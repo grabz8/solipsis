@@ -54,7 +54,7 @@ from solipsis.navigator.basic.image import ImageManager
  wxID_WXMAINFRAMEMENU2DVIEWAVATARSIZE, wxID_WXMAINFRAMEMENUABOUTSOLIPSIS,
 ] = map(lambda _init_ctrls: wxNewId(), range(26))
 
-           
+
 class wxMainFrame(wxFrame):
     def _init_coll_menuBar_Menus(self, parent):
 
@@ -79,7 +79,7 @@ class wxMainFrame(wxFrame):
         self.menu2DView.AppendCheckItem(wxID_WXMAINFRAMEMENU2DVIEWDISPLAYPSEUDOS,
                                         "Display pseudos", "")
         self.menu2DView.AppendCheckItem(wxID_WXMAINFRAMEMENU2DVIEWDISPLAYAVATARS,
-                                        "Display avatars", "")                
+                                        "Display avatars", "")
         self.menu2DView.InsertSeparator(2)
         self.menu2DView.Append(wxID_WXMAINFRAMEMENU2DVIEWMANAGE,
                                "Manage avatars", "")
@@ -111,11 +111,11 @@ class wxMainFrame(wxFrame):
         EVT_MENU(self, wxID_WXMAINFRAMEMENUFLAGSMANAGE, self.OnFlagsManage)
         EVT_MENU(self, wxID_WXMAINFRAMEMENU2DVIEWMANAGE, self.OnImagesManage)
         EVT_MENU(self, wxID_WXMAINFRAMEMENU2DVIEWDISPLAYPSEUDOS, self.OnDisplayPseudos)
-        EVT_MENU(self, wxID_WXMAINFRAMEMENU2DVIEWDISPLAYAVATARS, self.OnDisplayAvatars)        
+        EVT_MENU(self, wxID_WXMAINFRAMEMENU2DVIEWDISPLAYAVATARS, self.OnDisplayAvatars)
         EVT_MENU(self, wxID_WXMAINFRAMEMENU2DVIEWAVATARSIZE, self.OnAvatarSize)
-        EVT_MENU(self, wxID_WXMAINFRAMEMENUABOUTSOLIPSIS, self.OnAboutSolipsis)        
+        EVT_MENU(self, wxID_WXMAINFRAMEMENUABOUTSOLIPSIS, self.OnAboutSolipsis)
         EVT_MENU(self, wxID_WXMAINFRAMEMENUENTITYQUIT, self.OnClose)
-        
+
     def _init_utils(self):
         # generated method, don't edit
         self.menuBar = wxMenuBar()
@@ -150,7 +150,7 @@ class wxMainFrame(wxFrame):
                                            parent=self.navig_window,
                                            pos=wxPoint(0, 0), size=wxSize(1014, 46),
                                            style=0)
-        
+
         # logo window
         self.logo_window = wxWindow(id=wxID_WXMAINFRAMELOGO_WINDOW,
               name='logo_window', parent=self, pos=wxPoint(719, 46),
@@ -212,7 +212,7 @@ class wxMainFrame(wxFrame):
                                           pos=wxPoint(6, 460),size=wxSize(279, 115),
                                           style=wxNO_BORDER|wxTE_MULTILINE,value='')
 
-        sendBitmap =ImageManager.getBlueSendWxBitmap() 
+        sendBitmap =ImageManager.getBlueSendWxBitmap()
         self.sendMessageButton = wxBitmapButton(bitmap=sendBitmap,
                                                 id=wxID_WXMAINFRAMESENDMESSAGEBUTTON,
                                                 name='sendMessageButton',
@@ -221,14 +221,17 @@ class wxMainFrame(wxFrame):
                                                 size=wxSize(81, 17),
                                                 validator=wxDefaultValidator)
 
-        
+
 
     def __init__(self, params):
 
-        navigatorParams = params.getNavigatorParams()
         # display variables
-        [self.dist_max, self.scale, self.coeff_zoom, self.psedudo,
-         self.arePseudosDisplayed, self.areAvatarsDisplayed] = navigatorParams
+        self.dist_max = params.dist_max
+        self.scale = params.scale
+        self.coeff_zoom = params.zoom
+        self.pseudo = params.pseudo
+        self.arePseudosDisplayed = params.display_pseudos
+        self.areAvatarsDisplayed = params.display_avatars
 
         # my node variables
         self.nodeinfo = NodeInfo()
@@ -240,7 +243,7 @@ class wxMainFrame(wxFrame):
         self.controller = Controller(params.getControlParams())
 
         EVT_CLOSE(self, self.OnClose)
- 
+
 
     def OnNodesConnect(self, event):
         """ Open the entity manage dialog box on EntityManage event """
@@ -298,7 +301,7 @@ class wxMainFrame(wxFrame):
         """ Display the about Solipsis dialog box """
         dlg = aboutDialog(self)
         dlg.ShowModal()
-     
+
     def OnFlagsAdd(self, event):
         self.addFlagDialog = flagsDialog(self, self.controller)
         self.addFlagDialog.ShowModal()
@@ -341,14 +344,14 @@ class wxMainFrame(wxFrame):
             except:
                 displayError(self, 'The file %s has a bad format !' %flagFile)
                 return 0
-            
+
             # get the node AR to generate noise near the selected point
             ar = self.controller.getNodeAr()
             debug.debug_info("getNodeAr() -> " + str(ar))
-            deltaNoise = long(random.random()*ar/10)            
+            deltaNoise = long(random.random()*ar/10)
             posX = long(posX) + deltaNoise
             posY = long(posY) + deltaNoise
-                
+
             # jump to the flag position
             self.controller.jumpMyNode(str(posX), str(posY))
 
@@ -359,7 +362,7 @@ class wxMainFrame(wxFrame):
 
     def addSharefileServiceNeighbor(self, id):
         """ add the share file service picto of the corresponding neighbor """
-        
+
         self.neighbor_item[id][5] = TRUE
         # refresh the drawing
         self.toRefresh = TRUE

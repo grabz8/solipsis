@@ -3,7 +3,8 @@ from solipsis.navigator.basic.image import ImageManager
 from solipsis.navigator.navigatorinfo import NavigatorInfo
 from solipsis.navigator.service import Service
 
-class Display2D:
+
+class Display2D(object):
 
     # to ensure that elements are corectly displayed inside the window
     # we specify an offset
@@ -15,7 +16,7 @@ class Display2D:
         navigatorInfo: navigator information : node, peers, options, etc..."""
         self.two_d_window = window
         self.navigatorInfo = navigatorInfo
-        
+
     def OnPaint(self, event):
         dc = wx.ClientDC(self.two_d_window)
 
@@ -29,18 +30,18 @@ class Display2D:
 
 
         # draw background picture
-        two_d_bitmap = ImageManager.get2DBackgrounddWxBitmap()
-        dc.DrawBitmap(two_d_bitmap, wx.Point(0,0), True)
+        two_d_bitmap = ImageManager.getBitmap(ImageManager.IMG_2D_BACKGROUND)
+        dc.DrawBitmap(two_d_bitmap, 0, 0, True)
 
         width  = self.two_d_window.GetClientSize().GetWidth()
         height = self.two_d_window.GetClientSize().GetHeight()
-        # we are not connected, just display a 'not connected' message 
+        # we are not connected, just display a 'not connected' message
         if not self.navigatorInfo.isConnected():
-            dc.DrawText('Not connected', wx.Point(width/2, height/2))
-        else:            
-            # display awarness radius
-            dc.DrawCircle(wx.Point(width/2, height/2), width/2)
-            
+            dc.DrawText('Not connected', width // 2, height // 2)
+        else:
+            # display awareness radius
+            dc.DrawCircle(width / 2, height / 2, width / 2)
+
             self.displayEntity(dc, self.navigatorInfo.getNode())
             print '---'
             for peer in self.navigatorInfo.enumeratePeers():
@@ -48,49 +49,49 @@ class Display2D:
                 self.displayEntity(dc, peer)
 
     def displayEntity(self, dc, entity):
-        
+
         # display pseudo
         if self.navigatorInfo.arePseudosDisplayed() :
             pseudoCoordinate = self.getPseudoWindowCoordinate(entity)
-            dc.DrawText(entity.getPseudo(), pseudoCoordinate)
+            dc.DrawTextPoint(entity.getPseudo(), pseudoCoordinate)
 
         # display avatar
         if self.navigatorInfo.areAvatarsDisplayed() :
-            avatarBitmap = ImageManager.getGreyAvatar()
+            avatarBitmap = ImageManager.getBitmap(ImageManager.IMG_AVATAR_GREY)
             self.posAvatar = self.getWindowCoordinate(entity)
-            dc.DrawBitmap(avatarBitmap, self.posAvatar, True)
+            dc.DrawBitmapPoint(avatarBitmap, self.posAvatar, True)
 
-            
+
         # display services picto bitmap
         for service in entity.enumerateServices():
-            if service.id == Service.ID_CHAT:                
-                chatBitmap = ImageManager.getChatPicto()
+            if service.id == Service.ID_CHAT:
+                chatBitmap = ImageManager.getBitmap(ImageManager.IMG_CHAT_PICTO)
                 chatCoordinate = self.getServiceWindowCoordinate(entity,
                                                                  Service.ID_CHAT)
-                dc.DrawBitmap(chatBitmap, chatCoordinate, True)
+                dc.DrawBitmapPoint(chatBitmap, chatCoordinate, True)
             elif service.id == Service.ID_AVATAR:
-                avatarPicto = ImageManager.getAvatarPicto()
+                avatarPicto = ImageManager.getBitmap(ImageManager.IMG_AVATAR_PICTO)
                 avatarCoordinate = self.getServiceWindowCoordinate(entity,
                                                              Service.ID_AVATAR)
-                dc.DrawBitmap(avatarPicto, avatarCoordinate, True)
+                dc.DrawBitmapPoint(avatarPicto, avatarCoordinate, True)
             elif service.id == Service.ID_FILE_TRANSFER:
-                filePicto = ImageManager.getFilePicto()
+                filePicto = ImageManager.getBitmap(ImageManager.IMG_TRANSFER_PICTO)
                 fileCoordinate = self.getServiceWindowCoordinate(entity,
                                                            Service.ID_FILE_TRANSFER)
-                dc.DrawBitmap(filePicto, fileCoordinate, True)
+                dc.DrawBitmapPoint(filePicto, fileCoordinate, True)
             # unknown service type : display a question mark pictogram
             else:
-                unknownPicto = ImageManager.getUnknownPicto()                
+                unknownPicto = ImageManager.getBitmap(ImageManager.IMG_UNKNOWN_PICTO)
                 unknownCoord = self.getServiceWindowCoordinate(entity,
                                                                Service.ID_UNKNOWN)
-                dc.DrawBitmap(unknownPicto, unknownCoord, True)
-        
+                dc.DrawBitmapPoint(unknownPicto, unknownCoord, True)
+
 
     def getWindowCoordinate(self, entity):
-        """ Return the coordinate of an entity based on its position 
+        """ Return the coordinate of an entity based on its position
         Entity : the Entity object we want to display
         Return : a wx.Point object"""
-        
+
         # width and height of the window
         width  = self.two_d_window.GetClientSize().GetWidth() - Display2D.OFFSET
         height = self.two_d_window.GetClientSize().GetHeight()- Display2D.OFFSET
@@ -106,13 +107,13 @@ class Display2D:
         # that we have to display
         maxX = self.navigatorInfo.getMaxPosX()
         maxY = self.navigatorInfo.getMaxPosY()
-        
+
         # we have no peers, set a default using the size of the window
         if maxX == 0:
             maxX = width
         if maxY == 0:
             maxY = height
-            
+
         # In the wx coordinate system:
         # wx.Point(0,0) is located in the top left
         # wx.Point(width,0) is located in the top right
@@ -130,7 +131,7 @@ class Display2D:
 
         # position of the entity in the wx coordinate system
         wxPosX = posX*scaleX
-        wxPosY = height - (posY*scaleY) 
+        wxPosY = height - (posY*scaleY)
 
         return wx.Point(wxPosX, wxPosY)
 
@@ -145,11 +146,11 @@ class Display2D:
         if serviceId == Service.ID_CHAT:
             offset = wx.Point(Display2D.OFFSET, 10)
         elif serviceId == Service.ID_AVATAR:
-            offset = wx.Point(Display2D.OFFSET, 20)               
+            offset = wx.Point(Display2D.OFFSET, 20)
         elif serviceId == Service.ID_FILE_TRANSFER:
             offset = wx.Point(Display2D.OFFSET, 30)
         else:
             offset = wx.point(Display2D.OFFSET,40)
 
         return coordinate + offset
-        
+

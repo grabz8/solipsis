@@ -40,6 +40,8 @@ from solipsis.navigator.basic.image import ImageManager
 from solipsis.navigator.basic.wxSubscriber import WxSubscriber
 from solipsis.navigator.basic.wxProcessor import WxProcessor
 from solipsis.navigator.basic.display2d import Display2D
+from solipsis.navigator.chat import WxChat
+from entityDialog import entityDialog
 
 [wxID_WXMAINFRAME, wxID_WXMAINFRAMEAPPLI_WINDOW,
  wxID_WXMAINFRAMETOPBANNERBITMAP, wxID_WXMAINFRAMECHATBITMAP,
@@ -56,19 +58,18 @@ from solipsis.navigator.basic.display2d import Display2D
  wxID_WXMAINFRAMEMENU2DVIEWAVATARSIZE, wxID_WXMAINFRAMEMENUABOUTSOLIPSIS,
 ] = map(lambda _init_ctrls: wx.NewId(), range(26))
 
-# create event classes and event binder functions
-NewPeerEvent, EVT_NEW_PEER       = wx.lib.newevent.NewEvent()
-UpdatePeerEvent, EVT_UPDATE_PEER = wx.lib.newevent.NewEvent()
-NodeInfoEvent, EVT_NODE_INFO     = wx.lib.newevent.NewEvent()
-           
 class wxMainFrame(wx.Frame):
     def _init_coll_menuBar_Menus(self, parent):
+        self.locale = wx.Locale()
+        self.locale.Init2()
 
         # Entity menu
         self.menuEntity = wx.Menu()
-        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYCONNECT, "Connect...", "")
-        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYDISCONNECT, "Disconnect", "")
-        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYQUIT, "Quit", "")
+        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYCONNECT,
+                               "Connect...\tCtrl+C", "Connect to Solipsis")
+        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYDISCONNECT,
+                               "Disconnect", "")
+        self.menuEntity.Append(wxID_WXMAINFRAMEMENUENTITYQUIT, wx.GetTranslation("Close"), "")
         # Add menu to the menu bar
         parent.Append(self.menuEntity, "Entity")
 
@@ -85,7 +86,7 @@ class wxMainFrame(wx.Frame):
         self.menu2DView.AppendCheckItem(wxID_WXMAINFRAMEMENU2DVIEWDISPLAYPSEUDOS,
                                         "Display pseudos", "")
         self.menu2DView.AppendCheckItem(wxID_WXMAINFRAMEMENU2DVIEWDISPLAYAVATARS,
-                                        "Display avatars", "")                
+                                        "Display avatars", "")
         self.menu2DView.InsertSeparator(2)
         self.menu2DView.Append(wxID_WXMAINFRAMEMENU2DVIEWMANAGE,
                                "Manage avatars", "")
@@ -112,7 +113,7 @@ class wxMainFrame(wx.Frame):
         # evenement management
         self.Bind(wx.EVT_MENU, self.OnNodesConnect,
                   id=wxID_WXMAINFRAMEMENUENTITYCONNECT)
-        
+
         self.Bind(wx.EVT_MENU, self.OnNodesDisconnect,
                   id=wxID_WXMAINFRAMEMENUENTITYDISCONNECT)
         self.Bind(wx.EVT_MENU, self.OnFlagsAdd,
@@ -132,8 +133,8 @@ class wxMainFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnAboutSolipsis,
                   id=wxID_WXMAINFRAMEMENUABOUTSOLIPSIS)
         self.Bind(wx.EVT_MENU, self.OnClose,
-                  id=wxID_WXMAINFRAMEMENUENTITYQUIT) 
-        
+                  id=wxID_WXMAINFRAMEMENUENTITYQUIT)
+
     def _init_utils(self):
         # generated method, don't edit
         self.menuBar = wx.MenuBar()
@@ -143,16 +144,15 @@ class wxMainFrame(wx.Frame):
 
         # frame initialization
         wx.Frame.__init__(self, id=wxID_WXMAINFRAME, name='wxMainFrame',
-                         parent=None, pos=wx.Point(0, 0), size=wx.Size(1024, 768),
-                         style=wx.DEFAULT_FRAME_STYLE & ~
-                         (wx.RESIZE_BORDER | wx.RESIZE_BOX | wx.MAXIMIZE_BOX),
+                         parent=None, pos=wx.DefaultPosition, size=wx.Size(1024, 768),
+                         style=wx.DEFAULT_FRAME_STYLE,
                          title='Solipsis')
         self._init_utils()
         self.SetClientSize(wx.Size(1016, 741))
 
         # set the Solipsis icon in the frame
-        iconSolipsis = ImageManager.getSolipsisIconWxIcon()
-        bitmap = ImageManager.getSolipsisIconWxBitmap()
+        iconSolipsis = ImageManager.getIcon(ImageManager.IMG_SOLIPSIS_ICON)
+        bitmap = ImageManager.getBitmap(ImageManager.IMG_SOLIPSIS_ICON)
         iconSolipsis.CopyFromBitmap(bitmap)
         self.SetIcon(iconSolipsis)
 
@@ -161,25 +161,16 @@ class wxMainFrame(wx.Frame):
               name='navig_window', parent=self, pos=wx.Point(0, 0),
               size=wx.Size(1014, 46), style=0)
 
-        top = ImageManager.getTopBannerWxBitmap()
+        top = ImageManager.getBitmap(ImageManager.IMG_TOP_BANNER)
         self.bannerBitmap = wx.StaticBitmap(bitmap=top,
                                            id=wxID_WXMAINFRAMETOPBANNERBITMAP,
                                            name='topBannerBitmap',
                                            parent=self.navig_window,
                                            pos=wx.Point(0, 0), size=wx.Size(1014, 46),
                                            style=0)
-        
-        # logo window
-        self.logo_window = wx.Window(id=wxID_WXMAINFRAMELOGO_WINDOW,
-              name='logo_window', parent=self, pos=wx.Point(719, 46),
-              size=wx.Size(295, 76), style=0)
 
-        logo = ImageManager.getSolipsisLogoWxBitmap()
-        self.logoBitmap = wx.StaticBitmap(bitmap=logo,
-                                         id=wxID_WXMAINFRAMELOGOBITMAP,
-                                         name='logoBitmap', parent=self.logo_window,
-                                         pos=wx.Point(0, 0), size=wx.Size(295, 76),
-                                         style=0)
+        # logo window
+
 
         # 2D view window
         self.two_d_window = wx.Window(id=wxID_WXMAINFRAMETWO_D_WINDOW,
@@ -187,92 +178,60 @@ class wxMainFrame(wx.Frame):
               size=wx.Size(719, 676), style=0)
 
         # application window
-        self.appli_window = wx.Window(id=wxID_WXMAINFRAMEAPPLI_WINDOW,
+        self.appli_window = wx.Notebook(id=wxID_WXMAINFRAMEAPPLI_WINDOW,
                                      name='appli_window', parent=self,
-                                     pos=wx.Point(719, 122), size=wx.Size(295, 600),
+                                     pos=wx.Point(719, 0), size=wx.Size(295, 722),
                                      style=0)
 
+        #imgList = wx.ImageList(100,31)
+        #imgList.Add(ImageManager.getRedChatWxBitmap())
+        #imgList.Add(ImageManager.getBlueTransferWxBitmap())
 
-        self.transferButton = wx.BitmapButton(bitmap=
-                                             ImageManager.getBlueTransferWxBitmap(),
-                                             id=wxID_WXMAINFRAMETRANSFERBUTTON,
-                                             name='transferButton',
-                                             parent=self.navig_window,
-                                             pos=wx.Point(812, 9),
-                                             size=wx.Size(100, 31), style=0,
-                                             validator=wx.DefaultValidator)
+        #imgList = wx.ImageList(80,30)
+        #imgList.Add(ImageManager.getSmallBlueChatWxBitmap())
+        #imgList.Add(ImageManager.getSmallRedTransferWxBitmap())
 
-        self.chatButton = wx.BitmapButton(bitmap=ImageManager.getRedChatWxBitmap(),
-                                         id=wxID_WXMAINFRAMECHATBUTTON,
-                                         name='chatButton',
-                                         parent=self.navig_window,
-                                         pos=wx.Point(912, 9), size=wx.Size(100, 31),
-                                         style=wx.BU_AUTODRAW,
-                                         validator=wx.DefaultValidator)
+        imgList = wx.ImageList(16,16)
+        imgList.Add(ImageManager.getBitmap(ImageManager.IMG_SOLIPSIS_ICON))
+        imgList.Add(ImageManager.getBitmap(ImageManager.IMG_SOLIPSIS_ICON))
+        self.appli_window.SetImageList(imgList)
 
-        self.chattersListBox = wx.ListBox(choices=[],
-                                         id=wxID_WXMAINFRAMECHATTERSLISTBOX,
-                                         name='chattersList',
-                                         parent=self.appli_window,
-                                         pos=wx.Point(6, 30), size=wx.Size(279,135),
-                                         style=wx.NO_BORDER|wx.LB_ALWAYS_SB,
-                                         validator=wx.DefaultValidator)
+        self.wxChat = WxChat(self.appli_window)
+        import solipsis.navigator.filetransfer
+        self.wxFileTransfer = solipsis.navigator.filetransfer.WxFileTransfer(self.appli_window)
 
-        self.chatTextCtrl = wx.TextCtrl(id=wxID_WXMAINFRAMECHATTEXTCTRL,
-                                       name='chatTextCtrl',parent=self.appli_window,
-                                       pos=wx.Point(6, 201), size=wx.Size(279, 233),
-                                       style=wx.NO_BORDER|wx.TE_MULTILINE|wx.TE_READONLY,
-                                       value='')
-
-        self.messageTextCtrl = wx.TextCtrl(id=wxID_WXMAINFRAMEMESSAGETEXTCTRL,
-                                          name='messageTextCtrl',
-                                          parent=self.appli_window,
-                                          pos=wx.Point(6, 460),size=wx.Size(279, 115),
-                                          style=wx.NO_BORDER|wx.TE_MULTILINE,value='')
-
-        sendBitmap =ImageManager.getBlueSendWxBitmap() 
-        self.sendMessageButton = wx.BitmapButton(bitmap=sendBitmap,
-                                                id=wxID_WXMAINFRAMESENDMESSAGEBUTTON,
-                                                name='sendMessageButton',
-                                                parent=self.appli_window,
-                                                pos=wx.Point(190, 441),
-                                                size=wx.Size(81, 17),
-                                                validator=wx.DefaultValidator)
-
-        
+        self.appli_window.AddPage(self.wxChat, 'chat', imageId=0)
+        self.appli_window.AddPage(self.wxFileTransfer, 'transfer', imageId=1)
 
     def __init__(self, params):
 
         # init controls
         self._init_ctrls()
-        
+
         # navigator information : node, peers, options, etc...
         self.navigatorInfo = NavigatorInfo(params)
 
         # 2D display functions are manged by the Display2D class
         self.display2d = Display2D(self.two_d_window, self.navigatorInfo)
-        
+
         # navigator
         self.eventSubscriber = WxSubscriber(self)
-        self.eventProcessor  = WxProcessor(self)
-        #self.controller = XMLRPCController(self.eventSubscriber,
-        #                                   params.getControlParams())
-        self.controller = DummyController(self.eventSubscriber)
+
+        self.controller = XMLRPCController(self.eventSubscriber, params)
+        #self.controller = DummyController(self.eventSubscriber)
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+
         self.two_d_window.Bind(wx.EVT_PAINT, self.display2d.OnPaint)
-        
-        # Bind events to the related processor function
-        self.Bind(EVT_NEW_PEER, self.eventProcessor.OnNewPeer)
-        self.Bind(EVT_UPDATE_PEER, self.eventProcessor.OnUpdatePeer)
-        self.Bind(EVT_NODE_INFO, self.eventProcessor.OnNodeInfo)
-        
+        self.appli_window.Bind(wx.EVT_PAINT, self.wxChat.OnPaint)
+
+
     def OnNodesConnect(self, event):
         """ Open the entity manage dialog box on EntityManage event """
-        self.controller.connect()
-        #self.controller.lastNodeConnection()
-        #self.entityDialog = entityDialog(self, self.controller)
-        #self.entityDialog.ShowModal()
+        #self.controller.connect()
+
+        self.entityDialog = entityDialog(self, self.controller)
+        self.entityDialog.ShowModal()
 
     def OnNodesDisconnect(self, event):
         """ Disconnect the controller from the current node on NodesDisconnect event """
@@ -288,7 +247,7 @@ class wxMainFrame(wx.Frame):
         #self.imagesDialog = imagesDialog(self, self.controller)
         #self.imagesDialog.ShowModal()
         pass
-    
+
     def OnDisplayPseudos(self, event):
         """ change the display pseudos option """
         pass
@@ -325,7 +284,7 @@ class wxMainFrame(wx.Frame):
         pass
         #dlg = aboutDialog(self)
         #dlg.ShowModal()
-     
+
     def OnFlagsAdd(self, event):
         pass
         #self.addFlagDialog = flagsDialog(self, self.controller)
@@ -349,12 +308,12 @@ class wxMainFrame(wx.Frame):
     def On2DPaint(self, event):
         dc = wx.ClientDC(self.two_d_window)
         if len(self.navigatorInfo._peers) == 0:
-            dc.DrawText('no peer', wx.Point(0,0))
+            dc.DrawText('no peer', 0, 0)
         else:
             nb = len(self.navigatorInfo._peers)
             msg = 'Number of peers: ' + str(nb)
-            dc.DrawText(msg, wx.Point(0,nb*20))
-            
+            dc.DrawText(msg, 0, nb*20)
+
     def OnClose(self, event):
         """ Close the frame """
 

@@ -24,13 +24,13 @@ print "method:" + method
 HEADERS_SYNTAX = {
     'Position': '^\s*\d+\s*-\s*\d+$',
     'Remote-Address':  '\s*.*:\d+\s*',
-    'AwarnessRadius': '\d+',
+    'AwarenessRadius': '\d+',
     'Calibre': '\d+' }
 
-ALL_HEADERS = ['Address', 'Id', 'Position', 'AwarnessRadius', 'Calibre',
+ALL_HEADERS = ['Address', 'Id', 'Position', 'AwarenessRadius', 'Calibre',
                'Orientation', 'Pseudo']
 ALL_REMOTE_HEADERS = [  'Remote-Address', 'Remote-Id', 'Remote-Position',
-                        'Remote-AwarnessRadius', 'Remote-Calibre',
+                        'Remote-AwarenessRadius', 'Remote-Calibre',
                         'Remote-Orientation', 'Remote-Pseudo']
 METHODS = {
     'FINDNEAREST': ['Position', 'Id','Remote-Address'],
