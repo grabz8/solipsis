@@ -23,7 +23,7 @@
 
 class Entity:
 
-    def __init__(self, pos, ori, awarenessRadius, caliber, pseudo):
+    def __init__(self, pos, ori, awarenessRadius, calibre, pseudo):
         """ Create a new Entity and keep information about it"""
 
         # position and relative position
@@ -31,7 +31,7 @@ class Entity:
         
         # awareness radius, caliber, pseudo, orientation
         self.awarenessRadius = awarenessRadius
-        self.caliber         = caliber
+        self.calibre         = calibre
         self.pseudo          = pseudo
         self.orientation     = ori
 
@@ -55,6 +55,24 @@ class Entity:
         """ Get the ID of this node """
         return self.id
 
+    def getAddress(self):
+        return str(self.host) + ":" + str(self.port)
+
+    def getStringPosition(self):
+        return str(self.position[0]) + " - " + str(self.position[1])
+
+    def getAwarenessRadius(self):
+        return self.awarenessRadius
+
+    def getCalibre(self):
+        return self.calibre
+
+    def getOrientation(self):
+        return self.orientation
+    
+    def getPseudo(self):
+        return self.pseudo
+    
     def getNetAddress(self):
         """ Get the network address of this node
         The network address is a list [ host, port]

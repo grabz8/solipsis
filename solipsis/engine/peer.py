@@ -33,9 +33,10 @@
 #import function
 #import sys
 import random, string, time
-from entity import Entity
-from exception import SolipsisInternalError
-from util import CcwList, DistList, Geometry
+from solipsis.engine.entity import Entity
+from solipsis.util.exception import SolipsisInternalError
+from solipsis.util.util import CcwList, DistList, Geometry
+
 #################################################################################################
 #                                                                                               #
 #			----- Information about an entity ---------				#

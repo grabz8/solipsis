@@ -21,16 +21,15 @@
 ## ------------------------------------------------------------------------------
 
 
+
+import sys, time, select
 from threading import Thread
-import sys, time
 from Queue import Queue
 from socket import socket, AF_INET, SOCK_DGRAM
-import select
 
-from peer import Peer
-from event import PeerEvent
-from util import Geometry
-
+from solipsis.engine.peer import Peer
+from solipsis.util.event import PeerEvent
+from solipsis.util.util import Geometry
 
 class Engine:
   
@@ -58,19 +57,10 @@ class V0_2_5_Engine(Engine):
     self.version = "0.2.5"
 
   def process(self, event):
-    """ Process an event.
-    event : the event to be processed """
-
-    if ( event.type() == "peer" ):
-      self.processPeerEvent(event)
-    elif ( event.type() == "control" ):
-      self.processControlEvent(event)
-    else:            
-      self.logger.critical("unknow event type " + event.type())
-
-  def processPeerEvent(self, event):
     """ We have received a message from a peer, process this message
     event : the event containing the message sent by a peer """
+    # Parse event raw data and create a Message object
+    msg = Message(event.data())
     name = event.name()
     args = event.args()
     self.logger.debug("event name %s - event args %s", name, args)
@@ -89,7 +79,7 @@ class V0_2_5_Engine(Engine):
     if ( name == "FINDNEAREST" ):
       # FINDNEAREST, host, port, posX, posY
       [posX, posY] = [args[2], args[3]]
-      OnFindnearest(peer, posX, posY)
+      self.OnFindnearest(peer, posX, posY)
       
     elif ( name == "NEAREST" ):
       if((self.state.name == "MOVING") or (self.state.name == "TURNING")):
@@ -295,7 +285,7 @@ class V0_2_5_Engine(Engine):
         connectMsg = self.ConnectMsg()
         self.node.send(peer, connectMsg)      
     else:
-      connectMsg = ConnectMsg()
+      connectMsg = self.ConnectMsg()
       self.node.send(peer, connectMsg)
     
   def OnConnect(self, peer):
@@ -306,105 +296,6 @@ class V0_2_5_Engine(Engine):
     self.logger.critical("OnConnect NOT IMPLEMENTED")
 
     
-  ##########################################################################
-  # SOLIPSIS messages for v0.2.5
-  # 
-  # best, service, endservice, connect, hello, close, delta, heartbeat
-  # around, queryaround, detect, search, found, findnearest, nearest
-  ##########################################################################
-  def BestMsg(self):
-    """ Create a BEST message.
-    BEST host, port, posX, posY
-    """
-    args = ["BEST"] + self.node.getConnectInfo()
-    return self.encodeMsg(args)
-
-  def ServiceMsg(self, serviceId):
-    """ SERVICE, id, id_service, descr, host, port"""
-    srv = self.node.service[service_id]
-    args = ["SERVICE", self.node.id, serviceId, srv.desc, srv.host, str(srv.port) ]
-    return self.encodeMsg(args)
-
-  def EndserviceMsg(self, serviceId):
-    """ ENDSERVICE, id, id_service """
-    args = ["ENDSERVICE", self.node.id, serviceId]
-    return self.encodeMsg(args)
-
-  def ConnectMsg(self):
-    """ CONNECT, id, host, port, positionX, positionY, awareness radius,
-    caliber, pseudo, ori"""
-    args = ["CONNECT"] + self.node.getAllInfo()
-    return self.encodeMsg(args)
-
-  def HelloMsg(self):
-    """ HELLO, id, host, port, positionX, positionY, awareness radius,
-    caliber, pseudo, ori'"""
-    args = ["HELLO"] + self.node.getAllInfo()
-    return self.encodeMsg(args)
-
-  def CloseMsg(self):
-    """ CLOSE, id """
-    args = ["CLOSE", self.node.id]    
-    return self.encodeMsg(args)
-
-  def DeltaMsg(self, name):
-    """DELTA, id, var, newVar
-    var is the modified variable: 'POS' or 'AR' or 'ORI'"""
-    if ( name == "POS" ):
-      var = self.node.position
-    elif ( name == "ORI" ):
-      var = self.node.orientation
-    elif ( name == "AR"):
-      var = self.node.awarnessRadius
-
-    args = ["DELTA", self.node.id, name, var]
-    return self.encodeMsg(args)
-
-  def HeartbeatMsg(self):
-    """ HEARTBEAT id """
-    args = ["HEARTBEAT", self.node.id]
-    return self.encodeMsg(args)
-
-  def DetectMsg(self, peer):
-    """ DETECT, id, host, port, positionX, positionY, awareness radius,
-    caliber, pseudo """
-    args = [ "DETECT", peer.id] +  peer.getConnectInfo() + [
-      peer.awarenessRadius, peer.caliber, peer.pseudo ]
-    return self.encodeMsg(args)
-
-  def FoundMsg(self, peer):
-    """FOUND, id, host, port, posX, posY, awareness radius, caliber, pseudo""" 
-    args = ["FOUND", peer.id] +  peer.getConnectInfo() + [
-      peer.awarenessRadius, peer.caliber, peer.pseudo ]
-    return self.encodeMsg(args)
-
-  def SearchMsg(self, isCounterclockwise):
-    """ SEARCH, id, wise = 1 if counterclockwise"""
-    args = ["SEARCH", self.node.id, isCounterclockwise]
-    return self.encodeMsg(args)
-
-  def FindnearestMsg(self):
-    """ FINDNEAREST, host, port, posX, posY"""
-    args = ["FINDNEAREST"] + self.node.getConnectInfo() 
-    self.logger.debug(self.encodeMsg(args))
-    return self.encodeMsg(args)
-
-  def QueryaroundMsg(self, idNearest, distNearest):
-    """ QUERYAROUND, id, host, port, posX, posY, id_nearest, dist_nearest """
-    args = ["QUERYAROUND", self.node.id] +  self.node.getConnectInfo()
-    args = args + [idNearest, str(distNearest)]
-    
-    return self.encodeMsg(args)
-
-  def NearestMsg(self, peer):
-    """ NEAREST, id, host, port, positionX, positionY"""
-    args = ["NEAREST", peer.id] + peer.getConnectInfo()
-    return self.encodeMsg(args)
-
-  def AroundMsg(self, peer):
-    """ AROUND, id, host, port, positionX, positionY"""
-    args = ["AROUND", peer.id] + peer.getConnectInfo() 
-    return self.encodeMsg(args)
 
 class State:
   # STATES = {"NOT_CONNECTED":0, "IDLE":1, "MOVING":2, "TURNING":3}

@@ -34,16 +34,15 @@ import sys, time
 import ConfigParser, logging, logging.config
 from Queue import Queue
 
-from parameter import Parameters
-from entity import Entity
+from solipsis.util.parameter import Parameters
+from solipsis.util.util import Geometry, NotificationQueue
+from solipsis.util.exception import SolipsisConnectionError
 
-from peer import PeersManager
-from exception import SolipsisConnectionError
-
-from util import Geometry, NotificationQueue
-from connector import UDPConnector, XMLRPCConnector
-from engine import V0_2_5_Engine
-from control import ControlEngine
+from solipsis.engine.entity import Entity
+from solipsis.engine.peer import PeersManager
+from solipsis.engine.connector import UDPConnector, XMLRPCConnector
+from solipsis.engine.engine import V0_2_5_Engine
+from solipsis.engine.control import ControlEngine, InternalEngine
 
 class Node(Entity):
   
@@ -69,7 +68,8 @@ class Node(Entity):
     self.engine = V0_2_5_Engine(self, engineParams)
 
     self.controlEngine = ControlEngine(self, engineParams)
-        
+    self.internalEngine = InternalEngine(self, engineParams)
+    
     position = [params.posX, params.posY]
     
     # call parent class constructor
@@ -204,10 +204,12 @@ class Node(Entity):
       type = event.type()
       #self.logger.debug("%s - %s - %s ", event.name(), event.type(),
       #                  event.data())
-      if( type == "peer" ):
+      if( type == Event.PEER ):
         self.engine.process(event)
-      elif( type == "control"):
+      elif( type == Event.CONTROL):
         self.controlEngine.process(event)
+      elif type == Event.INTERNAL:
+        self.internalEngine.process(event)
       else:
         self.logger.critical("Unknown event type" + type)
                       

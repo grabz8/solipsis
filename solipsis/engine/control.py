@@ -1,5 +1,6 @@
-from engine import Engine
-from event import ControlEvent
+from solipsis.engine.engine import Engine
+from solipsis.util.event import ControlEvent
+from solipsis.util.exception import SolipsisInternalError
 
 class ControlEngine(Engine):
     def __init__(self, _node, params):
@@ -21,7 +22,8 @@ class ControlEngine(Engine):
         elif( type == "peers"):
             manager = self.node.getPeersManager()
             peerList = manager.getAllPeers()
-            peers = ControlEvent(map(peerList,getInfo()))
+            #peers = ControlEvent(map(peerList,getInfo()))
+            # TODO
             self.node.sendController(peers)
         elif( type == "peer"):
             id = event.data()[1]
@@ -105,3 +107,13 @@ class ControlEngine(Engine):
         args = ["DETECT", ent.id, ent.position[0], ent.position[1], ent.awarenessRadius, ent.caliber, ent.pseudo]
         return PeerEvent(args)
 
+
+class InternalEngine:
+    def __init__(self, _node, params):
+        """ Constructor.
+        node: the node associated with this engine"""
+        logger = params[0]
+        Engine.__init__(self, _node, logger)
+
+    def process(self, event):
+        raise SolipsisInternalError("InternalEngine.process not implemented")

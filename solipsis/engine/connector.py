@@ -30,16 +30,15 @@
 ## ******************************************************************************
 
 from threading import Thread
-#import string, sys, logging
-import sys, time
+import sys, time, select
 from Queue import Queue
 from socket import socket, AF_INET, SOCK_DGRAM
-import select
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from control import ControlEngine
 
-from event import PeerEvent, ControlEvent
-from util import NotificationQueue
+from solipsis.engine.control import ControlEngine
+from solipsis.engine.protocol import Message
+from solipsis.util.event import PeerEvent, ControlEvent
+from solipsis.util.util import NotificationQueue
 
 class Connector(Thread):
   """ Generic class for connecting to an entity """
@@ -87,12 +86,18 @@ class UDPConnector(Connector):
     """
     Connector.__init__(self, type, eventQueue)
 
-    [self.BUFFER_SIZE, self.logger] = netParams
+    [self.BUFFER_SIZE, self.logger, self.host, self.port] = netParams
     
     # network socket
     self.socket = socket(AF_INET, SOCK_DGRAM)
+
+    # If optionnal parameters IP address and port are supplied, bind socket to
+    # this network address
+    if self.host is not None and  self.port is not None:
+      self.socket.bind((self.host, self.port))
+
     self.socket.setblocking(0)
-    
+    self.logger.debug("UDP connector started:" + str(self.socket.getsockname()))
 
   def run(self):
     """ Receive messages from other nodes and process them.
@@ -113,11 +118,16 @@ class UDPConnector(Connector):
           # receive and process message from other nodes        
           data, sender = self.socket.recvfrom(self.BUFFER_SIZE)
           self.logger.debug("recvfrom %s", data)
+
+          msg = Message(data)
+
+          # create the corresponding event with:
+          # * the type of the event, the connector knows what kind of event
+          #   we received, either a "peer" or a "control" event
+          # * the method invoked through this message
+          netEvent = Event.createEvent(self.type, msg.getMethod())
+          netEvent.setArgs(msg.getArgs)
           
-          # store raw network message and
-          # store the type of the event, the connector knows what kind of event
-          # we received, either a "peer" or a "control" event
-          netEvent = NetworkEvent(self.type, data)
           # store ip address and port of sender
           netEvent.setSender(sender)
           
@@ -130,8 +140,6 @@ class UDPConnector(Connector):
                             str(sys.exc_info()[0]))
           raise
           time.sleep(0.2)
-
-        
       
         #raise
         #break
@@ -139,15 +147,15 @@ class UDPConnector(Connector):
     self.socket.close()
     self.logger.info('End of Network Server...')
 
-  def send(self, peer, msg):
+  def send(self, netEvent):
     """ Send a message to a peer
     To avoid problems when different thread access the socket object, only the
     network thread can send messages. As this method can be called by other
     threads, the message is NOT sent here. The message is instead added to a
     queue, and will be sent later by the network thread
     """
-    netEvent = NetworkEvent(self.type, msg)    
-    netEvent.setRecipient(peer.getNetAddress())
+    #netEvent = NetworkEvent(self.type, msg)    
+    #netEvent.setRecipient(peer.getNetAddress())
     self.outgoing.put(netEvent)
 
   def _send_no_wait(self, netEvent):
@@ -164,12 +172,9 @@ class UDPConnector(Connector):
       self.logger.critical("Error while sending %s %s %d", data, host, port)
       raise
 
-  def encodeMsg(self, list):
-    """ encode list of string list and return a string"""
-    return ";".join(list)
-
 
 class XMLRPCConnector(Connector):
+  
   def __init__(self, type, eventQueue, controlParams):
     """ Constructor.
     eventQueue : queue used to communicate with other thread. The PeerConnector
@@ -179,73 +184,108 @@ class XMLRPCConnector(Connector):
     a list [ buffer_size, logger_object ]
     """
     Connector.__init__(self, type, eventQueue)
-    [self.host, self.port, self.logger] = controlParams
-    # standard response for non get queries
-    self.ok = "1"
+    [self.host, self.controlPort,
+     self.notificationPort, self.logger] = controlParams
+  
+  def run(self):
+    """ Start 2 XML/RPC servers one for receiving control message from the
+    controller and another to send both reply to queries and asynchronous events
+    coming from the network (e.g. this 2nd channel is used to notify the
+    controller when a new node is discovered) """
     
-  def run(self):    
-    self.server =  SimpleXMLRPCServer((self.host, self.port))
-    self.server.register_instance(self)
+    # XML/RPC server used for receiving control orders
+    self.controlChannel = XMLRPCControlChannel(self.host, self.controlPort)
+    # XML/RPC server used for sending notification to the controller
+    self.notificationChannel = XMLRPCNotificationChannel(self.host,
+                                                         self.notificationPort)    
+    self.notificationChannel.start()
     
     while not self.stopThread:
-      self.server.handle_request()
-
+      self.controlChannel.server.handle_request()
+      
+    # set the STOP flag of the notification thread
+    self.notificationChannel.stopThread = True
+    # we need to send back the kill event to the controller because he is waiting
+    # for a reply from the notification thread
+    # (the call to XMLRPCNotificationChannel.get is blocking)
+    self.send(Event(["kill"]))
+                             
+    # wait for child thread before exiting 
+    notificationChannel.join()
     self.logger.info("End of control thread")
     
   def send(self, message):
+    """ Send a message to the controller"""
+    self.notificationChannel.send(message)
+    
+class XMLRPCNotificationChannel(Thread):
+  """ Comunication channel used by the node to send notification to its controller.
+  It is a one-way communication channel from the node to the controller.
+  The controller calls the get method, and blocks waiting for a reply. Whenever a
+  new event needs to be sent to the controller, this message is sent back in reply
+  to the get method call and the controller calls back the get method.  
+  """
+    
+  def __init__(self,host, port):
+    """ Constructor.
+    host : ip address of the node
+    port : port used by this XML/RPC server"""
+    Thread.__init__(self)
+    self.host = host
+    self.port = port
+    self.server =  SimpleXMLRPCServer((self.host, self.port))
+    self.server.register_instance(self)
+    self.stopThread = False
+    
+
+    # Message to send queue
+    self.outgoing = NotificationQueue()
+    
+    # this flag is set to True when we want to stop this thread
+    self.stopThread = False
+    
+  def run(self):
+    while not self.stopThread:
+      self.server.handle_request()
+
+  def get(self):
+    """ Wait for notification from the node main thread and send back events to the
+    controller. The controller calls the get method and is notified when a network
+    event occurs."""
+    # get the lock
+    self.outgoing.acquire()
+    # nothing to send, just wait
+    if self.outgoing.empty():
+      self.outgoing.wait()
+
+    # the main thread called the notify method to awaken this thread
+    # release the lock and send back the message to the controller.
+    self.outgoing.release()
+    
+    e = self.outgoing.get()
+    response = e.data()
+    return response
+    
+  def send(self, message):
+    """ Send a message to the controller"""
     self.outgoing.put(message)
   
-  def update(self, var, value):
-    """ Update a caracteristic of the node
-    var : the type of information to update, 'AR', 'POS', 'ORI', 'PSEUDO'
-    value : new value
-    """
-    #controlEvent = UpdateEvent(var, value)
-    controlEvent = ControlEvent(["update", var, value])
-    self.incoming.put(controlEvent)
-    return self.ok
   
-  def getNodeInfo(self, navId):
-    """ Return all the caracteristics of the node
-    [id, positionX, positionY, AR, CA, pseudo, orientation ]
-    navId : ID of the navigator asking this information
-    """
-    controlEvent = ControlEvent(["nodeinfo", navId])
-    self.logger.debug("getnodeinfo "+str(navId))
-    self.incoming.put(controlEvent)
-    return self.waitAndReply()
+  
 
-  def getPeerInfo(self, navId, id):
-    """ Return all the caracteristics of a peer
-    [id, positionX, positionY, AR, CA, pseudo, orientation ]
-    navId : id of the navigator
-    id : id of the peer
-    """
-    controlEvent = ControlEvent(["peer", id])
-    self.incoming.put(controlEvent)
-    return self.waitAndReply()
+class XMLRPCControlChannel:
+  """ Channel used for receiving orders from a navigator
 
-
+  """
+  def __init__(self, host, port):
+    self.host = host
+    self.port = port
+    self.server = SimpleXMLRPCServer((self.host, self.port))
+    self.server.register_instance(self)
     
-  def getAllPeers(self):
-    controlEvent = ControlEvent(["peers"])
-    self.incoming.put(controlEvent)
-    return self.waitAndReply()
+    # standard response for non get queries
+    self.ok = "1"
 
-  def connect(self):
-    """ Connect to solipsis. """
-    controlEvent = ControlEvent(["connect"])
-    self.incoming.put(controlEvent)
-    # return "OK" or "NOK" if node cannot connect
-    return self.waitAndReply()
-
-  def disconnect(self):
-    """ Disconnect node
-    Return OK """
-    controlEvent = ControlEvent(["disconnect"])
-    self.incoming.put(controlEvent)
-    return self.ok
-    
   def addService(self, srvId, srvDesc, srvConnectionString):
     """ add a new service to the node. """
     service = ControlEvent(["service", srvId, srvDesc, srvConnectionString])
@@ -259,14 +299,66 @@ class XMLRPCConnector(Connector):
     service = ControlEvent(["removeservice", srvId])
     self.incoming.put(service)
     return self.ok
+  
 
+  def update(self, var, value):
+    """ Update a caracteristic of the node
+    var : the type of information to update, 'AR', 'POS', 'ORI', 'PSEUDO'
+    value : new value
+    """
+    #controlEvent = UpdateEvent(var, value)
+    controlEvent = ControlEvent(["update", var, value])
+    self.incoming.put(controlEvent)
+    return self.ok
+
+  def getNodeInfo(self, navId):
+    """ Return all the caracteristics of the node
+    [id, positionX, positionY, AR, CA, pseudo, orientation ]
+    navId : ID of the navigator asking this information
+    """
+    controlEvent = ControlEvent(["nodeinfo", navId])
+    self.incoming.put(controlEvent)
+    return self.waitAndReply()
+
+  def getPeerInfo(self, navId, id):
+    """ Return all the caracteristics of a peer
+    [id, positionX, positionY, AR, CA, pseudo, orientation ]
+    navId : id of the navigator
+    id : id of the peer
+    """
+    controlEvent = ControlEvent(["peer", id])
+    self.incoming.put(controlEvent)
+    #return self.waitAndReply()
+    return self.ok
+
+    
+  def getAllPeers(self):
+    controlEvent = ControlEvent(["peers"])
+    self.incoming.put(controlEvent)
+    #return self.waitAndReply()
+    return self.ok
+
+  def connect(self):
+    """ Connect to solipsis. """
+    controlEvent = ControlEvent(["connect"])
+    self.incoming.put(controlEvent)
+    return self.ok
+
+  def disconnect(self):
+    """ Disconnect node
+    Return OK """
+    controlEvent = ControlEvent(["disconnect"])
+    self.incoming.put(controlEvent)
+    return self.ok
+    
   def startNode(self, navId):
     """ Start the node.
     navId : ID of the navigator."""
     start = ControlEvent(["start", navId])
     self.incoming.put(start)
-    return self.waitAndReply()
-
+    #return self.waitAndReply()
+    return self.ok
+  
   def kill(self, navId):
     """ Kill the node and stop connection betwwen navigator and node
     navId : ID of the navigator.
@@ -288,5 +380,3 @@ class XMLRPCConnector(Connector):
     e = self.outgoing.get()
     response = e.data()
     return response
-
-  
