@@ -1,6 +1,7 @@
 import math
 from Queue import Queue
 from threading import Condition
+from solipsis.engine.entity import Position
 
 class NotificationQueue(Queue):
     """ A queue class that notifies waiting threads when the queue is available for
@@ -48,7 +49,8 @@ class Geometry:
         Static method.
         """
         rp1 = Geometry.relativePosition(p1, p2)
-        return long ( math.hypot( rp1[0]-p2[0], rp1[1]-p2[1] ) )
+        return long ( math.hypot( rp1.getPosX()-p2.getPosX(),
+                                  rp1.getPosY()-p2.getPosY() ) )
     
     def relativePosition(pos, ref):
         """ Return the relative position of pos (relative to ref)
@@ -61,25 +63,25 @@ class Geometry:
         relative position of (9,1) is then (-11,1)
         """
 
-        result = [pos[0], pos[1]]
+        result = Position(pos.getPosX(), pos.getPosY())
 
         #-----Step 1: x-axis
 
-        if pos[0] > ref[0]:
-            if pos[0] - ref[0] > Geometry.SIZE/2:
-                result[0] = pos[0] - Geometry.SIZE
+        if pos.getPosX() > ref.getPosX():
+            if pos.getPosX() - ref.getPosX() > Geometry.SIZE/2:
+                result.setPosX(pos.getPosX() - Geometry.SIZE)
         else:
-            if ref[0] - pos[0] > Geometry.SIZE/2:
-                result[0] = pos[0] + Geometry.SIZE
+            if ref.getPosX() - pos.getPosX() > Geometry.SIZE/2:
+                result.setPosX(pos.getPosX() + Geometry.SIZE)
 
         #-----Step 2: y-axis
 
-        if pos[1] > ref[1]:
-            if pos[1] - ref[1] > Geometry.SIZE/2:
-                result[1] = pos[1] - Geometry.SIZE
+        if pos.getPosY() > ref.getPosY():
+            if pos.getPosY() - ref.getPosY() > Geometry.SIZE/2:
+                result.setPosY(pos.getPosY() - Geometry.SIZE)
         else:
-            if ref[1] - pos[1] > Geometry.SIZE/2:
-                result[1] = pos[1] + Geometry.SIZE
+            if ref.getPosY() - pos.getPosY() > Geometry.SIZE/2:
+                result.setPosY(pos.getPosY() + Geometry.SIZE)
 
         return result
 
@@ -93,8 +95,8 @@ class Geometry:
         # compute relative position of these two points
         relativePeerPosition = Geometry.relativePosition(peerPosition, origin)
         
-        return [relativePeerPosition[0] - origin[0],
-                relativePeerPosition[1] - origin[1]]
+        return Position(relativePeerPosition.getPosX() - origin.getPosX(),
+                relativePeerPosition.getPosY() - origin.getPosY())
     
     def inHalfPlane(p1, p2, pos):
         """ compute if pos belongs to half-plane delimited by (p1, p2)
@@ -102,7 +104,8 @@ class Geometry:
         return boolean TRUE if pos belongs to half-plane"""
         rp1  = Geometry.relativePosition(p1,p2)
         rpos = Geometry.relativePosition(pos, p2)
-        return (rpos[0]-rp1[0])*(rp1[1]-p2[1]) + (rpos[1]-rp1[1])*(p2[0]-rp1[0]) > 0
+        return (rpos.getPosX()-rp1.getPosX())*(rp1.getPosY()-p2.getPosY()) + \
+               (rpos.getPosY()-rp1.getPosY())*(p2.getPosX()-rp1.getPosX()) > 0
             
     def ccwOrder(x, y):
         """ return TRUE if entity y is before entity x in ccw order relation
@@ -113,15 +116,15 @@ class Geometry:
         yy = y.localPosition
 
         # verify that they lie in the same half-plane (up or down to pos)
-        upX = xx[1] <= 0
-        upY = yy[1] <= 0
+        upX = xx.getPosY() <= 0
+        upY = yy.getPosY() <= 0
 
         if upX <> upY:
             # they do not lie to the same half-plane, y is before x if y is up
             result = upY
         else:
             # they lie in the same plane, compute the determinant and check the sign
-            result = not Geometry.inHalfPlane(xx, [0,0], yy)
+            result = not Geometry.inHalfPlane(xx, Position(0,0), yy)
     
         return result    
 
@@ -133,7 +136,8 @@ class Geometry:
         xx = x.localPosition
         yy = y.localPosition
         
-        return ( Geometry.distance(yy, [0,0]) < Geometry.distance(xx, [0,0]) )
+        return ( Geometry.distance(yy, Position(0,0)) <
+                 Geometry.distance(xx, Position(0,0)) )
 
     distance = staticmethod(distance)
     relativePosition = staticmethod(relativePosition)
@@ -252,7 +256,7 @@ class CcwList(GenericList):
 	  for index in range(self.length-1) :
 	    ent = self.ll[index]
 	    next_ent = self.ll[ (index+1) % self.length ]
-	    if not inHalfPlane(ent.local_position, [0,0], next_ent.local_position) :
+	    if not inHalfPlane(ent.local_position, Position(0,0), next_ent.local_position) :
 	      result.append( [ ent, next_ent ] )
 	
 	return result      
@@ -276,7 +280,7 @@ class DistList(GenericList):
       """ return number of entities closer than distance d"""  
       result = 0
       while result < self.length and distance( self.ll[result].local_position,
-                                               [0,0] ) < d :
+                                               Position(0,0) ) < d :
           result += 1
 
       return result

@@ -29,15 +29,13 @@
 ##
 ## ******************************************************************************
 
-from threading import Thread
+from threading import Thread, Timer
 import sys, time, select
 from Queue import Queue
 from socket import socket, AF_INET, SOCK_DGRAM
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
-from solipsis.engine.control import ControlEngine
-from solipsis.engine.protocol import Message
-from solipsis.util.event import PeerEvent, ControlEvent
+from solipsis.engine.event import PeerEvent, ControlEvent
 from solipsis.util.util import NotificationQueue
 
 class Connector(Thread):
@@ -77,7 +75,7 @@ class UDPConnector(Connector):
   """ Connection to peers using UDP sockets """  
   def __init__(self, type, eventQueue, netParams):
     """ Constructor.
-    ype : type of connector - 'peer' or 'control'
+    type : type of connector - 'peer' or 'control'
     eventQueue : queue used to communicate with other thread. The PeerConnector
     fills this queue with events. Other threads are responsible for reading and
     removing events from this queue
@@ -93,7 +91,7 @@ class UDPConnector(Connector):
 
     # If optionnal parameters IP address and port are supplied, bind socket to
     # this network address
-    if self.host is not None and  self.port is not None:
+    if self.host is not None and self.port is not None:
       self.socket.bind((self.host, self.port))
 
     self.socket.setblocking(0)
@@ -119,17 +117,12 @@ class UDPConnector(Connector):
           data, sender = self.socket.recvfrom(self.BUFFER_SIZE)
           self.logger.debug("recvfrom %s", data)
 
-          msg = Message(data)
-
-          # create the corresponding event with:
-          # * the type of the event, the connector knows what kind of event
-          #   we received, either a "peer" or a "control" event
-          # * the method invoked through this message
-          netEvent = Event.createEvent(self.type, msg.getMethod())
-          netEvent.setArgs(msg.getArgs)
+          # Parse data and create a new event
+          netEvent = EventParser().createEvent(data)
+          netEvent.setType(self.type)
           
           # store ip address and port of sender
-          netEvent.setSender(sender)
+          netEvent.setSenderAddress(Address(sender[0], sender[1]))
           
           # add a new event to the queue of events that need to be processed
           self.incoming.put(netEvent)
@@ -154,8 +147,6 @@ class UDPConnector(Connector):
     threads, the message is NOT sent here. The message is instead added to a
     queue, and will be sent later by the network thread
     """
-    #netEvent = NetworkEvent(self.type, msg)    
-    #netEvent.setRecipient(peer.getNetAddress())
     self.outgoing.put(netEvent)
 
   def _send_no_wait(self, netEvent):
@@ -164,8 +155,11 @@ class UDPConnector(Connector):
     thread.
     """
     try:
-      host, port =  netEvent.recipient()
-      data = netEvent.data()
+      address =  netEvent.getRecipientAddress()
+      host = address.getHost()
+      port = address.getPort()
+
+      data = EventParser(netEvent).data()
       self.logger.debug("_send_no_wait %s %d - %s", host, port, data)
       self.socket.sendto(netEvent.data(), (host, port))
     except:
@@ -380,3 +374,50 @@ class XMLRPCControlChannel:
     e = self.outgoing.get()
     response = e.data()
     return response
+
+class InternalConnector(Connector):
+  """ Management task (e.g. Timers) are scheduled through this connector """
+  def __init__(self, type, eventQueue, internalParams):
+    """ Constructor.
+    type : type of connector - 'peer' or 'control'
+    eventQueue : queue used to communicate with other thread. The PeerConnector
+    fills this queue with events. Other threads are responsible for reading and
+    removing events from this queue
+    netParams : initialization parameters of this class -
+    a list [ buffer_size, logger_object ]
+    """
+    Connector.__init__(self, type, eventQueue)
+
+    [self.logger] = internalParams
+    
+    self.logger.debug("Internal connector started")
+
+  def run(self):
+
+    while not self.stopThread:
+      t = Timer(5, self.kill)
+      t.start()
+
+      t.join()
+      # thread for heartbeat messages
+      #t = Timer(heartbeatInterval, self.heartbeat())
+      #t.start()
+      
+      # thread for global connectivity checks
+
+
+      # thread for adjacent policy and awareness radius management
+
+
+      # thread for file entities.met management
+
+      # statistics thread
+
+  def heartbeat(self):
+    evt = InternalEvent('SENDHEARTBEAT')
+    self.incoming.put(evt)
+
+  def kill(self):
+    evt = ControlEvent('KILL')
+    self.incoming.put(evt)
+      

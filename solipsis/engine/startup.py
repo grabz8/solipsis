@@ -31,8 +31,6 @@
 ##
 ## ******************************************************************************
 
-import ConfigParser, logging, logging.config
-
 # Solipsis Packages
 from solipsis.util.parameter import Parameters
 from solipsis.engine.node import Node

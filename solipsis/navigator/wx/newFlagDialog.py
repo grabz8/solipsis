@@ -32,10 +32,8 @@
 
 from wxPython.wx import *
 import os
-import commun
+from solipsis.navigator.wx.guiMessage import displayError
 
-# debug module
-import debug
 
 def create(parent):
     return newFlagDialog(parent)
@@ -47,6 +45,9 @@ def create(parent):
 ] = map(lambda _init_ctrls: wxNewId(), range(7))
 
 class newFlagDialog(wxDialog):
+
+    FLAG_DIR_NAME = 'flags'
+    
     def _init_utils(self):
         # generated method, don't edit
         pass
@@ -124,17 +125,15 @@ class newFlagDialog(wxDialog):
 
     def initPositionValues(self):
         """ init the position values with the position of the connected node """
-        debug.debug_info("newFlagDialog.initPositionValues()")
-        debug.debug_info("FlagFile : " + self.flag_name)
-
+        
         # flag modification
         if self.flag_name:
             # open the flag file
-            flagFile = commun.FLAG_DIR_NAME + os.sep + self.flag_name
+            flagFile = newFlagDialog.FLAG_DIR_NAME + os.sep + self.flag_name
             try:
                 f = file(flagFile, 'r')
             except:
-                commun.displayError(self, "Can not open the file " + flagFile)
+                displayError(self, "Can not open the file " + flagFile)
                 return 0
 
             # read file and close
@@ -143,7 +142,7 @@ class newFlagDialog(wxDialog):
             try:
                 name, posX, posY = line.split(';')
             except:
-                commun.displayError(self, 'The file %s has a bad format !' %self.flag_name)
+                displayError(self, 'The file %s has a bad format !' %self.flag_name)
                 # close the dialog box
                 self.Close(FALSE)
                 return 0
@@ -170,42 +169,42 @@ class newFlagDialog(wxDialog):
 
         # errors control
         if name == "":
-            commun.displayError(self, "Your flag name is empty !")
+            displayError(self, "Your flag name is empty !")
         elif posX == "":
-            commun.displayError(self, "Your flag X coordinate is empty !")
+            displayError(self, "Your flag X coordinate is empty !")
             messageDialog.ShowModal()
         elif posY == "":
-            commun.displayError(self, "Your flag Y coordinate is empty !")
+            displayError(self, "Your flag Y coordinate is empty !")
         else:
             try:
                 x = long(posX)
             except:
-                commun.displayError(self, "Your flag X coordinate has a bad format. Please, enter an integer.")
+                displayError(self, "Your flag X coordinate has a bad format. Please, enter an integer.")
                 return 0
             try:
                 y = long(posY)
             except:
-                commun.displayError(self, "Your flag Y coordinate has a bad format. Please, enter an integer.")
+                displayError(self, "Your flag Y coordinate has a bad format. Please, enter an integer.")
                 return 0
 
-            flagFile = commun.FLAG_DIR_NAME + os.sep + name
+            flagFile = newFlagDialog.FLAG_DIR_NAME + os.sep + name
 
             # control the doublon
             if os.path.isfile(flagFile):
-                commun.displayError(self, "This flag name already exists. Please, choose another name.")
+                displayError(self, "This flag name already exists. Please, choose another name.")
                 return 0
 
             # flag modification
             if self.flag_name:
                 # rename the flag file
-                flagFile_old = commun.FLAG_DIR_NAME + os.sep + self.flag_name
+                flagFile_old = newFlagDialog.FLAG_DIR_NAME + os.sep + self.flag_name
                 os.rename(flagFile_old, flagFile)
 
             # open the flag file
             try:
                 f = file(flagFile, 'w')
             except:
-                commun.displayError(self, 'Can not open the file %s' %flagFile)
+                displayError(self, 'Can not open the file %s' %flagFile)
                 return 0
 
             # save the parameters in the flag file

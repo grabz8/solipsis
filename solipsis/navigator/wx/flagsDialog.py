@@ -30,13 +30,8 @@
 ## ******************************************************************************
 
 from wxPython.wx import *
-from newFlagDialog import *
+from newFlagDialog import newFlagDialog
 import os
-
-import commun
-
-# debug module
-import debug
 
 def create(parent):
     return flagsDialog(parent)
@@ -123,7 +118,7 @@ class flagsDialog(wxDialog):
 
     def initFlagsList(self):
         """ init the flags list with the files in the Flags directory """
-        debug.debug_info("flagsDialog.initFlagsList()")
+        
         # clear the list
         self.flagsList = []
         self.flagsListBox.Clear()

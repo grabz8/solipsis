@@ -32,6 +32,8 @@
 from wxPython.wx import *
 from newLocalNodeDialog import *
 from newDistantNodeDialog import *
+from guiMessage import displayError
+import os
 
 def create(parent):
     return entityDialog(parent)
@@ -122,10 +124,10 @@ class entityDialog(wxDialog):
         EVT_BUTTON(self.removeButton, wxID_ENTITYDIALOGREMOVEBUTTON,
               self.OnRemoveNodeButton)
         
-    def __init__(self, parent, navigator):
+    def __init__(self, parent, controller):
 
         # navigator
-        self.navigator = navigator
+        self.controller = controller
 
         # create the nodes file in order to save the nodes created
         self.nodesDir = "Nodes"
@@ -162,7 +164,7 @@ class entityDialog(wxDialog):
             self.nodeList.append(list)
             entry = pseudo
 
-            if ((list['isConnected'] == 1) and (self.navigator.getIsConnected() == 1)):
+            if ((list['isConnected'] == 1) and (self.controller.getIsConnected() == 1)):
                 entry +=' (connected)'
             self.pseudoList.append(entry)
 
@@ -183,33 +185,18 @@ class entityDialog(wxDialog):
         if dlg.ShowModal() == wxID_OK:
             pseudo = dlg.pseudoTextCtrl.GetValue()
             if pseudo == "":
-                commun.displayError(self, "Can't create the node : your node pseudo is empty !")
+                displayError(self, "Can't create the node : your node pseudo is empty !")
             else:
-                #host = socket.gethostbyname(socket.gethostname())
-                while 1:
-                    # find a port available for the node
-                    port = random.randint(1024, 2**16L)
-                    try:
-                        # start the new node
-                        self.startNode(pseudo, port)
-                        break
-                    except:
-                        # may be the port is already used
-                        time.sleep(0.2)
-                # host
-                # DEB MOD MCL
-                #addrinfo=socket.getaddrinfo(socket.gethostname(), port)
-                #address=addrinfo[len(addrinfo)-1][4]
-                #host=address[0]
-                filename = str(pseudo)+".host"
+                #self.controller.createNode()
+                self.controller.log('new local node ')
+                filename = str(pseudo) + ".host"
                 while filename not in os.listdir("."):
                     time.sleep(0.1)
 
                 f = file(filename, 'r')
                 host = f.readlines()[0]
                 f.close()
-                # FIN MOD MCL
-
+                
                 list={'pseudo':pseudo, 'host':host, 'port':port, 'posX':'', 'posY':'', 'isDistant':0, 'isConnected':0}
 
                 # store the new node in the lists
@@ -230,9 +217,9 @@ class entityDialog(wxDialog):
             host = dlg.hostTextCtrl.GetValue()
             port = dlg.portTextCtrl.GetValue()
             if host == "":
-                commun.displayError(self, "Can't create the node : your node host is empty !")
+                displayError(self, "Can't create the node : your node host is empty !")
             elif port == "":
-                commun.displayError(self, "Can't create the node : your node port is empty !")
+                displayError(self, "Can't create the node : your node port is empty !")
             else:
                 pseudo = host + ":" + port
                 list={'pseudo':pseudo, 'host':host, 'port':port, 'posX':'', 'posY':'', 'isDistant':1, 'isConnected':0}
@@ -266,25 +253,25 @@ class entityDialog(wxDialog):
                 # kill the node if it's a local one
                 if isDistant == 0:
                     #print "kill the node %s" %pseudo
-                    if ((isConnected != 1) and (self.navigator.getIsConnected() == 1)):
-                        # the navigator is connected to another node
-                        connected_node = self.navigator.my_node
-                        self.navigator.disconnectNode(False)
+                    if ((isConnected != 1) and (self.controller.getIsConnected() == 1)):
+                        # the controller is connected to another node
+                        connected_node = self.controller.my_node
+                        self.controller.disconnectNode(False)
 
                     # connection with the node to kill
-                    if self.navigator.getIsConnected() == 0:
-                        self.navigator.connectNode(host, port)
+                    if self.controller.getIsConnected() == 0:
+                        self.controller.connectNode(host, port)
 
                     # kill the node
-                    self.navigator.killNode()
+                    self.controller.killNode()
 
-                    # reconnect the navigator to the current node
+                    # reconnect the controller to the current node
                     if connected_node != "":
-                        self.navigator.connectNode(connected_node.node_host, connected_node.node_port)
+                        self.controller.connectNode(connected_node.node_host, connected_node.node_port)
 
                 # disconnect eventually from the distant node
-                elif self.navigator.getIsConnected() == 1:
-                    self.navigator.disconnectNode(False)
+                elif self.controller.getIsConnected() == 1:
+                    self.controller.disconnectNode(False)
 
                 # remove the node from the lists
                 del self.nodeList[self.nodeIndice]
@@ -304,7 +291,7 @@ class entityDialog(wxDialog):
         try:
             f = file(self.nodesFile, 'w')
         except:
-            commun.displayError(self, 'Can not open the file %s' %self.nodesFile)
+            displayError(self, 'Cannot open the file %s' %self.nodesFile)
             return 0
 
         # write node infos in the nodes file
@@ -324,7 +311,7 @@ class entityDialog(wxDialog):
         return 1
 
     def OnConnectNodeButton(self, event):
-        """ connect the navigator to the node selected in the list """
+        """ connect the controller to the node selected in the list """
 
         # check if an item is selected and is not connected
         if ((self.nodeIndice != -1) and (self.nodeList[self.nodeIndice]['isConnected'] == 0)):
@@ -342,8 +329,8 @@ class entityDialog(wxDialog):
             #if dlg.ShowModal() == wxID_OK:
             # disconnect from the current node before connecting to the new node
             self.disconnectCurrentNode()
-            #self.navigator.connectNode(socket.gethostbyname(socket.gethostname()), port)
-            return_val=self.navigator.connectNode(host, port)            
+            #self.controller.connectNode(socket.gethostbyname(socket.gethostname()), port)
+            return_val=self.controller.connectNode(host, port)            
             
             if return_val == 1:
                 # change the connected state of the node
@@ -358,7 +345,7 @@ class entityDialog(wxDialog):
                 self.Close()
 
     def OnDisconnectNodeButton(self, event):
-        """ disconnect the navigator from the node selected in the list """
+        """ disconnect the controller from the node selected in the list """
 
         # check if an item is selected and the corresponding node is connected
         if ((self.nodeIndice != -1) and (self.nodeList[self.nodeIndice]['isConnected'] == 1)):
@@ -371,10 +358,10 @@ class entityDialog(wxDialog):
             if dlg.ShowModal() == wxID_OK:
 
                 # close the chat service
-                #self.navigator.closeChatService()
+                #self.controller.closeChatService()
 
-                # disconnect the navigator from the node
-                return_val=self.navigator.disconnectNode(False)
+                # disconnect the controller from the node
+                return_val=self.controller.disconnectNode(False)
                 if return_val == 1:
                     # change the connected state of the node
                     self.nodeList[self.nodeIndice]['isConnected'] = 0
@@ -382,18 +369,6 @@ class entityDialog(wxDialog):
 
                     # save the disconnected node in the node file
                     self.saveNodeFile()
-
-    def startNode(self, pseudo, port):
-        """ start a node with the given parameter """
-
-        if platform == "win32":
-            args = ['Node.exe', '-n', pseudo, '-t', str(port)]
-            #os.spawnv(os.P_NOWAIT, args[0], args)
-            os.spawnv(os.P_DETACH, args[0], args)
-        else:
-            #args = [executable, 'Node.py', '-n', pseudo, '-t', str(port)]
-            os.system(executable + " Node.py -n "+ pseudo+" -t "+str(port)+" > /dev/null &")
-
 
     def disconnectCurrentNode(self):
         """ disconnect from the current node """
@@ -403,8 +378,8 @@ class entityDialog(wxDialog):
         indice = 0
         for node in self.nodeList:
             if (node['isConnected'] == 1):
-                # disconnect the navigator from the node
-                self.navigator.disconnectNode(False)
+                # disconnect the controller from the node
+                self.controller.disconnectNode(False)
 
                 # change the connected state of the node
                 self.nodeList[indice]['isConnected'] = 0

@@ -28,7 +28,6 @@
 ##
 ## ******************************************************************************
 
-
 import sys, time
 
 import ConfigParser, logging, logging.config
@@ -38,11 +37,12 @@ from solipsis.util.parameter import Parameters
 from solipsis.util.util import Geometry, NotificationQueue
 from solipsis.util.exception import SolipsisConnectionError
 
-from solipsis.engine.entity import Entity
+from solipsis.engine.entity import Entity, Position, Address
 from solipsis.engine.peer import PeersManager
-from solipsis.engine.connector import UDPConnector, XMLRPCConnector
-from solipsis.engine.engine import V0_2_5_Engine
-from solipsis.engine.control import ControlEngine, InternalEngine
+from solipsis.engine.connector import UDPConnector, XMLRPCConnector, InternalConnector
+import state
+#from solipsis.engine.engine import V0_2_5_Engine
+#from solipsis.engine.control import ControlEngine, InternalEngine
 
 class Node(Entity):
   
@@ -63,14 +63,10 @@ class Node(Entity):
     controlParams = params.getControlParams()
     self.controlConnector = XMLRPCConnector("control", self.events, controlParams)
 
-    # set the solipsis protocol used
-    engineParams = params.getEngineParams()
-    self.engine = V0_2_5_Engine(self, engineParams)
-
-    self.controlEngine = ControlEngine(self, engineParams)
-    self.internalEngine = InternalEngine(self, engineParams)
+    intParams =  params.getInternalParams()
+    self.internalConnector = InternalConnector('internal', self.events, intParams)
     
-    position = [params.posX, params.posY]
+    position = Position(params.posX, params.posY)
     
     # call parent class constructor
     Entity.__init__(self, position, params.ori, params.ar, params.caliber,
@@ -94,72 +90,43 @@ class Node(Entity):
     # set world size in Geometry class
     Geometry.SIZE = params.world_size
     self.params=params
-   
+
+    self.state = None
+    self.setState('NotConnected')
+    
   def getPeersManager(self):
     return self.peersManager
 
-  def updatePosition(self, newPosition):
-    """ update the position of the node
-    newPosition : the new poition of the node , a list [posX, posY]
+  def setState(self, stateClass):
+    stmt = 'state.' + stateClass + '(self, self.logger)'
+    try:
+      self.state = eval(stmt)
+    except:
+      raise SolipsisInternalError('unknown state ' + stateClass)
+
+  def fire(self, event):
+    """ Send an event.
+    event : the event to send.
     """
-    self.node.position = newPosition
-    manager = self.getPeersManager()
-    # re compute all positions of neighbours
-    manager.update()
+    connector = None
+    type = event.getType()
+    if type == 'peer':
+      connector = self.peerConnector
+    elif type == 'control':
+      connector = self.controlConnector
+    elif type == 'internal':
+      connector = self.internalConnector
+    else:
+      raise SolipsisInternalError('Unknown event type ' + type )
     
-
-  def send(self, peer, message):
-    """
-    Send a message to a peer
-    message : a solispsis message, e.g. 'HEARTBEAT;10.193.161.35:33363'
-    peer    : a Peer object resenting the recipient of the message
-    """
-    #netEvent = NetworkEvent(message)
-    #netEvent.setRecipient(peer.getNetAddress())
-    #self.net.send(netEvent)
-    self.peerConnector.send(peer, message)
-
-  def sendController(self, message):
-    self.controlConnector.send(message)
+    connector.send(event)
     
-  def enterSolipsis(self):
-    """
-    Enter Solipsis world, we consider that we have entered solipsis as soon as have
-    we are connected to one Solipsis entity
-    Raise: SolipsisConnectionError when a timeout expires
-    Return : True if the connection succeded
-    """
-    time_stamp = time.time()
-    #message = "KNOCK;SOLIPSIS 0.3"
-    message = "HI"
-    timeout = self.params.connection_timeout
-    
-    while True:
-
-      # retrieve peer
-      manager = self.getPeersManager()
-      peer = manager.getRandomPeer()
-            
-      # send message  
-      self.send(peer, message)      
-      time.sleep(0.5)
-
-      # we got an answer, for one of our Hi messages: we have entered Solipsis 
-      if not self.events.empty():
-        self.alive = True
-        return True
-
-      # Time out : impossible to connect
-      if time.time() > time_stamp + timeout:
-        self.logger.critical("Time out: cannot connect to Solipsis")
-        raise SolipsisConnectionError()
-
   def exit(self):
     """ stop the node and exit
     """
     # stop the network thread
     self.peerConnector.stop()
-
+    self.internalConnector.stop()    
     # we do not need to stop the controlConnector. The controlConnector
     # stopped after sending us the exit message
     # --> self.controlConnector.stop() not needed !
@@ -167,7 +134,7 @@ class Node(Entity):
     # wait for the other threads before exiting
     self.peerConnector.join()
     self.controlConnector.join()
-
+    self.internalConnector.join()
     self.alive = False
     
   def mainLoop(self):
@@ -176,15 +143,9 @@ class Node(Entity):
     self.controlConnector.start()
     # start peer connector
     self.peerConnector.start()
-
-    try:
-      # enter solipsis : send the first message
-      #self.enterSolipsis()
-      pass
-    except:
-      self.logger.critical("cannot enter Solipsis, exiting...")
-      self.exit()
-      raise
+    # start internal connected : needed for periodic tasks
+    self.internalConnector.start()
+    
 
     while self.alive:
       self.events.acquire()
@@ -200,25 +161,18 @@ class Node(Entity):
       
       # process one event in queue        
       event = self.events.get()
-      
-      type = event.type()
-      #self.logger.debug("%s - %s - %s ", event.name(), event.type(),
-      #                  event.data())
-      if( type == Event.PEER ):
-        self.engine.process(event)
-      elif( type == Event.CONTROL):
-        self.controlEngine.process(event)
-      elif type == Event.INTERNAL:
-        self.internalEngine.process(event)
-      else:
-        self.logger.critical("Unknown event type" + type)
-                      
+      request = event.getRequest()
+
+      try:
+        # process this request according to our current state
+        # e.g.: stmt='self.state.NEAREST(event)'
+        stmt = 'self.state.' + request + '(event)'
+        eval(stmt)
+      except:
+        self.logger.debug(sys.exc_info()[0])
+        self.logger.debug(sys.exc_info()[1])
+        self.logger.debug("unknown request "+ stmt)
+                                 
     self.logger.debug("end of main loop")
     
-  def processPeriodicEvent(self, event):
-    """ Process periodic tasks
-    Send heartbeat message
-    Or check global connectivity
-    """
-    # TO DO
-    self.logger.critical("processPeriodicEvent not implemented")
+ 

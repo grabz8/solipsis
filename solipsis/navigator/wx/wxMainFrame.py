@@ -43,7 +43,8 @@ from solipsis.navigator.controller import Controller
 # import for Dialog boxes
 from solipsis.navigator.wx.entityDialog import entityDialog
 from solipsis.navigator.wx.aboutDialog import aboutDialog
-
+from solipsis.navigator.wx.flagsDialog import flagsDialog
+from solipsis.navigator.wx.guiMessage import displayError
 
 
 [wxID_WXMAINFRAME, wxID_WXMAINFRAMEAPPLI_WINDOW,
@@ -268,41 +269,41 @@ class wxMainFrame(wxFrame):
         #self.chat = Chat(self.appli_window)
         self.chat = Chat()
 
-        EVT_PAINT(self.two_d_window, self.display.OnPaint2DView)
-        EVT_PAINT(self.appli_window, self.chat.OnPaintChatWindow)
-        EVT_LEFT_DOWN(self.two_d_window, self.display.OnLeftDown)
-        EVT_LEFT_DOWN(self.sendMessageButton, self.chat.OnSendMessageButton)
-        EVT_CHAR(self.messageTextCtrl, self.chat.OnSendMessageButton)
+        #EVT_PAINT(self.two_d_window, self.display.OnPaint2DView)
+        #EVT_PAINT(self.appli_window, self.chat.OnPaintChatWindow)
+        #EVT_LEFT_DOWN(self.two_d_window, self.display.OnLeftDown)
+        #EVT_LEFT_DOWN(self.sendMessageButton, self.chat.OnSendMessageButton)
+        #EVT_CHAR(self.messageTextCtrl, self.chat.OnSendMessageButton)
         EVT_CLOSE(self, self.OnClose)
         
         # update IHM events
-        EVT_DISPLAYCHATTERLIST(self, self.chat.displayChatterList)
-        EVT_DELETECHATSERVICENEIGHBOR(self, self.chat.deleteChatServiceNeighbor)
-        EVT_NEWCHATMESSAGE(self, self.chat.newChatMessage)
-        EVT_ADDDISPLAY2DSERVICENEIGHBOR(self, self.display.addDisplay2dServiceNeighbor)
-        EVT_DELETEDISPLAY2DSERVICENEIGHBOR(self, self.display.deleteDisplay2dServiceNeighbor)
-        EVT_DELETEIMAGE(self, self.display.deleteImage)
-        EVT_RECEIVEIMAGE(self, self.display.receiveImage)
+        #EVT_DISPLAYCHATTERLIST(self, self.chat.displayChatterList)
+        #EVT_DELETECHATSERVICENEIGHBOR(self, self.chat.deleteChatServiceNeighbor)
+        #EVT_NEWCHATMESSAGE(self, self.chat.newChatMessage)
+        #EVT_ADDDISPLAY2DSERVICENEIGHBOR(self, self.display.addDisplay2dServiceNeighbor)
+        #EVT_DELETEDISPLAY2DSERVICENEIGHBOR(self, self.display.deleteDisplay2dServiceNeighbor)
+        #EVT_DELETEIMAGE(self, self.display.deleteImage)
+        #EVT_RECEIVEIMAGE(self, self.display.receiveImage)
 
     def OnNodesConnect(self, event):
         """ Open the entity manage dialog box on EntityManage event """
 
-        #self.navigator.lastNodeConnection()
-        self.entityDialog = entityDialog(self, self.navigator)
+        #self.controller.lastNodeConnection()
+        self.entityDialog = entityDialog(self, self.controller)
         self.entityDialog.ShowModal()
 
     def OnNodesDisconnect(self, event):
-        """ Disconnect the navigator from the current node on NodesDisconnect event """
+        """ Disconnect the controller from the current node on NodesDisconnect event """
 
         # display a confirmation message
         message = 'Are you sure you want to disconnect you from the current entity ?'
         dlg = wxMessageDialog(self, message, 'Disconnect', wxOK|wxCANCEL|wxCENTRE|wxICON_QUESTION)
         dlg.Center(wxBOTH)
         if dlg.ShowModal() == wxID_OK:
-            self.navigator.disconnectNode(False)
+            self.controller.disconnectNode(False)
 
     def OnImagesManage(self, event):
-        self.imagesDialog = imagesDialog(self, self.navigator)
+        self.imagesDialog = imagesDialog(self, self.controller)
         self.imagesDialog.ShowModal()
 
     def OnDisplayPseudos(self, event):
@@ -342,19 +343,19 @@ class wxMainFrame(wxFrame):
         dlg.ShowModal()
      
     def OnFlagsAdd(self, event):
-        self.addFlagDialog = addFlagDialog(self, self.navigator)
+        self.addFlagDialog = flagsDialog(self, self.controller)
         self.addFlagDialog.ShowModal()
 
     def OnFlagsTeleportation(self, event):
-        self.teleportationDialog = teleportationDialog(self, self.navigator)
+        self.teleportationDialog = teleportationDialog(self, self.controller)
         self.teleportationDialog.ShowModal()
 
     def OnFlagsManage(self, event):
-        self.manageFlagsDialog = flagsDialog(self, self.navigator)
+        self.manageFlagsDialog = flagsDialog(self, self.controller)
         self.manageFlagsDialog.ShowModal()
 
     def removeFlagMenu(self, flag):
-        self.manageFlagsDialog = flagsDialog(self, self.navigator)
+        self.manageFlagsDialog = flagsDialog(self, self.controller)
         self.manageFlagsDialog.ShowModal()
 
     def OnFlagsGoto(self, event):
@@ -372,7 +373,7 @@ class wxMainFrame(wxFrame):
             try:
                 f = file(flagFile, 'r')
             except:
-                commun.displayError(self, 'Can not open the file %s' %flagFile)
+                displayError(self, 'Can not open the file %s' %flagFile)
                 return 0
 
             # read file and close
@@ -381,23 +382,23 @@ class wxMainFrame(wxFrame):
             try:
                 name, posX, posY = line.split(';')
             except:
-                commun.displayError(self, 'The file %s has a bad format !' %flagFile)
+                displayError(self, 'The file %s has a bad format !' %flagFile)
                 return 0
             
             # get the node AR to generate noise near the selected point
-            ar = self.navigator.getNodeAr()
+            ar = self.controller.getNodeAr()
             debug.debug_info("getNodeAr() -> " + str(ar))
             deltaNoise = long(random.random()*ar/10)            
             posX = long(posX) + deltaNoise
             posY = long(posY) + deltaNoise
                 
             # jump to the flag position
-            self.navigator.jumpMyNode(str(posX), str(posY))
+            self.controller.jumpMyNode(str(posX), str(posY))
 
 
-    def startNavigator(self):
-        """ start the navigator """
-        self.navigator.connectNode()
+    def startcontroller(self):
+        """ start the controller """
+        self.controller.connectNode()
 
     def addSharefileServiceNeighbor(self, id):
         """ add the share file service picto of the corresponding neighbor """

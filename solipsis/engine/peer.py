@@ -30,10 +30,8 @@
 ##
 ## ******************************************************************************
 
-#import function
-#import sys
 import random, string, time
-from solipsis.engine.entity import Entity
+from solipsis.engine.entity import Entity, Position, Address
 from solipsis.util.exception import SolipsisInternalError
 from solipsis.util.util import CcwList, DistList, Geometry
 
@@ -45,7 +43,7 @@ from solipsis.util.util import CcwList, DistList, Geometry
 
 class Peer(Entity):
   
-  def __init__(self, id="", host="", port=0, pos=[0,0], ori=0,
+  def __init__(self, id="", host="", port=0, pos=Position(0,0), ori=0,
                awareness_radius=0, caliber=0, pseudo=""):
     """ Create a new Entity and keep information about it"""
 
@@ -53,9 +51,7 @@ class Peer(Entity):
     Entity.__init__(self,pos, ori, awareness_radius, caliber, pseudo)
 
     self.id   = id
-    self.host = host
-    self.port = port
-    self.address = host + ":" + str(port)
+    self.address = Address(host, port)
     
     # last time when we saw this peer active 
     self.activeTime = 0
@@ -103,49 +99,26 @@ class Peer(Entity):
     """
     self.localPosition = Geometry.localPosition(self.position, nodePosition)
 
-    
-  def getHost(self):
-    return self.host
-
-  def getPort(self):
-    return self.port
-
   def setActiveTime(self, t):
     self.activeTime = t
     
-  def getNetAddress(self):
-    """ return the network address of the peer.
-    Return : a list [IP, Port]
-    """
-    return [self.host, self.port]
-  
   def addService(self, id_service, desc_service, host, port):
     """ add a new service"""
-    
+    # TODO
     self.services[id_service] = [desc_service, host, port]
 
     
 
   def closeService(self, id_service):
     """ delete service"""
-    
+    # TODO
     if self.services.has_key(id_service):
       del self.services[id_service]
-
-  def sendNetworkMessage(self, msg):
-    """ Send a message to this entity"""
-    
-    globalvars.me.socket.sendto(msg, (self.host, self.port))
-    
-    # update message_sent
-    if msg[:5] <> "FOUND" and msg[:7] <> "DETECT":
-      globalvars.message_sent = 1
-    
 
 
   def updateOri(self, new_ori):
     """ update entity orientation """
-    
+    # TODO
     self.ori = int(new_ori)
 
     # send message to Media
@@ -171,6 +144,7 @@ class Peer(Entity):
     
   def updatePos(self, new_pos):
     """ update the position of the entity"""
+    # TODO
     
     # update position
     old_position = self.position
@@ -210,7 +184,7 @@ class Peer(Entity):
 
   def confirm(self, pos, ori, ar, ca, pseudo):
     """ confirm and update informations: to detect liars"""
-
+    # TODO
     self.ok = 1
     
     # update informations about this entity.
@@ -274,9 +248,11 @@ class PeersManager:
     """ create a new Peer object
     netAddress : the network address of this peer, e.g. '193.168.25.36:2456'
     Return a Peer object"""
-    host, port = netAddress.split(":")
-    return Peer(netAddress, host, int(port))
-
+    host = netAddress.getHost()
+    port = netAddress.getPort()
+    p = Peer('', host, port)
+    p.createId()
+    return p
     
   def getRandomPeer(self):
     """ Return a peer randomly chosen from a file
@@ -292,14 +268,14 @@ class PeersManager:
       peer = random.choice(list)
       host, stringPort = string.splitfields(peer)
       port = int(stringPort)
-      
+      address = Address(host, port)
       f.close()
     except:
       self.logger.critical("Cannot read file " + self.entitiesFileName)
       raise
-    
-    id = host + ":" + stringPort
-    return Peer(id, host, port)
+    p = Peer('', host, port)
+    p.createId()
+    return p
     
   def addPeer(self, p):
     """ add a new peer
@@ -340,10 +316,10 @@ class PeersManager:
     self.removePeer(p)
     self.addPeer(p)
     
-  def getPeer(self, netAddress):
+  def getPeer(self, address):
     """ Return the peer associated with this net address """
     # TODO check exception if this peer doesn't exist
-    id = Node.createId(address[0], address[1])
+    id = address.toString()
     return self.peers[id]
 
   def heartbeat(self, id):
@@ -355,14 +331,14 @@ class PeersManager:
 
   def getPeerFromAddress(self, address):
     """ Get the peer with address 'address'
-    address: address of the peer we are looking at
+    address: address of the peer we are looking for - Address object
     Return : a peer, or None if no such peer was found
     """
     # Iterate through list of peers
     ids = self.peers.keys()
     for id in ids:
       p = self.peers[id]
-      if p.address == address:
+      if p.address.toString() == address.toString():
         return p
 
     # no peer with this address was found

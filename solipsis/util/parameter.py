@@ -4,27 +4,29 @@ import ConfigParser, logging, logging.config
 class Parameters:
     def __init__(self, configFileName):
         self.configFileName = configFileName
+        # create a file object in write mode
+        #self.configFile = file(configFileName, 'r+')
         self.getAllParameters()
         
     def getAllParameters(self):        
         try:
-            config = ConfigParser.ConfigParser()
-            config.read(self.configFileName)            
+            self.config = ConfigParser.ConfigParser()
+            self.config.read(self.configFileName)            
 
-            self.tcp_port_min = int(eval(config.get("general", "tcp_port_min")))
-            self.tcp_port_max = int(eval(config.get("general", "tcp_port_max")))
+            self.tcp_port_min = int(eval(self.config.get("general", "tcp_port_min")))
+            self.tcp_port_max = int(eval(self.config.get("general", "tcp_port_max")))
             self.tcp_port = random.randint(self.tcp_port_min, self.tcp_port_max)
-            self.buffer_size = int(eval(config.get("network", "buffer_size")))
-            self.connection_timeout = int(eval(config.get("network",
+            self.buffer_size = int(eval(self.config.get("network", "buffer_size")))
+            self.connection_timeout = int(eval(self.config.get("network",
                                                           "connection_timeout")))
 
-            if config.has_option("network","host"):
-                self.host = config.get("network","host")
+            if self.config.has_option("network","host"):
+                self.host = self.config.get("network","host")
             else:
                 self.host = "localhost"
 
-            if config.has_option("network","port"):
-                self.port = config.get("network","port")
+            if self.config.has_option("network","port"):
+                self.port = int(self.config.get("network","port"))
             else:
                 self.port = None
                 
@@ -33,43 +35,43 @@ class Parameters:
             self.rootLogger = logging.getLogger("root")
             self.controlLogger = logging.getLogger("solipsis.engine.control")
 
-            self.world_size = long(eval(config.get("general", "world_size")))
-            if config.has_option("general", "position_x"):
-                self.posX = long(config.get("general", "position_x"))
+            self.world_size = long(eval(self.config.get("general", "world_size")))
+            if self.config.has_option("general", "position_x"):
+                self.posX = long(self.config.get("general", "position_x"))
             else:
                 self.posX = long(random.random() * self.world_size )
                 
-            if config.has_option("general", "position_y"):
-                self.posY = long(config.get("general", "position_y"))
+            if self.config.has_option("general", "position_y"):
+                self.posY = long(self.config.get("general", "position_y"))
             else:
                 self.posY = long(random.random() * self.world_size )
                 
-            self.ar = int(config.get("general", "awarness_radius"))
-            self.caliber = int(config.get("general", "caliber"))
-            self.caliber_max = int(config.get("general", "caliber_max"))
-            self.ori = int(config.get("general", "orientation"))
-            self.exp = int(config.get("general", "expected_neighbours"))
+            self.ar = int(self.config.get("general", "awarness_radius"))
+            self.caliber = int(self.config.get("general", "caliber"))
+            self.caliber_max = int(self.config.get("general", "caliber_max"))
+            self.ori = int(self.config.get("general", "orientation"))
+            self.exp = int(self.config.get("general", "expected_neighbours"))
             
-            self.statInfos = config.getboolean("general", "stat_infos")
+            self.statInfos = self.config.getboolean("general", "stat_infos")
             # navigator options
-            if config.has_option("navigator","pseudo"):
-                self.pseudo = config.get("navigator","pseudo")
+            if self.config.has_option("navigator","pseudo"):
+                self.pseudo = self.config.get("navigator","pseudo")
             else:
                 self.pseudo = "anonymous_"+str(self.tcp_port)
-            self.scale = config.get("navigator","scale")
-            self.zoom = config.get("navigator","zoom")
-            self.arePseudosDisplayed = config.getboolean("navigator",
+            self.scale = self.config.get("navigator","scale")
+            self.zoom = self.config.get("navigator","zoom")
+            self.arePseudosDisplayed = self.config.getboolean("navigator",
                                                          "display_pseudos")
-            self.areAvatarsDisplayed = config.getboolean("navigator",
+            self.areAvatarsDisplayed = self.config.getboolean("navigator",
                                                          "display_avatars")
-            self.entities_file = config.get("general", "entities_file")
+            self.entities_file = self.config.get("general", "entities_file")
             
-            if config.has_option("control", "host"):
-                self.controlHost = config.get("control", "host")
-            if config.has_option("control", "control_port"):
-                self.controlPort = int(config.get("control", "control_port"))
-            if config.has_option("control", "notification_port"):
-                self.notifPort = int(config.get("control", "notification_port"))
+            if self.config.has_option("control", "host"):
+                self.controlHost = self.config.get("control", "host")
+            if self.config.has_option("control", "control_port"):
+                self.controlPort = int(self.config.get("control", "control_port"))
+            if self.config.has_option("control", "notification_port"):
+                self.notifPort = int(self.config.get("control", "notification_port"))
             
         except:
             sys.stderr.write("\nError while reading configuration file solipsis.conf :\n")
@@ -172,7 +174,7 @@ class Parameters:
         """
         return [self.entities_file, self.exp, self.rootLogger]
 
-    def getEngineParams(self):
+    def getInternalParams(self):
         return [self.rootLogger]
 
     def getControlParams(self):
@@ -182,3 +184,11 @@ class Parameters:
     def getNavigatorParams(self):
         return [self.world_size, self.scale, self.zoom, self.pseudo,
                 self.arePseudosDisplayed, self.areAvatarsDisplayed]
+
+    def setOption(self, section, option, value):
+        """ set the given option"""
+        self.config.set(section, option, value)
+        self.configFile = file(self.configFileName, 'w+')
+        self.config.write(self.configFile)
+        self.configFile.close()
+        

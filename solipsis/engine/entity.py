@@ -21,13 +21,83 @@
 ## ------------------------------------------------------------------------------
 
 
+from solipsis.navigator.service import Service
+
+    
+class Position:
+    """ Represents a Solipsis position. """
+
+    SEPARATOR = '-'
+    
+    def __init__(self, posX=0, posY=0):
+        """ Constructor.
+        posX : coordinate on the X axis
+        posY : coordinate on the Y axis
+        """
+        self.posX = long(posX)
+        self.posY = long(posY)
+
+    def getPosX(self):
+        return self.posX
+
+    def getPosY(self):
+        return self.posY
+
+    def setPosX(self, newPosX):
+        self.posX = newPosX
+
+    def setPosY(self, newPosY):
+        self.posY = newPosY
+        
+    def toString(self):
+        """ String representation of the position"""
+        return str(self.posX) + " " + Position.SEPARATOR + " " + str(self.posY)
+
+    def setValueFromString(self, strPosition):
+        """ Set the new coordinates of this Position object.
+        strPosition: a string representing the position '12454568745 - 7897456'
+        """
+        strPosX, strPosY = strPosition.split(Position.SEPARATOR)
+        self.posX = long(strPosX)
+        self.posY = long(strPosY)
+
+        
+class Address:
+    """ Represents a Solipsis Address."""
+
+    SEPARATOR = ':'
+    
+    def __init__(self, host, port):
+        self.host = host
+        self.port = int(port)
+
+    def toString(self):
+        return str(host) + Address.SEPARATOR + str(port)
+
+    def getHost(self):
+        return self.host
+
+    def getPort(self):
+        return self.port
+
+    def setValueFromString(self, strAddress):
+        """ Set the new address of this Address object.
+        strAddress: a string representing the address '192.235.22.32:8978'
+        """
+        strHost, strPort = strAddress.split(Address.SEPARATOR)
+        self.host = strHost
+        self.port = int(strPort)
+
 class Entity:
 
-    def __init__(self, pos, ori, awarenessRadius, calibre, pseudo):
+    def __init__(self, position=Position(), ori=0, awarenessRadius=0,
+                 calibre=0, pseudo=''):
         """ Create a new Entity and keep information about it"""
 
-        # position and relative position
-        self.position = [long(pos[0]), long(pos[1])]
+        # position 
+        self.position = position
+        # position of this entity in the coordinate system centered on the node
+        self.relativePosition = None
         
         # awareness radius, caliber, pseudo, orientation
         self.awarenessRadius = awarenessRadius
@@ -36,17 +106,17 @@ class Entity:
         self.orientation     = ori
 
         # public address of this node, address= IP+port
-        self.host = ""
-        self.port = 0
+        self.address = None
         
         # id of this node
         self.id = ""
 
+        self.service = {}
+        
     def createId(self):
         """ Compute the new ID of this node """
-        id = str(self.host) + ":" + str(self.port)
-        self.id = id
-        return id
+        self.id = self.address.toString()
+        return self.id
 
     def setId(self, ID):
         self.id = ID
@@ -56,11 +126,17 @@ class Entity:
         return self.id
 
     def getAddress(self):
-        return str(self.host) + ":" + str(self.port)
+        return self.address
 
     def getStringPosition(self):
-        return str(self.position[0]) + " - " + str(self.position[1])
+        return self.position.toString()
 
+    def getPosition(self):
+        return self.position
+
+    def getRelativePosition(self):
+        return self.relativePosition
+    
     def getAwarenessRadius(self):
         return self.awarenessRadius
 
@@ -73,11 +149,6 @@ class Entity:
     def getPseudo(self):
         return self.pseudo
     
-    def getNetAddress(self):
-        """ Get the network address of this node
-        The network address is a list [ host, port]
-        """
-        return [ self.host, self.port]
 
     def updateAr(self, newAr):
         """ update the awareness radius of the entity
@@ -88,16 +159,39 @@ class Entity:
     def getAllInfo(self):
         """ return all information available for this node
         """
-        return [ self.id, self.host, str(self.port), str(self.position[0]),
-                 str(self.position[1]), str(self.awarenessRadius),
+        return [ self.id, self.host, str(self.port), str(self.position.getPosX()),
+                 str(self.position.getPosY()), str(self.awarenessRadius),
                  str(self.caliber), self.pseudo, str(self.orientation)]
 
     def getConnectInfo(self):
-        return [ self.host, str(self.port), str(self.position[0]),
-                 str(self.position[1])]
+        return [ self.host, str(self.port), str(self.position.getPosX()),
+                 str(self.position.getPosY())]
 
     def setOrientation(self, value):
         self.orientation = value
 
     def setAwarenessRadius(self, value):
         self.awarnessRadius = value
+
+    def setCalibre(self, value):
+        self.calibre = value
+
+    def setPseudo(self, value):
+        self.pseudo = value
+        
+    def setPosition(self, pos):
+        """ Set the new position of this entity
+        pos : a Position object """
+        self.position = pos
+
+    def setRelativePosition(self, pos):
+        """ Set the new position of this entity
+        pos : a Position object """
+        self.relativePosition = pos
+
+    def setAddress(self, newAddress):
+        """ newAddress : a Address object"""
+        self.address = newAddress
+
+    def enumerateServices(self):
+        return self.service.values()

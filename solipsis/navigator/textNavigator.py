@@ -9,9 +9,9 @@ def init():
     configFileName = "conf/solipsis.conf"
     
     param = Parameters(configFileName)
-    [host, port, logger] = param.getControlParams()
+    [host, ctlPort, notifPort, logger] = param.getControlParams()
     
-    controller = Controller([host, port, logger])
+    controller = Controller([host, ctlPort, notifPort, logger])
     return controller
 
 def main():
