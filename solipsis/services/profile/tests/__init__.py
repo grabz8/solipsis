@@ -20,7 +20,7 @@
 # </copyright>
 """Constants used by tests"""
 
-__revision__ = "$Id: $"
+__revision__ = "$Id$"
 
 import os, os.path
 import solipsis

@@ -19,7 +19,7 @@
 """Design pattern Facade: presents working API for all actions of GUI
 available. This facade will be used both by GUI and unittests."""
 
-__revision__ = "$Id: $"
+__revision__ = "$Id$"
 
 from sys import stderr
 from solipsis.services.profile.data import PeerDescriptor, Blogs
