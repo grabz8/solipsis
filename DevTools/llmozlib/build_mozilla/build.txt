@@ -1,0 +1,15 @@
+c:
+cd \
+cvs login (the password is 'anonymous')
+cvs checkout -r FIREFOX_2_0_RELEASE mozilla/client.mk
+
+cd c:\mozilla
+make -f client.mk checkout MOZ_CO_PROJECT=xulrunner
+
+patch -p0 < linden_updates_2006_10_13.patch
+
+copy .mozconfig.optimized .mozconfig /y
+make -f client.mk build
+
+copy .mozconfig.debug .mozconfig /y
+make -f client.mk build

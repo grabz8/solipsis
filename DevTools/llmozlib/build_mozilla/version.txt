@@ -1,0 +1,2 @@
+Version of code in ..\libraries is built using a checkout from
+the CVS tag FIREFOX_2_0_RELEASE and patched with linden_updates_2006_10_13.patch

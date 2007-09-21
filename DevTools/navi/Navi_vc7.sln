@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc7", "Navi\Navi_vc7.vcproj", "{E87F3128-0E81-4542-A30D-43704D15C54E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NaviDemo_vc7", "NaviDemo\NaviDemo_vc7.vcproj", "{D8576C15-749A-42BB-8536-51C10F7ECF7F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E87F3128-0E81-4542-A30D-43704D15C54E} = {E87F3128-0E81-4542-A30D-43704D15C54E}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Debug.ActiveCfg = Debug|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Debug.Build.0 = Debug|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Release.ActiveCfg = Release|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Release.Build.0 = Release|Win32
+		{D8576C15-749A-42BB-8536-51C10F7ECF7F}.Debug.ActiveCfg = Debug|Win32
+		{D8576C15-749A-42BB-8536-51C10F7ECF7F}.Debug.Build.0 = Debug|Win32
+		{D8576C15-749A-42BB-8536-51C10F7ECF7F}.Release.ActiveCfg = Release|Win32
+		{D8576C15-749A-42BB-8536-51C10F7ECF7F}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

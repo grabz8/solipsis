@@ -1,0 +1,58 @@
+Current Version: NaviLibrary v1.3
+
+API Changes since v1.2:
+- In NaviManager:
+-- NaviManager::bindNaviData has been added
+-- NaviManager::unbindNaviData has been added
+-- NaviManager::hideNavi has been added
+-- NaviManager::showNavi has been added
+-- NaviManager::getNaviVisibility has been added
+-- NaviManager::createNavi and createNaviMaterial have been extended, a new parameter 'isVisible'
+-- NaviManager::createNavi has been refactored to use a unified NaviPosition object
+- In NaviData:
+-- NaviData::add has been extended for wide-string support
+-- NaviData::get has been extended for wide-string support
+- In NaviUtilities:
+-- NaviUtilities::encodeURIComponent has been added
+-- NaviUtilities::decodeURIComponent has been added
+-- NaviUtilities::toWide has been added
+-- NaviUtilities::toMultibyte has been added
+-- NaviUtilities::setLocale has been added
+- In Navi.js:
+-- Navi.js::NaviData::addQS has been added
+-- Navi.js::NaviData add(), addQS(), send() now return a reference to the NaviData object itself, thus you can do chaining (new NaviData('whatever').add('something', 'value').send())
+-- Navi.js::decode()/encode() have been removed because now we use encodeURIComponent()/decodeURIComponent() natively
+
+Core Changes since v1.2:
+- Callbacks via a delegate has been added thanks to freely available 'FastDelegate' code, (see NaviDelegate.h for more info)
+- Fading via hideNavi/showNavi has been implemented. The fading algorithm respects 'maxUpdatesPS' and also does not invoke needless Gecko draw calls. You can set a duration for the fade (in milliseconds) as well.
+- In the case of non-NaviMaterial Navis, when the visibility of a Navi is false, the overlay will be hidden as well and vice-versa. All non-visible Navis will not needlessly update their internal texture.
+- Rewrote much of the overlay/coordinate derivations for use with the new NaviPosition object. Relatively-positioned Navis can now be specified with an optional left/top offset.
+- Revised encoding/decoding in Navi.js and application-side to use the proper method of decoding/encoding data to percent-escaped UTF-8 encoded hexadecimal sequences. The excellent side effect of this is that we now have true unicode support. The two functions 'encodeURIComponent' and 'decodeURIComponent' exist in Javascript but not in C++ and so I wrote a mirror-implementation in C++ for use in our own context. To implement it, I needed a lightweight, cross-platform UTF-8 encoding/decoding library; thus UTF8-CPP is a new dependency.
+
+Bugfixes since v1.2:
+- In OpenGL, the NaviMouse cursors were showing corruption. Apparently because the manual texture of each cursor was loaded from an image, in OpenGL the hardwarepixelbuffer is created in Write-mode only and thus we cannot lock it to read it and instead must copy it.
+- Added some protection against adding a NaviEventListener twice.
+- Fixed destruction of a Navi called within an event spawned by the Navi object itself. Now, NaviManager::destroyNavi only flags the Navi for deletion, the actual destruction is done in NaviManager::update.
+- Fixed small bug with destroying a Navi that was currently focused.
+- Fixed a parsing bug in NaviData.cpp, the problem was only apparent with NaviData objects with multiple parameters.
+
+Extras since v1.2:
+- New NaviDemo! Check it out for ideas/tips on how to implement the NaviLibrary in your own game.
+
+
+Last Version: NaviLibrary v1.2
+Date: June 13th, 2007
+Author: Adam J. Simmons
+
+API Changes since v1.1:
+- In NaviManager:
+-- NaviManager::setNaviColorKey has been extended to use a 'keyFuzziness' parameter.
+-- NaviManager::naviEvaluateJS has been added
+-- NaviManager::getNaviMaterialName has been added
+-- NaviManager::getNaviInternalPanel has been added
+- In NaviData:
+-- NaviData::getDataMap has been added (props to madmark)
+
+Bugfixes since v1.1:
+- There was an issue with the destruction of the Navi object, specifically I didn't destroy the OverlayContainer before the Overlay. This has been resolved thanks to madmark's notification of the issue.
