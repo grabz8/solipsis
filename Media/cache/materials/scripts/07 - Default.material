@@ -1,0 +1,20 @@
+
+material 07 - Default
+{
+	technique Default
+	{
+		pass Main
+		{
+			ambient 0.588235 0.588235 0.588235 1
+			specular 0.09 0.09 0.09 1 0.1
+
+			texture_unit
+			{
+				texture_alias diffuse
+				texture LightMapSalamandra2.tga -1
+			}
+		}
+
+	}
+
+}

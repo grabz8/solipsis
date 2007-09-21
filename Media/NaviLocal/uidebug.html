@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <script type="text/javascript" src="mootools.v1.1.js"></script>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageRefresh').send();
+            }
+            function debugCommand(cmd, params)
+            {
+                new NaviData('debugCommand').add('cmd', cmd).add('params', params).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFF33;
+            }
+            #container
+            {
+	            background-image: url('uidebug.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 256px;
+            }
+            .buttonRow1
+            {
+	            position: absolute;
+	            left: 10px;
+                height: 24px;
+            }
+            #dbg1Button { top:10px; width: 100px; }
+            #dbg2Button { top:35px; width: 100px; }
+            #dbg3Button { top:60px; width: 100px; }
+            #dbg4Button { top:85px; width: 100px; }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <button id="dbg1Button" class="buttonRow1" name="dbg1" value="dbg1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
+            <button id="dbg2Button" class="buttonRow1" name="dbg2" value="dbg2" type="button" onclick="debugCommand('testEvt', 'peerLost')">peerLost</button>
+            <button id="dbg3Button" class="buttonRow1" name="dbg3" value="dbg3" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
+            <button id="dbg4Button" class="buttonRow1" name="dbg4" value="dbg4" type="button" onclick="debugCommand('rotateSunLight', '')">rotateSunLight</button>
+        </div>
+    </body>
+</html>

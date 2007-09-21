@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<GUILayout>
+    <Window Type="DefaultWindow" Name="Solipsis Gui">
+
+		<Window Type="TaharezLook/Editbox" Name="ChatBox">
+			<Property Name="UnifiedPosition" Value="{{0.03,0},{0.915,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.75,0},{0.04,0}}" />
+<!--
+			<Property Name="UnifiedPosition" Value="{{0,0},{0.96,0}}" />
+			<Property Name="UnifiedSize" Value="{{1,0},{0.04,0}}" />
+-->
+			<Property Name="Text" Value="Chat" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="true" />
+		</Window>		
+    </Window>
+</GUILayout>

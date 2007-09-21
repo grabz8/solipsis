@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <script type="text/javascript" src="mootools.v1.1.js"></script>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageRefresh').send();
+                // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
+                new NaviData('debugCommand').add('cmd', 'testEvt').add('params', 'peerNew').send();
+                new NaviData('debugCommand').add('cmd', 'demoNavi2').send();
+            }
+            function sendMessage(msg)
+            {
+                new NaviData('sendMessage').add('msg', msg).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFF33;
+            }
+            #container
+            {
+	            background-image: url('uichat.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 400px;
+	            height: 32px;
+            }
+            #chatInput
+            {
+	            position: absolute;
+	            left: 65px;
+	            top: 5px;
+            }
+            .inputText
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <!--
+            Here you will use 1 reentrant hidden form in order to validate the message by pressing ENTER,
+            by returning false the page won t be reloaded
+             -->
+            <form id="chatForm" action="" visible="false" onsubmit="sendMessage(document.getElementById('inputChat').value);return false;">
+                <div id="chatInput">
+                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="48" />
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

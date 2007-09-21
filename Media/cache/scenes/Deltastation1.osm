@@ -1,0 +1,166 @@
+<oe_scene>
+    <sceneManager type="0" />
+    <bkgcolor r="0" g="0" b="0" />
+    <lightColor r="0.5" g="0.5" b="0.5" />
+    <shadowTechnique type="0" tex_size="512" tex_count="1">
+        <color r="0" g="0" b="0" />
+    </shadowTechnique>
+    <entities>
+        <entity name="gun6" hidden="false" filename="gun6.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="sidegunR" hidden="false" filename="sidegunR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun5" hidden="false" filename="gun5.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="sidegunL" hidden="false" filename="sidegunL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun4" hidden="false" filename="gun4.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="midgunR" hidden="false" filename="midgunR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun3" hidden="false" filename="gun3.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="midgunL" hidden="false" filename="midgunL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="reargate" hidden="false" filename="reargate.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="ingateR" hidden="false" filename="ingateR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="ingateL" hidden="false" filename="ingateL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun2" hidden="false" filename="gun2.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="reargunR" hidden="false" filename="reargunR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun1" hidden="false" filename="gun1.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="reargunL" hidden="false" filename="reargunL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="lift" hidden="false" filename="lift.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="landgate" hidden="false" filename="landgate.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="skydome" hidden="false" filename="skydome.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun8" hidden="false" filename="gun8.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="frontgunR" hidden="false" filename="frontgunR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="gun7" hidden="false" filename="gun7.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="frontgunL" hidden="false" filename="frontgunL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="outgateR" hidden="false" filename="outgateR.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="outgateL" hidden="false" filename="outgateL.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="frontis" hidden="false" filename="frontis.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="roof" hidden="false" filename="roof.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="station" hidden="false" filename="station.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="0.0011138916" y="-0.00097955298" z="290.05481" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+        <entity name="Cercle01" hidden="false" filename="Cercle01.mesh" CastShadows="yes" ReceiveShadows="yes">
+            <position x="34.181168" y="-0.00097955298" z="-18.913794" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+        </entity>
+    </entities>
+    <lights>
+        <light name="Omnidir.01" type="omni" on="true" CastShadows="yes" intensity="1">
+            <position x="7632.9541" y="12870.149" z="3858.9365" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+            <color r="0.976471" g="0.952941" b="0.909804" />
+            <specular r="0.976471" g="0.952941" b="0.909804" />
+        </light>
+        <light name="Ciel01" type="spot" on="true" CastShadows="no" hotspot="0" falloff="0" intensity="0.3">
+            <position x="-847.59998" y="-0.0010405881" z="-1557.4564" />
+            <rotation x="0" y="0" z="-0" w="-1" />
+            <scale x="1" y="1" z="1" />
+            <color r="0.285" g="0.285" b="0.3" />
+            <specular r="0.285" g="0.285" b="0.3" />
+        </light>
+    </lights>
+</oe_scene>

@@ -1,0 +1,19 @@
+
+material 07_-_Default
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+
+			texture_unit
+			{
+				texture_alias Texture #62
+				texture LightMapSalamandra2.tga
+			}
+		}
+
+	}
+
+}

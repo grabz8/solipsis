@@ -1,0 +1,17 @@
+Solipsis/StandardOverlay
+{
+	zorder 500
+	container Panel(Solipsis/LogoPanel)
+	{	
+		metrics_mode pixels
+		horz_align right
+		vert_align bottom
+		top -75
+		##top -78
+		left -165
+		width 150
+		height 75
+		material Solipsis/Logo
+	}
+}
+

@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<GUILayout>
+    <Window Type="DefaultWindow" Name="Solipsis Startup Gui">
+
+		<Window Type="TaharezLook/StaticText" Name="Frame">
+			<Property Name="UnifiedPosition" Value="{{0.30,0},{0.34,0}}" />
+			<Property Name="UnifiedMinSize" Value="{{0.4,0},{0.47,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.4,0},{0.05,0}}" />
+			<Property Name="BackgroundEnabled" Value="True" />
+			<Property Name="HorzFormatting" Value="WordWrapLeft" />
+			<Property Name="VertFormatting" Value="TopAligned" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="Text" Value="Network Options" />
+		</Window>
+
+		<Window Type="TaharezLook/Checkbox" Name="NewNodeCheckbox">
+			<Property Name="UnifiedPosition" Value="{{0.32,0},{0.40,0}}" />
+			<Property Name="UnifiedMinSize" Value="{{0.4,0},{0.05,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.4,0},{0.05,0}}" />
+			<Property Name="BackgroundEnabled" Value="True" />
+			<Property Name="HorzFormatting" Value="WordWrapLeft" />
+			<Property Name="VertFormatting" Value="BottomAligned" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="Text" Value="Start a new Solipsis node on this computer :" />
+		</Window>
+
+		<Window Type="TaharezLook/StaticText" Name="UDPPortText">
+			<Property Name="UnifiedPosition" Value="{{0.32,0},{0.46,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.08,0},{0.05,0}}" />
+			<Property Name="Text" Value="UDP Port" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+		
+		<Window Type="TaharezLook/Editbox" Name="UDPPortBox">
+			<Property Name="UnifiedPosition" Value="{{0.42,0},{0.46,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.26,0},{0.05,0}}" />		
+			<Property Name="Text" Value="6010" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+		
+		<Window Type="TaharezLook/Checkbox" Name="ExistingNodeCheckbox">
+			<Property Name="UnifiedPosition" Value="{{0.32,0},{0.52,0}}" />
+			<Property Name="UnifiedMinSize" Value="{{0.4,0},{0.05,0}}" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="Text" Value="Connect to an existing node :" />
+		</Window>
+
+		<Window Type="TaharezLook/StaticText" Name="HostText">
+			<Property Name="UnifiedPosition" Value="{{0.32,0},{0.58,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.08,0},{0.05,0}}" />
+			<Property Name="Text" Value="Host" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+
+		<Window Type="TaharezLook/Editbox" Name="HostBox">
+			<Property Name="UnifiedPosition" Value="{{0.42,0},{0.58,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.26,0},{0.05,0}}" />
+			<Property Name="Text" Value="localhost" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+
+		<Window Type="TaharezLook/StaticText" Name="PortText">
+			<Property Name="UnifiedPosition" Value="{{0.32,0},{0.64,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.08,0},{0.05,0}}" />
+			<Property Name="Text" Value="Port" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+
+		<Window Type="TaharezLook/Editbox" Name="PortBox">
+			<Property Name="UnifiedPosition" Value="{{0.42,0},{0.64,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.26,0},{0.05,0}}" />
+			<Property Name="Text" Value="8550" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="InheritsAlpha" Value="True" />
+		</Window>
+
+
+		<Window Type="TaharezLook/Button" Name="Valid">
+			<Property Name="UnifiedPosition" Value="{{0.39,0},{0.73,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.09,0},{0.05,0}}" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="Text" Value="Ok" />
+		</Window>
+
+		<Window Type="TaharezLook/Button" Name="Back">
+			<Property Name="UnifiedPosition" Value="{{0.52,0},{0.73,0}}" />
+			<Property Name="UnifiedSize" Value="{{0.09,0},{0.05,0}}" />
+			<Property Name="Alpha" Value="0.5" />
+			<Property Name="Text" Value="Back" />
+		</Window>
+		
+    </Window>
+</GUILayout>

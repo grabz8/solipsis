@@ -1,0 +1,245 @@
+<html>
+    <head>
+        <script type="text/javascript" src="mootools.v1.1.js"></script>
+        <script type="text/javascript" src="mootabs1.2.js"></script>
+		<script type="text/javascript" charset="utf-8">
+		    window.addEvent('domready', init);
+		    function init() {
+		        optTabs = new mootabs('optTabs');
+		    }
+		</script>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageRefresh').send();
+            }
+            function buttonPressed(buttonName)
+            {
+                var naviData = new NaviData(buttonName);
+                if (buttonName == 'ok')
+                {
+                    if (document.getElementById("radioNewNode").checked)
+                        naviData.add('radioNode', 'newNode');
+                    else
+                        naviData.add('radioNode', 'existingNode');
+                    naviData.add('udpPort', document.getElementById("inputUdpPort").value);
+                    naviData.add('host', document.getElementById("inputHost").value);
+                    naviData.add('port', document.getElementById("inputPort").value);
+                    if (document.getElementById("radioProxyTypeDirect").checked)
+                        naviData.add('radioProxyType', 'direct');
+                    else
+                        naviData.add('radioProxyType', 'autoconf');
+                    naviData.add('proxyAutoconfUrl', document.getElementById("inputProxyAutoconfUrl").value);
+                }
+                naviData.send();
+            }
+        </script>
+        <style type="text/css">
+            .mootabs_title {
+	            list-style-image: none;
+	            list-style-type: none;
+	            margin: 0px;
+	            padding: 0px;
+            }
+            .mootabs_title li {
+	            float: left;
+	            background-color: transparent;
+	            padding: 2px 8px 2px 8px;
+	            margin-right: 10px;
+	            cursor: pointer;
+	            color: #FFFFFF;
+	            font-family: Verdana;
+	            font-size: 14px;
+	            line-height: 24px;
+            }
+            .mootabs_title li.active {
+	            border-top: 3px solid #B0E84D;
+            }
+            .mootabs_panel {
+	            display: none;
+	            position: relative;
+	            width: 350px;
+	            top: -1px;
+	            font-family: Verdana;
+	            clear: both;
+	            text-align:left;
+	            padding: 3px;
+            }
+            .mootabs_panel.active {
+                background-color: transparent;
+	            display: block;
+            }
+        </style>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFFFF;
+            }
+            #container
+            {
+	            background-image: url('uioptions.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 400px;
+	            height: 400px;
+            }
+            #newNodeRadio
+            {
+	            position: absolute;
+	            left: 10px;
+	            top: 10px;
+            }
+            #udpPortText
+            {
+	            position: absolute;
+	            left: 40px;
+	            top: 35px;
+            }
+            #udpPortInput
+            {
+	            position: absolute;
+	            left: 120px;
+	            top: 35px;
+            }
+            #existingNodeRadio
+            {
+	            position: absolute;
+	            left: 10px;
+	            top: 60px;
+            }
+            #hostText
+            {
+	            position: absolute;
+	            left: 40px;
+	            top: 85px;
+            }
+            #hostInput
+            {
+	            position: absolute;
+	            left: 120px;
+	            top: 85px;
+            }
+            #portText
+            {
+	            position: absolute;
+	            left: 40px;
+	            top: 110px;
+            }
+            #portInput
+            {
+	            position: absolute;
+	            left: 120px;
+	            top: 110px;
+            }
+            #proxyTypeDirectRadio
+            {
+	            position: absolute;
+	            left: 10px;
+	            top: 10px;
+            }
+            #proxyTypeAutoconfRadio
+            {
+	            position: absolute;
+	            left: 10px;
+	            top: 30px;
+            }
+            #proxyAutoconfUrlInput
+            {
+	            position: absolute;
+	            left: 35px;
+	            top: 55px;
+            }
+            .inputText
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            #tabs
+            {
+                position: absolute;
+                left: 20px;
+                top: 90px;
+            }
+            #infosText
+            {
+	            position: absolute;
+	            left: 20px;
+	            top: 280px;
+	            width: 350px;
+	            height: 30px;
+	            font-size: 14px;
+	            font-style: italic;
+	            font-weight: bold;
+	            text-align: left;
+	            color: #FFFF33;
+            }
+            .button
+            {
+	            position: absolute;
+	            top: 340px;
+	            width: 110px;
+	            height: 40px;
+            }
+            #okButton { left: 20px; }
+            #backButton { left: 270px; }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="tabs">
+			    <div id="optTabs">
+				    <ul class="mootabs_title">
+					    <li title="Node">Node</li>
+					    <li title="Proxy">Proxy</li>
+				    </ul>
+				    <div id="Node" class="mootabs_panel">
+                        <div id="newNodeRadio">
+                            <input id="radioNewNode" name="radioNode" checked="checked" type="radio" />
+                            Start a new Solipsis node on this computer
+                        </div>
+                        <div id="udpPortText">UDP Port</div>
+                        <div id="udpPortInput">
+                            <input id="inputUdpPort" class="inputtext" name="inputUdpPort" value="6010" type="text" size="30" />
+                        </div>
+                        <div id="existingNodeRadio">
+                            <input id="radioExistingNode" name="radioNode" type="radio" />
+                            Connect to an existing node
+                        </div>
+                        <div id="hostText">Host</div>
+                        <div id="hostInput">
+                            <input id="inputHost" class="inputText" name="inputHost" value="localhost" type="text" size="30" />
+                        </div>
+                        <div id="portText">Port</div>
+                        <div id="portInput">
+                            <input id="inputPort" class="inputText" name="inputPort" value="8550" type="text" size="30" />
+                        </div>
+				    </div>
+				    <div id="Proxy" class="mootabs_panel">
+                        <div id="proxyTypeDirectRadio">
+                            <input id="radioProxyTypeDirect" name="radioProxyType" checked="checked" type="radio" />
+                            Direct connection to Internet
+                        </div>
+                        <div id="proxyTypeAutoconfRadio">
+                            <input id="radioProxyTypeAutoconf" name="radioProxyType" type="radio" />
+                            Auto config proxy server
+                        </div>
+                        <div id="proxyAutoconfUrlInput">
+                            <input id="inputProxyAutoconfUrl" class="inputText" name="inputProxyAutoconfUrl" value="" type="text" size="44" />
+                        </div>
+				    </div>
+			    </div>
+            </div>
+            <div id="infosText"></div>
+            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
+            <div id="backButton" class="button" onclick="buttonPressed('back')"></div>
+        </div>
+    </body>
+</html>
