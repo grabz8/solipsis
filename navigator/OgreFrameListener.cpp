@@ -109,12 +109,6 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
        if (mKeyboard)
            mKeyboard->capture();
 
-       //Comme dans tutorial 4, deplacement camera a la descent
-        mCamNode->translate(mCamNode->getOrientation() //L'orientation du node camera
-                             * mCamNode->getChild(0)->getOrientation() //l'orientation du pitch node camera
-                             * mDirection                 // le vecteur de la translation
-                             * evt.timeSinceLastFrame); // pour ne pas dependre du frameRate
-
         return mContinue;
     }
 
