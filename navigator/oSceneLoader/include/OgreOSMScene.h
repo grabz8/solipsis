@@ -32,7 +32,7 @@ class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
 public:
 	TiXmlDocumentPtr() : Ogre::SharedPtr<TiXmlDocument>() {}	
 	explicit TiXmlDocumentPtr(TiXmlDocument* rep) : Ogre::SharedPtr<TiXmlDocument>(rep) {}
-	TiXmlDocumentPtr(const TiXmlDocumentPtr& r) : SharedPtr<TiXmlDocument>(r) {} 
+	TiXmlDocumentPtr(const TiXmlDocumentPtr& r) : Ogre::SharedPtr<TiXmlDocument>(r) {} 
 };
 
 class OSMScene
