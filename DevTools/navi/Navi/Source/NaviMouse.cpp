@@ -35,28 +35,15 @@ NaviMouse::NaviMouse()
 	activeCursor = 0;
 	defaultCursorName = "";
 
+    // BEGIN GREG mouse reload addon
 	// Create the texture
 	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual(
 		"NaviMouseTexture", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 		Ogre::TEX_TYPE_2D, 64, 64, 0, Ogre::PF_BYTE_BGRA,
-		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, 0);
+        Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, this);
 
-	Ogre::HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
-	pixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-	const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
-
-	Ogre::uint8* pDest = static_cast<Ogre::uint8*>(pixelBox.data);
-
-	// Fill the texture with a transparent color
-	for(size_t i = 0; i < (size_t)(64*64*4); i++)
-	{
-		if((i+1)%4)	
-			pDest[i] = 64; // B, G, R
-		else 
-			pDest[i] = 0; // A
-	}
-
-	pixelBuffer->unlock();
+    fillTransparent((Ogre::Texture*)texture.get());
+    // END GREG mouse reload addon
 
 	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("NaviMouseMaterial", 
 		Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -107,6 +94,40 @@ NaviMouse::~NaviMouse()
 	Ogre::MaterialManager::getSingletonPtr()->remove("NaviMouseMaterial");
 	Ogre::TextureManager::getSingletonPtr()->remove("NaviMouseTexture");
 }
+
+// BEGIN GREG mouse reload addon
+void NaviMouse::fillTransparent(Ogre::Texture* texture)
+{
+	Ogre::HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
+	pixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
+	const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
+
+	Ogre::uint8* pDest = static_cast<Ogre::uint8*>(pixelBox.data);
+
+	// Fill the texture with a transparent color
+	for(size_t i = 0; i < (size_t)(64*64*4); i++)
+	{
+		if((i+1)%4)	
+			pDest[i] = 64; // B, G, R
+		else 
+			pDest[i] = 0; // A
+	}
+
+	pixelBuffer->unlock();
+}
+
+void NaviMouse::loadResource(Ogre::Resource* resource)
+{
+    if (resource == 0)
+        OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
+            "Null parameter!", 
+			"NaviMouse::loadResource");
+
+    Ogre::Texture* texture = (Ogre::Texture*)resource;
+    fillTransparent(texture);
+    if (activeCursor) activeCursor->update(true);
+}
+// END GREG mouse reload addon
 
 NaviCursor* NaviMouse::createCursor(std::string cursorName, unsigned short hotspotX, unsigned short hotspotY)
 {

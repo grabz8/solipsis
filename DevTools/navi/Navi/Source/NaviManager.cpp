@@ -264,13 +264,13 @@ std::string NaviManager::naviEvaluateJS(const std::string &naviName, const std::
 }
 
 // BEGIN GREG Proxy config addon
-bool NaviManager::getPAC( std::string &autoConfigURL, int &proxyType )
+bool NaviManager::getProxyConfig(int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL)
 {
-	return LLMozLib::getInstance()->getPAC(autoConfigURL, proxyType);
+	return LLMozLib::getInstance()->getProxyConfig(proxyType, proxyHttp, proxyHttpPort, autoConfigURL);
 }
-void NaviManager::setPAC(const std::string autoConfigURL, int proxyType)
+void NaviManager::setProxyConfig(int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL)
 {
-	LLMozLib::getInstance()->setPAC(autoConfigURL, proxyType);
+	LLMozLib::getInstance()->setProxyConfig(proxyType, proxyHttp, proxyHttpPort, autoConfigURL);
 }
 // END GREG Proxy config addon
 
