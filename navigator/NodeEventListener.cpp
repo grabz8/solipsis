@@ -19,10 +19,20 @@ NodeEventListener::~NodeEventListener()
 //-------------------------------------------------------------------------------------
 bool NodeEventListener::start()
 {
-    if (pthread_create(&mThread, NULL, start_routine, this) != 0)
+    int rc;
+
+    rc = pthread_create(&mThread, NULL, start_routine, this);
+    if (rc != 0)
+    {
+        LogManager::getSingletonPtr()->logMessage("NodeEventListener::start() pthread_create returned " + StringConverter::toString(rc));
         return false;
-    if (pthread_detach(mThread) != 0)
+    }
+    rc = pthread_detach(mThread);
+    if (rc != 0)
+    {
+        LogManager::getSingletonPtr()->logMessage("NodeEventListener::start() pthread_detach returned " + StringConverter::toString(rc));
         return false;
+    }
 
     mState = SRunning;
     mStop = false;
@@ -54,6 +64,8 @@ void NodeEventListener::stop(unsigned int timeoutSec)
 {
     unsigned long elapsedMs = 0;
 
+    LogManager::getSingletonPtr()->logMessage("NodeEventListener::stop() stop requested");
+
     mStop = true;
     while ((mState == SRunning) && (elapsedMs < (unsigned long)timeoutSec*1000))
     {
@@ -63,6 +75,8 @@ void NodeEventListener::stop(unsigned int timeoutSec)
     // Kill thread ?
     if (mState == SRunning) {
     }
+
+    LogManager::getSingletonPtr()->logMessage("NodeEventListener::stop() end");
 }
 
 //-------------------------------------------------------------------------------------
@@ -71,5 +85,8 @@ void* NodeEventListener::start_routine(void* args)
     NodeEventListener* nodeEventListener = (NodeEventListener*)args;
     if (nodeEventListener != 0)
         nodeEventListener->run();
+
+    LogManager::getSingletonPtr()->logMessage("NodeEventListener::start_routine() end");
+
     return NULL;
 }
