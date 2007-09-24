@@ -70,22 +70,30 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 
 void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
-    if ((mode == CM1stPerson) && (mCameraMode != CM1stPerson))
-    {
+    if (mode == mCameraMode) return;
+
+    if (mCamera->getParentSceneNode() != 0)
         mCamera->getParentSceneNode()->detachObject(mCamera);
+
+    switch (mode)
+    {
+    case CM1stPerson:
         mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
+        mCamNode->setOrientation(Quaternion::IDENTITY);
+        mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
         mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
-        mNavigator->getNavigatorGUI()->SetMouseVisibility(false);
-        mCameraMode = mode;
-    }
-    else if ((mode == CM3rdPerson) && (mCameraMode != CM3rdPerson))
-    {
-        mCamera->getParentSceneNode()->detachObject(mCamera);
+        mNavigator->getUserAvatar()->setMvtType(Avatar::MT1stPerson);
+        break;
+    case CM3rdPerson:
         mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
         mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
-        mNavigator->getNavigatorGUI()->SetMouseVisibility(true);
-        mCameraMode = mode;
+        mNavigator->getUserAvatar()->setMvtType(Avatar::MT3rdPerson);
+        break;
     }
+    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode != CM1stPerson, false);
+    mNavigator->getUserAvatar()->setNameVisibility(mode != CM1stPerson);
+    mNavigator->getNavigatorGUI()->SetMouseVisibility(mode != CM1stPerson);
+    mCameraMode = mode;
 }
 
 NavigatorFrameListener::CameraMode NavigatorFrameListener::getCameraMode()
@@ -143,7 +151,10 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
     }
 
     if (getCameraMode() == CM1stPerson)
-        return OgreFrameListener::mouseMoved(e);
+    {
+        mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*e.state.X.rel));
+        mCamNode->getChild(0)->pitch(Degree(-mRotate*e.state.Y.rel));
+    }
 
     return true;
 }
@@ -228,37 +239,31 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
     case KC_UP:
     case KC_W:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_UP);
-        //mDirection.z -= mMove;
         break;
 
     case KC_DOWN:
     case KC_S:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_DOWN);
-        //mDirection.z += mMove;
         break;
 
     case KC_LEFT:
     case KC_A:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_LEFT);
-        //mDirection.x -= mMove;
         break;
 
     case KC_RIGHT:
     case KC_D:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_RIGHT);
-        //mDirection.x += mMove;
         break;
 
     case KC_PGDOWN:
     case KC_E:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_PGDOWN);
-        //mDirection.y -= mMove;
         break;
 
     case KC_PGUP:
     case KC_Q:
         mNavigator->getUserAvatar()->movementKeyPressed(KC_PGUP);
-        //mDirection.y += mMove;
         break;
     }
     return OgreFrameListener::keyPressed(e);
@@ -274,37 +279,31 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
     case KC_UP:
     case KC_W:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_UP);
-        //mDirection.z += mMove;
         break;
 
     case KC_DOWN:
     case KC_S:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_DOWN);
-        //mDirection.z -= mMove;
         break;
 
     case KC_LEFT:
     case KC_A:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_LEFT);
-        //mDirection.x += mMove;
         break;
 
     case KC_RIGHT:
     case KC_D:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_RIGHT);
-        //mDirection.x -= mMove;
         break;
 
     case KC_PGDOWN:
     case KC_E:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_PGDOWN);
-        //mDirection.y += mMove;
         break;
 
     case KC_PGUP:
     case KC_Q:
         mNavigator->getUserAvatar()->movementKeyReleased(KC_PGUP);
-        //mDirection.y -= mMove;
         break;
     }
     return true;
