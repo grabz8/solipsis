@@ -213,6 +213,36 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         setCameraMode(CM3rdPerson);
         break;
 
+    case KC_UP:
+    case KC_W:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_UP);
+        break;
+
+    case KC_DOWN:
+    case KC_S:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_DOWN);
+        break;
+
+    case KC_LEFT:
+    case KC_A:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_LEFT);
+        break;
+
+    case KC_RIGHT:
+    case KC_D:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_RIGHT);
+        break;
+
+    case KC_PGUP:
+    case KC_E:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_PGUP);
+        break;
+
+    case KC_PGDOWN:
+    case KC_C:
+        mNavigator->getUserAvatar()->movementKeyPressed(KC_PGDOWN);
+        break;
+
     case KC_F1:
         mNavigator->fakeSurroundingArea(1);
         break;
@@ -234,36 +264,6 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
     case KC_F12:
         mBoundingBoxesShows = !mBoundingBoxesShows;
         mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
-        break;
-
-    case KC_UP:
-    case KC_W:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_UP);
-        break;
-
-    case KC_DOWN:
-    case KC_S:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_DOWN);
-        break;
-
-    case KC_LEFT:
-    case KC_A:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_LEFT);
-        break;
-
-    case KC_RIGHT:
-    case KC_D:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_RIGHT);
-        break;
-
-    case KC_PGDOWN:
-    case KC_E:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_PGDOWN);
-        break;
-
-    case KC_PGUP:
-    case KC_Q:
-        mNavigator->getUserAvatar()->movementKeyPressed(KC_PGUP);
         break;
     }
     return OgreFrameListener::keyPressed(e);
@@ -296,14 +296,14 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
         mNavigator->getUserAvatar()->movementKeyReleased(KC_RIGHT);
         break;
 
-    case KC_PGDOWN:
+    case KC_PGUP:
     case KC_E:
-        mNavigator->getUserAvatar()->movementKeyReleased(KC_PGDOWN);
+        mNavigator->getUserAvatar()->movementKeyReleased(KC_PGUP);
         break;
 
-    case KC_PGUP:
-    case KC_Q:
-        mNavigator->getUserAvatar()->movementKeyReleased(KC_PGUP);
+    case KC_PGDOWN:
+    case KC_C:
+        mNavigator->getUserAvatar()->movementKeyReleased(KC_PGDOWN);
         break;
     }
     return true;
