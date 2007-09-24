@@ -9,32 +9,29 @@ String Avatar::mDefaultStateAnimName[SCount] = {
     "Swim"
 };
 
+#define EPSILON_SPEED 0.1
 #define MAX_SPEED 400
-#define STARTING_IMPULSE_SPEED 25
-#define EPSILON_DIST 0.01
 
 Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* raySceneQuery) :
     OgrePeer(peer),
     mState(SNone),
+    mMvtType(MT3rdPerson),
     mGravity(false),
     mSceneNode(sceneNode),
     mEntity(entity),
     mRaySceneQuery(raySceneQuery),
-    time(0),
-    mDirection(Vector3(EPSILON_DIST,0,0)),
-    mBackwardDist(0),
-    mUpKeyPressed(false),
-    mDownKeyPressed(false),
-    mLeftKeyPressed(false),
-    mRightKeyPressed(false),
-    mPgupKeyPressed(false),
-    mPgdownKeyPressed(false)
+    mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mRightKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 {
     for (int a = 0;a < SCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
 
     mSceneNode->attachObject(entity);
-    lookAtTheGoodDirection();
+//    lookAtTheGoodDirection();
 
     // Set Name Label
     mNameLabel = new MovableText("Label" + peer->getLogin(), peer->getLogin(), false);
@@ -47,6 +44,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* 
     mSceneNode->attachObject(mNameLabel);
 }
 
+//-------------------------------------------------------------------------------------
 Avatar::~Avatar()
 {
     if (mSceneNode == 0) return;
@@ -59,30 +57,36 @@ Avatar::~Avatar()
     mSceneNode->getCreator()->destroySceneNode(mSceneNode->getName());
 }
 
+//-------------------------------------------------------------------------------------
 SceneNode* Avatar::getSceneNode()
 {
     return mSceneNode;
 }
 
+//-------------------------------------------------------------------------------------
 Entity* Avatar::getEntity()
 {
     return mEntity;
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::setName(const String& name)
 {
     mNameLabel->setCaption(name);
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::setNameVisibility(bool visible)
 {
     mNameLabel->setVisible(visible);
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::setGravity(bool enabled) {
     mGravity = enabled;
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::setState(State state)
 {
     if (mStateAnimName[state].length() > 0)
@@ -96,21 +100,37 @@ void Avatar::setState(State state)
     mState = state;
 }
 
+//-------------------------------------------------------------------------------------
 Avatar::State Avatar::getState()
 {
     return mState;
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::setStateAnimName(State state, const String& name)
 {
     mStateAnimName[state] = name;
 }
 
+//-------------------------------------------------------------------------------------
+void Avatar::setMvtType(MvtType mvtType)
+{
+    mMvtType = mvtType;
+}
+
+//-------------------------------------------------------------------------------------
+Avatar::MvtType Avatar::getMvtType()
+{
+    return mMvtType;
+}
+
+//-------------------------------------------------------------------------------------
 void Avatar::update(Ogre::Real timeSinceLastFrame)
 {
     animate(timeSinceLastFrame);
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::startAnimation(const String &name, bool loop)
 {
     mAnimationState = mEntity->getAnimationState(name);
@@ -118,160 +138,117 @@ void Avatar::startAnimation(const String &name, bool loop)
     mAnimationState->setEnabled(true);
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::animate(Ogre::Real timeSinceLastFrame)
 {
-    AxisAlignedBox waabb = mSceneNode->_getWorldAABB();
-    time += timeSinceLastFrame;
-    if (time > 0.02)
+    Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
+    Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
+    Vector3 vri = mSceneNode->getOrientation()*Vector3::UNIT_Z;
+    Real frontBackMvt;
+    Real leftRightMvt;
+    Real upDownMvt;
+    State nextState = SIdle;
+    Real animOffset = 0;
+
+    mUpKeyMotion.update(timeSinceLastFrame);
+    mDownKeyMotion.update(timeSinceLastFrame);
+    frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
+    mSceneNode->translate(vpn*frontBackMvt*timeSinceLastFrame);
+    if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED/2) && (mState != SWalk))
+        nextState = SWalk;
+    if ((Math::Abs(frontBackMvt) > MAX_SPEED/2) && (mState != SRun))
+        nextState = SRun;
+
+    mLeftKeyMotion.update(timeSinceLastFrame);
+    mRightKeyMotion.update(timeSinceLastFrame);
+    leftRightMvt = mLeftKeyMotion.getMotion() - mRightKeyMotion.getMotion();
+    if (mMvtType == MT1stPerson)
     {
-        //Every half second..
-        time = 0;
-        bool doIdle = false;
+        // First person straff
+        mSceneNode->translate(-vri*leftRightMvt*timeSinceLastFrame);
+        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+            nextState = SWalk;
+    }
+    else
+    {
+        // Third person rotation
+        mSceneNode->yaw(Radian(Math::PI/100000)*leftRightMvt);
+        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+            nextState = SWalk;
+    }
 
-        Real distance = mDirection.normalise();
-        if (mUpKeyPressed)
-        {
-            if (distance < MAX_SPEED)
-            {
-                distance *= 1.5;
-                if ((distance > MAX_SPEED/2) && (getState() != SRun))
-                    setState(SRun);
-            }
-        }
+    mPgupKeyMotion.update(timeSinceLastFrame);
+    mPgdownKeyMotion.update(timeSinceLastFrame);
+    upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
+    mSceneNode->translate(vup*upDownMvt*timeSinceLastFrame);
+//    if ((Math::Abs(upDownMvt) > MAX_SPEED/2) && (mState != SFly))
+//        nextState = SFly;
+
+    if (mState != nextState)
+        setState(nextState);
+
+    if ((mState == SWalk) || (mState == SRun))
+        if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
+            animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
         else
-        {
-            if (distance > EPSILON_DIST)
-            {
-                distance *= 0.75;
-                if (distance <= EPSILON_DIST)
-                    doIdle = true;
-            }
-        }
-        mDirection = mDirection*distance; //come back to unnormalized value
+            animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+    else
+        animOffset = timeSinceLastFrame;
+    mAnimationState->addTime(animOffset);
 
-        if (mDownKeyPressed)
+    if (mGravity && (mRaySceneQuery != 0))
+    {
+        //Here is a fake gravity, follow ground if any
+        Vector3 pos = mSceneNode->getPosition();
+        Vector3 avatarSize = mEntity->getBoundingBox().getSize();
+        Ray ray(pos + avatarSize/2, Vector3::NEGATIVE_UNIT_Y); //Ray from the middle of avatar, direction:floor
+        mRaySceneQuery->setRay(ray);
+        mRaySceneQuery->setSortByDistance(true);
+        RaySceneQueryResult &result = mRaySceneQuery->execute();
+        RaySceneQueryResult::iterator itray = result.begin();
+        for(;itray!=result.end();++itray)
         {
-            if (mBackwardDist < MAX_SPEED/2)
-            {
-                //No more than half of walk speed
-                mBackwardDist *= 1.5;
-                if (mBackwardDist == 0)
-                    mBackwardDist = STARTING_IMPULSE_SPEED;
-            }
-        } 
-        else if (mBackwardDist > EPSILON_DIST)
-        {
-            mBackwardDist *= 0.75;
-            if (mBackwardDist <= EPSILON_DIST)
-                doIdle = true;
-        }
-
-        if (mLeftKeyPressed || mRightKeyPressed)
-        {
-           mYaw = ((Ogre::Math::HALF_PI/16)*((mRightKeyPressed) ? -1 : 1));
-           mDirection = Ogre::Quaternion(Radian(mYaw),Vector3::UNIT_Y)*mDirection;
-           lookAtTheGoodDirection();
-        }
-
-        if (mPgdownKeyPressed || mPgupKeyPressed)
-        {
-            mSceneNode->translate(Vector3::UNIT_Y*(((mPgdownKeyPressed) ? -1 : +1)*(MAX_SPEED/2)*timeSinceLastFrame));
-        }
-
-        /* Fly
-        if (mPgupKeyPressed)
-        {
-            if (mDirection.y < MAX_SPEED)
-            {
-                mDirection.y *= 1.15;
-                if (mDirection.y == 0)
-                    mDirection.y = STARTING_IMPULSE_SPEED;
-            }
-        } else if (mDirection.y>EPSILON_DIST)
-        {
-            mDirection.y *= 0.6;
-            if (mDirection.y <= EPSILON_DIST)
-                mDirection.y = 0;
-        }*/
-
-        if (mGravity && (mRaySceneQuery != 0))
-        {
-            //Here is a fake gravity, follow ground if any
-            Vector3 pos = mSceneNode->getPosition();
-            Vector3 avatarSize = mEntity->getBoundingBox().getSize();
-            Ray ray(pos + avatarSize/2, Vector3::NEGATIVE_UNIT_Y); //Ray from the middle of avatar, direction:floor
-            mRaySceneQuery->setRay(ray);
-            mRaySceneQuery->setSortByDistance(true);
-            RaySceneQueryResult &result = mRaySceneQuery->execute();
-            RaySceneQueryResult::iterator itray = result.begin();
-            if (itray!=result.end() && itray->worldFragment)
+            if (itray->worldFragment)
             {
                 Real height = itray->worldFragment->singleIntersection.y;
                 mSceneNode->setPosition(pos.x,height+10.0f,pos.z);
+                break;
             }
-/*            Vector3 hit;
-            if (RaycastFromPoint(ray, result, String("station"), hit))
-                mSceneNode->setPosition(pos.x,hit.y,pos.z);*/
         }
-
-        if (doIdle)
-            setState(SIdle);
+    /*    Vector3 hit;
+        if (RaycastFromPoint(ray, result, String("station"), hit))
+        mSceneNode->setPosition(pos.x,hit.y,pos.z);*/
     }
-
-    Real animOffset = 0;
-    if (mBackwardDist > EPSILON_DIST)
-    {
-        mDirection.normalise();
-        mSceneNode->translate(mDirection*(-mBackwardDist*timeSinceLastFrame));
-        animOffset = - (timeSinceLastFrame*(mBackwardDist/(MAX_SPEED/4))); //(MAX_SPEED/4) is speed where walk anim is in real time
-    }
-    else if (mDirection.length() > EPSILON_DIST)
-    {
-        mSceneNode->translate(mDirection*timeSinceLastFrame);
-        animOffset = timeSinceLastFrame*(mDirection.length()/(MAX_SPEED/4)); //(MAX_SPEED/4) is speed where walk anim is in real time
-    }
-    else
-        animOffset = timeSinceLastFrame;
-
-    mAnimationState->addTime(animOffset);
-
 }
 
+//-------------------------------------------------------------------------------------
 void Avatar::movementKeyPressed(OIS::KeyCode code)
 {
     using namespace OIS;
     switch (code) {
        case KC_UP:
-           mUpKeyPressed = true;
+           mUpKeyMotion.setState(true);
        break;
        case KC_DOWN:
-           mDownKeyPressed = true;
+           mDownKeyMotion.setState(true);
        break;
        case KC_LEFT:
-           mLeftKeyPressed = true;
+           mLeftKeyMotion.setState(true);
        break;
        case KC_RIGHT:
-           mRightKeyPressed = true;
+           mRightKeyMotion.setState(true);
        break;
        case KC_PGUP:
-           mPgupKeyPressed = true;
+           mPgupKeyMotion.setState(true);
        break;
        case KC_PGDOWN:
-           mPgdownKeyPressed = true;
+           mPgdownKeyMotion.setState(true);
        break;
-    }
-
-    //Walk anim if needed
-    if ((mUpKeyPressed || mDownKeyPressed || mLeftKeyPressed || mRightKeyPressed) && (getState() == SIdle))
-    {
-        time = 1000;
-        setState(SWalk);
-        //Starting Impulse
-        mDirection.normalise();
-        mDirection *= STARTING_IMPULSE_SPEED; 
     }
 }
 
+/*
+//-------------------------------------------------------------------------------------
 void Avatar::lookAtTheGoodDirection()
 {
     Vector3 src = mSceneNode->getOrientation()*Vector3::UNIT_X;
@@ -286,33 +263,35 @@ void Avatar::lookAtTheGoodDirection()
         mSceneNode->rotate(quat);
     } 
 }
-
+*/
+//-------------------------------------------------------------------------------------
 void Avatar::movementKeyReleased(OIS::KeyCode code)
 {
     using namespace OIS;
     switch (code) {
        case KC_UP:
-           mUpKeyPressed = false;
+           mUpKeyMotion.setState(false);
        break;
        case KC_DOWN:
-           mDownKeyPressed = false;
+           mDownKeyMotion.setState(false);
        break;
        case KC_LEFT:
-           mLeftKeyPressed = false;
+           mLeftKeyMotion.setState(false);
        break;
        case KC_RIGHT:
-           mRightKeyPressed = false;
+           mRightKeyMotion.setState(false);
        break;
        case KC_PGUP:
-           mPgupKeyPressed = false;
+           mPgupKeyMotion.setState(false);
        break;
        case KC_PGDOWN:
-           mPgdownKeyPressed = false;
+           mPgdownKeyMotion.setState(false);
        break;
     }
 }
 
 /*
+//-------------------------------------------------------------------------------------
 // raycast from a point in to the scene.
 // returns success or failure.
 // on success the point is returned in the result.
@@ -406,6 +385,7 @@ bool Avatar::RaycastFromPoint(Ray& ray,
     }
 }
 
+//-------------------------------------------------------------------------------------
 // Get the mesh information for the given mesh.
 // Code found on this forum link: http://www.ogre3d.org/wiki/index.php/RetrieveVertexData
 void Avatar::GetMeshInformation(const Ogre::MeshPtr mesh,

@@ -2,14 +2,13 @@
 #define __Avatar_h__
 
 #include "OgrePeer.h"
+#include "KeyMotion.h"
 #include "MovableText.h"
 
 //Use this define to signify OIS will be used as a DLL
 //(so that dll import/export macros are in effect)
 #define OIS_DYNAMIC_LIB
 #include <OIS/OIS.h>
-
-using namespace Ogre;
 
 class Avatar : public OgrePeer
 {
@@ -23,11 +22,16 @@ public:
         SSwim,
         SCount
     };
+    enum MvtType {
+        MT1stPerson,
+        MT3rdPerson
+    };
 
 protected:
     static String mDefaultStateAnimName[SCount];
     String mStateAnimName[SCount];
     State mState;
+    MvtType mMvtType;
 
     bool mGravity;
 
@@ -37,9 +41,9 @@ protected:
     RaySceneQuery* mRaySceneQuery;
     MovableText* mNameLabel;
 
-    void lookAtTheGoodDirection();
+//    void lookAtTheGoodDirection();
 
-    bool RaycastFromPoint(Ray& ray,
+/*    bool RaycastFromPoint(Ray& ray,
         RaySceneQueryResult& query_result,
         String& entity_name,
         Vector3& result);
@@ -51,7 +55,7 @@ protected:
         const Ogre::Vector3 &position,
         const Ogre::Quaternion &orient,
         const Ogre::Vector3 &scale);
-
+*/
 public:
     Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* raySceneQuery = 0);
     virtual ~Avatar();
@@ -66,6 +70,9 @@ public:
     void setState(State state);
     State getState();
     void setStateAnimName(State state, const String& name);
+
+    void setMvtType(MvtType mvtType);
+    MvtType getMvtType();
 
     virtual void update(Ogre::Real timeSinceLastFrame);
 
@@ -82,17 +89,12 @@ private:
     String mFlyAnimName;
     String mSwimAnimName;
 
-    bool mUpKeyPressed;
-    bool mDownKeyPressed;
-    bool mLeftKeyPressed;
-    bool mRightKeyPressed;
-    bool mPgupKeyPressed;
-    bool mPgdownKeyPressed;
-
-    Real time;
-    Real mYaw;
-    Real mBackwardDist;
-    Vector3 mDirection;
+    KeyMotion mUpKeyMotion;
+    KeyMotion mDownKeyMotion;
+    KeyMotion mLeftKeyMotion;
+    KeyMotion mRightKeyMotion;
+    KeyMotion mPgupKeyMotion;
+    KeyMotion mPgdownKeyMotion;
 };
 
 #endif // #ifndef __Avatar_h__
