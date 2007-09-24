@@ -182,7 +182,7 @@ void NavigatorGUI::quit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsPageRefresh(const NaviData& naviData)
 {
-    char txt[128];
+    char txt[256];
 
     LogManager::getSingletonPtr()->logMessage("NavigatorGUI::optionsPageRefresh()");
 
@@ -198,15 +198,32 @@ void NavigatorGUI::optionsPageRefresh(const NaviData& naviData)
     sprintf(txt, "$('inputPort').value = '%d'", mNavigator->getConnectionPort());
     mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
     mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
-    std::string autoConfigURL;
+    std::string proxyAutoconfUrl;
+    std::string proxyHttpHost;
+    int proxyHttpPort;
     int proxyType;
-    if (mNaviMgr.getPAC(autoConfigURL, proxyType))
+    if (mNaviMgr.getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
     {
-        if (proxyType == 0)
+        switch (proxyType)
+        {
+        case 0: // 0 for direct connection, no proxy
             mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeDirect').checked = 'checked'");
-        else
+            break;
+        case 4: // 4 for auto-detect proxy settings
+            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeAutodetect').checked = 'checked'");
+            break;
+        case 1: // 1 for manual proxy configuration
+            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeManual').checked = 'checked'");
+            break;
+        default: // 2 for proxy auto-conf (PAC)
             mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeAutoconf').checked = 'checked'");
-        sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", autoConfigURL.c_str());
+            break;
+        }
+        sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
+        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        sprintf(txt, "$('inputProxyHttpPort').value = '%d'", proxyHttpPort);
+        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
         mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
     }
 
@@ -234,15 +251,14 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
    	naviData.get("port", port, true);
     LogManager::getSingletonPtr()->logMessage("radioNode=" + (String)(radioNode.c_str()) + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + (String)(host.c_str()) + ", port=" + StringConverter::toString(port));
     std::string radioProxyType;
-//	std::string proxyHttpHost;
-//    int proxyHttpPort;
+	std::string proxyHttpHost;
+    int proxyHttpPort;
 	std::string proxyAutoconfUrl;
   	naviData.get("radioProxyType", radioProxyType, true);
-//   	naviData.get("proxyHttpHost", proxyHttpHost, true);
-//   	naviData.get("proxyHttpPort", proxyHttpPort, true);
+   	naviData.get("proxyHttpHost", proxyHttpHost, true);
+   	naviData.get("proxyHttpPort", proxyHttpPort, true);
    	naviData.get("proxyAutoconfUrl", proxyAutoconfUrl, true);
-//    LogManager::getSingletonPtr()->logMessage("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
-    LogManager::getSingletonPtr()->logMessage("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
+    LogManager::getSingletonPtr()->logMessage("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
 
     // Check
     bool valid_options = true;
@@ -271,14 +287,47 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
             valid_options = false;
         }
     }
-    int proxyType = (radioProxyType.compare("direct") == 0) ? 0 : 2;
-    if (proxyType == 0)
-        proxyAutoconfUrl = "";
-    else if (proxyAutoconfUrl.length() == 0)
+    int proxyType;
+    if (radioProxyType.compare("direct") == 0)
     {
-        // Bad url
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid proxy server URL ...'");
-        valid_options = false;
+        proxyType = 0;
+        proxyAutoconfUrl = "";
+        proxyHttpHost = "";
+        proxyHttpPort = 0;
+    }
+    else if (radioProxyType.compare("autodetect") == 0)
+    {
+        proxyType = 4;
+        proxyAutoconfUrl = "";
+        proxyHttpHost = "";
+        proxyHttpPort = 0;
+    }
+    else if (radioProxyType.compare("manual") == 0)
+    {
+        proxyType = 1;
+        proxyAutoconfUrl = "";
+        if (proxyHttpHost.length() == 0)
+        {
+            // Bad url
+            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid HTTP proxy Address ...'");
+            valid_options = false;
+        }
+        if (proxyHttpPort < 0)
+        {
+            // Bad port
+            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid HTTP proxy Port ...'");
+            valid_options = false;
+        }
+    }
+    else // autoconf
+    {
+        proxyType = 2;
+        if (proxyAutoconfUrl.length() == 0)
+        {
+            // Bad url
+            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid proxy server URL ...'");
+            valid_options = false;
+        }
     }
 
     // Valid options ?
@@ -290,7 +339,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         mNavigator->setConnectionPort(port);
         mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
 
-        mNaviMgr.setPAC(proxyAutoconfUrl, proxyType);
+        mNaviMgr.setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
 
         // Return to Navi UI login
         login();
