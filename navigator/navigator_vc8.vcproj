@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeyMotion.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MovableText.cpp"
 				>
 			</File>
@@ -274,6 +278,10 @@
 			</File>
 			<File
 				RelativePath=".\oSceneLoader\include\IOSMSceneCallbacks.h"
+				>
+			</File>
+			<File
+				RelativePath=".\KeyMotion.h"
 				>
 			</File>
 			<File
