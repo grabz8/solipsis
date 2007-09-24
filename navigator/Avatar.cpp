@@ -172,7 +172,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
     else
     {
         // Third person rotation
-        mSceneNode->yaw(Radian(Math::PI/100000)*leftRightMvt);
+        mSceneNode->yaw(Radian(Math::PI/1000)*leftRightMvt*timeSinceLastFrame);
         if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
             nextState = SWalk;
     }
