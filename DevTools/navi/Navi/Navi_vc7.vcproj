@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(SolutionDir)Dependencies\all\utf8-cpp&quot;;&quot;$(SolutionDir)..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -41,14 +41,13 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy debug runtime release ..."
-				CommandLine="mkdir ..\..\..\Dependencies\navi\include
-mkdir ..\..\..\Dependencies\navi\lib_vc7
-mkdir ..\..\..\Dependencies\navi\Javascript
-copy Include\*.h ..\..\..\Dependencies\navi\include\. /y
-copy lib_vc7\navi_d.lib ..\..\..\Dependencies\navi\lib_vc7\. /y
-copy Javascript\Navi.js ..\..\..\Dependencies\navi\Javascript\. /y"/>
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\include&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\Javascript&#x0D;&#x0A;copy Include\*.h $(ProjectDir)..\..\..\Dependencies\navi\include\. /y&#x0D;&#x0A;copy lib_vc7\navi_d.lib $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\. /y&#x0D;&#x0A;copy Javascript\Navi.js $(ProjectDir)..\..\..\Dependencies\navi\Javascript\. /y&#x0D;&#x0A;"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				Description="Copying LLMozLib debug dependencies"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\include&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Debug&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Debug&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include\llmozlib.h&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\llmozlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib\llmozlib_d.lib&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\Debug_vc7\llmozlib_vc7.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib\llmozlib_d.lib&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Debug\xul.dll&quot; xcopy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\libraries\i686-win32\runtime_debug\*.*&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Debug&quot; /s /y&#x0D;&#x0A;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -70,7 +69,7 @@ copy Javascript\Navi.js ..\..\..\Dependencies\navi\Javascript\. /y"/>
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(SolutionDir)Dependencies\all\utf8-cpp&quot;;&quot;$(SolutionDir)..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
@@ -88,14 +87,13 @@ copy Javascript\Navi.js ..\..\..\Dependencies\navi\Javascript\. /y"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy release runtime release ..."
-				CommandLine="mkdir ..\..\..\Dependencies\navi\include
-mkdir ..\..\..\Dependencies\navi\lib_vc7
-mkdir ..\..\..\Dependencies\navi\Javascript
-copy Include\*.h ..\..\..\Dependencies\navi\include\. /y
-copy lib_vc7\navi.lib ..\..\..\Dependencies\navi\lib_vc7\. /y
-copy Javascript\Navi.js ..\..\..\Dependencies\navi\Javascript\. /y"/>
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\include&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\Javascript&#x0D;&#x0A;copy Include\*.h $(ProjectDir)..\..\..\Dependencies\navi\include\. /y&#x0D;&#x0A;copy lib_vc7\navi.lib $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\. /y&#x0D;&#x0A;copy Javascript\Navi.js $(ProjectDir)..\..\..\Dependencies\navi\Javascript\. /y&#x0D;&#x0A;"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				Description="Copying LLMozLib release dependencies"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\include&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Release&quot; mkdir $(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Release&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include\llmozlib.h&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\llmozlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib\llmozlib.lib&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\Release_vc7\llmozlib_vc7.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\lib\llmozlib.lib&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Release\xul.dll&quot; xcopy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\libraries\i686-win32\runtime_release\*.*&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime\Release&quot; /s /y&#x0D;&#x0A;"
+			/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
