@@ -10,11 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc8", "DevTools\navi\N
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread", "DevTools\pthreads\pthread_vc8.vcproj", "{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "DevTools\tinyxml\tinyxml_lib.vcproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "DevTools\tinyxml\tinyxml_lib_vc8.vcproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "DevTools\xmlrpc++\XmlRpc.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "DevTools\xmlrpc++\XmlRpc_vc8.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navigator.vcproj", "{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navigator_vc8.vcproj", "{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
 	ProjectSection(ProjectDependencies) = postProject
 		{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C} = {938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}
 		{5902A470-3E2A-4159-A2F7-57BDC5614070} = {5902A470-3E2A-4159-A2F7-57BDC5614070}

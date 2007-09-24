@@ -5,10 +5,27 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc7", "DevTools\ll
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc7", "DevTools\navi\Navi\Navi_vc7.vcproj", "{E87F3128-0E81-4542-A30D-43704D15C54E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{0200E671-E19F-4D61-B775-956227116A3A} = {0200E671-E19F-4D61-B775-956227116A3A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread", "DevTools\pthreads\pthread_vc7.vcproj", "{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}"
 	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "DevTools\tinyxml\tinyxml_lib_vc7.vcproj", "{B9DC0DBB-3268-4948-986D-759AF15FBBDD}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlrpc", "DevTools\xmlrpc++\XmlRpc_vc7.vcproj", "{C89F7C52-11D9-471A-9094-239878213A49}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navigator_vc7.vcproj", "{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E87F3128-0E81-4542-A30D-43704D15C54E} = {E87F3128-0E81-4542-A30D-43704D15C54E}
+		{C89F7C52-11D9-471A-9094-239878213A49} = {C89F7C52-11D9-471A-9094-239878213A49}
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD} = {B9DC0DBB-3268-4948-986D-759AF15FBBDD}
+		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28} = {C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}
 	EndProjectSection
 EndProject
 Global
@@ -29,6 +46,18 @@ Global
 		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Debug.Build.0 = Debug|Win32
 		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Release.ActiveCfg = Release|Win32
 		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Release.Build.0 = Release|Win32
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD}.Debug.ActiveCfg = Debug|Win32
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD}.Debug.Build.0 = Debug|Win32
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD}.Release.ActiveCfg = Release|Win32
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD}.Release.Build.0 = Release|Win32
+		{C89F7C52-11D9-471A-9094-239878213A49}.Debug.ActiveCfg = Debug|Win32
+		{C89F7C52-11D9-471A-9094-239878213A49}.Debug.Build.0 = Debug|Win32
+		{C89F7C52-11D9-471A-9094-239878213A49}.Release.ActiveCfg = Release|Win32
+		{C89F7C52-11D9-471A-9094-239878213A49}.Release.Build.0 = Release|Win32
+		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.Debug.ActiveCfg = Debug|Win32
+		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.Debug.Build.0 = Debug|Win32
+		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.Release.ActiveCfg = Release|Win32
+		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
