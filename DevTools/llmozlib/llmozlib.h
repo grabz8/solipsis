@@ -170,8 +170,8 @@ class LLMozLib
 		const std::string getVersion();											
 		void setBrowserAgentId( std::string idIn );								
 // BEGIN GREG Proxy config addon
-		bool getPAC( std::string &autoConfigURL, int &proxyType );
-		void setPAC( const std::string autoConfigURL, int proxyType );
+		bool getProxyConfig( int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL );
+		void setProxyConfig( int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL );
 // END GREG Proxy config addon
 
 		// browser window - creation/deletion, mutation etc.

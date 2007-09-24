@@ -234,7 +234,7 @@ void LLEmbeddedBrowser::setBrowserAgentId( std::string idIn )
 // BEGIN GREG Proxy config addon
 ////////////////////////////////////////////////////////////////////////////////
 //
-bool LLEmbeddedBrowser::getPAC( std::string &autoConfigURL, int &proxyType )
+bool LLEmbeddedBrowser::getProxyConfig( int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL )
 {
 	nsCOMPtr<nsIPrefBranch> prefBranch;
 	nsCOMPtr<nsIPrefService> prefService(do_GetService(NS_PREFSERVICE_CONTRACTID));
@@ -246,12 +246,18 @@ bool LLEmbeddedBrowser::getPAC( std::string &autoConfigURL, int &proxyType )
 		{
 			nsXPIDLCString tmpstr;
 			PRInt32 tmpint;
-			rv = prefBranch->GetCharPref("network.proxy.autoconfig_url", getter_Copies(tmpstr));
-			if (NS_SUCCEEDED(rv))
-				autoConfigURL = PromiseFlatCString( tmpstr ).get();
 			rv = prefBranch->GetIntPref("network.proxy.type", &tmpint);
 			if (NS_SUCCEEDED(rv))
 				proxyType = tmpint;
+			rv = prefBranch->GetCharPref("network.proxy.http", getter_Copies(tmpstr));
+			if (NS_SUCCEEDED(rv))
+				proxyHttp = PromiseFlatCString( tmpstr ).get();
+            rv = prefBranch->GetIntPref("network.proxy.http_port", &tmpint);
+            if (NS_SUCCEEDED(rv))
+                proxyHttpPort = tmpint;
+			rv = prefBranch->GetCharPref("network.proxy.autoconfig_url", getter_Copies(tmpstr));
+			if (NS_SUCCEEDED(rv))
+				autoConfigURL = PromiseFlatCString( tmpstr ).get();
 			return true;
 		}
 	}
@@ -259,7 +265,7 @@ bool LLEmbeddedBrowser::getPAC( std::string &autoConfigURL, int &proxyType )
 	return false;
 }
 
-void LLEmbeddedBrowser::setPAC( const std::string autoConfigURL, int proxyType )
+void LLEmbeddedBrowser::setProxyConfig( int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL )
 {
 	// Update user prefs and save them
 	nsCOMPtr<nsIPrefBranch> prefBranch;
@@ -269,8 +275,10 @@ void LLEmbeddedBrowser::setPAC( const std::string autoConfigURL, int proxyType )
 		prefService->GetBranch("", getter_AddRefs(prefBranch));
 		if (prefBranch)
 		{
-			prefBranch->SetCharPref("network.proxy.autoconfig_url", autoConfigURL.c_str());
 			prefBranch->SetIntPref("network.proxy.type", proxyType);
+			prefBranch->SetCharPref("network.proxy.http", proxyHttp.c_str());
+			prefBranch->SetIntPref("network.proxy.http_port", proxyHttpPort);
+			prefBranch->SetCharPref("network.proxy.autoconfig_url", autoConfigURL.c_str());
 			prefService->SavePrefFile(nsnull);
 		}
 	}
@@ -279,8 +287,10 @@ void LLEmbeddedBrowser::setPAC( const std::string autoConfigURL, int proxyType )
 	nsCOMPtr<nsIPref> pref(do_GetService(NS_PREF_CONTRACTID));
 	if (pref)
 	{
-		pref->SetCharPref("network.proxy.autoconfig_url", autoConfigURL.c_str());
 		pref->SetIntPref("network.proxy.type", proxyType);
+		pref->SetCharPref("network.proxy.http", proxyHttp.c_str());
+		pref->SetIntPref("network.proxy.http_port", proxyHttpPort);
+		pref->SetCharPref("network.proxy.autoconfig_url", autoConfigURL.c_str());
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////

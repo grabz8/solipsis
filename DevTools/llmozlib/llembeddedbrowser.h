@@ -59,8 +59,8 @@ class LLEmbeddedBrowser
 		std::string getGREVersion();
 		void setBrowserAgentId( std::string idIn );
 // BEGIN GREG Proxy config addon
-		bool getPAC( std::string &autoConfigURL, int &proxyType );
-		void setPAC( const std::string autoConfigURL, int proxyType );
+		bool getProxyConfig( int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL );
+		void setProxyConfig( int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL );
 // END GREG Proxy config addon
 		LLEmbeddedBrowserWindow* createBrowserWindow( void* nativeWindowHandleIn, int browserWidthIn, int browserHeightIn );
 		bool destroyBrowserWindow( LLEmbeddedBrowserWindow* browserWindowIn );

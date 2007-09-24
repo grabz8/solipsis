@@ -136,14 +136,14 @@ void LLMozLib::setBrowserAgentId( std::string idIn )
 // BEGIN GREG Proxy config addon
 ////////////////////////////////////////////////////////////////////////////////
 //
-bool LLMozLib::getPAC( std::string &autoConfigURL, int &proxyType )
+bool LLMozLib::getProxyConfig( int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL )
 {
-	return LLEmbeddedBrowser::getInstance()->getPAC( autoConfigURL, proxyType );
+	return LLEmbeddedBrowser::getInstance()->getProxyConfig( proxyType, proxyHttp, proxyHttpPort, autoConfigURL );
 }
 
-void LLMozLib::setPAC( const std::string autoConfigURL, int proxyType )
+void LLMozLib::setProxyConfig( int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL )
 {
-	LLEmbeddedBrowser::getInstance()->setPAC( autoConfigURL, proxyType );
+	LLEmbeddedBrowser::getInstance()->setProxyConfig( proxyType, proxyHttp, proxyHttpPort, autoConfigURL );
 }
 ////////////////////////////////////////////////////////////////////////////////
 // END GREG Proxy config addon
