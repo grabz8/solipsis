@@ -57,27 +57,10 @@ Batch build all (Debug+Release)
 Define the OGRE_HOME env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
 OGRE_HOME = C:\<your_path>\ogrenew
 
-Open DevTools/llmozlib/llmozlib_vcX.sln
-Batch build all (Debug+Release)
+Open solipsis_vcX.sln (for instance only vc8 is up-to-date, so ...)
+Batch build Navigator project (Debug+Release)
 
-Run DevTools/navi/copy_llmozlib_files_vcX.bat
-
-Open DevTools/navi/Navi_vcX.sln
-Batch build all (Debug+Release)
-
-Open DevTools/pthreads/pthread_vcX.sln
-Batch build all (Debug+Release)
-
-Open DevTools/tinyxml/tinyxml.sln
-Batch build ONLY the tinyxml project (Debug+Release), (STL, test and testSTL are not used)
-
-Open DevTools/xmlrpc++/XmlRpc.sln
-Batch build ONLY the XmlRpc project (Debug+Release)
-
-Open DevTools/navigator/navigator.sln
-Batch build all (Debug+Release)
-
-Check into the navigator project settings you set correctly the Debug/Working directory to $(TargetDir)
+Check into the Navigator project settings you set correctly the Debug/Working directory to $(TargetDir)
 Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navigator.exe
 (avoid to launch the Debug config, you will be too often prompted by Mozilla/LLMozLib assertions,
 they will be suppressed in the future)
