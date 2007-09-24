@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "XmlRpc.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "XmlRpc_vc8.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestXml", "test\TestXml.vcproj", "{6F0C2ADA-0341-4183-8FAA-576668F1788A}"
 	ProjectSection(ProjectDependencies) = postProject
