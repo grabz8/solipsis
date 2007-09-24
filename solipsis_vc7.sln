@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc7", "DevTools\llmozlib\llmozlib_vc7.vcproj", "{0200E671-E19F-4D61-B775-956227116A3A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc7", "DevTools\navi\Navi\Navi_vc7.vcproj", "{E87F3128-0E81-4542-A30D-43704D15C54E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread", "DevTools\pthreads\pthread_vc7.vcproj", "{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{0200E671-E19F-4D61-B775-956227116A3A}.Debug.ActiveCfg = Debug|Win32
+		{0200E671-E19F-4D61-B775-956227116A3A}.Debug.Build.0 = Debug|Win32
+		{0200E671-E19F-4D61-B775-956227116A3A}.Release.ActiveCfg = Release|Win32
+		{0200E671-E19F-4D61-B775-956227116A3A}.Release.Build.0 = Release|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Debug.ActiveCfg = Debug|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Debug.Build.0 = Debug|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Release.ActiveCfg = Release|Win32
+		{E87F3128-0E81-4542-A30D-43704D15C54E}.Release.Build.0 = Release|Win32
+		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Debug.ActiveCfg = Debug|Win32
+		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Debug.Build.0 = Debug|Win32
+		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Release.ActiveCfg = Release|Win32
+		{C908A4D6-1CB1-4557-9E3D-FEE3612BCA28}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
