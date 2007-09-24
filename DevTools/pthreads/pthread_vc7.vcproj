@@ -13,8 +13,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\."
-			IntermediateDirectory=".\."
+			OutputDirectory="$(ProjectDir)"
+			IntermediateDirectory="$(ProjectDir)"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -23,7 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="$(ProjectDir)"
 				PreprocessorDefinitions="__CLEANUP_C;WIN32;NDEBUG;_WINDOWS;_USRDLL;PTW32_BUILD"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -87,8 +87,8 @@ copy pthreadVC.dll ..\..\Dependencies\pthreads\lib\pthreadVC.dll /y
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\."
-			IntermediateDirectory=".\."
+			OutputDirectory="$(ProjectDir)"
+			IntermediateDirectory="$(ProjectDir)"
 			ConfigurationType="2"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -96,7 +96,7 @@ copy pthreadVC.dll ..\..\Dependencies\pthreads\lib\pthreadVC.dll /y
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="."
+				AdditionalIncludeDirectories="$(ProjectDir)"
 				PreprocessorDefinitions="__CLEANUP_C;WIN32;_DEBUG;_WINDOWS;_USRDLL;PTW32_BUILD"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
