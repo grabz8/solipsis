@@ -346,21 +346,29 @@ namespace NaviLibrary
 		/**
 		* Get the Proxy Auto Config parameters.
 		*
-		* @param	autoConfigURL	The URL of the autoconfig proxy.
-		*
 		* @param	proxyType		The proxy type.
+		*
+		* @param	proxyHttp	    The HTTP proxy host (for manual config).
+		*
+		* @param	proxyHttpPort	The HTTP proxy port (for manual config).
+		*
+		* @param	autoConfigURL	The URL of the autoconfig proxy (for auto-conf PAC).
 		*
 		* @return	If it succeeds, this will return results
 		*/
-		bool getPAC( std::string &autoConfigURL, int &proxyType );
+		bool getProxyConfig(int &proxyType, std::string &proxyHttp, int &proxyHttpPort, std::string &autoConfigURL);
 		/**
 		* Set the Proxy Auto Config parameters.
 		*
-		* @param	autoConfigURL	The URL of the autoconfig proxy.
-		*
 		* @param	proxyType		The proxy type.
+		*
+		* @param	proxyHttp	    The HTTP proxy host (for manual config).
+		*
+		* @param	proxyHttpPort	The HTTP proxy port (for manual config).
+		*
+		* @param	autoConfigURL	The URL of the autoconfig proxy (for auto-conf PAC).
 		*/
-		void setPAC(const std::string autoConfigURL, int proxyType);
+		void setProxyConfig(int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL);
 		// END GREG Proxy config addon
 
 		/**

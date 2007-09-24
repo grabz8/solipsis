@@ -31,7 +31,7 @@
 
 namespace NaviLibrary
 {
-	class NaviMouse
+    class NaviMouse : public Ogre::ManualResourceLoader
 	{
 		friend class NaviManager;
 		int mouseX, mouseY;
@@ -47,6 +47,11 @@ namespace NaviLibrary
 		void update();
 		NaviMouse();
 		~NaviMouse();
+    // BEGIN GREG mouse reload addon
+    protected:
+        void fillTransparent(Ogre::Texture* texture);
+        virtual void loadResource(Ogre::Resource* resource);
+    // END GREG mouse reload addon
 	public:
 		/**
 		* Creates a cursor for use with this NaviMouse.
