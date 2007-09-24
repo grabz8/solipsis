@@ -1,7 +1,7 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator.vcproj", "{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator_vc8.vcproj", "{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
