@@ -4,6 +4,10 @@
 #pragma once
 #endif
 
+#ifdef _DEBUG
+#define DEBUG_OVERLAY
+#endif
+
 #include "Ogre.h"
 #include "InputManager.h"
 #include "NaviManager.h"
@@ -12,7 +16,7 @@ class NaviDemo : public OIS::MouseListener, public OIS::KeyListener, public Ogre
 {
 	Ogre::RenderWindow* renderWin;
 	Ogre::SceneManager* sceneMgr;
-#ifdef _DEBUG
+#ifdef DEBUG_OVERLAY
 	Ogre::Overlay* dbgOverlay;
 	Ogre::OverlayElement* dbgText;
 #endif
@@ -37,6 +41,7 @@ public:
 	void hpChange(const NaviLibrary::NaviData &naviData);
 	void messageSent(const NaviLibrary::NaviData &naviData);
 	void itemEquipped(const NaviLibrary::NaviData &naviData);
+	void levelChanged(const NaviLibrary::NaviData &naviData);
 	
 	bool mouseMoved(const OIS::MouseEvent &arg);
 	bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
