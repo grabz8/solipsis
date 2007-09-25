@@ -84,3 +84,15 @@ Check into the Navigator project settings you set correctly the Debug/Working di
 Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navigator.exe
 (avoid to launch the Debug config, you will be too often prompted by Mozilla/LLMozLib assertions,
 they will be suppressed in the future)
+
+
+--------------------------------------------------------------------------------
+FORUMS LOGINS
+--------------------------------------------------------------------------------
+
+Navi
+url      http://navi.agelessanime.com/forum
+username g6r6e6g
+email    gregoryjan@free.fr
+password greg666
+
