@@ -22,9 +22,11 @@
 
 #include "Navi.h"
 #include "NaviUtilities.h"
+#include <OgreBitwise.h>
 
 using namespace Ogre;
 using namespace NaviLibrary;
+using namespace NaviLibrary::NaviUtilities;
 
 Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
 	unsigned short width, unsigned short height, bool isMovable, bool visible, unsigned int maxUpdatesPerSec, bool forceMaxUpdate, unsigned short zOrder, float _opacity)
@@ -54,8 +56,6 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	keyR = keyG = keyB = 255;
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
-	alphaCache = new unsigned char[naviWidth*naviHeight];
-	for(int i = 0; i < naviWidth*naviHeight; i++) alphaCache[i] = 255;
 	isMaterialOnly = false;
 	okayToDelete = false;
 	isVisible = visible;
@@ -65,6 +65,9 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	fadingIn = false;
 	fadingInStart = 0;
 	fadingInEnd = 0;
+	compensateNPOT = false;
+	texWidth = width;
+	texHeight = height;
 
 	createMaterial();
 	createOverlay(zOrder);
@@ -100,8 +103,6 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	keyR = keyG = keyB = 255;
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
-	alphaCache = new unsigned char[naviWidth*naviHeight];
-	for(int i = 0; i < naviWidth*naviHeight; i++) alphaCache[i] = 255;
 	isMaterialOnly = true;
 	okayToDelete = false;
 	isVisible = visible;
@@ -111,6 +112,9 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	fadingIn = false;
 	fadingInStart = 0;
 	fadingInEnd = 0;
+	compensateNPOT = false;
+	texWidth = width;
+	texHeight = height;
 
 	createMaterial(texFiltering);
 	createBrowser(renderWin, homepage);	
@@ -121,7 +125,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 
 Navi::~Navi()
 {
-	delete[] alphaCache;
+	delete[] naviCache;
 
 	WindowEventUtilities::removeWindowEventListener(renderWindow, this);
 
@@ -147,10 +151,12 @@ void Navi::createOverlay(unsigned short zOrder)
 {
 	OverlayManager& overlayManager = OverlayManager::getSingleton();
 
-	panel = static_cast<OverlayContainer*>(overlayManager.createOverlayElement("Panel", naviName + "Panel"));
+	panel = static_cast<PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", naviName + "Panel"));
 	panel->setMetricsMode(Ogre::GMM_PIXELS);
-	panel->setDimensions(naviWidth, naviHeight);
 	panel->setMaterialName(naviName + "Material");
+	panel->setDimensions(naviWidth, naviHeight);
+	if(compensateNPOT)
+		panel->setUV(0, 0, (Real)naviWidth/(Real)texWidth, (Real)naviHeight/(Real)texHeight);	
 	
 	overlay = overlayManager.create(naviName + "Overlay");
 	overlay->add2D(panel);
@@ -181,25 +187,45 @@ void Navi::createMaterial(Ogre::FilterOptions texFiltering)
 	if(opacity > 1) opacity = 1;
 	if(opacity < 0) opacity = 0;
 
+	if(!Bitwise::isPO2(naviWidth) || !Bitwise::isPO2(naviHeight))
+	{
+		if(Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
+		{
+			if(Root::getSingleton().getRenderSystem()->getCapabilities()->getNonPOW2TexturesLimited())
+				compensateNPOT = true;
+		}
+		else compensateNPOT = true;
+		
+		if(compensateNPOT)
+		{
+			texWidth = Bitwise::firstPO2From(naviWidth);
+			texHeight = Bitwise::firstPO2From(naviHeight);
+		}
+	}
+
 	// Create the texture
 	TexturePtr texture = TextureManager::getSingleton().createManual(
 		naviName + "Texture", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		TEX_TYPE_2D, naviWidth, naviHeight, 0, PF_BYTE_BGRA,
+		TEX_TYPE_2D, texWidth, texHeight, 0, PF_BYTE_BGRA,
 		TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, this);
 
 	HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
 	pixelBuffer->lock(HardwareBuffer::HBL_DISCARD);
 	const PixelBox& pixelBox = pixelBuffer->getCurrentLock();
+	texPixelSize = Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+	texPitch = (pixelBox.rowPitch*texPixelSize);
+
+	naviCache = new unsigned char[texHeight*texPitch];
 
 	uint8* pDest = static_cast<uint8*>(pixelBox.data);
 
 	// Fill the texture with a transparent color
-	for(size_t i = 0; i < (size_t)(naviHeight*naviWidth*4); i++)
+	for(size_t i = 0; i < (size_t)(texHeight*texPitch); i++)
 	{
-		if((i+1)%4)	
-			pDest[i] = 64; // B, G, R
+		if((i+1)%texPixelSize)	
+			pDest[i] = naviCache[i] = 64; // B, G, R
 		else 
-			pDest[i] = 0; // A
+			pDest[i] = naviCache[i] = 0; // A
 	}
 
 	pixelBuffer->unlock();
@@ -207,7 +233,7 @@ void Navi::createMaterial(Ogre::FilterOptions texFiltering)
 	MaterialPtr material = MaterialManager::getSingleton().create(naviName + "Material", 
 		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	material->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
-    material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
 
 	TextureUnitState* texUnit = material->getTechnique(0)->getPass(0)->createTextureUnitState(naviName + "Texture");
 
@@ -235,9 +261,11 @@ void Navi::setMask(std::string maskFileName, std::string groupName)
 		naviName + "MaskTexture", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 		maskImage, TEX_TYPE_2D, 0, 1, false, PF_BYTE_BGRA);
 
-	if(maskTexture->getWidth() < naviWidth || maskTexture->getHeight() < naviHeight)
+	if(maskTexture->getWidth() < texWidth || maskTexture->getHeight() < texHeight)
 		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Mask width and height must each be greater than or equal to the width and height of the Navi.", 
+			"Mask width and height must each be greater than or equal to the actual width and height of the Navi's internal texture. On certain videocards, the internal texture size is bumped up to the next highest Power-of-Two. Mask Dimensions: " + 
+			StringConverter::toString(maskTexture->getWidth()) + "x" + StringConverter::toString(maskTexture->getHeight()) + ", " +
+			"Texture Dimensions: " + StringConverter::toString(texWidth) + "x" + StringConverter::toString(texHeight),
 			"Navi::setMask");
 
 	needsUpdate = true;
@@ -287,40 +315,23 @@ void Navi::update()
 
 	TexturePtr texture = TextureManager::getSingleton().getByName(naviName + "Texture");
 	
-	uint8* copyDataBuffer = 0;
-
-	if(!(needsUpdate || forceMax))
-	{
-		// This is for fading, we don't want to make Gecko render more than it already has to
-		// thus, we make a copy of the existing buffer
-		HardwarePixelBufferSharedPtr copyBuffer = texture->getBuffer();
-		copyDataBuffer = new uint8[copyBuffer->getSizeInBytes()];
-		PixelBox copyPBox(copyBuffer->getWidth(), copyBuffer->getHeight(), copyBuffer->getDepth(), copyBuffer->getFormat(), copyDataBuffer);
-		copyBuffer->blitToMemory(copyPBox);
-		pixels = static_cast<uint8*>(copyPBox.data);
-	}
-
 	HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
 	pixelBuffer->lock(HardwareBuffer::HBL_DISCARD);
 	const PixelBox& pixelBox = pixelBuffer->getCurrentLock();
 
 	uint8* pDest = static_cast<uint8*>(pixelBox.data);
-	size_t wOffset = 0;
 
-	if(needsUpdate || forceMax)
-	{
-		// Derive the offset for any incongruencies with the Mozilla renderer
-		size_t actualWidth = LLMozLib::getInstance()->getBrowserRowSpan(windowID)/LLMozLib::getInstance()->getBrowserDepth(windowID);
-		if(actualWidth-naviWidth > 0) wOffset = (actualWidth-naviWidth)*4;
-	}
+	size_t browserPitch = LLMozLib::getInstance()->getBrowserRowSpan(windowID);
+	size_t browserDepth = LLMozLib::getInstance()->getBrowserDepth(windowID);
 	
-	size_t pitch = (naviWidth*4);
+	size_t destPixelSize = texPixelSize;
+	size_t pitch = texPitch;
 	
 	unsigned char B, G, R, A;
 
 	HardwarePixelBufferSharedPtr maskPBuffer;
 	uint8* maskData;
-	size_t maskWidth, mwOffset;
+	size_t maskPitch, maskDepth;
 	bool validMask = false;
 	int colDist = 0;
 	float tempOpa = 0;
@@ -332,16 +343,12 @@ void Navi::update()
 		if(!maskTexture.isNull())
 		{
 			maskPBuffer = maskTexture->getBuffer();
-
-			// Lock the Mask Texture pixel buffer and get a pixel box
 			maskPBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
 			const PixelBox& maskPBox = maskPBuffer->getCurrentLock();
 
 			maskData = static_cast<uint8*>(maskPBox.data);
-
-			maskWidth = maskTexture->getWidth();
-			mwOffset = 0;
-			if(maskWidth-naviWidth > 0) mwOffset = (maskWidth-naviWidth)*4;
+			maskDepth = PixelUtil::getNumElemBytes(maskPBox.format);
+			maskPitch = maskPBox.rowPitch*maskDepth;
 			validMask = true;
 		}
 	}
@@ -374,17 +381,18 @@ void Navi::update()
 
 	for(size_t y = 0; y < (size_t)naviHeight; y++)
 	{
-		for(size_t x = 0; x < pitch; x += 4)
-		{
+		for(size_t x = 0; x < naviWidth; x++)
+		{	
 			if(needsUpdate || forceMax)
 			{
-				B = pixels[(y*pitch)+(y*wOffset)+x]; //blue
-				G = pixels[(y*pitch)+(y*wOffset)+x+1]; //green
-				R = pixels[(y*pitch)+(y*wOffset)+x+2]; // red
+				size_t srcx = x * browserDepth;
+				B = pixels[(y*browserPitch)+srcx]; //blue
+				G = pixels[(y*browserPitch)+srcx+1]; //green
+				R = pixels[(y*browserPitch)+srcx+2]; // red
 				A = 255 * opacity; //alpha
 
 				if(validMask)
-					A = maskData[(y*pitch)+(y*mwOffset)+x+3] * opacity;
+					A = maskData[(y*maskPitch)+(x*maskDepth)+3] * opacity;
 
 				if(usingColorKeying)
 				{
@@ -400,7 +408,7 @@ void Navi::update()
 					}
 					else
 					{
-						colDist = colorDistanceRGB(keyR, keyG, keyB, R, G, B);
+						colDist = abs((int)keyR - (int)R) + abs((int)keyG - (int)G) + abs((int)keyB - (int)B);
 						if(colDist < (keyFuzziness * 400))
 						{
 							R = keyFillR;
@@ -412,33 +420,27 @@ void Navi::update()
 						}
 					}
 				}
+
+				size_t destx = x * destPixelSize;
+				pDest[y*pitch+destx] = naviCache[y*pitch+destx] = B;
+				pDest[y*pitch+destx+1] = naviCache[y*pitch+destx+1] = G;
+				pDest[y*pitch+destx+2] = naviCache[y*pitch+destx+2] = R;
+				pDest[y*pitch+destx+3] = A * fadeMod;
+				naviCache[y*pitch+destx+3] = A;
 			}
 			else
 			{
-				// Get values from copied data
-				B = pixels[(y*pitch)+x]; //blue
-				G = pixels[(y*pitch)+x+1]; //green
-				R = pixels[(y*pitch)+x+2]; // red
-				A = alphaCache[y*naviWidth+(x/4)];  //alpha
+				size_t destx = x * destPixelSize;
+				pDest[y*pitch+destx] = naviCache[y*pitch+destx];
+				pDest[y*pitch+destx+1] = naviCache[y*pitch+destx+1];
+				pDest[y*pitch+destx+2] = naviCache[y*pitch+destx+2];
+				pDest[y*pitch+destx+3] = naviCache[y*pitch+destx+3] * fadeMod;
 			}
-
-			pDest[y*pitch+x] = B;
-			pDest[y*pitch+x+1] = G;
-			pDest[y*pitch+x+2] = R;
-			pDest[y*pitch+x+3] = A * fadeMod;
-
-			alphaCache[y*naviWidth+(x/4)] = A;
 		}
 	}
 
-	if(validMask)
-		maskPBuffer->unlock();
-
-			
+	if(validMask) maskPBuffer->unlock();
 	pixelBuffer->unlock();
-
-	if(!(needsUpdate || forceMax))
-		delete[] copyDataBuffer;
 
 	needsUpdate = false;
 	lastUpdateTime = timer.getMilliseconds();
@@ -450,8 +452,8 @@ void Navi::loadResource(Resource* resource)
 	Texture *tex = static_cast<Texture*>(resource); 
 
 	tex->setTextureType(TEX_TYPE_2D);
-	tex->setWidth(naviWidth);
-	tex->setHeight(naviHeight);
+	tex->setWidth(texWidth);
+	tex->setHeight(texHeight);
 	tex->setNumMipmaps(0);
 	tex->setFormat(PF_BYTE_BGRA);
 	tex->setUsage(TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
@@ -463,7 +465,7 @@ void Navi::loadResource(Resource* resource)
 
 void Navi::moveNavi(int deltaX, int deltaY)
 {
-	if(movable)
+	if(movable && !isMaterialOnly)
 		panel->setPosition(panel->getLeft()+deltaX, panel->getTop()+deltaY);
 }
 
@@ -474,12 +476,12 @@ void Navi::navigateTo(std::string url)
 	LLMozLib::getInstance()->navigateTo(windowID, url);
 }
 
-void Navi::navigateTo(std::string url, const NaviData &naviData)
+void Navi::navigateTo(std::string url, NaviData naviData)
 {
 	std::string suffix = "";
 
 	if(naviData.getName().length())
-		suffix = "?" + naviData.getName() + "?" + naviData.dataString;
+		suffix = "?" + naviData.getName() + "?" + naviData.toQueryString();
 
 	translateLocalProtocols(url);
 	LLMozLib::getInstance()->navigateTo(windowID, url + suffix);
@@ -522,13 +524,17 @@ void Navi::removeEventListener(NaviEventListener* removeListener)
 	}
 }
 
-void Navi::bindNaviData(const std::string &naviDataName, const NaviDelegate &callback)
+void Navi::bind(const std::string &naviDataName, const NaviDelegate &callback, const std::vector<std::string> &keys)
 {
 	if(callback.empty() || naviDataName.empty()) return;
-		delegateMap.insert(std::pair<std::string, NaviDelegate>(naviDataName, callback));
+	
+	delegateMap.insert(std::pair<std::string, NaviDelegate>(naviDataName, callback));
+
+	if(keys.size())
+		ensureKeysMap[naviDataName] = keys;
 }
 
-void Navi::unbindNaviData(const std::string &naviDataName, const NaviDelegate &callback)
+void Navi::unbind(const std::string &naviDataName, const NaviDelegate &callback)
 {
 	if(delegateMap.empty()) return;
 	dmBounds = delegateMap.equal_range(naviDataName);
@@ -549,6 +555,9 @@ void Navi::unbindNaviData(const std::string &naviDataName, const NaviDelegate &c
 			else delegateIter++;
 		}
 	}
+
+	if(!delegateMap.count(naviDataName))
+		ensureKeysMap.erase(naviDataName);
 }
 
 void Navi::setBackgroundColor(float red, float green, float blue)
@@ -699,15 +708,11 @@ void Navi::setDefaultPosition()
 
 void Navi::hide(bool fade, unsigned short fadeDurationMS)
 {
-	if(!isVisible) return;
-
 	if(fadingIn || fadingOut)
 	{
-		fadingInStart = 0;
-		fadingInEnd = 0;
+		fadingInStart = fadingInEnd = 0;
 		fadingIn = false;
-		fadingOutStart = 0;
-		fadingOutEnd = 0;
+		fadingOutStart = fadingOutEnd = 0;
 		fadingOut = false;
 	}
 
@@ -720,20 +725,17 @@ void Navi::hide(bool fade, unsigned short fadeDurationMS)
 	else
 	{
 		if(!isMaterialOnly) overlay->hide();
+		isVisible = false;
 	}
 }
 
 void Navi::show(bool fade, unsigned short fadeDurationMS)
 {
-	if(isVisible) return;
-
 	if(fadingIn || fadingOut)
 	{
-		fadingInStart = 0;
-		fadingInEnd = 0;
+		fadingInStart = fadingInEnd = 0;
 		fadingIn = false;
-		fadingOutStart = 0;
-		fadingOutEnd = 0;
+		fadingOutStart = fadingOutEnd = 0;
 		fadingOut = false;
 	}
 
@@ -743,7 +745,8 @@ void Navi::show(bool fade, unsigned short fadeDurationMS)
 		fadingInEnd = timer.getMilliseconds() + fadeDurationMS + 1; // The +1 is to avoid division by 0 later
 		fadingIn = true;
 	}
-	
+	else needsUpdate = true;
+
 	isVisible = true;
 	if(!isMaterialOnly) overlay->show();
 }
@@ -821,7 +824,7 @@ bool Navi::isPointOpaqueEnough(int x, int y)
 	if(!ignoringTrans)
 		return true;
 
-	return alphaCache[y*naviWidth+x] > (255*transparent);
+	return naviCache[y*texPitch+x*texPixelSize+(texPixelSize-1)] > 255*transparent;
 }
 
 int Navi::getRelativeX(int absX)
@@ -835,6 +838,11 @@ int Navi::getRelativeX(int absX)
 		left = (winWidth/2)-(naviWidth/2) + position.data.rel.x;
 	else if(panel->getHorizontalAlignment()==GHA_RIGHT)
 		left = winWidth - naviWidth + position.data.rel.x;
+
+	if(absX - left < 0)
+		return 0;
+	else if(naviWidth - 1 < absX - left)
+		return naviWidth - 1;
 
 	return absX - left;
 }
@@ -850,6 +858,11 @@ int Navi::getRelativeY(int absY)
 		top = (winHeight/2)-(naviHeight/2) + position.data.rel.y;
 	else if(panel->getVerticalAlignment()==GVA_BOTTOM)
 		top = winHeight - naviHeight + position.data.rel.y;
+
+	if(absY - top < 0)
+		return 0;
+	else if(naviHeight - 1 < absY - top)
+		return naviHeight - 1;
 	
 	return absY - top;
 }
@@ -857,35 +870,29 @@ int Navi::getRelativeY(int absY)
 void Navi::onStatusTextChange(const EventType& eventIn)
 {
 	std::string statusMsg = eventIn.getStringValue();
-	if(statusMsg.substr(0, 10) == "NAVI_DATA:")
+
+	if(isPrefixed(statusMsg, "NAVI_DATA:", false))
 	{
-		std::string naviDataStr = statusMsg.substr(10);
-		std::string naviDataName = "";
-		size_t idx = naviDataStr.find_first_of("?");
-		size_t endIdx;
-		if(idx != std::string::npos)
+		std::vector<std::string> stringVector = split(statusMsg, "?", false);
+		if(stringVector.size() == 3)
 		{
-			idx++;
-			endIdx = naviDataStr.find_first_of("?", idx);
-			if(endIdx != std::string::npos)
+			NaviData naviDataEvent(stringVector[1], stringVector[2]);
+
+			if(!eventListeners.empty())
+				for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); nel++)
+					(*nel)->onNaviDataEvent(naviName, naviDataEvent);
+
+			if(!delegateMap.empty())
 			{
-				naviDataName = naviDataStr.substr(idx, endIdx-1);
-				naviDataStr = naviDataStr.substr(endIdx+1);
-				NaviData naviDataEvent(naviDataName, naviDataStr);
+				ensureKeysMapIter = ensureKeysMap.find(stringVector[1]);
+				if(ensureKeysMapIter != ensureKeysMap.end())
+					naviDataEvent.ensure(ensureKeysMapIter->second);
 
-				if(!eventListeners.empty())
-					for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); nel++)
-						(*nel)->onNaviDataEvent(naviName, naviDataEvent);
-
-				if(!delegateMap.empty())
-				{
-					dmBounds = delegateMap.equal_range(naviDataName);
-					for(delegateIter = dmBounds.first; delegateIter != dmBounds.second; delegateIter++)
-						delegateIter->second(naviDataEvent);
-				}
+				dmBounds = delegateMap.equal_range(stringVector[1]);
+				for(delegateIter = dmBounds.first; delegateIter != dmBounds.second; delegateIter++)
+					delegateIter->second(naviDataEvent);
 			}
 		}
-		
 	}
 }
 
