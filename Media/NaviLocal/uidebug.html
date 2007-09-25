@@ -1,15 +1,14 @@
 <html>
     <head>
-        <script type="text/javascript" src="mootools.v1.1.js"></script>
         <script type="text/javascript" src="Navi.js"></script>
         <script type="text/javascript">
             function pageLoaded()
             {
                 new NaviData('pageRefresh').send();
             }
-            function debugCommand(cmd, params)
+            function debugCommand(command, parameters)
             {
-                new NaviData('debugCommand').add('cmd', cmd).add('params', params).send();
+                new NaviData('debugCommand').add({cmd:command}).add({params:parameters}).send();
             }
         </script>
         <style type="text/css">

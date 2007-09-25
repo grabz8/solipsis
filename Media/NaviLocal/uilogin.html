@@ -1,6 +1,5 @@
 <html>
     <head>
-        <script type="text/javascript" src="mootools.v1.1.js"></script>
         <script type="text/javascript" src="Navi.js"></script>
         <script type="text/javascript">
             function pageLoaded()
@@ -14,7 +13,7 @@
             {
                 var naviData = new NaviData(buttonName);
                 if (buttonName == 'connect')
-                    naviData.add('login', document.getElementById("inputLogin").value);
+                    naviData.add({login:document.getElementById("inputLogin").value});
                 naviData.send();
             }
         </script>

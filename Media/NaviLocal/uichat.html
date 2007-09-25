@@ -1,18 +1,17 @@
 <html>
     <head>
-        <script type="text/javascript" src="mootools.v1.1.js"></script>
         <script type="text/javascript" src="Navi.js"></script>
         <script type="text/javascript">
             function pageLoaded()
             {
                 new NaviData('pageRefresh').send();
                 // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
-                new NaviData('debugCommand').add('cmd', 'testEvt').add('params', 'peerNew').send();
-                new NaviData('debugCommand').add('cmd', 'demoNavi2').send();
+                new NaviData('debugCommand').add({cmd:'testEvt'}).add({params:'peerNew'}).send();
+                new NaviData('debugCommand').add({cmd:'demoNavi2'}).send();
             }
-            function sendMessage(msg)
+            function sendMessage(message)
             {
-                new NaviData('sendMessage').add('msg', msg).send();
+                new NaviData('sendMessage').add({msg:message}).send();
             }
         </script>
         <style type="text/css">
