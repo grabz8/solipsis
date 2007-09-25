@@ -67,7 +67,7 @@ void NavigatorGUI::inWorld()
     if (mNavisStates[NAVI_CHAT] == NSNotCreated)
     {
         // Create Navi UI chat
-        mNaviMgr.createNavi(mNavisNames[NAVI_CHAT], "local://uichat.html", NaviPosition(TopLeft), 400, 32, true, false);
+        mNaviMgr.createNavi(mNavisNames[NAVI_CHAT], "local://uichat.html", NaviPosition(TopLeft), 512, 64, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_CHAT], "uichat.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_CHAT], 0.75f);
 	    mNaviMgr.bind(mNavisNames[NAVI_CHAT], "pageRefresh", NaviDelegate(this, &NavigatorGUI::chatPageRefresh));
