@@ -29,8 +29,6 @@
 #include "NaviManager.h"
 #include <llmozlib.h>
 
-struct NaviCompare;
-
 namespace NaviLibrary
 {
 	/**
@@ -52,7 +50,7 @@ namespace NaviLibrary
 		bool movable;
 		int windowID;
 		Ogre::Overlay* overlay;
-		Ogre::OverlayContainer* panel;
+		Ogre::PanelOverlayElement* panel;
 		bool needsUpdate;
 		unsigned int maxUpdatePS;
 		bool forceMax;
@@ -67,12 +65,14 @@ namespace NaviLibrary
 		unsigned char keyR, keyG, keyB;
 		float keyFOpacity;
 		unsigned char keyFillR, keyFillG, keyFillB;
-		unsigned char* alphaCache;
+		unsigned char* naviCache;
 		bool isMaterialOnly;
 		std::vector<NaviEventListener*> eventListeners;
 		std::multimap<std::string, NaviDelegate> delegateMap;
 		std::multimap<std::string, NaviDelegate>::iterator delegateIter;
 		std::pair<std::multimap<std::string, NaviDelegate>::iterator, std::multimap<std::string, NaviDelegate>::iterator> dmBounds;
+		std::map<std::string, std::vector<std::string>> ensureKeysMap;
+		std::map<std::string, std::vector<std::string>>::iterator ensureKeysMapIter;
 		bool okayToDelete;
 		bool isVisible;
 		bool fadingOut;
@@ -81,6 +81,11 @@ namespace NaviLibrary
 		bool fadingIn;
 		unsigned long fadingInStart;
 		unsigned long fadingInEnd;
+		bool compensateNPOT;
+		unsigned short texWidth;
+		unsigned short texHeight;
+		size_t texPixelSize;
+		size_t texPitch;
 
 
 		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
@@ -107,7 +112,7 @@ namespace NaviLibrary
 
 		void navigateTo(std::string url);
 
-		void navigateTo(std::string url, const NaviData &naviData);
+		void navigateTo(std::string url, NaviData naviData);
 
 		std::string evaluateJS(const std::string &script);
 
@@ -115,9 +120,9 @@ namespace NaviLibrary
 
 		void removeEventListener(NaviEventListener* removeListener);
 
-		void bindNaviData(const std::string &naviDataName, const NaviDelegate &callback);
+		void bind(const std::string &naviDataName, const NaviDelegate &callback, const std::vector<std::string> &keys);
 
-		void unbindNaviData(const std::string &naviDataName, const NaviDelegate &callback = NaviDelegate());
+		void unbind(const std::string &naviDataName, const NaviDelegate &callback = NaviDelegate());
 
 		void setBackgroundColor(float red, float green, float blue);
 

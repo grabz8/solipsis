@@ -670,7 +670,7 @@ private:	// Invoker for static functions
 class NaviData;
 
 /*
-* Functions assigned to a NaviDelegate must return a 'void' and have one argument: 'const NaviData &naviData'
+* Functions assigned to a NaviDelegate must return a 'void' and have one argument: 'NaviData naviData'
 *
 * Member function instantiation example: NaviDelegate(this, &MyClass::myMemberFunction)
 * Member function instantiation example: NaviDelegate(pointerToSexyClass, &SexyClass::mySexyFunction)

@@ -31,7 +31,16 @@
 
 namespace NaviLibrary
 {
-    class NaviMouse : public Ogre::ManualResourceLoader
+	/**
+	* A simple little class that displays a mouse cursor using an Ogre Overlay that follows
+	* the mouse coordinates that are injected into NaviManager.
+	*
+	* @note	You should instantiate this class via NaviManager::StartupMouse.
+	*/
+	// BEGIN GREG mouse reload addon
+//	class NaviMouse
+	class NaviMouse : public Ogre::ManualResourceLoader
+	// END GREG mouse reload addon
 	{
 		friend class NaviManager;
 		int mouseX, mouseY;
@@ -40,18 +49,16 @@ namespace NaviLibrary
 		std::map<std::string, NaviCursor*> cursors;
 		NaviCursor* activeCursor;
 		std::string defaultCursorName;
-        // BEGIN GREG mouse visibility addon
-        bool visible;
-        // END GREG mouse visibility addon
-        void move(int x, int y);
+		bool visible;
+		void move(int x, int y);
 		void update();
-		NaviMouse();
+		NaviMouse(bool visibility);
 		~NaviMouse();
-    // BEGIN GREG mouse reload addon
-    protected:
-        void fillTransparent(Ogre::Texture* texture);
-        virtual void loadResource(Ogre::Resource* resource);
-    // END GREG mouse reload addon
+	// BEGIN GREG mouse reload addon
+	protected:
+		void fillTransparent(Ogre::Texture* texture);
+		virtual void loadResource(Ogre::Resource* resource);
+	// END GREG mouse reload addon
 	public:
 		/**
 		* Creates a cursor for use with this NaviMouse.
@@ -89,15 +96,16 @@ namespace NaviLibrary
 		*/
 		void activateCursor(std::string cursorName);
 
-        // BEGIN GREG mouse visibility addon
 		/**
-		* Changes visibility of the cursor.
-		*
-		* @param	visible 	The visibility state.
+		* Displays the mouse cursor (if it is hidden via NaviMouse::hide).
 		*/
-        void NaviMouse::setVisibility(bool visible);
-        // END GREG mouse visibility addon
-    };
+		void show();
+
+		/**
+		* Hides the mouse cursor. Show it again via NaviMouse::show.
+		*/
+		void hide();
+	};
 
 }
 
