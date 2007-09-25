@@ -44,12 +44,12 @@ void NavigatorGUI::login()
         mNaviMgr.createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300, false, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_LOGIN], "uilogin.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_LOGIN], 0.75f);
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_LOGIN], "pageRefresh", NaviDelegate(this, &NavigatorGUI::loginPageRefresh));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_LOGIN], "connect", NaviDelegate(this, &NavigatorGUI::connect));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_LOGIN], "options", NaviDelegate(this, &NavigatorGUI::options));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_LOGIN], "quit", NaviDelegate(this, &NavigatorGUI::quit));
+        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "pageRefresh", NaviDelegate(this, &NavigatorGUI::loginPageRefresh));
+	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "connect", NaviDelegate(this, &NavigatorGUI::connect));
+	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "options", NaviDelegate(this, &NavigatorGUI::options));
+	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "quit", NaviDelegate(this, &NavigatorGUI::quit));
 #ifdef UIDEBUG
-        mNaviMgr.bindNaviData(mNavisNames[NAVI_LOGIN], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_LOGIN] = NSLoaded;
     }
@@ -70,10 +70,10 @@ void NavigatorGUI::inWorld()
         mNaviMgr.createNavi(mNavisNames[NAVI_CHAT], "local://uichat.html", NaviPosition(TopLeft), 400, 32, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_CHAT], "uichat.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_CHAT], 0.75f);
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_CHAT], "pageRefresh", NaviDelegate(this, &NavigatorGUI::chatPageRefresh));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_CHAT], "sendMessage", NaviDelegate(this, &NavigatorGUI::sendMessage));
+	    mNaviMgr.bind(mNavisNames[NAVI_CHAT], "pageRefresh", NaviDelegate(this, &NavigatorGUI::chatPageRefresh));
+	    mNaviMgr.bind(mNavisNames[NAVI_CHAT], "sendMessage", NaviDelegate(this, &NavigatorGUI::sendMessage));
 #ifdef UIDEBUG
-        mNaviMgr.bindNaviData(mNavisNames[NAVI_CHAT], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr.bind(mNavisNames[NAVI_CHAT], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_CHAT] = NSLoaded;
     }
@@ -85,7 +85,10 @@ void NavigatorGUI::inWorld()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::SetMouseVisibility(bool visible)
 {
-    mNaviMgr.getMouse()->setVisibility(visible);
+    if (visible)
+        mNaviMgr.getMouse()->show();
+    else
+        mNaviMgr.getMouse()->hide();
 }
 
 //-------------------------------------------------------------------------------------
@@ -124,7 +127,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
 
     // Get login name
 	std::string login;
-	naviData.get("login", login, true);
+    login = naviData["login"].str();
     LogManager::getSingletonPtr()->logMessage("login=" + (String)(login.c_str()));
 
     // Check
@@ -158,11 +161,11 @@ void NavigatorGUI::options(const NaviData& naviData)
         mNaviMgr.createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400, false, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_OPTIONS], "uioptions.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_OPTIONS], 0.75f);
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_OPTIONS], "pageRefresh", NaviDelegate(this, &NavigatorGUI::optionsPageRefresh));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_OPTIONS], "ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
-	    mNaviMgr.bindNaviData(mNavisNames[NAVI_OPTIONS], "back", NaviDelegate(this, &NavigatorGUI::optionsBack));
+	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "pageRefresh", NaviDelegate(this, &NavigatorGUI::optionsPageRefresh));
+	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
+	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "back", NaviDelegate(this, &NavigatorGUI::optionsBack));
 #ifdef UIDEBUG
-        mNaviMgr.bindNaviData(mNavisNames[NAVI_OPTIONS], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_OPTIONS] = NSLoaded;
     }
@@ -245,19 +248,19 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     int udpPort;
 	std::string host;
     int port;
-  	naviData.get("radioNode", radioNode, true);
-  	naviData.get("udpPort", udpPort, true);
-   	naviData.get("host", host, true);
-   	naviData.get("port", port, true);
+    radioNode = naviData["radioNode"].str();
+    udpPort = naviData["udpPort"].toInt();
+    host = naviData["host"].str();
+    port = naviData["port"].toInt();
     LogManager::getSingletonPtr()->logMessage("radioNode=" + (String)(radioNode.c_str()) + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + (String)(host.c_str()) + ", port=" + StringConverter::toString(port));
     std::string radioProxyType;
 	std::string proxyHttpHost;
     int proxyHttpPort;
 	std::string proxyAutoconfUrl;
-  	naviData.get("radioProxyType", radioProxyType, true);
-   	naviData.get("proxyHttpHost", proxyHttpHost, true);
-   	naviData.get("proxyHttpPort", proxyHttpPort, true);
-   	naviData.get("proxyAutoconfUrl", proxyAutoconfUrl, true);
+    radioProxyType = naviData["radioProxyType"].str();
+    proxyHttpHost = naviData["proxyHttpHost"].str();
+    proxyHttpPort = naviData["proxyHttpPort"].toInt();
+    proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
     LogManager::getSingletonPtr()->logMessage("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
 
     // Check
@@ -378,7 +381,7 @@ void NavigatorGUI::sendMessage(const NaviData& naviData)
 
     // Get message to send
     std::string msg;
-  	naviData.get("msg", msg, true);
+    msg = naviData["msg"].str();
     LogManager::getSingletonPtr()->logMessage("msg=" + (String)(msg.c_str()));
 
     // Set current values
@@ -398,8 +401,8 @@ void NavigatorGUI::switchDebug()
         mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 256, 256, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_DEBUG], "uidebug.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_DEBUG], 0.50f);
-        mNaviMgr.bindNaviData(mNavisNames[NAVI_DEBUG], "pageRefresh", NaviDelegate(this, &NavigatorGUI::debugPageRefresh));
-        mNaviMgr.bindNaviData(mNavisNames[NAVI_DEBUG], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageRefresh", NaviDelegate(this, &NavigatorGUI::debugPageRefresh));
+        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
         mNavisStates[NAVI_DEBUG] = NSLoaded;
     }
     else
@@ -434,8 +437,8 @@ void NavigatorGUI::debugCommand(const NaviData& naviData)
     // Get message to send
     std::string cmd;
     std::string params;
-  	naviData.get("cmd", cmd, true);
-  	naviData.get("params", params, true);
+    cmd = naviData["cmd"].str();
+    params = naviData["params"].str();
     LogManager::getSingletonPtr()->logMessage("cmd=" + (String)(cmd.c_str()) + ", params=" + (String)(params.c_str()));
 
     // Push debug command
