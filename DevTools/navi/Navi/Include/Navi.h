@@ -71,8 +71,13 @@ namespace NaviLibrary
 		std::multimap<std::string, NaviDelegate> delegateMap;
 		std::multimap<std::string, NaviDelegate>::iterator delegateIter;
 		std::pair<std::multimap<std::string, NaviDelegate>::iterator, std::multimap<std::string, NaviDelegate>::iterator> dmBounds;
-		std::map<std::string, std::vector<std::string>> ensureKeysMap;
-		std::map<std::string, std::vector<std::string>>::iterator ensureKeysMapIter;
+// BEGIN GREG updates for VC7
+//		std::map<std::string, std::vector<std::string>> ensureKeysMap;
+//		std::map<std::string, std::vector<std::string>>::iterator ensureKeysMapIter;
+		typedef std::vector<std::string> t_string_vector;
+		std::map<std::string, t_string_vector> ensureKeysMap;
+		std::map<std::string, t_string_vector>::iterator ensureKeysMapIter;
+// END GREG updates for VC7
 		bool okayToDelete;
 		bool isVisible;
 		bool fadingOut;
