@@ -47,7 +47,7 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug runtimes files..."
+				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;$(TargetDir)\components\&quot; xcopy &quot;$(SolutionDir)..\..\Dependencies\llmozlib\win32_vc7\runtime\Debug\*.*&quot; &quot;$(TargetDir)&quot; /s /y
 if not exist &quot;$(TargetDir)\OgreMain_d.dll&quot; xcopy &quot;$(OGRE_HOME)\Samples\Common\bin\Debug\*.dll&quot; &quot;$(TargetDir)&quot; /s /y
 if not exist &quot;$(TargetDir)\NaviLocal\&quot; xcopy &quot;$(ProjectDir)Bin\Build-Common\*.*&quot; &quot;$(TargetDir)&quot; /s /y
@@ -105,7 +105,7 @@ if not exist &quot;$(TargetDir)\quake3settings.cfg&quot; xcopy &quot;$(OGRE_HOME
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release runtimes files..."
+				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;$(TargetDir)\components\&quot; xcopy &quot;$(SolutionDir)..\..\Dependencies\llmozlib\win32_vc7\runtime\Release\*.*&quot; &quot;$(TargetDir)&quot; /s /y
 if not exist &quot;$(TargetDir)\OgreMain_d.dll&quot; xcopy &quot;$(OGRE_HOME)\Samples\Common\bin\Release\*.dll&quot; &quot;$(TargetDir)&quot; /s /y
 if not exist &quot;$(TargetDir)\NaviLocal\&quot; xcopy &quot;$(ProjectDir)Bin\Build-Common\*.*&quot; &quot;$(TargetDir)&quot; /s /y
