@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;NSHADOWS;PHYSICS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="1"
 				RuntimeLibrary="3"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;NSHADOWS;PHYSICS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
