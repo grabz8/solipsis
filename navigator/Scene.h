@@ -9,6 +9,7 @@ class Scene : public OgrePeer
 {
 protected:
     SceneNode* mSceneNode;
+    StaticGeometry* mStaticGeometry;
     RaySceneQuery* mRaySceneQuery;
 
 public:
@@ -19,6 +20,12 @@ public:
     SceneNode* getSceneNode();
 
     virtual void update(Ogre::Real timeSinceLastFrame);
+
+protected:
+    void destroy();
+    void convertToStaticGeometry();
+    void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
+
 };
 
 #endif // #ifndef __Scene_h__
