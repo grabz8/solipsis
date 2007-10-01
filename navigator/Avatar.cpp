@@ -38,7 +38,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* 
     mNameLabel->setCharacterHeight(6);
     mNameLabel->setColor(Ogre::ColourValue::White);
     mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
-    Real aabbHeightDiv2 = entity->getBoundingBox().getSize().y*0.5;
+    Real aabbHeightDiv2 = entity->getBoundingBox().getHalfSize().y;
     Real scale = mSceneNode->getScale().y;
     mNameLabel->setAdditionalHeight(aabbHeightDiv2*(1 + scale));
     mSceneNode->attachObject(mNameLabel);
@@ -89,14 +89,11 @@ void Avatar::setGravity(bool enabled) {
 //-------------------------------------------------------------------------------------
 void Avatar::setState(State state)
 {
+    LogManager::getSingletonPtr()->logMessage("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
+    if (mStateAnimName[mState].length() > 0)
+        stopAnimation();
     if (mStateAnimName[state].length() > 0)
         startAnimation(mStateAnimName[state]);
-    else if (mStateAnimName[mState].length() > 0)
-    {
-        mAnimationState = mEntity->getAnimationState(mStateAnimName[mState]);
-        mAnimationState->setLoop(false);
-        mAnimationState->setEnabled(false);
-    }
     mState = state;
 }
 
@@ -139,6 +136,14 @@ void Avatar::startAnimation(const String &name, bool loop)
 }
 
 //-------------------------------------------------------------------------------------
+void Avatar::stopAnimation()
+{
+    mAnimationState = mEntity->getAnimationState(mStateAnimName[mState]);
+    mAnimationState->setLoop(false);
+    mAnimationState->setEnabled(false);
+}
+
+//-------------------------------------------------------------------------------------
 void Avatar::animate(Ogre::Real timeSinceLastFrame)
 {
     Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
@@ -147,16 +152,16 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
     Real frontBackMvt;
     Real leftRightMvt;
     Real upDownMvt;
-    State nextState = SIdle;
+    State nextState = mState;
     Real animOffset = 0;
 
     mUpKeyMotion.update(timeSinceLastFrame);
     mDownKeyMotion.update(timeSinceLastFrame);
     frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
     mSceneNode->translate(vpn*frontBackMvt*timeSinceLastFrame);
-    if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED/2) && (mState != SWalk))
+    if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
         nextState = SWalk;
-    if ((Math::Abs(frontBackMvt) > MAX_SPEED/2) && (mState != SRun))
+    if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
         nextState = SRun;
 
     mLeftKeyMotion.update(timeSinceLastFrame);
@@ -181,20 +186,22 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
     mPgdownKeyMotion.update(timeSinceLastFrame);
     upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
     mSceneNode->translate(vup*upDownMvt*timeSinceLastFrame);
-//    if ((Math::Abs(upDownMvt) > MAX_SPEED/2) && (mState != SFly))
+//    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
 //        nextState = SFly;
-
-    if (mState != nextState)
-        setState(nextState);
 
     if ((mState == SWalk) || (mState == SRun))
         if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
             animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
-        else
+        else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)
             animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+        else
+            nextState = SIdle;
     else
         animOffset = timeSinceLastFrame;
     mAnimationState->addTime(animOffset);
+
+    if (mState != nextState)
+        setState(nextState);
 
     if (mGravity && (mRaySceneQuery != 0))
     {
@@ -289,225 +296,3 @@ void Avatar::movementKeyReleased(OIS::KeyCode code)
        break;
     }
 }
-
-/*
-//-------------------------------------------------------------------------------------
-// raycast from a point in to the scene.
-// returns success or failure.
-// on success the point is returned in the result.
-bool Avatar::RaycastFromPoint(Ray& ray,
-                              RaySceneQueryResult& query_result,
-                              String& entity_name,
-                              Vector3& result)
-{
-    // at this point we have raycast to a series of different objects bounding boxes.
-    // we need to test these different objects to see which is the first polygon hit.
-    // there are some minor optimizations (distance based) that mean we wont have to
-    // check all of the objects most of the time, but the worst case scenario is that
-    // we need to test every triangle of every object.
-    Ogre::Real closest_distance = -1.0f;
-    Ogre::Vector3 closest_result;
-    for (size_t qr_idx = 0; qr_idx < query_result.size(); qr_idx++)
-    {
-        // stop checking if we have found a raycast hit that is closer
-        // than all remaining entities
-        if ((closest_distance >= 0.0f) &&
-            (closest_distance < query_result[qr_idx].distance))
-        {
-             break;
-        }
-       
-        // only check this result if its a hit against an entity
-        if ((query_result[qr_idx].movable != NULL) &&
-            (query_result[qr_idx].movable->getMovableType().compare("Entity") == 0) &&
-            (static_cast<Ogre::Entity*>(query_result[qr_idx].movable)->getName().compare(entity_name) == 0))
-        {
-            // get the entity to check
-            Ogre::Entity *pentity = static_cast<Ogre::Entity*>(query_result[qr_idx].movable);           
-
-            // mesh data to retrieve         
-            size_t vertex_count;
-            size_t index_count;
-            Ogre::Vector3 *vertices;
-            unsigned long *indices;
-
-            // get the mesh information
-            GetMeshInformation(pentity->getMesh(), vertex_count, vertices, index_count, indices,             
-                              pentity->getParentNode()->getWorldPosition(),
-                              pentity->getParentNode()->getWorldOrientation(),
-                              pentity->getParentNode()->getScale());
-
-            // test for hitting individual triangles on the mesh
-            bool new_closest_found = false;
-            for (int i = 0; i < static_cast<int>(index_count); i += 3)
-            {
-                // check for a hit against this triangle
-                std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(ray, vertices[indices[i]],
-                    vertices[indices[i+1]], vertices[indices[i+2]], true, false);
-
-                // if it was a hit check if its the closest
-                if (hit.first)
-                {
-                    if ((closest_distance < 0.0f) ||
-                        (hit.second < closest_distance))
-                    {
-                        // this is the closest so far, save it off
-                        closest_distance = hit.second;
-                        new_closest_found = true;
-                    }
-                }
-            }
-
-         // free the verticies and indicies memory
-            delete[] vertices;
-            delete[] indices;
-
-            // if we found a new closest raycast for this object, update the
-            // closest_result before moving on to the next object.
-            if (new_closest_found)
-            {
-                closest_result = ray.getPoint(closest_distance);               
-            }
-        }       
-    }
-
-    // return the result
-    if (closest_distance >= 0.0f)
-    {
-        // raycast success
-        result = closest_result.x;
-        return (true);
-    }
-    else
-    {
-        // raycast failed
-        return (false);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-// Get the mesh information for the given mesh.
-// Code found on this forum link: http://www.ogre3d.org/wiki/index.php/RetrieveVertexData
-void Avatar::GetMeshInformation(const Ogre::MeshPtr mesh,
-                                size_t &vertex_count,
-                                Ogre::Vector3* &vertices,
-                                size_t &index_count,
-                                unsigned long* &indices,
-                                const Ogre::Vector3 &position,
-                                const Ogre::Quaternion &orient,
-                                const Ogre::Vector3 &scale)
-{
-    bool added_shared = false;
-    size_t current_offset = 0;
-    size_t shared_offset = 0;
-    size_t next_offset = 0;
-    size_t index_offset = 0;
-
-    vertex_count = index_count = 0;
-
-    // Calculate how many vertices and indices we're going to need
-    for (unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
-    {
-        Ogre::SubMesh* submesh = mesh->getSubMesh( i );
-
-        // We only need to add the shared vertices once
-        if(submesh->useSharedVertices)
-        {
-            if( !added_shared )
-            {
-                vertex_count += mesh->sharedVertexData->vertexCount;
-                added_shared = true;
-            }
-        }
-        else
-        {
-            vertex_count += submesh->vertexData->vertexCount;
-        }
-
-        // Add the indices
-        index_count += submesh->indexData->indexCount;
-    }
-
-
-    // Allocate space for the vertices and indices
-    vertices = new Ogre::Vector3[vertex_count];
-    indices = new unsigned long[index_count];
-
-    added_shared = false;
-
-    // Run through the submeshes again, adding the data into the arrays
-    for ( unsigned short i = 0; i < mesh->getNumSubMeshes(); ++i)
-    {
-        Ogre::SubMesh* submesh = mesh->getSubMesh(i);
-
-        Ogre::VertexData* vertex_data = submesh->useSharedVertices ? mesh->sharedVertexData : submesh->vertexData;
-
-        if((!submesh->useSharedVertices)||(submesh->useSharedVertices && !added_shared))
-        {
-            if(submesh->useSharedVertices)
-            {
-                added_shared = true;
-                shared_offset = current_offset;
-            }
-
-            const Ogre::VertexElement* posElem =
-                vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
-
-            Ogre::HardwareVertexBufferSharedPtr vbuf =
-                vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
-
-            unsigned char* vertex =
-                static_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-
-            // There is _no_ baseVertexPointerToElement() which takes an Ogre::Real or a double
-            //  as second argument. So make it float, to avoid trouble when Ogre::Real will
-            //  be comiled/typedefed as double:
-            //      Ogre::Real* pReal;
-            float* pReal;
-
-            for( size_t j = 0; j < vertex_data->vertexCount; ++j, vertex += vbuf->getVertexSize())
-            {
-                posElem->baseVertexPointerToElement(vertex, &pReal);
-
-                Ogre::Vector3 pt(pReal[0], pReal[1], pReal[2]);
-
-                vertices[current_offset + j] = (orient * (pt * scale)) + position;
-            }
-
-            vbuf->unlock();
-            next_offset += vertex_data->vertexCount;
-        }
-
-
-        Ogre::IndexData* index_data = submesh->indexData;
-        size_t numTris = index_data->indexCount / 3;
-        Ogre::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
-
-        bool use32bitindexes = (ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT);
-
-        unsigned long*  pLong = static_cast<unsigned long*>(ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-        unsigned short* pShort = reinterpret_cast<unsigned short*>(pLong);
-
-
-        size_t offset = (submesh->useSharedVertices)? shared_offset : current_offset;
-
-        if ( use32bitindexes )
-        {
-            for ( size_t k = 0; k < numTris*3; ++k)
-            {
-                indices[index_offset++] = pLong[k] + static_cast<unsigned long>(offset);
-            }
-        }
-        else
-        {
-            for ( size_t k = 0; k < numTris*3; ++k)
-            {
-                indices[index_offset++] = static_cast<unsigned long>(pShort[k]) +
-                    static_cast<unsigned long>(offset);
-            }
-        }
-
-        ibuf->unlock();
-        current_offset = next_offset;
-    }
-}*/

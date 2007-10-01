@@ -77,6 +77,7 @@ public:
     virtual void update(Ogre::Real timeSinceLastFrame);
 
     void startAnimation(const String &name, bool loop = true);
+    void stopAnimation();
     void animate(Ogre::Real timeSinceLastFrame);
 
     void movementKeyPressed(OIS::KeyCode code);
