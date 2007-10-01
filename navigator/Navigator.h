@@ -69,6 +69,8 @@ public:
     void fakeSurroundingArea(int index);
 #ifdef DEMO_NAVI1
     void demoNavi1();
+#endif
+#ifdef DEMO_NAVI2
     void demoNavi2();
 #endif
 
