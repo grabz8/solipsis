@@ -19,6 +19,7 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 {
 #ifdef UIDEBUG
     std::map<Ogre::String,Ogre::String>::iterator dbgCmd;
+#ifdef DEMO_NAVI1
     // Launch demoNavi1 ?
     dbgCmd = DebugHelpers::debugCommands.find("demoNavi1");
     if (dbgCmd != DebugHelpers::debugCommands.end())
@@ -26,6 +27,8 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
         DebugHelpers::debugCommands.erase(dbgCmd);
         mNavigator->demoNavi1();
     }
+#endif
+#ifdef DEMO_NAVI2
     // Launch demoNavi2 ?
     dbgCmd = DebugHelpers::debugCommands.find("demoNavi2");
     if (dbgCmd != DebugHelpers::debugCommands.end())
@@ -33,6 +36,7 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
         DebugHelpers::debugCommands.erase(dbgCmd);
         mNavigator->demoNavi2();
     }
+#endif
     // Rotate sun light ?
     static bool rotateSunLight = false;
     dbgCmd = DebugHelpers::debugCommands.find("rotateSunLight");
@@ -128,6 +132,7 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
         }
 
         Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
+        Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
         Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
         size.x /=2;
@@ -135,7 +140,7 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
         size.z = 0;
         //move 3rd person camera toward avatar
         mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)); 
-        mCamNode->translate(Vector3(mouseWheel/6,0,0));
+        mCamNode->translate(Vector3(mouseWheel/(6*scale),0,0));
 
 
         //Switch to 1st person camera if close to avatar
