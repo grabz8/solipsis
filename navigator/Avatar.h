@@ -10,7 +10,15 @@
 #define OIS_DYNAMIC_LIB
 #include <OIS/OIS.h>
 
+#ifdef PHYSICS
+#include "OgreOde_Core.h"
+#endif
+
 class Avatar : public OgrePeer
+#ifdef PHYSICS
+    ,
+    public OgreOde::CollisionListener
+#endif
 {
 public:
     enum State {
@@ -33,31 +41,30 @@ protected:
     State mState;
     MvtType mMvtType;
 
-    bool mGravity;
-
     SceneNode* mSceneNode;
     Entity* mEntity;
     AnimationState* mAnimationState;
-    RaySceneQuery* mRaySceneQuery;
     MovableText* mNameLabel;
+    bool mGravity;
+#ifdef PHYSICS
+    OgreOde::RayGeometry* mPhysicsRay;
+    OgreOde::CapsuleGeometry* mCapsuleGeom;
+//    OgreOde::Contact mCapsuleLastContact;
+//    bool mContact;
+    Real mRadius;
+    OgreOde::TriangleMeshGeometry* mWorldGeometry;
+#else
+    RaySceneQuery* mRaySceneQuery;
+#endif
+
+#ifdef PHYSICS
+    bool collision(OgreOde::Contact* contact);
+#endif
 
 //    void lookAtTheGoodDirection();
 
-/*    bool RaycastFromPoint(Ray& ray,
-        RaySceneQueryResult& query_result,
-        String& entity_name,
-        Vector3& result);
-    void GetMeshInformation(const Ogre::MeshPtr mesh,
-        size_t &vertex_count,
-        Ogre::Vector3* &vertices,
-        size_t &index_count,
-        unsigned long* &indices,
-        const Ogre::Vector3 &position,
-        const Ogre::Quaternion &orient,
-        const Ogre::Vector3 &scale);
-*/
 public:
-    Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* raySceneQuery = 0);
+    Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity);
     virtual ~Avatar();
 
     //Set and get
@@ -65,7 +72,6 @@ public:
     Entity* getEntity();
     void setName(const String& name);
     void setNameVisibility(bool visible);
-    void setGravity(bool enabled);
 
     void setState(State state);
     State getState();
@@ -73,6 +79,11 @@ public:
 
     void setMvtType(MvtType mvtType);
     MvtType getMvtType();
+
+    void setGravity(bool enabled);
+#ifdef PHYSICS
+    void createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
+#endif
 
     virtual void update(Ogre::Real timeSinceLastFrame);
 

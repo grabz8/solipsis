@@ -12,14 +12,13 @@ String Avatar::mDefaultStateAnimName[SCount] = {
 #define EPSILON_SPEED 0.1
 #define MAX_SPEED 400
 
-Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* raySceneQuery) :
-    OgrePeer(peer),
+Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
+    OgrePeer(peer, "avatar"),
     mState(SNone),
     mMvtType(MT3rdPerson),
-    mGravity(false),
     mSceneNode(sceneNode),
     mEntity(entity),
-    mRaySceneQuery(raySceneQuery),
+    mAnimationState(0),
     mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
@@ -42,14 +41,28 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity, RaySceneQuery* 
     Real scale = mSceneNode->getScale().y;
     mNameLabel->setAdditionalHeight(aabbHeightDiv2*(1 + scale));
     mSceneNode->attachObject(mNameLabel);
+
+    mGravity = false;
+#ifdef PHYSICS
+    mPhysicsRay = 0;
+    mCapsuleGeom = 0;
+//    mContact = false;
+#else
+    mRaySceneQuery = mSceneNode->getCreator()->createRayQuery(Ray());
+#endif
 }
 
 //-------------------------------------------------------------------------------------
 Avatar::~Avatar()
 {
     if (mSceneNode == 0) return;
+#ifdef PHYSICS
+    delete mCapsuleGeom;
+    delete mPhysicsRay;
+#else
     if (mRaySceneQuery != 0)
         mSceneNode->getCreator()->destroyQuery(mRaySceneQuery);
+#endif
     if (mEntity != 0) {
         mSceneNode->detachObject(mEntity);
         mSceneNode->getCreator()->destroyEntity(mEntity);
@@ -82,14 +95,9 @@ void Avatar::setNameVisibility(bool visible)
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::setGravity(bool enabled) {
-    mGravity = enabled;
-}
-
-//-------------------------------------------------------------------------------------
 void Avatar::setState(State state)
 {
-    LogManager::getSingletonPtr()->logMessage("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
+//    LogManager::getSingletonPtr()->logMessage("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
     if (mStateAnimName[mState].length() > 0)
         stopAnimation();
     if (mStateAnimName[state].length() > 0)
@@ -121,6 +129,40 @@ Avatar::MvtType Avatar::getMvtType()
     return mMvtType;
 }
 
+#ifdef PHYSICS
+//-------------------------------------------------------------------------------------
+void Avatar::createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry)
+{
+    delete mCapsuleGeom;
+    delete mPhysicsRay;
+    if (world == 0) return;
+    AxisAlignedBox aab = mEntity->getBoundingBox();
+    Vector3 min = aab.getMinimum()*mSceneNode->getScale();
+    Vector3 max = aab.getMaximum()*mSceneNode->getScale();
+    Vector3 size(fabs(max.x - min.x), fabs(max.y - min.y),fabs(max.z - min.z));
+    mRadius = (size.x > size.z) ? size.z/2 : size.x/2;
+    mPhysicsRay = new OgreOde::RayGeometry(100, world);
+///    OgreOde::Body* mCapsuleBody = new OgreOde::Body(world);
+///    mSceneNode->attachObject(mCapsuleBody);
+///    mCapsuleBody->setMass(OgreOde::BoxMass(1,Vector3(1, 1, 1)));
+///    mCapsuleBody->setAffectedByGravity(false);
+///    mCapsuleGeom = new OgreOde::CapsuleGeometry(mRadius, size.y, world, world->getDefaultSpace());
+///    Quaternion upQuat;
+///    upQuat.FromAngleAxis(Radian(-Ogre::Math::HALF_PI), Vector3::UNIT_X);
+///    mCapsuleGeom->setOrientation(upQuat);
+///    mCapsuleGeom->setBody(mCapsuleBody);
+//    mCapsuleGeom = new OgreOde::CapsuleGeometry(mRadius, size.y, world);
+//    Quaternion upQuat;
+//    upQuat.FromAngleAxis(Radian(-Ogre::Math::HALF_PI), Vector3::UNIT_X);
+//    mCapsuleGeom->setOrientation(upQuat);
+    mWorldGeometry = worldGeometry;
+}
+#endif
+//-------------------------------------------------------------------------------------
+void Avatar::setGravity(bool enabled) {
+    mGravity = enabled;
+}
+
 //-------------------------------------------------------------------------------------
 void Avatar::update(Ogre::Real timeSinceLastFrame)
 {
@@ -130,6 +172,7 @@ void Avatar::update(Ogre::Real timeSinceLastFrame)
 //-------------------------------------------------------------------------------------
 void Avatar::startAnimation(const String &name, bool loop)
 {
+    if (name.length() == 0) return;
     mAnimationState = mEntity->getAnimationState(name);
     mAnimationState->setLoop(loop);
     mAnimationState->setEnabled(true);
@@ -138,9 +181,10 @@ void Avatar::startAnimation(const String &name, bool loop)
 //-------------------------------------------------------------------------------------
 void Avatar::stopAnimation()
 {
-    mAnimationState = mEntity->getAnimationState(mStateAnimName[mState]);
-    mAnimationState->setLoop(false);
-    mAnimationState->setEnabled(false);
+    if (mStateAnimName[mState].length() == 0) return;
+    AnimationState* animationStateToStop = mEntity->getAnimationState(mStateAnimName[mState]);
+    animationStateToStop->setLoop(false);
+    animationStateToStop->setEnabled(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -182,6 +226,10 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
             nextState = SWalk;
     }
 
+    if (mPgupKeyMotion.isPressed() && mGravity)
+        setGravity(false);
+    else if (mPgdownKeyMotion.isPressed() && !mGravity)
+        setGravity(true);
     mPgupKeyMotion.update(timeSinceLastFrame);
     mPgdownKeyMotion.update(timeSinceLastFrame);
     upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
@@ -198,11 +246,29 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
             nextState = SIdle;
     else
         animOffset = timeSinceLastFrame;
-    mAnimationState->addTime(animOffset);
+    if (mAnimationState != 0)
+        mAnimationState->addTime(animOffset);
 
     if (mState != nextState)
         setState(nextState);
 
+#ifdef PHYSICS
+    // Create world physics ray
+    if (mGravity && (mPhysicsRay != 0)/* && (mCapsuleGeom != 0)*/)
+    {
+        // raise desired ray position a little above character's scenenode
+        Vector3 pos = mSceneNode->getPosition();
+        // may need to raise it higher for better accuracy
+        pos.y += mRadius*2;
+
+        // fire ray downward to collisionListener
+        mPhysicsRay->setDefinition(pos, Vector3::NEGATIVE_UNIT_Y);
+        mPhysicsRay->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
+        // test capsule to collisionListener
+//        mCapsuleGeom->setPosition(pos + Vector3(0, 47, 16));
+///        mCapsuleGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
+    }
+#else
     if (mGravity && (mRaySceneQuery != 0))
     {
         //Here is a fake gravity, follow ground if any
@@ -222,10 +288,8 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                 break;
             }
         }
-    /*    Vector3 hit;
-        if (RaycastFromPoint(ray, result, String("station"), hit))
-        mSceneNode->setPosition(pos.x,hit.y,pos.z);*/
     }
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -254,23 +318,6 @@ void Avatar::movementKeyPressed(OIS::KeyCode code)
     }
 }
 
-/*
-//-------------------------------------------------------------------------------------
-void Avatar::lookAtTheGoodDirection()
-{
-    Vector3 src = mSceneNode->getOrientation()*Vector3::UNIT_X;
-    Vector3 direction = mDirection;
-    direction.y = 0; //Facing horizon !
-    if ((1.0f + src.dotProduct(direction)) < 0.0001f) {
-        mSceneNode->yaw(Degree(180));
-    }
-    else
-    {
-        Ogre::Quaternion quat = src.getRotationTo(direction);
-        mSceneNode->rotate(quat);
-    } 
-}
-*/
 //-------------------------------------------------------------------------------------
 void Avatar::movementKeyReleased(OIS::KeyCode code)
 {
@@ -296,3 +343,47 @@ void Avatar::movementKeyReleased(OIS::KeyCode code)
        break;
     }
 }
+
+#ifdef PHYSICS
+//-------------------------------------------------------------------------------------
+bool Avatar::collision(OgreOde::Contact* contact)
+{
+    if (mPhysicsRay == 0) return true;
+    if (contact->getFirstGeometry()->getID() == mPhysicsRay->getID() ||
+	    contact->getSecondGeometry()->getID() == mPhysicsRay->getID())
+    {
+#ifdef LEXI
+        mSceneNode->setPosition(contact->getPosition() + Vector3(0, 47, 0));
+#else
+        mSceneNode->setPosition(contact->getPosition());
+#endif
+    }
+    else if (contact->getFirstGeometry()->getID() == mCapsuleGeom->getID() ||
+        contact->getSecondGeometry()->getID() == mCapsuleGeom->getID())
+    {
+///        mSceneNode->translate(-contact->getNormal()*contact->getPenetrationDepth());
+//        mCapsuleLastContact = *contact;
+//        mContact = true;
+    }
+
+    return true;
+}
+#endif
+
+/*
+//-------------------------------------------------------------------------------------
+void Avatar::lookAtTheGoodDirection()
+{
+    Vector3 src = mSceneNode->getOrientation()*Vector3::UNIT_X;
+    Vector3 direction = mDirection;
+    direction.y = 0; //Facing horizon !
+    if ((1.0f + src.dotProduct(direction)) < 0.0001f) {
+        mSceneNode->yaw(Degree(180));
+    }
+    else
+    {
+        Ogre::Quaternion quat = src.getRotationTo(direction);
+        mSceneNode->rotate(quat);
+    } 
+}
+*/
