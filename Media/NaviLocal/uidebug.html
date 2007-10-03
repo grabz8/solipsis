@@ -1,6 +1,13 @@
 <html>
     <head>
         <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript" src="mootabs1.2.js"></script>
+		<script type="text/javascript" charset="utf-8">
+		    window.addEvent('domready', init);
+		    function init() {
+		        dbgTabs = new mootabs('dbgTabs');
+		    }
+		</script>
         <script type="text/javascript">
             function pageLoaded()
             {
@@ -11,6 +18,42 @@
                 new NaviData('debugCommand').add({cmd:command}).add({params:parameters}).send();
             }
         </script>
+        <style type="text/css">
+            .mootabs_title {
+	            list-style-image: none;
+	            list-style-type: none;
+	            margin: 0px;
+	            padding: 0px;
+            }
+            .mootabs_title li {
+	            float: left;
+	            background-color: transparent;
+	            padding: 2px 8px 2px 8px;
+	            margin-right: 10px;
+	            cursor: pointer;
+	            color: #FFFFFF;
+	            font-family: Verdana;
+	            font-size: 14px;
+	            line-height: 24px;
+            }
+            .mootabs_title li.active {
+	            border-top: 3px solid #B0E84D;
+            }
+            .mootabs_panel {
+	            display: none;
+	            position: relative;
+	            width: 350px;
+	            top: -1px;
+	            font-family: Verdana;
+	            clear: both;
+	            text-align:left;
+	            padding: 3px;
+            }
+            .mootabs_panel.active {
+                background-color: transparent;
+	            display: block;
+            }
+        </style>
         <style type="text/css">
             body
             {
@@ -30,25 +73,73 @@
 	            width: 256px;
 	            height: 256px;
             }
+            #tabs
+            {
+                position: absolute;
+                left: 22px;
+                top: 3px;
+            }
             .buttonRow1
             {
 	            position: absolute;
-	            left: 10px;
+	            left: 0px;
                 height: 24px;
             }
-            #dbg1Button { top:10px; width: 100px; }
-            #dbg2Button { top:35px; width: 100px; }
-            #dbg3Button { top:60px; width: 100px; }
-            #dbg4Button { top:85px; width: 100px; }
+            .inputText
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+            #helpersToggleAxisButton { top:10px; width: 100px; }
+            #helpersPosAxisInput
+            {
+	            position: absolute;
+	            left: 110px;
+	            top: 10px;
+            }
+            #helpersSclAxisInput
+            {
+	            position: absolute;
+	            left: 190px;
+	            top: 10px;
+            }
+            #rotateSunLightButton { top:35px; width: 100px; }
+            #demoNavi1Button { top:10px; width: 100px; }
+            #demoPhysics1Button { top:35px; width: 100px; }
+            #peerLostButton { top:10px; width: 100px; }
+            #peerNewButton { top:35px; width: 100px; }
         </style>
     </head>
 
     <body onload="pageLoaded()">
         <div id="container">
-            <button id="dbg1Button" class="buttonRow1" name="dbg1" value="dbg1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
-            <button id="dbg2Button" class="buttonRow1" name="dbg2" value="dbg2" type="button" onclick="debugCommand('testEvt', 'peerLost')">peerLost</button>
-            <button id="dbg3Button" class="buttonRow1" name="dbg3" value="dbg3" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
-            <button id="dbg4Button" class="buttonRow1" name="dbg4" value="dbg4" type="button" onclick="debugCommand('rotateSunLight', '')">rotateSunLight</button>
+            <div id="tabs">
+			    <div id="dbgTabs">
+				    <ul class="mootabs_title">
+					    <li title="Helpers">Helpers</li>
+					    <li title="Demos">Demos</li>
+					    <li title="Tests">Tests</li>
+				    </ul>
+				    <div id="Helpers" class="mootabs_panel">
+                        <button id="helpersToggleAxisButton" class="buttonRow1" name="buttonHelpersToggleAxis" value="buttonHelpersToggleAxis" type="button" onclick="debugCommand('toggleAxis', document.getElementById('inputHelpersPosAxis').value)">toggleAxis</button>
+                        <div id="helpersPosAxisInput">
+                            <input id="inputHelpersPosAxis" class="inputText" name="inputHelpersPosAxis" value="0,0,0" type="text" size="7" onchange="debugCommand('posAxis', document.getElementById('inputHelpersPosAxis').value)" />
+                        </div>
+                        <div id="helpersSclAxisInput">
+                            <input id="inputHelpersSclAxis" class="inputText" name="inputHelpersSclAxis" value="1" type="text" size="1" onchange="debugCommand('sclAxis', document.getElementById('inputHelpersSclAxis').value)" />
+                        </div>
+                        <button id="rotateSunLightButton" class="buttonRow1" name="buttonRotateSunLight" value="buttonRotateSunLight" type="button" onclick="debugCommand('rotateSunLight', '')">rotateSunLight</button>
+				    </div>
+				    <div id="Demos" class="mootabs_panel">
+                        <button id="demoNavi1Button" class="buttonRow1" name="buttonDemoNavi1" value="buttonDemoNavi1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
+                        <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
+				    </div>
+				    <div id="Tests" class="mootabs_panel">
+                        <button id="peerLostButton" class="buttonRow1" name="buttonPeerLost" value="buttonPeerLost" type="button" onclick="debugCommand('testEvt', 'peerLost')">peerLost</button>
+                        <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
+				    </div>
+			    </div>
+            </div>
         </div>
     </body>
 </html>
