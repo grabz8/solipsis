@@ -77,7 +77,11 @@ Batch build all (Debug+Release)
 Define the OGRE_HOME env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
 OGRE_HOME = C:\<your_path>\ogrenew
 
-Open solipsis_vcX.sln (for instance only vc8 is up-to-date, so ...)
+Open DevTools\OgreOde\scripts\VC8\OgreOde_Source.sln
+Batch build 4 configs (debugLib, debugDLL, releaseLib, releaseDLL) for ode project
+Batch build 2 configs (debug+release) for OgreOde project
+
+Open solipsis_vcX.sln
 Batch build Navigator project (Debug+Release)
 
 Check into the Navigator project settings you set correctly the Debug/Working directory to $(TargetDir)
