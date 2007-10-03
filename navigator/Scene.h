@@ -25,7 +25,6 @@ protected:
     void destroy();
     void convertToStaticGeometry();
     void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
-
 };
 
 #endif // #ifndef __Scene_h__

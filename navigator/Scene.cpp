@@ -1,7 +1,8 @@
 #include "Scene.h"
+#include "OgreHelpers.h"
 
 Scene::Scene(Peer* peer, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
-    OgrePeer(peer),
+    OgrePeer(peer, "scene"),
     mSceneNode(sceneNode),
     mStaticGeometry(0),
     mRaySceneQuery(raySceneQuery)
@@ -51,29 +52,19 @@ void Scene::convertToStaticGeometry()
     if (mSceneNode == 0) return;
     SceneManager* sceneMgr = mSceneNode->getCreator();
 
+    // Add all visible entities (1 loop because StaticGeometry::addSceneNode() add invisible entities)
     mStaticGeometry = sceneMgr->createStaticGeometry(mSceneNode->getName());
-    mStaticGeometry->addSceneNode(mSceneNode);
-    mStaticGeometry->build();
-
     std::list<MovableObject*> movableObjectsList;
-    getMovableObjectsList(mSceneNode, "Entity", movableObjectsList);
+    OgreHelpers::getMovableObjectsList(mSceneNode, "Entity", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
-        (*movableObject)->setVisible(false);
-}
-
-void Scene::getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList)
-{
-    SceneNode::ObjectIterator objectIterator = node->getAttachedObjectIterator();
-    while (objectIterator.hasMoreElements())
     {
-        MovableObject* movableObject = objectIterator.getNext();
-        if (movableObject->getMovableType().compare(movableType) == 0)
-            movableObjectsList.push_back(movableObject);
+        Entity* entity = static_cast<Entity*>(*movableObject);
+        SceneNode* sceneNode = entity->getParentSceneNode();
+        if (entity->isVisible()) mStaticGeometry->addEntity(entity,
+            sceneNode->_getDerivedPosition(),
+            sceneNode->_getDerivedOrientation(),
+            sceneNode->_getDerivedScale());
+        entity->setVisible(false);
     }
-    Node::ChildNodeIterator childNodeIterator = node->getChildIterator();
-    while (childNodeIterator.hasMoreElements())
-    {
-        Node* childNode = childNodeIterator.getNext();
-        getMovableObjectsList((SceneNode*)childNode, movableType, movableObjectsList);
-    }
+    mStaticGeometry->build();
 }
