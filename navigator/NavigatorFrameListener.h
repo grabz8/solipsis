@@ -4,7 +4,18 @@
 #include "OgreFrameListener.h"
 #include "Navigator.h"
 
-class NavigatorFrameListener : public OgreFrameListener
+#ifdef PHYSICS
+#include "OgreOde_Core.h"
+#endif
+
+class NavigatorFrameListener :
+    public OgreFrameListener
+#ifdef PHYSICS
+    ,
+	public OgreOde::StepListener, 
+	public OgreOde::TriangleMeshRayListener,
+    public OgreOde::CollisionListener
+#endif
 {
 public:
     enum CameraMode {
@@ -20,21 +31,26 @@ protected:
 
     Real time;
 
+    // OIS::MouseListener
+    bool mouseMoved(const OIS::MouseEvent &e);
+    bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+
+    // OIS::KeyListener
+    bool keyPressed(const OIS::KeyEvent &e);
+    bool keyReleased(const OIS::KeyEvent &e);
+
+#ifdef PHYSICS
+    // OgreOde::CollisionListener
+    bool collision(OgreOde::Contact* contact);
+#endif
+
 public:
     NavigatorFrameListener(Navigator* navigator);
     virtual bool frameStarted(const FrameEvent& evt);
 
     void setCameraMode(CameraMode mode);
     CameraMode getCameraMode();
-
-    //OIS::MouseListener
-    bool mouseMoved(const OIS::MouseEvent &e);
-    bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-    bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-
-    //OIS::KeyListener
-    bool keyPressed(const OIS::KeyEvent &e);
-    bool keyReleased(const OIS::KeyEvent &e);
 };
 
 #endif // #ifndef __NavigatorFrameListener_h__

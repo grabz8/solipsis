@@ -18,42 +18,7 @@ NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
 bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 {
 #ifdef UIDEBUG
-    std::map<Ogre::String,Ogre::String>::iterator dbgCmd;
-#ifdef DEMO_NAVI1
-    // Launch demoNavi1 ?
-    dbgCmd = DebugHelpers::debugCommands.find("demoNavi1");
-    if (dbgCmd != DebugHelpers::debugCommands.end())
-    {
-        DebugHelpers::debugCommands.erase(dbgCmd);
-        mNavigator->demoNavi1();
-    }
-#endif
-#ifdef DEMO_NAVI2
-    // Launch demoNavi2 ?
-    dbgCmd = DebugHelpers::debugCommands.find("demoNavi2");
-    if (dbgCmd != DebugHelpers::debugCommands.end())
-    {
-        DebugHelpers::debugCommands.erase(dbgCmd);
-        mNavigator->demoNavi2();
-    }
-#endif
-    // Rotate sun light ?
-    static bool rotateSunLight = false;
-    dbgCmd = DebugHelpers::debugCommands.find("rotateSunLight");
-    if (dbgCmd != DebugHelpers::debugCommands.end())
-    {
-        DebugHelpers::debugCommands.erase(dbgCmd);
-        rotateSunLight = !rotateSunLight;
-    }
-    if (rotateSunLight)
-    {
-        Light* light = mSceneMgr->getLight("SunLight");
-        if (light != 0) {
-            Matrix4 r(Quaternion(Radian(evt.timeSinceLastFrame), Vector3::UNIT_Y));
-            Vector3 dir = r.transformAffine(light->getDirection());
-            light->setDirection(dir);
-        }
-    }
+    DebugHelpers::frameStarted(evt, mNavigator, mSceneMgr);
 #endif
 
     // Updating Navi
@@ -61,6 +26,16 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 
     // Process received events
     mNavigator->processEvents();
+
+#ifdef PHYSICS
+    // Step physics
+    OgreOde::StepHandler* stepHandler = mNavigator->getPhysicsStepHandler();
+    if (stepHandler != 0)
+        stepHandler->step(evt.timeSinceLastFrame);
+    OgreOde::World* physicsWorld = mNavigator->getPhysicsWorld();
+    if (physicsWorld != 0)
+        physicsWorld->synchronise();
+#endif
 
     // Animate
     if (mNavigator->isConnected()) {
@@ -198,6 +173,10 @@ bool NavigatorFrameListener::mouseReleased(const OIS::MouseEvent &e, OIS::MouseB
 
 bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
 { 
+#ifdef PHYSICS
+    OgreOde::World* physicsWorld = mNavigator->getPhysicsWorld();
+#endif
+
     // Updating Navi with the key pressed
     if (NaviManager::Get().isAnyNaviFocused()) return true;
 
@@ -266,6 +245,17 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
     case KC_F6:
         mNavigator->fakeSurroundingArea(0);
         break;
+
+#ifdef PHYSICS
+    case KC_F10:
+        if (physicsWorld != 0)
+            physicsWorld->setShowDebugContact(!physicsWorld->getShowDebugContact());
+        break;
+    case KC_F11:
+        if (physicsWorld != 0)
+            physicsWorld->setShowDebugGeometries(!physicsWorld->getShowDebugGeometries());
+        break;
+#endif
     case KC_F12:
         mBoundingBoxesShows = !mBoundingBoxesShows;
         mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
@@ -313,3 +303,12 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
     }
     return true;
 }
+
+#ifdef PHYSICS
+//-------------------------------------------------------------------------------------
+bool NavigatorFrameListener::collision(OgreOde::Contact* contact)
+{
+
+    return true;
+}
+#endif
