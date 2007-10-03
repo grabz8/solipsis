@@ -11,6 +11,8 @@ if not exist "%1\pthreadVC.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC.dl
 if not exist "%1\xul.dll" xcopy "..\Dependencies\llmozlib\win32_vc8\runtime\Release\*.*" "%1" /s /y
 if not exist "%1\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%1\NaviLocal" /s /y /i
 if not exist "%1\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%1\NaviLocal" /y
+if not exist "%1\ode.dll" xcopy "..\Dependencies\ode\lib\releasedll\ode.dll" "%1" /s /y
+if not exist "%1\OgreOde_Core.dll" xcopy "..\Dependencies\OgreOde\lib\OgreOde_Core.dll" "%1" /s /y
 if not exist "%1\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%1" /s /y
 if not exist "%1\quake3settings.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\quake3settings.cfg" "%1" /s /y
 if not exist "%1\resources.cfg" xcopy "..\Media\resources.cfg" "%1" /s /y
