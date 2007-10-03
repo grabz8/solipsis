@@ -9,6 +9,10 @@
 #include "Avatar.h"
 #include "Scene.h"
 
+#ifdef PHYSICS
+#include "OgreOde_Core.h"
+#endif
+
 class Navigator : public OgreApplication, public NodeEventListener
 {
 public:
@@ -39,6 +43,12 @@ protected:
 
     Avatar* mUserAvatar;
 
+#ifdef PHYSICS
+    OgreOde::World* mPhysicsWorld;
+    OgreOde::StepHandler* mPhysicsStepHandler;
+    OgreOde::TriangleMeshGeometry* mPhysicsWorldGeometry;
+#endif
+
     bool mFakeTerrain;
 
 public:
@@ -65,6 +75,12 @@ public:
 
     Avatar* getUserAvatar();
 
+#ifdef PHYSICS
+    OgreOde::World* getPhysicsWorld();
+    OgreOde::StepHandler* getPhysicsStepHandler();
+    OgreOde::TriangleMeshGeometry* getPhysicsWorldGeometry();
+#endif
+
     // Demonstrators
     void fakeSurroundingArea(int index);
 #ifdef DEMO_NAVI1
@@ -72,6 +88,9 @@ public:
 #endif
 #ifdef DEMO_NAVI2
     void demoNavi2();
+#endif
+#ifdef DEMO_PHYSICS1
+    void demoPhysics1();
 #endif
 
     bool quit();
