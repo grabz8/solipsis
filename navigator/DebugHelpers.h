@@ -3,13 +3,21 @@
 
 #ifdef UIDEBUG
 
-#include "Ogre.h"
 #include <stack>
+#include "Ogre.h"
+
+using namespace Ogre;
+
+class Navigator;
 
 class DebugHelpers
 {
 public:
-    static std::map<Ogre::String,Ogre::String> debugCommands;
+    // Map of debug commands with parameters
+    static std::map<String,String> debugCommands;
+
+    // Debug callbacks
+    static bool frameStarted(const FrameEvent& evt, Navigator* navigator, SceneManager* sceneMgr);
 };
 
 #endif
