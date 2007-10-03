@@ -1,15 +1,15 @@
 
-material 07_-_Default
+material 02_-_Default
 {
 	technique
 	{
 		pass
 		{
-			lighting off
+			lighting on
 
 			texture_unit
 			{
-				texture_alias Texture #62
+				texture_alias Texture #63
 				texture LightMapSalamandra2.tga
 			}
 		}
