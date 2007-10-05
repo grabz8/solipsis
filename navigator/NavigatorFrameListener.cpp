@@ -255,6 +255,12 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         if (physicsWorld != 0)
             physicsWorld->setShowDebugGeometries(!physicsWorld->getShowDebugGeometries());
         break;
+#ifdef FEET
+    case KC_END:
+        if (physicsWorld != 0)
+            mNavigator->getUserAvatar()->movementKeyPressed(KC_END);
+        break;
+#endif
 #endif
     case KC_F12:
         mBoundingBoxesShows = !mBoundingBoxesShows;
