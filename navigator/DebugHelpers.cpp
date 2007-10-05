@@ -83,7 +83,7 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     if (dbgCmd != debugCommands.end())
     {
         Vector3 pos = Vector3::ZERO;
-        if (OgreHelpers::convertVector3String(dbgCmd->second, pos) && sceneMgr->hasSceneNode("dbgAxis"))
+        if (OgreHelpers::convertString2Vector3(dbgCmd->second, pos) && sceneMgr->hasSceneNode("dbgAxis"))
             sceneMgr->getSceneNode("dbgAxis")->setPosition(pos);
         debugCommands.erase(dbgCmd);
     }
@@ -91,7 +91,7 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     if (dbgCmd != debugCommands.end())
     {
         Real factor = 1;
-        if (OgreHelpers::convertRealString(dbgCmd->second, factor) && sceneMgr->hasSceneNode("dbgAxis"))
+        if (OgreHelpers::convertString2Real(dbgCmd->second, factor) && sceneMgr->hasSceneNode("dbgAxis"))
             sceneMgr->getSceneNode("dbgAxis")->setScale(factor, factor, factor);
         debugCommands.erase(dbgCmd);
     }
