@@ -46,12 +46,23 @@ protected:
     AnimationState* mAnimationState;
     MovableText* mNameLabel;
     bool mGravity;
+    Real mRadius;
+    Real mHeight;
 #ifdef PHYSICS
     OgreOde::RayGeometry* mPhysicsRay;
+#ifdef CAPSULEGEOM
+    Ogre::Real mMaxUpdateTimeStep;
     OgreOde::CapsuleGeometry* mCapsuleGeom;
-//    OgreOde::Contact mCapsuleLastContact;
-//    bool mContact;
-    Real mRadius;
+    OgreOde::Contact mCapsuleLastContact;
+    bool mCapsuleContact;
+#endif
+#ifdef FEET
+    OgreOde::Body* mFeetBody;
+    OgreOde::SphereGeometry* mFeetGeom;
+    OgreOde::Contact mFeetGeomLastContact;
+    bool mFeetGeomContact;
+    bool mFeetContact;
+#endif
     OgreOde::TriangleMeshGeometry* mWorldGeometry;
 #else
     RaySceneQuery* mRaySceneQuery;
@@ -81,8 +92,13 @@ public:
     MvtType getMvtType();
 
     void setGravity(bool enabled);
+    bool isGravityEnabled();
 #ifdef PHYSICS
     void createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
+#endif
+#ifdef CAPSULEGEOM
+    void setMaxUpdateTimeStep(Ogre::Real maxUpdateTimeStep);
+    Ogre::Real getMaxUpdateTimeStep();
 #endif
 
     virtual void update(Ogre::Real timeSinceLastFrame);
