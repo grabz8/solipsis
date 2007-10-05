@@ -16,9 +16,9 @@ public:
     static void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
 
     // Convert 1 string representation of Real into 1 Real
-    static bool convertRealString(const String& real, Real& r);
+    static bool convertString2Real(const String& real, Real& r);
     // Convert 1 string representation of Vector3 (ie. x, y, z) into 1 Vector3
-    static bool convertVector3String(const String& vector, Vector3& v);
+    static bool convertString2Vector3(const String& vector, Vector3& v);
 };
 
 #endif // #ifndef __OgreHelpers_h__

@@ -17,7 +17,7 @@ void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableTyp
     }
 }
 
-bool OgreHelpers::convertRealString(const String& real, Real& r)
+bool OgreHelpers::convertString2Real(const String& real, Real& r)
 {
     Real result = 0;
 
@@ -28,7 +28,7 @@ bool OgreHelpers::convertRealString(const String& real, Real& r)
     return true;
 }
 
-bool OgreHelpers::convertVector3String(const String& vector, Vector3& v)
+bool OgreHelpers::convertString2Vector3(const String& vector, Vector3& v)
 {
     Vector3 result = Vector3::ZERO;
     size_t prev, comma;
