@@ -30,18 +30,27 @@ UP/Z     Move forward
 DOWN/S   Move backward
 LEFT/Q   Turn left (3rd person) / Straff left (1st person)
 RIGHT/D  Turn right (3rd person) / Straff right (1st person)
-PGUP/E   Fly up
+PGUP/E   Fly up (+ deactivate gravity)
 PGDOWN/C Fly down
+END      Activate gravity
 
 
 Debug commands:
 F1 .. F4 SkyDome choice
 F5       FakeTerrain
+F10      Toggle physics contacts display
+F11      Toggle physics geometries display
 F12      Toggle bounding-boxes display
-[PAUSE]  switch on/off DEBUG panel
-button1  small test on LOST evt from Solipsis node
-button2  small Navi test (1 Knot  with Google, 1 panel on gpl.txt, 1 panel on YouTube video Warcraft in Simpsons)
-...
+[PAUSE]  Toggle DEBUG panel
+ Helpers
+  toggleAxis     Toggle 1 axis on (0,0,0) with scale x1, position + scale can be updated to locate something
+  rotateSunLight Rotate the directional light to debug normals illumination
+ Demos
+  demoNavi1      Launch DEMO_NAVI1 (refer below)
+  demoPhysics1   Launch DEMO_PHYSICS1 (refer below)
+ Tests
+  peerLost       Small test on LOST evt from Solipsis node
+  peerNew        Small test on NEW evt (for instance this evt is automatically launched on uichat.html page loaded evt)
 
 
 About HTTP proxy, you can now define it into the options panel, the resulting config
@@ -89,6 +98,16 @@ Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navi
 (avoid to launch the Debug config, you will be too often prompted by Mozilla/LLMozLib assertions,
 they will be suppressed in the future)
 
+COMPILATION DEFINES (add 1 starting 'N' char to unset it):
+UIDEBUG        Set/Unset the debug user interface panel
+DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google homepage)
+DEMO_NAVI2     Set/Unset Navi demo2 (spatialStation official demo with 1 panel on YouTube video)
+NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
+PHYSICS        Set/Unset Physics management
+ DEMO_PHYSICS1 Set/Unset Physics demo (1 cube will drop into the spatialStation)
+ CAPSULEGEOM   Set/Unset Physics capsule on user avatar (walls)
+ FEET          Set/Unset Physics feet sphere on user avatar (floor + gravity)
+LEXI           User avatar exported with LEXI plugin
 
 --------------------------------------------------------------------------------
 FORUMS LOGINS
