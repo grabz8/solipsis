@@ -86,10 +86,6 @@ Batch build all (Debug+Release)
 Define the OGRE_HOME env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
 OGRE_HOME = C:\<your_path>\ogrenew
 
-Open DevTools\OgreOde\scripts\VCX\OgreOde_Source.sln
-Batch build 4 configs (debugLib, debugDLL, releaseLib, releaseDLL) for ode project
-Batch build 2 configs (debug+release) for OgreOde project
-
 Open solipsis_vcX.sln
 Batch build Navigator project (Debug+Release)
 
