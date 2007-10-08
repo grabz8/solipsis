@@ -1,0 +1,84 @@
+---------------------------
+12/09/07
+
+(http://www.ogre3d.org/phpBB2/viewtopic.php?p=245691)
+Following "sinbad OGRE Project Lead" remarks about bug on floats comparisons in OGRE 1.4.3, some updates into 3darrow\ogrenew\trunk\OgreMain\include\OgreRenderQueueSortingGrouping.h
+
+				    if (adepth == bdepth)
+REPLACED BY
+				    if (Math::RealEqual(adepth, bdepth))
+
+---------------------------
+17/09/07
+
+Proxy server config added into LLMozLib (getPAC, setPAC functions)
+NaviManager updated
+Uioptions.html updated
+
+Deltastation1.max added (!!! Take care to scale() on nodes, normals are scaled too !!!)
+
+---------------------------
+19/09/07
+
+Proxy server config is now 1 of tabs of the options panel
+Deltastation1 scene + salamandra avatar integrated + 1 navi 3D panel on the wall
+
+---------------------------
+20/09/07
+
+Some fixes into NaviMouse to avoid Ogre warning about manual texture reload
+Proxy config improved with now 4 proxy types
+
+---------------------------
+24/09/07
+
+Solipsis global solution added
+Full proxy config
+Some fixes on VC7 build
+Some improvements into the user's avatar motion (fluidity, straff in 1st person mode, mouse is now rotating avatar in 1st person mode)
+
+---------------------------
+25/09/07
+
+Last release of Navi (1.4) updated
+Suggested updates posted on Navi forum
+
+---------------------------
+27/09/07
+
+Exporters on salamandra
+oFusion seemed to have some aabboxes pb
+lexiExporter is OK on aabboxes but keep some position offset on mesh
+oFusion is OK on aabboxes on latest salamandra release
+
+---------------------------
+01/10/07
+
+Ode and OgreOde added
+Collisions with dedicated collision mesh of DeltaStation1 scene file
+1 ray added on user avatar to make feet following the floor
+
+---------------------------
+02/10/07
+
+DEMOPHYSICS1 added (1 cube dropped into the Deltastation1 scene)
+
+---------------------------
+03/10/07
+
+1 capsule geom added on user avatar for walk/run mvts collision
+
+---------------------------
+05/10/07
+
+1 sphere geom added on user avatar for floor and gravity
+1 sphere body added on user avatar for gravity
+Nota: spheres geom+body are activated only when feet are no more on the floor, and are deactivated when flying, they are complementary to the ray
+Key "END" added to activate gravity when flying to go down the floor
+
+---------------------------
+08/10/07
+
+VC7 projects updated for Ode + OgreOde integration
+Lua integration
+
