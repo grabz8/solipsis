@@ -49,19 +49,19 @@ protected:
     Real mRadius;
     Real mHeight;
 #ifdef PHYSICS
-    OgreOde::RayGeometry* mPhysicsRay;
+    OgreOde::RayGeometry* mRayGeom;
 #ifdef CAPSULEGEOM
     Ogre::Real mMaxUpdateTimeStep;
     OgreOde::CapsuleGeometry* mCapsuleGeom;
-    OgreOde::Contact mCapsuleLastContact;
-    bool mCapsuleContact;
+    OgreOde::Contact mCapsuleGeomLastContact;
+    bool mCapsuleGeomContact;
 #endif
 #ifdef FEET
     OgreOde::Body* mFeetBody;
+    bool mRayGeomContact;
     OgreOde::SphereGeometry* mFeetGeom;
     OgreOde::Contact mFeetGeomLastContact;
     bool mFeetGeomContact;
-    bool mFeetContact;
 #endif
     OgreOde::TriangleMeshGeometry* mWorldGeometry;
 #else

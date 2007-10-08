@@ -43,17 +43,17 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
 
     mGravity = false;
 #ifdef PHYSICS
-    mPhysicsRay = 0;
+    mRayGeom = 0;
 #ifdef CAPSULEGEOM
     mMaxUpdateTimeStep = -1.0;
     mCapsuleGeom = 0;
-    mCapsuleContact = false;
+    mCapsuleGeomContact = false;
 #endif
 #ifdef FEET
     mFeetBody = 0;
+    mRayGeomContact = false;
     mFeetGeom = 0;
     mFeetGeomContact = false;
-    mFeetContact = false;
 #endif
 #else
     mRaySceneQuery = mSceneNode->getCreator()->createRayQuery(Ray());
@@ -72,7 +72,7 @@ Avatar::~Avatar()
 #ifdef CAPSULEGEOM
     delete mCapsuleGeom;
 #endif
-    delete mPhysicsRay;
+    delete mRayGeom;
 #else
     if (mRaySceneQuery != 0)
         mSceneNode->getCreator()->destroyQuery(mRaySceneQuery);
@@ -154,7 +154,7 @@ void Avatar::createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMe
 #ifdef CAPSULEGEOM
     delete mCapsuleGeom;
 #endif
-    delete mPhysicsRay;
+    delete mRayGeom;
 
     // world ?
     if (world == 0) return;
@@ -165,7 +165,7 @@ void Avatar::createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMe
     mHeight = aabbHalfSize.y*2;
 
     // Create the ray for feet
-    mPhysicsRay = new OgreOde::RayGeometry(mHeight, world);
+    mRayGeom = new OgreOde::RayGeometry(mHeight, world);
 
 #ifdef CAPSULEGEOM
     // Create the torso collision geometry
@@ -227,7 +227,7 @@ void Avatar::setGravity(bool enabled) {
             mFeetBody->sleep();
             mFeetBody->setAffectedByGravity(false);
             mSceneNode->detachObject(mFeetBody);
-            mPhysicsRay->setLength(mHeight);
+            mRayGeom->setLength(mHeight);
         }
 }
 
@@ -348,16 +348,16 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
         mFeetGeom->setPosition(mSceneNode->getPosition());
 #endif
     // Collide physics ray with world
-    if (mGravity && (mPhysicsRay != 0))
+    if (mGravity && (mRayGeom != 0))
     {
 #ifdef FEET
-        mFeetContact = false;
+        mRayGeomContact = false;
 #endif
         // fire ray downward to collisionListener
-        mPhysicsRay->setDefinition(mSceneNode->getPosition() + Vector3(0, mHeight*0.5, 0), Vector3::NEGATIVE_UNIT_Y);
-        mPhysicsRay->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
+        mRayGeom->setDefinition(mSceneNode->getPosition() + Vector3(0, mHeight*0.5, 0), Vector3::NEGATIVE_UNIT_Y);
+        mRayGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
 #ifdef FEET
-        if (!mFeetContact && (mFeetBody != 0))
+        if (!mRayGeomContact && (mFeetBody != 0))
         {
             mFeetGeomContact = false;
             mFeetGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
@@ -372,7 +372,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                     mFeetBody->wake();
             }
             mFeetBody->setPosition(mSceneNode->getPosition());
-            mPhysicsRay->setLength(mHeight/2);
+            mRayGeom->setLength(mHeight/2);
             }
         }
 #endif
@@ -385,9 +385,9 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
         Vector3 aabbHalfSize = mEntity->getBoundingBox().getHalfSize();
         Vector3 pos = mSceneNode->getPosition();
         mCapsuleGeom->setPosition(pos + Vector3(0, aabbHalfSize.y*1.5, 0));
-        mCapsuleContact = false;
+        mCapsuleGeomContact = false;
         mCapsuleGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
-        if (mCapsuleContact)
+        if (mCapsuleGeomContact)
         {
             static int sl = 0;
             sl++;
@@ -396,15 +396,15 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                 StringUtil::StrStreamType log;
                 log.precision(2);
                 log.width(5);
-                log << "Avatar::animate() mCapsuleLastContact.(pos=("
-                    << mCapsuleLastContact.getPosition().x << ", " << mCapsuleLastContact.getPosition().y << ", " << mCapsuleLastContact.getPosition().z
+                log << "Avatar::animate() mCapsuleGeomLastContact.(pos=("
+                    << mCapsuleGeomLastContact.getPosition().x << ", " << mCapsuleGeomLastContact.getPosition().y << ", " << mCapsuleGeomLastContact.getPosition().z
                     << "), normal=("
-                    << mCapsuleLastContact.getNormal().x << ", " << mCapsuleLastContact.getNormal().y << ", " << mCapsuleLastContact.getNormal().z
+                    << mCapsuleGeomLastContact.getNormal().x << ", " << mCapsuleGeomLastContact.getNormal().y << ", " << mCapsuleGeomLastContact.getNormal().z
                     << "), depth="
-                    << mCapsuleLastContact.getPenetrationDepth();
+                    << mCapsuleGeomLastContact.getPenetrationDepth();
                 LogManager::getSingletonPtr()->logMessage(log.str());
             }
-            Ogre::Plane contactPlane(mCapsuleLastContact.getNormal(), mCapsuleLastContact.getPosition());
+            Ogre::Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
             Vector3 mvtOnContactPlane;
             mvtOnContactPlane = contactPlane.projectVector(mvt)*Vector3(1, 0, 1);
             if ((sl % 60) == 0)
@@ -418,21 +418,21 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                 LogManager::getSingletonPtr()->logMessage(log.str());
             }
             mCapsuleGeom->setPosition(pos - mvt - mvtOnContactPlane + Vector3(0, aabbHalfSize.y*1.5, 0));
-            mCapsuleContact = false;
+            mCapsuleGeomContact = false;
             mCapsuleGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
-            if (mCapsuleContact)
+            if (mCapsuleGeomContact)
             {
                 if ((sl % 60) == 0)
                 {
                     StringUtil::StrStreamType log;
                     log.precision(2);
                     log.width(5);
-                    log << "Avatar::animate() 2nd contact mCapsuleLastContact.(pos=("
-                        << mCapsuleLastContact.getPosition().x << ", " << mCapsuleLastContact.getPosition().y << ", " << mCapsuleLastContact.getPosition().z
+                    log << "Avatar::animate() 2nd contact mCapsuleGeomLastContact.(pos=("
+                        << mCapsuleGeomLastContact.getPosition().x << ", " << mCapsuleGeomLastContact.getPosition().y << ", " << mCapsuleGeomLastContact.getPosition().z
                         << "), normal=("
-                        << mCapsuleLastContact.getNormal().x << ", " << mCapsuleLastContact.getNormal().y << ", " << mCapsuleLastContact.getNormal().z
+                        << mCapsuleGeomLastContact.getNormal().x << ", " << mCapsuleGeomLastContact.getNormal().y << ", " << mCapsuleGeomLastContact.getNormal().z
                         << "), depth="
-                        << mCapsuleLastContact.getPenetrationDepth();
+                        << mCapsuleGeomLastContact.getPenetrationDepth();
                     LogManager::getSingletonPtr()->logMessage(log.str());
                 }
                 mSceneNode->translate(-mvt);
@@ -527,9 +527,9 @@ void Avatar::movementKeyReleased(OIS::KeyCode code)
 //-------------------------------------------------------------------------------------
 bool Avatar::collision(OgreOde::Contact* contact)
 {
-    if (mPhysicsRay == 0) return true;
-    if (contact->getFirstGeometry()->getID() == mPhysicsRay->getID() ||
-	    contact->getSecondGeometry()->getID() == mPhysicsRay->getID())
+    if (mRayGeom == 0) return true;
+    if (contact->getFirstGeometry()->getID() == mRayGeom->getID() ||
+	    contact->getSecondGeometry()->getID() == mRayGeom->getID())
     {
 #ifdef LEXI
         mSceneNode->setPosition(contact->getPosition() + Vector3(0, 47, 0));
@@ -542,9 +542,9 @@ bool Avatar::collision(OgreOde::Contact* contact)
             mFeetBody->sleep();
             mFeetBody->setAffectedByGravity(false);
             mSceneNode->detachObject(mFeetBody);
-            mPhysicsRay->setLength(mHeight);
+            mRayGeom->setLength(mHeight);
         }
-        mFeetContact = true;
+        mRayGeomContact = true;
 #endif
     }
 #ifdef FEET
@@ -559,8 +559,8 @@ bool Avatar::collision(OgreOde::Contact* contact)
     else if (contact->getFirstGeometry()->getID() == mCapsuleGeom->getID() ||
         contact->getSecondGeometry()->getID() == mCapsuleGeom->getID())
     {
-        mCapsuleLastContact = *contact;
-        mCapsuleContact = true;
+        mCapsuleGeomLastContact = *contact;
+        mCapsuleGeomContact = true;
     }
 #endif
 
