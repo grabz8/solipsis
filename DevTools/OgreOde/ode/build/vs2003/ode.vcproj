@@ -46,7 +46,13 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying debug DLL runtime files ..."
+				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
+copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
+if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll
+copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y
+copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -102,7 +108,13 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying release DLL runtime files ..."
+				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
+copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
+if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll
+copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y
+copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -134,7 +146,7 @@
 				PreprocessorDefinitions="WIN32;ODE_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
@@ -149,7 +161,12 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying debug LIB runtime files ..."
+				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
+copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
+if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib
+copy $(ProjectDir)..\..\lib\debuglib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib\. /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -161,8 +178,6 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -181,7 +196,7 @@
 				AdditionalIncludeDirectories="../../include;../../OPCODE;../../GIMPACT/include"
 				PreprocessorDefinitions="WIN32;ODE_LIB"
 				StringPooling="TRUE"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
@@ -196,7 +211,12 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying release LIB runtime files ..."
+				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
+copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
+if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib
+copy $(ProjectDir)..\..\lib\releaselib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib\. /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -208,8 +228,6 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -297,73 +315,10 @@
 				Name="src"
 				Filter="">
 				<File
-					RelativePath="..\..\ode\src\array.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_kernel.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_space_internal.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_std.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_transform.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_trimesh_internal.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\collision_util.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\heightfield.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\joint.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\lcp.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\mat.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\objects.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\obstack.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\quickstep.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\stack.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\step.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\testing.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\util.h">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\fastdot.c">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\fastldlt.c">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\fastlsolve.c">
-				</File>
-				<File
-					RelativePath="..\..\ode\src\fastltsolve.c">
-				</File>
-				<File
 					RelativePath="..\..\ode\src\array.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\array.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\box.cpp">
@@ -387,13 +342,25 @@
 					RelativePath="..\..\ode\src\collision_kernel.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\collision_kernel.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\collision_quadtreespace.cpp">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\collision_space.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\collision_space_internal.h">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\collision_std.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\collision_transform.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\collision_transform.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\collision_trimesh_box.cpp">
@@ -406,6 +373,9 @@
 				</File>
 				<File
 					RelativePath="..\..\ode\src\collision_trimesh_gimpact.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\collision_trimesh_internal.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\collision_trimesh_opcode.cpp">
@@ -426,6 +396,9 @@
 					RelativePath="..\..\ode\src\collision_util.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\collision_util.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\convex.cpp">
 				</File>
 				<File
@@ -438,19 +411,43 @@
 					RelativePath="..\..\ode\src\export-dif.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\fastdot.c">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\fastldlt.c">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\fastlsolve.c">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\fastltsolve.c">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\heightfield.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\heightfield.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\joint.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\joint.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\lcp.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\lcp.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\mass.cpp">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\mat.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\mat.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\matrix.cpp">
@@ -462,7 +459,13 @@
 					RelativePath="..\..\ode\src\misc.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\objects.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\obstack.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\obstack.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\ode.cpp">
@@ -477,6 +480,9 @@
 					RelativePath="..\..\ode\src\quickstep.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\quickstep.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\ray.cpp">
 				</File>
 				<File
@@ -486,7 +492,13 @@
 					RelativePath="..\..\ode\src\sphere.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\stack.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\step.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\step.h">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\stepfast.cpp">
@@ -495,10 +507,16 @@
 					RelativePath="..\..\ode\src\testing.cpp">
 				</File>
 				<File
+					RelativePath="..\..\ode\src\testing.h">
+				</File>
+				<File
 					RelativePath="..\..\ode\src\timer.cpp">
 				</File>
 				<File
 					RelativePath="..\..\ode\src\util.cpp">
+				</File>
+				<File
+					RelativePath="..\..\ode\src\util.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -511,9 +529,6 @@
 				<Filter
 					Name="GIMPACT"
 					Filter="">
-					<File
-						RelativePath="..\..\GIMPACT\include\GIMPACT\gimpact.h">
-					</File>
 					<File
 						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_boxpruning.h">
 					</File>
@@ -533,9 +548,6 @@
 						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_radixsort.h">
 					</File>
 					<File
-						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_trimesh.h">
-					</File>
-					<File
 						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_tri_capsule_collision.h">
 					</File>
 					<File
@@ -544,14 +556,17 @@
 					<File
 						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_tri_sphere_collision.h">
 					</File>
+					<File
+						RelativePath="..\..\GIMPACT\include\GIMPACT\gim_trimesh.h">
+					</File>
+					<File
+						RelativePath="..\..\GIMPACT\include\GIMPACT\gimpact.h">
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
 				Name="src"
 				Filter="">
-				<File
-					RelativePath="..\..\GIMPACT\src\gimpact.cpp">
-				</File>
 				<File
 					RelativePath="..\..\GIMPACT\src\gim_boxpruning.cpp">
 				</File>
@@ -563,6 +578,9 @@
 				</File>
 				<File
 					RelativePath="..\..\GIMPACT\src\gim_memory.cpp">
+				</File>
+				<File
+					RelativePath="..\..\GIMPACT\src\gim_tri_tri_overlap.cpp">
 				</File>
 				<File
 					RelativePath="..\..\GIMPACT\src\gim_trimesh.cpp">
@@ -580,142 +598,27 @@
 					RelativePath="..\..\GIMPACT\src\gim_trimesh_trimesh_collision.cpp">
 				</File>
 				<File
-					RelativePath="..\..\GIMPACT\src\gim_tri_tri_overlap.cpp">
+					RelativePath="..\..\GIMPACT\src\gimpact.cpp">
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="OPCODE"
 			Filter="">
-			<Filter
-				Name="Ice"
-				Filter="">
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceAABB.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceAxes.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceBoundingSphere.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceContainer.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceFPU.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceHPoint.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceIndexedTriangle.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceLSS.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceMatrix3x3.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceMatrix4x4.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceMemoryMacros.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceOBB.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePairs.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePlane.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePoint.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePreprocessor.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRandom.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRay.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRevisitedRadix.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceSegment.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceTriangle.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceTriList.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceTypes.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceUtils.h">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceAABB.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceContainer.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceHPoint.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceIndexedTriangle.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceMatrix3x3.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceMatrix4x4.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceOBB.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePlane.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IcePoint.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRandom.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRay.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceRevisitedRadix.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceSegment.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceTriangle.cpp">
-				</File>
-				<File
-					RelativePath="..\..\OPCODE\Ice\IceUtils.cpp">
-				</File>
-			</Filter>
 			<File
-				RelativePath="..\..\OPCODE\Opcode.h">
+				RelativePath="..\..\OPCODE\OPC_AABBCollider.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_AABBCollider.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_AABBTree.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_AABBTree.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_BaseModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_BaseModel.h">
@@ -724,13 +627,25 @@
 				RelativePath="..\..\OPCODE\OPC_BoxBoxOverlap.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_BoxPruning.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_BoxPruning.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_Collider.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_Collider.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_Common.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_Common.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_HybridModel.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_HybridModel.h">
@@ -742,28 +657,49 @@
 				RelativePath="..\..\OPCODE\OPC_LSSAABBOverlap.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_LSSCollider.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_LSSCollider.h">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_LSSTriOverlap.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_MeshInterface.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_MeshInterface.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_Model.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_Model.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_OBBCollider.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_OBBCollider.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_OptimizedTree.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_OptimizedTree.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_Picking.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_Picking.h">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_PlanesAABBOverlap.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_PlanesCollider.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_PlanesCollider.h">
@@ -773,6 +709,9 @@
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_RayAABBOverlap.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_RayCollider.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_RayCollider.h">
@@ -787,16 +726,28 @@
 				RelativePath="..\..\OPCODE\OPC_SphereAABBOverlap.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_SphereCollider.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_SphereCollider.h">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_SphereTriOverlap.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_SweepAndPrune.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_SweepAndPrune.h">
 			</File>
 			<File
+				RelativePath="..\..\OPCODE\OPC_TreeBuilders.cpp">
+			</File>
+			<File
 				RelativePath="..\..\OPCODE\OPC_TreeBuilders.h">
+			</File>
+			<File
+				RelativePath="..\..\OPCODE\OPC_TreeCollider.cpp">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\OPC_TreeCollider.h">
@@ -808,77 +759,144 @@
 				RelativePath="..\..\OPCODE\OPC_TriTriOverlap.h">
 			</File>
 			<File
-				RelativePath="..\..\OPCODE\OPC_VolumeCollider.h">
+				RelativePath="..\..\OPCODE\OPC_VolumeCollider.cpp">
 			</File>
 			<File
-				RelativePath="..\..\OPCODE\Stdafx.h">
+				RelativePath="..\..\OPCODE\OPC_VolumeCollider.h">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\Opcode.cpp">
 			</File>
 			<File
-				RelativePath="..\..\OPCODE\OPC_AABBCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_AABBTree.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_BaseModel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_BoxPruning.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_Collider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_Common.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_HybridModel.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_LSSCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_MeshInterface.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_Model.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_OBBCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_OptimizedTree.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_Picking.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_PlanesCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_RayCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_SphereCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_SweepAndPrune.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_TreeBuilders.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_TreeCollider.cpp">
-			</File>
-			<File
-				RelativePath="..\..\OPCODE\OPC_VolumeCollider.cpp">
+				RelativePath="..\..\OPCODE\Opcode.h">
 			</File>
 			<File
 				RelativePath="..\..\OPCODE\StdAfx.cpp">
 			</File>
+			<File
+				RelativePath="..\..\OPCODE\Stdafx.h">
+			</File>
+			<Filter
+				Name="Ice"
+				Filter="">
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceAABB.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceAABB.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceAxes.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceBoundingSphere.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceContainer.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceContainer.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceFPU.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceHPoint.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceHPoint.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceIndexedTriangle.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceIndexedTriangle.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceLSS.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceMatrix3x3.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceMatrix3x3.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceMatrix4x4.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceMatrix4x4.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceMemoryMacros.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceOBB.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceOBB.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePairs.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePlane.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePlane.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePoint.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePoint.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IcePreprocessor.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRandom.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRandom.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRay.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRay.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRevisitedRadix.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceRevisitedRadix.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceSegment.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceSegment.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceTriangle.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceTriangle.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceTriList.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceTypes.h">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceUtils.cpp">
+				</File>
+				<File
+					RelativePath="..\..\OPCODE\Ice\IceUtils.h">
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
