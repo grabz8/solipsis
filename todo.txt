@@ -6,6 +6,8 @@
 - create 1 Navigator Displayer ActiveX to interact with Navigator from 1 simple Win Mozilla browser
 - add 3D picking on Navis (refer to ogreaddons\uOgreBrowser)
 
+- salamandra export pb with lexiExporter on root bone position offset (OK on oFusion)
+
 - update Navi with demo on contextual menu + lua
 
 - add methods to get position around avatar according to TOP, BOTTOM, LEFT, RIGHT, CENTER
