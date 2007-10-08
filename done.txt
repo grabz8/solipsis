@@ -1,0 +1,52 @@
+- Win: compilation of Mozilla/XULrunner from release 1.8.04
+(from mozilla FTP xulrunner-1.8.0.4-source.tar.bz2)
+- Win: compilation of LLMozLib vc7 & vc8
+- Win: compilation of Navi/NaviDemo vc7 & vc8
+
+- Win: compilation of Mozilla/XULrunner from release 1.8.1
+(CVS repository from co_FIREFOX_2_0_RELEASE.bat)
+(branch FIREFOX_2_0_RELEASE)
+- Win: compilation of LLMozLib vc7 & vc8
+- Win: compilation of Navi/NaviDemo vc7 & vc8
+
+- Win: compilation of SVN Ogre on vc8
+=> Dependencies directory to replace + include and lib directories to remove
+
+- Win: install solipsis (prebuit OK + sources OK)
+
+- Win: compilation of SVN Solipsis Navigator + Tests
+
+- Win: replacement of CEGUI user interfaces by HTML/CSS under Navi library
+into Navigator project
+- Win: add pthread support (Dependencies\pthread) to implement
+the peer events listener (Win32/Linux portable)
+
+- Move dependencies LLMozLib + Navi into Solipsis/Dependencies
+
+- Add 1 option about HTTP proxy into options panel
+- Replace into options about HTTP proxy 1 panel with 1 tabs
+
+- pb on station spatiale scene : no lights impact => due to node scaling, normals are scaled too !
+
+- Move navigator/bin/Debug&Release into Common/bin/Debug&Release
+
+- get Ogre 1.4.4 + rebuild
+
+- fluidity improvements + keys/mouse management to update
+- 1 global Solipsis solution
+- add shadows
+=> hmhm ok but fps-- + shadow texture too big and shadow on avatar too small
+
+- update with Navi 1.4
+
+- integration of salamandra
+ facing X axis -> OK
+ all anims in same .max -> OK (with lexiExporter and oFusion with some BBox troubles)
+ scale pb: x40 by OGRE -> OK resolved with Nel Plugin
+
+- tune the camera according to avatar size (waiting salamandra with good local axes ...)
+- integration of ODE and OgreOde
+- integration of ODE and OgreOde : ray floor OK, capsule geom OK, sphere gravity floor OK
+- integration of ODE and OgreOde : VC7 projects
+
+- integration of LUA
