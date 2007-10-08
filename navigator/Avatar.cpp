@@ -221,6 +221,7 @@ Ogre::Real Avatar::getMaxUpdateTimeStep() {
 //-------------------------------------------------------------------------------------
 void Avatar::setGravity(bool enabled) {
     mGravity = enabled;
+#ifdef FEET
     if (!enabled)
         if ((mFeetBody != 0) && mFeetBody->isAttached())
         {
@@ -229,6 +230,7 @@ void Avatar::setGravity(bool enabled) {
             mSceneNode->detachObject(mFeetBody);
             mRayGeom->setLength(mHeight);
         }
+#endif
 }
 
 //-------------------------------------------------------------------------------------
