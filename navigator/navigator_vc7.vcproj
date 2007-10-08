@@ -20,8 +20,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="1"
 				RuntimeLibrary="3"
@@ -33,9 +33,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib OgreOde_Core_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\OgreOde\lib"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -72,8 +72,8 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -83,9 +83,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib"
+				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib OgreOde_Core.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\OgreOde\lib"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -162,6 +162,9 @@
 				RelativePath=".\OgreFrameListener.cpp">
 			</File>
 			<File
+				RelativePath=".\OgreHelpers.cpp">
+			</File>
+			<File
 				RelativePath=".\oSceneLoader\src\OgreOSMScene.cpp">
 			</File>
 			<File
@@ -222,6 +225,9 @@
 			</File>
 			<File
 				RelativePath=".\OgreFrameListener.h">
+			</File>
+			<File
+				RelativePath=".\OgreHelpers.h">
 			</File>
 			<File
 				RelativePath=".\oSceneLoader\include\OgreOSMScene.h">
