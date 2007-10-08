@@ -1,8 +1,4 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tiny XML", "..\..\tinyxml\tinyxml_lib.vcproj", "{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ode", "..\..\ode\build\vs2003\ode.vcproj", "{FB603612-D49E-0B48-B1BC-5B7D627796DC}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
@@ -28,13 +24,16 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOde_Prefab_Source", "..\..\prefab\scripts\VC7.1\OgreOde_Prefab_Source.vcproj", "{BF6E2AC5-1B24-4728-B4E4-8E2D20DDB297}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FB603612-D49E-0B48-B1BC-5B7D627796DC} = {FB603612-D49E-0B48-B1BC-5B7D627796DC}
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF} = {D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}
 		{DF22C2FB-C678-4378-8475-9CCE0A906756} = {DF22C2FB-C678-4378-8475-9CCE0A906756}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OgreOde_Core_Source", "OgreOde_Core_Source.vcproj", "{DF22C2FB-C678-4378-8475-9CCE0A906756}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FB603612-D49E-0B48-B1BC-5B7D627796DC} = {FB603612-D49E-0B48-B1BC-5B7D627796DC}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tiny XML", "..\..\tinyxml\tinyxml_lib_vc7.vcproj", "{3915EE40-2D05-4849-B2BD-4D4E6A565C06}"
+	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Global
@@ -47,18 +46,6 @@ Global
 		ReleaseLib = ReleaseLib
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.Debug.ActiveCfg = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.Debug.Build.0 = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.DebugDLL.ActiveCfg = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.DebugDLL.Build.0 = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.DebugLib.ActiveCfg = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.DebugLib.Build.0 = Debug|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.Release.ActiveCfg = Release|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.Release.Build.0 = Release|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.ReleaseDLL.ActiveCfg = Release|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.ReleaseDLL.Build.0 = Release|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.ReleaseLib.ActiveCfg = Release|Win32
-		{D77FB6F1-2D33-497E-A1AC-A05FEEF362DF}.ReleaseLib.Build.0 = Release|Win32
 		{FB603612-D49E-0B48-B1BC-5B7D627796DC}.Debug.ActiveCfg = DebugLib|Win32
 		{FB603612-D49E-0B48-B1BC-5B7D627796DC}.Debug.Build.0 = DebugLib|Win32
 		{FB603612-D49E-0B48-B1BC-5B7D627796DC}.DebugDLL.ActiveCfg = DebugDLL|Win32
@@ -131,6 +118,18 @@ Global
 		{DF22C2FB-C678-4378-8475-9CCE0A906756}.ReleaseDLL.Build.0 = Release|Win32
 		{DF22C2FB-C678-4378-8475-9CCE0A906756}.ReleaseLib.ActiveCfg = Release|Win32
 		{DF22C2FB-C678-4378-8475-9CCE0A906756}.ReleaseLib.Build.0 = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.Debug.ActiveCfg = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.Debug.Build.0 = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.DebugDLL.ActiveCfg = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.DebugDLL.Build.0 = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.DebugLib.ActiveCfg = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.DebugLib.Build.0 = Debug|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.Release.ActiveCfg = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.Release.Build.0 = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.ReleaseDLL.ActiveCfg = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.ReleaseDLL.Build.0 = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.ReleaseLib.ActiveCfg = Release|Win32
+		{3915EE40-2D05-4849-B2BD-4D4E6A565C06}.ReleaseLib.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

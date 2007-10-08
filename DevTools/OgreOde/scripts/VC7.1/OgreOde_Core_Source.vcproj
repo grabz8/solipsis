@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\ode\include;..\..\..\ogrenew\OgreMain\include"
+				AdditionalIncludeDirectories="..\..\include;..\..\ode\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OGREODE_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -39,7 +39,7 @@
 				Version="0.1"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\ode\lib\debuglib;&quot;..\..\..\ogrenew\OgreMain\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\ode\lib\debuglib\;&quot;$(OGRE_HOME)\lib&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/OgreOde_Core_d.pdb"
 				SubSystem="2"
@@ -49,7 +49,12 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(OutDir)\$(TargetFileName) ..\..\..\ogrenew\Samples\Common\bin\$(ConfigurationName)"/>
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\include&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include
+xcopy ..\..\include\*.h $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include /y
+if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib
+copy $(OutDir)\OgreOde_Core_d.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -78,7 +83,7 @@
 				Name="VCCLCompilerTool"
 				EnableFiberSafeOptimizations="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="..\..\include;..\..\ode\include;..\..\..\ogrenew\OgreMain\include"
+				AdditionalIncludeDirectories="..\..\include;..\..\ode\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OGREODE_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -98,7 +103,7 @@
 				Version="0.1"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\..\ode\lib\releaselib;&quot;..\..\..\ogrenew\OgreMain\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\ode\lib\releaselib\;&quot;$(OGRE_HOME)\lib&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				StackReserveSize="8000000"
@@ -110,7 +115,12 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(OutDir)\$(TargetFileName) ..\..\..\ogrenew\Samples\Common\bin\$(ConfigurationName)"/>
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\include&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include
+xcopy ..\..\include\*.h $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include /y
+if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib
+copy $(OutDir)\OgreOde_Core.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -141,6 +151,9 @@
 			</File>
 			<File
 				RelativePath="..\..\src\OgreOdeCollision.cpp">
+			</File>
+			<File
+				RelativePath="..\..\src\OgreOdeDebugContact.cpp">
 			</File>
 			<File
 				RelativePath="..\..\src\OgreOdeDebugObject.cpp">
