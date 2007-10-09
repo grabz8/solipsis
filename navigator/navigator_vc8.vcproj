@@ -363,6 +363,14 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath="..\changelog.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\done.txt"
+				>
+			</File>
+			<File
 				RelativePath="..\readme.txt"
 				>
 			</File>
@@ -376,6 +384,10 @@
 			</File>
 			<File
 				RelativePath="..\Media\SolipsisFakeTerrain.cfg"
+				>
+			</File>
+			<File
+				RelativePath="..\todo.txt"
 				>
 			</File>
 			<File
