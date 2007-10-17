@@ -1,0 +1,19 @@
+
+material Matériau #1
+{
+	technique Default
+	{
+		pass Main
+		{
+
+
+			texture_unit
+			{
+				texture_alias diffuse
+				texture RustySteel.jpg -1
+			}
+		}
+
+	}
+
+}

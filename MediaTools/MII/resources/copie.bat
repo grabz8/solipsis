@@ -1,0 +1,1 @@
+xcopy "mii.xml" "G:\SolipsisCVS\bin\ressources\MII" /s /y

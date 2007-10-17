@@ -1,0 +1,17 @@
+
+
+--- CAMERA ---
+* navigation : 
+	left : (de)selection
+	left + CTRL :	selection : rotate around selection
+					none : rotate eye
+	right : ???
+	middle : zoom
+* si aucun objet n'est selectionne, la camera est en mode 'free'						mCamera->yall / pitch / roll
+* si un objet est selectionne, la camera se 'lock / target' dessus						mCamera->rotate(?)
+* pour l'auto zoom, se calibrer par rapport a la bounding box de la selection
+* si on deselectionne, la camera repasse en mode 'free' mais a gardee
+  les dernieres coordonnees de la selection
+  
+  
+--- SELECTION ---	  
