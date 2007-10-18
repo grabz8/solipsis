@@ -1,0 +1,38 @@
+root directory contains
+-----------------------
+
+Common         all generated binaries which can be launched standalone
+Dependencies   all 3rd-party dependencies (libraries, include files, binaries, ...)
+DevTools       all 3rd-party sources
+Media          all media files
+MediaTools     all external standalone tools we can use to manage/create/... media files
+navigator      the navigator
+
+Some rules for developpers
+--------------------------
+
+0- because those directories are filled during the generation, I DO NOT commit anything into
+ Common
+ Dependencies
+
+1- before creating 1 new directory check if you cannot use the dedicated directory
+ media files into Media
+ 3rd-parties into DevTools
+ . . .
+
+2- create as many configuration projects as you can (Visual Studio 2003 = vc7, Visual Studio 2005 = vc8, ...)
+
+3- if you need some third-parties (libraries, ...), check it is not already available into DevTools directory
+ tinyxml,
+ pthreads,
+ . . .
+
+4- if you need some third-parties and it is not yet into DevTools directory
+ then try to choose 1 crossplatform version and add it into DevTools directory
+
+5- if you add something into DevTools directory
+ then copy libraries/includes/binaries into Dependencies directory
+
+6- if you generate 1 binary then copy all files this binary needs into Common/bin/<binary name>,
+ idea is I can launch this binary from this directory without adding anything else ...
+
