@@ -102,7 +102,6 @@ protected:
     OIS::Keyboard* mKeyboard;
     OIS::JoyStick* mJoy;
 
-
     Real mRotate;          // The rotate constant
     Real mMove;            // The movement constant
 

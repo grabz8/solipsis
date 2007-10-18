@@ -240,7 +240,6 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
         }
     }
 
-
 //-------------------------------------------------------------------------------------
    
  
