@@ -34,7 +34,6 @@ protected:
     int mPort;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
-    NodeEventListener* mNodeEventListener;
 
     std::list<Peer*> mPeersList;
     std::map<String,OgrePeer*> mOgrePeersMap;
