@@ -41,7 +41,7 @@ bool NodeEventListener::start()
 }
 
 //-------------------------------------------------------------------------------------
-void NodeEventListener::run()
+void NodeEventListener::listen()
 {
     while (!mStop)
     {
@@ -54,7 +54,7 @@ void NodeEventListener::run()
         mNodeEventsListProcessing = mNodeEventsListReceiving;
         mNodeEventsListReceiving = (mNodeEventsListReceiving == &mNodeEventsList1) ? &mNodeEventsList2 : &mNodeEventsList1;
         //processEvents(); is called by the rendering thread to ensure synchronization with the rendering engine
-        LogManager::getSingletonPtr()->logMessage("NodeEventListener::run() new events list in mNodeEventsListProcessing");
+        LogManager::getSingletonPtr()->logMessage("NodeEventListener::listen() new events list in mNodeEventsListProcessing");
     }
     mState = SStopped;
 }
@@ -84,7 +84,7 @@ void* NodeEventListener::start_routine(void* args)
 {
     NodeEventListener* nodeEventListener = (NodeEventListener*)args;
     if (nodeEventListener != 0)
-        nodeEventListener->run();
+        nodeEventListener->listen();
 
     LogManager::getSingletonPtr()->logMessage("NodeEventListener::start_routine() end");
 

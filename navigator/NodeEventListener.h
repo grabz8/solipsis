@@ -33,7 +33,7 @@ public:
     ~NodeEventListener();
 
     bool start();
-    virtual void run();
+    virtual void listen();
     void stop(unsigned int timeoutSec = 5);
 
 protected:
