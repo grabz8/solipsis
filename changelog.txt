@@ -82,3 +82,10 @@ Key "END" added to activate gravity when flying to go down the floor
 VC7 projects updated for Ode + OgreOde integration
 Lua integration
 
+---------------------------
+23/10/07
+
+Some Navi updates (now focused Navi is refreshed to see/move cursor, Navi vs NaviMaterial management)
+3D ray picking added (you can now click on meshes with NaviMaterial mapped on, take care to be close to)
+1 new camera mode = First-person camera view with mouse interaction, usefull when looking 1 web page without
+the avatar in front of

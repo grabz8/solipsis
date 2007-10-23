@@ -50,3 +50,8 @@ the peer events listener (Win32/Linux portable)
 - integration of ODE and OgreOde : VC7 projects
 
 - integration of LUA
+
+- add small refresh rate on focused navi in order to display blinking cursor
+- add 3D picking on Navis (refer to ogreaddons\uOgreBrowser)
+=> still 1 small problem when the ray origin is into the AABB of the navi
+

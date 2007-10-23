@@ -21,7 +21,8 @@ HELP
 
 Camera:
 1        First-Person view mode
-2        Third-Person view mode
+2        First-Person view mode with mouse to interact
+3        Third-Person view mode
 MOUSE    Cursor mode (3rd person) / View mode (1st person)
 
 
@@ -108,6 +109,12 @@ LEXI           User avatar exported with LEXI plugin
 --------------------------------------------------------------------------------
 FORUMS LOGINS
 --------------------------------------------------------------------------------
+
+Ogre
+url      http://www.ogre3d.org/phpBB2/
+username g6r6e6g
+email    gregoryjan@free.fr
+password greg666
 
 Navi
 url      http://navi.agelessanime.com/forum
