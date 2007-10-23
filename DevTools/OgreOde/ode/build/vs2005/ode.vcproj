@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug DLL runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y"
+				CommandLine="if not exist ..\..\..\..\..\Dependencies\ode\include\ode mkdir ..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy ..\..\include\ode\*.h ..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist ..\..\..\..\..\Dependencies\ode\lib\debugdll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll&#x0D;&#x0A;copy ..\..\lib\debugdll\$(TargetName).lib ..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y&#x0D;&#x0A;copy ..\..\lib\debugdll\$(TargetName).dll ..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -183,7 +183,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release DLL runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y"
+				CommandLine="if not exist ..\..\..\..\..\Dependencies\ode\include\ode mkdir ..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy ..\..\include\ode\*.h ..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist ..\..\..\..\..\Dependencies\ode\lib\releasedll mkdir ..\..\..\..\..\Dependencies\ode\lib\releasedll&#x0D;&#x0A;copy ..\..\lib\releasedll\$(TargetName).lib ..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y&#x0D;&#x0A;copy ..\..\lib\releasedll\$(TargetName).dll ..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -251,7 +251,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\debuglib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib\. /y"
+				CommandLine="if not exist ..\..\..\..\..\Dependencies\ode\include\ode mkdir ..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy ..\..\include\ode\*.h ..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist ..\..\..\..\..\Dependencies\ode\lib\debuglib mkdir ..\..\..\..\..\Dependencies\ode\lib\debuglib&#x0D;&#x0A;copy ..\..\lib\debuglib\$(TargetName).lib ..\..\..\..\..\Dependencies\ode\lib\debuglib\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -319,7 +319,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib&#x0D;&#x0A;copy $(ProjectDir)..\..\lib\releaselib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib\. /y"
+				CommandLine="if not exist ..\..\..\..\..\Dependencies\ode\include\ode mkdir ..\..\..\..\..\Dependencies\ode\include\ode&#x0D;&#x0A;copy ..\..\include\ode\*.h ..\..\..\..\..\Dependencies\ode\include\ode\. /y&#x0D;&#x0A;if not exist ..\..\..\..\..\Dependencies\ode\lib\releaselib mkdir ..\..\..\..\..\Dependencies\ode\lib\releaselib&#x0D;&#x0A;copy ..\..\lib\releaselib\$(TargetName).lib ..\..\..\..\..\Dependencies\ode\lib\releaselib\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
