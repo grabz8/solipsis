@@ -38,6 +38,9 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	winHeight = renderWin->getHeight();
 	renderWindow = renderWin;
 	isWinFocused = true;
+// BEGIN GREG
+	isFocused = false;
+// END GREG
 	position = naviPosition;
 	movable = isMovable;
 	windowID = 0;
@@ -86,6 +89,9 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	winHeight = renderWin->getHeight();
 	renderWindow = renderWin;
 	isWinFocused = true;
+// BEGIN GREG
+	isFocused = false;
+// END GREG
 	position = NaviPosition();
 	movable = false;
 	windowID = 0;
@@ -278,7 +284,10 @@ void Navi::update()
 	if(!isWinFocused) return;
 	if(!isVisible) return;
 
-	if(forceMax || fadingIn || fadingOut)
+// BEGIN GREG
+//	if(forceMax || fadingIn || fadingOut)
+	if(forceMax || fadingIn || fadingOut || isFocused)
+// END GREG
 	{
 		if(maxUpdatePS)
 		{
@@ -303,6 +312,9 @@ void Navi::update()
 	
 	unsigned char* pixels = 0;
 
+// BEGIN GREG
+	if(isFocused) needsUpdate = true;
+// END GREG
 	if(needsUpdate || forceMax)
 	{
 		LLMozLib::getInstance()->grabBrowserWindow(windowID);

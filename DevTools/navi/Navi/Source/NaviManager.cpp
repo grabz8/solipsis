@@ -440,6 +440,15 @@ const std::string & NaviManager::getFocusedNaviName()
 	return empty;
 }
 
+// BEGIN GREG
+bool NaviManager::naviFocusedIsMaterialOnly()
+{
+	if(!focusedNavi)
+		return false;
+	return focusedNavi->isMaterialOnly;
+}
+// END GREG
+
 std::string NaviManager::getNaviMaterialName(const std::string &naviName)
 {
 	iter = activeNavis.find(naviName);
@@ -487,6 +496,20 @@ void NaviManager::getDerivedUV(const std::string &naviName, Ogre::Real& u1, Ogre
 		}
 	}
 }
+
+// BEGIN GREG
+void NaviManager::getNaviExtents(const std::string &naviName, unsigned short& width, unsigned short& height)
+{
+	width = height = 0;
+
+	iter = activeNavis.find(naviName);
+	if(iter != activeNavis.end())
+	{
+		width = iter->second->naviWidth;
+		height = iter->second->naviHeight;
+	}
+}
+// END GREG
 
 bool NaviManager::injectMouseMove(int xPos, int yPos)
 {
@@ -686,29 +709,37 @@ void NaviManager::focusNavi(int x, int y, Navi* selection)
 
 	if(naviToFocus)
 	{
-		std::vector<Navi*> sortedNavis = getNavis();
-
-		if(sortedNavis.size())
+// BEGIN GREG
+		if(!naviToFocus->isMaterialOnly)
 		{
-			if(sortedNavis.at(0) != naviToFocus)
-			{
-				// Find the Navi to pop to the top
-				unsigned int popIdx = 0;
-				for(; popIdx < sortedNavis.size(); popIdx++)
-					if(sortedNavis.at(popIdx) == naviToFocus)
-						break;
+			std::vector<Navi*> sortedNavis = getNavis();
 
-				unsigned short highestZ = sortedNavis.at(0)->overlay->getZOrder();
-				// 'Sink' z-orders of Navis above the one to pop
-				for(unsigned int i = 0; i < popIdx; i++)
-					sortedNavis.at(i)->overlay->setZOrder(sortedNavis.at(i+1)->overlay->getZOrder());
-				
-				// Pop Navi to the top
-				sortedNavis.at(popIdx)->overlay->setZOrder(highestZ);
+			if(sortedNavis.size())
+			{
+				if(sortedNavis.at(0) != naviToFocus)
+				{
+					// Find the Navi to pop to the top
+					unsigned int popIdx = 0;
+					for(; popIdx < sortedNavis.size(); popIdx++)
+						if(sortedNavis.at(popIdx) == naviToFocus)
+							break;
+
+					unsigned short highestZ = sortedNavis.at(0)->overlay->getZOrder();
+					// 'Sink' z-orders of Navis above the one to pop
+					for(unsigned int i = 0; i < popIdx; i++)
+						sortedNavis.at(i)->overlay->setZOrder(sortedNavis.at(i+1)->overlay->getZOrder());
+    				
+					// Pop Navi to the top
+					sortedNavis.at(popIdx)->overlay->setZOrder(highestZ);
+				}
 			}
 		}
+// END GREG
 
 		focusedNavi = naviToFocus;
+// BEGIN GREG
+		focusedNavi->setFocus(true);
+// END GREG
 		LLMozLib::getInstance()->focusBrowser(naviToFocus->windowID, true);
 	}
 }
@@ -756,6 +787,10 @@ void NaviManager::deFocusAllNavis()
 	for(iter = activeNavis.begin(); iter != activeNavis.end(); iter++)
 		LLMozLib::getInstance()->focusBrowser(iter->second->windowID, false);
 
+// BEGIN GREG
+	if(focusedNavi)
+		focusedNavi->setFocus(false);
+// END GREG
 	focusedNavi = 0;
 
 	// A true and total HACK to get rid of internal Mozilla keyboard focus
