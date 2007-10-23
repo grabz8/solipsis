@@ -105,7 +105,11 @@ namespace NaviLibrary
 		* Hides the mouse cursor. Show it again via NaviMouse::show.
 		*/
 		void hide();
-	};
+
+		// BEGIN GREG
+		bool isVisible() { return visible; }
+		// END GREG
+    };
 
 }
 

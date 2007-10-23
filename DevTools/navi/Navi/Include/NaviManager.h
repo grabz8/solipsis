@@ -572,6 +572,15 @@ namespace NaviLibrary
 		*/
 		const std::string & getFocusedNaviName();
 
+		// BEGIN GREG
+		/**
+		* Checks whether or not the focused/selected Navi is a NaviMaterial.
+		*
+		* @return	True if the focused Navi is a NaviMaterial, False otherwise.
+		*/
+		bool naviFocusedIsMaterialOnly();
+		// END GREG
+
 		/**
 		* Gets the name of the Ogre Material that is used internally for a certain Navi.
 		*
@@ -606,6 +615,13 @@ namespace NaviLibrary
 		* however NaviMaterials will need to adjust their own by use of this function.
 		*/
 		void getDerivedUV(const std::string &naviName, Ogre::Real& u1, Ogre::Real& v1, Ogre::Real& u2, Ogre::Real& v2);
+
+		// BEGIN GREG
+		/**
+		* Gets the extents (width, height) of the Navi, those extents are those used by the native browser.
+		*/
+		void getNaviExtents(const std::string &naviName, unsigned short& width, unsigned short& height);
+		// END GREG
 
 		/**
 		* Injects absolute mouse coordinates into NaviManager. Used to generally keep track of where the mouse 

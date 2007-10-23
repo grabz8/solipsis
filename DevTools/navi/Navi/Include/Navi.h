@@ -46,6 +46,9 @@ namespace NaviLibrary
 		unsigned int winHeight;
 		Ogre::RenderWindow* renderWindow;
 		bool isWinFocused;
+// BEGIN GREG
+		bool isFocused;
+// END GREG
 		NaviPosition position;
 		bool movable;
 		int windowID;
@@ -152,6 +155,10 @@ namespace NaviLibrary
 		int getRelativeX(int absX);
 
 		int getRelativeY(int absY);
+
+// BEGIN GREG
+        void setFocus(bool focus) { isFocused = focus; }
+// END GREG
 
 		void onPageChanged(const EventType& eventIn);
 		void onNavigateBegin(const EventType& eventIn);
