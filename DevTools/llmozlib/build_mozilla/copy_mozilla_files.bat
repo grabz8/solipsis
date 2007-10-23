@@ -41,7 +41,8 @@ xcopy %SRC_DIR_OPT%\dist\include\webbrwsr\*.*					%DEST_DIR%\include\mozilla\inc
 xcopy %SRC_DIR_OPT%\dist\include\widget\*.*						%DEST_DIR%\include\mozilla\include\widget\ /s
 xcopy %SRC_DIR_OPT%\dist\include\xpcom\*.*						%DEST_DIR%\include\mozilla\include\xpcom\ /s
 xcopy %SRC_DIR_OPT%\dist\include\xulapp\*.*						%DEST_DIR%\include\mozilla\include\xulapp\ /s
-xcopy %SRC_DIR_OPT%\dist\sdk\include\*.*						%DEST_DIR%\include\mozilla\sdk\include\	/s
+xcopy %SRC_DIR_OPT%\dist\sdk\*.*						%DEST_DIR%\include\mozilla\sdk\ /s
+xcopy %SRC_DIR_OPT%\..\modules\plugin\tools\sdk\samples\include\*.h		%DEST_DIR%\include\mozilla\modules\plugin\tools\sdk\samples\include\ /s
 
 @echo ========== copying debug libraries ==========
 xcopy %SRC_DIR_DEBUG%\dist\lib\nspr4.lib						%DEST_DIR%\lib_debug\
