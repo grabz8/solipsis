@@ -20,6 +20,7 @@ class NavigatorFrameListener :
 public:
     enum CameraMode {
         CM1stPerson,
+        CM1stPersonWithMouse,
         CM3rdPerson
     };
 

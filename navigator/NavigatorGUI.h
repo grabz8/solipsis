@@ -51,6 +51,7 @@ public:
 
     // Mouse
     void SetMouseVisibility(bool visible);
+    bool isMouseVisible();
 
     // Handlers
     void loginPageRefresh(const NaviData& naviData);

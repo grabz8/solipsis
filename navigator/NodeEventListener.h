@@ -1,46 +1,42 @@
 #ifndef __NodeEventListener_h__
 #define __NodeEventListener_h__
 
-#include <pthread.h>
 #include <list>
+#include "BasicThread.h"
 #include "NodeEvent.h"
 
 class NavigatorXMLRPCClient;
 
-class NodeEventListener
+class NodeEventListener : public BasicThread
 {
-public:
-    enum State {
-        SInit,      // Listener is initialized
-        SRunning,   // Listener is running
-        SStopped    // Listener is stopped
-    };
-
 protected:
+    // XMLRPC client
     NavigatorXMLRPCClient*& mXmlRpcClient;
 
+private:
+    // mutex to secure events lists accesses
+    pthread_mutex_t mNodeEventsListsMutex;
+    // first events list storage
     std::list<NodeEvent*> mNodeEventsList1;
+    // second events list storage
     std::list<NodeEvent*> mNodeEventsList2;
+    // current list used to receive new events
     std::list<NodeEvent*>* mNodeEventsListReceiving;
+    // current list containing events to process
     std::list<NodeEvent*>* mNodeEventsListProcessing;
-
-    pthread_t mThread;
-    State mState;
-    bool mStop;
 
 public:
     NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient);
     ~NodeEventListener();
 
-    bool start();
-    virtual void listen();
-    void stop(unsigned int timeoutSec = 5);
-
 protected:
-    virtual void processEvents() = 0; // pure virtual
+    // implements the BasicThread methods
+    virtual void run();
 
-private:
-    static void *start_routine(void* args);
+    // begin to process events
+    virtual std::list<NodeEvent*>* beginProcessEvents();
+    // end of events processing
+    virtual void endProcessEvents();
 };
 
 #endif // #ifndef __NodeEventListener_h__

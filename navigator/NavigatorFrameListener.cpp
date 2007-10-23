@@ -57,6 +57,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     switch (mode)
     {
     case CM1stPerson:
+    case CM1stPersonWithMouse:
         mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
         mCamNode->setOrientation(Quaternion::IDENTITY);
         mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
@@ -69,8 +70,8 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         mNavigator->getUserAvatar()->setMvtType(Avatar::MT3rdPerson);
         break;
     }
-    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode != CM1stPerson, false);
-    mNavigator->getUserAvatar()->setNameVisibility(mode != CM1stPerson);
+    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson, false);
+    mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson);
     mNavigator->getNavigatorGUI()->SetMouseVisibility(mode != CM1stPerson);
     mCameraMode = mode;
 }
@@ -93,8 +94,40 @@ NavigatorFrameListener::CameraMode NavigatorFrameListener::getCameraMode()
 bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
 {
     // Updating Navi with the mouse motion
-    if (e.state.Z.rel != 0) NaviManager::Get().injectMouseWheel(e.state.Z.rel);
+    // 3D picking of Navi panels if any NaviMaterial focused
+    if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly()
+        && (mCameraMode != CM1stPerson))
+    {
+        std::string focusedNavi = NaviManager::Get().getFocusedNaviName();
+        if (e.state.Z.rel != 0) NaviManager::Get().injectNaviMouseWheel(focusedNavi, e.state.Z.rel);
+        // normalize (x, y) on 0..1 and get the ray emitted from the camera
+        Ray mouseRay = mCamera->getCameraToViewportRay((Real)e.state.X.abs/(Real)mCamera->getViewport()->getActualWidth(), (Real)e.state.Y.abs/(Real)mCamera->getViewport()->getActualHeight());
+        Real closestDistance = -1.0f;
+        Vector2 closestUV;
+        Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+        int naviX, naviY;
+        if (mNavigator->isNaviHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
+                                         closestDistance,
+                                         closestUV,
+                                         closestTriUV0, closestTriUV1, closestTriUV2))
+        {
+            // compute texture coordinates of the hit
+            mNavigator->computeNaviHit(focusedNavi,
+                                       closestUV,
+                                       closestTriUV0, closestTriUV1, closestTriUV2,
+                                       naviX, naviY);
+            NaviManager::Get().injectNaviMouseMove(focusedNavi, naviX, naviY);
+        }
+    }
+    else
+        if (e.state.Z.rel != 0) NaviManager::Get().injectMouseWheel(e.state.Z.rel);
+
+    // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
     NaviManager::Get().injectMouseMove(e.state.X.abs, e.state.Y.abs);
+
+    // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
+    if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly())
+        return true;
 
     Real mouseWheel = e.state.Z.rel;
 
@@ -125,7 +158,7 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
         //Vector3 camAbs = mCamera->getWorldPosition();
         if (posAbs.squaredDistance(camAbs)<(size.x)*(size.x))
         {
-            if (getCameraMode()==CM3rdPerson)
+            if (getCameraMode() == CM3rdPerson)
                 setCameraMode(CM1stPerson);
         }
     }
@@ -143,8 +176,25 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
 
 bool NavigatorFrameListener::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 {
-    // Updating Navi with the mouse pressed
-    NaviManager::Get().injectMouseDown(id);
+    if (NaviManager::Get().getMouse()->isVisible())
+    {
+        // Updating Navi with the mouse pressed
+        NaviManager::Get().injectMouseDown(id);
+
+        // 3D picking of Navi panels if no 2D panel focused
+        if (!NaviManager::Get().isAnyNaviFocused())
+        {
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)e.state.X.abs/(Real)mCamera->getViewport()->getActualWidth(), (Real)e.state.Y.abs/(Real)mCamera->getViewport()->getActualHeight());
+            String naviName;
+            int naviX, naviY;
+            if (mNavigator->is1NaviHitByMouse(mouseRay, naviName, naviX, naviY))
+            {
+                NaviManager::Get().focusNavi(naviName);
+                NaviManager::Get().injectNaviMouseDown(naviName, id, naviX, naviY);
+            }
+        }
+    }
 
     return OgreFrameListener::mousePressed(e,id);
 }
@@ -152,9 +202,23 @@ bool NavigatorFrameListener::mousePressed(const OIS::MouseEvent &e, OIS::MouseBu
 //-------------------------------------------------------------------------------------
 
 bool NavigatorFrameListener::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{ 
-    // Updating Navi with the mouse pressed
-    NaviManager::Get().injectMouseUp(id);
+{
+    if (NaviManager::Get().getMouse()->isVisible())
+    {
+        // Updating Navi with the mouse pressed
+        // 3D picking of Navi panels if any NaviMaterial focused
+        if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly())
+        {
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)e.state.X.abs/(Real)mCamera->getViewport()->getActualWidth(), (Real)e.state.Y.abs/(Real)mCamera->getViewport()->getActualHeight());
+            String naviName;
+            int naviX, naviY;
+            if (mNavigator->is1NaviHitByMouse(mouseRay, naviName, naviX, naviY))
+                NaviManager::Get().injectNaviMouseUp(naviName, id, naviX, naviY);
+        }
+        else
+            NaviManager::Get().injectMouseUp(id);
+    }
 
     return OgreFrameListener::mouseReleased(e,id);
 }
@@ -189,11 +253,13 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         break;
 #endif
 
-    case KC_1: //Changement de camera
+    case KC_1: // Switch to 1st person camera
         setCameraMode(CM1stPerson);
         break;
-
-    case KC_2: //Changement de camera
+    case KC_2: // Switch to 1st person camera with mouse
+        setCameraMode(CM1stPersonWithMouse);
+        break;
+    case KC_3: // Switch to 3rd person camera
         setCameraMode(CM3rdPerson);
         break;
 

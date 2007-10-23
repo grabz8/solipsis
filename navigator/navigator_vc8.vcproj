@@ -191,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BasicThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\BigInt.cpp"
 				>
 			</File>
@@ -270,6 +274,10 @@
 			>
 			<File
 				RelativePath=".\Avatar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\BasicThread.h"
 				>
 			</File>
 			<File
@@ -364,6 +372,10 @@
 			>
 			<File
 				RelativePath="..\changelog.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\devrules.txt"
 				>
 			</File>
 			<File

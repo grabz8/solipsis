@@ -3,11 +3,11 @@
 #include "Platform.h"
 
 NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
+    BasicThread(),
     mXmlRpcClient(xmlRpcClient),
+    mNodeEventsListsMutex(PTHREAD_MUTEX_INITIALIZER),
     mNodeEventsListReceiving(&mNodeEventsList1),
-    mNodeEventsListProcessing(&mNodeEventsList2),
-    mState(SInit),
-    mStop(false)
+    mNodeEventsListProcessing(&mNodeEventsList2)
 {
 }
 
@@ -17,76 +17,50 @@ NodeEventListener::~NodeEventListener()
 }
 
 //-------------------------------------------------------------------------------------
-bool NodeEventListener::start()
+void NodeEventListener::run()
 {
-    int rc;
-
-    rc = pthread_create(&mThread, NULL, start_routine, this);
-    if (rc != 0)
+    while (!isStopRequested())
     {
-        LogManager::getSingletonPtr()->logMessage("NodeEventListener::start() pthread_create returned " + StringConverter::toString(rc));
-        return false;
-    }
-    rc = pthread_detach(mThread);
-    if (rc != 0)
-    {
-        LogManager::getSingletonPtr()->logMessage("NodeEventListener::start() pthread_detach returned " + StringConverter::toString(rc));
-        return false;
-    }
-
-    mState = SRunning;
-    mStop = false;
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-void NodeEventListener::listen()
-{
-    while (!mStop)
-    {
+        // receive new events
         mNodeEventsListReceiving->clear();
-        while (mNodeEventsListReceiving->empty() && !mStop)
+        while (mNodeEventsListReceiving->empty() && !isStopRequested())
             mXmlRpcClient->getEvents(*mNodeEventsListReceiving);
-        while (!mNodeEventsListProcessing->empty() && !mStop)
+
+        // waiting previous events are processed
+        bool isNodeEventsListProcessingEmpty = false;
+        while (!isStopRequested() && !isNodeEventsListProcessingEmpty)
+        {
+            pthread_mutex_lock(&mNodeEventsListsMutex);
+            isNodeEventsListProcessingEmpty = mNodeEventsListProcessing->empty();
             Platform::sleep(100);
-        if (mStop) break;
+        }
+        if (isStopRequested())
+        {
+            if (isNodeEventsListProcessingEmpty)
+                pthread_mutex_unlock(&mNodeEventsListsMutex);
+            break;
+        }
+
+        // assign new received events to events to process
         mNodeEventsListProcessing = mNodeEventsListReceiving;
         mNodeEventsListReceiving = (mNodeEventsListReceiving == &mNodeEventsList1) ? &mNodeEventsList2 : &mNodeEventsList1;
+        pthread_mutex_unlock(&mNodeEventsListsMutex);
+
         //processEvents(); is called by the rendering thread to ensure synchronization with the rendering engine
-        LogManager::getSingletonPtr()->logMessage("NodeEventListener::listen() new events list in mNodeEventsListProcessing");
+        LogManager::getSingletonPtr()->logMessage("NodeEventListener::run() new events list in mNodeEventsListProcessing");
     }
-    mState = SStopped;
 }
 
 //-------------------------------------------------------------------------------------
-void NodeEventListener::stop(unsigned int timeoutSec)
+std::list<NodeEvent*>* NodeEventListener::beginProcessEvents()
 {
-    unsigned long elapsedMs = 0;
-
-    LogManager::getSingletonPtr()->logMessage("NodeEventListener::stop() stop requested");
-
-    mStop = true;
-    while ((mState == SRunning) && (elapsedMs < (unsigned long)timeoutSec*1000))
-    {
-        Platform::sleep(100);
-        elapsedMs += 100;
-    }
-    // Kill thread ?
-    if (mState == SRunning) {
-    }
-
-    LogManager::getSingletonPtr()->logMessage("NodeEventListener::stop() end");
+    pthread_mutex_lock(&mNodeEventsListsMutex);
+    return mNodeEventsListProcessing;
 }
 
 //-------------------------------------------------------------------------------------
-void* NodeEventListener::start_routine(void* args)
+void NodeEventListener::endProcessEvents()
 {
-    NodeEventListener* nodeEventListener = (NodeEventListener*)args;
-    if (nodeEventListener != 0)
-        nodeEventListener->listen();
-
-    LogManager::getSingletonPtr()->logMessage("NodeEventListener::start_routine() end");
-
-    return NULL;
+    mNodeEventsListProcessing->clear();
+    pthread_mutex_unlock(&mNodeEventsListsMutex);
 }

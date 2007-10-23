@@ -126,6 +126,9 @@
 				RelativePath=".\Avatar.cpp">
 			</File>
 			<File
+				RelativePath=".\BasicThread.cpp">
+			</File>
+			<File
 				RelativePath=".\BigInt.cpp">
 			</File>
 			<File
@@ -186,6 +189,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath=".\Avatar.h">
+			</File>
+			<File
+				RelativePath=".\BasicThread.h">
 			</File>
 			<File
 				RelativePath=".\BigInt.h">
@@ -257,6 +263,9 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
 				RelativePath="..\changelog.txt">
+			</File>
+			<File
+				RelativePath="..\devrules.txt">
 			</File>
 			<File
 				RelativePath="..\done.txt">

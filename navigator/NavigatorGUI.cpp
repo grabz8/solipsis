@@ -92,6 +92,12 @@ void NavigatorGUI::SetMouseVisibility(bool visible)
 }
 
 //-------------------------------------------------------------------------------------
+bool NavigatorGUI::isMouseVisible()
+{
+    return mNaviMgr.getMouse()->isVisible();
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::loginPageRefresh(const NaviData& naviData)
 {
     LogManager::getSingletonPtr()->logMessage("NavigatorGUI::loginPageRefresh()");

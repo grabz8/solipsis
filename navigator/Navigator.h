@@ -25,6 +25,11 @@ public:
         SBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
         SUnavailable    // Node is not connected to the Solipsis world
     };
+    enum QueryFlags
+    {
+        QFNaviPanel = 1<<0,
+        QFAvatars = QFNaviPanel<<1
+    };
 
 protected:
     ConnectionMode mConnectionMode;
@@ -32,6 +37,7 @@ protected:
     int mUdpPort;
     String mHost;
     int mPort;
+    Real mMaxNaviPickingDistance;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
@@ -39,6 +45,7 @@ protected:
     std::map<String,OgrePeer*> mOgrePeersMap;
 
     NavigatorGUI* mNavigatorGUI;
+    RaySceneQuery* mNaviRaySceneQuery;
 
     Avatar* mUserAvatar;
 
@@ -92,10 +99,23 @@ public:
     void demoPhysics1();
 #endif
 
+    // Navi 3D panels management
+    Entity* getNaviEntity(const String& naviName);
+    bool isNaviHitByMouse(Ray& mouseRay, Entity* naviEntity,
+                          Real& closestDistance,
+                          Vector2& closestUV,
+                          Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2);
+    void computeNaviHit(const String& naviName,
+                        Vector2& closestUV,
+                        Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                        int& naviX, int& naviY);
+    bool is1NaviHitByMouse(Ray& mouseRay, String& naviName, int& naviX, int& naviY);
+
     bool quit();
     bool connect();
     bool sendMessage(const String& message);
 
+    // process events received by node
     void processEvents();
 
 protected:
