@@ -12,8 +12,6 @@ class NavigatorFrameListener :
     public OgreFrameListener
 #ifdef PHYSICS
     ,
-	public OgreOde::StepListener, 
-	public OgreOde::TriangleMeshRayListener,
     public OgreOde::CollisionListener
 #endif
 {
@@ -42,8 +40,9 @@ protected:
     bool keyReleased(const OIS::KeyEvent &e);
 
 #ifdef PHYSICS
+private:
     // OgreOde::CollisionListener
-    bool collision(OgreOde::Contact* contact);
+    virtual bool collision(OgreOde::Contact* contact);
 #endif
 
 public:

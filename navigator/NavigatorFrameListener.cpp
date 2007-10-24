@@ -380,6 +380,9 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::collision(OgreOde::Contact* contact)
 {
+    contact->setCoulombFriction(0.9);
+    contact->setBouncyness(0.2);
+    contact->setSoftness(0.8, 10e-5);
 
     return true;
 }
