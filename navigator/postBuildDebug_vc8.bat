@@ -16,4 +16,4 @@ if not exist "%1\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugin
 if not exist "%1\quake3settings.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\quake3settings.cfg" "%1" /s /y
 if not exist "%1\resources.cfg" xcopy "..\Media\resources.cfg" "%1" /s /y
 if not exist "%1\SolipsisFakeTerrain.cfg" xcopy "..\Media\SolipsisFakeTerrain.cfg" "%1" /s /y
-if not exist "%1\readme.txt" copy "readme.txt" "%1readme.txt" /y
+if not exist "%1\readme.txt" copy "..\readme.txt" "%1readme.txt" /y
