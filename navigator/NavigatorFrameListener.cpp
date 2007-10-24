@@ -380,6 +380,17 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::collision(OgreOde::Contact* contact)
 {
+    // Check for collisions between things that are connected and ignore them
+/*    OgreOde::Geometry * const g1 = contact->getFirstGeometry();
+    OgreOde::Geometry * const g2 = contact->getSecondGeometry();
+    if (g1 && g2)
+    {
+        const OgreOde::Body * const b1 = g1->getBody();
+        const OgreOde::Body * const b2 = g2->getBody();
+        if (b1 && b2 && OgreOde::Joint::areConnected(b1, b2)) 
+            return false; 
+    }*/
+
     contact->setCoulombFriction(0.9);
     contact->setBouncyness(0.2);
     contact->setSoftness(0.8, 10e-5);
