@@ -55,3 +55,14 @@ the peer events listener (Win32/Linux portable)
 - add 3D picking on Navis (refer to ogreaddons\uOgreBrowser)
 => still 1 small problem when the ray origin is into the AABB of the navi
 
+- create 1 Navigator Displayer ActiveX/Plugin to interact with Navigator from 1 simple Win Mozilla browser
++ implement object-oriented interfaces NavigatorModule which would be the generic Navigator interface
+  shared by different Navigator implementations : Binary application with 1 main(), Mozilla plugin, ActiveX IE, ...
+   events (application, keyboard, mouse, ...) class (OIS, ...)
+   all datas Navigator is waiting for (Window class, ...)
+=> pb when loading Mozilla DLLs from Navigator DLL plugin loaded by Mozilla binary !!!
+
+- integration of ODE and OgreOde : still some pbs about C/C++ callbacks
+=> use dynamic_cast instead of simple C++ cast (OgreFrameListener to CollisionListener)
+
+- main modeler panel added and available with F9

@@ -39,6 +39,7 @@ END      Activate gravity
 Debug commands:
 F1 .. F4 SkyDome choice
 F5       FakeTerrain
+F9       Toggle MODELER main panel
 F10      Toggle physics contacts display
 F11      Toggle physics geometries display
 F12      Toggle bounding-boxes display
