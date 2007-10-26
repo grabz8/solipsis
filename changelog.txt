@@ -89,3 +89,9 @@ Some Navi updates (now focused Navi is refreshed to see/move cursor, Navi vs Nav
 3D ray picking added (you can now click on meshes with NaviMaterial mapped on, take care to be close to)
 1 new camera mode = First-person camera view with mouse interaction, usefull when looking 1 web page without
 the avatar in front of
+
+---------------------------
+26/10/07
+
+main modeler panel (accordion right menu like Max) added and available with F9
+
