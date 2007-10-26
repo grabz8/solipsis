@@ -17,6 +17,7 @@ class NavigatorFrameListener :
 {
 public:
     enum CameraMode {
+        CMDetached,
         CM1stPerson,
         CM1stPersonWithMouse,
         CM3rdPerson
@@ -27,6 +28,7 @@ protected:
     Overlay* mStandardOverlay;
     bool mBoundingBoxesShows;
     CameraMode mCameraMode;
+    CameraMode mSavedCameraMode;
 
     Real time;
 
@@ -51,6 +53,8 @@ public:
 
     void setCameraMode(CameraMode mode);
     CameraMode getCameraMode();
+    void detachCamera();
+    void attachCamera();
 };
 
 #endif // #ifndef __NavigatorFrameListener_h__

@@ -73,7 +73,7 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
         //Register as a Window listener
         WindowEventUtilities::addWindowEventListener(mWindow, this);
 
-        //OSI Listeners
+        //OIS Listeners
         mMouse->setEventCallback(this);
         mKeyboard->setEventCallback(this);
 
@@ -185,11 +185,11 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
 //-------------------------------------------------------------------------------------
    bool OgreFrameListener::keyReleased(const OIS::KeyEvent &e) {
        using namespace OIS;
-       switch (e.key) //L'inverse du pressed pour stopper le mouvement !
+/*       switch (e.key)
        {
        default:
            break;
-       }
+       }*/
        return true;
    }
 
@@ -239,6 +239,24 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
             }
         }
     }
+
+//-------------------------------------------------------------------------------------
+void OgreFrameListener::pushOIS(OIS::KeyListener* keyListener, OIS::MouseListener* mouseListener)
+{
+    keyListenersStack.push(mKeyboard->getEventCallback());
+    mouseListenersStack.push(mMouse->getEventCallback());
+    mKeyboard->setEventCallback(keyListener);
+    mMouse->setEventCallback(mouseListener);
+}
+
+//-------------------------------------------------------------------------------------
+void OgreFrameListener::popOIS()
+{
+    mKeyboard->setEventCallback(keyListenersStack.top());
+    mMouse->setEventCallback(mouseListenersStack.top());
+    keyListenersStack.pop();
+    mouseListenersStack.pop();
+}
 
 //-------------------------------------------------------------------------------------
    
@@ -295,3 +313,114 @@ void OgreFrameListener::requestShutDown() {
         }
         catch(...) { /* ignore */ }
     }
+
+/*
+pushOIS, popOIS could be used to switch to another Ogre module
+with its own listeners (frame, keyboard, mouse) and its scene manager,
+you have to destroy/recreate camera+viewports to switch between scene managers
+
+Module::Module(Navigator* navigator) :
+    mNavigator(navigator),
+    mSceneMgr(0),
+    mCamera(0) {}
+Module::~Module() {}
+bool Module::initialise()
+{
+    createSceneManager();
+    createCamera();
+    createViewports();
+
+    // Create the scene
+    createScene();
+
+    return true;
+}
+bool Module::shutdown()
+{
+    // Destroy the scene
+    destroyScene();
+
+    destroyViewports();
+    destroyCamera();
+    destroySceneManager();
+
+    return true;
+}
+Navigator* Module::getNavigator()
+{
+    return mNavigator;
+}
+void Module::createSceneManager()
+{
+    // Create the SceneManager, in this case a generic one
+    mSceneMgr = Root::getSingletonPtr()->createSceneManager(ST_GENERIC);
+}
+void Module::destroySceneManager()
+{
+    // Destroy the SceneManager
+    Root::getSingletonPtr()->destroySceneManager(mSceneMgr);
+    mSceneMgr = 0;
+}
+void Module::createCamera()
+{
+    // Create the camera
+    mCamera = mSceneMgr->createCamera("ModuleCam");
+    // Position it at 500 in Z direction
+    mCamera->setPosition(Vector3(0,0,0));
+    // Look back along -Z
+    mCamera->lookAt(Vector3(0,0,-300));
+    mCamera->setNearClipDistance(5);
+}
+void Module::destroyCamera()
+{
+    mSceneMgr->destroyCamera(mCamera);
+}
+void Module::createViewports()
+{
+    // Create one viewport, entire window
+    Viewport* vp = mNavigator->getRenderWindowPtr()->addViewport(mCamera);
+    vp->setBackgroundColour(ColourValue(0,0,0));
+    // Alter the camera aspect ratio to match the viewport
+    mCamera->setAspectRatio(Real(vp->getActualWidth())/Real(vp->getActualHeight()));
+}
+void Module::destroyViewports()
+{
+    mNavigator->getRenderWindowPtr()->removeViewport(mCamera->getViewport()->getZOrder());
+}
+void Module::createScene() {}
+void Module::destroyScene() {}
+
+SWITCH
+    // Add module listener
+    Root::getSingletonPtr()->addFrameListener(mModuleFrameListener);
+    mFrameListener->pushOIS(mModuleFrameListener, mModuleFrameListener);
+
+    // Hide scene
+    ((NavigatorFrameListener*)mFrameListener)->detachCamera();
+    // Save camera
+    mSavedCameraPos = mCamera->getPosition();
+    mSavedCameraQuat = mCamera->getOrientation();
+    mSavedCameraNearClipDistance = mCamera->getNearClipDistance();
+    mWindow->removeViewport(mCamera->getViewport()->getZOrder());
+    mSceneMgr->destroyCamera(mCamera);
+
+    mModule->initialise();
+BACK
+    mModule->shutdown();
+
+    // Display scene
+    // Create the camera
+    mCamera = mSceneMgr->createCamera("UserCam");
+    mCamera->setPosition(mSavedCameraPos);
+    mCamera->setOrientation(mSavedCameraQuat);
+    mCamera->setNearClipDistance(mSavedCameraNearClipDistance);
+    Viewport* vp = mWindow->addViewport(mCamera);
+    vp->setBackgroundColour(ColourValue(0,0,0));
+    mCamera->setAspectRatio(Real(vp->getActualWidth())/Real(vp->getActualHeight()));
+    mFrameListener->setCamera(mCamera);
+    ((NavigatorFrameListener*)mFrameListener)->attachCamera();
+
+    // Remove module listener
+    mFrameListener->popOIS();
+    Root::getSingletonPtr()->removeFrameListener(mModuleFrameListener);
+*/

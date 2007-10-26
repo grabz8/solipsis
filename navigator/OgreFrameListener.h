@@ -35,6 +35,7 @@ D:        Step right
 #ifndef __OgreFrameListener_H__
 #define __OgreFrameListener_H__
 
+#include <stack>
 #include "Ogre.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"
@@ -69,6 +70,11 @@ public:
    virtual bool keyPressed(const OIS::KeyEvent &e);
    virtual bool keyReleased(const OIS::KeyEvent &e);
 
+   // push 1 new OIS listener or pop it
+   void pushOIS(OIS::KeyListener* keyListener, OIS::MouseListener* mouseListener);
+   void popOIS();
+   void setCamera(Camera* Camera) { mCamera = Camera; }
+
    void showDebugOverlay(bool show);
    void requestShutDown();
    void updateStats(void);
@@ -101,6 +107,10 @@ protected:
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
     OIS::JoyStick* mJoy;
+
+    //OIS events callbacks stacks
+    std::stack<OIS::KeyListener*> keyListenersStack;
+    std::stack<OIS::MouseListener*> mouseListenersStack;
 
     Real mRotate;          // The rotate constant
     Real mMove;            // The movement constant

@@ -16,14 +16,18 @@
 class Navigator : public OgreApplication, public NodeEventListener
 {
 public:
+    enum State {
+        SLogin,         // User is choosing options, ... and finally log on world
+        SInWorld        // GUI displayed when user is in the world
+    };
     enum ConnectionMode {
         CMExistingNode, // Use an existing node
         CMStartNewNode  // Start a new node for this session
     };
-    enum Status {
-        SReady,         // Node is connected to the Solipsis world
-        SBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
-        SUnavailable    // Node is not connected to the Solipsis world
+    enum NodeStatus {
+        NSReady,         // Node is connected to the Solipsis world
+        NSBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
+        NSUnavailable    // Node is not connected to the Solipsis world
     };
     enum QueryFlags
     {
@@ -32,8 +36,9 @@ public:
     };
 
 protected:
+    State mState;
     ConnectionMode mConnectionMode;
-    Status mStatus;
+    NodeStatus mNodeStatus;
     int mUdpPort;
     String mHost;
     int mPort;
@@ -64,9 +69,10 @@ public:
     bool isConnected();
 
     // Get and set
+    State getState();
     ConnectionMode getConnectionMode();
     void setConnectionMode(ConnectionMode connectionMode);
-    Status getStatus();
+    NodeStatus getNodeStatus();
     int getConnectionUdpPort();
     void setConnectionUdpPort(int udpPort);
     String getConnectionHost();
@@ -126,7 +132,7 @@ protected:
 
     virtual void createGUI();
 
-    void setStatus(String& statusString);
+    void setNodeStatus(String& nodeStatusString);
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 

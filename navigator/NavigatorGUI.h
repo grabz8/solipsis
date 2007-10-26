@@ -16,15 +16,11 @@ protected:
         NSVisible       // Navi page visible
     };
 
-    struct NaviEntry {
-        std::string name;
-        NaviState state;
-    };
-
-    enum Navis {
+    enum NaviPanel {
         NAVI_LOGIN = 0,
         NAVI_OPTIONS,
         NAVI_CHAT,
+        NAVI_MODELERMAIN,
 #ifdef UIDEBUG
         NAVI_DEBUG,
 #endif
@@ -40,37 +36,51 @@ protected:
 
 public:
     NavigatorGUI(Navigator* navigator);
-    ~NavigatorGUI() {}
+    ~NavigatorGUI();
 
     // Start up GUI
     void startup();
-
-    // Interfaces
-    void login();
-    void inWorld();
 
     // Mouse
     void SetMouseVisibility(bool visible);
     bool isMouseVisible();
 
+    // Interfaces
+    void login();
+    void inWorld();
+
+#ifdef UIDEBUG
+    void switchDebug();
+#endif
+
+    void modelerMainShow();
+    bool isModelerMainVisible();
+    void modelerMainHide();
+    void modelerMainUnload();
+
+protected:
     // Handlers
+    // Login/Options/InWorld callbacks
     void loginPageRefresh(const NaviData& naviData);
     void connect(const NaviData& naviData);
     void options(const NaviData& naviData);
-    void quit(const NaviData& naviData);
     void optionsPageRefresh(const NaviData& naviData);
+    void quit(const NaviData& naviData);
     void optionsOk(const NaviData& naviData);
     void optionsBack(const NaviData& naviData);
     void chatPageRefresh(const NaviData& naviData);
     void sendMessage(const NaviData& naviData);
 
 #ifdef UIDEBUG
-    void switchDebug();
-    void debugPageRefresh(const NaviData& naviData);
     void debugCommand(const NaviData& naviData);
 #endif
 
-protected:
+    // Modeler callbacks
+    void modelerMainFileExit(const NaviData& naviData);
+
+    // Helpers
+    NaviPanel getNaviPanel(const std::string& naviName);
+    void naviToShowPageRefresh(const NaviData& naviData);
     void hidePreviousNavi();
 };
 

@@ -8,7 +8,8 @@ NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),
     mNavigator(navigator),
     mBoundingBoxesShows(false),
-    mCameraMode(CM3rdPerson)
+    mCameraMode(CMDetached),
+    mSavedCameraMode(CMDetached)
 {
     mStandardOverlay = OverlayManager::getSingleton().getByName("Solipsis/StandardOverlay");
     if (mStandardOverlay != 0)
@@ -56,6 +57,8 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 
     switch (mode)
     {
+    case CMDetached:
+        break;
     case CM1stPerson:
     case CM1stPersonWithMouse:
         mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
@@ -81,6 +84,21 @@ NavigatorFrameListener::CameraMode NavigatorFrameListener::getCameraMode()
     return mCameraMode;
 }
 
+void NavigatorFrameListener::detachCamera()
+{
+    if (mSavedCameraMode != CMDetached)
+        return;
+    mSavedCameraMode = getCameraMode();
+    setCameraMode(CMDetached);
+}
+
+void NavigatorFrameListener::attachCamera()
+{
+    if (mSavedCameraMode == CMDetached)
+        return;
+    setCameraMode(mSavedCameraMode);
+    mSavedCameraMode = CMDetached;
+}
 
 //-----------------------------------------------------------------------------//
 //--                                                                         --//
@@ -95,7 +113,8 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
 {
     // Updating Navi with the mouse motion
     // 3D picking of Navi panels if any NaviMaterial focused
-    if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly()
+    if ((mNavigator->getState() == Navigator::SInWorld) &&
+        NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly()
         && (mCameraMode != CM1stPerson))
     {
         std::string focusedNavi = NaviManager::Get().getFocusedNaviName();
@@ -124,6 +143,9 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
 
     // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
     NaviManager::Get().injectMouseMove(e.state.X.abs, e.state.Y.abs);
+
+    if (mNavigator->getState() != Navigator::SInWorld)
+        return true;
 
     // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
     if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly())
@@ -182,7 +204,8 @@ bool NavigatorFrameListener::mousePressed(const OIS::MouseEvent &e, OIS::MouseBu
         NaviManager::Get().injectMouseDown(id);
 
         // 3D picking of Navi panels if no 2D panel focused
-        if (!NaviManager::Get().isAnyNaviFocused())
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            !NaviManager::Get().isAnyNaviFocused())
         {
             // normalize (x, y) on 0..1 and get the ray emitted from the camera
             Ray mouseRay = mCamera->getCameraToViewportRay((Real)e.state.X.abs/(Real)mCamera->getViewport()->getActualWidth(), (Real)e.state.Y.abs/(Real)mCamera->getViewport()->getActualHeight());
@@ -205,9 +228,10 @@ bool NavigatorFrameListener::mouseReleased(const OIS::MouseEvent &e, OIS::MouseB
 {
     if (NaviManager::Get().getMouse()->isVisible())
     {
-        // Updating Navi with the mouse pressed
+        // Updating Navi with the mouse released
         // 3D picking of Navi panels if any NaviMaterial focused
-        if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly())
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().naviFocusedIsMaterialOnly())
         {
             // normalize (x, y) on 0..1 and get the ray emitted from the camera
             Ray mouseRay = mCamera->getCameraToViewportRay((Real)e.state.X.abs/(Real)mCamera->getViewport()->getActualWidth(), (Real)e.state.Y.abs/(Real)mCamera->getViewport()->getActualHeight());
@@ -237,12 +261,15 @@ bool NavigatorFrameListener::mouseReleased(const OIS::MouseEvent &e, OIS::MouseB
 
 bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
 { 
+    // Updating Navi with the key pressed
+    if (NaviManager::Get().isAnyNaviFocused()) return true;
+
+    // In world ?
+    if (mNavigator->getState() != Navigator::SInWorld) return OgreFrameListener::keyPressed(e);
+
 #ifdef PHYSICS
     OgreOde::World* physicsWorld = mNavigator->getPhysicsWorld();
 #endif
-
-    // Updating Navi with the key pressed
-    if (NaviManager::Get().isAnyNaviFocused()) return true;
 
     using namespace OIS;
     switch (e.key)
@@ -312,6 +339,13 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         mNavigator->fakeSurroundingArea(0);
         break;
 
+    case KC_F9:
+        if (!mNavigator->getNavigatorGUI()->isModelerMainVisible())
+            mNavigator->getNavigatorGUI()->modelerMainShow();
+        else
+            mNavigator->getNavigatorGUI()->modelerMainHide();
+        break;
+
 #ifdef PHYSICS
     case KC_F10:
         if (physicsWorld != 0)
@@ -340,6 +374,12 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
 
 bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
 {
+    // Updating Navi with the key pressed
+    if (NaviManager::Get().isAnyNaviFocused()) return true;
+
+    // In world ?
+    if (mNavigator->getState() != Navigator::SInWorld) return OgreFrameListener::keyReleased(e);
+
     using namespace OIS;
     switch (e.key) 
     {
@@ -373,7 +413,7 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
         mNavigator->getUserAvatar()->movementKeyReleased(KC_PGDOWN);
         break;
     }
-    return true;
+    return OgreFrameListener::keyReleased(e);
 }
 
 #ifdef PHYSICS

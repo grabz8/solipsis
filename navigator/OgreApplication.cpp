@@ -111,8 +111,7 @@ void OgreApplication::createViewports()
     vp->setBackgroundColour(ColourValue(0,0,0));
 
     // Alter the camera aspect ratio to match the viewport
-    mCamera->setAspectRatio(
-        Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
+    mCamera->setAspectRatio(Real(vp->getActualWidth())/Real(vp->getActualHeight()));
 }
 
 //-------------------------------------------------------------------------------------
