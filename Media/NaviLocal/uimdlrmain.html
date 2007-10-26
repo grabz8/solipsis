@@ -1,0 +1,140 @@
+<html>
+    <head>
+        <script type="text/javascript" src="Navi.js"></script>
+		<script type="text/javascript" charset="utf-8">
+		    window.addEvent('domready', init);
+		    function init() {
+                var accordion = new Accordion('h3.atStart', 'div.atStart', {
+                    opacity: false,
+                    onActive: function(toggler, element){
+                        toggler.setStyle('color', '#000000');
+        	            toggler.setStyle('font-weight', 'bold');
+                    },
+                    onBackground: function(toggler, element){
+                        toggler.setStyle('color', '#808080');
+        	            toggler.setStyle('font-weight', 'normal');
+                    }
+                }, $('accordion'));
+		    }
+		</script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageRefresh').add({naviName:'uimdlrmain'}).send();
+            }
+            function elementClicked(elementName)
+            {
+                new NaviData(elementName).send();
+            }
+        </script>
+        <style type="text/css">
+            .toggler {
+	            color: #000000;
+	            margin: 0;
+	            padding: 2px 5px;
+	            background: #FFFFFF;
+	            border-bottom: 1px solid #507426;
+	            border-right: 1px solid #507426;
+	            border-top: 1px solid #FFFFFF;
+	            border-left: 1px solid #FFFFFF;
+	            font-size: 11px;
+	            font-weight: normal;
+	            font-family: 'Andale Mono', sans-serif;
+	            width: 127px;
+            }
+            .element {
+            }
+            .element p {
+	            margin: 0;
+	            padding: 4px;
+            }
+            .element ul {
+	            margin: 0;
+	            padding: 4px;
+	            color: #000000;
+            }
+            .float-right {
+	            padding: 10px 20px;
+	            float: right;
+            }
+        </style>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFFFF;
+            }
+            #container
+            {
+	            background-image: url('uimdlrmain.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 512px;
+            }
+            #containerMenu
+            {
+	            position: absolute;
+	            left: 8px;
+	            top: 20px;
+	            width: 240px;
+	            height: 472px;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="containerMenu">
+                <div id="accordion">
+                    <h3 class="toggler atStart">File</h3>
+                    <div class="element atStart"">
+                        <ul>
+                            <li onclick="elementClicked('FileNew')">New</li>
+                            <li onclick="elementClicked('FileOpen')">Open ...</li>
+                            <li onclick="elementClicked('FileClose')">Close</li>
+                            <li onclick="elementClicked('FileSave')">Save</li>
+                            <li onclick="elementClicked('FileExit')">Exit</li>
+                        </ul>
+                    </div>
+                    <h3 class="toggler atStart">Create</h3>
+                    <div class="element atStart">
+                        <ul>
+                            <li onclick="elementClicked('CreateBox')">Box</li>
+                            <li onclick="elementClicked('CreateCorner')">Corner</li>
+                            <li onclick="elementClicked('CreatePyramid')">Pyramid</li>
+                            <li onclick="elementClicked('CreatePrism')">Prism</li>
+                            <li onclick="elementClicked('CreateCylinder')">Cylinder</li>
+                            <li onclick="elementClicked('CreateHalfCylinder')">Half Cylinder</li>
+                            <li onclick="elementClicked('CreateCone')">Cone</li>
+                            <li onclick="elementClicked('CreateHalfCone')">Half Cone</li>
+                            <li onclick="elementClicked('CreateSphere')">Sphere</li>
+                            <li onclick="elementClicked('CreateHalfSphere')">Half sphere</li>
+                            <li onclick="elementClicked('CreateTorus')">Torus</li>
+                            <li onclick="elementClicked('CreateTube')">Tube</li>
+                            <li onclick="elementClicked('CreateRing')">Ring</li>
+                        </ul>
+                    </div>
+                    <h3 class="toggler atStart">Tools</h3>
+                    <div class="element atStart">
+                        <ul>
+                            <li onclick="elementClicked('ToolsDisplayConfig')">Display configuration</li>
+                        </ul>
+                    </div>
+                    <h3 class="toggler atStart">Help</h3>
+                    <div class="element atStart">
+                        <ul>
+                            <li onclick="elementClicked('HelpContents')">Contents ...</li>
+                            <li onclick="elementClicked('HelpAbout')">About ...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
