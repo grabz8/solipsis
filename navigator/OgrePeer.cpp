@@ -1,11 +1,12 @@
 #include "OgrePeer.h"
+#include "OgreHelpers.h"
 
 OgrePeer::OgrePeer(Peer* peer, String type) :
     mPeer(peer),
     mType(type),
     mLod(0)
 {
-    LogManager::getSingletonPtr()->logMessage("OgrePeer::OgrePeer() mType=" + mType);
+    OGRE_LOG("OgrePeer::OgrePeer() mType=" + mType);
 }
 
 OgrePeer::~OgrePeer()

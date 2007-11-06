@@ -42,9 +42,9 @@ int Peer::getFakeX()
     //return (int)(x / CBigInt("100000000000000000000000000000000")); Div don't work well..
     /* 
     const CBigInt magic = CBigInt("10000");
-    LogManager::getSingletonPtr()->logMessage((String)x);
-    LogManager::getSingletonPtr()->logMessage((String)magic);
-    LogManager::getSingletonPtr()->logMessage((String)((x/magic)));
+    OGRE_LOG((String)x);
+    OGRE_LOG((String)magic);
+    OGRE_LOG((String)((x/magic)));
     */
     return (int)(x % CBigInt("10000"))-5000;
 }
