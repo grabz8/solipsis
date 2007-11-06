@@ -1,5 +1,6 @@
 #include "NodeEventListener.h"
 #include "NavigatorXMLRPCClient.h"
+#include "OgreHelpers.h"
 #include "Platform.h"
 
 NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
@@ -47,7 +48,7 @@ void NodeEventListener::run()
         pthread_mutex_unlock(&mNodeEventsListsMutex);
 
         //processEvents(); is called by the rendering thread to ensure synchronization with the rendering engine
-        LogManager::getSingletonPtr()->logMessage("NodeEventListener::run() new events list in mNodeEventsListProcessing");
+        OGRE_LOG("NodeEventListener::run() new events list in mNodeEventsListProcessing");
     }
 }
 
