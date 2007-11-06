@@ -1,11 +1,13 @@
 #include "NavigatorGUI.h"
 #include "Navigator.h"
+#include "OgreHelpers.h"
 #include "DebugHelpers.h"
 
 const std::string NavigatorGUI::mNavisNames[] = {
     "uilogin",
     "uioptions",
     "uichat",
+    "uicontext",
     "uimdlrmain",
 #ifdef UIDEBUG
     "uidebug"
@@ -29,7 +31,7 @@ NavigatorGUI::~NavigatorGUI()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::startup()
+bool NavigatorGUI::startup()
 {
     // Startup NaviMouse and create the cursors
     NaviMouse* mouse = mNaviMgr.StartupMouse();
@@ -38,6 +40,21 @@ void NavigatorGUI::startup()
 	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
 	defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");
     mouse->setDefaultCursor("default_cursor");
+
+    // Load Lua default GUI
+    lua_State* luaState = mNavigator->getLuaState();
+    if (luaL_loadfile(luaState, "lua\\defaultGUI.lua") != 0)
+    {
+        OGRE_LOG("Navigator::startup() Unable to load defaultGUI.lua, error: " + String(lua_tostring(luaState, -1)));
+        return false;
+    }
+    if (lua_pcall(luaState, 0, LUA_MULTRET, 0))
+    {
+        OGRE_LOG("Navigator::startup() Unable to run defaultGUI.lua, error: " + String(lua_tostring(luaState, -1)));
+        return false;
+    }
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -67,14 +84,14 @@ void NavigatorGUI::login()
         mNaviMgr.createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300, false, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_LOGIN], "uilogin.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_LOGIN], 0.75f);
-        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "pageRefresh", NaviDelegate(this, &NavigatorGUI::loginPageRefresh));
+        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
 	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "connect", NaviDelegate(this, &NavigatorGUI::connect));
 	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "options", NaviDelegate(this, &NavigatorGUI::options));
 	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "quit", NaviDelegate(this, &NavigatorGUI::quit));
 #ifdef UIDEBUG
         mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
-        mNavisStates[NAVI_LOGIN] = NSLoaded;
+        mNavisStates[NAVI_LOGIN] = NSCreated;
     }
 
     // Set next Navi UI
@@ -90,19 +107,97 @@ void NavigatorGUI::inWorld()
     if (mNavisStates[NAVI_CHAT] == NSNotCreated)
     {
         // Create Navi UI chat
-        mNaviMgr.createNavi(mNavisNames[NAVI_CHAT], "local://uichat.html", NaviPosition(TopLeft), 512, 64, true, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_CHAT], "uichat.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_CHAT], 0.75f);
-	    mNaviMgr.bind(mNavisNames[NAVI_CHAT], "pageRefresh", NaviDelegate(this, &NavigatorGUI::chatPageRefresh));
-	    mNaviMgr.bind(mNavisNames[NAVI_CHAT], "sendMessage", NaviDelegate(this, &NavigatorGUI::sendMessage));
+        // Lua
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_CHAT].c_str()))
+        {
+            OGRE_LOG("Navigator::inWorld() Unable to create GUI called " + mNavisNames[NAVI_CHAT]);
+            return;
+        }
 #ifdef UIDEBUG
         mNaviMgr.bind(mNavisNames[NAVI_CHAT], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
-        mNavisStates[NAVI_CHAT] = NSLoaded;
+        mNavisStates[NAVI_CHAT] = NSCreated;
     }
+    else
+        mNaviMgr.showNavi(mNavisNames[NAVI_CHAT], true);
+}
 
-    // Set next Navi UI
-    mCurrentNavi = NAVI_CHAT;
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::contextShow(int x, int y, const std::string& items)
+{
+    if (mNavisStates[NAVI_CONTEXT] == NSNotCreated)
+    {
+        // Create Navi UI context
+        // Lua
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", mNavisNames[NAVI_CONTEXT].c_str(), x, y, items.c_str()))
+        {
+            OGRE_LOG("Navigator::contextShow() Unable to create GUI called " + mNavisNames[NAVI_CONTEXT]);
+            return;
+        }
+        mNavisStates[NAVI_CONTEXT] = NSCreated;
+    }
+    else
+        mNaviMgr.showNavi(mNavisNames[NAVI_CONTEXT], true);
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::isContextVisible()
+{
+    return (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_CONTEXT]));
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::contextHide()
+{
+    if (mNavisStates[NAVI_CONTEXT] != NSNotCreated)
+    {
+        // Destroy Navi UI context
+        mNaviMgr.hideNavi(mNavisNames[NAVI_CONTEXT]);
+        mNaviMgr.destroyNavi(mNavisNames[NAVI_CONTEXT]);
+        mNavisStates[NAVI_CONTEXT] = NSNotCreated;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainShow()
+{
+    if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
+    {
+        // Create Navi UI modeler
+        mNaviMgr.createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512, true, false);
+        mNaviMgr.setNaviMask(mNavisNames[NAVI_MODELERMAIN], "uimdlrmain.png");
+        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_MODELERMAIN], 0.75f);
+        mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+	    mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
+        mNavisStates[NAVI_MODELERMAIN] = NSCreated;
+    }
+    else
+        mNaviMgr.showNavi(mNavisNames[NAVI_MODELERMAIN], true);
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::isModelerMainVisible()
+{
+    return (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_MODELERMAIN]));
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainHide()
+{
+    if (!isModelerMainVisible()) return;
+    mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainUnload()
+{
+    if (mNavisStates[NAVI_MODELERMAIN] != NSNotCreated)
+    {
+        // Destroy Navi UI modeler
+        mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
+        mNaviMgr.destroyNavi(mNavisNames[NAVI_MODELERMAIN]);
+        mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
+    }
 }
 
 #ifdef UIDEBUG
@@ -115,9 +210,9 @@ void NavigatorGUI::switchDebug()
         mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 256, 256, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_DEBUG], "uidebug.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_DEBUG], 0.50f);
-        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageRefresh", NaviDelegate(this, &NavigatorGUI::naviToShowPageRefresh));
+        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
         mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
-        mNavisStates[NAVI_DEBUG] = NSLoaded;
+        mNavisStates[NAVI_DEBUG] = NSCreated;
     }
     else
     {
@@ -132,58 +227,9 @@ void NavigatorGUI::switchDebug()
 #endif
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerMainShow()
+void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 {
-    if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
-    {
-        // Create Navi UI login
-        mNaviMgr.createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512, true, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_MODELERMAIN], "uimdlrmain.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_MODELERMAIN], 0.75f);
-        mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "pageRefresh", NaviDelegate(this, &NavigatorGUI::naviToShowPageRefresh));
-	    mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
-        mNavisStates[NAVI_MODELERMAIN] = NSLoaded;
-    }
-    else
-    {
-        mNaviMgr.showNavi(mNavisNames[NAVI_MODELERMAIN], true);
-        mNavisStates[NAVI_MODELERMAIN] = NSVisible;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-bool NavigatorGUI::isModelerMainVisible()
-{
-    return (mNavisStates[NAVI_MODELERMAIN] == NSVisible);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerMainHide()
-{
-    if (mNavisStates[NAVI_MODELERMAIN] == NSVisible)
-    {
-        // Create Navi UI login
-        mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
-        mNavisStates[NAVI_MODELERMAIN] = NSLoaded;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerMainUnload()
-{
-    if (mNavisStates[NAVI_MODELERMAIN] != NSNotCreated)
-    {
-        // Create Navi UI login
-        mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
-        mNaviMgr.destroyNavi(mNavisNames[NAVI_MODELERMAIN]);
-        mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::loginPageRefresh(const NaviData& naviData)
-{
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::loginPageRefresh()");
+    OGRE_LOG("NavigatorGUI::loginPageLoaded()");
 
     // Set network config into informations text
     char txt[128];
@@ -202,22 +248,19 @@ void NavigatorGUI::loginPageRefresh(const NaviData& naviData)
     mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_LOGIN], "$('infosText').innerHTML = '" + infosText + "'");
 
     // Show Navi UI login
-    if (mNavisStates[NAVI_LOGIN] == NSLoaded)
-    {
+    if (mNavisStates[NAVI_LOGIN] == NSCreated)
         mNaviMgr.showNavi(mNavisNames[NAVI_LOGIN], true);
-        mNavisStates[NAVI_LOGIN] = NSVisible;
-    }
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::connect()");
+    OGRE_LOG("NavigatorGUI::connect()");
 
     // Get login name
 	std::string login;
     login = naviData["login"].str();
-    LogManager::getSingletonPtr()->logMessage("login=" + (String)(login.c_str()));
+    OGRE_LOG("login=" + (String)(login.c_str()));
 
     // Check
     if ((login.length() < 2) || (login.compare("null") == 0) || (login.compare("me") == 0))
@@ -239,7 +282,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::options(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::options()");
+    OGRE_LOG("NavigatorGUI::options()");
 
     // Hide previous Navi UI
     hidePreviousNavi();
@@ -250,13 +293,13 @@ void NavigatorGUI::options(const NaviData& naviData)
         mNaviMgr.createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400, false, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_OPTIONS], "uioptions.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_OPTIONS], 0.75f);
-	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "pageRefresh", NaviDelegate(this, &NavigatorGUI::optionsPageRefresh));
+	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "pageLoaded", NaviDelegate(this, &NavigatorGUI::optionsPageLoaded));
 	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
 	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "back", NaviDelegate(this, &NavigatorGUI::optionsBack));
 #ifdef UIDEBUG
         mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
-        mNavisStates[NAVI_OPTIONS] = NSLoaded;
+        mNavisStates[NAVI_OPTIONS] = NSCreated;
     }
 
     // Set next Navi UI
@@ -264,11 +307,11 @@ void NavigatorGUI::options(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::optionsPageRefresh(const NaviData& naviData)
+void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 {
     char txt[256];
 
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::optionsPageRefresh()");
+    OGRE_LOG("NavigatorGUI::optionsPageLoaded()");
 
     // Set current values
     if (mNavigator->getConnectionMode() == Navigator::CMStartNewNode)
@@ -312,17 +355,14 @@ void NavigatorGUI::optionsPageRefresh(const NaviData& naviData)
     }
 
     // Show Navi UI options
-    if (mNavisStates[NAVI_OPTIONS] == NSLoaded)
-    {
+    if (mNavisStates[NAVI_OPTIONS] == NSCreated)
         mNaviMgr.showNavi(mNavisNames[NAVI_OPTIONS], true);
-        mNavisStates[NAVI_OPTIONS] = NSVisible;
-    }
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::quit(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::quit()");
+    OGRE_LOG("NavigatorGUI::quit()");
 
     mNavigator->quit();
 }
@@ -330,7 +370,7 @@ void NavigatorGUI::quit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsOk(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::optionsOk()");
+    OGRE_LOG("NavigatorGUI::optionsOk()");
 
     // Get options
     std::string radioNode;
@@ -341,7 +381,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     udpPort = naviData["udpPort"].toInt();
     host = naviData["host"].str();
     port = naviData["port"].toInt();
-    LogManager::getSingletonPtr()->logMessage("radioNode=" + (String)(radioNode.c_str()) + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + (String)(host.c_str()) + ", port=" + StringConverter::toString(port));
+    OGRE_LOG("radioNode=" + (String)(radioNode.c_str()) + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + (String)(host.c_str()) + ", port=" + StringConverter::toString(port));
     std::string radioProxyType;
 	std::string proxyHttpHost;
     int proxyHttpPort;
@@ -350,7 +390,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     proxyHttpHost = naviData["proxyHttpHost"].str();
     proxyHttpPort = naviData["proxyHttpPort"].toInt();
     proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
-    LogManager::getSingletonPtr()->logMessage("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
+    OGRE_LOG("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
 
     // Check
     bool valid_options = true;
@@ -441,70 +481,50 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsBack(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::optionsBack()");
+    OGRE_LOG("NavigatorGUI::optionsBack()");
 
     // Return to Navi UI login
     login();
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::chatPageRefresh(const NaviData& naviData)
+void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::chatPageRefresh()");
+    OGRE_LOG("NavigatorGUI::chatPageLoaded()");
 
     // Set current values
     mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_CHAT], "$('inputChat').value = ''");
 
     // Show Navi UI options
-    if (mNavisStates[NAVI_CHAT] == NSLoaded)
-    {
+    if (mNavisStates[NAVI_CHAT] == NSCreated)
         mNaviMgr.showNavi(mNavisNames[NAVI_CHAT], true);
-        mNavisStates[NAVI_CHAT] = NSVisible;
-    }
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::sendMessage(const NaviData& naviData)
+void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::sendMessage()");
+    OGRE_LOG("NavigatorGUI::modelerMainFileExit()");
 
-    // Get message to send
-    std::string msg;
-    msg = naviData["msg"].str();
-    LogManager::getSingletonPtr()->logMessage("msg=" + (String)(msg.c_str()));
-
-    // Set current values
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_CHAT], "$('inputChat').value = ''");
-
-    // Send message
-    mNavigator->sendMessage((Ogre::String)msg);
+    modelerMainHide();
 }
 
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugCommand(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::debugCommand()");
+    OGRE_LOG("NavigatorGUI::debugCommand()");
 
     // Get message to send
     std::string cmd;
     std::string params;
     cmd = naviData["cmd"].str();
     params = naviData["params"].str();
-    LogManager::getSingletonPtr()->logMessage("cmd=" + (String)(cmd.c_str()) + ", params=" + (String)(params.c_str()));
+    OGRE_LOG("cmd=" + (String)(cmd.c_str()) + ", params=" + (String)(params.c_str()));
 
     // Push debug command
     DebugHelpers::debugCommands[(Ogre::String)cmd] = (Ogre::String)params;
 }
 #endif
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
-{
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::modelerMainFileExit()");
-
-    modelerMainHide();
-}
 
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
@@ -516,21 +536,18 @@ NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::naviToShowPageRefresh(const NaviData& naviData)
+void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 {
-    LogManager::getSingletonPtr()->logMessage("NavigatorGUI::naviToShowPageRefresh()");
+    OGRE_LOG("NavigatorGUI::naviToShowPageLoaded()");
 
     std::string naviName;
     naviName = naviData["naviName"].str();
     NaviPanel naviPanel = getNaviPanel(naviName);
-    LogManager::getSingletonPtr()->logMessage("naviName=" + (String)(naviName.c_str()) + ", naviPanel=" + StringConverter::toString(naviPanel));
+    OGRE_LOG("naviName=" + (String)(naviName.c_str()) + ", naviPanel=" + StringConverter::toString(naviPanel));
 
     // Show Navi UI
-    if (mNavisStates[naviPanel] == NSLoaded)
-    {
+    if (mNavisStates[naviPanel] == NSCreated)
         mNaviMgr.showNavi(mNavisNames[naviPanel], true);
-        mNavisStates[naviPanel] = NSVisible;
-    }
 }
 
 //-------------------------------------------------------------------------------------
