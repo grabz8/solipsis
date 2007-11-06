@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="1"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib OgreOde_Core_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib OgreOde_Core_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc8\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc8;..\Dependencies\OgreOde\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc8\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc8;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;.\oSceneLoader\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -141,9 +141,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib OgreOde_Core.lib"
+				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib OgreOde_Core.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc8\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc8;..\Dependencies\OgreOde\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc8\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc8;..\Dependencies\lua\lib\releaselib;..\Dependencies\OgreOde\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LuaBinding.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MovableText.cpp"
 				>
 			</File>
@@ -223,7 +227,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NavigatorLua.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NavigatorXMLRPCClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NaviLua.cpp"
 				>
 			</File>
 			<File
@@ -297,6 +309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LuaBinding.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MovableText.h"
 				>
 			</File>
@@ -313,7 +329,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NavigatorLua.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NavigatorXMLRPCClient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NaviLua.h"
 				>
 			</File>
 			<File
@@ -371,7 +395,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
+				RelativePath="..\Media\lua\boot.lua"
+				>
+			</File>
+			<File
 				RelativePath="..\changelog.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\lua\defaultGUI.lua"
 				>
 			</File>
 			<File
@@ -404,6 +436,10 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uichat.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uicontext.html"
 				>
 			</File>
 			<File
