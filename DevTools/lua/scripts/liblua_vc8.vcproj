@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug LIB runtime files ..."
-				CommandLine="if not exist ..\..\..\Dependencies\lua\include mkdir ..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy ..\src\lua.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy ..\src\luaconf.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist ..\..\..\Dependencies\lua\lib\debuglib mkdir ..\..\..\Dependencies\lua\lib\debuglib&#x0D;&#x0A;copy ..\lib\DebugLib_vc8\$(TargetName).lib ..\..\..\Dependencies\lua\lib\debuglib\. /y&#x0D;&#x0A;"
+				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib&#x0D;&#x0A;copy $(ProjectDir)..\lib\DebugLib_vc8\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -141,7 +141,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release LIB runtime files ..."
-				CommandLine="if not exist ..\..\..\Dependencies\lua\include mkdir ..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy ..\src\lua.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy ..\src\luaconf.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist ..\..\..\Dependencies\lua\lib\releaselib mkdir ..\..\..\Dependencies\lua\lib\releaselib&#x0D;&#x0A;copy ..\lib\ReleaseLib_vc8\$(TargetName).lib ..\..\..\Dependencies\lua\lib\releaselib\. /y&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\lua\lib\releaselib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib&#x0D;&#x0A;copy $(ProjectDir)..\lib\ReleaseLib_vc8\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -216,7 +216,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug DLL runtime files ..."
-				CommandLine="if not exist ..\..\..\Dependencies\lua\include mkdir ..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy ..\src\lua.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy ..\src\luaconf.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist ..\..\..\Dependencies\lua\lib\debugdll mkdir ..\..\..\Dependencies\lua\lib\debugdll&#x0D;&#x0A;copy ..\lib\DebugDll_vc8\$(TargetName).lib ..\..\..\Dependencies\lua\lib\debugdll\. /y&#x0D;&#x0A;copy ..\lib\DebugDll_vc8\$(TargetName).dll ..\..\..\Dependencies\lua\lib\debugdll\. /y&#x0D;&#x0A;"
+				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll&#x0D;&#x0A;copy $(ProjectDir)..\lib\DebugDll_vc8\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y&#x0D;&#x0A;copy $(ProjectDir)..\lib\DebugDll_vc8\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -288,7 +288,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release DLL runtime files ..."
-				CommandLine="if not exist ..\..\..\Dependencies\lua\include mkdir ..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy ..\src\lua.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy ..\src\luaconf.h ..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist ..\..\..\Dependencies\lua\lib\releasedll mkdir ..\..\..\Dependencies\lua\lib\releasedll&#x0D;&#x0A;copy ..\lib\ReleaseDll_vc8\$(TargetName).lib ..\..\..\Dependencies\lua\lib\releasedll\. /y&#x0D;&#x0A;copy ..\lib\ReleaseDll_vc8\$(TargetName).dll ..\..\..\Dependencies\lua\lib\releasedll\. /y&#x0D;&#x0A;"
+				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include&#x0D;&#x0A;copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y&#x0D;&#x0A;if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll&#x0D;&#x0A;copy $(ProjectDir)..\lib\ReleaseDll_vc8\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y&#x0D;&#x0A;copy $(ProjectDir)..\lib\ReleaseDll_vc8\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
