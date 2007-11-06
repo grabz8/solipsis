@@ -1,6 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorPlugin_vc7", "navigatorPlugin\navigatorPlugin_vc7.vcproj", "{CDF7962E-7F04-48E9-AE2A-7FE7338CECA1}"
 	ProjectSection(ProjectDependencies) = postProject
+		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorModule_vc7", "navigatorModule\navigatorModule_vc7.vcproj", "{509E40D6-0263-4228-A85B-BA1595F617A7}"
