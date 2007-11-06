@@ -1,4 +1,5 @@
 #include "Avatar.h"
+#include "OgreHelpers.h"
 
 String Avatar::mDefaultStateAnimName[SCount] = {
     "",
@@ -111,7 +112,7 @@ void Avatar::setNameVisibility(bool visible)
 //-------------------------------------------------------------------------------------
 void Avatar::setState(State state)
 {
-//    LogManager::getSingletonPtr()->logMessage("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
+//    OGRE_LOG("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
     if (mStateAnimName[mState].length() > 0)
         stopAnimation();
     if (mStateAnimName[state].length() > 0)
@@ -404,7 +405,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                     << mCapsuleGeomLastContact.getNormal().x << ", " << mCapsuleGeomLastContact.getNormal().y << ", " << mCapsuleGeomLastContact.getNormal().z
                     << "), depth="
                     << mCapsuleGeomLastContact.getPenetrationDepth();
-                LogManager::getSingletonPtr()->logMessage(log.str());
+                OGRE_LOG(log.str());
             }
             Ogre::Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
             Vector3 mvtOnContactPlane;
@@ -417,7 +418,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                 log << "Avatar::animate() mvtOnContactPlane=("
                     << mvtOnContactPlane.x << ", " << mvtOnContactPlane.y << ", " << mvtOnContactPlane.z
                     << ")";
-                LogManager::getSingletonPtr()->logMessage(log.str());
+                OGRE_LOG(log.str());
             }
             mCapsuleGeom->setPosition(pos - mvt - mvtOnContactPlane + Vector3(0, aabbHalfSize.y*1.5, 0));
             mCapsuleGeomContact = false;
@@ -435,7 +436,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                         << mCapsuleGeomLastContact.getNormal().x << ", " << mCapsuleGeomLastContact.getNormal().y << ", " << mCapsuleGeomLastContact.getNormal().z
                         << "), depth="
                         << mCapsuleGeomLastContact.getPenetrationDepth();
-                    LogManager::getSingletonPtr()->logMessage(log.str());
+                    OGRE_LOG(log.str());
                 }
                 mSceneNode->translate(-mvt);
             }
