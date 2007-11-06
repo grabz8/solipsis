@@ -6,6 +6,8 @@
 #include "NavigatorXMLRPCClient.h"
 #include "NodeEventListener.h"
 #include "NavigatorGUI.h"
+#include "LuaBinding.h"
+#include "NavigatorLua.h"
 #include "Avatar.h"
 #include "Scene.h"
 
@@ -32,8 +34,11 @@ public:
     enum QueryFlags
     {
         QFNaviPanel = 1<<0,
-        QFAvatars = QFNaviPanel<<1
+        QFAvatar = QFNaviPanel<<1
     };
+
+private:
+    static Navigator* ms_singletonPtr;
 
 protected:
     State mState;
@@ -42,7 +47,6 @@ protected:
     int mUdpPort;
     String mHost;
     int mPort;
-    Real mMaxNaviPickingDistance;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
@@ -50,7 +54,18 @@ protected:
     std::map<String,OgrePeer*> mOgrePeersMap;
 
     NavigatorGUI* mNavigatorGUI;
-    RaySceneQuery* mNaviRaySceneQuery;
+
+    Real mMaxAvatarPickingDistance;
+    Real mMaxNaviPickingDistance;
+    RaySceneQuery* mRaySceneQuery;
+    MovableObject* mPickedMovable;
+    Real closestDistance;
+    Vector3 closestHitPoint;
+    Vector2 closestUV;
+    Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+
+    lua_State* mLuaState;
+    NavigatorLua* mNavigatorLua;
 
     Avatar* mUserAvatar;
 
@@ -65,6 +80,7 @@ protected:
 public:
     Navigator();
     ~Navigator();
+    static Navigator* getSingletonPtr();
 
     bool isConnected();
 
@@ -84,6 +100,10 @@ public:
     std::map<String,OgrePeer*>::iterator getOgrePeersIteratorEnd();
 
     NavigatorGUI* getNavigatorGUI();
+
+    lua_State* getLuaState();
+    void setNavigatorLua(NavigatorLua* navigatorLua);
+    NavigatorLua* getNavigatorLua();
 
     Avatar* getUserAvatar();
 
@@ -107,31 +127,37 @@ public:
 
     // Navi 3D panels management
     Entity* getNaviEntity(const String& naviName);
-    bool isNaviHitByMouse(Ray& mouseRay, Entity* naviEntity,
-                          Real& closestDistance,
-                          Vector2& closestUV,
-                          Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2);
+
+    // Mouse ray picking
+    void resetMousePicking();
+    bool computeMousePicking(Ray& mouseRay);
+    bool is1NaviHitByMouse(String& naviName, int& naviX, int& naviY);
     void computeNaviHit(const String& naviName,
                         Vector2& closestUV,
                         Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
                         int& naviX, int& naviY);
-    bool is1NaviHitByMouse(Ray& mouseRay, String& naviName, int& naviX, int& naviY);
+    bool is1AvatarHitByMouse(Avatar*& avatar);
 
     bool quit();
     bool connect();
     bool sendMessage(const String& message);
+    bool contextItemSelected(const String& message);
 
     // process events received by node
     void processEvents();
 
 protected:
+    // OgreApplication
+    virtual bool initOgreCore();
+
     virtual void createSceneManager(); 
     virtual void createFrameListener();
 
     virtual void createScene();
 
-    virtual void createGUI();
+    virtual bool createGUI();
 
+    // Locals
     void setNodeStatus(String& nodeStatusString);
 
     void cleanUpPeers(bool cleanUpLocalPeers);
