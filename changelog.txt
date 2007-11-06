@@ -95,3 +95,15 @@ the avatar in front of
 
 main modeler panel (accordion right menu like Max) added and available with F9
 
+---------------------------
+06/11/07
+
+Lua scripts boot + defaultGUI added with 
+avatar context menu
+DOCTYPE and title files added in html
+PageRefresh replaced by PageLoaded in html files
+lualib.h and lauxlib.h added into Lua include dependencies
+liblua_vc8.vcproj updated by ofda : $(ProjectDir) is DevTools\lua\scripts, paths were correct, check you are using the Solipsis solution
+OGRE_LOG helper macro added
+
+

@@ -1,7 +1,6 @@
+- integration of ODE and OgreOde : collisions avatar vs walls too close
 - integration of ODE and OgreOde : add 1 space for user avatar's geoms to avoid internal collisions mgt
 - integration of ODE and OgreOde : sampling of mvt instead of frameTime is OK but some pb on gravity/feet/floor
-
-- update Navi with demo on contextual menu + lua
 
 - salamandra export pb with lexiExporter on root bone position offset (OK on oFusion),
   but oFusion has sometimes pbs with bounding box computation
