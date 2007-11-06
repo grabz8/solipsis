@@ -353,7 +353,7 @@ void Navigator::demoPhysics1()
     if (boxIt != boxes.end())
     {
         boxNode = mSceneMgr->getSceneNode(boxNodeName);
-        boxBody = (OgreOde::Body*)boxNode->getAttachedObject(boxName + "Body");
+        boxBody = (OgreOde::Body*)boxNode->getAttachedObject(boxName + "Bod");
         boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
         boxGeom = (OgreOde::BoxGeometry*)boxBody->getGeometry(0);
     }
@@ -364,7 +364,7 @@ void Navigator::demoPhysics1()
         boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
         boxEntity->setMaterialName("2 - Default");
         boxNode->attachObject(boxEntity);
-        boxBody = new OgreOde::Body(mPhysicsWorld, boxName + "Body");
+        boxBody = new OgreOde::Body(mPhysicsWorld, boxName + "Bod");
         boxBody->setMass(OgreOde::BoxMass(1, boxGeomSize*boxScale));
         boxNode->attachObject(boxBody);
         boxGeom = new OgreOde::BoxGeometry(boxGeomSize*boxScale, mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
