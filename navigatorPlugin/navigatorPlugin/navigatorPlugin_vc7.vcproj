@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Work\mozilla181\mozilla\modules\plugin\tools\sdk\samples\include;&quot;C:\Work\mozilla181\mozilla\objdir-debug-xulrunner-small\dist\sdk\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\modules\plugin\tools\sdk\samples\include&quot;;&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\sdk\include&quot;;..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORPLUGIN_EXPORTS;MOZILLA_STRICT_API;XPCOM_GLUE;NPSIMPLE_EXPORTS;_X86_;XP_WIN;XP_WIN32;WINVER=0x0400"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -30,7 +30,10 @@
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+				CommandLine="runxpidl.bat"
+				AdditionalDependencies="nsInavigatorPlugin.idl"
+				Outputs="nsINavigatorPlugin.h;nsINavigatorPlugin.xpt;SolipsisNavigator.xpt"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/npsolnav.dll"
@@ -44,7 +47,12 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y
+copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y
+copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -70,7 +78,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Work\mozilla181\mozilla\modules\plugin\tools\sdk\samples\include;&quot;C:\Work\mozilla181\mozilla\objdir-debug-xulrunner-small\dist\sdk\include&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\modules\plugin\tools\sdk\samples\include&quot;;&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\sdk\include&quot;;..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORPLUGIN_EXPORTS;MOZILLA_STRICT_API;NPSIMPLE_EXPORTS;_X86_;XP_WIN;XP_WIN32;XPCOM_GLUE;WINVER=0x0400"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -78,7 +86,10 @@
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCCustomBuildTool"
+				CommandLine="runxpidl.bat"
+				AdditionalDependencies="nsInavigatorPlugin.idl"
+				Outputs="nsINavigatorPlugin.h;nsINavigatorPlugin.xpt;SolipsisNavigator.xpt"/>
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)/npsolnav.dll"
@@ -93,7 +104,12 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCPostBuildEventTool"
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y
+copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y
+copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -134,6 +150,9 @@
 			<File
 				RelativePath=".\plugin.cpp">
 			</File>
+			<File
+				RelativePath=".\scriptablePluginObject.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -144,6 +163,9 @@
 			</File>
 			<File
 				RelativePath=".\resource.h">
+			</File>
+			<File
+				RelativePath=".\scriptablePluginObject.h">
 			</File>
 		</Filter>
 		<Filter
