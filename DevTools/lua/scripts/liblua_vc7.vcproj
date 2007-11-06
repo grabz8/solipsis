@@ -42,6 +42,8 @@
 				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib
 copy $(ProjectDir)..\lib\DebugLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib\. /y"/>
 			<Tool
@@ -87,6 +89,8 @@ copy $(ProjectDir)..\lib\DebugLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\De
 				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib
 copy $(ProjectDir)..\lib\ReleaseLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib\. /y"/>
 			<Tool
@@ -135,6 +139,8 @@ copy $(ProjectDir)..\lib\ReleaseLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\
 				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll
 copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y
 copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y"/>
@@ -183,6 +189,8 @@ copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\De
 				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
+copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll
 copy $(ProjectDir)..\lib\ReleaseDll_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y
 copy $(ProjectDir)..\lib\ReleaseDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y"/>
