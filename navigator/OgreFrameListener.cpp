@@ -1,4 +1,5 @@
 #include "OgreFrameListener.h"
+#include "OgreHelpers.h"
 
 //-------------------------------------------------------------------------------------
 
@@ -30,7 +31,7 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
         showDebugOverlay(true);
 #endif
 
-        LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
+        OGRE_LOG("*** Initializing OIS ***");
 
         ParamList pl;
         size_t windowHnd = 0;
