@@ -6,6 +6,8 @@
 #include "NavigatorXMLRPCClient.h"
 #include "NodeEventListener.h"
 #include "NavigatorGUI.h"
+#include "LuaBinding.h"
+#include "NavigatorLua.h"
 #include "Avatar.h"
 #include "Scene.h"
 
@@ -18,19 +20,32 @@ using namespace NavigatorModule;
 class Navigator : public Instance, public NodeEventListener
 {
 public:
+    enum State {
+        SLogin,         // User is choosing options, ... and finally log on world
+        SInWorld        // GUI displayed when user is in the world
+    };
     enum ConnectionMode {
         CMExistingNode, // Use an existing node
         CMStartNewNode  // Start a new node for this session
     };
-    enum Status {
-        SReady,         // Node is connected to the Solipsis world
-        SBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
-        SUnavailable    // Node is not connected to the Solipsis world
+    enum NodeStatus {
+        NSReady,         // Node is connected to the Solipsis world
+        NSBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
+        NSUnavailable    // Node is not connected to the Solipsis world
+    };
+    enum QueryFlags
+    {
+        QFNaviPanel = 1<<0,
+        QFAvatar = QFNaviPanel<<1
     };
 
+private:
+    static Navigator* ms_singletonPtr;
+
 protected:
+    State mState;
     ConnectionMode mConnectionMode;
-    Status mStatus;
+    NodeStatus mNodeStatus;
     int mUdpPort;
     String mHost;
     int mPort;
@@ -41,6 +56,18 @@ protected:
     std::map<String,OgrePeer*> mOgrePeersMap;
 
     NavigatorGUI* mNavigatorGUI;
+
+    Real mMaxAvatarPickingDistance;
+    Real mMaxNaviPickingDistance;
+    RaySceneQuery* mRaySceneQuery;
+    MovableObject* mPickedMovable;
+    Real closestDistance;
+    Vector3 closestHitPoint;
+    Vector2 closestUV;
+    Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+
+    lua_State* mLuaState;
+    NavigatorLua* mNavigatorLua;
 
     Avatar* mUserAvatar;
 
@@ -55,13 +82,15 @@ protected:
 public:
     Navigator();
     ~Navigator();
+    static Navigator* getSingletonPtr();
 
     bool isConnected();
 
     // Get and set
+    State getState();
     ConnectionMode getConnectionMode();
     void setConnectionMode(ConnectionMode connectionMode);
-    Status getStatus();
+    NodeStatus getNodeStatus();
     int getConnectionUdpPort();
     void setConnectionUdpPort(int udpPort);
     String getConnectionHost();
@@ -73,6 +102,10 @@ public:
     std::map<String,OgrePeer*>::iterator getOgrePeersIteratorEnd();
 
     NavigatorGUI* getNavigatorGUI();
+
+    lua_State* getLuaState();
+    void setNavigatorLua(NavigatorLua* navigatorLua);
+    NavigatorLua* getNavigatorLua();
 
     Avatar* getUserAvatar();
 
@@ -94,21 +127,40 @@ public:
     void demoPhysics1();
 #endif
 
+    // Navi 3D panels management
+    Entity* getNaviEntity(const String& naviName);
+
+    // Mouse ray picking
+    void resetMousePicking();
+    bool computeMousePicking(Ray& mouseRay);
+    bool is1NaviHitByMouse(String& naviName, int& naviX, int& naviY);
+    void computeNaviHit(const String& naviName,
+                        Vector2& closestUV,
+                        Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                        int& naviX, int& naviY);
+    bool is1AvatarHitByMouse(Avatar*& avatar);
+
     bool quit();
     bool connect();
     bool sendMessage(const String& message);
+    bool contextItemSelected(const String& message);
 
+    // process events received by node
     void processEvents();
 
 protected:
+    // OgreApplication
+    virtual bool initOgreCore();
+
     virtual void createSceneManager(); 
     virtual void createFrameListener();
 
     virtual void createScene();
 
-    virtual void createGUI();
+    virtual bool createGUI();
 
-    void setStatus(String& statusString);
+    // Locals
+    void setNodeStatus(String& nodeStatusString);
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 

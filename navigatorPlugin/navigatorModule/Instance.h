@@ -78,6 +78,8 @@ public:
     Camera* getCameraPtr();
 
 protected: 
+    virtual bool initOgreCore();
+
     virtual void createSceneManager(); 
     virtual void createCamera(); 
     virtual void createViewports(); 
@@ -86,7 +88,7 @@ protected:
     virtual void createScene() = 0; // pure virtual
     virtual void destroyScene(); 
 
-    virtual void createGUI();
+    virtual bool createGUI();
     virtual void destroyGUI();
 
 protected:

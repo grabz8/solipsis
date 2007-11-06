@@ -12,14 +12,14 @@ class NavigatorFrameListener :
     public OgreFrameListener
 #ifdef PHYSICS
     ,
-	public OgreOde::StepListener, 
-	public OgreOde::TriangleMeshRayListener,
     public OgreOde::CollisionListener
 #endif
 {
 public:
     enum CameraMode {
+        CMDetached,
         CM1stPerson,
+        CM1stPersonWithMouse,
         CM3rdPerson
     };
 
@@ -28,6 +28,7 @@ protected:
     Overlay* mStandardOverlay;
     bool mBoundingBoxesShows;
     CameraMode mCameraMode;
+    CameraMode mSavedCameraMode;
 
     Real time;
 
@@ -43,8 +44,9 @@ protected:
 #endif
 
 #ifdef PHYSICS
+private:
     // OgreOde::CollisionListener
-    bool collision(OgreOde::Contact* contact);
+    virtual bool collision(OgreOde::Contact* contact);
 #endif
 
 public:
@@ -53,6 +55,8 @@ public:
 
     void setCameraMode(CameraMode mode);
     CameraMode getCameraMode();
+    void detachCamera();
+    void attachCamera();
 };
 
 #endif // #ifndef __NavigatorFrameListener_h__

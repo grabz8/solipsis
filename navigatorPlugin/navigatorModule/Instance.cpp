@@ -152,6 +152,12 @@ Camera* Instance::getCameraPtr() {
 }
 
 //-------------------------------------------------------------------------------------
+bool Instance::initOgreCore()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 void Instance::createSceneManager()
 {
     // Create the SceneManager, in this case a generic one
@@ -190,9 +196,11 @@ void Instance::destroyScene()
 }
 
 //-------------------------------------------------------------------------------------
-void Instance::createGUI() {
+bool Instance::createGUI() {
     // Initializing Navi
     NaviLibrary::NaviManager::Get().Startup(mWindow);
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
