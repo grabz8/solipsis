@@ -8,7 +8,7 @@ using namespace Ogre;
 
 class OgreApplication
 {
-public: 
+public:
     OgreApplication::OgreApplication(const char* title = 0);
     virtual ~OgreApplication();
 
@@ -33,7 +33,7 @@ protected:
     virtual void createScene() = 0; // pure virtual
     virtual void destroyScene();
 
-    virtual void createGUI();
+    virtual bool createGUI();
     virtual void destroyGUI();
 
     virtual void addResourceLocations();

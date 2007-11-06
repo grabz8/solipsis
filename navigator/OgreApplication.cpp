@@ -92,9 +92,11 @@ void OgreApplication::destroyScene()
 }
 
 //-------------------------------------------------------------------------------------
-void OgreApplication::createGUI() {
+bool OgreApplication::createGUI() {
     // Initializing Navi
     NaviLibrary::NaviManager::Get().Startup(mWindow);
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -158,7 +160,11 @@ void OgreApplication::go()
     try
     {
         if (!initialise())
+        {
+            // clean up
+            shutdown();
             return;
+        }
 
         Root::getSingletonPtr()->startRendering();
     }
@@ -180,7 +186,8 @@ bool OgreApplication::initialise()
     addResourceLocations();
 
     // if we cannot initialise Ogre, just abandon the whole deal
-    if (!initOgreCore()) return false;
+    if (!initOgreCore())
+        return false;
 
     createSceneManager();
     createCamera();
@@ -199,7 +206,8 @@ bool OgreApplication::initialise()
     createScene();
 
     // Create GUI
-    createGUI();
+    if (!createGUI())
+        return false;
 
     createFrameListener();
     registerFrameListener();
