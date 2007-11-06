@@ -1,10 +1,9 @@
 #include "DebugHelpers.h"
 
-#ifdef UIDEBUG
-
 #include "OgreHelpers.h"
 #include "Navigator.h"
 
+#ifdef UIDEBUG
 std::map<String,String> DebugHelpers::debugCommands;
 
 bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, SceneManager* sceneMgr)
@@ -100,3 +99,19 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
 }
 
 #endif
+
+bool DebugHelpers::initLua(lua_State* luaState)
+{
+    lua_atpanic(luaState, DebugHelpers::luaLogMessage);
+    lua_register(luaState, "logMessage", luaLogMessage);
+
+    return true;
+}
+
+int DebugHelpers::luaLogMessage(lua_State *L)
+{
+    LogManager* logMgr = LogManager::getSingletonPtr();
+    if (logMgr)
+        logMgr->logMessage("luaLog> " + String(luaL_checkstring(L, 1)));
+	return 0;
+}
