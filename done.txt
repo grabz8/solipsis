@@ -61,6 +61,12 @@ the peer events listener (Win32/Linux portable)
    events (application, keyboard, mouse, ...) class (OIS, ...)
    all datas Navigator is waiting for (Window class, ...)
 => pb when loading Mozilla DLLs from Navigator DLL plugin loaded by Mozilla binary !!!
+   mozilla/widget/src/windows/nstoolkit.cpp void 
+nsToolkit::Startup(HMODULE hModule)
+ function return error
+   maybe due to WNDCLASSW registration (wc.lpszClassName    = L"nsToolkitClass";) which is already registered
+   by the Mozilla running instance
+=> same pb in VC8 and VC7
 
 - integration of ODE and OgreOde : still some pbs about C/C++ callbacks
 => use dynamic_cast instead of simple C++ cast (OgreFrameListener to CollisionListener)
