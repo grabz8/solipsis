@@ -17,6 +17,7 @@ void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableTyp
     }
 }
 
+//-------------------------------------------------------------------------------------
 bool OgreHelpers::convertString2Real(const String& real, Real& r)
 {
     Real result = 0;
@@ -28,6 +29,7 @@ bool OgreHelpers::convertString2Real(const String& real, Real& r)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 bool OgreHelpers::convertString2Vector3(const String& vector, Vector3& v)
 {
     Vector3 result = Vector3::ZERO;
@@ -64,6 +66,7 @@ bool OgreHelpers::convertString2Vector3(const String& vector, Vector3& v)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 void OgreHelpers::getMeshInformation(const MeshPtr mesh,
                                      size_t &vertex_count,
                                      Vector3*& vertices,
@@ -149,6 +152,8 @@ void OgreHelpers::getMeshInformation(const MeshPtr mesh,
                     Vector2 tc(pReal[0], pReal[1]);
                     texCoords[current_offset + j] = tc;
                 }
+                else
+                    texCoords[current_offset + j] = Vector2::ZERO;
             }
 
             vbuf->unlock();
@@ -182,6 +187,7 @@ void OgreHelpers::getMeshInformation(const MeshPtr mesh,
     }
 }
 
+//-------------------------------------------------------------------------------------
 bool OgreHelpers::getIntersection(const Ray& ray,
                                   const Vector3& a,
                                   const Vector3& b,
@@ -231,4 +237,57 @@ bool OgreHelpers::getIntersection(const Ray& ray,
     uv *= invDet;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
+                                     Real& closestDistance,
+                                     Vector2& closestUV,
+                                     Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2)
+{
+    // mesh data to retrieve
+    size_t vertexCount;
+    size_t indexCount;
+    Vector3 *vertices;
+    Vector2 *texCoords;
+    unsigned long *indices;
+
+    // get the mesh information
+    OgreHelpers::getMeshInformation(entity->getMesh(), vertexCount, vertices, texCoords, indexCount, indices,
+                                    entity->getParentNode()->getWorldPosition(),
+                                    entity->getParentNode()->getWorldOrientation(),
+                                    entity->getParentNode()->getScale());
+
+    // test for hitting individual triangles on the mesh
+    bool newClosestFound = false;
+    for (int i = 0; i < static_cast<int>(indexCount); i += 3)
+    {
+        // check for a hit against this triangle
+        Real distance;
+        Vector2 uv;
+        // if it was a hit check if its the closest
+        if (OgreHelpers::getIntersection(ray, vertices[indices[i]], vertices[indices[i + 1]], vertices[indices[i + 2]], distance, uv))
+        {
+            if ((closestDistance < 0.0f) || (distance < closestDistance))
+            {
+                OGRE_LOG("v0=" + StringConverter::toString(vertices[indices[i]]) + ", tc=" + StringConverter::toString(texCoords[indices[i]]));
+                OGRE_LOG("v1=" + StringConverter::toString(vertices[indices[i + 1]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 1]]));
+                OGRE_LOG("v2=" + StringConverter::toString(vertices[indices[i + 2]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 2]]));
+                // this is the closest so far, save it off
+                closestDistance = distance;
+                closestUV = uv;
+                closestTriUV0 = texCoords[indices[i]];
+                closestTriUV1 = texCoords[indices[i + 1]];
+                closestTriUV2 = texCoords[indices[i + 2]];
+                newClosestFound = true;
+            }
+        }
+    }
+
+    // free the verticies and indicies memory
+    delete[] vertices;
+    delete[] texCoords;
+    delete[] indices;
+
+    return newClosestFound;
 }

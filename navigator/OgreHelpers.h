@@ -5,6 +5,9 @@
 
 using namespace Ogre;
 
+// secure logMessage macro
+#define OGRE_LOG(message) if (Ogre::LogManager::getSingletonPtr()) Ogre::LogManager::getSingletonPtr()->logMessage(message);
+
 class OgreHelpers
 {
 private:
@@ -12,6 +15,14 @@ private:
     OgreHelpers() {};
 
 public:
+    // Retrieve recursively from 1 scene node all movable objects of 1 type
+    static void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
+
+    // Convert 1 string representation of Real into 1 Real
+    static bool convertString2Real(const String& real, Real& r);
+    // Convert 1 string representation of Vector3 (ie. x, y, z) into 1 Vector3
+    static bool convertString2Vector3(const String& vector, Vector3& v);
+
     // Retrieve mesh informations
     static void getMeshInformation(const MeshPtr mesh,
         size_t &vertex_count,
@@ -30,14 +41,11 @@ public:
         const Vector3& c,
         Real& distance,
         Vector2& uv);
-
-    // Retrieve recursively from 1 scene node all movable objects of 1 type
-    static void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
-
-    // Convert 1 string representation of Real into 1 Real
-    static bool convertString2Real(const String& real, Real& r);
-    // Convert 1 string representation of Vector3 (ie. x, y, z) into 1 Vector3
-    static bool convertString2Vector3(const String& vector, Vector3& v);
+    // Ray/entity intersection return boolean result
+    static bool isEntityHitByMouse(const Ray& ray, Entity* entity,
+        Real& closestDistance,
+        Vector2& closestUV,
+        Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2);
 };
 
 #endif // #ifndef __OgreHelpers_h__
