@@ -332,6 +332,8 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
   if (mhWnd == NULL)
     return FALSE;
 
+    SetCurrentDirectory(_szLastNavigatorDllLocation);
+
     // get window extents
     RECT rc;
     if (GetClientRect(mhWnd, &rc))
