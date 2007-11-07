@@ -95,6 +95,7 @@ protected:
     // attached window
     IWindow* mIWindow;
 
+	bool mReady;
     bool mStopRequested;
 /*    // thread local storage (specific datas)
     static pthread_once_t ms_TlsKeyOnce;

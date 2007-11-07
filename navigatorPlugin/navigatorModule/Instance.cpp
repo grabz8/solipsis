@@ -1,4 +1,5 @@
 #include "Instance.h"
+#include "Platform.h"
 
 using namespace NavigatorModule;
 
@@ -9,6 +10,7 @@ pthread_key_t Instance::ms_TlsKey = NAVMODINSTANCE_TLS_NOKEY;
 */
 Instance::Instance() :
     mIWindow(0),
+    mReady(false),
     mStopRequested(false),
     mFrameListener(0),
     mSceneMgr(0),
@@ -60,6 +62,7 @@ bool Instance::finalize()
 
 bool Instance::setWindow(IWindow* w)
 {
+    mReady = false;
     assert(w != 0);
 
     mIWindow = w;
@@ -73,6 +76,31 @@ bool Instance::setWindow(IWindow* w)
     }
     if (ms_OgreApplication != 0)
         ms_OgreApplication->registerInstance(this, w);
+
+	Ogre::RenderSystem *currentRenderSystem = NULL;
+	Ogre::RenderSystemList *rl = Ogre::Root::getSingleton().getAvailableRenderers();
+	Ogre::String str;
+	for (Ogre::RenderSystemList::iterator it = rl->begin(); it != rl->end(); ++it) {
+		currentRenderSystem = (*it);
+		str = currentRenderSystem->getName().c_str();
+		if ( (int)str.find("3D9") > 0 )
+		{
+			break;
+		}
+    }
+	if ( NULL == currentRenderSystem )
+        return false;
+	// preserve the floating point precision
+	currentRenderSystem->setConfigOption("Floating-point mode","Consistent");
+	try 
+	{
+		ms_OgreApplication->getRoot()->setRenderSystem(currentRenderSystem);
+    }
+    catch (Ogre::Exception& e)
+    {
+        return false;
+    }
+    ms_OgreApplication->getRoot()->initialise(false);
 
     Ogre::NameValuePairList misc;
     misc["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned int)(mIWindow->getHandle()));
@@ -105,6 +133,8 @@ bool Instance::setWindow(IWindow* w)
     createFrameListener();
     registerFrameListener();
 
+    mReady = true;
+
     return true;
 }
 
@@ -114,6 +144,11 @@ bool Instance::run()
     {
         try
         {
+            if (!mReady)
+            {
+                Platform::sleep(1000);
+                continue;
+            }
             ms_OgreApplication->getRoot()->getRenderSystem()->_initRenderTargets();
             while (ms_OgreApplication->getRoot()->renderOneFrame())
                 ;
@@ -124,9 +159,9 @@ bool Instance::run()
             ms_OgreApplication->finalize();
             throw;
         }
-        // clean up
-        ms_OgreApplication->finalize();
     }
+    // clean up
+    ms_OgreApplication->finalize();
 
     return true;
 }
