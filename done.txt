@@ -64,7 +64,7 @@ the peer events listener (Win32/Linux portable)
    mozilla/widget/src/windows/nstoolkit.cpp void 
 nsToolkit::Startup(HMODULE hModule)
  function return error
-   maybe due to WNDCLASSW registration (wc.lpszClassName    = L"nsToolkitClass";) which is already registered
+   it is due to WNDCLASSW registration (wc.lpszClassName    = L"nsToolkitClass";) which was already registered
    by the Mozilla running instance
 => same pb in VC8 and VC7
 

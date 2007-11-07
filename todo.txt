@@ -1,3 +1,16 @@
+- create 1 Navigator Displayer ActiveX/Plugin to interact with Navigator from 1 simple Win Mozilla browser
++ implement object-oriented interfaces NavigatorModule which would be the generic Navigator interface
+  shared by different Navigator implementations : Binary application with 1 main(), Mozilla plugin, ActiveX IE, ...
+   events (application, keyboard, mouse, ...) class (OIS, ...)
+   all datas Navigator is waiting for (Window class, ...)
+=> pb in VC7 & VC8 when loading Mozilla DLLs from Navigator DLL plugin loaded by Mozilla binary !!!
+   mozilla/widget/src/windows/nstoolkit.cpp void 
+nsToolkit::Startup(HMODULE hModule)
+ function return error
+   it is due to WNDCLASSW registration (wc.lpszClassName    = L"nsToolkitClass";) which was already registered
+   by the Mozilla running instance
+=> soluce should be to rename this className to avoid conflict
+
 - integration of ODE and OgreOde : collisions avatar vs walls too close
 - integration of ODE and OgreOde : add 1 space for user avatar's geoms to avoid internal collisions mgt
 - integration of ODE and OgreOde : sampling of mvt instead of frameTime is OK but some pb on gravity/feet/floor
