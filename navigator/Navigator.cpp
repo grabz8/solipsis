@@ -517,10 +517,9 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::initOgreCore()
+bool Navigator::initPostOgreCore()
 {
-    // call inherited
-    if (!OgreApplication::initOgreCore())
+    if (!OgreApplication::initPostOgreCore())
         return false;
 
     // boot Lua

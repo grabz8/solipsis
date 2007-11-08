@@ -54,6 +54,12 @@ bool OgreApplication::initOgreCore()
 }
 
 //-------------------------------------------------------------------------------------
+bool OgreApplication::initPostOgreCore()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 void OgreApplication::createSceneManager()
 {
     // Create the SceneManager, in this case a generic one
@@ -187,6 +193,8 @@ bool OgreApplication::initialise()
 
     // if we cannot initialise Ogre, just abandon the whole deal
     if (!initOgreCore())
+        return false;
+    if (!initPostOgreCore())
         return false;
 
     createSceneManager();
