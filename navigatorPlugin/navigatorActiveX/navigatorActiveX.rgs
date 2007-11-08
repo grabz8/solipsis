@@ -1,0 +1,70 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'navigatorActiveX'
+		'navigatorActiveX.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+	
+	navigatorActiveX.navigatorActiveXCtrl.1 = s 'navigatorActiveXCtrl Class'
+	{
+		CLSID = s '{76107200-CA5D-45EF-8099-DF1750A560D5}'
+		'Insertable'
+	}
+	navigatorActiveX.navigatorActiveXCtrl = s 'navigatorActiveXCtrl Class'
+	{
+		CLSID = s '{76107200-CA5D-45EF-8099-DF1750A560D5}'
+		CurVer = s 'navigatorActiveX.navigatorActiveXCtrl.1'
+		'Shell' = s ''
+		{
+			'open'
+			{
+				'command' = s 'iexplore.exe %%1'
+			}
+		}
+	}
+
+	
+	ForceRemove .sol = s 'navigatorActiveX.navigatorActiveXCtrl'
+	{
+		ForceRemove val 'Content Type' = s 'application/x-solnav'
+	}
+
+	NoRemove MIME
+	{
+		NoRemove Database
+		{
+			 NoRemove 'Content Type'
+			{
+				ForceRemove 'application/x-solnav'
+				{
+					val Extension = s '.sol'
+					val CLSID = s '{76107200-CA5D-45EF-8099-DF1750A560D5}'
+				}
+			}
+		}
+   }
+   
+   NoRemove CLSID
+	{
+		ForceRemove {76107200-CA5D-45EF-8099-DF1750A560D5} = s 'navigatorActiveXCtrl Class'
+		{
+			ProgID = s 'navigatorActiveX.navigatorActiveXCtrl.1'
+			VersionIndependentProgID = s 'navigatorActiveX.navigatorActiveXCtrl'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'EnableFullPage'
+			{
+				ForceRemove .sol
+			}
+			ForceRemove 'Insertable'
+		}
+   }
+}
