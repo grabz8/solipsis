@@ -77,31 +77,6 @@ bool Instance::setWindow(IWindow* w)
     if (ms_OgreApplication != 0)
         ms_OgreApplication->registerInstance(this, w);
 
-	Ogre::RenderSystem *currentRenderSystem = NULL;
-	Ogre::RenderSystemList *rl = Ogre::Root::getSingleton().getAvailableRenderers();
-	Ogre::String str;
-	for (Ogre::RenderSystemList::iterator it = rl->begin(); it != rl->end(); ++it) {
-		currentRenderSystem = (*it);
-		str = currentRenderSystem->getName().c_str();
-		if ( (int)str.find("3D9") > 0 )
-		{
-			break;
-		}
-    }
-	if ( NULL == currentRenderSystem )
-        return false;
-	// preserve the floating point precision
-	currentRenderSystem->setConfigOption("Floating-point mode","Consistent");
-	try 
-	{
-		ms_OgreApplication->getRoot()->setRenderSystem(currentRenderSystem);
-    }
-    catch (Ogre::Exception& e)
-    {
-        return false;
-    }
-    ms_OgreApplication->getRoot()->initialise(false);
-
     Ogre::NameValuePairList misc;
     misc["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned int)(mIWindow->getHandle()));
     misc["vsync"] = "true";
@@ -116,6 +91,13 @@ bool Instance::setWindow(IWindow* w)
     {
         return false;
     }
+    ms_OgreApplication->initialize2();
+
+    // if we cannot initialise Ogre, just abandon the whole deal
+    if (!initOgreCore())
+        return false;
+    if (!initPostOgreCore())
+        return false;
 
     createSceneManager();
     createCamera();
@@ -188,6 +170,12 @@ Camera* Instance::getCameraPtr() {
 
 //-------------------------------------------------------------------------------------
 bool Instance::initOgreCore()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::initPostOgreCore()
 {
     return true;
 }

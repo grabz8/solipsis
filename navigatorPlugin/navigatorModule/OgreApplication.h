@@ -18,6 +18,7 @@ public:
     unsigned int getNumInstances() { return mNumInstances; }
 
     bool initialize();
+    bool initialize2();
     bool finalize();
 
     virtual void createResourceListener(); 

@@ -58,6 +58,36 @@ bool OgreApplication::initialize()
 {
     mRoot = new Root();
 
+	Ogre::RenderSystem *currentRenderSystem = NULL;
+	Ogre::RenderSystemList *rl = Ogre::Root::getSingleton().getAvailableRenderers();
+	Ogre::String str;
+	for (Ogre::RenderSystemList::iterator it = rl->begin(); it != rl->end(); ++it) {
+		currentRenderSystem = (*it);
+		str = currentRenderSystem->getName().c_str();
+		if ( (int)str.find("3D9") > 0 )
+		{
+			break;
+		}
+    }
+	if ( NULL == currentRenderSystem )
+        return false;
+	// preserve the floating point precision
+	currentRenderSystem->setConfigOption("Floating-point mode","Consistent");
+	try 
+	{
+		mRoot->setRenderSystem(currentRenderSystem);
+    }
+    catch (Ogre::Exception& e)
+    {
+        return false;
+    }
+    mRoot->initialise(false);
+
+    return true;
+};
+
+bool OgreApplication::initialize2()
+{
     addResourceLocations();
 
     // Create any resource listeners (for loading screens)
@@ -67,7 +97,7 @@ bool OgreApplication::initialize()
     initResources();
 
     return true;
-};
+}
 
 //-------------------------------------------------------------------------------------
 bool OgreApplication::finalize()

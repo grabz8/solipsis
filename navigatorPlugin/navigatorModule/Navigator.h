@@ -150,7 +150,7 @@ public:
 
 protected:
     // OgreApplication
-    virtual bool initOgreCore();
+    virtual bool initPostOgreCore();
 
     virtual void createSceneManager(); 
     virtual void createFrameListener();
