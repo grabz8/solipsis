@@ -75,3 +75,5 @@ nsToolkit::Startup(HMODULE hModule)
 
 - update Navi with demo on contextual menu + lua
 
+- Navigator ActiveX added
+=> but still problems on 1st Navi Web Browser creation (like Navigator Mozilla Plugin)

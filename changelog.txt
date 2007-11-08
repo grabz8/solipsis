@@ -106,4 +106,12 @@ lualib.h and lauxlib.h added into Lua include dependencies
 liblua_vc8.vcproj updated by ofda : $(ProjectDir) is DevTools\lua\scripts, paths were correct, check you are using the Solipsis solution
 OGRE_LOG helper macro added
 
+---------------------------
+08/11/07
 
+Navigator Mozilla Plugin pb about DLL loading tracked (due to WNDCLASS className conflict with FireFox)
+=> but still problems on 1st Navi Web Browser creation
+Navigator ActiveX added
+=> but still problems on 1st Navi Web Browser creation (like Navigator Mozilla Plugin)
+
+---------------------------

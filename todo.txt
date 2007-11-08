@@ -10,6 +10,9 @@ nsToolkit::Startup(HMODULE hModule)
    it is due to WNDCLASSW registration (wc.lpszClassName    = L"nsToolkitClass";) which was already registered
    by the Mozilla running instance
 => soluce should be to rename this className to avoid conflict
+=> after 1 workaround about className pb, still problems on 1st Navi Web Browser creation (like Navigator Mozilla Plugin)
+   in VC7 & VC8 configs
+=> ?
 
 - integration of ODE and OgreOde : collisions avatar vs walls too close
 - integration of ODE and OgreOde : add 1 space for user avatar's geoms to avoid internal collisions mgt
