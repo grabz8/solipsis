@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorModule_vc7", "navi
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorActiveX_vc7", "navigatorActiveX\navigatorActiveX_vc7.vcproj", "{26463D8A-91B7-49F2-B20F-1ADE89AD7370}"
+	ProjectSection(ProjectDependencies) = postProject
+		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -22,6 +27,10 @@ Global
 		{509E40D6-0263-4228-A85B-BA1595F617A7}.Debug.Build.0 = Debug|Win32
 		{509E40D6-0263-4228-A85B-BA1595F617A7}.Release.ActiveCfg = Release|Win32
 		{509E40D6-0263-4228-A85B-BA1595F617A7}.Release.Build.0 = Release|Win32
+		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Debug.ActiveCfg = Debug|Win32
+		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Debug.Build.0 = Debug|Win32
+		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Release.ActiveCfg = Release|Win32
+		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
