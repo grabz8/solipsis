@@ -43,9 +43,8 @@
 				LinkIncremental="2"
 				ModuleDefinitionFile="navigatorPlugin.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/navigatorPlugin_vc7.pdb"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/navigatorPlugin_vc7.lib"
+				ImportLibrary="$(OutDir)/navigatorPlugin.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>

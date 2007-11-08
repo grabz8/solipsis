@@ -364,17 +364,20 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
 
 void nsPluginInstance::shut()
 {
-    if (mNavigatorInstance)
+    if (navigatorApp)
     {
-        navigatorApp->destroyInstance(mNavigatorInstance);
-        mNavigatorInstance = 0;
+        if (mNavigatorInstance)
+        {
+            navigatorApp->destroyInstance(mNavigatorInstance);
+            mNavigatorInstance = 0;
+        }
+
+        // subclass it back
+        SubclassWindow(mhWnd, mOldProc);
+
+        // unhook the keyboard hook
+        UnhookWindowsHookEx(mKeyboardHook);
     }
-
-    // subclass it back
-    SubclassWindow(mhWnd, mOldProc);
-
-    // unhook the keyboard hook
-    UnhookWindowsHookEx(mKeyboardHook);
 
   mhWnd = NULL;
   mInitialized = FALSE;
