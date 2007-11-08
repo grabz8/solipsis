@@ -217,7 +217,7 @@ void NavigatorGUI::switchDebug()
     else
     {
         // Hide and destroy UI debug
-        if (mCurrentNavi != -1) {
+        if (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_DEBUG])) {
             mNaviMgr.hideNavi(mNavisNames[NAVI_DEBUG]);
             mNaviMgr.destroyNavi(mNavisNames[NAVI_DEBUG]);
             mNavisStates[NAVI_DEBUG] = NSNotCreated;
