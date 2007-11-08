@@ -37,7 +37,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="comsvcs.lib navigatorModule.lib"
+				AdditionalDependencies="comsvcs.lib navigator.lib"
 				OutputFile="$(OutDir)/navigatorActiveX.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\navigatorModule\$(ConfigurationName)_vc7&quot;"
@@ -106,7 +106,7 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="comsvcs.lib"
+				AdditionalDependencies="comsvcs.lib navigator.lib"
 				OutputFile="$(OutDir)/navigatorActiveX.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\navigatorModule\$(ConfigurationName)_vc7&quot;"
