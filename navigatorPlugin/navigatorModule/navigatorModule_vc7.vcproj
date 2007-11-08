@@ -41,7 +41,6 @@
 				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\xmlrpc++\lib&quot;;..\..\Dependencies\tinyxml\lib;..\..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\..\Dependencies\navi\lib_vc7;..\..\Dependencies\lua\lib\debuglib;..\..\Dependencies\OgreOde\lib"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
-				ImportLibrary="$(OutDir)/navigatorModule.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -101,7 +100,6 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug\.
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/navigatorModule.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
