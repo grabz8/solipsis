@@ -130,8 +130,10 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 				ProxyFileName="navigatorActiveX_p.c"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Performing registration"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;"/>
+				Description="Copying release runtime files and Performing registration"
+				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
+regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
