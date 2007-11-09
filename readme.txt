@@ -123,3 +123,10 @@ username g6r6e6g
 email    gregoryjan@free.fr
 password greg666
 
+Mozilla
+http://www.nabble.com
+http://www.nabble.com/Mozilla---Embedding-f6665.html
+username g6r6e6g
+email    gregoryjan@free.fr
+password greg666
+
