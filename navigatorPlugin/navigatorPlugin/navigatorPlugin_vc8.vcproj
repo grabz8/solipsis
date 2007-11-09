@@ -131,7 +131,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\modules\plugin\tools\sdk\samples\include&quot;;&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\sdk\include&quot;;..\..\Dependencies\navigatorModule\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORPLUGIN_EXPORTS;_CRT_SECURE_NO_WARNINGS;MOZILLA_STRICT_API;NPSIMPLE_EXPORTS;_X86_;XP_WIN;XP_WIN32;XPCOM_GLUE;WINVER=0x0400"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORPLUGIN_EXPORTS;_CRT_SECURE_NO_WARNINGS;MOZILLA_STRICT_API;XPCOM_GLUE;NPSIMPLE_EXPORTS;_X86_;XP_WIN;XP_WIN32;WINVER=0x0400"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="true"
 				ForceConformanceInForLoopScope="false"
