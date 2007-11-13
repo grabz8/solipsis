@@ -495,7 +495,7 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
     // Set current values
     mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_CHAT], "$('inputChat').value = ''");
 
-    // Show Navi UI options
+    // Show Navi UI chat
     if (mNavisStates[NAVI_CHAT] == NSCreated)
         mNaviMgr.showNavi(mNavisNames[NAVI_CHAT], true);
 }
