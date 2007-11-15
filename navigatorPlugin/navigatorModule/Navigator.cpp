@@ -653,6 +653,21 @@ bool Navigator::createGUI()
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::setWindow(IWindow* w)
+{
+    if (!Instance::setWindow(w))
+        return false;
+
+/*    // Set avatar name
+    getUserAvatar()->setName("mee");
+
+    DebugHelpers::debugCommands["testEvt"] = "peerNew";
+
+    // Call connect
+    return connect();*/return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::quit()
 {
     mFrameListener->requestShutDown();
@@ -711,7 +726,7 @@ bool Navigator::connect()
             }
         }
 
-        mNavigatorGUI->inWorld();
+//        mNavigatorGUI->inWorld();
 
         // set Third person camera
         ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);

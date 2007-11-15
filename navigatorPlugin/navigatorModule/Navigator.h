@@ -158,6 +158,7 @@ protected:
     virtual void createScene();
 
     virtual bool createGUI();
+    virtual bool setWindow(IWindow* w);
 
     // Locals
     void setNodeStatus(String& nodeStatusString);
