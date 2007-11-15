@@ -2,11 +2,13 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include <atlctl.h>
+#include <map>
 
 #include "NavigatorModule.h"
 #include "INavigatorApp.h"
 #include "IInstance.h"
 #include "IWindow.h"
+#include "Event.h"
 
 // InavigatorActiveXCtrl
 [
@@ -79,6 +81,15 @@ END_PROP_MAP()
 BEGIN_MSG_MAP(CnavigatorActiveXCtrl)
 	CHAIN_MSG_MAP(CComControl<CnavigatorActiveXCtrl>)
 	DEFAULT_REFLECTION_HANDLER()
+//	MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
+    MESSAGE_HANDLER(WM_SIZE, OnSize)
+    MESSAGE_HANDLER(WM_LBUTTONDOWN, OnMouseLButtonDown)
+    MESSAGE_HANDLER(WM_LBUTTONUP, OnMouseLButtonUp)
+    MESSAGE_HANDLER(WM_RBUTTONDOWN, OnMouseRButtonDown)
+    MESSAGE_HANDLER(WM_RBUTTONUP, OnMouseRButtonUp)
+    MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
+    MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+//    MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 END_MSG_MAP()
 // Handler prototypes:
 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -92,6 +103,16 @@ END_MSG_MAP()
 public:
     HRESULT OnDraw(ATL_DRAWINFO& di);
 
+	// Additional messages mapping
+	LRESULT OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
@@ -103,16 +124,22 @@ public:
 	void FinalRelease();
 
 protected:
-    // create the navigator instance
-    void _createInstance();
+    // keyboard hook function
+	static LRESULT CALLBACK fnHookKeyboard(int code, WPARAM wParam, LPARAM lParam);
 
 private:
 
     bool mInitialized;
     HWND mhWnd;
 
+    // instances
+    static std::map<HWND, NavigatorModule::IInstance*> mInstances;
+
     // keyboard hook
     HHOOK mKeyboardHook;
+
+    // last mouse evt
+    NavigatorModule::MouseEvt lastMouseEvt;
 
     // navigator instance
     NavigatorModule::IInstance* mNavigatorInstance;
@@ -120,5 +147,7 @@ private:
     // window attributes
     unsigned int mWidth;
     unsigned int mHeight;
+
+//IWebBrowser2* browser;
 };
 

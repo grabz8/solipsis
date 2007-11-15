@@ -313,6 +313,10 @@
 			RelativePath=".\ReadMe.txt"
 			>
 		</File>
+		<File
+			RelativePath=".\test.html"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
