@@ -49,6 +49,7 @@ namespace NavigatorModule {
     class IWindow;
 
     class NavigatorApp;
+    class Event;
     class Instance;
 
 } // end namespace

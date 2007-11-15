@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\navigator\oSceneLoader\include;..\..\navigator;..\..\Dependencies\pthreads\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\navi\include;..\..\Dependencies\lua\include;..\..\Dependencies\OgreOde\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -94,7 +94,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include&#x0D;&#x0A;copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll\. /y&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug\. /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include&#x0D;&#x0A;copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy Event.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll\. /y&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,8 +122,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\navigator\oSceneLoader\include;..\..\navigator;..\..\Dependencies\pthreads\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\navi\include;..\..\Dependencies\lua\include;..\..\Dependencies\OgreOde\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -176,7 +177,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include&#x0D;&#x0A;copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\releasedll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\releasedll\. /y&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release\. /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include&#x0D;&#x0A;copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy Event.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\releasedll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\releasedll\. /y&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release\. /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -233,7 +234,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\navigator\NavigatorGUI.cpp"
+				RelativePath=".\NavigatorGUI.cpp"
 				>
 			</File>
 			<File
@@ -311,6 +312,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Event.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IInstance.h"
 				>
 			</File>
@@ -355,7 +360,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\navigator\NavigatorGUI.h"
+				RelativePath=".\NavigatorGUI.h"
 				>
 			</File>
 			<File
@@ -412,6 +417,10 @@
 			</File>
 			<File
 				RelativePath="..\..\navigator\PlatformWin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Queue.h"
 				>
 			</File>
 			<File

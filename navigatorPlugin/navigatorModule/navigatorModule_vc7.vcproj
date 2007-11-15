@@ -21,7 +21,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\navigator\oSceneLoader\include;..\..\navigator;..\..\Dependencies\pthreads\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\navi\include;..\..\Dependencies\lua\include;..\..\Dependencies\OgreOde\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_VC7_EXPORTS;NAVIGATORMODULE_SELF_BUILD"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_VC7_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -49,6 +49,7 @@
 				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include
 copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
+copy Event.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
 copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
 if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll
 copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\debugdll\. /y
@@ -79,8 +80,9 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug\.
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="..\..\navigator\oSceneLoader\include;..\..\navigator;..\..\Dependencies\pthreads\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\navi\include;..\..\Dependencies\lua\include;..\..\Dependencies\OgreOde\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_VC7_EXPORTS;NAVIGATORMODULE_SELF_BUILD"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_VC7_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_PHYSICS1;NSHADOWS;PHYSICS;NLEXI;CAPSULEGEOM;FEET"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				RuntimeTypeInfo="TRUE"
@@ -108,6 +110,7 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug\.
 				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\include&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\include
 copy NavigatorModule.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
+copy Event.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
 copy I*.h $(ProjectDir)..\..\Dependencies\navigatorModule\include\. /y
 if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorModule\release_dll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorModule\release_dll
 copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorModule\releasedll\. /y
@@ -172,7 +175,7 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
 				RelativePath=".\NavigatorFrameListener.cpp">
 			</File>
 			<File
-				RelativePath="..\..\navigator\NavigatorGUI.cpp">
+				RelativePath=".\NavigatorGUI.cpp">
 			</File>
 			<File
 				RelativePath=".\NavigatorLua.cpp">
@@ -231,6 +234,9 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
 				RelativePath="..\..\navigator\DebugHelpers.h">
 			</File>
 			<File
+				RelativePath=".\Event.h">
+			</File>
+			<File
 				RelativePath=".\IInstance.h">
 			</File>
 			<File
@@ -264,7 +270,7 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
 				RelativePath=".\NavigatorFrameListener.h">
 			</File>
 			<File
-				RelativePath="..\..\navigator\NavigatorGUI.h">
+				RelativePath=".\NavigatorGUI.h">
 			</File>
 			<File
 				RelativePath=".\NavigatorLua.h">
@@ -307,6 +313,9 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
 			</File>
 			<File
 				RelativePath="..\..\navigator\PlatformWin.h">
+			</File>
+			<File
+				RelativePath=".\Queue.h">
 			</File>
 			<File
 				RelativePath="..\..\navigator\Scene.h">
