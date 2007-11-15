@@ -526,6 +526,62 @@ void Avatar::movementKeyReleased(OIS::KeyCode code)
     }
 }
 #endif
+//-------------------------------------------------------------------------------------
+void Avatar::movementKeyPressed(NavigatorModule::KeyCode code)
+{
+    using namespace NavigatorModule;
+    switch (code) {
+       case KC_UP:
+           mUpKeyMotion.setState(true);
+       break;
+       case KC_DOWN:
+           mDownKeyMotion.setState(true);
+       break;
+       case KC_LEFT:
+           mLeftKeyMotion.setState(true);
+       break;
+       case KC_RIGHT:
+           mRightKeyMotion.setState(true);
+       break;
+       case KC_PGUP:
+           mPgupKeyMotion.setState(true);
+       break;
+       case KC_PGDOWN:
+           mPgdownKeyMotion.setState(true);
+       break;
+#ifdef FEET
+       case KC_END:
+           setGravity(!isGravityEnabled());
+       break;
+#endif
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::movementKeyReleased(NavigatorModule::KeyCode code)
+{
+    using namespace NavigatorModule;
+    switch (code) {
+       case KC_UP:
+           mUpKeyMotion.setState(false);
+       break;
+       case KC_DOWN:
+           mDownKeyMotion.setState(false);
+       break;
+       case KC_LEFT:
+           mLeftKeyMotion.setState(false);
+       break;
+       case KC_RIGHT:
+           mRightKeyMotion.setState(false);
+       break;
+       case KC_PGUP:
+           mPgupKeyMotion.setState(false);
+       break;
+       case KC_PGDOWN:
+           mPgdownKeyMotion.setState(false);
+       break;
+    }
+}
 
 #ifdef PHYSICS
 //-------------------------------------------------------------------------------------

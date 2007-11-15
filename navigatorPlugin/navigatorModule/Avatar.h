@@ -10,6 +10,8 @@
 //(so that dll import/export macros are in effect)
 #define OIS_DYNAMIC_LIB
 #include <OIS/OIS.h>
+#else
+#include "Event.h"
 #endif
 
 #ifdef PHYSICS
@@ -113,6 +115,8 @@ public:
     void movementKeyPressed(OIS::KeyCode code);
     void movementKeyReleased(OIS::KeyCode code);
 #endif
+    void movementKeyPressed(NavigatorModule::KeyCode code);
+    void movementKeyReleased(NavigatorModule::KeyCode code);
 
 private:
     String mIdleAnimName;
