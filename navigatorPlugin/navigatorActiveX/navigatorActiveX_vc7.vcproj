@@ -231,6 +231,9 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFil
 		<File
 			RelativePath=".\ReadMe.txt">
 		</File>
+		<File
+			RelativePath=".\test.html">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
