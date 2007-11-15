@@ -78,7 +78,6 @@ nsToolkit::Startup(HMODULE hModule)
 - Navigator ActiveX added
 => it s working in Release config
 => still problems on Navi update() grabBrowser in Debug config
-- Navigator ActiveX added
-=> still problems on 1st Navi Web Browser creation in Debug & Release config
+=> Mozilla Plugin is working with Navigator.dll (NavigatorModule) in Release config but fails on 1st Navi (onPageLoaded callback not triggered)
 
 - IE ActiveX & Mozilla Plugin to run Navigator from IE/Mozilla added
