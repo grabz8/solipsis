@@ -13,19 +13,23 @@ public:
         The container application should create an object that implements
         the IWindow interface to return handle, width and height information
     */
-    virtual bool setWindow(IWindow* w)=0;
+    virtual bool setWindow(IWindow* w) = 0;
 
     /** Returns the IWindow pointer for width, height, etc.
     */
-    virtual IWindow* getIWindow()=0;
+    virtual IWindow* getIWindow() = 0;
+
+    /** Process 1 new event (Mouse, Keyboard, ...)
+    */
+    virtual bool processEvent(const Event& event) = 0;
 
     /** runs the render loop
     */
-    virtual bool run()=0;
+    virtual bool run() = 0;
 
     /** terminates the instance.
     */
-    virtual void requestTerminate()=0;
+    virtual void requestTerminate() = 0;
 };
 
 } // end namespace
