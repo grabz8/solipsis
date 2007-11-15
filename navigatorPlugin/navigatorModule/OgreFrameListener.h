@@ -44,14 +44,17 @@ D:        Step right
 //(so that dll import/export macros are in effect)
 #define OIS_DYNAMIC_LIB
 #include <OIS/OIS.h>
+#else
+#include "Event.h"
 #endif
 
 using namespace Ogre;
+using namespace NavigatorModule;
 
 #ifndef NAVIGATORMODULE_SELF_BUILD // to replace by 1 interface classes
 class OgreFrameListener: public FrameListener, public WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 #else
-class OgreFrameListener: public FrameListener
+class OgreFrameListener: public FrameListener, public KeyboardEventListener, public MouseEventListener
 #endif
 {
 public:
@@ -78,6 +81,12 @@ public:
    virtual bool keyPressed(const OIS::KeyEvent &e);
    virtual bool keyReleased(const OIS::KeyEvent &e);
 #endif
+   virtual bool keyPressed(const KeyboardEvt& evt);
+   virtual bool keyReleased(const KeyboardEvt& evt);
+
+   virtual bool mouseMoved(const MouseEvt& evt);
+   virtual bool mousePressed(const MouseEvt& evt);
+   virtual bool mouseReleased(const MouseEvt& evt);
 
    void showDebugOverlay(bool show);
    void requestShutDown();

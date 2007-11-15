@@ -37,9 +37,9 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
         showDebugOverlay(true);
 #endif
 
+#ifndef NAVIGATORMODULE_SELF_BUILD // to replace by 1 interface classes
         LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
 
-#ifndef NAVIGATORMODULE_SELF_BUILD // to replace by 1 interface classes
         ParamList pl;
         size_t windowHnd = 0;
         std::ostringstream windowHndStr;
@@ -256,6 +256,42 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
         }
     }
 #endif
+
+//-------------------------------------------------------------------------------------
+bool OgreFrameListener::mouseMoved(const MouseEvt& evt)
+{
+    using namespace NavigatorModule;
+
+//    mCamNode->yaw(Degree(-mRotate * e.state.X.rel));
+//    mCamNode->getChild(0)->pitch(Degree(-mRotate * e.state.Y.rel));
+
+    return true;
+}
+
+
+//-------------------------------------------------------------------------------------
+bool OgreFrameListener::mousePressed(const MouseEvt& evt)
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgreFrameListener::mouseReleased(const MouseEvt& evt)
+{ 
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgreFrameListener::keyPressed(const KeyboardEvt& evt)
+{ 
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgreFrameListener::keyReleased(const KeyboardEvt& evt)
+{ 
+    return true;
+}
 
 //-------------------------------------------------------------------------------------
    
