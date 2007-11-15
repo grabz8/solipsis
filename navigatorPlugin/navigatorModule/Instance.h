@@ -1,9 +1,11 @@
 #ifndef __NAVMODINSTANCE_H__
 #define __NAVMODINSTANCE_H__
 
-//#include <pthread.h>
+#include <pthread.h>
 #include "IInstance.h"
 #include "IWindow.h"
+#include "Queue.h"
+#include "Event.h"
 
 #include "OgreApplication.h"
 #include "OgreFrameListener.h"
@@ -38,6 +40,7 @@ public:
     virtual bool setWindow(IWindow* w);
     virtual IWindow* getIWindow() { return mIWindow; }
 
+    virtual bool processEvent(const Event& evt);
     virtual bool run();
     virtual void requestTerminate();
 
@@ -92,12 +95,21 @@ protected:
     virtual bool createGUI();
     virtual void destroyGUI();
 
+public:
+    pthread_mutex_t mNaviMutex;
+
 protected:
     // attached window
     IWindow* mIWindow;
 
 	bool mReady;
-    bool mStopRequested;
+    bool mTermRequested;
+
+    Queue<Event> mEventQueue;
+    pthread_mutex_t mMouseMutex;
+    Event mLastMouseMovedEvent;
+    bool mLastMouseMovedValid;
+
 /*    // thread local storage (specific datas)
     static pthread_once_t ms_TlsKeyOnce;
     static pthread_key_t ms_TlsKey;*/
@@ -116,6 +128,9 @@ protected:
 
 private: 
     void registerFrameListener();
+
+    bool handleEvent(const Event& evt);
+    bool handleEvents();
 
     Real mTimeUntilNextToggle; 
     int mSceneDetailIndex ; 

@@ -11,11 +11,14 @@ pthread_key_t Instance::ms_TlsKey = NAVMODINSTANCE_TLS_NOKEY;
 Instance::Instance() :
     mIWindow(0),
     mReady(false),
-    mStopRequested(false),
+    mTermRequested(false),
     mFrameListener(0),
     mSceneMgr(0),
     mWindow(0),
-    mCamera(0)
+    mCamera(0),
+    mNaviMutex(PTHREAD_MUTEX_INITIALIZER),
+    mMouseMutex(PTHREAD_MUTEX_INITIALIZER),
+    mLastMouseMovedValid(false)
 {
     initialize();
 }
@@ -120,9 +123,29 @@ bool Instance::setWindow(IWindow* w)
     return true;
 }
 
+bool Instance::processEvent(const Event& evt)
+{
+    if (evt.getEvt().mType == ETMouseMoved)
+    {
+        pthread_mutex_lock(&mMouseMutex);
+        mLastMouseMovedEvent = evt;
+        if (!mLastMouseMovedValid)
+        {
+            mEventQueue.addTail(evt);
+            mLastMouseMovedValid = true;
+        }
+        pthread_mutex_unlock(&mMouseMutex);
+    }
+    else
+        mEventQueue.addTail(evt);
+
+    return true;
+}
+
 bool Instance::run()
 {
-    while (!mStopRequested)
+    bool _initRenderTargetsCalled = false;
+    while (!mTermRequested)
     {
         try
         {
@@ -131,26 +154,41 @@ bool Instance::run()
                 Platform::sleep(1000);
                 continue;
             }
-            ms_OgreApplication->getRoot()->getRenderSystem()->_initRenderTargets();
-            while (ms_OgreApplication->getRoot()->renderOneFrame())
-                ;
+
+		    // process events
+            if (!handleEvents())
+                requestTerminate();
+            if (mTermRequested) break;
+
+            // render
+            if (!_initRenderTargetsCalled)
+            {
+                ms_OgreApplication->getRoot()->getRenderSystem()->_initRenderTargets();
+                _initRenderTargetsCalled = true;
+            }
+            ms_OgreApplication->getRoot()->renderOneFrame();
         }
         catch (...)
         {
             // clean up
-            ms_OgreApplication->finalize();
-            throw;
+//            ms_OgreApplication->finalize();
+//            throw;
         }
     }
     // clean up
-    ms_OgreApplication->finalize();
+//    ms_OgreApplication->finalize();
 
     return true;
 }
 
 void Instance::requestTerminate()
 {
-    mStopRequested = true;
+/*    mTermRequested = true;
+    while (mTermRequested)
+        Platform::sleep(100);*/
+    Evt termEvt;
+    termEvt.mType = ETTermRequested;
+    processEvent(Event(0, &termEvt));
 }
 
 //-------------------------------------------------------------------------------------
@@ -207,13 +245,6 @@ void Instance::createFrameListener()
 }
 
 //-------------------------------------------------------------------------------------
-void Instance::registerFrameListener()
-{
-    if (mFrameListener != 0)
-        Root::getSingletonPtr()->addFrameListener(mFrameListener);
-}
-
-//-------------------------------------------------------------------------------------
 void Instance::destroyScene()
 {
 }
@@ -242,4 +273,71 @@ void Instance::createViewports()
     // Alter the camera aspect ratio to match the viewport
     mCamera->setAspectRatio(
         Real(vp->getActualWidth()) / Real(vp->getActualHeight()));
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::registerFrameListener()
+{
+    if (mFrameListener != 0)
+        Root::getSingletonPtr()->addFrameListener(mFrameListener);
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::handleEvent(const Event& evt)
+{
+    switch (evt.getEvt().mType)
+    {
+    case ETTermRequested:
+        mTermRequested = true;
+        break;
+
+    case ETKeyPressed:
+        if (mFrameListener != 0)
+            mFrameListener->keyPressed((const KeyboardEvt&)evt.getEvt());
+        break;
+    case ETKeyReleased:
+        if (mFrameListener != 0)
+            mFrameListener->keyReleased((const KeyboardEvt&)evt.getEvt());
+        break;
+
+    case ETMousePressed:
+        if (mFrameListener != 0)
+            mFrameListener->mousePressed((const MouseEvt&)evt.getEvt());
+        break;
+    case ETMouseReleased:
+        if (mFrameListener != 0)
+            mFrameListener->mouseReleased((const MouseEvt&)evt.getEvt());
+        break;
+    case ETMouseMoved:
+        if (mFrameListener != 0)
+            mFrameListener->mouseMoved((const MouseEvt&)evt.getEvt());
+        break;
+    }
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::handleEvents()
+{
+    while (!mEventQueue.isEmpty()) {
+        Event* evt = mEventQueue.getHead();
+        if (evt == 0)
+            return true;
+        if (evt->getEvt().mType == ETMouseMoved)
+        {
+            pthread_mutex_lock(&mMouseMutex);
+            Event evt = mLastMouseMovedEvent;
+            mEventQueue.removeHead();
+            mLastMouseMovedValid = false;
+            pthread_mutex_unlock(&mMouseMutex);
+            handleEvent(evt);
+        }
+        else
+        {
+            handleEvent(*evt);
+            mEventQueue.removeHead();
+        }
+    }
+
+    return true;
 }
