@@ -56,9 +56,6 @@ IInstance* NavigatorApp::createInstance()
 
 bool NavigatorApp::destroyInstance(IInstance* instance)
 {
-    // Stop the main thread
-    instance->requestTerminate();
-
     // find instance
     MainThread* mainThread = NULL;
 
@@ -71,6 +68,7 @@ bool NavigatorApp::destroyInstance(IInstance* instance)
         }
     }
 
+    mainThread->stop();
     delete mainThread->getInstance();
     delete mainThread;
 
@@ -134,6 +132,10 @@ void NavigatorApp::MainThread::stop(unsigned int timeoutSec)
 {
     unsigned long elapsedMs = 0;
 
+    // Stop the instance
+    if (mState == SRunning)
+        mInstance->requestTerminate();
+
     mStop = true;
     while ((mState == SRunning) && (elapsedMs < (unsigned long)timeoutSec*1000))
     {
@@ -149,6 +151,7 @@ void NavigatorApp::MainThread::run()
 {
     // run the render loop
     mInstance->run();
+    mState = SStopped;
 }
 
 void* NavigatorApp::MainThread::start_routine(void* args)
