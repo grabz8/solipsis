@@ -42,6 +42,12 @@ protected:
     bool keyPressed(const OIS::KeyEvent &e);
     bool keyReleased(const OIS::KeyEvent &e);
 #endif
+   virtual bool keyPressed(const KeyboardEvt& evt);
+   virtual bool keyReleased(const KeyboardEvt& evt);
+
+   virtual bool mouseMoved(const MouseEvt& evt);
+   virtual bool mousePressed(const MouseEvt& evt);
+   virtual bool mouseReleased(const MouseEvt& evt);
 
 #ifdef PHYSICS
 private:
