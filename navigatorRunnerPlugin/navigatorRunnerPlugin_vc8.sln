@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorRunnerMoz_vc8", "navigatorRunnerMoz\navigatorRunnerMoz_vc8.vcproj", "{2D4CA5C4-937A-11DC-8314-0800200C9A66}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorRunnerAx_vc8", "navigatorRunnerAx\navigatorRunnerAx_vc8.vcproj", "{9087F4C8-1719-4D1B-997A-9C0FD81B6266}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D4CA5C4-937A-11DC-8314-0800200C9A66}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D4CA5C4-937A-11DC-8314-0800200C9A66}.Debug|Win32.Build.0 = Debug|Win32
+		{2D4CA5C4-937A-11DC-8314-0800200C9A66}.Release|Win32.ActiveCfg = Release|Win32
+		{2D4CA5C4-937A-11DC-8314-0800200C9A66}.Release|Win32.Build.0 = Release|Win32
+		{9087F4C8-1719-4D1B-997A-9C0FD81B6266}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9087F4C8-1719-4D1B-997A-9C0FD81B6266}.Debug|Win32.Build.0 = Debug|Win32
+		{9087F4C8-1719-4D1B-997A-9C0FD81B6266}.Release|Win32.ActiveCfg = Release|Win32
+		{9087F4C8-1719-4D1B-997A-9C0FD81B6266}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
