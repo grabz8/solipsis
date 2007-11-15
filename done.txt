@@ -80,3 +80,5 @@ nsToolkit::Startup(HMODULE hModule)
 => still problems on Navi update() grabBrowser in Debug config
 - Navigator ActiveX added
 => still problems on 1st Navi Web Browser creation in Debug & Release config
+
+- IE ActiveX & Mozilla Plugin to run Navigator from IE/Mozilla added

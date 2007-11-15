@@ -115,3 +115,8 @@ Navigator ActiveX added
 => but still problems on 1st Navi Web Browser creation (like Navigator Mozilla Plugin)
 
 ---------------------------
+15/11/07
+
+IE ActiveX & Mozilla Plugin to run Navigator from IE/Mozilla added :
+still problems with 2nd navi (eg. uioptions.html) on IE ActiveX, so 1 solution is
+to provide plugins to launch Navigator from IE/Mozilla instead of embedding it,
