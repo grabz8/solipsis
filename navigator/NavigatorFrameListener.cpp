@@ -371,7 +371,7 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         if (!mNavigator->getNavigatorGUI()->isModelerMainVisible())
             mNavigator->getNavigatorGUI()->modelerMainShow();
         else
-            mNavigator->getNavigatorGUI()->modelerMainHide();
+            mNavigator->getNavigatorGUI()->modelerMainUnload();
         break;
 
 #ifdef PHYSICS

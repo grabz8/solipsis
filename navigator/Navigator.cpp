@@ -324,11 +324,11 @@ void Navigator::demoNavi2()
 #endif
 }
 #endif
-#ifdef PHYSICS
 #ifdef DEMO_PHYSICS1
 //-------------------------------------------------------------------------------------
 void Navigator::demoPhysics1()
 {
+#ifdef PHYSICS
 #define MAX_BOXES 10
     static int nextBox = 0;
     static std::map<String, SceneNode*> boxes;
@@ -376,8 +376,8 @@ void Navigator::demoPhysics1()
     boxBody->setLinearVelocity(Vector3::ZERO);
     boxBody->setAngularVelocity(Vector3::ZERO);
     boxBody->wake();
-}
 #endif
+}
 #endif
 
 //-------------------------------------------------------------------------------------

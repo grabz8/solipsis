@@ -505,7 +505,7 @@ void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainFileExit()");
 
-    modelerMainHide();
+    modelerMainUnload();
 }
 
 #ifdef UIDEBUG
