@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerDatas>
+  <sceneNode name="Deltastation1" static="true" filename="Deltastation1.osm" />
+  <!-- <sceneNode name="object1" static="false" filename="object1.sof"/> -->
+</peerDatas>
