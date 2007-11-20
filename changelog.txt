@@ -129,3 +129,8 @@ Mozilla plugin is working with Navigator.dll (NavigatorModule) in Release config
 Peer xml file added
 
 ---------------------------
+20/11/07
+
+Solipsis namespace added
+
+---------------------------

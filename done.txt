@@ -81,3 +81,5 @@ nsToolkit::Startup(HMODULE hModule)
 => Mozilla Plugin is working with Navigator.dll (NavigatorModule) in Release config but fails on 1st Navi (onPageLoaded callback not triggered)
 
 - IE ActiveX & Mozilla Plugin to run Navigator from IE/Mozilla added
+
+- Solipsis namespace added
