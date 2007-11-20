@@ -26,24 +26,12 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
     // Updating Navi
     NaviManager::Get().Update();
 
-    // Process received events
-    mNavigator->processEvents();
-
-#ifdef PHYSICS
-    // Step physics
-    OgreOde::StepHandler* stepHandler = mNavigator->getPhysicsStepHandler();
-    if (stepHandler != 0)
-        stepHandler->step(evt.timeSinceLastFrame);
-    OgreOde::World* physicsWorld = mNavigator->getPhysicsWorld();
-    if (physicsWorld != 0)
-        physicsWorld->synchronise();
-#endif
-
-    // Animate
     if (mNavigator->isConnected()) {
-        // Peers' avatars
-        for (std::map<String,OgrePeer*>::iterator it = mNavigator->getOgrePeersIteratorBegin();it != mNavigator->getOgrePeersIteratorEnd();++it)
-            it->second->update(evt.timeSinceLastFrame);
+        // Process received events
+        mNavigator->processEvents();
+
+        // Update peers
+        mNavigator->getOgrePeerManager()->frameStarted(evt);
     }
 
     return OgreFrameListener::frameStarted(evt);
@@ -296,7 +284,7 @@ bool NavigatorFrameListener::keyPressed(const OIS::KeyEvent &e)
         mNavigator->getNavigatorGUI()->contextHide();
 
 #ifdef PHYSICS
-    OgreOde::World* physicsWorld = mNavigator->getPhysicsWorld();
+    OgreOde::World* physicsWorld = mNavigator->getOgrePeerManager()->getPhysicsWorld();
 #endif
 
     using namespace OIS;
@@ -443,26 +431,3 @@ bool NavigatorFrameListener::keyReleased(const OIS::KeyEvent &e)
     }
     return OgreFrameListener::keyReleased(e);
 }
-
-#ifdef PHYSICS
-//-------------------------------------------------------------------------------------
-bool NavigatorFrameListener::collision(OgreOde::Contact* contact)
-{
-    // Check for collisions between things that are connected and ignore them
-/*    OgreOde::Geometry * const g1 = contact->getFirstGeometry();
-    OgreOde::Geometry * const g2 = contact->getSecondGeometry();
-    if (g1 && g2)
-    {
-        const OgreOde::Body * const b1 = g1->getBody();
-        const OgreOde::Body * const b2 = g2->getBody();
-        if (b1 && b2 && OgreOde::Joint::areConnected(b1, b2)) 
-            return false; 
-    }*/
-
-    contact->setCoulombFriction(0.9);
-    contact->setBouncyness(0.2);
-    contact->setSoftness(0.8, 10e-5);
-
-    return true;
-}
-#endif

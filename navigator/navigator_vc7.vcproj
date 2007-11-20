@@ -185,6 +185,9 @@
 				RelativePath=".\OgrePeer.cpp">
 			</File>
 			<File
+				RelativePath=".\OgrePeerManager.cpp">
+			</File>
+			<File
 				RelativePath=".\Peer.cpp">
 			</File>
 			<File
@@ -209,6 +212,9 @@
 			</File>
 			<File
 				RelativePath=".\DebugHelpers.h">
+			</File>
+			<File
+				RelativePath=".\IOgrePeerManagerCallbacks.h">
 			</File>
 			<File
 				RelativePath=".\oSceneLoader\include\IOSMSceneCallbacks.h">
@@ -260,6 +266,9 @@
 			</File>
 			<File
 				RelativePath=".\OgrePeer.h">
+			</File>
+			<File
+				RelativePath=".\OgrePeerManager.h">
 			</File>
 			<File
 				RelativePath=".\Peer.h">

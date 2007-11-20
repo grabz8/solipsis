@@ -44,6 +44,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
 
     mGravity = false;
 #ifdef PHYSICS
+    mWorld = 0;
     mRayGeom = 0;
 #ifdef CAPSULEGEOM
     mMaxUpdateTimeStep = -1.0;
@@ -65,15 +66,9 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
 Avatar::~Avatar()
 {
     if (mSceneNode == 0) return;
+
 #ifdef PHYSICS
-#ifdef FEET
-    delete mFeetGeom;
-    delete mFeetBody;
-#endif
-#ifdef CAPSULEGEOM
-    delete mCapsuleGeom;
-#endif
-    delete mRayGeom;
+    destroyPhysics();
 #else
     if (mRaySceneQuery != 0)
         mSceneNode->getCreator()->destroyQuery(mRaySceneQuery);
@@ -146,19 +141,13 @@ Avatar::MvtType Avatar::getMvtType()
 
 #ifdef PHYSICS
 //-------------------------------------------------------------------------------------
-void Avatar::createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry)
+void Avatar::createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry)
 {
-#ifdef FEET
-    delete mFeetGeom;
-    delete mFeetBody;
-#endif
-#ifdef CAPSULEGEOM
-    delete mCapsuleGeom;
-#endif
-    delete mRayGeom;
+    destroyPhysics();
 
     // world ?
     if (world == 0) return;
+    mWorld = world;
 
     // Compute radius and height of character
     Vector3 aabbHalfSize = mEntity->getBoundingBox().getHalfSize()*mSceneNode->getScale();
@@ -204,6 +193,21 @@ void Avatar::createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMe
   mSceneNode->attachObject(mCapsuleBody);*/
 #endif
     mWorldGeometry = worldGeometry;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::destroyPhysics()
+{
+#ifdef FEET
+    delete mFeetGeom;
+    delete mFeetBody;
+#endif
+#ifdef CAPSULEGEOM
+    delete mCapsuleGeom;
+#endif
+    delete mRayGeom;
+
+    mWorld = 0;
 }
 #endif
 

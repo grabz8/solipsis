@@ -49,6 +49,7 @@ protected:
     Real mRadius;
     Real mHeight;
 #ifdef PHYSICS
+    OgreOde::World* mWorld;
     OgreOde::RayGeometry* mRayGeom;
 #ifdef CAPSULEGEOM
     Ogre::Real mMaxUpdateTimeStep;
@@ -94,7 +95,9 @@ public:
     void setGravity(bool enabled);
     bool isGravityEnabled();
 #ifdef PHYSICS
-    void createPhysicsRayGeometry(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
+    OgreOde::World* getPhysicsWorld() { return mWorld; }
+    void createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
+    void destroyPhysics();
 #endif
 #ifdef CAPSULEGEOM
     void setMaxUpdateTimeStep(Ogre::Real maxUpdateTimeStep);

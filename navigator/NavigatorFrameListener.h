@@ -4,16 +4,7 @@
 #include "OgreFrameListener.h"
 #include "Navigator.h"
 
-#ifdef PHYSICS
-#include "OgreOde_Core.h"
-#endif
-
-class NavigatorFrameListener :
-    public OgreFrameListener
-#ifdef PHYSICS
-    ,
-    public OgreOde::CollisionListener
-#endif
+class NavigatorFrameListener : public OgreFrameListener
 {
 public:
     enum CameraMode {
@@ -40,12 +31,6 @@ protected:
     // OIS::KeyListener
     bool keyPressed(const OIS::KeyEvent &e);
     bool keyReleased(const OIS::KeyEvent &e);
-
-#ifdef PHYSICS
-private:
-    // OgreOde::CollisionListener
-    virtual bool collision(OgreOde::Contact* contact);
-#endif
 
 public:
     NavigatorFrameListener(Navigator* navigator);

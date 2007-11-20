@@ -1,24 +1,10 @@
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
-#include "OgreOSMScene.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
 #include "NaviLua.h"
 
 Navigator* Navigator::ms_singletonPtr = 0;
-
-// this internal OSM-loader callbacks class is used to force OFF shadows casting of entities
-class navigatorOSMSceneCallbacks : public OSMSceneCallbacks
-{
-    virtual void OnLightCreate(Light *pLight, TiXmlElement* pLightDesc)
-    {
-        pLight->setCastShadows(false);
-    }
-    virtual void OnEntityCreate(Entity *pEntity, TiXmlElement* pEntityDesc)
-    {
-        pEntity->setCastShadows(false);
-    }
-};
 
 Navigator::Navigator() :
     OgreApplication("Solipsis"),
@@ -31,17 +17,13 @@ Navigator::Navigator() :
     mHost("localhost"),
     mPort(8550),
     mXmlRpcClient(0),
+    mOgrePeerManager(0),
     mNavigatorGUI(0),
     mMaxNaviPickingDistance(500),
     mMaxAvatarPickingDistance(500),
     mRaySceneQuery(0),
     mPickedMovable(0),
     mUserAvatar(0)
-#ifdef PHYSICS
-    ,mPhysicsWorld(0),
-    mPhysicsStepHandler(0),
-    mPhysicsWorldGeometry(0)
-#endif
 {
     ms_singletonPtr = this;
 
@@ -62,6 +44,7 @@ Navigator::~Navigator()
 
     // Clean up allocated peers datas
     cleanUpPeers(true);
+    delete mOgrePeerManager;
 
     // Destroy the ray scene query
     if (mSceneMgr)
@@ -72,13 +55,6 @@ Navigator::~Navigator()
 
     // Lua finalization
     lua_close(mLuaState);
-
-#ifdef PHYSICS
-    // Destroy the physical world
-    delete mPhysicsWorldGeometry;
-    delete mPhysicsStepHandler;
-    delete mPhysicsWorld;
-#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -154,14 +130,9 @@ void Navigator::setConnectionPort(int port)
 }
 
 //-------------------------------------------------------------------------------------
-std::map<String,OgrePeer*>::iterator Navigator::getOgrePeersIteratorBegin()
+OgrePeerManager* Navigator::getOgrePeerManager()
 {
-    return mOgrePeersMap.begin();
-}
-
-//-------------------------------------------------------------------------------------
-std::map<String,OgrePeer*>::iterator Navigator::getOgrePeersIteratorEnd() {
-    return mOgrePeersMap.end();
+    return mOgrePeerManager;
 }
 
 //-------------------------------------------------------------------------------------
@@ -193,26 +164,6 @@ Avatar* Navigator::getUserAvatar()
 {
     return mUserAvatar;
 }
-
-#ifdef PHYSICS
-//-------------------------------------------------------------------------------------
-OgreOde::World* Navigator::getPhysicsWorld()
-{
-    return mPhysicsWorld;
-}
-
-//-------------------------------------------------------------------------------------
-OgreOde::StepHandler* Navigator::getPhysicsStepHandler()
-{
-    return mPhysicsStepHandler;
-}
-
-//-------------------------------------------------------------------------------------
-OgreOde::TriangleMeshGeometry* Navigator::getPhysicsWorldGeometry()
-{
-    return mPhysicsWorldGeometry;
-}
-#endif
 
 //-------------------------------------------------------------------------------------
 void Navigator::fakeSurroundingArea(int index)
@@ -332,7 +283,8 @@ void Navigator::demoPhysics1()
 #define MAX_BOXES 10
     static int nextBox = 0;
     static std::map<String, SceneNode*> boxes;
-    if (mPhysicsWorld == 0) return;
+    OgreOde::World* physicsWorld = mOgrePeerManager->getPhysicsWorld();
+    if (physicsWorld == 0) return;
 
     // Create a box
     int boxNum = nextBox;
@@ -364,10 +316,10 @@ void Navigator::demoPhysics1()
         boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
         boxEntity->setMaterialName("2 - Default");
         boxNode->attachObject(boxEntity);
-        boxBody = new OgreOde::Body(mPhysicsWorld, boxName + "Bod");
+        boxBody = new OgreOde::Body(physicsWorld, boxName + "Bod");
         boxBody->setMass(OgreOde::BoxMass(1, boxGeomSize*boxScale));
         boxNode->attachObject(boxBody);
-        boxGeom = new OgreOde::BoxGeometry(boxGeomSize*boxScale, mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
+        boxGeom = new OgreOde::BoxGeometry(boxGeomSize*boxScale, physicsWorld, physicsWorld->getDefaultSpace());
         boxGeom->setBody(boxBody);
         boxes[boxName] = boxNode;
     }
@@ -503,7 +455,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFAvatar))
     {
         // retrieve avatar instance
-        for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
+        for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
         {
             if (ogrePeer->second->getType().compare("avatar") != 0) continue;
             if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
@@ -562,34 +514,13 @@ void Navigator::createScene()
 {
     mSceneMgr->setAmbientLight(ColourValue(0.20, 0.20, 0.20));
 
-    // Create user avatar
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode("UserAvatarNode");
-    Entity* entity = mSceneMgr->createEntity("UserAvatar", "salamandra.mesh");//robot.mesh
-    entity->setQueryFlags(QFAvatar);
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#endif
-    Peer* userLocalPeer = new Peer(String("UserAvatarPeer"), 0, 0, 0);
-    mUserAvatar = new Avatar(userLocalPeer, node, entity);
-    mOgrePeersMap[userLocalPeer->getNetworkId()] = mUserAvatar;
-    mUserAvatar->setGravity(false);
-    mUserAvatar->setStateAnimName(Avatar::SWalk, "Walk");
-    mUserAvatar->setStateAnimName(Avatar::SRun, "Run");
-    if (entity->getMesh()->getName().find("robot") != String::npos)
-        mUserAvatar->setStateAnimName(Avatar::SRun, "Walk");
-    mUserAvatar->setStateAnimName(Avatar::SFly, "Walk");
-    mUserAvatar->setStateAnimName(Avatar::SSwim, "Walk");
-    mUserAvatar->setState(Avatar::SIdle);
+    // Create OgrePeer manager
+    mOgrePeerManager = new OgrePeerManager(mSceneMgr, this);
 
-#ifdef LEXI
-    if (entity->getMesh()->getName().find("salamandra") != String::npos)
-        node->setPosition(0, 47, 0);
-#else
-    node->setPosition(0, 0, 0);
-#ifdef CAPSULEGEOM
-    node->setPosition(0, 0, -650);
-#endif
-#endif
+    // Create user avatar
+    Peer* userLocalPeer = new Peer(String("User"), 0, 0, 0);
+    if (!generateFromPeer(userLocalPeer))
+        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load User avatar", "Navigator::createScene");
 
     // create the sun light
     Light *sunLight = mSceneMgr->createLight("SunLight");
@@ -608,7 +539,7 @@ void Navigator::createScene()
     Vector3 avatarHalfSize = mUserAvatar->getEntity()->getBoundingBox().getHalfSize();
 
     // Create First person camera node/pitch node
-    SceneNode* camNode = node->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
+    SceneNode* camNode = mUserAvatar->getSceneNode()->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
 #ifdef LEXI
     if (entity->getMesh()->getName().find("salamandra") != String::npos)
         camNode->setPosition(Vector3(0, 1, 0)*avatarHalfSize);
@@ -617,7 +548,7 @@ void Navigator::createScene()
     SceneNode* pitchCamNode = camNode->createChildSceneNode("FirstPersonCamPitchNode");
 
     // Create the Third camera node/pitch node
-    camNode = node->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
+    camNode = mUserAvatar->getSceneNode()->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
 #ifdef LEXI
     if (entity->getMesh()->getName().find("salamandra") != String::npos)
         camNode->setPosition(Vector3(0, -47, 0) + Vector3(-4, 1.1, 0)*avatarSize);
@@ -690,21 +621,17 @@ bool Navigator::connect()
 
         // Get all peers
         cleanUpPeers(false);
-        nodeResponse = mXmlRpcClient->getAllPeers(mPeersList);
+        std::list<Peer*> peersList;
+        nodeResponse = mXmlRpcClient->getAllPeers(peersList);
 
         if (nodeResponse)
         {
-            //You've got peers!
-//            CEGUI::Editbox* infoTxt = (CEGUI::Editbox*)CEGUI::System::getSingleton().getGUISheet()->getChild("InfoTxt");
-//            char nb[128]; sprintf(nb, "%d", mPeersList.size());
-//            infoTxt->setText("Node has found " + String(nb) + " peer(s)");
-            
             //Create avatars, set on the scene and store them
-            for (std::list<Peer*>::iterator peer = mPeersList.begin();peer != mPeersList.end();++peer)
+            for (std::list<Peer*>::iterator peer = peersList.begin();peer != peersList.end();++peer)
             {
                 OGRE_LOG("create avatar for " + (*peer)->getLogin());
-                Avatar* avatar = generateAvatarFromPeer(*peer);
-                mOgrePeersMap[(*peer)->getNetworkId()] = avatar;
+                if (!generateFromPeer(*peer))
+                    return false;
             }
         }
 
@@ -724,7 +651,14 @@ bool Navigator::sendMessage(const String& message)
 {
     if (mXmlRpcClient == 0)
         Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
-    return mXmlRpcClient->sendMessage(message, mPeersList);
+    std::list<Peer*> peersList;
+    for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+    {
+        if (ogrePeer->second->getType().compare("avatar") != 0) continue;
+        if (ogrePeer->second->getPeer()->isLocal()) continue;
+        peersList.push_back(ogrePeer->second->getPeer());
+    }
+    return mXmlRpcClient->sendMessage(message, peersList);
 }
 
 //-------------------------------------------------------------------------------------
@@ -756,137 +690,15 @@ void Navigator::setNodeStatus(String& nodeStatusString)
 //-------------------------------------------------------------------------------------
 void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 {
-    bool loopAgain;
-
-    loopAgain = true;
-    while (loopAgain)
-    {
-        loopAgain = false;
-        for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
-        {
-            if (!cleanUpLocalPeers && ogrePeer->second->getPeer()->isLocal()) continue;
-            mPeersList.remove(ogrePeer->second->getPeer());
-            delete ogrePeer->second->getPeer();
-            delete ogrePeer->second;
-            mOgrePeersMap.erase(ogrePeer);
-            loopAgain = true;
-            break;
-        }
-    }
-    loopAgain = true;
-    while (loopAgain)
-    {
-        loopAgain = false;
-        for (std::list<Peer*>::iterator peer = mPeersList.begin();peer != mPeersList.end();++peer)
-        {
-            if (!cleanUpLocalPeers && (*peer)->isLocal()) continue;
-            OGRE_LOG("deleting orphan peer instance " + (*peer)->getLogin());
-            delete (*peer);
-            mPeersList.erase(peer);
-            loopAgain = true;
-            break;
-        }
-    }
+    mOgrePeerManager->removeAll(false);
+    if (cleanUpLocalPeers)
+        mOgrePeerManager->removeAll(true);
 }
 
 //-------------------------------------------------------------------------------------
-Avatar* Navigator::generateAvatarFromPeer(Peer* peer)
+bool Navigator::generateFromPeer(Peer* peer)
 {
-    if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Navigator::generateAvatarFromPeer");
-
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(peer->getNetworkId() + "Avatar");
-    Entity* entity = mSceneMgr->createEntity(peer->getNetworkId() + "Avatar", "salamandra.mesh");//"salamandra.mesh");
-    entity->setQueryFlags(QFAvatar);
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#endif
-
-    //TODO : need to set correct position         
-    node->setPosition(peer->getFakeX(),peer->getFakeZ(),peer->getFakeY()); //careful to switch y and z !
-#ifdef LEXI
-    if (peer->getLogin().find("salamandra") != String::npos)
-        node->setPosition(0, 47, 500);
-#else
-    node->setPosition(0, 3, 500);
-#ifdef CAPSULEGEOM
-    node->setPosition(-50, 3, -500);
-#endif
-#endif
-
-    Avatar* peerAvatar = new Avatar(peer, node, entity);
-    
-    peerAvatar->setGravity(false);
-    peerAvatar->setStateAnimName(Avatar::SWalk, "Walk");
-    peerAvatar->setStateAnimName(Avatar::SRun, "Run");
-    peerAvatar->setStateAnimName(Avatar::SFly, "Fly");
-    peerAvatar->setStateAnimName(Avatar::SSwim, "Swim");
-    peerAvatar->setState(Avatar::SIdle);
-
-    return peerAvatar;
-}
-
-//-------------------------------------------------------------------------------------
-Scene* Navigator::generateSceneFromPeer(Peer* peer)
-{
-    if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Navigator::generateSceneFromPeer");
-
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(peer->getNetworkId() + "Scene");
-    OSMScene osmScene(mSceneMgr);
-    //OSMSceneCallbacks* osmSceneCallbacks = 0;
-    navigatorOSMSceneCallbacks osmSceneCallbacks;
-    if (!osmScene.initialise("Deltastation1.osm", &osmSceneCallbacks))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene !", "Navigator::generateSceneFromPeer");
-    osmScene.declareResources();
-    if (!osmScene.createScene(node))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene !", "Navigator::generateSceneFromPeer");
-
-#ifdef SHADOWS
-    mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
-    mSceneMgr->setShadowTextureSettings(512, 2, PixelFormat::PF_A4R4G4B4);
-#endif
-
-    //TODO : need to set correct position         
-//    node->setPosition(peer->getFakeX(),peer->getFakeZ(),peer->getFakeY()); //careful to switch y and z !
-    node->setPosition(18,-58,133);
-
-#ifdef PHYSICS
-    // Create the physical world
-    mPhysicsWorld = new OgreOde::World(mSceneMgr);
-    mPhysicsWorld->setGravity(Vector3(0,-9.80665,0));
-    mPhysicsWorld->setCFM(10e-5/50);
-    mPhysicsWorld->setERP(0.8/50);
-    mPhysicsWorld->setAutoSleep(true);
-    mPhysicsWorld->setContactCorrectionVelocity(0.1*50);
-    mPhysicsWorld->setContactSurfaceLayer(0.2*50);
-//    mPhysicsWorld->setAutoSleepLinearThreshold(10.0);
-//    mPhysicsWorld->setAutoSleepAngularThreshold(10.0);
-    mPhysicsWorld->setCollisionListener(dynamic_cast<OgreOde::CollisionListener*>(mFrameListener));
-    // Create something that will step the world, but don't do it automatically
-//    mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::BasicStep, Real(0.001), Real(1000.0), Real(1.0));
-    mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::QuickStep, Real(1.0/60.0), Real(1000.0), Real(5.0));
-    mPhysicsStepHandler->setAutomatic(OgreOde::StepHandler::AutoMode_NotAutomatic, Root::getSingletonPtr());
-    // Create the world collision mesh
-    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
-    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
-    OgreOde::EntityInformer entityInformer(worldCollisionEntity, worldCollisionSceneNode->_getFullTransform());
-    mPhysicsWorldGeometry = entityInformer.createStaticTriangleMesh(mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
-    worldCollisionSceneNode->setVisible(false);
-    // Create user avatar's world ray
-    mUserAvatar->createPhysicsRayGeometry(mPhysicsWorld, mPhysicsWorldGeometry);
-#ifdef CAPSULEGEOM
-    mUserAvatar->setMaxUpdateTimeStep(1.0/60.0);
-#endif
-#else
-    // Destroy collision mesh
-    mSceneMgr->destroySceneNode("MC_station");
-#endif
-    mUserAvatar->setGravity(true);
-
-    Scene* peerScene = new Scene(peer, node);
-
-    return peerScene;
+    return mOgrePeerManager->load(peer, peer->getLogin() + ".xml");
 }
 
 //-------------------------------------------------------------------------------------
@@ -894,9 +706,7 @@ void Navigator::onPeerNew(NodeEvent::DatasPeerNew& evtDatas)
 {
     OGRE_LOG("Navigator::onPeerNew()");
 
-    mPeersList.push_back(evtDatas.mPeer);
-    Scene* scene = generateSceneFromPeer(evtDatas.mPeer);
-    mOgrePeersMap[evtDatas.mPeer->getNetworkId()] = scene;
+    generateFromPeer(evtDatas.mPeer);
 }
 
 //-------------------------------------------------------------------------------------
@@ -904,22 +714,7 @@ void Navigator::onPeerLost(NodeEvent::DatasPeerLost& evtDatas)
 {
     OGRE_LOG("Navigator::onPeerLost()");
 
-    bool peerFound = false;
-    for (std::map<String,OgrePeer*>::iterator ogrePeer=mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
-    {
-        if (ogrePeer->second->getPeer()->getNetworkId().compare(evtDatas.mNetworkId) == 0)
-        {
-            if (ogrePeer->second->getPeer()->isLocal())
-                Exception(Exception::ERR_INTERNAL_ERROR, "We cannot loose one local peer", "Navigator::onPeerLost");
-            mPeersList.remove(ogrePeer->second->getPeer());
-            delete ogrePeer->second->getPeer();
-            delete ogrePeer->second;
-            mOgrePeersMap.erase(ogrePeer);
-            peerFound = true;
-            break;
-        }
-    }
-    if (!peerFound)
+    if (!mOgrePeerManager->remove(evtDatas.mNetworkId, false))
         Exception(Exception::ERR_INTERNAL_ERROR, "Lost peer not found", "Navigator::onPeerLost");
 }
 
@@ -928,7 +723,7 @@ void Navigator::onStatusChanged(NodeEvent::DatasStatusChanged& evtDatas)
 {
     OGRE_LOG("Navigator::onStatusChanged()");
 
-    this->setNodeStatus(evtDatas.mStatus);
+    setNodeStatus(evtDatas.mStatus);
 }
 
 //-------------------------------------------------------------------------------------
@@ -956,6 +751,34 @@ void Navigator::processEvents()
         }
     }
     endProcessEvents();
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
+{
+    // User Avatar ?
+    if (ogrePeer->getPeer()->isLocal())
+    {
+        mUserAvatar = (Avatar*)ogrePeer;
+#ifdef LEXI
+        if (mUserAvatar->getEntity()->getMesh()->getName().find("salamandra") != String::npos)
+            mUserAvatar->getSceneNode()->setPosition(0, 47, 0);
+#else
+        mUserAvatar->getSceneNode()->setPosition(0, 0, 0);
+#ifdef CAPSULEGEOM
+        mUserAvatar->getSceneNode()->setPosition(0, 0, -650);
+#endif
+#endif
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
+{
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------

@@ -267,6 +267,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OgrePeerManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Peer.cpp"
 				>
 			</File>
@@ -298,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\DebugHelpers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IOgrePeerManagerCallbacks.h"
 				>
 			</File>
 			<File
@@ -366,6 +374,10 @@
 			</File>
 			<File
 				RelativePath=".\OgrePeer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OgrePeerManager.h"
 				>
 			</File>
 			<File

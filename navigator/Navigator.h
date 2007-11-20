@@ -2,20 +2,16 @@
 #define __Navigator_h__
 
 #include "OgreApplication.h"
-#include "Peer.h"
 #include "NavigatorXMLRPCClient.h"
 #include "NodeEventListener.h"
+#include "Avatar.h"
+#include "Scene.h"
+#include "OgrePeerManager.h"
 #include "NavigatorGUI.h"
 #include "LuaBinding.h"
 #include "NavigatorLua.h"
-#include "Avatar.h"
-#include "Scene.h"
 
-#ifdef PHYSICS
-#include "OgreOde_Core.h"
-#endif
-
-class Navigator : public OgreApplication, public NodeEventListener
+class Navigator : public OgreApplication, public NodeEventListener, public IOgrePeerManagerCallbacks
 {
 public:
     enum State {
@@ -50,8 +46,7 @@ protected:
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
-    std::list<Peer*> mPeersList;
-    std::map<String,OgrePeer*> mOgrePeersMap;
+    OgrePeerManager* mOgrePeerManager;
 
     NavigatorGUI* mNavigatorGUI;
 
@@ -68,12 +63,6 @@ protected:
     NavigatorLua* mNavigatorLua;
 
     Avatar* mUserAvatar;
-
-#ifdef PHYSICS
-    OgreOde::World* mPhysicsWorld;
-    OgreOde::StepHandler* mPhysicsStepHandler;
-    OgreOde::TriangleMeshGeometry* mPhysicsWorldGeometry;
-#endif
 
     bool mFakeTerrain;
 
@@ -96,9 +85,7 @@ public:
     int getConnectionPort();
     void setConnectionPort(int port);
 
-    std::map<String,OgrePeer*>::iterator getOgrePeersIteratorBegin();
-    std::map<String,OgrePeer*>::iterator getOgrePeersIteratorEnd();
-
+    OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
 
     lua_State* getLuaState();
@@ -106,12 +93,6 @@ public:
     NavigatorLua* getNavigatorLua();
 
     Avatar* getUserAvatar();
-
-#ifdef PHYSICS
-    OgreOde::World* getPhysicsWorld();
-    OgreOde::StepHandler* getPhysicsStepHandler();
-    OgreOde::TriangleMeshGeometry* getPhysicsWorldGeometry();
-#endif
 
     // Demonstrators
     void fakeSurroundingArea(int index);
@@ -146,6 +127,10 @@ public:
     // process events received by node
     void processEvents();
 
+    // IOgrePeerManagerCallbacks
+	virtual bool OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+	virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+
 protected:
     // OgreApplication
     virtual bool initPostOgreCore();
@@ -162,8 +147,7 @@ protected:
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 
-    Avatar* generateAvatarFromPeer(Peer* peer);
-    Scene* generateSceneFromPeer(Peer* peer);
+    bool generateFromPeer(Peer* peer);
 
     virtual void onPeerNew(NodeEvent::DatasPeerNew& evtDatas);
     virtual void onPeerLost(NodeEvent::DatasPeerLost& evtDatas);
