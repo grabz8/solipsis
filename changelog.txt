@@ -122,3 +122,10 @@ still problems with 2nd navi (eg. uioptions.html) on IE ActiveX, so 1 solution i
 to provide plugins to launch Navigator from IE/Mozilla instead of embedding it,
 
 Mozilla plugin is working with Navigator.dll (NavigatorModule) in Release config but fails on 1st Navi (onPageLoaded callback not triggered)
+
+---------------------------
+19/11/07
+
+Peer xml file added
+
+---------------------------

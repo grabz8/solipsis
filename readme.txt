@@ -130,3 +130,7 @@ username g6r6e6g
 email    gregoryjan@free.fr
 password greg666
 
+PhysX
+http://devsupport.ageia.com
+email    gregoryjan@free.fr
+password greg666
