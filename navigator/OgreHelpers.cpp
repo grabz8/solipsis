@@ -1,5 +1,7 @@
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList)
 {
     SceneNode::ObjectIterator objectIterator = node->getAttachedObjectIterator();

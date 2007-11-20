@@ -1,5 +1,7 @@
 #include "NodeEvent.h"
 
+using namespace Solipsis;
+
 NodeEvent::NodeEvent(time_t timestamp, Type type, Datas* datas) :
     mTimestamp(timestamp),
     mType(type),

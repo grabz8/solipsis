@@ -5,6 +5,8 @@
 
 using namespace NaviLibrary;
 
+namespace Solipsis {
+
 class Navigator;
 
 class NavigatorGUI
@@ -89,5 +91,7 @@ protected:
     void naviToShowPageLoaded(const NaviData& naviData);
     void hidePreviousNavi();
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NavigatorGUI_h__

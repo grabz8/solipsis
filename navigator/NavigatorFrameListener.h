@@ -4,6 +4,8 @@
 #include "OgreFrameListener.h"
 #include "Navigator.h"
 
+namespace Solipsis {
+
 class NavigatorFrameListener : public OgreFrameListener
 {
 public:
@@ -41,5 +43,7 @@ public:
     void detachCamera();
     void attachCamera();
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NavigatorFrameListener_h__

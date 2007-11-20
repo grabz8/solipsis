@@ -5,8 +5,10 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 // secure logMessage macro
-#define OGRE_LOG(message) if (Ogre::LogManager::getSingletonPtr()) Ogre::LogManager::getSingletonPtr()->logMessage(message);
+#define OGRE_LOG(message) if (LogManager::getSingletonPtr()) LogManager::getSingletonPtr()->logMessage(message);
 
 class OgreHelpers
 {
@@ -47,5 +49,7 @@ public:
         Vector2& closestUV,
         Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __OgreHelpers_h__

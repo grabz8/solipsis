@@ -3,6 +3,8 @@
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
 
+using namespace Solipsis;
+
 const std::string NavigatorGUI::mNavisNames[] = {
     "uilogin",
     "uioptions",

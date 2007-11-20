@@ -3,6 +3,8 @@
 
 #include "LuaBinding.h"
 
+namespace Solipsis {
+
 class Navigator;
 
 class NavigatorLua
@@ -50,5 +52,7 @@ public:
     // handle 1 event
     int handleEvent(const char* evt, const char *fmt, ...);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NavigatorLua_h__

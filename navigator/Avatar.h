@@ -14,6 +14,8 @@
 #include "OgreOde_Core.h"
 #endif
 
+namespace Solipsis {
+
 class Avatar : public OgrePeer
 #ifdef PHYSICS
     ,
@@ -127,5 +129,7 @@ private:
     KeyMotion mPgupKeyMotion;
     KeyMotion mPgdownKeyMotion;
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __Avatar_h__

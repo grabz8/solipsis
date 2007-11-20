@@ -4,6 +4,8 @@
 #include "DebugHelpers.h"
 #include "NaviLua.h"
 
+using namespace Solipsis;
+
 Navigator* Navigator::ms_singletonPtr = 0;
 
 Navigator::Navigator() :

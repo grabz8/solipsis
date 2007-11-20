@@ -1,6 +1,8 @@
 #include "Avatar.h"
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 String Avatar::mDefaultStateAnimName[SCount] = {
     "",
     "Idle",

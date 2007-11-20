@@ -3,6 +3,8 @@
 #include "OgreHelpers.h"
 #include "Platform.h"
 
+using namespace Solipsis;
+
 NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
     BasicThread(),
     mXmlRpcClient(xmlRpcClient),

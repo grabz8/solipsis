@@ -3,6 +3,8 @@
 #include "OgreHelpers.h"
 #include "Platform.h"
 
+using namespace Solipsis;
+
 BasicThread::BasicThread() :
     mMutex(PTHREAD_MUTEX_INITIALIZER),
     mState(SInit),

@@ -47,6 +47,8 @@ D:        Step right
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class OgreFrameListener: public FrameListener, public WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 {
 public:
@@ -121,5 +123,7 @@ protected:
     bool mContinue;        // Whether to continue rendering or not
     Vector3 mDirection;     // Value to move in the correct direction
 };
+
+} // namespace Solipsis
 
 #endif

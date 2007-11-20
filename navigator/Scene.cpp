@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 Scene::Scene(Peer* peer, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
     OgrePeer(peer, "scene"),
     mSceneNode(sceneNode),

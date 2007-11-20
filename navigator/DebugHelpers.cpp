@@ -3,6 +3,8 @@
 #include "OgreHelpers.h"
 #include "Navigator.h"
 
+using namespace Solipsis;
+
 #ifdef UIDEBUG
 std::map<String,String> DebugHelpers::debugCommands;
 

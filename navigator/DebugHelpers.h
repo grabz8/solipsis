@@ -7,6 +7,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class Navigator;
 
 class DebugHelpers
@@ -27,5 +29,7 @@ protected:
     // Lua message logging
     LuaStaticCppGlue(luaLogMessage);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __DebugHelpers_h__

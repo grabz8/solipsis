@@ -1,6 +1,8 @@
 #include "OgreFrameListener.h"
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 //-------------------------------------------------------------------------------------
 
 // Constructor takes a RenderWindow because it uses that to determine input context

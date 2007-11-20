@@ -5,6 +5,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class Scene : public OgrePeer
 {
 protected:
@@ -19,12 +21,14 @@ public:
     // Set and get
     SceneNode* getSceneNode();
 
-    virtual void update(Ogre::Real timeSinceLastFrame);
+    virtual void update(Real timeSinceLastFrame);
 
 protected:
     void destroy();
     void convertToStaticGeometry();
     void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __Scene_h__

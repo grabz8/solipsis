@@ -8,6 +8,8 @@
 #include "NodeEvent.h"
 #include <pthread.h>
 
+namespace Solipsis {
+
 class NavigatorXMLRPCClient : public XmlRpc::XmlRpcClient
 {
 protected:
@@ -36,5 +38,7 @@ private:
     Ogre::String removeFirstLevelOfXmlAnchor(Ogre::String& xml);
     bool executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NavigatorXMLRPCClient_h__

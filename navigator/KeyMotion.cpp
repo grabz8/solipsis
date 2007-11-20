@@ -1,5 +1,7 @@
 #include "KeyMotion.h"
 
+using namespace Solipsis;
+
 KeyMotion::KeyMotion(Real impulse, Real maxSpeed, Real accelerationFactor, Real decelerationFactor) :
   mImpulse(impulse),
   mMaxSpeed(maxSpeed),

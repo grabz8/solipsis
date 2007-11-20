@@ -5,7 +5,7 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 
-using namespace Ogre;
+using namespace Solipsis;
 
 // this internal OSM-loader callbacks class is used to force OFF shadows casting of entities
 class OgrePeerManagerOSMSceneCallbacks : public OSMSceneCallbacks

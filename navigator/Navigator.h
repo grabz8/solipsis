@@ -11,6 +11,8 @@
 #include "LuaBinding.h"
 #include "NavigatorLua.h"
 
+namespace Solipsis {
+
 class Navigator : public OgreApplication, public NodeEventListener, public IOgrePeerManagerCallbacks
 {
 public:
@@ -153,5 +155,7 @@ protected:
     virtual void onPeerLost(NodeEvent::DatasPeerLost& evtDatas);
     virtual void onStatusChanged(NodeEvent::DatasStatusChanged& evtDatas);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __Navigator_h__

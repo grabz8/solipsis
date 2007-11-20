@@ -1,6 +1,8 @@
 #include "OgrePeer.h"
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 OgrePeer::OgrePeer(Peer* peer, String type) :
     mPeer(peer),
     mType(type),

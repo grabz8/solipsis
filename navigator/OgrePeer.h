@@ -6,6 +6,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 //#define COLLIDE_QUERY_MASK 0x00001000
 
 class OgrePeer
@@ -23,7 +25,9 @@ public:
     Peer* getPeer();
     const String& getType();
 
-    virtual void update(Ogre::Real timeSinceLastFrame) = 0;
+    virtual void update(Real timeSinceLastFrame) = 0;
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __PeerNode_h__

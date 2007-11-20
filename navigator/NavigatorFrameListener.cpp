@@ -4,6 +4,7 @@
 #include "DebugHelpers.h"
 
 using namespace NaviLibrary;
+using namespace Solipsis;
 
 NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),

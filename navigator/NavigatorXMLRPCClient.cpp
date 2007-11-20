@@ -3,6 +3,8 @@
 #include "DebugHelpers.h"
 #include "Platform.h"
 
+using namespace Solipsis;
+
 NavigatorXMLRPCClient::NavigatorXMLRPCClient(const char *host, int port, const char *uri) :
     XmlRpcClient(host, port, uri),
     mConnected(false),

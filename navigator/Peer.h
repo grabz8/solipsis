@@ -6,6 +6,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 #define PEER_LOCAL ""
 
 class Peer
@@ -31,5 +33,7 @@ public:
     int getFakeZ();
     bool isLocal();
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __Peer_h__

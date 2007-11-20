@@ -1,5 +1,7 @@
 #include "Peer.h"
 
+using namespace Solipsis;
+
 Peer::Peer(String& networkId, String& login, CBigInt x_, CBigInt y_, CBigInt z_) :
     mNetworkId(networkId),
     mLogin(login),

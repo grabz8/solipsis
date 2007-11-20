@@ -1,6 +1,8 @@
 #include "OgreApplication.h"
 #include "NaviManager.h"
 
+using namespace Solipsis;
+
 #define RESSOURCE_FILE_NAME "resources.cfg"
 
 //-------------------------------------------------------------------------------------

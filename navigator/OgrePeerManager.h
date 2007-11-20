@@ -9,6 +9,10 @@
 #include "OgreOde_Core.h"
 #endif
 
+using namespace Ogre;
+
+namespace Solipsis {
+
 class OgrePeerManager : public FrameListener
 #ifdef PHYSICS
     ,
@@ -16,14 +20,14 @@ class OgrePeerManager : public FrameListener
 #endif
 {
 public:
-	OgrePeerManager(Ogre::SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
+	OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
 	~OgrePeerManager();
 
 	// Load
-	bool load(Peer* peer, const Ogre::String xmlFile);
+	bool load(Peer* peer, const String xmlFile);
 
 	// Remove 1 peer according to its ID and if it is local or networked
-    bool remove(Ogre::String& peerId, bool local);
+    bool remove(String& peerId, bool local);
 
     // Remove all peers (locals or networked)
     bool removeAll(bool local);
@@ -32,7 +36,7 @@ public:
     virtual bool frameStarted(const FrameEvent& evt);
 
 	// Get/Set
-	Ogre::SceneManager* getSceneManager() { return mSceneMgr; }
+	SceneManager* getSceneManager() { return mSceneMgr; }
     std::map<String,OgrePeer*>::iterator getOgrePeersIteratorBegin() { return mOgrePeersMap.begin(); }
     std::map<String,OgrePeer*>::iterator getOgrePeersIteratorEnd() { return mOgrePeersMap.end(); }
 #ifdef PHYSICS
@@ -68,5 +72,7 @@ private:
     OgreOde::TriangleMeshGeometry* mPhysicsWorldGeometry;
 #endif
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __OgrePeerManager__

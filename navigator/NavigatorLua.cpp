@@ -2,6 +2,8 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 
+using namespace Solipsis;
+
 const char NavigatorLua::className[] = "NavigatorLua";
 
 Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {

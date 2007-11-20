@@ -7,6 +7,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class NodeEvent
 {
 public:
@@ -47,5 +49,7 @@ public:
     Type getType();
     Datas* getDatas();
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NodeEvent_h__

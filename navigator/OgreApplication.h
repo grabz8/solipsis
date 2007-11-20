@@ -6,6 +6,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class OgreApplication
 {
 public:
@@ -63,5 +65,7 @@ private:
     TextureFilterOptions mFiltering;
     int mAniso;
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __OgreApplication_h__

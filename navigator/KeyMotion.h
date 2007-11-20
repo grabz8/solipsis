@@ -5,6 +5,8 @@
 
 using namespace Ogre;
 
+namespace Solipsis {
+
 class KeyMotion
 {
 protected:
@@ -23,5 +25,7 @@ public:
     Real getMotion();
     void update(Real timeSinceLastFrame);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __KeyMotion_h__

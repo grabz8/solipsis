@@ -5,6 +5,8 @@
 #include "BasicThread.h"
 #include "NodeEvent.h"
 
+namespace Solipsis {
+
 class NavigatorXMLRPCClient;
 
 class NodeEventListener : public BasicThread
@@ -38,5 +40,7 @@ protected:
     // end of events processing
     virtual void endProcessEvents();
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __NodeEventListener_h__

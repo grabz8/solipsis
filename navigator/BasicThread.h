@@ -3,6 +3,8 @@
 
 #include <pthread.h>
 
+namespace Solipsis {
+
 class BasicThread
 {
 public:
@@ -51,5 +53,7 @@ private:
     // forward the call to instance method startRoutine()
     static void *startRoutine(void* args);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __BasicThread_h__
