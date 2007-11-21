@@ -51,11 +51,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\debugdll
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\debugdll\. /y
-copy $(Projectdir)SolipsisNavigatorRunner.xpt $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\debugdll\. /y
-copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
-"/>
+				CommandLine="if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\debug mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\debug
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\debug /y
+copy $(Projectdir)SolipsisNavigatorRunner.xpt $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\debug /y
+copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -112,11 +113,12 @@ copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\releasedll
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\releasedll\. /y
-copy $(Projectdir)SolipsisNavigatorRunner.xpt $(ProjectDir)..\..\Dependencies\navigatorRunnerMoz\releasedll\. /y
-copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
-"/>
+				CommandLine="if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\release mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\release
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\release /y
+copy $(Projectdir)SolipsisNavigatorRunner.xpt $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerMoz\release /y
+copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
