@@ -42,7 +42,7 @@ protected:
     virtual void addResourceLocations();
     virtual void initResources();
 
-    Ogre::String mWindowTitle;
+    String mWindowTitle;
     OgreFrameListener* mFrameListener;
     SceneManager* mSceneMgr;
     RenderWindow* mWindow;

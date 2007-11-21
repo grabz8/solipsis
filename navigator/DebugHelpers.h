@@ -13,6 +13,10 @@ class Navigator;
 
 class DebugHelpers
 {
+private:
+    // No instanciation
+    DebugHelpers() {};
+
 public:
 #ifdef UIDEBUG
     // Map of debug commands with parameters

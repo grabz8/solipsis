@@ -63,7 +63,7 @@ int NavigatorLua::sendMessage(lua_State* luaState)
     // Get message to send
     std::string msg = luaL_checkstring(luaState, 1);
     // Send message
-    int rc = mNavigator->sendMessage((Ogre::String)msg);
+    int rc = mNavigator->sendMessage(String(msg));
 
     lua_pushboolean(luaState, rc);
     return 1;
@@ -77,7 +77,7 @@ int NavigatorLua::contextItemSelected(lua_State* luaState)
     // Get item selected
     std::string item = luaL_checkstring(luaState, 1);
     // Perform action
-    int rc = mNavigator->contextItemSelected((Ogre::String)item);
+    int rc = mNavigator->contextItemSelected(String(item));
 
     lua_pushboolean(luaState, rc);
     return 1;

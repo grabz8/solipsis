@@ -37,7 +37,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     // Set Name Label
     mNameLabel = new MovableText("Label" + peer->getLogin(), peer->getLogin(), false);
     mNameLabel->setCharacterHeight(6);
-    mNameLabel->setColor(Ogre::ColourValue::White);
+    mNameLabel->setColor(ColourValue::White);
     mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
     Real aabbHeightDiv2 = entity->getBoundingBox().getHalfSize().y;
     Real scale = mSceneNode->getScale().y;
@@ -109,7 +109,7 @@ void Avatar::setNameVisibility(bool visible)
 //-------------------------------------------------------------------------------------
 void Avatar::setState(State state)
 {
-//    OGRE_LOG("Avatar::setState()" + Ogre::StringConverter::toString((int)state));
+//    OGRE_LOG("Avatar::setState()" + StringConverter::toString((int)state));
     if (mStateAnimName[mState].length() > 0)
         stopAnimation();
     if (mStateAnimName[state].length() > 0)
@@ -163,7 +163,7 @@ void Avatar::createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry*
     // Create the torso collision geometry
     mCapsuleGeom = new OgreOde::CapsuleGeometry(mRadius*0.5, mHeight*0.25, world);
     Quaternion upQuat;
-    upQuat.FromAngleAxis(Radian(-Ogre::Math::HALF_PI), Vector3::UNIT_X);
+    upQuat.FromAngleAxis(Radian(-Math::HALF_PI), Vector3::UNIT_X);
     mCapsuleGeom->setOrientation(upQuat);
 #ifdef FEET
     // Create the feet body
@@ -186,7 +186,7 @@ void Avatar::createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry*
   OgreOde::TransformGeometry* mCapsuleTrans = new OgreOde::TransformGeometry(world, avatarSpace);
   mCapsuleGeom->setPosition(Vector3(0, aabbHalfSize.y*1.5, 0));
   Quaternion upQuat;
-  upQuat.FromAngleAxis(Radian(-Ogre::Math::HALF_PI), Vector3::UNIT_X);
+  upQuat.FromAngleAxis(Radian(-Math::HALF_PI), Vector3::UNIT_X);
   mCapsuleGeom->setOrientation(upQuat);
   // Bind body and geometry to transform geometry
   mCapsuleTrans->setBody(mCapsuleBody); 
@@ -215,12 +215,12 @@ void Avatar::destroyPhysics()
 
 #ifdef CAPSULEGEOM
 //-------------------------------------------------------------------------------------
-void Avatar::setMaxUpdateTimeStep(Ogre::Real maxUpdateTimeStep) {
+void Avatar::setMaxUpdateTimeStep(Real maxUpdateTimeStep) {
     mMaxUpdateTimeStep = maxUpdateTimeStep;
 }
 
 //-------------------------------------------------------------------------------------
-Ogre::Real Avatar::getMaxUpdateTimeStep() {
+Real Avatar::getMaxUpdateTimeStep() {
     return mMaxUpdateTimeStep;
 }
 #endif
@@ -246,12 +246,12 @@ bool Avatar::isGravityEnabled() {
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::update(Ogre::Real timeSinceLastFrame)
+void Avatar::update(Real timeSinceLastFrame)
 {
 #ifdef CAPSULEGEOM
     if (mMaxUpdateTimeStep > 0)
     {
-        Ogre::Real totalTime = 0.0;
+        Real totalTime = 0.0;
         for (;totalTime < timeSinceLastFrame - mMaxUpdateTimeStep; totalTime += mMaxUpdateTimeStep)
             animate(mMaxUpdateTimeStep);
         // last step
@@ -280,7 +280,7 @@ void Avatar::stopAnimation()
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::animate(Ogre::Real timeSinceLastFrame)
+void Avatar::animate(Real timeSinceLastFrame)
 {
     Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
     Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
@@ -413,7 +413,7 @@ void Avatar::animate(Ogre::Real timeSinceLastFrame)
                     << mCapsuleGeomLastContact.getPenetrationDepth();
                 OGRE_LOG(log.str());
             }
-            Ogre::Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
+            Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
             Vector3 mvtOnContactPlane;
             mvtOnContactPlane = contactPlane.projectVector(mvt)*Vector3(1, 0, 1);
             if ((sl % 60) == 0)
@@ -587,7 +587,7 @@ bool Avatar::collision(OgreOde::Contact* contact)
 /*
     if (mMaxUpdateTimeStep > 0)
     {
-        Ogre::Real totalTime = 0.0;
+        Real totalTime = 0.0;
         for (;totalTime < timeSinceLastFrame - mMaxUpdateTimeStep; totalTime += mMaxUpdateTimeStep)
             animate(mMaxUpdateTimeStep);
         // last step

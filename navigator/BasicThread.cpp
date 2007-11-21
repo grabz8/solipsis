@@ -38,14 +38,14 @@ bool BasicThread::start()
     rc = pthread_create(&mThreadId, NULL, startRoutine, this);
     if (rc != 0)
     {
-        OGRE_LOG("BasicThread::start() pthread_create returned " + Ogre::StringConverter::toString(rc));
+        OGRE_LOG("BasicThread::start() pthread_create returned " + StringConverter::toString(rc));
         pthread_mutex_unlock(&mMutex);
         return false;
     }
     rc = pthread_detach(mThreadId);
     if (rc != 0)
     {
-        OGRE_LOG("BasicThread::start() pthread_detach returned " + Ogre::StringConverter::toString(rc));
+        OGRE_LOG("BasicThread::start() pthread_detach returned " + StringConverter::toString(rc));
         pthread_mutex_unlock(&mMutex);
         return false;
     }
@@ -59,7 +59,7 @@ bool BasicThread::start()
 //-------------------------------------------------------------------------------------
 void BasicThread::stop(unsigned int stopTimeoutSec)
 {
-    OGRE_LOG("BasicThread::stop() stop requested with stopTimeoutSec=" + Ogre::StringConverter::toString(stopTimeoutSec));
+    OGRE_LOG("BasicThread::stop() stop requested with stopTimeoutSec=" + StringConverter::toString(stopTimeoutSec));
 
     mStopRequested = true;
     mStopTimeoutSec = stopTimeoutSec;

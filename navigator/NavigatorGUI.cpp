@@ -524,7 +524,7 @@ void NavigatorGUI::debugCommand(const NaviData& naviData)
     OGRE_LOG("cmd=" + (String)(cmd.c_str()) + ", params=" + (String)(params.c_str()));
 
     // Push debug command
-    DebugHelpers::debugCommands[(Ogre::String)cmd] = (Ogre::String)params;
+    DebugHelpers::debugCommands[String(cmd)] = String(params);
 }
 #endif
 

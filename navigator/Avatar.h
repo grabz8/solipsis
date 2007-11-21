@@ -5,6 +5,8 @@
 #include "KeyMotion.h"
 #include "MovableText.h"
 
+using namespace Ogre;
+
 //Use this define to signify OIS will be used as a DLL
 //(so that dll import/export macros are in effect)
 #define OIS_DYNAMIC_LIB
@@ -54,7 +56,7 @@ protected:
     OgreOde::World* mWorld;
     OgreOde::RayGeometry* mRayGeom;
 #ifdef CAPSULEGEOM
-    Ogre::Real mMaxUpdateTimeStep;
+    Real mMaxUpdateTimeStep;
     OgreOde::CapsuleGeometry* mCapsuleGeom;
     OgreOde::Contact mCapsuleGeomLastContact;
     bool mCapsuleGeomContact;
@@ -102,15 +104,15 @@ public:
     void destroyPhysics();
 #endif
 #ifdef CAPSULEGEOM
-    void setMaxUpdateTimeStep(Ogre::Real maxUpdateTimeStep);
-    Ogre::Real getMaxUpdateTimeStep();
+    void setMaxUpdateTimeStep(Real maxUpdateTimeStep);
+    Real getMaxUpdateTimeStep();
 #endif
 
-    virtual void update(Ogre::Real timeSinceLastFrame);
+    virtual void update(Real timeSinceLastFrame);
 
     void startAnimation(const String &name, bool loop = true);
     void stopAnimation();
-    void animate(Ogre::Real timeSinceLastFrame);
+    void animate(Real timeSinceLastFrame);
 
     void movementKeyPressed(OIS::KeyCode code);
     void movementKeyReleased(OIS::KeyCode code);

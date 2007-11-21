@@ -37,7 +37,7 @@ bool NavigatorXMLRPCClient::connect()
 
     if (mConnected)
     {
-        mConnectionId = removeFirstLevelOfXmlAnchor(Ogre::String(result.toXml()));
+        mConnectionId = removeFirstLevelOfXmlAnchor(String(result.toXml()));
         OGRE_LOG("Connection ID : " + mConnectionId);
     }
 
@@ -375,7 +375,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
     </value>
     */
     char csaXmlNew[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5500_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>Deltastation1</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
-    std::map<Ogre::String,Ogre::String>::iterator dbgCmd = DebugHelpers::debugCommands.find("testEvt");
+    std::map<String,String>::iterator dbgCmd = DebugHelpers::debugCommands.find("testEvt");
     if (dbgCmd != DebugHelpers::debugCommands.end())
     {
         static bool peerLostShot = false;
@@ -420,7 +420,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
                 // Decode timestamp
                 String timestampString = removeFirstLevelOfXmlAnchor(nodeEventStruct["timestamp"].toXml());
                 if (!StringConverter::isNumber(timestampString))
-                    Ogre::Exception(Ogre::Exception::ERR_INTERNAL_ERROR, "Timestamp bad format : " + timestampString, "NavigatorXMLRPCClient::getEvents");
+                    Exception(Exception::ERR_INTERNAL_ERROR, "Timestamp bad format : " + timestampString, "NavigatorXMLRPCClient::getEvents");
                 time_t timestamp = StringConverter::parseLong(timestampString);
                 // Decode event type
                 String typeString = removeFirstLevelOfXmlAnchor(nodeEventStruct["type"].toXml());
@@ -454,7 +454,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
                     ((NodeEvent::DatasStatusChanged*)datas)->mStatus = removeFirstLevelOfXmlAnchor(nodeEventDatasStruct["status"].toXml());
                 }
                 else
-                    Ogre::Exception(Ogre::Exception::ERR_INTERNAL_ERROR, "Unknown event type : " + typeString, "NavigatorXMLRPCClient::getEvents");
+                    Exception(Exception::ERR_INTERNAL_ERROR, "Unknown event type : " + typeString, "NavigatorXMLRPCClient::getEvents");
 
                 // Feed nodeEventsList
                 nodeEventsList.push_back(new NodeEvent(timestamp, type, datas));
@@ -467,7 +467,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorXMLRPCClient::getStatus(Ogre::String &status)
+bool NavigatorXMLRPCClient::getStatus(String &status)
 {
     const XmlRpc::XmlRpcValue value;
     const XmlRpc::XmlRpcValue noParam;
@@ -483,7 +483,7 @@ bool NavigatorXMLRPCClient::getStatus(Ogre::String &status)
 
     if (mConnected)
     {
-        status = removeFirstLevelOfXmlAnchor(Ogre::String(result.toXml()));
+        status = removeFirstLevelOfXmlAnchor(String(result.toXml()));
         OGRE_LOG("Status : " + status);
     }
 
@@ -565,7 +565,7 @@ bool NavigatorXMLRPCClient::move(const Peer &peer)
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorXMLRPCClient::sendMessage(const Ogre::String& message, std::list<Peer*> &peersList)
+bool NavigatorXMLRPCClient::sendMessage(const String& message, std::list<Peer*> &peersList)
 {
     const XmlRpc::XmlRpcValue params;
     XmlRpc::XmlRpcValue result;
@@ -626,21 +626,21 @@ Peer* NavigatorXMLRPCClient::createPeerFromXml(std::string& peerXml)
 }
 
 //-------------------------------------------------------------------------------------
-Ogre::String NavigatorXMLRPCClient::removeFirstLevelOfXmlAnchor(Ogre::String& xml)
+String NavigatorXMLRPCClient::removeFirstLevelOfXmlAnchor(String& xml)
 {
     size_t first = xml.find_first_of('>');
     size_t last = xml.find_last_of('<');
-    return Ogre::String(xml.substr(first+1,last-first-1));
+    return String(xml.substr(first+1,last-first-1));
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result)
 {
     if (pthread_mutex_lock(&mCallsMutex) != 0)
-        Ogre::Exception(Ogre::Exception::ERR_INTERNAL_ERROR, "Unable to lock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
+        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to lock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
     bool succeeded = this->execute(method, params, result);
     if (pthread_mutex_unlock(&mCallsMutex) != 0)
-        Ogre::Exception(Ogre::Exception::ERR_INTERNAL_ERROR, "Unable to unlock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
+        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to unlock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
 
     return succeeded;
 }

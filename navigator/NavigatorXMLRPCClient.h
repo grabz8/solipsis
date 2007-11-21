@@ -4,9 +4,12 @@
 #define UNPLUG_MODE
 
 #include "XmlRpc.h"
+#include "Ogre.h"
 #include "Peer.h"
 #include "NodeEvent.h"
 #include <pthread.h>
+
+using namespace Ogre;
 
 namespace Solipsis {
 
@@ -28,14 +31,14 @@ public:
     bool isConnected();
     bool getAllPeers(std::list<Peer*> &peersList);
     bool getEvents(std::list<NodeEvent*> &nodeEventsList);
-    bool getStatus(Ogre::String &status);
+    bool getStatus(String &status);
     bool getDesc(const Peer &peer);
     bool move(const Peer &peer);
-    bool sendMessage(const Ogre::String& message, std::list<Peer*> &peersList);
+    bool sendMessage(const String& message, std::list<Peer*> &peersList);
 
 private:
     Peer* createPeerFromXml(std::string& peerXml);
-    Ogre::String removeFirstLevelOfXmlAnchor(Ogre::String& xml);
+    String removeFirstLevelOfXmlAnchor(String& xml);
     bool executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result);
 };
 
