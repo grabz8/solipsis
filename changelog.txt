@@ -134,3 +134,9 @@ Peer xml file added
 Solipsis namespace added
 
 ---------------------------
+21/11/07
+
+Because VSExpress is not able to compile MFC/ATL projects, Plugins for ActiveX & Mozilla
+are commited into Common/bin/navigatorRunner
+
+---------------------------
