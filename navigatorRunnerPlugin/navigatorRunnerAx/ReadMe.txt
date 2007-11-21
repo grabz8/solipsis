@@ -66,4 +66,8 @@ Other notes:
 
 	The COM+ 1.0 Support option builds the COM+ 1.0 library into your skeleton application,
 	making COM+ 1.0 classes, objects, and functions available to you.
+
+
+	To register this ActiveX (for Internet Explorer), use regsvr32 binary
+	regsvr32 /s /c "navigatorRunnerAx.dll"
 /////////////////////////////////////////////////////////////////////////////

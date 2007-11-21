@@ -58,7 +58,10 @@
 				Description="Copying debug runtime files and Performing registration"
 				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;
-"/>
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -126,7 +129,10 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 				Description="Copying release runtime files and Performing registration"
 				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;
-"/>
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx
+if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release
+copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release /y"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

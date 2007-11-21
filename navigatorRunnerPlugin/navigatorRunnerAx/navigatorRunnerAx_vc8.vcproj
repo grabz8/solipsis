@@ -109,7 +109,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Performing registration"
-				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -205,7 +205,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Performing registration"
-				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&#x0D;&#x0A;if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release /y"
 			/>
 		</Configuration>
 	</Configurations>
