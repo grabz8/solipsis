@@ -250,8 +250,8 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
     // mesh data to retrieve
     size_t vertexCount;
     size_t indexCount;
-    Vector3 *vertices;
-    Vector2 *texCoords;
+    Vector3* vertices;
+    Vector2* texCoords;
     unsigned long *indices;
 
     // get the mesh information

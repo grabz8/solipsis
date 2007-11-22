@@ -255,7 +255,7 @@ void Navigator::demoNavi2()
 
     // Create a plane
     Plane plane(Vector3::NEGATIVE_UNIT_Z, 0);
-#ifdef CAPSULEGEOM
+#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
     MeshManager::getSingleton().createPlane("demoNavi2Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 200, 200, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
 #else
     MeshManager::getSingleton().createPlane("demoNavi2Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 85, 85, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
@@ -268,7 +268,7 @@ void Navigator::demoNavi2()
 //    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512, true, 15, true, 0.75f));
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
     videoNode->attachObject(vidEnt);
-#ifdef CAPSULEGEOM
+#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
     videoNode->setPosition(Vector3(10, 100, -1300));
     videoNode->yaw(Degree(180), Node::TS_WORLD);
 #else
@@ -295,6 +295,7 @@ void Navigator::demoPhysics1()
     String boxNodeName = boxName + "Node";
     Vector3 boxGeomSize = Vector3(100, 100, 100);
     Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
+    Vector3 boxExtents = boxGeomSize*boxScale;
     Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
     Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
     Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
@@ -319,9 +320,9 @@ void Navigator::demoPhysics1()
         boxEntity->setMaterialName("2 - Default");
         boxNode->attachObject(boxEntity);
         boxBody = new OgreOde::Body(physicsWorld, boxName + "Bod");
-        boxBody->setMass(OgreOde::BoxMass(1, boxGeomSize*boxScale));
+        boxBody->setMass(OgreOde::BoxMass(1, boxExtents));
         boxNode->attachObject(boxBody);
-        boxGeom = new OgreOde::BoxGeometry(boxGeomSize*boxScale, physicsWorld, physicsWorld->getDefaultSpace());
+        boxGeom = new OgreOde::BoxGeometry(boxExtents, physicsWorld, physicsWorld->getDefaultSpace());
         boxGeom->setBody(boxBody);
         boxes[boxName] = boxNode;
     }
@@ -330,6 +331,122 @@ void Navigator::demoPhysics1()
     boxBody->setLinearVelocity(Vector3::ZERO);
     boxBody->setAngularVelocity(Vector3::ZERO);
     boxBody->wake();
+#elif PHYSX
+#define MAX_BOXES 10
+    static int nextBox = 0;
+    static std::map<String, SceneNode*> boxes;
+    static std::map<String, NxActor*> actors;
+    NxScene* physicsScene = mOgrePeerManager->getPhysicsScene();
+    if (physicsScene == 0) return;
+
+    // Create a box
+    int boxNum = nextBox;
+    nextBox = (nextBox + 1)%MAX_BOXES;
+    String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
+    String boxNodeName = boxName + "Node";
+    Vector3 boxGeomSize = Vector3(100, 100, 100);
+    Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
+    Vector3 boxExtents = boxGeomSize*boxScale;
+    Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
+    Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
+    Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
+    Vector3 boxPos = userAvatarPos + userAvatarVpn*300 + userAvatarVup*300;
+    SceneNode* boxNode = 0;
+    NxActor* boxActor = 0;
+    Entity* boxEntity = 0;
+    std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
+    if (boxIt != boxes.end())
+    {
+        boxNode = mSceneMgr->getSceneNode(boxNodeName);
+        boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
+        boxActor = (actors.find(boxName))->second;
+    }
+    else
+    {
+        boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
+        boxNode->setScale(boxScale);
+        boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
+        boxEntity->setMaterialName("2 - Default");
+        boxNode->attachObject(boxEntity);
+        NxBodyDesc boxBodyDesc;
+        boxBodyDesc.angularDamping = 0.5f;
+        NxBoxShapeDesc boxShapeDesc;
+        boxShapeDesc.dimensions = NxVec3(boxExtents.x/2, boxExtents.y/2, boxExtents.z/2);
+        boxShapeDesc.localPose.t = NxVec3(0, 0, 0);
+        NxActorDesc actorDesc;
+        actorDesc.shapes.pushBack(&boxShapeDesc);
+        actorDesc.body = &boxBodyDesc;
+        actorDesc.density = 50.0f;
+        boxActor = physicsScene->createActor(actorDesc);
+        boxActor->userData = (void*)boxNode;
+        physicsScene->setActorPairFlags(*(mOgrePeerManager->getPhysicsWorldActor()), *boxActor, NX_NOTIFY_ON_TOUCH);
+        boxes[boxName] = boxNode;
+        actors[boxName] = boxActor;
+    }
+    boxActor->setGlobalPosition(NxVec3(boxPos.x, boxPos.y, boxPos.z));
+    boxActor->setLinearVelocity(NxVec3(0, 0, 0));
+    boxActor->setAngularVelocity(NxVec3(0, 0, 0));
+#elif TOKAMAK
+#define MAX_BOXES 10
+    static int nextBox = 0;
+    static std::map<String, SceneNode*> boxes;
+    std::map<String, neRigidBody*>& bodies = mOgrePeerManager->getPhysicsBodies();
+    neSimulator* physicsSim = mOgrePeerManager->getPhysicsSim();
+    if (physicsSim == 0) return;
+
+    // Create a box
+    int boxNum = nextBox;
+    nextBox = (nextBox + 1)%MAX_BOXES;
+    String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
+    String boxNodeName = boxName + "Node";
+    Vector3 boxGeomSize = Vector3(100, 100, 100);
+    Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
+    Vector3 boxExtents = boxGeomSize*boxScale;
+    Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
+    Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
+    Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
+    Vector3 boxPos = userAvatarPos + userAvatarVpn*300 + userAvatarVup*300;
+    SceneNode* boxNode = 0;
+    neRigidBody* boxBody = 0;
+    Entity* boxEntity = 0;
+    std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
+    if (boxIt != boxes.end())
+    {
+        boxNode = mSceneMgr->getSceneNode(boxNodeName);
+        boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
+        boxBody = (bodies.find(boxName))->second;
+    }
+    else
+    {
+        boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
+        boxNode->setScale(boxScale);
+        boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
+        boxEntity->setMaterialName("2 - Default");
+        boxNode->attachObject(boxEntity);
+        boxBody = physicsSim->CreateRigidBody();
+        boxBody->SetMass(1.0f);
+        neV3 boxExtentsTok;
+        boxExtentsTok.Set(boxExtents.x, boxExtents.y, boxExtents.z);
+        boxBody->SetInertiaTensor(neBoxInertiaTensor(boxExtentsTok, boxBody->GetMass()));
+        neGeometry* boxGeom = boxBody->AddGeometry();
+        boxGeom->SetBoxSize(boxExtentsTok);
+        /*neT3 xform;
+        xform.SetIdentity();
+        xform.pos.Set(0, -boxExtents.y/2, 0);
+        boxGeom->SetTransform(xform);*/
+        boxGeom->SetMaterialIndex(0);
+        boxBody->GravityEnable(true);
+        boxBody->SetCollisionID(0);
+        boxBody->SetUserData((u32)boxNode);
+        boxes[boxName] = boxNode;
+        bodies[boxName] = boxBody;
+    }
+    neV3 boxPosTok;
+    boxPosTok.Set(boxPos.x, boxPos.y, boxPos.z);
+    boxBody->SetPos(boxPosTok);
+    neV3 velocity;
+    velocity.SetZero();
+    boxBody->SetVelocity(velocity);
 #endif
 }
 #endif
@@ -767,7 +884,7 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
             mUserAvatar->getSceneNode()->setPosition(0, 47, 0);
 #else
         mUserAvatar->getSceneNode()->setPosition(0, 0, 0);
-#ifdef CAPSULEGEOM
+#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
         mUserAvatar->getSceneNode()->setPosition(0, 0, -650);
 #endif
 #endif

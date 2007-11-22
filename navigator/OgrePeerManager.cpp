@@ -27,6 +27,12 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     ,mPhysicsWorld(0),
     mPhysicsStepHandler(0),
     mPhysicsWorldGeometry(0)
+#elif PHYSX
+    ,mPhysicsScene(0),
+    mPhysicsWorldGeometry(0),
+    mPhysicsWorldActor(0)
+#elif TOKAMAK
+    ,mPhysicsSim(0)
 #endif
 {
 }
@@ -38,10 +44,28 @@ OgrePeerManager::~OgrePeerManager()
     delete mPhysicsWorldGeometry;
     delete mPhysicsStepHandler;
     delete mPhysicsWorld;
+#elif PHYSX
+    if (PhysXHelpers::getPhysicsSDK() != 0)
+    {
+        if (mPhysicsScene != 0)
+        {
+            NxActor** actors = mPhysicsScene->getActors();
+            for (NxU32 a=0; a<mPhysicsScene->getNbActors(); ++a)
+            {
+                NxActor* actor = actors[a];
+                mPhysicsScene->releaseActor(*actor);
+            }
+            PhysXHelpers::getPhysicsSDK()->releaseScene(*mPhysicsScene);
+        }
+        PhysXHelpers::shutdown();
+    }
+#elif TOKAMAK
+    if (mPhysicsSim != 0)
+        neSimulator::DestroySimulator(mPhysicsSim);
 #endif
 }
 
-bool OgrePeerManager::load(Peer* peer, const Ogre::String xmlFile)
+bool OgrePeerManager::load(Peer* peer, const String xmlFile)
 {
     class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
     public:
@@ -105,7 +129,7 @@ bool OgrePeerManager::load(Peer* peer, const Ogre::String xmlFile)
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::remove(Ogre::String& peerId, bool local)
+bool OgrePeerManager::remove(String& peerId, bool local)
 {
     bool peerFound = false;
     for (std::map<String,OgrePeer*>::iterator ogrePeer=mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
@@ -174,6 +198,47 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         mPhysicsStepHandler->step(evt.timeSinceLastFrame);
     if (mPhysicsWorld != 0)
         mPhysicsWorld->synchronise();
+#elif PHYSX
+    // Step physics
+    if (mPhysicsScene != 0)
+    {
+        mPhysicsScene->simulate(evt.timeSinceLastFrame);
+        mPhysicsScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+        NxActor** actors = mPhysicsScene->getActors();
+        for (NxU32 a=0; a<mPhysicsScene->getNbActors(); ++a)
+        {
+            NxActor* actor = actors[a];
+            if (actor->userData == 0) continue;
+            SceneNode* node = (SceneNode*)actor->userData;
+            NxVec3 pos = actor->getGlobalPosition();
+            node->setPosition(pos.x, pos.y, pos.z);
+            NxQuat orient = actor->getGlobalOrientationQuat();
+            node->setOrientation(orient.w, orient.x, orient.y, orient.z);
+        }
+    }
+#elif TOKAMAK
+    // Step physics
+    if (mPhysicsSim != 0)
+    {
+        Real maxUpdateTimeStep = 1.0f/60.0f;
+        Real timeSinceLastFrame = evt.timeSinceLastFrame;
+        Real totalTime = 0.0;
+        for (;totalTime < timeSinceLastFrame - maxUpdateTimeStep; totalTime += maxUpdateTimeStep)
+            mPhysicsSim->Advance(maxUpdateTimeStep);
+        // last step
+        timeSinceLastFrame -= totalTime;
+        mPhysicsSim->Advance(timeSinceLastFrame);
+        for (std::map<String, neRigidBody*>::iterator it = mPhysicsBodies.begin();it != mPhysicsBodies.end(); ++it)
+        {
+            neRigidBody* body = it->second;
+            if (body->GetUserData() == 0) continue;
+            SceneNode* node = (SceneNode*)body->GetUserData();
+            neV3 pos = body->GetPos();
+            node->setPosition(pos.X(), pos.Y(), pos.Z());
+            neQ orient = body->GetRotationQ();
+            node->setOrientation(orient.W, orient.X, orient.Y, orient.Z);
+        }
+    }
 #endif
 
     // Animate
@@ -201,6 +266,42 @@ OgreOde::StepHandler* OgrePeerManager::getPhysicsStepHandler()
 OgreOde::TriangleMeshGeometry* OgrePeerManager::getPhysicsWorldGeometry()
 {
     return mPhysicsWorldGeometry;
+}
+#elif PHYSX
+//-------------------------------------------------------------------------------------
+NxScene* OgrePeerManager::getPhysicsScene()
+{
+    return mPhysicsScene;
+}
+
+//-------------------------------------------------------------------------------------
+NxTriangleMesh* OgrePeerManager::getPhysicsWorldGeometry()
+{
+    return mPhysicsWorldGeometry;
+}
+
+//-------------------------------------------------------------------------------------
+NxActor* OgrePeerManager::getPhysicsWorldActor()
+{
+    return mPhysicsWorldActor;
+}
+#elif TOKAMAK
+//-------------------------------------------------------------------------------------
+neSimulator* OgrePeerManager::getPhysicsSim()
+{
+    return mPhysicsSim;
+}
+
+//-------------------------------------------------------------------------------------
+neTriangleMesh& OgrePeerManager::getPhysicsWorldGeometry()
+{
+    return mPhysicsWorldGeometry;
+}
+
+//-------------------------------------------------------------------------------------
+std::map<String, neRigidBody*>& OgrePeerManager::getPhysicsBodies()
+{
+    return mPhysicsBodies;
 }
 #endif
 
@@ -231,7 +332,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
         node->setPosition(0, 47, 500);
 #else
     node->setPosition(0, 3, 500);
-#ifdef CAPSULEGEOM
+#if defined(PHYSICS) || defined (PHYSX) || defined (TOKAMAK)
     node->setPosition(-50, 3, -500);
 #endif
 #endif
@@ -268,10 +369,10 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
     if (!osmScene.initialise(filename, &osmSceneCallbacks))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "Navigator::generateSceneFromPeer");
+        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
     osmScene.declareResources();
     if (!osmScene.createScene(node))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "Navigator::generateSceneFromPeer");
+        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
 
 #ifdef SHADOWS
     mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
@@ -285,24 +386,79 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 #ifdef PHYSICS
     // Create the physical world
     mPhysicsWorld = new OgreOde::World(mSceneMgr);
-    mPhysicsWorld->setGravity(Vector3(0,-9.80665,0));
-    mPhysicsWorld->setCFM(10e-5/50);
-    mPhysicsWorld->setERP(0.8/50);
+    mPhysicsWorld->setGravity(Vector3(0, -9.80665*physicsScale, 0));
+    mPhysicsWorld->setCFM(10e-5*physicsScale);
+    mPhysicsWorld->setERP(0.8/physicsScale);
     mPhysicsWorld->setAutoSleep(true);
-    mPhysicsWorld->setContactCorrectionVelocity(0.1*50);
-    mPhysicsWorld->setContactSurfaceLayer(0.2*50);
-//    mPhysicsWorld->setAutoSleepLinearThreshold(10.0);
-//    mPhysicsWorld->setAutoSleepAngularThreshold(10.0);
+    mPhysicsWorld->setContactCorrectionVelocity(0.1*physicsScale);
+    mPhysicsWorld->setContactSurfaceLayer(0.2*physicsScale);
+    mPhysicsWorld->setAutoSleepLinearThreshold(1.0*physicsScale);
+    mPhysicsWorld->setAutoSleepAngularThreshold(1.0*physicsScale);
     mPhysicsWorld->setCollisionListener(dynamic_cast<OgreOde::CollisionListener*>(this));
     // Create something that will step the world, but don't do it automatically
-//    mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::BasicStep, Real(0.001), Real(1000.0), Real(1.0));
-    mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::QuickStep, Real(1.0/60.0), Real(1000.0), Real(5.0));
+    mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::QuickStep, Real(1.0/60.0), Real(1000.0), Real(1.0));
     mPhysicsStepHandler->setAutomatic(OgreOde::StepHandler::AutoMode_NotAutomatic, Root::getSingletonPtr());
     // Create the world collision mesh
     Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
     SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
     OgreOde::EntityInformer entityInformer(worldCollisionEntity, worldCollisionSceneNode->_getFullTransform());
     mPhysicsWorldGeometry = entityInformer.createStaticTriangleMesh(mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
+    worldCollisionSceneNode->setVisible(false);
+#elif PHYSX
+    // Init the SDK
+    PhysXHelpers::init(physicsScale);
+    // Create the physical world
+    NxSceneDesc sceneDesc;
+    sceneDesc.gravity = NxVec3(0, -9.80665*physicsScale, 0);
+    mPhysicsScene = PhysXHelpers::getPhysicsSDK()->createScene(sceneDesc);
+    if (mPhysicsScene == 0)
+    {
+        Exception(Exception::ERR_INTERNAL_ERROR,
+            "Unable to create the PhysX scene !",
+            "OgrePeerManager::CreateSceneNode");
+    }
+    mPhysicsScene->setTiming(1.0/60.0, 8, NX_TIMESTEP_FIXED);
+    // Set the default material 0
+	NxMaterial* defaultMaterial = mPhysicsScene->getMaterialFromIndex(0); 
+	defaultMaterial->setRestitution(0.1f);
+	defaultMaterial->setStaticFriction(0.5f);
+	defaultMaterial->setDynamicFriction(0.5f);
+    // Create the world collision mesh
+    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
+    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
+    mPhysicsWorldGeometry = PhysXHelpers::cookMesh(worldCollisionEntity->getMesh(),
+                                                   worldCollisionEntity->getParentNode()->getWorldPosition(),
+                                                   worldCollisionEntity->getParentNode()->getWorldOrientation(),
+                                                   worldCollisionEntity->getParentNode()->getScale());
+    NxTriangleMeshShapeDesc triangleMeshShapeDesc;
+    NxActorDesc actorDesc;
+    triangleMeshShapeDesc.meshData = mPhysicsWorldGeometry;
+    actorDesc.shapes.pushBack(&triangleMeshShapeDesc);
+    mPhysicsWorldActor = mPhysicsScene->createActor(actorDesc);
+    mPhysicsWorldActor->userData = (void*)0;
+    worldCollisionSceneNode->setVisible(false);
+#elif TOKAMAK
+    // Create the physical world
+    neSimulatorSizeInfo simSizeInfo;
+    neV3 gravity;
+    gravity.Set(0, -9.80665*physicsScale, 0);
+    mPhysicsSim = neSimulator::CreateSimulator(simSizeInfo, NULL, &gravity);
+    if (mPhysicsSim == 0)
+    {
+        Exception(Exception::ERR_INTERNAL_ERROR,
+            "Unable to create the Tokamak simulation !",
+            "OgrePeerManager::CreateSceneNode");
+    }
+    // Set the default material 0
+    mPhysicsSim->SetMaterial(0, 0.5f, 0.1f);
+    // Create the world collision mesh
+    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
+    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
+    mPhysicsWorldGeometry = TokamakHelpers::convertMesh(worldCollisionEntity->getMesh(),
+                                                        worldCollisionEntity->getParentNode()->getWorldPosition(),
+                                                        worldCollisionEntity->getParentNode()->getWorldOrientation(),
+                                                        worldCollisionEntity->getParentNode()->getScale());
+    mPhysicsSim->SetTerrainMesh(&mPhysicsWorldGeometry);
     worldCollisionSceneNode->setVisible(false);
 #else
     // Destroy collision mesh
@@ -325,6 +481,12 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 //-------------------------------------------------------------------------------------
 bool OgrePeerManager::collision(OgreOde::Contact* contact)
 {
+    /*
+    we have 2 collidable objects from our object system, if one of the Collide function returns false, we return false in this method, too,
+    else we return true, so ode computes a normal collision.
+    true means ode will treat this like a normal collison => rigid body behavior
+    false means ode will not treat this collision at all => objects ignore each other
+    */
     // Check for collisions between things that are connected and ignore them
 /*    OgreOde::Geometry * const g1 = contact->getFirstGeometry();
     OgreOde::Geometry * const g2 = contact->getSecondGeometry();
@@ -336,9 +498,9 @@ bool OgrePeerManager::collision(OgreOde::Contact* contact)
             return false; 
     }*/
 
-    contact->setCoulombFriction(0.9);
-    contact->setBouncyness(0.2);
-    contact->setSoftness(0.8, 10e-5);
+    contact->setCoulombFriction(0.9*physicsScale);
+    contact->setBouncyness(0.25);
+    contact->setSoftness(0.8/physicsScale, 10e-5*physicsScale);
 
     return true;
 }
