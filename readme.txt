@@ -96,16 +96,24 @@ Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navi
 (avoid to launch the Debug config, you will be too often prompted by Mozilla/LLMozLib assertions,
 they will be suppressed in the future)
 
+If you are using Ageia PhysX:
+ Download 2 packages runtime & SDK on http://devsupport.ageia.com (refer to registered email/password below)
+ Download runtime : PhysX_7.06.25_SystemSoftware.exe
+ Download SDK : PhysX_2.7.2_SDK_Core.exe
+ Define your PHYSX_DIR env. var.
+
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel
 DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google homepage)
 DEMO_NAVI2     Set/Unset Navi demo2 (spatialStation official demo with 1 panel on YouTube video)
 NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
-PHYSICS        Set/Unset Physics management
+LEXI           User avatar exported with LEXI plugin
+PHYSICS        Set/Unset Physics management by Ode and OgreODE
  DEMO_PHYSICS1 Set/Unset Physics demo (1 cube will drop into the spatialStation)
  CAPSULEGEOM   Set/Unset Physics capsule on user avatar (walls)
  FEET          Set/Unset Physics feet sphere on user avatar (floor + gravity)
-LEXI           User avatar exported with LEXI plugin
+PHYSX          Set/Unset Physics management by Ageia PhysX
+TOKAMAK        Set/Unset Physics management by Tokamak
 
 --------------------------------------------------------------------------------
 FORUMS LOGINS

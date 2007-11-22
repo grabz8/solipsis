@@ -83,3 +83,10 @@ nsToolkit::Startup(HMODULE hModule)
 - IE ActiveX & Mozilla Plugin to run Navigator from IE/Mozilla added
 
 - Solipsis namespace added
+
+- integration of ODE and OgreOde : pb about cubes diving into collision mesh was SIMPLY due
+to the mesh' normals direction ! Flip them resolved it.
+- integration of ODE and OgreOde : collisions avatar vs walls too close => due to normals pb
+
+- integration of Ageia PhysX
+- integration of Tokamak

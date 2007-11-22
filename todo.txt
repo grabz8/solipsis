@@ -18,7 +18,6 @@ nsToolkit::Startup(HMODULE hModule)
 => ActiveX is working in Release config but fails on 2nd Navi (onPageLoaded callback not triggered)
 => Mozilla plugin is working with Navigator.dll (NavigatorModule) in Release config but fails on 1st Navi (onPageLoaded callback not triggered)
 
-- integration of ODE and OgreOde : collisions avatar vs walls too close
 - integration of ODE and OgreOde : add 1 space for user avatar's geoms to avoid internal collisions mgt
 - integration of ODE and OgreOde : sampling of mvt instead of frameTime is OK but some pb on gravity/feet/floor
 

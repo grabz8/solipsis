@@ -140,3 +140,11 @@ Because VSExpress is not able to compile MFC/ATL projects, Plugins for ActiveX &
 are commited into Common/bin/navigatorRunner
 
 ---------------------------
+22/11/07
+
+integration of ODE and OgreOde : pb about cubes diving into collision mesh was SIMPLY due
+to the mesh' normals direction ! Flipping them resolved it.
+
+Integration of Ageia PhysX and Tokamak for tests
+
+---------------------------
