@@ -102,7 +102,7 @@ public:
     void demoNavi1();
 #endif
 #ifdef DEMO_NAVI2
-    void demoNavi2();
+    void demoNavi2(const String url);
 #endif
 #ifdef DEMO_PHYSICS1
     void demoPhysics1();

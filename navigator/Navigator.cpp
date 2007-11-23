@@ -247,10 +247,18 @@ void Navigator::demoNavi1()
 #endif
 #ifdef DEMO_NAVI2
 //-------------------------------------------------------------------------------------
-void Navigator::demoNavi2()
+void Navigator::demoNavi2(const String url)
 {
     static bool active = false;
-    if (active) return;
+    String url2go(url);
+    if (url.length() == 0)
+        url2go = "http://www.youtube.com/watch?v=mAJYQOANDCk";
+//        "http://www.youtube.com/watch?v=066_q4DIeqk"
+    if (active)
+    {
+        NaviLibrary::NaviManager::Get().navigateNaviTo("demoNavi2Video", url2go);
+        return;
+    }
     active = true;
 
     // Create a plane
@@ -264,8 +272,7 @@ void Navigator::demoNavi2()
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=mAJYQOANDCk", 512, 512, true, 15, true, 0.75f));
-//    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512, true, 15, true, 0.75f));
+    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), url2go, 512, 512, true, 15, true, 0.75f));
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
     videoNode->attachObject(vidEnt);
 #if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)

@@ -27,8 +27,8 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     dbgCmd = debugCommands.find("demoNavi2");
     if (dbgCmd != debugCommands.end())
     {
+        navigator->demoNavi2(dbgCmd->second);
         debugCommands.erase(dbgCmd);
-        navigator->demoNavi2();
     }
 #endif
 
