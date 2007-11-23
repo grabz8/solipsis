@@ -48,7 +48,7 @@
 	            top: -1px;
 	            font-family: Verdana;
 	            clear: both;
-	            text-align:left;
+	            text-align: left;
 	            padding: 3px;
             }
             .mootabs_panel.active {
@@ -92,7 +92,7 @@
                 background-color: #FFFFFF;
                 color: #000000;
             }
-            #helpersToggleAxisButton { top:10px; width: 100px; }
+            #helpersToggleAxisButton { top: 10px; width: 100px; }
             #helpersPosAxisInput
             {
 	            position: absolute;
@@ -105,11 +105,13 @@
 	            left: 190px;
 	            top: 10px;
             }
-            #rotateSunLightButton { top:35px; width: 100px; }
-            #demoNavi1Button { top:10px; width: 100px; }
-            #demoPhysics1Button { top:35px; width: 100px; }
-            #peerLostButton { top:10px; width: 100px; }
-            #peerNewButton { top:35px; width: 100px; }
+            #rotateSunLightButton { top: 35px; width: 100px; }
+            #demoNavi1Button { top: 10px; width: 100px; }
+            #demoPhysics1Button { top: 35px; width: 100px; }
+            #urlText { position: absolute; left: 0px; top: 60px; }
+            #urlInput { position: absolute; left: 30px; top: 60px; }
+            #peerLostButton { top: 10px; width: 100px; }
+            #peerNewButton { top: 35px; width: 100px; }
         </style>
     </head>
 
@@ -135,6 +137,12 @@
 				    <div id="Demos" class="mootabs_panel">
                         <button id="demoNavi1Button" class="buttonRow1" name="buttonDemoNavi1" value="buttonDemoNavi1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
                         <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
+                        <form id="urlForm" action="" visible="false" onsubmit="debugCommand('demoNavi2', document.getElementById('inputUrl').value);return false;">
+                            <div id="urlText">URL</div>
+                            <div id="urlInput">
+                                <input id="inputUrl" class="inputText" name="inputUrl" value="" type="text" size="20" />
+                            </div>
+                        </form>
 				    </div>
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerLostButton" class="buttonRow1" name="buttonPeerLost" value="buttonPeerLost" type="button" onclick="debugCommand('testEvt', 'peerLost')">peerLost</button>

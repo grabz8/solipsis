@@ -9,7 +9,7 @@
                 new NaviData('pageLoaded').send();
                 // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
                 new NaviData('debugCommand').add({cmd:'testEvt'}).add({params:'peerNew'}).send();
-                new NaviData('debugCommand').add({cmd:'demoNavi2'}).send();
+                new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://www.youtube.com/watch?v=mAJYQOANDCk'}).send();
             }
             function sendMessage(message)
             {
