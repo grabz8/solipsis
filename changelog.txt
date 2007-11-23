@@ -148,3 +148,8 @@ to the mesh' normals direction ! Flipping them resolved it.
 Integration of Ageia PhysX and Tokamak for tests
 
 ---------------------------
+23/11/07
+
+URL parameter added to demoNavi2
+
+---------------------------
