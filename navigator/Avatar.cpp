@@ -12,8 +12,10 @@ String Avatar::mDefaultStateAnimName[SCount] = {
     "Swim"
 };
 
-#define EPSILON_SPEED 0.1
-#define MAX_SPEED 400
+#define EPSILON_SPEED 0.1f
+#define MAX_SPEED 1.0f
+#define TRANSLATION_SPEED_MPS 6.0f
+#define ROTATION_SPEED_RPS Radian(Math::HALF_PI)
 
 Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     OgrePeer(peer, "avatar"),
@@ -36,12 +38,12 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
 
     // Set Name Label
     mNameLabel = new MovableText("Label" + peer->getLogin(), peer->getLogin(), false);
-    mNameLabel->setCharacterHeight(6);
+    mNameLabel->setScale(0.1f);
+    mNameLabel->setCharacterHeight(1);
     mNameLabel->setColor(ColourValue::White);
     mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
-    Real aabbHeightDiv2 = entity->getBoundingBox().getHalfSize().y;
-    Real scale = mSceneNode->getScale().y;
-    mNameLabel->setAdditionalHeight(aabbHeightDiv2*(1 + scale));
+    Real aabbHeight = entity->getBoundingBox().getSize().y;
+    mNameLabel->setAdditionalHeight(aabbHeight);
     mSceneNode->attachObject(mNameLabel);
 
     mGravity = false;
@@ -59,6 +61,10 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     mFeetGeom = 0;
     mFeetGeomContact = false;
 #endif
+#elif PHYSX
+    mPhysicsScene = 0;
+    mControllerManager = 0;
+    mCapsuleController = 0;
 #else
     mRaySceneQuery = mSceneNode->getCreator()->createRayQuery(Ray());
 #endif
@@ -70,6 +76,8 @@ Avatar::~Avatar()
     if (mSceneNode == 0) return;
 
 #ifdef PHYSICS
+    destroyPhysics();
+#elif PHYSX
     destroyPhysics();
 #else
     if (mRaySceneQuery != 0)
@@ -211,6 +219,44 @@ void Avatar::destroyPhysics()
 
     mWorld = 0;
 }
+#elif PHYSX
+//-------------------------------------------------------------------------------------
+void Avatar::createPhysics(NxScene* physicsScene, NxControllerManager* controllerManager)
+{
+    destroyPhysics();
+/*
+    // world ?
+    if ((physicsScene == 0) || (controllerManager == 0)) return;
+    mPhysicsScene = physicsScene;
+    mControllerManager = controllerManager;
+
+    // Compute radius and height of character
+    Vector3 aabbHalfSize = mEntity->getBoundingBox().getHalfSize()*mSceneNode->getScale();
+    mRadius = std::min(aabbHalfSize.x, aabbHalfSize.z);
+    mHeight = aabbHalfSize.y*2;
+
+    NxSphereControllerDesc sphereControllerdesc;
+    sphereControllerdesc.position = mSceneNode->getPosition();
+    sphereControllerdesc.radius = mRadius;
+    sphereControllerdesc.upDirection = NX_Y;
+    sphereControllerdesc.slopeLimit = 0;
+    sphereControllerdesc.slopeLimit = cosf(NxMath::degToRad(45.0f));
+    sphereControllerdesc.skinWidth = mRadius*0.05;
+    sphereControllerdesc.stepOffset = 0.5;
+    sphereControllerdesc.callback = &gControllerHitReport;
+
+    mCapsuleController = mControllerManager->createController();
+*/
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::destroyPhysics()
+{
+    if (mCapsuleController != 0)
+        mControllerManager->releaseController(*mCapsuleController);
+
+    mPhysicsScene = 0;
+}
 #endif
 
 #ifdef CAPSULEGEOM
@@ -295,7 +341,7 @@ void Avatar::animate(Real timeSinceLastFrame)
     mUpKeyMotion.update(timeSinceLastFrame);
     mDownKeyMotion.update(timeSinceLastFrame);
     frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
-    mvt += vpn*frontBackMvt*timeSinceLastFrame;
+    mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
     if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
         nextState = SWalk;
     if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
@@ -307,14 +353,14 @@ void Avatar::animate(Real timeSinceLastFrame)
     if (mMvtType == MT1stPerson)
     {
         // First person straff
-        mvt += -vri*leftRightMvt*timeSinceLastFrame;
+        mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
         if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
             nextState = SWalk;
     }
     else
     {
         // Third person rotation
-        mSceneNode->yaw(Radian(Math::PI/1000)*leftRightMvt*timeSinceLastFrame);
+        mSceneNode->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
         if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
             nextState = SWalk;
     }
@@ -329,7 +375,7 @@ void Avatar::animate(Real timeSinceLastFrame)
     mPgupKeyMotion.update(timeSinceLastFrame);
     mPgdownKeyMotion.update(timeSinceLastFrame);
     upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
-    mSceneNode->translate(vup*upDownMvt*timeSinceLastFrame);
+    mSceneNode->translate(vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
 //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
 //        nextState = SFly;
 
@@ -413,7 +459,7 @@ void Avatar::animate(Real timeSinceLastFrame)
                     << mCapsuleGeomLastContact.getPenetrationDepth();
                 OGRE_LOG(log.str());
             }
-            Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
+            Plane contactPlane(-mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
             Vector3 mvtOnContactPlane;
             mvtOnContactPlane = contactPlane.projectVector(mvt)*Vector3(1, 0, 1);
             if ((sl % 60) == 0)
@@ -451,6 +497,7 @@ void Avatar::animate(Real timeSinceLastFrame)
         }
     }
 #endif
+#elif PHYSX
 #else
     if (mGravity && (mRaySceneQuery != 0))
     {
@@ -541,7 +588,7 @@ bool Avatar::collision(OgreOde::Contact* contact)
 	    contact->getSecondGeometry()->getID() == mRayGeom->getID())
     {
 #ifdef LEXI
-        mSceneNode->setPosition(contact->getPosition() + Vector3(0, 47, 0));
+        mSceneNode->setPosition(contact->getPosition() + Vector3(0, 0.67f, 0));
 #else
         mSceneNode->setPosition(contact->getPosition());
 #endif

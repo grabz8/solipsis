@@ -7,6 +7,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class manages keys states when applied to motion.
+ */
 class KeyMotion
 {
 protected:

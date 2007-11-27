@@ -11,6 +11,8 @@ namespace Solipsis {
 
 class Navigator;
 
+/** This static class contains several methods to help debugging.
+ */
 class DebugHelpers
 {
 private:

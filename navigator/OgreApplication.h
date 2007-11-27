@@ -8,6 +8,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class manages a general Ogre application.
+ */
 class OgreApplication
 {
 public:

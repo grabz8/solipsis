@@ -6,6 +6,8 @@
 
 namespace Solipsis {
 
+/** This class defines a callbacks interface on OgrePeerManager.
+ */
 class IOgrePeerManagerCallbacks
 {
 public:

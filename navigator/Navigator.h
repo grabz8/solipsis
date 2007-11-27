@@ -1,3 +1,8 @@
+/**
+ * \file Navigator.h
+ * \brief The Navigator application.
+ */
+
 #ifndef __Navigator_h__
 #define __Navigator_h__
 
@@ -13,6 +18,8 @@
 
 namespace Solipsis {
 
+/** The main class of Navigator application.
+ */
 class Navigator : public OgreApplication, public NodeEventListener, public IOgrePeerManagerCallbacks
 {
 public:

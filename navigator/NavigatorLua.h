@@ -7,6 +7,8 @@ namespace Solipsis {
 
 class Navigator;
 
+/** This class represents the LUA instance of a Navigator instance.
+ */
 class NavigatorLua
 {
 private:

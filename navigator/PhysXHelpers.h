@@ -83,6 +83,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This static class contains several helper methods above Ageia PhysX physics engine.
+ */
 class PhysXHelpers
 {
 private:
@@ -91,7 +93,7 @@ private:
 
 public:
     // Init
-    static bool init(Real scale);
+    static bool init();
     // Shutdown
     static bool shutdown();
 

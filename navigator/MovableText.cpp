@@ -1,7 +1,7 @@
 /**
  * File: MovableText.cpp
  *
- * description: This create create a billboarding object that display a text.
+ * description: This class creates a billboarding object that display a text.
  * 
  * @author  2003 by cTh see gavocanov@rambler.ru
  * @update  2006 by barraq see nospam@barraquand.com
@@ -161,6 +161,15 @@ void MovableText::showOnTop(bool show)
         mpMaterial->setDepthBias(!mOnTop, 0);
         mpMaterial->setDepthCheckEnabled(!mOnTop);
         mpMaterial->setDepthWriteEnabled(mOnTop);
+    }
+}
+
+void MovableText::setScale(float scale)
+{
+    if( mScale != scale )
+    {
+        mScale = scale;
+        mNeedUpdate = true;
     }
 }
 
@@ -620,7 +629,11 @@ void MovableText::getWorldTransforms(Ogre::Matrix4 * xform) const
             scale3x3[2][2] = mParentNode->_getDerivedScale().z / 2;
         }
         else
-            scale3x3 = Ogre::Matrix3::IDENTITY;
+        {
+            scale3x3[0][0] = mScale;
+            scale3x3[1][1] = mScale;
+            scale3x3[2][2] = mScale;
+        }
 
         // apply all transforms to xform       
         *xform = (rot3x3 * scale3x3);

@@ -10,6 +10,8 @@ namespace Solipsis {
 
 //#define COLLIDE_QUERY_MASK 0x00001000
 
+/** This class represents a basic OGRE representation of a peer.
+ */
 class OgrePeer
 {
 protected:

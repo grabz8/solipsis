@@ -9,6 +9,8 @@ namespace Solipsis {
 
 class Navigator;
 
+/** This class manages all Graphical User Interfaces of the Navigator.
+ */
 class NavigatorGUI
 {
 public:

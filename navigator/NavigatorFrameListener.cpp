@@ -6,6 +6,8 @@
 using namespace NaviLibrary;
 using namespace Solipsis;
 
+#define MOUSE_WHEEL_FACTOR (1.0f/120.0f)*0.25f
+
 NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),
     mNavigator(navigator),
@@ -161,7 +163,7 @@ bool NavigatorFrameListener::mouseMoved(const OIS::MouseEvent &e)
         size.z = 0;
         //move 3rd person camera toward avatar
         mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)); 
-        mCamNode->translate(Vector3(mouseWheel/(6*scale),0,0));
+        mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
 
 
         //Switch to 1st person camera if close to avatar

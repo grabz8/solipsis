@@ -62,6 +62,7 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
 
     // Display axis ?
     static bool toggleAxis = false;
+    static Real unitScale = 0.1f;
     dbgCmd = debugCommands.find("toggleAxis");
     if (dbgCmd != debugCommands.end())
     {
@@ -74,6 +75,7 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
             dbgAxisSceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode("dbgAxis");
             Entity* dbgAxisSceneEntity = sceneMgr->createEntity("dbgAxis", "axes.mesh");
             dbgAxisSceneNode->attachObject(dbgAxisSceneEntity);
+            dbgAxisSceneNode->setScale(unitScale, unitScale, unitScale);
         }
         toggleAxis = !toggleAxis;
         dbgAxisSceneNode->setVisible(toggleAxis);
@@ -89,9 +91,9 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     dbgCmd = debugCommands.find("sclAxis");
     if (dbgCmd != debugCommands.end())
     {
-        Real factor = 1;
+        Real factor = 1.0f;
         if (OgreHelpers::convertString2Real(dbgCmd->second, factor) && sceneMgr->hasSceneNode("dbgAxis"))
-            sceneMgr->getSceneNode("dbgAxis")->setScale(factor, factor, factor);
+            sceneMgr->getSceneNode("dbgAxis")->setScale(factor*unitScale, factor*unitScale, factor*unitScale);
         debugCommands.erase(dbgCmd);
     }
 

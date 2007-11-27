@@ -230,7 +230,7 @@ using namespace Solipsis;
 
 NxPhysicsSDK* PhysXHelpers::mPhysicsSDK = 0;
 
-bool PhysXHelpers::init(Real scale)
+bool PhysXHelpers::init()
 {
     if (mPhysicsSDK != 0)
         return true;
@@ -245,8 +245,8 @@ bool PhysXHelpers::init(Real scale)
             "Unable to initialize the PhysX SDK ! errorCode=" + StringConverter::toString((int)errorCode),
             "OgrePeerManager::CreateSceneNode");
     }
-    mPhysicsSDK->setParameter(NX_SKIN_WIDTH, 0.05f*scale);
-    mPhysicsSDK->setParameter(NX_DEFAULT_SLEEP_LIN_VEL_SQUARED, 0.15*0.15*scale*scale);
+    mPhysicsSDK->setParameter(NX_SKIN_WIDTH, 0.01f);
+    mPhysicsSDK->setParameter(NX_DEFAULT_SLEEP_LIN_VEL_SQUARED, 0.15f*0.15f);
 
     return true;
 }

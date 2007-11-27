@@ -13,6 +13,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class manages XMLRPC requests and responses processed by the Navigator.
+ */
 class NavigatorXMLRPCClient : public XmlRpc::XmlRpcClient
 {
 protected:

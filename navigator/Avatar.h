@@ -14,10 +14,17 @@ using namespace Ogre;
 
 #ifdef PHYSICS
 #include "OgreOde_Core.h"
+#elif PHYSX
+#include "NxPhysics.h"
+#include "NxController.h"
+#include "NxControllerManager.h"
+#include "NxCapsuleController.h"
 #endif
 
 namespace Solipsis {
 
+/** This class represents an avatar.
+ */
 class Avatar : public OgrePeer
 #ifdef PHYSICS
     ,
@@ -69,6 +76,10 @@ protected:
     bool mFeetGeomContact;
 #endif
     OgreOde::TriangleMeshGeometry* mWorldGeometry;
+#elif PHYSX
+    NxScene* mPhysicsScene;
+    NxControllerManager* mControllerManager;
+    NxCapsuleController* mCapsuleController;
 #else
     RaySceneQuery* mRaySceneQuery;
 #endif
@@ -101,6 +112,9 @@ public:
 #ifdef PHYSICS
     OgreOde::World* getPhysicsWorld() { return mWorld; }
     void createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
+    void destroyPhysics();
+#elif PHYSX
+    void createPhysics(NxScene* physicsScene, NxControllerManager* controllerManager);
     void destroyPhysics();
 #endif
 #ifdef CAPSULEGEOM

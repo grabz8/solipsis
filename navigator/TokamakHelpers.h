@@ -10,6 +10,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This static class contains several helper methods above Tokamak physics engine.
+ */
 class TokamakHelpers
 {
 private:

@@ -10,6 +10,8 @@ namespace Solipsis {
 // secure logMessage macro
 #define OGRE_LOG(message) if (LogManager::getSingletonPtr()) LogManager::getSingletonPtr()->logMessage(message);
 
+/** This static class contains several helper methods above OGRE.
+ */
 class OgreHelpers
 {
 private:

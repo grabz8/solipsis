@@ -5,6 +5,8 @@
 
 namespace Solipsis {
 
+/** This class manages a thread, implement the run method to specialize its treatment.
+ */
 class BasicThread
 {
 public:

@@ -29,6 +29,7 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     mPhysicsWorldGeometry(0)
 #elif PHYSX
     ,mPhysicsScene(0),
+    mControllerManager(0),
     mPhysicsWorldGeometry(0),
     mPhysicsWorldActor(0)
 #elif TOKAMAK
@@ -202,7 +203,11 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
     // Step physics
     if (mPhysicsScene != 0)
     {
-        mPhysicsScene->simulate(evt.timeSinceLastFrame);
+//        mPhysicsScene->simulate(evt.timeSinceLastFrame);
+//        mPhysicsScene->flushStream();
+//        mPhysicsScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+        // To avoid blocking on fetchResults(), we will shift actions
+        // in order to let simulation threading during the rendering
         mPhysicsScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
         NxActor** actors = mPhysicsScene->getActors();
         for (NxU32 a=0; a<mPhysicsScene->getNbActors(); ++a)
@@ -215,6 +220,8 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             NxQuat orient = actor->getGlobalOrientationQuat();
             node->setOrientation(orient.w, orient.x, orient.y, orient.z);
         }
+        mPhysicsScene->simulate(evt.timeSinceLastFrame);
+        mPhysicsScene->flushStream();
     }
 #elif TOKAMAK
     // Step physics
@@ -275,6 +282,12 @@ NxScene* OgrePeerManager::getPhysicsScene()
 }
 
 //-------------------------------------------------------------------------------------
+NxControllerManager* OgrePeerManager::getControllerManager()
+{
+    return mControllerManager;
+}
+
+//-------------------------------------------------------------------------------------
 NxTriangleMesh* OgrePeerManager::getPhysicsWorldGeometry()
 {
     return mPhysicsWorldGeometry;
@@ -329,12 +342,9 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
     node->setPosition(peer->getFakeX(),peer->getFakeZ(),peer->getFakeY()); //careful to switch y and z !
 #ifdef LEXI
     if (peer->getLogin().find("salamandra") != String::npos)
-        node->setPosition(0, 47, 500);
+        node->setPosition(0, 0.67f, 7.14f);
 #else
-    node->setPosition(0, 3, 500);
-#if defined(PHYSICS) || defined (PHYSX) || defined (TOKAMAK)
-    node->setPosition(-50, 3, -500);
-#endif
+        node->setPosition(17, -56.9f, 120);
 #endif
 
     Avatar* peerAvatar = new Avatar(peer, node, entity);
@@ -386,14 +396,14 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 #ifdef PHYSICS
     // Create the physical world
     mPhysicsWorld = new OgreOde::World(mSceneMgr);
-    mPhysicsWorld->setGravity(Vector3(0, -9.80665*physicsScale, 0));
-    mPhysicsWorld->setCFM(10e-5*physicsScale);
-    mPhysicsWorld->setERP(0.8/physicsScale);
+    mPhysicsWorld->setGravity(Vector3(0, -9.80665f, 0));
+    mPhysicsWorld->setCFM(10e-5f);
+    mPhysicsWorld->setERP(0.8f);
     mPhysicsWorld->setAutoSleep(true);
-    mPhysicsWorld->setContactCorrectionVelocity(0.1*physicsScale);
-    mPhysicsWorld->setContactSurfaceLayer(0.2*physicsScale);
-    mPhysicsWorld->setAutoSleepLinearThreshold(1.0*physicsScale);
-    mPhysicsWorld->setAutoSleepAngularThreshold(1.0*physicsScale);
+    mPhysicsWorld->setContactCorrectionVelocity(0.1f);
+    mPhysicsWorld->setContactSurfaceLayer(0.01f);
+    mPhysicsWorld->setAutoSleepLinearThreshold(1.0f);
+    mPhysicsWorld->setAutoSleepAngularThreshold(1.0f);
     mPhysicsWorld->setCollisionListener(dynamic_cast<OgreOde::CollisionListener*>(this));
     // Create something that will step the world, but don't do it automatically
     mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::QuickStep, Real(1.0/60.0), Real(1000.0), Real(1.0));
@@ -406,10 +416,10 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     worldCollisionSceneNode->setVisible(false);
 #elif PHYSX
     // Init the SDK
-    PhysXHelpers::init(physicsScale);
+    PhysXHelpers::init();
     // Create the physical world
     NxSceneDesc sceneDesc;
-    sceneDesc.gravity = NxVec3(0, -9.80665*physicsScale, 0);
+    sceneDesc.gravity = NxVec3(0, -9.80665f, 0);
     mPhysicsScene = PhysXHelpers::getPhysicsSDK()->createScene(sceneDesc);
     if (mPhysicsScene == 0)
     {
@@ -441,7 +451,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     // Create the physical world
     neSimulatorSizeInfo simSizeInfo;
     neV3 gravity;
-    gravity.Set(0, -9.80665*physicsScale, 0);
+    gravity.Set(0, -9.80665f, 0);
     mPhysicsSim = neSimulator::CreateSimulator(simSizeInfo, NULL, &gravity);
     if (mPhysicsSim == 0)
     {
@@ -498,9 +508,9 @@ bool OgrePeerManager::collision(OgreOde::Contact* contact)
             return false; 
     }*/
 
-    contact->setCoulombFriction(0.9*physicsScale);
-    contact->setBouncyness(0.25);
-    contact->setSoftness(0.8/physicsScale, 10e-5*physicsScale);
+    contact->setCoulombFriction(0.9f);
+    contact->setBouncyness(0.25f);
+    contact->setSoftness(0.8f, 10e-5f);
 
     return true;
 }

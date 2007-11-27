@@ -14,6 +14,8 @@
 #include <string.h>
 #include <ctype.h>
 
+/** This class manages a big integer.
+ */
 class CBigInt {
 protected:
 // Data

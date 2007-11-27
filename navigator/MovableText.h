@@ -1,7 +1,7 @@
 /**
  * File: MovableText.h
  *
- * description: This create create a billboarding object that display a text.
+ * description: This class creates a billboarding object that display a text.
  * 
  * @author  2003 by cTh see gavocanov@rambler.ru
  * @update  2006 by barraq see nospam@barraquand.com
@@ -50,6 +50,7 @@ protected:
     Ogre::MaterialPtr        mpBackgroundMaterial;
 
     bool                     mApplyParentScale;
+    float                    mScale;
 
     /******************************** public methods ******************************/
 public:
@@ -68,6 +69,7 @@ public:
     void    setTextAlignment(const HorizontalAlignment & horizontalAlignment, const VerticalAlignment & verticalAlignment);
     void    setAdditionalHeight( float height );
     void    showOnTop(bool show = true);
+    void    setScale(float scale);
 
     // Get settings
     const   Ogre::String        & getFontName() const {return mFontName;}

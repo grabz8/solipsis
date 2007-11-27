@@ -1,3 +1,8 @@
+/**
+ * \file Navigator.cpp
+ * \brief The Navigator application.
+ */
+
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
@@ -188,8 +193,8 @@ void Navigator::fakeSurroundingArea(int index)
            mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Solipsis/SkyBox3", 10, true);
            break;
-#ifndef PHYSICS
-        case 5: 
+#if !defined(PHYSICS) && !defined(PHYSX) && !defined(TOKAMAK)
+        case 5:
            mFakeTerrain = true;
            mSceneMgr->setWorldGeometry("SolipsisFakeTerrain.cfg"); //Add fake terrain (fake because local and not shared with other peers)
            mUserAvatar->setGravity(mFakeTerrain);
@@ -213,8 +218,8 @@ void Navigator::demoNavi1()
     active = true;
 
     // Create a plane
-    Plane plane(Vector3::NEGATIVE_UNIT_Z, -60);
-    MeshManager::getSingleton().createPlane("demoNavi1Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 85, 85, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
+    Plane plane(Vector3::NEGATIVE_UNIT_Z, -1.1);
+    MeshManager::getSingleton().createPlane("demoNavi1Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 1.5, 1.5, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
 
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi1Video", "demoNavi1Plane");
@@ -222,7 +227,7 @@ void Navigator::demoNavi1()
     //vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=mAJYQOANDCk", 512, 512, true, 15, true, 0.75f));
     vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512, true, 15, true, 0.75f));
     //http://www.youtube.com/watch?v=ZQcUS4chhc4
-    SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1VideoNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(85, 100, 85));
+    SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1VideoNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
     videoNode->attachObject(vidEnt);
     videoNode->yaw(Degree(45), Node::TS_WORLD);
 
@@ -230,7 +235,7 @@ void Navigator::demoNavi1()
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
     txtEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512, true, 8, false));
-    SceneNode* txtNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1TextNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(85, 100, 85));
+    SceneNode* txtNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1TextNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
     txtNode->attachObject(txtEnt);
     txtNode->yaw(Degree(-25), Node::TS_WORLD);
 
@@ -241,7 +246,8 @@ void Navigator::demoNavi1()
     MaterialPtr googleMtl = (MaterialPtr)MaterialManager::getSingletonPtr()->getByName(googleMtlName);
     googleMtl->setDepthWriteEnabled(true);
     knotEnt->setMaterialName(googleMtlName);
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1WebKnotNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(0, 150, 250));
+    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1WebKnotNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(-3, 1.75, 4));
+    node->setScale(Vector3(0.015f, 0.015f, 0.015f));
     node->attachObject(knotEnt);
 }
 #endif
@@ -263,11 +269,7 @@ void Navigator::demoNavi2(const String url)
 
     // Create a plane
     Plane plane(Vector3::NEGATIVE_UNIT_Z, 0);
-#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
-    MeshManager::getSingleton().createPlane("demoNavi2Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 200, 200, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
-#else
-    MeshManager::getSingleton().createPlane("demoNavi2Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 85, 85, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
-#endif
+    MeshManager::getSingleton().createPlane("demoNavi2Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 4, 4, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
 
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
@@ -275,25 +277,17 @@ void Navigator::demoNavi2(const String url)
     vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), url2go, 512, 512, true, 15, true, 0.75f));
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
     videoNode->attachObject(vidEnt);
-#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
-    videoNode->setPosition(Vector3(10, 100, -1300));
+    videoNode->setPosition(Vector3(18, -55, 104.5));
     videoNode->yaw(Degree(180), Node::TS_WORLD);
-#else
-    videoNode->setPosition(Vector3(280, 100, -100));
-    videoNode->yaw(Degree(180), Node::TS_WORLD);
-#endif
 }
 #endif
 #ifdef DEMO_PHYSICS1
 //-------------------------------------------------------------------------------------
 void Navigator::demoPhysics1()
 {
-#ifdef PHYSICS
 #define MAX_BOXES 10
     static int nextBox = 0;
     static std::map<String, SceneNode*> boxes;
-    OgreOde::World* physicsWorld = mOgrePeerManager->getPhysicsWorld();
-    if (physicsWorld == 0) return;
 
     // Create a box
     int boxNum = nextBox;
@@ -301,15 +295,19 @@ void Navigator::demoPhysics1()
     String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
     String boxNodeName = boxName + "Node";
     Vector3 boxGeomSize = Vector3(100, 100, 100);
-    Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
+    Vector3 boxScale = Vector3(0.01 - boxNum*0.0005, 0.01 - boxNum*0.0005, 0.01 - boxNum*0.0005);
     Vector3 boxExtents = boxGeomSize*boxScale;
     Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
     Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
     Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
-    Vector3 boxPos = userAvatarPos + userAvatarVpn*300 + userAvatarVup*300;
+    Vector3 boxPos = userAvatarPos + userAvatarVpn*4.5 + userAvatarVup*4.5;
     SceneNode* boxNode = 0;
-    OgreOde::Body* boxBody = 0;
     Entity* boxEntity = 0;
+#ifdef PHYSICS
+    OgreOde::World* physicsWorld = mOgrePeerManager->getPhysicsWorld();
+    if (physicsWorld == 0) return;
+
+    OgreOde::Body* boxBody = 0;
     OgreOde::BoxGeometry* boxGeom = 0;
     std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
     if (boxIt != boxes.end())
@@ -339,28 +337,11 @@ void Navigator::demoPhysics1()
     boxBody->setAngularVelocity(Vector3::ZERO);
     boxBody->wake();
 #elif PHYSX
-#define MAX_BOXES 10
-    static int nextBox = 0;
-    static std::map<String, SceneNode*> boxes;
     static std::map<String, NxActor*> actors;
     NxScene* physicsScene = mOgrePeerManager->getPhysicsScene();
     if (physicsScene == 0) return;
 
-    // Create a box
-    int boxNum = nextBox;
-    nextBox = (nextBox + 1)%MAX_BOXES;
-    String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
-    String boxNodeName = boxName + "Node";
-    Vector3 boxGeomSize = Vector3(100, 100, 100);
-    Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
-    Vector3 boxExtents = boxGeomSize*boxScale;
-    Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
-    Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
-    Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
-    Vector3 boxPos = userAvatarPos + userAvatarVpn*300 + userAvatarVup*300;
-    SceneNode* boxNode = 0;
     NxActor* boxActor = 0;
-    Entity* boxEntity = 0;
     std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
     if (boxIt != boxes.end())
     {
@@ -394,28 +375,11 @@ void Navigator::demoPhysics1()
     boxActor->setLinearVelocity(NxVec3(0, 0, 0));
     boxActor->setAngularVelocity(NxVec3(0, 0, 0));
 #elif TOKAMAK
-#define MAX_BOXES 10
-    static int nextBox = 0;
-    static std::map<String, SceneNode*> boxes;
     std::map<String, neRigidBody*>& bodies = mOgrePeerManager->getPhysicsBodies();
     neSimulator* physicsSim = mOgrePeerManager->getPhysicsSim();
     if (physicsSim == 0) return;
 
-    // Create a box
-    int boxNum = nextBox;
-    nextBox = (nextBox + 1)%MAX_BOXES;
-    String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
-    String boxNodeName = boxName + "Node";
-    Vector3 boxGeomSize = Vector3(100, 100, 100);
-    Vector3 boxScale = Vector3(0.5 - boxNum*0.02, 0.5 - boxNum*0.02, 0.5 - boxNum*0.02);
-    Vector3 boxExtents = boxGeomSize*boxScale;
-    Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
-    Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
-    Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
-    Vector3 boxPos = userAvatarPos + userAvatarVpn*300 + userAvatarVup*300;
-    SceneNode* boxNode = 0;
     neRigidBody* boxBody = 0;
-    Entity* boxEntity = 0;
     std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
     if (boxIt != boxes.end())
     {
@@ -677,7 +641,7 @@ void Navigator::createScene()
     camNode = mUserAvatar->getSceneNode()->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
 #ifdef LEXI
     if (entity->getMesh()->getName().find("salamandra") != String::npos)
-        camNode->setPosition(Vector3(0, -47, 0) + Vector3(-4, 1.1, 0)*avatarSize);
+        camNode->setPosition(Vector3(0, -0.67, 0) + Vector3(-4, 1.1, 0)*avatarSize);
 #endif
     camNode->yaw(Radian(-Math::HALF_PI));
     pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
@@ -888,12 +852,9 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
         mUserAvatar = (Avatar*)ogrePeer;
 #ifdef LEXI
         if (mUserAvatar->getEntity()->getMesh()->getName().find("salamandra") != String::npos)
-            mUserAvatar->getSceneNode()->setPosition(0, 47, 0);
+            mUserAvatar->getSceneNode()->setPosition(0, 0.67f, 0);
 #else
-        mUserAvatar->getSceneNode()->setPosition(0, 0, 0);
-#if defined(PHYSICS) || defined(PHYSX) || defined(TOKAMAK)
-        mUserAvatar->getSceneNode()->setPosition(0, 0, -650);
-#endif
+        mUserAvatar->getSceneNode()->setPosition(17, -57, 115);
 #endif
     }
 

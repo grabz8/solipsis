@@ -9,6 +9,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class represents an event applied to a Solipsis node.
+ */
 class NodeEvent
 {
 public:

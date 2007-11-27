@@ -7,6 +7,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class represents a 3D scene.
+ */
 class Scene : public OgrePeer
 {
 protected:

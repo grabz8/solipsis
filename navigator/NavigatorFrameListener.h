@@ -6,6 +6,8 @@
 
 namespace Solipsis {
 
+/** This class is the dedicated frame listener of the Navigator application.
+ */
 class NavigatorFrameListener : public OgreFrameListener
 {
 public:

@@ -17,6 +17,7 @@
 #pragma comment(lib, "NxCooking.lib")
 #pragma comment(lib, "NxCharacter.lib")
 #include "NxPhysics.h"
+#include "NxControllerManager.h"
 #include "PhysXHelpers.h"
 #elif TOKAMAK
 #pragma comment(lib, "tokamakdll.lib")
@@ -28,6 +29,8 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+/** This class manages all Solipsis/Ogre peers.
+ */
 class OgrePeerManager : public FrameListener
 #ifdef PHYSICS
     ,
@@ -60,6 +63,7 @@ public:
     OgreOde::TriangleMeshGeometry* getPhysicsWorldGeometry();
 #elif PHYSX
     NxScene* getPhysicsScene();
+    NxControllerManager* getControllerManager();
     NxTriangleMesh* getPhysicsWorldGeometry();
     NxActor* getPhysicsWorldActor();
 #elif TOKAMAK
@@ -90,17 +94,15 @@ private:
 
     // Physics
 #ifdef PHYSICS
-    #define physicsScale 10.0f
     OgreOde::World* mPhysicsWorld;
     OgreOde::StepHandler* mPhysicsStepHandler;
     OgreOde::TriangleMeshGeometry* mPhysicsWorldGeometry;
 #elif PHYSX
-    #define physicsScale 10.0f
     NxScene* mPhysicsScene;
+    NxControllerManager* mControllerManager;
     NxTriangleMesh* mPhysicsWorldGeometry;
     NxActor* mPhysicsWorldActor;
 #elif TOKAMAK
-    #define physicsScale 10.0f
     neSimulator* mPhysicsSim;
     neTriangleMesh mPhysicsWorldGeometry;
     std::map<String, neRigidBody*> mPhysicsBodies;

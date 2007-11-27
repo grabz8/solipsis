@@ -10,6 +10,8 @@ namespace Solipsis {
 
 #define PEER_LOCAL ""
 
+/** This class contains datas of a peer.
+ */
 class Peer
 {
 protected:
