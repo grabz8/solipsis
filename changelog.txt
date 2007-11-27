@@ -153,3 +153,9 @@ Integration of Ageia PhysX and Tokamak for tests
 URL parameter added to demoNavi2
 
 ---------------------------
+27/11/07
+
+new scale (unit=1 meter) applied into media contents, temporary avatars' positions and physics engines
+doxygen added
+
+---------------------------

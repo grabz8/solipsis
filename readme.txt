@@ -101,6 +101,16 @@ If you are using Ageia PhysX:
  Download runtime : PhysX_7.06.25_SystemSoftware.exe
  Download SDK : PhysX_2.7.2_SDK_Core.exe
  Define your PHYSX_DIR env. var.
+ Run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
+
+If you are using Tokamak:
+ Compile project Tokamak under DevTools (config TokamakDLL)
+ Run CopyTokamakFiles.bat to copy dedicated DLLs into your Common\bin
+
+To generate HTML documentation:
+ Download Doxygen Tool (doxygen.exe)
+ Define your DOXYGEN_PATH env. var.
+ Run Docs\doxygen\doxygen.bat
 
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel
