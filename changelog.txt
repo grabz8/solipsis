@@ -159,3 +159,8 @@ new scale (unit=1 meter) applied into media contents, temporary avatars' positio
 doxygen added
 
 ---------------------------
+28/11/07
+
+PhysX character capsule controller added, still some stuff because avatar is diving into floor
+
+---------------------------
