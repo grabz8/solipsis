@@ -65,6 +65,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     mPhysicsScene = 0;
     mControllerManager = 0;
     mCapsuleController = 0;
+    mSceneQuery = 0;
 #else
     mRaySceneQuery = mSceneNode->getCreator()->createRayQuery(Ray());
 #endif
@@ -221,11 +222,11 @@ void Avatar::destroyPhysics()
 }
 #elif PHYSX
 //-------------------------------------------------------------------------------------
-void Avatar::createPhysics(NxScene* physicsScene, NxControllerManager* controllerManager)
+void Avatar::createPhysics(NxScene* physicsScene, ::ControllerManager* controllerManager)
 {
     destroyPhysics();
-/*
-    // world ?
+
+    // scene and controller manager ?
     if ((physicsScene == 0) || (controllerManager == 0)) return;
     mPhysicsScene = physicsScene;
     mControllerManager = controllerManager;
@@ -235,23 +236,29 @@ void Avatar::createPhysics(NxScene* physicsScene, NxControllerManager* controlle
     mRadius = std::min(aabbHalfSize.x, aabbHalfSize.z);
     mHeight = aabbHalfSize.y*2;
 
-    NxSphereControllerDesc sphereControllerdesc;
-    sphereControllerdesc.position = mSceneNode->getPosition();
-    sphereControllerdesc.radius = mRadius;
-    sphereControllerdesc.upDirection = NX_Y;
-    sphereControllerdesc.slopeLimit = 0;
-    sphereControllerdesc.slopeLimit = cosf(NxMath::degToRad(45.0f));
-    sphereControllerdesc.skinWidth = mRadius*0.05;
-    sphereControllerdesc.stepOffset = 0.5;
-    sphereControllerdesc.callback = &gControllerHitReport;
+    NxCapsuleControllerDesc capsuleControllerDesc;
+    Vector3 pos = mSceneNode->getPosition();
+    capsuleControllerDesc.position.set(pos.x, pos.y + (mHeight - mRadius), pos.z);
+    capsuleControllerDesc.radius = mRadius*0.5f;
+    capsuleControllerDesc.height = mHeight - mRadius;
+    capsuleControllerDesc.upDirection = NX_Y;
+    capsuleControllerDesc.slopeLimit = 0;
+    capsuleControllerDesc.skinWidth = mRadius*0.01f;
+    capsuleControllerDesc.stepOffset = mRadius;
+    capsuleControllerDesc.callback = (NxUserControllerHitReport*)this;
+    mCapsuleController = (NxCapsuleController*)mControllerManager->createController(physicsScene, capsuleControllerDesc);
 
-    mCapsuleController = mControllerManager->createController();
-*/
+    NxSceneQueryDesc sceneQueryDesc;
+    sceneQueryDesc.executeMode = NX_SQE_SYNCHRONOUS;
+    sceneQueryDesc.report = (NxSceneQueryReport*)this;
+    mSceneQuery = mPhysicsScene->createSceneQuery(sceneQueryDesc);
 }
 
 //-------------------------------------------------------------------------------------
 void Avatar::destroyPhysics()
 {
+    if (mSceneQuery != 0)
+        mPhysicsScene->releaseSceneQuery(*mSceneQuery);
     if (mCapsuleController != 0)
         mControllerManager->releaseController(*mCapsuleController);
 
@@ -498,6 +505,25 @@ void Avatar::animate(Real timeSinceLastFrame)
     }
 #endif
 #elif PHYSX
+    // Collide physics capsule with world 
+    if (mCapsuleController != 0)
+    {
+        NxExtendedVec3 newPos = mCapsuleController->getFilteredPosition();
+        mSceneNode->setPosition(newPos.x, newPos.y - (mHeight - mRadius), newPos.z);
+//        NxExtendedVec3 oldPos = mCapsuleController->getFilteredPosition();
+        NxVec3 displacement(mvt.x, mvt.y, mvt.z);
+        if (mGravity)
+            displacement.y += -9.80665f*timeSinceLastFrame;
+        NxU32 collisionFlags;
+        mCapsuleController->move(displacement, PhysXHelpers::CG_COLLIDABLE_MASK, 0.000001f, collisionFlags, 1.0f);
+        //NxExtendedVec3 newPos = mCapsuleController->getDebugPosition();
+//        NxExtendedVec3 newPos = mCapsuleController->getFilteredPosition();
+        //NxExtendedVec3 newPos = mCapsuleController->getPosition();
+//        mSceneNode->setPosition(newPos.x, newPos.y - mHeight, newPos.z);
+//        NxVec3 newMvt = newPos - oldPos;
+//        Vector3 newMvtOgre(newMvt.x, newMvt.y, newMvt.z);
+//        mSceneNode->translate(-mvt + newMvtOgre);
+    }
 #else
     if (mGravity && (mRaySceneQuery != 0))
     {
@@ -621,6 +647,21 @@ bool Avatar::collision(OgreOde::Contact* contact)
 #endif
 
     return true;
+}
+#elif PHYSX
+NxControllerAction Avatar::onShapeHit(const NxControllerShapeHit& hit)
+{
+    return NX_ACTION_NONE;
+}
+
+NxControllerAction Avatar::onControllerHit(const NxControllersHit& hit)
+{
+    return NX_ACTION_NONE;
+}
+
+NxQueryReportResult	Avatar::onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits)
+{
+    return NX_SQR_ABORT_ALL_QUERIES;
 }
 #endif
 

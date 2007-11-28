@@ -48,6 +48,7 @@ OgrePeerManager::~OgrePeerManager()
 #elif PHYSX
     if (PhysXHelpers::getPhysicsSDK() != 0)
     {
+        delete mControllerManager;
         if (mPhysicsScene != 0)
         {
             NxActor** actors = mPhysicsScene->getActors();
@@ -185,8 +186,15 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             {
                 avatar->createPhysics(mPhysicsWorld, mPhysicsWorldGeometry);
 #ifdef CAPSULEGEOM
-                avatar->setMaxUpdateTimeStep(1.0/60.0);
+                avatar->setMaxUpdateTimeStep(1.0f/60.0f);
 #endif
+                avatar->setGravity(true);
+            }
+#elif PHYSX
+            // Simulate entry of local avatars into the physical world of the current scene
+            if ((mPhysicsScene != 0) && (avatar->getPhysicsScene() == 0))
+            {
+                avatar->createPhysics(mPhysicsScene, mControllerManager);
                 avatar->setGravity(true);
             }
 #endif
@@ -200,7 +208,7 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
     if (mPhysicsWorld != 0)
         mPhysicsWorld->synchronise();
 #elif PHYSX
-    // Step physics
+    // Step physics part 1
     if (mPhysicsScene != 0)
     {
 //        mPhysicsScene->simulate(evt.timeSinceLastFrame);
@@ -209,6 +217,12 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         // To avoid blocking on fetchResults(), we will shift actions
         // in order to let simulation threading during the rendering
         mPhysicsScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+        NxReal maxTimestep;
+        NxTimeStepMethod method;
+        NxU32 maxIter;
+        NxU32 numSubSteps;
+        mPhysicsScene->getTiming(maxTimestep, maxIter, method, &numSubSteps);
+        if (numSubSteps) mControllerManager->updateControllers();
         NxActor** actors = mPhysicsScene->getActors();
         for (NxU32 a=0; a<mPhysicsScene->getNbActors(); ++a)
         {
@@ -220,8 +234,6 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             NxQuat orient = actor->getGlobalOrientationQuat();
             node->setOrientation(orient.w, orient.x, orient.y, orient.z);
         }
-        mPhysicsScene->simulate(evt.timeSinceLastFrame);
-        mPhysicsScene->flushStream();
     }
 #elif TOKAMAK
     // Step physics
@@ -253,6 +265,15 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
     for (std::map<String,OgrePeer*>::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
         it->second->update(evt.timeSinceLastFrame);
 
+#ifdef PHYSX
+    // Step physics part 2
+    if (mPhysicsScene != 0)
+    {
+        mPhysicsScene->simulate(evt.timeSinceLastFrame);
+        mPhysicsScene->flushStream();
+    }
+#endif
+
     return true;
 }
 
@@ -282,7 +303,7 @@ NxScene* OgrePeerManager::getPhysicsScene()
 }
 
 //-------------------------------------------------------------------------------------
-NxControllerManager* OgrePeerManager::getControllerManager()
+::ControllerManager* OgrePeerManager::getControllerManager()
 {
     return mControllerManager;
 }
@@ -427,7 +448,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
             "Unable to create the PhysX scene !",
             "OgrePeerManager::CreateSceneNode");
     }
-    mPhysicsScene->setTiming(1.0/60.0, 8, NX_TIMESTEP_FIXED);
+    mPhysicsScene->setTiming(1.0/60.0, 1, NX_TIMESTEP_FIXED);
     // Set the default material 0
 	NxMaterial* defaultMaterial = mPhysicsScene->getMaterialFromIndex(0); 
 	defaultMaterial->setRestitution(0.1f);
@@ -443,10 +464,12 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     NxTriangleMeshShapeDesc triangleMeshShapeDesc;
     NxActorDesc actorDesc;
     triangleMeshShapeDesc.meshData = mPhysicsWorldGeometry;
+    triangleMeshShapeDesc.group = PhysXHelpers::CG_COLLIDABLE_NON_PUSHABLE;
     actorDesc.shapes.pushBack(&triangleMeshShapeDesc);
     mPhysicsWorldActor = mPhysicsScene->createActor(actorDesc);
     mPhysicsWorldActor->userData = (void*)0;
     worldCollisionSceneNode->setVisible(false);
+    mControllerManager = new ::ControllerManager();
 #elif TOKAMAK
     // Create the physical world
     neSimulatorSizeInfo simSizeInfo;

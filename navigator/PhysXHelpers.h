@@ -92,6 +92,15 @@ private:
     PhysXHelpers() {}
 
 public:
+    enum CollisionGroup
+    {
+        CG_NON_COLLIDABLE,
+        CG_COLLIDABLE_NON_PUSHABLE,
+        CG_COLLIDABLE_PUSHABLE,
+    };
+    static const int CG_COLLIDABLE_MASK = (1<<PhysXHelpers::CG_COLLIDABLE_NON_PUSHABLE) | (1<<PhysXHelpers::CG_COLLIDABLE_PUSHABLE);
+
+public:
     // Init
     static bool init();
     // Shutdown

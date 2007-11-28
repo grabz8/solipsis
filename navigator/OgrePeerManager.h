@@ -17,7 +17,8 @@
 #pragma comment(lib, "NxCooking.lib")
 #pragma comment(lib, "NxCharacter.lib")
 #include "NxPhysics.h"
-#include "NxControllerManager.h"
+#include "NxController.h"
+#include "ControllerManager.h"
 #include "PhysXHelpers.h"
 #elif TOKAMAK
 #pragma comment(lib, "tokamakdll.lib")
@@ -63,7 +64,7 @@ public:
     OgreOde::TriangleMeshGeometry* getPhysicsWorldGeometry();
 #elif PHYSX
     NxScene* getPhysicsScene();
-    NxControllerManager* getControllerManager();
+    ::ControllerManager* getControllerManager();
     NxTriangleMesh* getPhysicsWorldGeometry();
     NxActor* getPhysicsWorldActor();
 #elif TOKAMAK
@@ -77,7 +78,7 @@ protected:
 	virtual OgrePeer* createSceneNode(Peer* peer, TiXmlElement* xmlElt);
 
 #ifdef PHYSICS
-private:
+protected:
     // OgreOde::CollisionListener
     virtual bool collision(OgreOde::Contact* contact);
 #endif
@@ -99,7 +100,7 @@ private:
     OgreOde::TriangleMeshGeometry* mPhysicsWorldGeometry;
 #elif PHYSX
     NxScene* mPhysicsScene;
-    NxControllerManager* mControllerManager;
+    ::ControllerManager* mControllerManager;
     NxTriangleMesh* mPhysicsWorldGeometry;
     NxActor* mPhysicsWorldActor;
 #elif TOKAMAK

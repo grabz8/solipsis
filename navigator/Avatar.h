@@ -17,8 +17,9 @@ using namespace Ogre;
 #elif PHYSX
 #include "NxPhysics.h"
 #include "NxController.h"
-#include "NxControllerManager.h"
+#include "ControllerManager.h"
 #include "NxCapsuleController.h"
+#include "PhysXHelpers.h"
 #endif
 
 namespace Solipsis {
@@ -29,6 +30,10 @@ class Avatar : public OgrePeer
 #ifdef PHYSICS
     ,
     public OgreOde::CollisionListener
+#elif PHYSX
+    ,
+    public NxUserControllerHitReport,
+    public NxSceneQueryReport
 #endif
 {
 public:
@@ -78,14 +83,11 @@ protected:
     OgreOde::TriangleMeshGeometry* mWorldGeometry;
 #elif PHYSX
     NxScene* mPhysicsScene;
-    NxControllerManager* mControllerManager;
+    ::ControllerManager* mControllerManager;
     NxCapsuleController* mCapsuleController;
+    NxSceneQuery* mSceneQuery;
 #else
     RaySceneQuery* mRaySceneQuery;
-#endif
-
-#ifdef PHYSICS
-    bool collision(OgreOde::Contact* contact);
 #endif
 
 //    void lookAtTheGoodDirection();
@@ -114,7 +116,8 @@ public:
     void createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
     void destroyPhysics();
 #elif PHYSX
-    void createPhysics(NxScene* physicsScene, NxControllerManager* controllerManager);
+    NxScene* getPhysicsScene() { return mPhysicsScene; }
+    void createPhysics(NxScene* physicsScene, ::ControllerManager* controllerManager);
     void destroyPhysics();
 #endif
 #ifdef CAPSULEGEOM
@@ -130,6 +133,22 @@ public:
 
     void movementKeyPressed(OIS::KeyCode code);
     void movementKeyReleased(OIS::KeyCode code);
+
+#ifdef PHYSICS
+protected:
+    // OgreOde::CollisionListener
+    bool collision(OgreOde::Contact* contact);
+#elif PHYSX
+protected:
+    // NxUserControllerHitReport
+    virtual NxControllerAction onShapeHit(const NxControllerShapeHit& hit);
+    virtual NxControllerAction onControllerHit(const NxControllersHit& hit);
+    // NxSceneQueryReport
+    virtual NxQueryReportResult onBooleanQuery(void* userData, bool result) { return NX_SQR_ABORT_ALL_QUERIES; }
+	virtual NxQueryReportResult onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits);
+	virtual NxQueryReportResult onShapeQuery(void* userData, NxU32 nbHits, NxShape** hits) { return NX_SQR_ABORT_ALL_QUERIES; }
+	virtual NxQueryReportResult onSweepQuery(void* userData, NxU32 nbHits, NxSweepQueryHit* hits) { return NX_SQR_ABORT_ALL_QUERIES; }
+#endif
 
 private:
     String mIdleAnimName;
