@@ -854,7 +854,7 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
         if (mUserAvatar->getEntity()->getMesh()->getName().find("salamandra") != String::npos)
             mUserAvatar->getSceneNode()->setPosition(0, 0.67f, 0);
 #else
-        mUserAvatar->getSceneNode()->setPosition(17, /*-57*/-50, 115);
+        mUserAvatar->getSceneNode()->setPosition(17, -57, 115);
 #endif
     }
 
