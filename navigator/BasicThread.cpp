@@ -5,6 +5,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 BasicThread::BasicThread() :
     mMutex(PTHREAD_MUTEX_INITIALIZER),
     mState(SInit),
@@ -122,3 +123,5 @@ void* BasicThread::startRoutine(void* args)
 
     return NULL;
 }
+
+//-------------------------------------------------------------------------------------

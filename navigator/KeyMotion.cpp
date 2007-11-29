@@ -2,6 +2,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 KeyMotion::KeyMotion(Real impulse, Real maxSpeed, Real accelerationFactor, Real decelerationFactor) :
   mImpulse(impulse),
   mMaxSpeed(maxSpeed),
@@ -47,3 +48,5 @@ void KeyMotion::update(Real timeSinceLastFrame)
             mMotion = 0.0;
     }
 }
+
+//-------------------------------------------------------------------------------------

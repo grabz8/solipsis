@@ -51,37 +51,41 @@ namespace Solipsis {
 
 /** This class listen/manages frame, window, keyboard, mouse events of a general Ogre application.
  */
-class OgreFrameListener: public FrameListener, public WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
+class OgreFrameListener : public FrameListener, public WindowEventListener, public OIS::KeyListener, public OIS::MouseListener
 {
 public:
     OgreFrameListener(RenderWindow* win, Camera* cam, SceneManager *sceneMgr);
     virtual ~OgreFrameListener();
 
-    //WindowEventListener
+    /** These methods implement FrameListener
+    */
+    virtual bool frameStarted(const FrameEvent& evt);
+    virtual bool frameEnded(const FrameEvent& evt);
+
+    /** These methods implement WindowEventListener
+    */
     virtual void windowResized(RenderWindow* rw);
     virtual void windowClosed(RenderWindow* rw);
 
-    //FrameListener
-    bool frameStarted(const FrameEvent& evt);
-    bool frameEnded(const FrameEvent& evt);
+    /** These methods implement KeyListener
+    */
+    virtual bool keyPressed(const OIS::KeyEvent &e);
+    virtual bool keyReleased(const OIS::KeyEvent &e);
 
-   //OIS::MouseListener
-   virtual bool mouseMoved(const OIS::MouseEvent &e);
-   virtual bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-   virtual bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    /** These methods implement MouseListener
+    */
+    virtual bool mouseMoved(const OIS::MouseEvent &e);
+    virtual bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    virtual bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
 
-   //OIS::KeyListener
-   virtual bool keyPressed(const OIS::KeyEvent &e);
-   virtual bool keyReleased(const OIS::KeyEvent &e);
+    // push 1 new OIS listener or pop it
+    void pushOIS(OIS::KeyListener* keyListener, OIS::MouseListener* mouseListener);
+    void popOIS();
+    void setCamera(Camera* Camera) { mCamera = Camera; }
 
-   // push 1 new OIS listener or pop it
-   void pushOIS(OIS::KeyListener* keyListener, OIS::MouseListener* mouseListener);
-   void popOIS();
-   void setCamera(Camera* Camera) { mCamera = Camera; }
-
-   void showDebugOverlay(bool show);
-   void requestShutDown();
-   void updateStats(void);
+    void showDebugOverlay(bool show);
+    void requestShutDown();
+    void updateStats(void);
 
 protected:
     Camera* mCamera;
@@ -113,8 +117,8 @@ protected:
     OIS::JoyStick* mJoy;
 
     //OIS events callbacks stacks
-    std::stack<OIS::KeyListener*> keyListenersStack;
-    std::stack<OIS::MouseListener*> mouseListenersStack;
+    std::stack<OIS::KeyListener*> mKeyListenersStack;
+    std::stack<OIS::MouseListener*> mMouseListenersStack;
 
     Real mRotate;          // The rotate constant
     Real mMove;            // The movement constant

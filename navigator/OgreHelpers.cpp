@@ -2,6 +2,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList)
 {
     SceneNode::ObjectIterator objectIterator = node->getAttachedObjectIterator();
@@ -293,3 +294,5 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
 
     return newClosestFound;
 }
+
+//-------------------------------------------------------------------------------------

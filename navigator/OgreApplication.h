@@ -44,6 +44,10 @@ protected:
     virtual void addResourceLocations();
     virtual void initResources();
 
+private: 
+    void registerFrameListener();
+
+protected:
     String mWindowTitle;
     OgreFrameListener* mFrameListener;
     SceneManager* mSceneMgr;
@@ -55,10 +59,6 @@ protected:
     float mMoveScale;
     Degree mRotScale;
     Radian mRotX, mRotY;
-
-private: 
-
-    void registerFrameListener();
 
     Real mTimeUntilNextToggle;
     int mSceneDetailIndex; 

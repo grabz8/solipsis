@@ -6,6 +6,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 neTriangleMesh TokamakHelpers::convertMesh(const MeshPtr mesh,
                                             const Vector3& position,
                                             const Quaternion& orient,

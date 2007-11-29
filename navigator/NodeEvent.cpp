@@ -2,6 +2,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 NodeEvent::NodeEvent(time_t timestamp, Type type, Datas* datas) :
     mTimestamp(timestamp),
     mType(type),
@@ -32,3 +33,5 @@ NodeEvent::Datas* NodeEvent::getDatas()
 {
     return mDatas;
 }
+
+//-------------------------------------------------------------------------------------

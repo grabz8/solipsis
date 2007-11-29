@@ -20,6 +20,7 @@ class OgrePeerManagerOSMSceneCallbacks : public OSMSceneCallbacks
     }
 };
 
+//-------------------------------------------------------------------------------------
 OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbacks* callbacks) :
     mSceneMgr(sceneMgr),
     mCallbacks(callbacks)
@@ -38,6 +39,7 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
 {
 }
 
+//-------------------------------------------------------------------------------------
 OgrePeerManager::~OgrePeerManager()
 {
 #ifdef PHYSICS
@@ -67,6 +69,7 @@ OgrePeerManager::~OgrePeerManager()
 #endif
 }
 
+//-------------------------------------------------------------------------------------
 bool OgrePeerManager::load(Peer* peer, const String xmlFile)
 {
     class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
@@ -538,3 +541,5 @@ bool OgrePeerManager::collision(OgreOde::Contact* contact)
     return true;
 }
 #endif
+
+//-------------------------------------------------------------------------------------

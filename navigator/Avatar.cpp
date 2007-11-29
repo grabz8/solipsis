@@ -17,6 +17,7 @@ String Avatar::mDefaultStateAnimName[SCount] = {
 #define TRANSLATION_SPEED_MPS 6.0f
 #define ROTATION_SPEED_RPS Radian(Math::HALF_PI)
 
+//-------------------------------------------------------------------------------------
 Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     OgrePeer(peer, "avatar"),
     mState(SNone),
@@ -665,6 +666,7 @@ NxQueryReportResult	Avatar::onRaycastQuery(void* userData, NxU32 nbHits, const N
 }
 #endif
 
+//-------------------------------------------------------------------------------------
 
 
 

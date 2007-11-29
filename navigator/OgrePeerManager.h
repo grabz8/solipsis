@@ -31,7 +31,7 @@ using namespace Ogre;
 namespace Solipsis {
 
 /** This class manages all Solipsis/Ogre peers.
- */
+*/
 class OgrePeerManager : public FrameListener
 #ifdef PHYSICS
     ,
@@ -51,7 +51,8 @@ public:
     // Remove all peers (locals or networked)
     bool removeAll(bool local);
 
-    // Ogre::FrameListener
+    /** These methods implement FrameListener
+    */
     virtual bool frameStarted(const FrameEvent& evt);
 
 	// Get/Set
@@ -79,7 +80,8 @@ protected:
 
 #ifdef PHYSICS
 protected:
-    // OgreOde::CollisionListener
+    /** These methods implement CollisionListener
+    */
     virtual bool collision(OgreOde::Contact* contact);
 #endif
 

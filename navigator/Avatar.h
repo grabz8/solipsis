@@ -125,6 +125,8 @@ public:
     Real getMaxUpdateTimeStep();
 #endif
 
+    /** These methods implement OgrePeer
+    */
     virtual void update(Real timeSinceLastFrame);
 
     void startAnimation(const String &name, bool loop = true);
@@ -136,14 +138,17 @@ public:
 
 #ifdef PHYSICS
 protected:
-    // OgreOde::CollisionListener
+    /** These methods implement CollisionListener
+    */
     bool collision(OgreOde::Contact* contact);
 #elif PHYSX
 protected:
-    // NxUserControllerHitReport
+    /** These methods implement NxUserControllerHitReport
+    */
     virtual NxControllerAction onShapeHit(const NxControllerShapeHit& hit);
     virtual NxControllerAction onControllerHit(const NxControllersHit& hit);
-    // NxSceneQueryReport
+    /** These methods implement NxSceneQueryReport
+    */
     virtual NxQueryReportResult onBooleanQuery(void* userData, bool result) { return NX_SQR_ABORT_ALL_QUERIES; }
 	virtual NxQueryReportResult onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits);
 	virtual NxQueryReportResult onShapeQuery(void* userData, NxU32 nbHits, NxShape** hits) { return NX_SQR_ABORT_ALL_QUERIES; }

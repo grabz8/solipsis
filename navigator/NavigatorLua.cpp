@@ -14,6 +14,7 @@ Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     {0, 0}
 };
 
+//-------------------------------------------------------------------------------------
 NavigatorLua::NavigatorLua(lua_State* luaState) :
     mLuaState(luaState),
     mNavigator(0)
@@ -140,3 +141,5 @@ int NavigatorLua::handleEvent(const char* evt, const char *fmt, ...)
     }
     return lua_toboolean(mLuaState, -1);
 }
+
+//-------------------------------------------------------------------------------------

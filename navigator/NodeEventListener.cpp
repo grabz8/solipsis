@@ -5,6 +5,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
     BasicThread(),
     mXmlRpcClient(xmlRpcClient),
@@ -67,3 +68,5 @@ void NodeEventListener::endProcessEvents()
     mNodeEventsListProcessing->clear();
     pthread_mutex_unlock(&mNodeEventsListsMutex);
 }
+
+//-------------------------------------------------------------------------------------

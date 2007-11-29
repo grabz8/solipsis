@@ -10,7 +10,7 @@ namespace Solipsis {
 class NavigatorXMLRPCClient;
 
 /** This class listen/manages events received from Solipsis nodes.
- */
+*/
 class NodeEventListener : public BasicThread
 {
 protected:
@@ -34,7 +34,8 @@ public:
     ~NodeEventListener();
 
 protected:
-    // implements the BasicThread methods
+    /** These methods implement BasicThread
+    */
     virtual void run();
 
     // begin to process events

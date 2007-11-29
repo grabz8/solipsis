@@ -3,6 +3,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 Scene::Scene(Peer* peer, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
     OgrePeer(peer, "scene"),
     mSceneNode(sceneNode),
@@ -11,16 +12,19 @@ Scene::Scene(Peer* peer, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
 {
 }
 
+//-------------------------------------------------------------------------------------
 Scene::~Scene()
 {
     destroy();
 }
 
+//-------------------------------------------------------------------------------------
 SceneNode* Scene::getSceneNode()
 {
     return mSceneNode;
 }
 
+//-------------------------------------------------------------------------------------
 void Scene::update(Ogre::Real timeSinceLastFrame)
 {
     // Optimize by converting it into static geometry
@@ -28,6 +32,7 @@ void Scene::update(Ogre::Real timeSinceLastFrame)
         convertToStaticGeometry();
 }
 
+//-------------------------------------------------------------------------------------
 void Scene::destroy()
 {
     if (mSceneNode == 0) return;
@@ -47,6 +52,7 @@ void Scene::destroy()
     mSceneNode = 0;
 }
 
+//-------------------------------------------------------------------------------------
 void Scene::convertToStaticGeometry()
 {
     delete mStaticGeometry;
@@ -70,3 +76,5 @@ void Scene::convertToStaticGeometry()
     }
     mStaticGeometry->build();
 }
+
+//-------------------------------------------------------------------------------------

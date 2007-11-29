@@ -18,6 +18,29 @@ public:
         CM3rdPerson
     };
 
+public:
+    NavigatorFrameListener(Navigator* navigator);
+
+    /** These methods implement FrameListener
+    */
+    virtual bool frameStarted(const FrameEvent& evt);
+
+    /** These methods implement KeyListener
+    */
+    virtual bool keyPressed(const OIS::KeyEvent &e);
+    virtual bool keyReleased(const OIS::KeyEvent &e);
+
+    /** These methods implement MouseListener
+    */
+    virtual bool mouseMoved(const OIS::MouseEvent &e);
+    virtual bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    virtual bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
+
+    void setCameraMode(CameraMode mode);
+    CameraMode getCameraMode();
+    void detachCamera();
+    void attachCamera();
+
 protected:
     Navigator* mNavigator;
     Overlay* mStandardOverlay;
@@ -26,24 +49,6 @@ protected:
     CameraMode mSavedCameraMode;
 
     Real time;
-
-    // OIS::MouseListener
-    bool mouseMoved(const OIS::MouseEvent &e);
-    bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-    bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-
-    // OIS::KeyListener
-    bool keyPressed(const OIS::KeyEvent &e);
-    bool keyReleased(const OIS::KeyEvent &e);
-
-public:
-    NavigatorFrameListener(Navigator* navigator);
-    virtual bool frameStarted(const FrameEvent& evt);
-
-    void setCameraMode(CameraMode mode);
-    CameraMode getCameraMode();
-    void detachCamera();
-    void attachCamera();
 };
 
 } // namespace Solipsis

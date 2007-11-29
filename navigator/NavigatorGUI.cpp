@@ -16,6 +16,7 @@ const std::string NavigatorGUI::mNavisNames[] = {
 #endif
 };
 
+//-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
     mNaviMgr(NaviManager::Get()),
@@ -563,3 +564,5 @@ void NavigatorGUI::hidePreviousNavi()
         mCurrentNavi = -1;
     }
 }
+
+//-------------------------------------------------------------------------------------

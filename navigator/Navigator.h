@@ -1,8 +1,3 @@
-/**
- * \file Navigator.h
- * \brief The Navigator application.
- */
-
 #ifndef __Navigator_h__
 #define __Navigator_h__
 
@@ -136,12 +131,14 @@ public:
     // process events received by node
     void processEvents();
 
-    // IOgrePeerManagerCallbacks
-	virtual bool OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
-	virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+    /** These methods implement IOgrePeerManagerCallbacks
+    */
+    virtual bool OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+    virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
 
 protected:
-    // OgreApplication
+    /** These methods implement OgreApplication
+    */
     virtual bool initPostOgreCore();
 
     virtual void createSceneManager(); 

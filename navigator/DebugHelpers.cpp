@@ -8,6 +8,7 @@ using namespace Solipsis;
 #ifdef UIDEBUG
 std::map<String,String> DebugHelpers::debugCommands;
 
+//-------------------------------------------------------------------------------------
 bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, SceneManager* sceneMgr)
 {
     std::map<String,String>::iterator dbgCmd;
@@ -102,6 +103,7 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
 
 #endif
 
+//-------------------------------------------------------------------------------------
 bool DebugHelpers::initLua(lua_State* luaState)
 {
     lua_atpanic(luaState, DebugHelpers::luaLogMessage);
@@ -110,6 +112,7 @@ bool DebugHelpers::initLua(lua_State* luaState)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 int DebugHelpers::luaLogMessage(lua_State *L)
 {
     LogManager* logMgr = LogManager::getSingletonPtr();
@@ -117,3 +120,5 @@ int DebugHelpers::luaLogMessage(lua_State *L)
         logMgr->logMessage("luaLog> " + String(luaL_checkstring(L, 1)));
 	return 0;
 }
+
+//-------------------------------------------------------------------------------------

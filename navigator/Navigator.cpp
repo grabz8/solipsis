@@ -1,8 +1,3 @@
-/**
- * \file Navigator.cpp
- * \brief The Navigator application.
- */
-
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
@@ -13,6 +8,7 @@ using namespace Solipsis;
 
 Navigator* Navigator::ms_singletonPtr = 0;
 
+//-------------------------------------------------------------------------------------
 Navigator::Navigator() :
     OgreApplication("Solipsis"),
     NodeEventListener(mXmlRpcClient),
@@ -561,6 +557,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
 //-------------------------------------------------------------------------------------
 bool Navigator::initPostOgreCore()
 {
+    // call inherited
     if (!OgreApplication::initPostOgreCore())
         return false;
 

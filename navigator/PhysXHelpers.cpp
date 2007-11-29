@@ -230,6 +230,7 @@ using namespace Solipsis;
 
 NxPhysicsSDK* PhysXHelpers::mPhysicsSDK = 0;
 
+//-------------------------------------------------------------------------------------
 bool PhysXHelpers::init()
 {
     if (mPhysicsSDK != 0)

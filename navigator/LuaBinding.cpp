@@ -1,5 +1,6 @@
 #include "LuaBinding.h"
 
+//-------------------------------------------------------------------------------------
 int LuaPushArgs(lua_State *L, const char *fmt, va_list argp)
 {
     int nparams = 0;
@@ -42,3 +43,5 @@ int LuaPushArgs(lua_State *L, const char *fmt, va_list argp)
     }
     return nparams;
 }
+
+//-------------------------------------------------------------------------------------

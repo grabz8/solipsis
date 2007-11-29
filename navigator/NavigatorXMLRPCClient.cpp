@@ -5,6 +5,7 @@
 
 using namespace Solipsis;
 
+//-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::NavigatorXMLRPCClient(const char *host, int port, const char *uri) :
     XmlRpcClient(host, port, uri),
     mConnected(false),
@@ -644,3 +645,5 @@ bool NavigatorXMLRPCClient::executeThreadSafe(const char* method, XmlRpc::XmlRpc
 
     return succeeded;
 }
+
+//-------------------------------------------------------------------------------------

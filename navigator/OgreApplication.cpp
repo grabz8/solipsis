@@ -251,3 +251,5 @@ RenderWindow* OgreApplication::getRenderWindowPtr() {
 Camera* OgreApplication::getCameraPtr() {
     return mCamera;
 }
+
+//-------------------------------------------------------------------------------------
