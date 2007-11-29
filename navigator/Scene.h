@@ -23,6 +23,8 @@ public:
     // Set and get
     SceneNode* getSceneNode();
 
+    /** These methods implement OgrePeer
+    */
     virtual void update(Real timeSinceLastFrame);
 
 protected:
