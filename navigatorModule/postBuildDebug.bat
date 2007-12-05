@@ -1,0 +1,35 @@
+set dst="..\Common\bin\navigator\Debug"
+set vc="%1"
+
+if not exist "..\Dependencies\navigatorModule\include" mkdir ..\Dependencies\navigatorModule\include
+copy NavigatorModule.h ..\Dependencies\navigatorModule\include\. /y
+copy Event.h ..\Dependencies\navigatorModule\include\. /y
+copy IApplication.h ..\Dependencies\navigatorModule\include\. /y
+copy IInstance.h ..\Dependencies\navigatorModule\include\. /y
+copy IWindow.h ..\Dependencies\navigatorModule\include\. /y
+if not exist ..\Dependencies\navigatorModule\lib\Debug mkdir ..\Dependencies\navigatorModule\lib\Debug
+copy Debug\Navigator.lib ..\Dependencies\navigatorModule\lib\Debug\. /y
+copy Debug\Navigator.dll ..\Dependencies\navigatorModule\lib\Debug\. /y
+
+if not exist "%dst%" mkdir "%dst%"
+copy Debug\Navigator.dll "%dst%" /y
+if not exist "%dst%\OgreMain_d.dll" xcopy "%OGRE_HOME%\lib\OgreMain_d.dll" "%dst%" /s /y
+if not exist "%dst%\Plugin_BSPSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_BSPSceneManager_d.dll" "%dst%" /s /y
+if not exist "%dst%\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
+if not exist "%dst%\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" "%dst%" /s /y
+if not exist "%dst%\Plugin_CgProgramManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_CgProgramManager_d.dll" "%dst%" /s /y
+if not exist "%dst%\RenderSystem_Direct3D9_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_Direct3D9_d.dll" "%dst%" /s /y
+if not exist "%dst%\RenderSystem_GL_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_GL_d.dll" "%dst%" /s /y
+if not exist "%dst%\cg.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\cg.dll" "%dst%" /s /y
+if not exist "%dst%\OIS_d.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\OIS_d.dll" "%dst%" /s /y
+if not exist "%dst%\pthreadVC_d.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC_d.dll" "%dst%" /s /y
+if not exist "%dst%\xul.dll" xcopy "..\Dependencies\llmozlib\win32_%vc%\runtime\Debug\*.*" "%dst%" /s /y
+if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
+if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
+if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
+if not exist "%dst%\OgreOde_Core_d.dll" xcopy "..\Dependencies\OgreOde\lib\OgreOde_Core_d.dll" "%dst%" /s /y
+if not exist "%dst%\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" "%dst%" /s /y
+if not exist "%dst%\quake3settings.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\quake3settings.cfg" "%dst%" /s /y
+if not exist "%dst%\resources.cfg" xcopy "..\Media\resources.cfg" "%dst%" /s /y
+if not exist "%dst%\SolipsisFakeTerrain.cfg" xcopy "..\Media\SolipsisFakeTerrain.cfg" "%dst%" /s /y
+if not exist "%dst%\readme.txt" copy "..\readme.txt" "%dst%\readme.txt" /y

@@ -1,0 +1,181 @@
+#include "AutoCreatedWindow.h"
+#include "Instance.h"
+
+using namespace Solipsis;
+
+//-------------------------------------------------------------------------------------
+AutoCreatedWindow::AutoCreatedWindow(Instance* instance) :
+    mInstance(instance),
+    mInputManager(0), mMouse(0), mKeyboard(0), mJoy(0)
+{
+}
+
+//-------------------------------------------------------------------------------------
+AutoCreatedWindow::~AutoCreatedWindow()
+{
+    // Remove ourself as a Window listener
+    WindowEventUtilities::removeWindowEventListener(mInstance->getRenderWindowPtr(), this);
+    windowClosed(mInstance->getRenderWindowPtr());
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::frameStarted(const FrameEvent& evt)
+{
+    if (mMouse)
+        mMouse->capture();
+    if (mKeyboard)
+        mKeyboard->capture();
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::windowResized(RenderWindow* rw)
+{
+    //Adjust mouse clipping area
+    unsigned int width, height, depth;
+    int left, top;
+    rw->getMetrics(width, height, depth, left, top);
+
+    const OIS::MouseState &ms = mMouse->getMouseState();
+    ms.width = width;
+    ms.height = height;
+}
+
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::windowClosed(RenderWindow* rw)
+{
+    //Unattach OIS before window shutdown (very important under Linux)
+    //Only close for window that created OIS (the main window in these demos)
+    if (rw == mInstance->getRenderWindowPtr())
+    {
+        if (mInputManager)
+        {
+            mInputManager->destroyInputObject(mMouse);
+            mMouse = 0;
+            mInputManager->destroyInputObject(mKeyboard);
+            mKeyboard = 0;
+            mInputManager->destroyInputObject(mJoy);
+            mJoy = 0;
+
+            OIS::InputManager::destroyInputSystem(mInputManager);
+            mInputManager = 0;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::keyPressed(const OIS::KeyEvent &e)
+{
+    Evt keyboardEvt;
+    keyboardEvt.mType = ETKeyPressed;
+    keyboardEvt.mKeyboard.mKey = (KeyCode)e.key;
+    mInstance->processEvent(Event(0, &keyboardEvt));
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::keyReleased(const OIS::KeyEvent &e)
+{
+    Evt keyboardEvt;
+    keyboardEvt.mType = ETKeyReleased;
+    keyboardEvt.mKeyboard.mKey = (KeyCode)e.key;
+    mInstance->processEvent(Event(0, &keyboardEvt));
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::mouseMoved(const OIS::MouseEvent &e)
+{
+    Evt mouseEvt;
+    mouseEvt.mType = ETMouseMoved;
+    mouseEvt.mMouse.mState.mX = e.state.X.abs;
+    mouseEvt.mMouse.mState.mY = e.state.Y.abs;
+    mouseEvt.mMouse.mState.mZ = e.state.Z.abs;
+    mouseEvt.mMouse.mState.mXrel = e.state.X.rel;
+    mouseEvt.mMouse.mState.mYrel = e.state.Y.rel;
+    mouseEvt.mMouse.mState.mZrel = e.state.Z.rel;
+    mouseEvt.mMouse.mState.mButtons = MBNone;
+    mInstance->processEvent(Event(0, &mouseEvt));
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+{
+    Evt mouseEvt;
+    mouseEvt.mType = ETMousePressed;
+    mouseEvt.mMouse.mState.mX = e.state.X.abs;
+    mouseEvt.mMouse.mState.mY = e.state.Y.abs;
+    mouseEvt.mMouse.mState.mZ = e.state.Z.abs;
+    mouseEvt.mMouse.mState.mXrel = e.state.X.rel;
+    mouseEvt.mMouse.mState.mYrel = e.state.Y.rel;
+    mouseEvt.mMouse.mState.mZrel = e.state.Z.rel;
+    mouseEvt.mMouse.mState.mButtons = MBNone;
+    if (id == OIS::MB_Left) mouseEvt.mMouse.mState.mButtons = MBLeft;
+    if (id == OIS::MB_Right) mouseEvt.mMouse.mState.mButtons = MBRight;
+    if (id == OIS::MB_Middle) mouseEvt.mMouse.mState.mButtons = MBMiddle;
+    mInstance->processEvent(Event(0, &mouseEvt));
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool AutoCreatedWindow::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+{
+    Evt mouseEvt;
+    mouseEvt.mType = ETMouseReleased;
+    mouseEvt.mMouse.mState.mX = e.state.X.abs;
+    mouseEvt.mMouse.mState.mY = e.state.Y.abs;
+    mouseEvt.mMouse.mState.mZ = e.state.Z.abs;
+    mouseEvt.mMouse.mState.mXrel = e.state.X.rel;
+    mouseEvt.mMouse.mState.mYrel = e.state.Y.rel;
+    mouseEvt.mMouse.mState.mZrel = e.state.Z.rel;
+    mouseEvt.mMouse.mState.mButtons = MBNone;
+    if (id == OIS::MB_Left) mouseEvt.mMouse.mState.mButtons = MBLeft;
+    if (id == OIS::MB_Right) mouseEvt.mMouse.mState.mButtons = MBRight;
+    if (id == OIS::MB_Middle) mouseEvt.mMouse.mState.mButtons = MBMiddle;
+    mInstance->processEvent(Event(0, &mouseEvt));
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::initialize()
+{
+    using namespace OIS;
+
+    // Create the input context
+    ParamList pl;
+    std::ostringstream windowHndStr;
+    windowHndStr << (size_t)getHandle();
+    pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+    mInputManager = InputManager::createInputSystem(pl);
+
+    // Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
+    mKeyboard = static_cast<Keyboard*>(mInputManager->createInputObject(OISKeyboard, true));
+    mMouse = static_cast<Mouse*>(mInputManager->createInputObject(OISMouse, true));
+    try {
+        mJoy = static_cast<JoyStick*>(mInputManager->createInputObject(OISJoyStick, true));
+    }
+    catch(...) {
+        mJoy = 0;
+    }
+
+    // Set initial mouse clipping size
+    windowResized(mInstance->getRenderWindowPtr());
+
+    // Register as a Window listener
+    WindowEventUtilities::addWindowEventListener(mInstance->getRenderWindowPtr(), this);
+
+    // OIS Listeners
+    mMouse->setEventCallback(this);
+    mKeyboard->setEventCallback(this);
+
+    Root::getSingletonPtr()->addFrameListener(this);
+}
+
+//-------------------------------------------------------------------------------------

@@ -1,0 +1,380 @@
+#include "Instance.h"
+#include "AutoCreatedWindow.h"
+#include "NaviManager.h"
+#include "Platform.h"
+
+using namespace Solipsis;
+
+/*pthread_once_t Instance::ms_TlsKeyOnce = PTHREAD_ONCE_INIT;
+pthread_key_t Instance::ms_TlsKey = INSTANCE_TLS_NOKEY;
+*/
+
+//-------------------------------------------------------------------------------------
+Instance::Instance(IApplication* application) :
+    mIWindow(0),
+    mSetWindow(false),
+    mAutoCreatedWindow(false),
+    mReady(false),
+    mTermRequested(false),
+    mMouseMutex(PTHREAD_MUTEX_INITIALIZER),
+    mLastMouseMovedValid(false),
+    mFrameListener(0),
+    mSceneMgr(0),
+    mWindow(0),
+    mCamera(0),
+    mNaviSupported(true)
+{
+    mOgreApplication = (OgreApplication*)application;
+}
+
+//-------------------------------------------------------------------------------------
+Instance::~Instance()
+{
+    finalize();
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::setWindow(IWindow* w)
+{
+    mReady = false;
+
+    if (mOgreApplication == 0)
+        return false;
+
+    mAutoCreatedWindow = (w == 0);
+    mIWindow = w;
+    mSetWindow = true;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::_setWindow()
+{
+    if (mOgreApplication == 0)
+        return false;
+
+    mSetWindow = false;
+    if (mAutoCreatedWindow)
+    {
+        mIWindow = new AutoCreatedWindow(this);
+        mWindow = mOgreApplication->getRoot()->getAutoCreatedWindow();
+        ((AutoCreatedWindow*)mIWindow)->initialize();
+    }
+    else
+    {
+        Ogre::NameValuePairList misc;
+        misc["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned int)(mIWindow->getHandle()));
+        misc["vsync"] = "true";
+        misc["FSAA"] = "0";
+        char strName[64];
+        sprintf(strName, "Navigator");
+        try
+        {
+            mWindow = mOgreApplication->getRoot()->createRenderWindow(strName, mIWindow->getWidth(), mIWindow->getHeight(), false, &misc);
+        }
+        catch (Ogre::Exception& e)
+        {
+            return false;
+        }
+    }
+
+    // Initialize resources
+    mOgreApplication->initResources();
+
+    initialize();
+
+    mReady = true;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::processEvent(const Event& evt)
+{
+    if (evt.getEvt().mType == ETMouseMoved)
+    {
+        pthread_mutex_lock(&mMouseMutex);
+        mLastMouseMovedEvent = evt;
+        if (!mLastMouseMovedValid)
+        {
+            mEventQueue.addTail(evt);
+            mLastMouseMovedValid = true;
+        }
+        pthread_mutex_unlock(&mMouseMutex);
+    }
+    else
+        mEventQueue.addTail(evt);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::run()
+{
+    bool _initRenderTargetsCalled = false;
+    while (!mTermRequested)
+    {
+        try
+        {
+            if (!mReady)
+            {
+                if (mSetWindow)
+                    _setWindow();
+                Platform::sleep(100);
+                continue;
+            }
+
+		    // process events
+            if (!handleEvents())
+                requestTerminate();
+            if (mTermRequested) break;
+
+            // render
+            if (!_initRenderTargetsCalled)
+            {
+                mOgreApplication->getRoot()->getRenderSystem()->_initRenderTargets();
+                _initRenderTargetsCalled = true;
+            }
+            if (mAutoCreatedWindow)
+                WindowEventUtilities::messagePump();
+            if (!mOgreApplication->getRoot()->renderOneFrame())
+                requestTerminate();
+        }
+        catch (...)
+        {
+            // clean up
+//            mOgreApplication->finalize();
+//            throw;
+        }
+    }
+    // clean up
+//    mOgreApplication->finalize();
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::requestTerminate()
+{
+    Evt termEvt;
+    termEvt.mType = ETTermRequested;
+    processEvent(Event(0, &termEvt));
+}
+
+//-------------------------------------------------------------------------------------
+SceneManager* Instance::getSceneMgrPtr() {
+    return mSceneMgr;
+}
+
+//-------------------------------------------------------------------------------------
+RenderWindow* Instance::getRenderWindowPtr() {
+    return mWindow;
+}
+
+//-------------------------------------------------------------------------------------
+Camera* Instance::getCameraPtr() {
+    return mCamera;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::initialize()
+{
+    // if we cannot initialize Ogre, just abandon the whole deal
+    if (!initOgreCore())
+        return false;
+    if (!initPostOgreCore())
+        return false;
+
+    createSceneManager();
+    createCamera();
+    createViewports();
+
+    // Set default mipmap level (NB some APIs ignore this)
+    TextureManager::getSingleton().setDefaultNumMipmaps(99999);
+
+    // Create the scene
+    createScene();
+
+    // Create GUI
+    if (!createGUI())
+        return false;
+
+    createFrameListener();
+    registerFrameListener();
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::finalize()
+{
+    unregisterFrameListener();
+    delete mFrameListener;
+
+    // Destroy GUI
+    destroyGUI();
+
+    // Destroy the scene
+    destroyScene();
+
+    if (!mAutoCreatedWindow)
+        mOgreApplication->getRoot()->detachRenderTarget(mWindow);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::initOgreCore()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::initPostOgreCore()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::createSceneManager()
+{
+    // Create the SceneManager, in this case a generic one
+    mSceneMgr = Root::getSingletonPtr()->createSceneManager(ST_GENERIC);
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::createCamera()
+{
+    // Create the camera
+    mCamera = mSceneMgr->createCamera("UserCam");
+
+    // Position it at 500 in Z direction
+    mCamera->setPosition(Vector3(0,0,0));
+    // Look back along -Z
+    mCamera->lookAt(Vector3(0,0,-1));
+    mCamera->setNearClipDistance(0.1f);
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::createFrameListener()
+{
+    mFrameListener = 0; //Override it if needed
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::destroyScene()
+{
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::createGUI() {
+    // Navi supported ?
+    char* naviSupport = ::getenv(NAVI_SUPPORT_ENV);
+    if ((naviSupport != 0) && (_stricmp(naviSupport, "no") == 0))
+        mNaviSupported = false;
+
+    if (!mNaviSupported)
+        return true;
+
+    // Initializing Navi
+    NaviLibrary::NaviManager::Get().Startup(mWindow);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::destroyGUI() {
+    if (!mNaviSupported)
+        return;
+
+    // Finalizing Navi
+    NaviLibrary::NaviManager::Get().Shutdown();
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::createViewports()
+{
+    // Create one viewport, entire window
+    Viewport* vp = mWindow->addViewport(mCamera);
+    vp->setBackgroundColour(ColourValue(0,0,0));
+
+    // Alter the camera aspect ratio to match the viewport
+    mCamera->setAspectRatio(Real(vp->getActualWidth())/Real(vp->getActualHeight()));
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::registerFrameListener()
+{
+    if (mFrameListener != 0)
+        Root::getSingletonPtr()->addFrameListener(mFrameListener);
+}
+
+//-------------------------------------------------------------------------------------
+void Instance::unregisterFrameListener()
+{
+    if (mFrameListener != 0)
+        Root::getSingletonPtr()->removeFrameListener(mFrameListener);
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::handleEvent(const Event& evt)
+{
+    switch (evt.getEvt().mType)
+    {
+    case ETTermRequested:
+        mTermRequested = true;
+        break;
+
+    case ETKeyPressed:
+        if (mFrameListener != 0)
+            mFrameListener->keyPressed((const KeyboardEvt&)evt.getEvt());
+        break;
+    case ETKeyReleased:
+        if (mFrameListener != 0)
+            mFrameListener->keyReleased((const KeyboardEvt&)evt.getEvt());
+        break;
+
+    case ETMousePressed:
+        if (mFrameListener != 0)
+            mFrameListener->mousePressed((const MouseEvt&)evt.getEvt());
+        break;
+    case ETMouseReleased:
+        if (mFrameListener != 0)
+            mFrameListener->mouseReleased((const MouseEvt&)evt.getEvt());
+        break;
+    case ETMouseMoved:
+        if (mFrameListener != 0)
+            mFrameListener->mouseMoved((const MouseEvt&)evt.getEvt());
+        break;
+    }
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Instance::handleEvents()
+{
+    while (!mEventQueue.isEmpty()) {
+        Event* evt = mEventQueue.getHead();
+        if (evt == 0)
+            return true;
+        if (evt->getEvt().mType == ETMouseMoved)
+        {
+            pthread_mutex_lock(&mMouseMutex);
+            Event evt = mLastMouseMovedEvent;
+            mEventQueue.removeHead();
+            mLastMouseMovedValid = false;
+            pthread_mutex_unlock(&mMouseMutex);
+            handleEvent(evt);
+        }
+        else
+        {
+            handleEvent(*evt);
+            mEventQueue.removeHead();
+        }
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
