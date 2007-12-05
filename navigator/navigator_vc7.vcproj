@@ -14,16 +14,16 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)bin\$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;PHYSICS;NPHYSX;NTOKAMAK;CAPSULEGEOM;FEET"
+				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
-				BasicRuntimeChecks="1"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
@@ -34,9 +34,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib"
+				AdditionalDependencies="Navigator.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\debugdll"
+				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -45,8 +45,8 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug runtime files ..."
-				CommandLine="postBuildDebug_vc7.bat $(TargetDir)"/>
+				Description=""
+				CommandLine=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -67,14 +67,14 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)bin\$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include\OIS&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;PHYSICS;NPHYSX;NTOKAMAK;CAPSULEGEOM;FEET"
+				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="0"
@@ -85,9 +85,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib"
+				AdditionalDependencies="Navigator.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\lua\lib\releaselib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\releasedll"
+				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -125,231 +125,19 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\Avatar.cpp">
-			</File>
-			<File
-				RelativePath=".\BasicThread.cpp">
-			</File>
-			<File
-				RelativePath=".\BigInt.cpp">
-			</File>
-			<File
-				RelativePath=".\DebugHelpers.cpp">
-			</File>
-			<File
-				RelativePath=".\KeyMotion.cpp">
-			</File>
-			<File
-				RelativePath=".\LuaBinding.cpp">
-			</File>
-			<File
-				RelativePath=".\MovableText.cpp">
-			</File>
-			<File
-				RelativePath=".\Navigator.cpp">
-			</File>
-			<File
-				RelativePath=".\NavigatorFrameListener.cpp">
-			</File>
-			<File
-				RelativePath=".\NavigatorGUI.cpp">
-			</File>
-			<File
-				RelativePath=".\NavigatorLua.cpp">
-			</File>
-			<File
-				RelativePath=".\NavigatorXMLRPCClient.cpp">
-			</File>
-			<File
-				RelativePath=".\NaviLua.cpp">
-			</File>
-			<File
-				RelativePath=".\NodeEvent.cpp">
-			</File>
-			<File
-				RelativePath=".\NodeEventListener.cpp">
-			</File>
-			<File
-				RelativePath=".\OgreApplication.cpp">
-			</File>
-			<File
-				RelativePath=".\OgreFrameListener.cpp">
-			</File>
-			<File
-				RelativePath=".\OgreHelpers.cpp">
-			</File>
-			<File
-				RelativePath=".\oSceneLoader\src\OgreOSMScene.cpp">
-			</File>
-			<File
-				RelativePath=".\OgrePeer.cpp">
-			</File>
-			<File
-				RelativePath=".\OgrePeerManager.cpp">
-			</File>
-			<File
-				RelativePath=".\Peer.cpp">
-			</File>
-			<File
-				RelativePath=".\PhysXHelpers.cpp">
-			</File>
-			<File
-				RelativePath=".\PlatformWin.cpp">
-			</File>
-			<File
-				RelativePath=".\Scene.cpp">
-			</File>
-			<File
-				RelativePath=".\TokamakHelpers.cpp">
+				RelativePath=".\NavigatorApp.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-			<File
-				RelativePath=".\Avatar.h">
-			</File>
-			<File
-				RelativePath=".\BasicThread.h">
-			</File>
-			<File
-				RelativePath=".\BigInt.h">
-			</File>
-			<File
-				RelativePath=".\DebugHelpers.h">
-			</File>
-			<File
-				RelativePath=".\IOgrePeerManagerCallbacks.h">
-			</File>
-			<File
-				RelativePath=".\oSceneLoader\include\IOSMSceneCallbacks.h">
-			</File>
-			<File
-				RelativePath=".\KeyMotion.h">
-			</File>
-			<File
-				RelativePath=".\LuaBinding.h">
-			</File>
-			<File
-				RelativePath=".\MovableText.h">
-			</File>
-			<File
-				RelativePath=".\Navigator.h">
-			</File>
-			<File
-				RelativePath=".\NavigatorFrameListener.h">
-			</File>
-			<File
-				RelativePath=".\NavigatorGUI.h">
-			</File>
-			<File
-				RelativePath=".\NavigatorLua.h">
-			</File>
-			<File
-				RelativePath=".\NavigatorXMLRPCClient.h">
-			</File>
-			<File
-				RelativePath=".\NaviLua.h">
-			</File>
-			<File
-				RelativePath=".\NodeEvent.h">
-			</File>
-			<File
-				RelativePath=".\NodeEventListener.h">
-			</File>
-			<File
-				RelativePath=".\OgreApplication.h">
-			</File>
-			<File
-				RelativePath=".\OgreFrameListener.h">
-			</File>
-			<File
-				RelativePath=".\OgreHelpers.h">
-			</File>
-			<File
-				RelativePath=".\oSceneLoader\include\OgreOSMScene.h">
-			</File>
-			<File
-				RelativePath=".\OgrePeer.h">
-			</File>
-			<File
-				RelativePath=".\OgrePeerManager.h">
-			</File>
-			<File
-				RelativePath=".\Peer.h">
-			</File>
-			<File
-				RelativePath=".\PhysXHelpers.h">
-			</File>
-			<File
-				RelativePath=".\Platform.h">
-			</File>
-			<File
-				RelativePath=".\PlatformLinux.h">
-			</File>
-			<File
-				RelativePath=".\PlatformWin.h">
-			</File>
-			<File
-				RelativePath=".\Scene.h">
-			</File>
-			<File
-				RelativePath=".\TokamakHelpers.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
-			<File
-				RelativePath="..\Media\lua\boot.lua">
-			</File>
-			<File
-				RelativePath="..\changelog.txt">
-			</File>
-			<File
-				RelativePath="..\Media\lua\defaultGUI.lua">
-			</File>
-			<File
-				RelativePath="..\devrules.txt">
-			</File>
-			<File
-				RelativePath="..\done.txt">
-			</File>
-			<File
-				RelativePath="..\readme.txt">
-			</File>
-			<File
-				RelativePath="..\Media\materials\scripts\Solipsis.material">
-			</File>
-			<File
-				RelativePath="..\Media\overlays\Solipsis.overlay">
-			</File>
-			<File
-				RelativePath="..\Media\SolipsisFakeTerrain.cfg">
-			</File>
-			<File
-				RelativePath="..\todo.txt">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uichat.html">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uicontext.html">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uidebug.html">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uilogin.html">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uimdlrmain.html">
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uioptions.html">
-			</File>
 		</Filter>
 	</Files>
 	<Globals>
