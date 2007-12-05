@@ -5,7 +5,7 @@
 #include <map>
 
 #include "NavigatorModule.h"
-#include "INavigatorApp.h"
+#include "IApplication.h"
 #include "IInstance.h"
 #include "IWindow.h"
 #include "Event.h"
@@ -49,7 +49,7 @@ class ATL_NO_VTABLE CnavigatorActiveXCtrl :
 	public IDataObjectImpl<CnavigatorActiveXCtrl>,
 	public IProvideClassInfo2Impl<&__uuidof(CnavigatorActiveXCtrl), NULL>,
 	public CComControl<CnavigatorActiveXCtrl>,
-    public NavigatorModule::IWindow
+    public Solipsis::IWindow
 {
 public:
 
@@ -133,16 +133,16 @@ private:
     HWND mhWnd;
 
     // instances
-    static std::map<HWND, NavigatorModule::IInstance*> mInstances;
+    static std::map<HWND, Solipsis::IInstance*> mInstances;
 
     // keyboard hook
     HHOOK mKeyboardHook;
 
     // last mouse evt
-    NavigatorModule::MouseEvt lastMouseEvt;
+    Solipsis::MouseEvt lastMouseEvt;
 
     // navigator instance
-    NavigatorModule::IInstance* mNavigatorInstance;
+    Solipsis::IInstance* mNavigatorInstance;
 
     // window attributes
     unsigned int mWidth;

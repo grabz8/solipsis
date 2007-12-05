@@ -40,7 +40,7 @@
 				AdditionalDependencies="comsvcs.lib navigator.lib"
 				OutputFile="$(OutDir)/navigatorActiveX.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\navigatorModule\$(ConfigurationName)_vc7&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
 				MergedIDLBaseFileName="_navigatorActiveX.idl"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -93,6 +93,7 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\modules\plugin\tools\sdk\samples\include&quot;;&quot;..\..\DevTools\llmozlib\libraries\i686-win32\include\mozilla\sdk\include&quot;;..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
 				RuntimeLibrary="2"
@@ -109,7 +110,7 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 				AdditionalDependencies="comsvcs.lib navigator.lib"
 				OutputFile="$(OutDir)/navigatorActiveX.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\navigatorModule\$(ConfigurationName)_vc7&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
 				MergedIDLBaseFileName="_navigatorActiveX.idl"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"

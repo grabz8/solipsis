@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "navigatorActiveXCtrl.h"
 
-using namespace NavigatorModule;
+using namespace Solipsis;
 
 // ==============================
 // key map
@@ -85,7 +85,7 @@ void initKeyMap()
 // ==============================
 
 // navaigator application
-INavigatorApp* navigatorApp = 0;
+IApplication* application = 0;
 
 // last location of navigator DLL
 char _szLastNavigatorDllLocation[1024] = "";
@@ -107,9 +107,9 @@ void _getPluginPath(const char* dllname, char* p, int size)
         }
 }
 
-INavigatorApp* _createNavigatorApp()
+IApplication* _createApplication()
 {
-    INavigatorApp* navigatorApp = 0;
+    IApplication* application = 0;
     bool error = true;
 
     // find navigator dll
@@ -123,8 +123,10 @@ INavigatorApp* _createNavigatorApp()
     if (strlen(location) > 0)
         strcpy(_szLastNavigatorDllLocation, location);
 
-    navigatorApp = INavigatorApp::createNavigatorApp(location);
-    if (navigatorApp != 0)
+    SetCurrentDirectory(_szLastNavigatorDllLocation);
+
+    application = IApplication::createApplication(location);
+    if (application != 0)
         error = false;
 
     if (error)
@@ -133,12 +135,12 @@ INavigatorApp* _createNavigatorApp()
         MessageBox(NULL, SZ_NAVIGATORDLL" could not be found ! Please re-install plugin ...", "Error loading "SZ_NAVIGATORDLL" plugin", MB_OK);
     }
 
-    return navigatorApp;
+    return application;
 }
 
 // CnavigatorActiveXCtrl
 
-std::map<HWND, NavigatorModule::IInstance*> CnavigatorActiveXCtrl::mInstances;
+std::map<HWND, IInstance*> CnavigatorActiveXCtrl::mInstances;
 
 CnavigatorActiveXCtrl::CnavigatorActiveXCtrl() :
     mInitialized(false),
@@ -157,16 +159,6 @@ CnavigatorActiveXCtrl::CnavigatorActiveXCtrl() :
 
 HRESULT CnavigatorActiveXCtrl::OnDraw(ATL_DRAWINFO& di)
 {
-/*	if (!mInitialized)
-    {
-        SetCurrentDirectory("C:\\Work\\solipsis\\trunk\\Common\\bin\\navigator\\release");
-        char *args[2];
-        args[0] = "C:\\Work\\solipsis\\trunk\\Common\\bin\\navigator\\release\\Navigator.exe";
-        args[1] = 0;
-        ::spawnv(_P_DETACH, "C:\\Work\\solipsis\\trunk\\Common\\bin\\navigator\\release\\Navigator.exe", args);
-        mInitialized = true;
-        return S_OK;
-    }*/
 /*	if (!mInitialized)
     {
 		IOleInPlaceActiveObjectImpl<CnavigatorActiveXCtrl>::GetWindow(&mhWnd);
@@ -248,17 +240,19 @@ end:
 		mHeight = rc.bottom - rc.top;
 
         // create the navigator application
-        if (navigatorApp == 0)
-            navigatorApp = _createNavigatorApp();
-
-        SetCurrentDirectory(_szLastNavigatorDllLocation);
+        if (application == 0)
+            application = _createApplication();
 
         // create the navigator instance and set this window
-        if (navigatorApp)
+        if (application)
         {
-            ::putenv("$CONTAINER_NAME=activex");
+            std::string envVar;
+            envVar = CONTAINER_NAME_ENV"=activex";
+            _putenv(envVar.c_str());
+            envVar = NAVI_SUPPORT_ENV"=no";
+            _putenv(envVar.c_str());
 
-            mNavigatorInstance = navigatorApp->createInstance();
+            mNavigatorInstance = application->createInstance();
             assert(mNavigatorInstance);
             mInstances[mhWnd] = mNavigatorInstance;
 
@@ -444,11 +438,11 @@ LRESULT CnavigatorActiveXCtrl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CALLBACK CnavigatorActiveXCtrl::fnHookKeyboard(int code, WPARAM wParam, LPARAM lParam)
 {
     if (code == HC_NOREMOVE)
-    return 0;
+        return 0;
 
-    NavigatorModule::IInstance* instance = 0;
+    IInstance* instance = 0;
     HWND hWnd = ::GetFocus();
-    std::map<HWND, NavigatorModule::IInstance*>::const_iterator it;
+    std::map<HWND, IInstance*>::const_iterator it;
     it = mInstances.find(hWnd);
     if (it != mInstances.end())
         instance = it->second;
@@ -468,17 +462,17 @@ LRESULT CALLBACK CnavigatorActiveXCtrl::fnHookKeyboard(int code, WPARAM wParam, 
 
 void CnavigatorActiveXCtrl::FinalRelease()
 {
-    if (navigatorApp)
+    if (application)
     {
         if (mNavigatorInstance)
         {
 	        // unregister the keyboard hook now
-	        // so we stop sending keyboard messages to emma
+	        // so we stop sending keyboard messages
 	        ::UnhookWindowsHookEx(mKeyboardHook);
 
             // remove/destroy this instance
             mInstances.erase(mhWnd);
-            navigatorApp->destroyInstance(mNavigatorInstance);
+            application->destroyInstance(mNavigatorInstance);
             mNavigatorInstance = 0;
         }
     }
@@ -488,9 +482,9 @@ void CnavigatorActiveXCtrl::FinalRelease()
     ::ShowCursor(TRUE);
 
     // destroy the navigator application if no more instances
-    if (navigatorApp && (mInstances.size() == 0))
+    if (application && (mInstances.size() == 0))
 	{
-        navigatorApp->destroy();
-		navigatorApp = 0;
+        application->destroy();
+		application = 0;
 	}
 }
