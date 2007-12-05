@@ -2,16 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorPlugin_vc8", "navigatorPlugin\navigatorPlugin_vc8.vcproj", "{7DCCCF26-8501-413D-AD02-F912E4B1AC12}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
-	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorModule_vc8", "navigatorModule\navigatorModule_vc8.vcproj", "{B71ED042-7AAC-48D8-9BE9-5946D194A25F}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorActiveX_vc7", "navigatorActiveX\navigatorActiveX_vc8.vcproj", "{26463D8A-91B7-49F2-B20F-1ADE89AD7370}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorActiveX_vc8", "navigatorActiveX\navigatorActiveX_vc8.vcproj", "{26463D8A-91B7-49F2-B20F-1ADE89AD7370}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +15,6 @@ Global
 		{7DCCCF26-8501-413D-AD02-F912E4B1AC12}.Debug|Win32.Build.0 = Debug|Win32
 		{7DCCCF26-8501-413D-AD02-F912E4B1AC12}.Release|Win32.ActiveCfg = Release|Win32
 		{7DCCCF26-8501-413D-AD02-F912E4B1AC12}.Release|Win32.Build.0 = Release|Win32
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F}.Debug|Win32.Build.0 = Debug|Win32
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F}.Release|Win32.ActiveCfg = Release|Win32
-		{B71ED042-7AAC-48D8-9BE9-5946D194A25F}.Release|Win32.Build.0 = Release|Win32
 		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Debug|Win32.ActiveCfg = Debug|Win32
 		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Debug|Win32.Build.0 = Debug|Win32
 		{26463D8A-91B7-49F2-B20F-1ADE89AD7370}.Release|Win32.ActiveCfg = Release|Win32
