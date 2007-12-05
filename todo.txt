@@ -1,3 +1,10 @@
+- in Mozilla plugin config
+ - mouse capture to add (first person movement)
+ - without NPPVpluginKeepLibraryInMemory, then Ogre Root is destroyed on each
+   instance release but RenderSystem_Direct3D9_d cannot be re-loaded on next instance run
+=> to debug
+ - NavigatorModule Ogre MT-safe to manage by mutex when several instances are used by plugins (Ax or Moz)
+
 - create 1 Navigator Displayer ActiveX/Plugin to interact with Navigator from 1 simple Win Mozilla browser
 + implement object-oriented interfaces NavigatorModule which would be the generic Navigator interface
   shared by different Navigator implementations : Binary application with 1 main(), Mozilla plugin, ActiveX IE, ...
