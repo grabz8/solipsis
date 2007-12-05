@@ -164,3 +164,13 @@ doxygen added
 PhysX character capsule controller added, still some stuff because avatar is diving into floor
 
 ---------------------------
+05/12/07
+
+NavigatorModule added
+NavigatorPlugin and NavigatorActiveX updated
+now source code is shared by 3 application types and fully contained into NavigatorModule
+in standAlone application, the AutoCreatedWindow class keep the possibility to use the native Ogre
+config management / window creation
+doxygen on NavigatorModule added
+
+---------------------------

@@ -97,7 +97,7 @@ Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navi
 they will be suppressed in the future)
 
 If you are using Ageia PhysX:
- Download 2 packages runtime & SDK on http://devsupport.ageia.com (refer to registered email/password below)
+ Download 2 packages runtime & SDK on http://devsupport.ageia.com
  Download runtime : PhysX_7.06.25_SystemSoftware.exe
  Download SDK : PhysX_2.7.2_SDK_Core.exe
  Define your PHYSX_DIR env. var.
@@ -124,31 +124,3 @@ PHYSICS        Set/Unset Physics management by Ode and OgreODE
  FEET          Set/Unset Physics feet sphere on user avatar (floor + gravity)
 PHYSX          Set/Unset Physics management by Ageia PhysX
 TOKAMAK        Set/Unset Physics management by Tokamak
-
---------------------------------------------------------------------------------
-FORUMS LOGINS
---------------------------------------------------------------------------------
-
-Ogre
-url      http://www.ogre3d.org/phpBB2/
-username g6r6e6g
-email    gregoryjan@free.fr
-password greg666
-
-Navi
-url      http://navi.agelessanime.com/forum
-username g6r6e6g
-email    gregoryjan@free.fr
-password greg666
-
-Mozilla
-http://www.nabble.com
-http://www.nabble.com/Mozilla---Embedding-f6665.html
-username g6r6e6g
-email    gregoryjan@free.fr
-password greg666
-
-PhysX
-http://devsupport.ageia.com
-email    gregoryjan@free.fr
-password greg666

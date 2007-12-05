@@ -93,3 +93,6 @@ to the mesh' normals direction ! Flip them resolved it.
 
 - new scale (unit=1 meter) applied into media contents, temporary avatars' positions and physics engines
 - doxygen added
+
+- NavigatorModule added and now shared by 3 application types
+- doxygen on NaviagtorModule added + 2 classes are doxygen compliants
