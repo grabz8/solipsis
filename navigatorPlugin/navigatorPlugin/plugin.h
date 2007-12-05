@@ -41,13 +41,14 @@
 #include "pluginbase.h"
 
 #include "NavigatorModule.h"
-#include "INavigatorApp.h"
+#include "IApplication.h"
 #include "IInstance.h"
 #include "IWindow.h"
+#include "Event.h"
 
 class nsPluginInstance :
     public nsPluginInstanceBase,
-    public NavigatorModule::IWindow
+    public Solipsis::IWindow
 {
 public:
   nsPluginInstance(nsPluginCreateData * aCreateDataStruct);
@@ -65,7 +66,7 @@ public:
     virtual NPError GetValue(NPPVariable variable, void *value);
     // end overridden
 
-    // overridden from NavigatorModule::IWindow
+    // overridden from Solipsis::IWindow
     virtual void * getHandle() { return mhWnd; }
     virtual unsigned int getWidth() { return mWidth; }
     virtual unsigned int getHeight() { return mHeight; }
@@ -79,6 +80,7 @@ public:
     NPObject* getScriptableObject();
     void setWidth(unsigned int v) { mWidth = v; }
     void setHeight(unsigned int v) { mHeight = v; }
+    Solipsis::IInstance* getIInstance() { return mNavigatorInstance; }
 
     // javascript tests only
     const char* getPaintString();
@@ -88,6 +90,14 @@ public:
 protected:
     // create the navigator instance
     void _createInstance();
+
+	LRESULT OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     // keyboard and window messages hanlders
     static LRESULT CALLBACK PluginWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -103,8 +113,11 @@ private:
     // keyboard hook
     HHOOK mKeyboardHook;
 
+    // last mouse evt
+    Solipsis::MouseEvt lastMouseEvt;
+
     // navigator instance
-    NavigatorModule::IInstance* mNavigatorInstance;
+    Solipsis::IInstance* mNavigatorInstance;
 
     // window attributes
     unsigned int mWidth;

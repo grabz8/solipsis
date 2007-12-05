@@ -41,19 +41,97 @@
 #include <sys/stat.h>
 
 #include "plugin.h"
+#include <string>
+#include <map>
 #include "scriptablePluginObject.h"
+
+using namespace Solipsis;
+
+// ==============================
+// key map
+// ==============================
+static KeyCode sKeyMap[0xFF];
+void initKeyMap()
+{
+    int i;
+
+    /* Map the VK keysyms */
+    for ( i=0; i<0xFF; ++i )
+        sKeyMap[i] = KC_UNASSIGNED;
+
+	sKeyMap['0'] = KC_0;
+	sKeyMap['1'] = KC_1;
+	sKeyMap['2'] = KC_2;
+	sKeyMap['3'] = KC_3;
+	sKeyMap['4'] = KC_4;
+	sKeyMap['5'] = KC_5;
+	sKeyMap['6'] = KC_6;
+	sKeyMap['7'] = KC_7;
+	sKeyMap['8'] = KC_8;
+	sKeyMap['9'] = KC_9;
+
+	sKeyMap['A'] = KC_A;
+	sKeyMap['B'] = KC_B;
+	sKeyMap['C'] = KC_C;
+	sKeyMap['D'] = KC_D;
+	sKeyMap['E'] = KC_E;
+	sKeyMap['F'] = KC_F;
+	sKeyMap['G'] = KC_G;
+	sKeyMap['H'] = KC_H;
+	sKeyMap['I'] = KC_I;
+	sKeyMap['J'] = KC_J;
+	sKeyMap['K'] = KC_K;
+	sKeyMap['L'] = KC_L;
+	sKeyMap['M'] = KC_M;
+	sKeyMap['N'] = KC_N;
+	sKeyMap['O'] = KC_O;
+	sKeyMap['P'] = KC_P;
+	sKeyMap['Q'] = KC_Q;
+	sKeyMap['R'] = KC_R;
+	sKeyMap['S'] = KC_S;
+	sKeyMap['T'] = KC_T;
+	sKeyMap['U'] = KC_U;
+	sKeyMap['V'] = KC_V;
+	sKeyMap['W'] = KC_W;
+	sKeyMap['X'] = KC_X;
+	sKeyMap['Y'] = KC_Y;
+	sKeyMap['Z'] = KC_Z;
+
+	sKeyMap[VK_DELETE] = KC_DELETE;
+
+    sKeyMap[VK_UP] = KC_UP;
+    sKeyMap[VK_DOWN] = KC_DOWN;
+    sKeyMap[VK_RIGHT] = KC_RIGHT;
+    sKeyMap[VK_LEFT] = KC_LEFT;
+    sKeyMap[VK_INSERT] = KC_INSERT;
+    sKeyMap[VK_HOME] = KC_HOME;
+    sKeyMap[VK_END] = KC_END;
+    sKeyMap[VK_PRIOR] = KC_PGUP;
+    sKeyMap[VK_NEXT] = KC_PGDOWN;
+
+    sKeyMap[VK_F1] = KC_F1;
+    sKeyMap[VK_F2] = KC_F2;
+    sKeyMap[VK_F3] = KC_F3;
+    sKeyMap[VK_F4] = KC_F4;
+    sKeyMap[VK_F5] = KC_F5;
+    sKeyMap[VK_F6] = KC_F6;
+    sKeyMap[VK_F7] = KC_F7;
+    sKeyMap[VK_F8] = KC_F8;
+    sKeyMap[VK_F9] = KC_F9;
+    sKeyMap[VK_F10] = KC_F10;
+    sKeyMap[VK_F11] = KC_F11;
+    sKeyMap[VK_F12] = KC_F12;
+}
 
 // ==============================
 // navigator DLL loading
 // ==============================
 
-using namespace NavigatorModule;
-
 // navaigator application
-INavigatorApp* navigatorApp = 0;
+IApplication* application = 0;
 
 // last location of navigator DLL
-char _szLastNavigatorDllLocation[1024] = "";
+static char _szLastNavigatorDllLocation[1024] = "";
 
 // navigator related defines
 #define SZ_NPSOLNAVDLL              "npsolnav.dll"
@@ -61,7 +139,7 @@ char _szLastNavigatorDllLocation[1024] = "";
 #define SZ_NAVIGATORREGKEY          "SOFTWARE\\Solipsis\\Navigator" // reg key in HKEY_CURRENT_USER
 #define SZ_NAVIGATORINSTALLDIR      "Install Directory"
 #define SZ_NAVIGATORDLL             "Navigator.dll"
-#define SZ_CREATENAVIGATORAPPFUN    "createNavigatorApp"
+#define SZ_CREATENAVIGATORAPPFUN    "createApplication"
 
 typedef void (CALLBACK* LPFNSETDLLDIRECTORY)(LPCTSTR);
 
@@ -203,9 +281,9 @@ HMODULE _loadNavigatorDll(char* location)
     return h;
 }
 
-INavigatorApp* _createNavigatorApp()
+IApplication* _createApplication()
 {
-    INavigatorApp* navigatorApp = 0;
+    IApplication* application = 0;
     bool error = true;
 
     // find navigator dll
@@ -213,8 +291,8 @@ INavigatorApp* _createNavigatorApp()
     HMODULE h = _loadNavigatorDll(location);
     if (h)
     {
-        INavigatorApp* (*createNavigatorAppFunction)(const char*) = reinterpret_cast<INavigatorApp* (*)(const char*)>(GetProcAddress(h, SZ_CREATENAVIGATORAPPFUN));
-        if (createNavigatorAppFunction != NULL)
+        IApplication* (*createApplicationFunction)(const char*, bool, const char*) = reinterpret_cast<IApplication* (*)(const char*, bool, const char*)>(GetProcAddress(h, SZ_CREATENAVIGATORAPPFUN));
+        if (createApplicationFunction != NULL)
         {
             assert(strlen(location)>0);
             // make sure it closes with a backslash
@@ -222,8 +300,9 @@ INavigatorApp* _createNavigatorApp()
             {
                 strcat(location,"\\");
             }
-            navigatorApp = createNavigatorAppFunction(location);
-            if (navigatorApp != 0)
+            SetCurrentDirectory(location);
+            application = createApplicationFunction(location, false, 0);
+            if (application != 0)
                 error = false;
         }
     }
@@ -234,7 +313,7 @@ INavigatorApp* _createNavigatorApp()
         MessageBox(NULL, SZ_NAVIGATORDLL" could not be found ! Please re-install plugin ...", "Error loading "SZ_NAVIGATORDLL" plugin", MB_OK);
     }
 
-    return navigatorApp;
+    return application;
 }
 
 //////////////////////////////////////
@@ -243,8 +322,16 @@ INavigatorApp* _createNavigatorApp()
 //
 NPError NS_PluginInitialize()
 {
+    std::string envVar;
+    envVar = CONTAINER_NAME_ENV"=mozilla";
+    _putenv(envVar.c_str());
+    envVar = NAVI_SUPPORT_ENV"=no";
+    _putenv(envVar.c_str());
+
     // create the navigator application
-    navigatorApp = _createNavigatorApp();
+    application = _createApplication();
+
+    initKeyMap();
 
   return NPERR_NO_ERROR;
 }
@@ -252,10 +339,10 @@ NPError NS_PluginInitialize()
 void NS_PluginShutdown()
 {
     // destroy the navigator application
-    if (navigatorApp)
+    if (application)
 	{
-        navigatorApp->destroy();
-		navigatorApp = 0;
+        application->destroy();
+		application = 0;
 	}
 }
 
@@ -284,6 +371,8 @@ void NS_DestroyPluginInstance(nsPluginInstanceBase * aPlugin)
 // nsPluginInstance class implementation
 //
 
+std::map<HWND, IInstance*> mInstances;
+
 nsPluginInstance::nsPluginInstance(nsPluginCreateData * aCreateDataStruct) : nsPluginInstanceBase(),
   mInstance(aCreateDataStruct->instance),
   mInitialized(FALSE),
@@ -298,19 +387,26 @@ nsPluginInstance::nsPluginInstance(nsPluginCreateData * aCreateDataStruct) : nsP
     // check type
     assert(!strcmp(aCreateDataStruct->type, "application/x-solnav"));
 
+    // keep the plugin resident to avoid destroy/re-creation of application
+    NPN_SetValue(mInstance, NPPVpluginKeepLibraryInMemory, (void*)TRUE);
+    // TODO: remove this line in order to destroy completely Ogre (like in Ax IE)
+    // and resolve the pb of RenderSystem_Direct3D9_d dll loading pb (specified module not found exception)
+
     // parameters
     assert(aCreateDataStruct->argc > 0);
     for ( int i = 0; i < aCreateDataStruct->argc; i++)
     {
-        if (!stricmp(aCreateDataStruct->argn[i], "width"))
+        if (!_stricmp(aCreateDataStruct->argn[i], "width"))
         {
             sscanf(aCreateDataStruct->argv[i], "%d", &mWidth);
         }
-        else if (!stricmp(aCreateDataStruct->argn[i], "height"))
+        else if (!_stricmp(aCreateDataStruct->argn[i], "height"))
         {
             sscanf(aCreateDataStruct->argv[i], "%d", &mHeight);
         }
     }
+
+    lastMouseEvt.mType = ETNone;
 
     strcpy(mPaintString, "");
 }
@@ -331,8 +427,6 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
   mhWnd = (HWND)aWindow->window;
   if (mhWnd == NULL)
     return FALSE;
-
-    SetCurrentDirectory(_szLastNavigatorDllLocation);
 
     // get window extents
     RECT rc;
@@ -356,7 +450,8 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
   SetWindowLong(mhWnd, GWL_USERDATA, (LONG)this);
 
     // get keyboard events on this thread
-    mKeyboardHook = SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)kbHookProc, NULL, GetCurrentThreadId());
+    mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)kbHookProc, NULL, GetCurrentThreadId());
+    assert(mKeyboardHook);
 
   mInitialized = TRUE;
   return TRUE;
@@ -364,23 +459,27 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
 
 void nsPluginInstance::shut()
 {
-    if (navigatorApp)
+    if (application)
     {
         if (mNavigatorInstance)
         {
-            navigatorApp->destroyInstance(mNavigatorInstance);
+            // subclass it back
+            SubclassWindow(mhWnd, mOldProc);
+
+	        // unregister the keyboard hook now
+	        // so we stop sending keyboard messages
+            ::UnhookWindowsHookEx(mKeyboardHook);
+
+            // remove/destroy this instance
+            mInstances.erase(mhWnd);
+            application->destroyInstance(mNavigatorInstance);
             mNavigatorInstance = 0;
         }
-
-        // subclass it back
-        SubclassWindow(mhWnd, mOldProc);
-
-        // unhook the keyboard hook
-        UnhookWindowsHookEx(mKeyboardHook);
     }
 
-  mhWnd = NULL;
-  mInitialized = FALSE;
+    mhWnd = NULL;
+    mInitialized = FALSE;
+    ::ShowCursor(TRUE);
 }
 
 NPBool nsPluginInstance::isInitialized()
@@ -441,19 +540,147 @@ void nsPluginInstance::_createInstance()
 {
     assert(mNavigatorInstance == 0);
 
-    if (navigatorApp)
+    if (application)
     {
-        ::putenv("$CONTAINER_NAME=mozilla");
-
-        mNavigatorInstance = navigatorApp->createInstance();
+        mNavigatorInstance = application->createInstance();
         assert(mNavigatorInstance);
+        mInstances[mhWnd] = mNavigatorInstance;
     }
+}
+
+LRESULT nsPluginInstance::OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+//    ::SetCapture(mhWnd);
+    if (mNavigatorInstance != 0)
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = ETMousePressed;
+        mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mZ = 0;
+        mouseEvt.mMouse.mState.mXrel = 0;
+        mouseEvt.mMouse.mState.mYrel = 0;
+        mouseEvt.mMouse.mState.mZrel = 0;
+        mouseEvt.mMouse.mState.mButtons = MBLeft;
+        mNavigatorInstance->processEvent(Event(0, &mouseEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (mNavigatorInstance != 0)
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = ETMouseReleased;
+        mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mZ = 0;
+        mouseEvt.mMouse.mState.mXrel = 0;
+        mouseEvt.mMouse.mState.mYrel = 0;
+        mouseEvt.mMouse.mState.mZrel = 0;
+        mouseEvt.mMouse.mState.mButtons = MBLeft;
+        mNavigatorInstance->processEvent(Event(0, &mouseEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+//    ::ReleaseCapture();
+    if (mNavigatorInstance != 0)
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = ETMousePressed;
+        mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mZ = 0;
+        mouseEvt.mMouse.mState.mXrel = 0;
+        mouseEvt.mMouse.mState.mYrel = 0;
+        mouseEvt.mMouse.mState.mZrel = 0;
+        mouseEvt.mMouse.mState.mButtons = MBRight;
+        mNavigatorInstance->processEvent(Event(0, &mouseEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (mNavigatorInstance != 0)
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = ETMouseReleased;
+        mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mZ = 0;
+        mouseEvt.mMouse.mState.mXrel = 0;
+        mouseEvt.mMouse.mState.mYrel = 0;
+        mouseEvt.mMouse.mState.mZrel = 0;
+        mouseEvt.mMouse.mState.mButtons = MBRight;
+        mNavigatorInstance->processEvent(Event(0, &mouseEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (mNavigatorInstance != 0)
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = ETMouseMoved;
+        mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
+        mouseEvt.mMouse.mState.mZ = 0;
+        if (lastMouseEvt.mType == ETNone)
+        {
+            mouseEvt.mMouse.mState.mXrel = 0;
+            mouseEvt.mMouse.mState.mYrel = 0;
+            mouseEvt.mMouse.mState.mZrel = 0;
+        }
+        else
+        {
+            mouseEvt.mMouse.mState.mXrel = mouseEvt.mMouse.mState.mX - lastMouseEvt.mState.mX;
+            mouseEvt.mMouse.mState.mYrel = mouseEvt.mMouse.mState.mY - lastMouseEvt.mState.mY;
+            mouseEvt.mMouse.mState.mZrel = mouseEvt.mMouse.mState.mZ - lastMouseEvt.mState.mZ;
+        }
+        lastMouseEvt = mouseEvt.mMouse;
+        mouseEvt.mMouse.mState.mButtons = MBNone;
+        if (wParam & MK_LBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBLeft);
+        if (wParam & MK_MBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBMiddle);
+        if (wParam & MK_RBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBRight);
+        mNavigatorInstance->processEvent(Event(0, &mouseEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (mNavigatorInstance != 0)
+    {
+        Evt keyboardEvt;
+        keyboardEvt.mType = ETKeyPressed;
+        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
+        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+    }
+    return S_OK;
+}
+
+LRESULT nsPluginInstance::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (mNavigatorInstance != 0)
+    {
+        Evt keyboardEvt;
+        keyboardEvt.mType = ETKeyReleased;
+        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
+        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+    }
+    return S_OK;
 }
 
 LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	nsPluginInstance* p = (nsPluginInstance*)(GetWindowLong(hWnd, GWL_USERDATA));
-//	NavigatorModule::IInstance* navigatorInstance = p->getNavigatorInstance();
+    nsPluginInstance* p = (nsPluginInstance*)(GetWindowLong(hWnd, GWL_USERDATA));
+    BOOL handled;
 
     switch (msg)
     {
@@ -467,25 +694,41 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
         break;
     case WM_KEYDOWN:
         {
+            if (p)
+                p->OnKeyDown(msg, wParam, lParam, handled);
+        }
+        break;
+    case WM_KEYUP:
+        {
+            if (p)
+                p->OnKeyUp(msg, wParam, lParam, handled);
         }
         break;
     case WM_LBUTTONDOWN:
         {
+            if (p)
+                p->OnMouseLButtonDown(msg, wParam, lParam, handled);
         }
         break;
     case WM_LBUTTONUP:
         {
+            if (p)
+                p->OnMouseLButtonUp(msg, wParam, lParam, handled);
         }
         break;
-    case WM_MOUSEMOVE:
+    case WM_RBUTTONDOWN:
         {
+            if (p)
+                p->OnMouseRButtonDown(msg, wParam, lParam, handled);
         }
         break;
     case WM_RBUTTONUP:
         {
+            if (p)
+                p->OnMouseRButtonUp(msg, wParam, lParam, handled);
         }
         break;
-    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:
         {
         }
         break;
@@ -493,8 +736,10 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
         {
         }
         break;
-    case WM_MBUTTONDOWN:
+    case WM_MOUSEMOVE:
         {
+            if (p)
+                p->OnMouseMove(msg, wParam, lParam, handled);
         }
         break;
     case WM_PAINT:
@@ -529,24 +774,27 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
 
 LRESULT CALLBACK nsPluginInstance::kbHookProc(int code, WPARAM wParam, LPARAM lParam)
 {
-    if (code == HC_NOREMOVE) 
+    if (code == HC_NOREMOVE)
+        return 0;
+
+    IInstance* instance = 0;
+    HWND hWnd = ::GetFocus();
+    std::map<HWND, IInstance*>::const_iterator it;
+    it = mInstances.find(hWnd);
+    if (it != mInstances.end())
+        instance = it->second;
+    else
+        instance = mInstances.begin()->second;
+    if (instance)
     {
-        return 0;	   
-    }
-    else if (code >= 0) 
-    {
-        nsPluginInstance* p = (nsPluginInstance*)(GetWindowLong(GetFocus(), GWL_USERDATA));
-        if (p)
-        {
-/*            NavigatorModule::IInstance* navigatorInstance = p->getNavigatorInstance();
-            if (navigatorInstance)
-            {
-            }*/
-        }
+        Evt keyboardEvt;
+        keyboardEvt.mType = (HIWORD(lParam) & KF_UP) ? ETKeyReleased : ETKeyPressed;
+        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
+        instance->processEvent(Event(0, &keyboardEvt));
+        ::SetFocus(hWnd);
     }
 
-    // no matter what, always pass the event to the next in line
-    return ::CallNextHookEx(NULL/*mKeyboardHook*/, code, wParam, lParam);
+    return 1;
 }
 
 // return instance of the scriptable object
