@@ -91,17 +91,18 @@ protected:
     // create the navigator instance
     void _createInstance();
 
+    LRESULT OnMouseLButtonDblClk(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+/*	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);*/
 
     // keyboard and window messages hanlders
     static LRESULT CALLBACK PluginWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    static LRESULT CALLBACK nsPluginInstance::kbHookProc(int code, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK fnHookKeyboard(int code, WPARAM wParam, LPARAM lParam);
 
 private:
   NPP mInstance;
@@ -112,6 +113,7 @@ private:
     WNDPROC mOldProc;
     // keyboard hook
     HHOOK mKeyboardHook;
+    bool mFirstPersonMode;
 
     // last mouse evt
     Solipsis::MouseEvt lastMouseEvt;

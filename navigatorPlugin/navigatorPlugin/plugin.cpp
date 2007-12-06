@@ -374,15 +374,16 @@ void NS_DestroyPluginInstance(nsPluginInstanceBase * aPlugin)
 std::map<HWND, IInstance*> mInstances;
 
 nsPluginInstance::nsPluginInstance(nsPluginCreateData * aCreateDataStruct) : nsPluginInstanceBase(),
-  mInstance(aCreateDataStruct->instance),
-  mInitialized(FALSE),
-  mhWnd(NULL),
-  mOldProc(NULL),
-  mKeyboardHook(NULL),
-  mNavigatorInstance(0),
-  mWidth(0),
-  mHeight(0),
-  mScriptableObject(NULL)
+    mInstance(aCreateDataStruct->instance),
+    mInitialized(FALSE),
+    mhWnd(NULL),
+    mOldProc(NULL),
+    mKeyboardHook(NULL),
+    mFirstPersonMode(false),
+    mNavigatorInstance(0),
+    mWidth(0),
+    mHeight(0),
+    mScriptableObject(NULL)
 {
     // check type
     assert(!strcmp(aCreateDataStruct->type, "application/x-solnav"));
@@ -406,8 +407,6 @@ nsPluginInstance::nsPluginInstance(nsPluginCreateData * aCreateDataStruct) : nsP
         }
     }
 
-    lastMouseEvt.mType = ETNone;
-
     strcpy(mPaintString, "");
 }
 
@@ -421,12 +420,12 @@ static LRESULT CALLBACK PluginWinProc(HWND, UINT, WPARAM, LPARAM);
 
 NPBool nsPluginInstance::init(NPWindow* aWindow)
 {
-  if (aWindow == NULL)
-    return FALSE;
+    if (aWindow == NULL)
+        return FALSE;
 
-  mhWnd = (HWND)aWindow->window;
-  if (mhWnd == NULL)
-    return FALSE;
+    mhWnd = (HWND)aWindow->window;
+    if (mhWnd == NULL)
+        return FALSE;
 
     // get window extents
     RECT rc;
@@ -445,16 +444,17 @@ NPBool nsPluginInstance::init(NPWindow* aWindow)
     // do our drawing to it
     mOldProc = SubclassWindow(mhWnd, (WNDPROC)PluginWinProc);
 
-  // associate window with our nsPluginInstance object so we can access 
-  // it in the window procedure
-  SetWindowLong(mhWnd, GWL_USERDATA, (LONG)this);
+    // in mozilla plugins we do not receive FOCUS messages
+    // so we have to hook keyboard now !
+    mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)nsPluginInstance::fnHookKeyboard, 0, ::GetCurrentThreadId());
+    lastMouseEvt.mType = ETNone;
 
-    // get keyboard events on this thread
-    mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)kbHookProc, NULL, GetCurrentThreadId());
-    assert(mKeyboardHook);
+    // associate window with our nsPluginInstance object so we can access 
+    // it in the window procedure
+    SetWindowLong(mhWnd, GWL_USERDATA, (LONG)this);
 
-  mInitialized = TRUE;
-  return TRUE;
+    mInitialized = TRUE;
+    return TRUE;
 }
 
 void nsPluginInstance::shut()
@@ -468,7 +468,8 @@ void nsPluginInstance::shut()
 
 	        // unregister the keyboard hook now
 	        // so we stop sending keyboard messages
-            ::UnhookWindowsHookEx(mKeyboardHook);
+            if (mKeyboardHook != 0)
+                ::UnhookWindowsHookEx(mKeyboardHook);
 
             // remove/destroy this instance
             mInstances.erase(mhWnd);
@@ -548,9 +549,28 @@ void nsPluginInstance::_createInstance()
     }
 }
 
+LRESULT nsPluginInstance::OnMouseLButtonDblClk(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    ::OutputDebugString("nsPluginInstance::OnMouseLButtonDblClk\n");
+    mFirstPersonMode = !mFirstPersonMode;
+    if (mFirstPersonMode)
+    {
+        RECT rect;
+        POINT p;
+        ::GetWindowRect(mhWnd, &rect);
+        p.x = rect.left + ((rect.right - rect.left)>>1);
+        p.y = rect.top + ((rect.bottom - rect.top)>>1);
+        ::SetCursorPos(p.x, p.y);
+        ::SetCapture(mhWnd);
+    }
+    else
+        ::ReleaseCapture();
+    return S_OK;
+}
+
 LRESULT nsPluginInstance::OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-//    ::SetCapture(mhWnd);
+    ::OutputDebugString("nsPluginInstance::OnMouseLButtonDown\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -569,6 +589,7 @@ LRESULT nsPluginInstance::OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lP
 
 LRESULT nsPluginInstance::OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("nsPluginInstance::OnMouseLButtonUp\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -587,7 +608,7 @@ LRESULT nsPluginInstance::OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 LRESULT nsPluginInstance::OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-//    ::ReleaseCapture();
+    ::OutputDebugString("nsPluginInstance::OnMouseRButtonDown\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -606,6 +627,7 @@ LRESULT nsPluginInstance::OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lP
 
 LRESULT nsPluginInstance::OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("nsPluginInstance::OnMouseRButtonUp\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -624,6 +646,8 @@ LRESULT nsPluginInstance::OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 LRESULT nsPluginInstance::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+//    sprintf(text, "nsPluginInstance::OnMouseMove (%d, %d) wParam=%d\n", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), wParam);
+//    ::OutputDebugString(text);
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -631,19 +655,38 @@ LRESULT nsPluginInstance::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
         mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
         mouseEvt.mMouse.mState.mZ = 0;
-        if (lastMouseEvt.mType == ETNone)
+        if (mFirstPersonMode)
         {
-            mouseEvt.mMouse.mState.mXrel = 0;
-            mouseEvt.mMouse.mState.mYrel = 0;
+            RECT rect;
+            POINT p;
+            ::GetWindowRect(mhWnd, &rect);
+            p.x = rect.left + ((rect.right - rect.left)>>1);
+            p.y = rect.top + ((rect.bottom - rect.top)>>1);
+            POINT np;
+            ::GetCursorPos(&np);
+            if ((np.x == p.x) && (np.y == p.y))
+                return S_OK;
+            mouseEvt.mMouse.mState.mXrel = np.x - p.x;
+            mouseEvt.mMouse.mState.mYrel = np.y - p.y;
             mouseEvt.mMouse.mState.mZrel = 0;
+            ::SetCursorPos(p.x, p.y);
         }
         else
         {
-            mouseEvt.mMouse.mState.mXrel = mouseEvt.mMouse.mState.mX - lastMouseEvt.mState.mX;
-            mouseEvt.mMouse.mState.mYrel = mouseEvt.mMouse.mState.mY - lastMouseEvt.mState.mY;
-            mouseEvt.mMouse.mState.mZrel = mouseEvt.mMouse.mState.mZ - lastMouseEvt.mState.mZ;
+            if (lastMouseEvt.mType == ETNone)
+            {
+                mouseEvt.mMouse.mState.mXrel = 0;
+                mouseEvt.mMouse.mState.mYrel = 0;
+                mouseEvt.mMouse.mState.mZrel = 0;
+            }
+            else
+            {
+                mouseEvt.mMouse.mState.mXrel = mouseEvt.mMouse.mState.mX - lastMouseEvt.mState.mX;
+                mouseEvt.mMouse.mState.mYrel = mouseEvt.mMouse.mState.mY - lastMouseEvt.mState.mY;
+                mouseEvt.mMouse.mState.mZrel = mouseEvt.mMouse.mState.mZ - lastMouseEvt.mState.mZ;
+            }
+            lastMouseEvt = mouseEvt.mMouse;
         }
-        lastMouseEvt = mouseEvt.mMouse;
         mouseEvt.mMouse.mState.mButtons = MBNone;
         if (wParam & MK_LBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBLeft);
         if (wParam & MK_MBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBMiddle);
@@ -652,30 +695,31 @@ LRESULT nsPluginInstance::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     }
     return S_OK;
 }
-
-LRESULT nsPluginInstance::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+/*
+LRESULT nsPluginInstance::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("nsPluginInstance::OnSetFocus\n");
     if (mNavigatorInstance != 0)
     {
-        Evt keyboardEvt;
-        keyboardEvt.mType = ETKeyPressed;
-        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
-        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+        if (mKeyboardHook == 0)
+            mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)nsPluginInstance::fnHookKeyboard, 0, ::GetCurrentThreadId());
+        lastMouseEvt.mType = ETNone;
     }
     return S_OK;
 }
 
-LRESULT nsPluginInstance::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT nsPluginInstance::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("nsPluginInstance::OnKillFocus\n");
     if (mNavigatorInstance != 0)
     {
-        Evt keyboardEvt;
-        keyboardEvt.mType = ETKeyReleased;
-        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
-        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+        if (mKeyboardHook != 0)
+            ::UnhookWindowsHookEx(mKeyboardHook);
+        mKeyboardHook = 0;
+        mFirstPersonMode = false;
     }
     return S_OK;
-}
+}*/
 
 LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -692,16 +736,10 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
         {
         }
         break;
-    case WM_KEYDOWN:
+    case WM_LBUTTONDBLCLK:
         {
             if (p)
-                p->OnKeyDown(msg, wParam, lParam, handled);
-        }
-        break;
-    case WM_KEYUP:
-        {
-            if (p)
-                p->OnKeyUp(msg, wParam, lParam, handled);
+                p->OnMouseLButtonDblClk(msg, wParam, lParam, handled);
         }
         break;
     case WM_LBUTTONDOWN:
@@ -742,6 +780,18 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
                 p->OnMouseMove(msg, wParam, lParam, handled);
         }
         break;
+/*    case WM_SETFOCUS:
+        {
+            if (p)
+                p->OnSetFocus(msg, wParam, lParam, handled);
+        }
+        break;
+    case WM_KILLFOCUS:
+        {
+            if (p)
+                p->OnKillFocus(msg, wParam, lParam, handled);
+        }
+        break;*/
     case WM_PAINT:
         {
             // draw a frame and display the string
@@ -772,10 +822,12 @@ LRESULT CALLBACK nsPluginInstance::PluginWinProc(HWND hWnd, UINT msg, WPARAM wPa
   return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-LRESULT CALLBACK nsPluginInstance::kbHookProc(int code, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK nsPluginInstance::fnHookKeyboard(int code, WPARAM wParam, LPARAM lParam)
 {
     if (code == HC_NOREMOVE)
         return 0;
+    if (code < 0)
+        return ::CallNextHookEx(0, code, wParam, lParam);
 
     IInstance* instance = 0;
     HWND hWnd = ::GetFocus();
