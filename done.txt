@@ -96,3 +96,5 @@ to the mesh' normals direction ! Flip them resolved it.
 
 - NavigatorModule added and now shared by 3 application types
 - doxygen on NaviagtorModule added + 2 classes are doxygen compliants
+
+- in plugin configs, mouse capture added (first person movement)

@@ -1,5 +1,4 @@
 - in Mozilla plugin config
- - mouse capture to add (first person movement)
  - without NPPVpluginKeepLibraryInMemory, then Ogre Root is destroyed on each
    instance release but RenderSystem_Direct3D9_d cannot be re-loaded on next instance run
 => to debug
