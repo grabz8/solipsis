@@ -6,7 +6,10 @@ Dependencies   all 3rd-party dependencies (libraries, include files, binaries, .
 DevTools       all 3rd-party sources
 Media          all media files
 MediaTools     all external standalone tools we can use to manage/create/... media files
-navigator      the navigator
+navigator             the navigator application (standalone)
+navigatorModule       the navigator main module
+navigatorPlugin       the navigator plugins (IE ActiveX and Mozilla plugin)
+navigatorRunnerPlugin the navigator plugins (IE ActiveX and Mozilla plugin) launching the application (standalone)
 
 Some rules for developpers
 --------------------------
@@ -14,6 +17,7 @@ Some rules for developpers
 0- because those directories are filled during the generation, I DO NOT commit anything into
  Common
  Dependencies
+(except for plugins because some people cannot build them without ATL on Visual Studio Express edition)
 
 1- before creating 1 new directory check if you cannot use the dedicated directory
  media files into Media
