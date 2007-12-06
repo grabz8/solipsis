@@ -6,8 +6,8 @@ pause
 
 echo ========== Cleaning up... ==========
 
-rem rmdir Common\bin\navigator\debug /S /Q
-rem rmdir Common\bin\navigator\release /S /Q
+rmdir Common\bin\navigator\debug /S /Q
+rmdir Common\bin\navigator\release /S /Q
 
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
