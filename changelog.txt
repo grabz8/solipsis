@@ -174,3 +174,8 @@ config management / window creation
 doxygen on NavigatorModule added
 
 ---------------------------
+06/12/07
+
+Mouse management in plugin modes improved
+
+---------------------------

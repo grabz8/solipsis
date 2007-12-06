@@ -24,6 +24,7 @@ Camera:
 2        First-Person view mode with mouse to interact
 3        Third-Person view mode
 MOUSE    Cursor mode (3rd person) / View mode (1st person)
+DBLCLICK In plugins mode, you have to double-click left mouse to enter/leave FirstPerson mouse mode
 
 
 Move (french keyboard letters):
