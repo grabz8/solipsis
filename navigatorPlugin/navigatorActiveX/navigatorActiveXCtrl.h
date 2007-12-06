@@ -81,15 +81,16 @@ END_PROP_MAP()
 BEGIN_MSG_MAP(CnavigatorActiveXCtrl)
 	CHAIN_MSG_MAP(CComControl<CnavigatorActiveXCtrl>)
 	DEFAULT_REFLECTION_HANDLER()
-//	MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
+	MESSAGE_HANDLER(WM_SETCURSOR, OnSetCursor)
     MESSAGE_HANDLER(WM_SIZE, OnSize)
+    MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnMouseLButtonDblClk)
     MESSAGE_HANDLER(WM_LBUTTONDOWN, OnMouseLButtonDown)
     MESSAGE_HANDLER(WM_LBUTTONUP, OnMouseLButtonUp)
     MESSAGE_HANDLER(WM_RBUTTONDOWN, OnMouseRButtonDown)
     MESSAGE_HANDLER(WM_RBUTTONUP, OnMouseRButtonUp)
     MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-    MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-//    MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
+    MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+    MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
 END_MSG_MAP()
 // Handler prototypes:
 //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -106,13 +107,14 @@ public:
 	// Additional messages mapping
 	LRESULT OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnMouseLButtonDblClk(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
@@ -137,6 +139,7 @@ private:
 
     // keyboard hook
     HHOOK mKeyboardHook;
+    bool mFirstPersonMode;
 
     // last mouse evt
     Solipsis::MouseEvt lastMouseEvt;

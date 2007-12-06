@@ -132,7 +132,7 @@ IApplication* _createApplication()
     if (error)
     {
         // some error message to the user...
-        MessageBox(NULL, SZ_NAVIGATORDLL" could not be found ! Please re-install plugin ...", "Error loading "SZ_NAVIGATORDLL" plugin", MB_OK);
+        MessageBox(0, SZ_NAVIGATORDLL" could not be found ! Please re-install plugin ...", "Error loading "SZ_NAVIGATORDLL" plugin", MB_OK);
     }
 
     return application;
@@ -144,8 +144,9 @@ std::map<HWND, IInstance*> CnavigatorActiveXCtrl::mInstances;
 
 CnavigatorActiveXCtrl::CnavigatorActiveXCtrl() :
     mInitialized(false),
-    mhWnd(NULL),
-    mKeyboardHook(NULL),
+    mhWnd(0),
+    mKeyboardHook(0),
+    mFirstPersonMode(false),
     mNavigatorInstance(0),
     mWidth(0),
     mHeight(0)
@@ -153,12 +154,12 @@ CnavigatorActiveXCtrl::CnavigatorActiveXCtrl() :
 	// important, ATL by default creates windowless controls
 	m_bWindowOnly = true;
 
-    lastMouseEvt.mType = ETNone;
     initKeyMap();
 }
 
 HRESULT CnavigatorActiveXCtrl::OnDraw(ATL_DRAWINFO& di)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnDraw\n");
 /*	if (!mInitialized)
     {
 		IOleInPlaceActiveObjectImpl<CnavigatorActiveXCtrl>::GetWindow(&mhWnd);
@@ -256,10 +257,6 @@ end:
             assert(mNavigatorInstance);
             mInstances[mhWnd] = mNavigatorInstance;
 
-	        // set a keyboard hook
-	        mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)CnavigatorActiveXCtrl::fnHookKeyboard, NULL, ::GetCurrentThreadId());
-	        assert(mKeyboardHook);
-
             bool ret = mNavigatorInstance->setWindow(this);
             assert(ret);
 
@@ -297,18 +294,39 @@ end:
 
 LRESULT CnavigatorActiveXCtrl::OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnSetCursor\n");
 	// if we process this, then the container cannot set a cursor
 	return 0; 
 }
 
 LRESULT CnavigatorActiveXCtrl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnSize\n");
+    return S_OK;
+}
+
+LRESULT CnavigatorActiveXCtrl::OnMouseLButtonDblClk(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnMouseLButtonDblClk\n");
+    mFirstPersonMode = !mFirstPersonMode;
+    if (mFirstPersonMode)
+    {
+        RECT rect;
+        POINT p;
+        ::GetWindowRect(mhWnd, &rect);
+        p.x = rect.left + ((rect.right - rect.left)>>1);
+        p.y = rect.top + ((rect.bottom - rect.top)>>1);
+        ::SetCursorPos(p.x, p.y);
+        ::SetCapture(mhWnd);
+    }
+    else
+        ::ReleaseCapture();
     return S_OK;
 }
 
 LRESULT CnavigatorActiveXCtrl::OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-//    ::SetCapture(mhWnd);
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnMouseLButtonDown\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -327,6 +345,7 @@ LRESULT CnavigatorActiveXCtrl::OnMouseLButtonDown(UINT uMsg, WPARAM wParam, LPAR
 
 LRESULT CnavigatorActiveXCtrl::OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnMouseLButtonUp\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -345,7 +364,7 @@ LRESULT CnavigatorActiveXCtrl::OnMouseLButtonUp(UINT uMsg, WPARAM wParam, LPARAM
 
 LRESULT CnavigatorActiveXCtrl::OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-//    ::ReleaseCapture();
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnMouseRButtonDown\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -364,6 +383,7 @@ LRESULT CnavigatorActiveXCtrl::OnMouseRButtonDown(UINT uMsg, WPARAM wParam, LPAR
 
 LRESULT CnavigatorActiveXCtrl::OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnMouseRButtonUp\n");
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -382,6 +402,8 @@ LRESULT CnavigatorActiveXCtrl::OnMouseRButtonUp(UINT uMsg, WPARAM wParam, LPARAM
 
 LRESULT CnavigatorActiveXCtrl::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+//    sprintf(text, "CnavigatorActiveXCtrl::OnMouseMove (%d, %d) wParam=%d\n", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), wParam);
+//    ::OutputDebugString(text);
     if (mNavigatorInstance != 0)
     {
         Evt mouseEvt;
@@ -389,19 +411,38 @@ LRESULT CnavigatorActiveXCtrl::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lPar
         mouseEvt.mMouse.mState.mX = (int)GET_X_LPARAM(lParam);
         mouseEvt.mMouse.mState.mY = (int)GET_Y_LPARAM(lParam);
         mouseEvt.mMouse.mState.mZ = 0;
-        if (lastMouseEvt.mType == ETNone)
+        if (mFirstPersonMode)
         {
-            mouseEvt.mMouse.mState.mXrel = 0;
-            mouseEvt.mMouse.mState.mYrel = 0;
+            RECT rect;
+            POINT p;
+            ::GetWindowRect(mhWnd, &rect);
+            p.x = rect.left + ((rect.right - rect.left)>>1);
+            p.y = rect.top + ((rect.bottom - rect.top)>>1);
+            POINT np;
+            ::GetCursorPos(&np);
+            if ((np.x == p.x) && (np.y == p.y))
+                return S_OK;
+            mouseEvt.mMouse.mState.mXrel = np.x - p.x;
+            mouseEvt.mMouse.mState.mYrel = np.y - p.y;
             mouseEvt.mMouse.mState.mZrel = 0;
+            ::SetCursorPos(p.x, p.y);
         }
         else
         {
-            mouseEvt.mMouse.mState.mXrel = mouseEvt.mMouse.mState.mX - lastMouseEvt.mState.mX;
-            mouseEvt.mMouse.mState.mYrel = mouseEvt.mMouse.mState.mY - lastMouseEvt.mState.mY;
-            mouseEvt.mMouse.mState.mZrel = mouseEvt.mMouse.mState.mZ - lastMouseEvt.mState.mZ;
+            if (lastMouseEvt.mType == ETNone)
+            {
+                mouseEvt.mMouse.mState.mXrel = 0;
+                mouseEvt.mMouse.mState.mYrel = 0;
+                mouseEvt.mMouse.mState.mZrel = 0;
+            }
+            else
+            {
+                mouseEvt.mMouse.mState.mXrel = mouseEvt.mMouse.mState.mX - lastMouseEvt.mState.mX;
+                mouseEvt.mMouse.mState.mYrel = mouseEvt.mMouse.mState.mY - lastMouseEvt.mState.mY;
+                mouseEvt.mMouse.mState.mZrel = mouseEvt.mMouse.mState.mZ - lastMouseEvt.mState.mZ;
+            }
+            lastMouseEvt = mouseEvt.mMouse;
         }
-        lastMouseEvt = mouseEvt.mMouse;
         mouseEvt.mMouse.mState.mButtons = MBNone;
         if (wParam & MK_LBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBLeft);
         if (wParam & MK_MBUTTON) mouseEvt.mMouse.mState.mButtons = (MouseButton)((int)mouseEvt.mMouse.mState.mButtons | MBMiddle);
@@ -411,26 +452,27 @@ LRESULT CnavigatorActiveXCtrl::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lPar
     return S_OK;
 }
 
-LRESULT CnavigatorActiveXCtrl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CnavigatorActiveXCtrl::OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnSetFocus\n");
     if (mNavigatorInstance != 0)
     {
-        Evt keyboardEvt;
-        keyboardEvt.mType = ETKeyPressed;
-        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
-        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+        if (mKeyboardHook == 0)
+            mKeyboardHook = ::SetWindowsHookEx(WH_KEYBOARD, (HOOKPROC)CnavigatorActiveXCtrl::fnHookKeyboard, 0, ::GetCurrentThreadId());
+        lastMouseEvt.mType = ETNone;
     }
     return S_OK;
 }
 
-LRESULT CnavigatorActiveXCtrl::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CnavigatorActiveXCtrl::OnKillFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    ::OutputDebugString("CnavigatorActiveXCtrl::OnKillFocus\n");
     if (mNavigatorInstance != 0)
     {
-        Evt keyboardEvt;
-        keyboardEvt.mType = ETKeyReleased;
-        keyboardEvt.mKeyboard.mKey = sKeyMap[wParam];
-        mNavigatorInstance->processEvent(Event(0, &keyboardEvt));
+        if (mKeyboardHook != 0)
+            ::UnhookWindowsHookEx(mKeyboardHook);
+        mKeyboardHook = 0;
+        mFirstPersonMode = false;
     }
     return S_OK;
 }
@@ -439,6 +481,8 @@ LRESULT CALLBACK CnavigatorActiveXCtrl::fnHookKeyboard(int code, WPARAM wParam, 
 {
     if (code == HC_NOREMOVE)
         return 0;
+    if (code < 0)
+        return ::CallNextHookEx(0, code, wParam, lParam);
 
     IInstance* instance = 0;
     HWND hWnd = ::GetFocus();
@@ -468,7 +512,8 @@ void CnavigatorActiveXCtrl::FinalRelease()
         {
 	        // unregister the keyboard hook now
 	        // so we stop sending keyboard messages
-	        ::UnhookWindowsHookEx(mKeyboardHook);
+            if (mKeyboardHook != 0)
+                ::UnhookWindowsHookEx(mKeyboardHook);
 
             // remove/destroy this instance
             mInstances.erase(mhWnd);
@@ -477,7 +522,7 @@ void CnavigatorActiveXCtrl::FinalRelease()
         }
     }
 
-    mhWnd = NULL;
+    mhWnd = 0;
 //    mInitialized = false;
     ::ShowCursor(TRUE);
 
