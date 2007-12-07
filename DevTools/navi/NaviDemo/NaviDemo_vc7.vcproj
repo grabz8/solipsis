@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Headers&quot;;&quot;$(SolutionDir)..\..\Dependencies\navi\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Headers&quot;;&quot;$(SolutionDir)..\..\Dependencies\navi\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -80,7 +80,7 @@ if not exist &quot;$(TargetDir)\quake3settings.cfg&quot; xcopy &quot;$(OGRE_HOME
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Headers&quot;;&quot;$(SolutionDir)..\..\Dependencies\navi\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Headers&quot;;&quot;$(SolutionDir)..\..\Dependencies\navi\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
