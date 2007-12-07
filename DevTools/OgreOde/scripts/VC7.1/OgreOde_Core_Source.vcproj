@@ -50,9 +50,9 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\include&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include
-xcopy ..\..\include\*.h $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include /y
-if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib
+				CommandLine="if not exist ..\..\..\..\Dependencies\OgreOde\include mkdir ..\..\..\..\Dependencies\OgreOde\include
+xcopy ..\..\include\*.h ..\..\..\..\Dependencies\OgreOde\include /y
+if not exist ..\..\..\..\Dependencies\OgreOde\lib mkdir ..\..\..\..\Dependencies\OgreOde\lib
 copy $(OutDir)\OgreOde_Core_d.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
 copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y
 "/>
@@ -117,9 +117,9 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\l
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\include&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include
-xcopy ..\..\include\*.h $(ProjectDir)..\..\..\..\Dependencies\OgreOde\include /y
-if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib
+				CommandLine="if not exist ..\..\..\..\Dependencies\OgreOde\include mkdir ..\..\..\..\Dependencies\OgreOde\include
+xcopy ..\..\include\*.h ..\..\..\..\Dependencies\OgreOde\include /y
+if not exist ..\..\..\..\Dependencies\OgreOde\lib mkdir ..\..\..\..\Dependencies\OgreOde\lib
 copy $(OutDir)\OgreOde_Core.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
 copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y
 "/>
