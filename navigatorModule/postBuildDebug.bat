@@ -13,15 +13,42 @@ copy Debug\Navigator.dll ..\Dependencies\navigatorModule\lib\Debug\. /y
 
 if not exist "%dst%" mkdir "%dst%"
 copy Debug\Navigator.dll "%dst%" /y
-if not exist "%dst%\OgreMain_d.dll" xcopy "%OGRE_HOME%\lib\OgreMain_d.dll" "%dst%" /s /y
-if not exist "%dst%\Plugin_BSPSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_BSPSceneManager_d.dll" "%dst%" /s /y
-if not exist "%dst%\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
-if not exist "%dst%\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" "%dst%" /s /y
-if not exist "%dst%\Plugin_CgProgramManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_CgProgramManager_d.dll" "%dst%" /s /y
-if not exist "%dst%\RenderSystem_Direct3D9_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_Direct3D9_d.dll" "%dst%" /s /y
-if not exist "%dst%\RenderSystem_GL_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_GL_d.dll" "%dst%" /s /y
-if not exist "%dst%\cg.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\cg.dll" "%dst%" /s /y
-if not exist "%dst%\OIS_d.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\OIS_d.dll" "%dst%" /s /y
+if exist "%dst%\OgreMain_d.dll" goto OgreMain_d_exist
+ if exist "%OGRE_HOME%\lib\OgreMain_d.dll" xcopy "%OGRE_HOME%\lib\OgreMain_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\OgreMain_d.dll" xcopy "%OGRE_HOME%\bin\debug\OgreMain_d.dll" "%dst%" /s /y
+:OgreMain_d_exist
+if exist "%dst%\Plugin_BSPSceneManager_d.dll" goto Plugin_BSPSceneManager_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_BSPSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_BSPSceneManager_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_BSPSceneManager_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_BSPSceneManager_d.dll" "%dst%" /s /y
+:Plugin_BSPSceneManager_d_exist
+if exist "%dst%\Plugin_OctreeSceneManager_d.dll" goto Plugin_OctreeSceneManager_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
+:Plugin_OctreeSceneManager_d_exist
+if exist "%dst%\Plugin_ParticleFX_d.dll" goto Plugin_ParticleFX_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_ParticleFX_d.dll" "%dst%" /s /y
+:Plugin_ParticleFX_d_exist
+if exist "%dst%\Plugin_CgProgramManager_d.dll" goto Plugin_CgProgramManager_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_CgProgramManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_CgProgramManager_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_CgProgramManager_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_CgProgramManager_d.dll" "%dst%" /s /y
+:Plugin_CgProgramManager_d_exist
+if exist "%dst%\RenderSystem_Direct3D9_d.dll" goto RenderSystem_Direct3D9_d_exist
+ if exist "%OGRE_HOME%\lib\RenderSystem_Direct3D9_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_Direct3D9_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\RenderSystem_Direct3D9_d.dll" xcopy "%OGRE_HOME%\bin\debug\RenderSystem_Direct3D9_d.dll" "%dst%" /s /y
+:RenderSystem_Direct3D9_d_exist
+if exist "%dst%\RenderSystem_GL_d.dll" goto RenderSystem_GL_d_exist
+ if exist "%OGRE_HOME%\lib\RenderSystem_GL_d.dll" xcopy "%OGRE_HOME%\lib\RenderSystem_GL_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\RenderSystem_GL_d.dll" xcopy "%OGRE_HOME%\bin\debug\RenderSystem_GL_d.dll" "%dst%" /s /y
+:RenderSystem_GL_d_exist
+if exist "%dst%\cg.dll" goto cg_exist
+ if exist "%OGRE_HOME%\Samples\Common\bin\Debug\cg.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\cg.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\cg.dll" xcopy "%OGRE_HOME%\bin\debug\cg.dll" "%dst%" /s /y
+:cg_exist
+if exist "%dst%\OIS_d.dll" goto OIS_d_exist
+ if exist "%OGRE_HOME%\Samples\Common\bin\Debug\OIS_d.dll" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\OIS_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\OIS_d.dll" xcopy "%OGRE_HOME%\bin\debug\OIS_d.dll" "%dst%" /s /y
+:OIS_d_exist
 if not exist "%dst%\pthreadVC_d.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC_d.dll" "%dst%" /s /y
 if not exist "%dst%\xul.dll" xcopy "..\Dependencies\llmozlib\win32_%vc%\runtime\Debug\*.*" "%dst%" /s /y
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
