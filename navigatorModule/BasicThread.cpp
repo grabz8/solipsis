@@ -70,6 +70,7 @@ void BasicThread::stop(unsigned int stopTimeoutSec)
 //-------------------------------------------------------------------------------------
 void BasicThread::finalize()
 {
+    int rc;
     unsigned long elapsedMs = 0;
 
     if (mState == SInit) return;
@@ -85,6 +86,9 @@ void BasicThread::finalize()
     // Kill thread ?
     if (mState == SRunning) {
         OGRE_LOG(mName + ">BasicThread::finalize() killing thread");
+        rc = pthread_cancel(mThreadId);
+        if (rc != 0)
+            OGRE_LOG(mName + ">BasicThread::finalize() pthread_cancel returned " + StringConverter::toString(rc));
     }
 
     pthread_mutex_lock(&mMutex);
