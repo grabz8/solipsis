@@ -97,8 +97,8 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release runtime files ..."
-				CommandLine="postBuildRelease_vc7.bat $(TargetDir)"/>
+				Description=""
+				CommandLine=""/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
