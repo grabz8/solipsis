@@ -182,5 +182,6 @@ Mouse management in plugin modes improved
 07/12/07
 
 Ogre Prebuilt-SDK compilation updates
+1 bug fixed in Ogre 1.4.5 into Plane::projectVector()
 
 ---------------------------
