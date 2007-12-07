@@ -467,9 +467,14 @@ void Avatar::animate(Real timeSinceLastFrame)
                     << mCapsuleGeomLastContact.getPenetrationDepth();
                 OGRE_LOG(log.str());
             }
-            Plane contactPlane(-mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
+            Plane contactPlane(mCapsuleGeomLastContact.getNormal(), mCapsuleGeomLastContact.getPosition());
             Vector3 mvtOnContactPlane;
+#if (OGRE_VERSION < ((1 << 16) | (4 << 8) | 5))
+            // 1 bug on projectVector() in Ogre < 1.4.5
+            mvtOnContactPlane = -contactPlane.projectVector(mvt)*Vector3(1, 0, 1);
+#else
             mvtOnContactPlane = contactPlane.projectVector(mvt)*Vector3(1, 0, 1);
+#endif
             if ((sl % 60) == 0)
             {
                 StringUtil::StrStreamType log;
@@ -480,7 +485,7 @@ void Avatar::animate(Real timeSinceLastFrame)
                     << ")";
                 OGRE_LOG(log.str());
             }
-            mCapsuleGeom->setPosition(pos - mvt - mvtOnContactPlane + Vector3(0, aabbHalfSize.y*1.5, 0));
+            mCapsuleGeom->setPosition(pos - mvt + mvtOnContactPlane + Vector3(0, aabbHalfSize.y*1.5, 0));
             mCapsuleGeomContact = false;
             mCapsuleGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
             if (mCapsuleGeomContact)
@@ -501,7 +506,7 @@ void Avatar::animate(Real timeSinceLastFrame)
                 mSceneNode->translate(-mvt);
             }
             else
-                mSceneNode->translate(-mvt - mvtOnContactPlane);
+                mSceneNode->translate(-mvt + mvtOnContactPlane);
         }
     }
 #endif
