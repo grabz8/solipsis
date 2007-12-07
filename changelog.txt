@@ -183,5 +183,7 @@ Mouse management in plugin modes improved
 
 Ogre Prebuilt-SDK compilation updates
 1 bug fixed in Ogre 1.4.5 into Plane::projectVector()
+OgreApplication mutex added
+booleans replaced by 1 mutex to start render loop when window is set
 
 ---------------------------
