@@ -179,3 +179,8 @@ doxygen on NavigatorModule added
 Mouse management in plugin modes improved
 
 ---------------------------
+07/12/07
+
+Ogre Prebuilt-SDK compilation updates
+
+---------------------------
