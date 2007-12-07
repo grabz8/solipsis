@@ -87,7 +87,10 @@ Add Additional Lib path "$(DXSDK_DIR)\lib\x86"
 Batch build all (Debug+Release)
 
 Define the OGRE_HOME env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
-OGRE_HOME = C:\<your_path>\ogrenew
+If you are compiling Ogre from source code
+ OGRE_HOME = C:\<your_path>\ogrenew
+If you are using Ogre prebuilt-SDK
+ OGRE_HOME = C:\OgreSDK
 
 Open solipsis_vcX.sln
 Batch build Navigator project (Debug+Release)
