@@ -72,11 +72,13 @@ IInstance* NavigatorApp::createInstance()
         return 0;
 
     // create the main thread
-    Instance* instance = new Navigator(this);
+    std::string instanceName;
+    instanceName = "Navigator" + StringConverter::toString(mNumInstances - 1);
+    Instance* instance = new Navigator(instanceName, this);
     mNumInstances++;
     if (!mStandAloneAutoCreateWindow)
     {
-        MainThread* mainThread = new MainThread("Navigator" + StringConverter::toString(mNumInstances - 1), instance);
+        MainThread* mainThread = new MainThread(instanceName, instance);
         mainThread->start();
         mThreads.push_back(mainThread);
     }

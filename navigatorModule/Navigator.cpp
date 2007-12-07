@@ -9,8 +9,8 @@ using namespace Solipsis;
 Navigator* Navigator::ms_singletonPtr = 0;
 
 //-------------------------------------------------------------------------------------
-Navigator::Navigator(IApplication* application) :
-    Instance(application),
+Navigator::Navigator(const String name, IApplication* application) :
+    Instance(name, application),
     NodeEventListener(mXmlRpcClient),
     mFakeTerrain(false),
     mState(SLogin),

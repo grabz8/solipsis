@@ -24,12 +24,12 @@ namespace Solipsis {
 class Instance : public IInstance
 {
 protected:
+    String mName;
     // attached window
     IWindow* mIWindow;
 
     bool mAutoCreatedWindow;
-    bool mSetWindow;
-	bool mReady;
+    pthread_mutex_t mStartMutex;
     bool mTermRequested;
 
     Queue<Event> mEventQueue;
@@ -62,7 +62,7 @@ protected:
     int mAniso;
 
 public:
-    Instance(IApplication* application);
+    Instance(const String name, IApplication* application);
     virtual ~Instance();
 
     /** See IInstance. */

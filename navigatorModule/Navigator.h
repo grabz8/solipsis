@@ -71,7 +71,7 @@ protected:
     bool mFakeTerrain;
 
 public:
-    Navigator(IApplication* application);
+    Navigator(const String name, IApplication* application);
     ~Navigator();
     static Navigator* getSingletonPtr();
 

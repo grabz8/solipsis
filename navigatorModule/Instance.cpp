@@ -10,11 +10,11 @@ pthread_key_t Instance::ms_TlsKey = INSTANCE_TLS_NOKEY;
 */
 
 //-------------------------------------------------------------------------------------
-Instance::Instance(IApplication* application) :
+Instance::Instance(const String name, IApplication* application) :
+    mName(name),
     mIWindow(0),
-    mSetWindow(false),
     mAutoCreatedWindow(false),
-    mReady(false),
+    mStartMutex(PTHREAD_MUTEX_INITIALIZER),
     mTermRequested(false),
     mMouseMutex(PTHREAD_MUTEX_INITIALIZER),
     mLastMouseMovedValid(false),
@@ -36,14 +36,14 @@ Instance::~Instance()
 //-------------------------------------------------------------------------------------
 bool Instance::setWindow(IWindow* w)
 {
-    mReady = false;
-
     if (mOgreApplication == 0)
+        return false;
+    if ((mIWindow != 0) || (mAutoCreatedWindow && (mIWindow == 0)))
         return false;
 
     mAutoCreatedWindow = (w == 0);
     mIWindow = w;
-    mSetWindow = true;
+    pthread_mutex_unlock(&mStartMutex);
 
     return true;
 }
@@ -54,12 +54,13 @@ bool Instance::_setWindow()
     if (mOgreApplication == 0)
         return false;
 
-    mSetWindow = false;
+    mOgreApplication->lock();
     if (mAutoCreatedWindow)
     {
         mIWindow = new AutoCreatedWindow(this);
         mWindow = mOgreApplication->getRoot()->getAutoCreatedWindow();
-        ((AutoCreatedWindow*)mIWindow)->initialize();
+        if (mWindow != 0)
+            ((AutoCreatedWindow*)mIWindow)->initialize();
     }
     else
     {
@@ -67,24 +68,23 @@ bool Instance::_setWindow()
         misc["externalWindowHandle"] = Ogre::StringConverter::toString((unsigned int)(mIWindow->getHandle()));
         misc["vsync"] = "true";
         misc["FSAA"] = "0";
-        char strName[64];
-        sprintf(strName, "Navigator");
         try
         {
-            mWindow = mOgreApplication->getRoot()->createRenderWindow(strName, mIWindow->getWidth(), mIWindow->getHeight(), false, &misc);
+            mWindow = mOgreApplication->getRoot()->createRenderWindow(mName, mIWindow->getWidth(), mIWindow->getHeight(), false, &misc);
         }
         catch (Ogre::Exception& e)
         {
-            return false;
+            mWindow = 0;
         }
     }
+    mOgreApplication->unlock();
+    if (mWindow == 0)
+        return false;
 
     // Initialize resources
     mOgreApplication->initResources();
 
     initialize();
-
-    mReady = true;
 
     return true;
 }
@@ -113,22 +113,27 @@ bool Instance::processEvent(const Event& evt)
 bool Instance::run()
 {
     bool _initRenderTargetsCalled = false;
+
+    // wait until the window is set
+    pthread_mutex_lock(&mStartMutex);
+    // termination requested before setting window ?
+    if (mTermRequested)
+        return true;
+
+    // set the window
+    if (!_setWindow())
+        return false;
+
     while (!mTermRequested)
     {
         try
         {
-            if (!mReady)
-            {
-                if (mSetWindow)
-                    _setWindow();
-                Platform::sleep(100);
-                continue;
-            }
-
 		    // process events
             if (!handleEvents())
                 requestTerminate();
             if (mTermRequested) break;
+
+            mOgreApplication->lock();
 
             // render
             if (!_initRenderTargetsCalled)
@@ -136,20 +141,22 @@ bool Instance::run()
                 mOgreApplication->getRoot()->getRenderSystem()->_initRenderTargets();
                 _initRenderTargetsCalled = true;
             }
+
+            // if we auto-create the window then rendering loop is in the same thread
+            // and we have to pump window messages
             if (mAutoCreatedWindow)
                 WindowEventUtilities::messagePump();
+
+            // render the current frame
             if (!mOgreApplication->getRoot()->renderOneFrame())
                 requestTerminate();
+
+            mOgreApplication->unlock();
         }
         catch (...)
         {
-            // clean up
-//            mOgreApplication->finalize();
-//            throw;
         }
     }
-    // clean up
-//    mOgreApplication->finalize();
 
     return true;
 }
@@ -160,6 +167,9 @@ void Instance::requestTerminate()
     Evt termEvt;
     termEvt.mType = ETTermRequested;
     processEvent(Event(0, &termEvt));
+
+    // in case the setWindow was never called
+    pthread_mutex_unlock(&mStartMutex);
 }
 
 //-------------------------------------------------------------------------------------

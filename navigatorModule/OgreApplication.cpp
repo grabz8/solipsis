@@ -7,7 +7,8 @@ using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
 OgreApplication::OgreApplication() :
-    mRoot(0)
+    mRoot(0),
+    mMutex(PTHREAD_MUTEX_INITIALIZER)
 {
 }
 
@@ -17,41 +18,15 @@ OgreApplication::~OgreApplication()
 }
 
 //-------------------------------------------------------------------------------------
-void OgreApplication::addResourceLocations()
+void OgreApplication::lock()
 {
-    // Load resource paths from config file
-    ConfigFile cf;
-    cf.load("resources.cfg");
-
-    // Go through all sections & settings in the file
-    ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            ResourceGroupManager::getSingleton().addResourceLocation(
-                archName, typeName, secName);
-        }
-    }
+    pthread_mutex_lock(&mMutex);
 }
 
 //-------------------------------------------------------------------------------------
-void OgreApplication::createResourceListener()
+void OgreApplication::unlock()
 {
-
-}
-
-//-------------------------------------------------------------------------------------
-void OgreApplication::initResources()
-{
-    ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+    pthread_mutex_unlock(&mMutex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -113,6 +88,44 @@ bool OgreApplication::finalize()
     delete mRoot;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void OgreApplication::createResourceListener()
+{
+
+}
+
+//-------------------------------------------------------------------------------------
+void OgreApplication::addResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().addResourceLocation(
+                archName, typeName, secName);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreApplication::initResources()
+{
+    ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
 //-------------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #ifndef __OgreApplication_h__
 #define __OgreApplication_h__
 
+#include <pthread.h>
 #include "IApplication.h"
 #include "Ogre.h"
 
@@ -14,6 +15,7 @@ class OgreApplication : public IApplication
 {
 private: 
     Root* mRoot;
+    pthread_mutex_t mMutex;
 
 protected: 
     OgreApplication::OgreApplication();
@@ -21,6 +23,9 @@ protected:
 
 public: 
     Root* getRoot() { return mRoot; }
+
+    void lock();
+    void unlock();
 
     virtual bool initialize(bool configManagedByOgre = false, String windowTitle = "");
     virtual bool finalize();
