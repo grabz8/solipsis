@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -94,7 +94,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Copying LLMozLib release dependencies ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include\llmozlib.h&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\llmozlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib\llmozlib.lib&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\Release_vc8\llmozlib_vc8.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib\llmozlib.lib&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release\xul.dll&quot; xcopy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\libraries\i686-win32\runtime_release\*.*&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot; /s /y"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include\llmozlib.h&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\llmozlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib\llmozlib.lib&quot; copy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\Release_vc8\llmozlib_vc8.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\lib\llmozlib.lib&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release\xul.dll&quot; xcopy &quot;$(ProjectDir)..\..\..\DevTools\llmozlib\libraries\i686-win32\runtime_release\*.*&quot; &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc8\runtime\Release&quot; /s /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -110,7 +110,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
