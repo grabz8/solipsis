@@ -451,10 +451,10 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
             "Unable to create the PhysX scene !",
             "OgrePeerManager::CreateSceneNode");
     }
-    mPhysicsScene->setTiming(1.0/60.0, 1, NX_TIMESTEP_FIXED);
+    mPhysicsScene->setTiming(1.0/60.0, 1, NX_TIMESTEP_VARIABLE);
     // Set the default material 0
 	NxMaterial* defaultMaterial = mPhysicsScene->getMaterialFromIndex(0); 
-	defaultMaterial->setRestitution(0.1f);
+	defaultMaterial->setRestitution(0.0f);
 	defaultMaterial->setStaticFriction(0.5f);
 	defaultMaterial->setDynamicFriction(0.5f);
     // Create the world collision mesh

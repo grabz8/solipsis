@@ -265,6 +265,7 @@ bool PhysXHelpers::shutdown()
 }
 
 //-------------------------------------------------------------------------------------
+/*#include <fstream>*/
 NxTriangleMesh* PhysXHelpers::cookMesh(const MeshPtr mesh,
                                        const Vector3& position,
                                        const Quaternion& orient,
@@ -305,6 +306,9 @@ NxTriangleMesh* PhysXHelpers::cookMesh(const MeshPtr mesh,
     NxInitCooking();
     MemoryWriteBuffer buf;
     NxCookTriangleMesh(triangleMeshDesc, buf);
+/*std::ofstream ofs("terrain.dat", std::ios_base::binary);
+ofs.write((char*)buf.data, buf.currentSize);
+ofs.close();*/
     NxTriangleMeshShapeDesc triangleMeshShapeDesc;
     NxTriangleMesh* triangleMesh = mPhysicsSDK->createTriangleMesh(MemoryReadBuffer(buf.data));
     NxCloseCooking();

@@ -109,8 +109,8 @@ protected:
     ::ControllerManager* mControllerManager;
     /// Capsule controller
     NxCapsuleController* mCapsuleController;
-    /// Scene query
-    NxSceneQuery* mSceneQuery;
+/*    /// Scene query
+    NxSceneQuery* mSceneQuery;*/
 #else
     RaySceneQuery* mRaySceneQuery;
 #endif
@@ -215,13 +215,13 @@ protected:
 #elif PHYSX
 protected:
     /** See NxUserControllerHitReport. */
-    virtual NxControllerAction onShapeHit(const NxControllerShapeHit& hit);
+    virtual NxControllerAction onShapeHit(const NxControllerShapeHit& hit) { return NX_ACTION_NONE; }
     /** See NxUserControllerHitReport. */
-    virtual NxControllerAction onControllerHit(const NxControllersHit& hit);
+    virtual NxControllerAction onControllerHit(const NxControllersHit& hit) { return NX_ACTION_NONE; }
     /** See NxSceneQueryReport. */
     virtual NxQueryReportResult onBooleanQuery(void* userData, bool result) { return NX_SQR_ABORT_ALL_QUERIES; }
     /** See NxSceneQueryReport. */
-	virtual NxQueryReportResult onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits);
+    virtual NxQueryReportResult onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits) { return NX_SQR_ABORT_ALL_QUERIES; }
     /** See NxSceneQueryReport. */
 	virtual NxQueryReportResult onShapeQuery(void* userData, NxU32 nbHits, NxShape** hits) { return NX_SQR_ABORT_ALL_QUERIES; }
     /** See NxSceneQueryReport. */

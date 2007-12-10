@@ -360,7 +360,7 @@ void Navigator::demoPhysics1()
         NxActorDesc actorDesc;
         actorDesc.shapes.pushBack(&boxShapeDesc);
         actorDesc.body = &boxBodyDesc;
-        actorDesc.density = 50.0f;
+        actorDesc.density = 1.0f;
         boxActor = physicsScene->createActor(actorDesc);
         boxActor->userData = (void*)boxNode;
         physicsScene->setActorPairFlags(*(mOgrePeerManager->getPhysicsWorldActor()), *boxActor, NX_NOTIFY_ON_TOUCH);

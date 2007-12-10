@@ -66,7 +66,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     mPhysicsScene = 0;
     mControllerManager = 0;
     mCapsuleController = 0;
-    mSceneQuery = 0;
+/*    mSceneQuery = 0;*/
 #else
     mRaySceneQuery = mSceneNode->getCreator()->createRayQuery(Ray());
 #endif
@@ -238,28 +238,29 @@ void Avatar::createPhysics(NxScene* physicsScene, ::ControllerManager* controlle
     mHeight = aabbHalfSize.y*2;
 
     NxCapsuleControllerDesc capsuleControllerDesc;
+    capsuleControllerDesc.interactionFlag = NXIF_INTERACTION_INCLUDE;
     Vector3 pos = mSceneNode->getPosition();
     capsuleControllerDesc.position.set(pos.x, pos.y + (mHeight - mRadius), pos.z);
     capsuleControllerDesc.radius = mRadius*0.5f;
     capsuleControllerDesc.height = mHeight - mRadius;
     capsuleControllerDesc.upDirection = NX_Y;
-    capsuleControllerDesc.slopeLimit = 0;
-    capsuleControllerDesc.skinWidth = mRadius*0.01f;
+    capsuleControllerDesc.slopeLimit = cosf(NxMath::degToRad(45.0f));
+    capsuleControllerDesc.skinWidth = 0.1f;
     capsuleControllerDesc.stepOffset = mRadius;
     capsuleControllerDesc.callback = (NxUserControllerHitReport*)this;
     mCapsuleController = (NxCapsuleController*)mControllerManager->createController(physicsScene, capsuleControllerDesc);
-
+/*
     NxSceneQueryDesc sceneQueryDesc;
     sceneQueryDesc.executeMode = NX_SQE_SYNCHRONOUS;
     sceneQueryDesc.report = (NxSceneQueryReport*)this;
-    mSceneQuery = mPhysicsScene->createSceneQuery(sceneQueryDesc);
+    mSceneQuery = mPhysicsScene->createSceneQuery(sceneQueryDesc);*/
 }
 
 //-------------------------------------------------------------------------------------
 void Avatar::destroyPhysics()
 {
-    if (mSceneQuery != 0)
-        mPhysicsScene->releaseSceneQuery(*mSceneQuery);
+/*    if (mSceneQuery != 0)
+        mPhysicsScene->releaseSceneQuery(*mSceneQuery);*/
     if (mCapsuleController != 0)
         mControllerManager->releaseController(*mCapsuleController);
 
@@ -376,6 +377,7 @@ void Avatar::animate(Real timeSinceLastFrame)
     if (mPgupKeyMotion.isPressed() && mGravity)
         setGravity(false);
 #ifdef FEET
+#elif PHYSX
 #else
     if (mPgdownKeyMotion.isPressed() && !mGravity)
         setGravity(true);
@@ -441,7 +443,7 @@ void Avatar::animate(Real timeSinceLastFrame)
 #endif
     }
 #ifdef CAPSULEGEOM
-    // Collide physics capsule with world 
+    // Collide physics capsule with world
     if (mCapsuleGeom != 0)
     {
         // test capsule to collisionListener
@@ -511,24 +513,17 @@ void Avatar::animate(Real timeSinceLastFrame)
     }
 #endif
 #elif PHYSX
-    // Collide physics capsule with world 
+    // Collide physics capsule with world
     if (mCapsuleController != 0)
     {
         NxExtendedVec3 newPos = mCapsuleController->getFilteredPosition();
         mSceneNode->setPosition(newPos.x, newPos.y - (mHeight - mRadius), newPos.z);
-//        NxExtendedVec3 oldPos = mCapsuleController->getFilteredPosition();
-        NxVec3 displacement(mvt.x, mvt.y, mvt.z);
+        Vector3 mvtTotal = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
+        NxVec3 displacement(mvtTotal.x, mvtTotal.y, mvtTotal.z);
         if (mGravity)
             displacement.y += -9.80665f*timeSinceLastFrame;
         NxU32 collisionFlags;
-        mCapsuleController->move(displacement, PhysXHelpers::CG_COLLIDABLE_MASK, 0.000001f, collisionFlags, 1.0f);
-        //NxExtendedVec3 newPos = mCapsuleController->getDebugPosition();
-//        NxExtendedVec3 newPos = mCapsuleController->getFilteredPosition();
-        //NxExtendedVec3 newPos = mCapsuleController->getPosition();
-//        mSceneNode->setPosition(newPos.x, newPos.y - mHeight, newPos.z);
-//        NxVec3 newMvt = newPos - oldPos;
-//        Vector3 newMvtOgre(newMvt.x, newMvt.y, newMvt.z);
-//        mSceneNode->translate(-mvt + newMvtOgre);
+        mCapsuleController->move(displacement, PhysXHelpers::CG_COLLIDABLE_MASK, 0.001f, collisionFlags, 1.0f);
     }
 #else
     if (mGravity && (mRaySceneQuery != 0))
@@ -578,6 +573,10 @@ void Avatar::movementKeyPressed(Solipsis::KeyCode code)
            mPgdownKeyMotion.setState(true);
        break;
 #ifdef FEET
+       case KC_END:
+           setGravity(!isGravityEnabled());
+       break;
+#elif PHYSX
        case KC_END:
            setGravity(!isGravityEnabled());
        break;
@@ -654,21 +653,6 @@ bool Avatar::collision(OgreOde::Contact* contact)
 
     return true;
 }
-#elif PHYSX
-NxControllerAction Avatar::onShapeHit(const NxControllerShapeHit& hit)
-{
-    return NX_ACTION_NONE;
-}
-
-NxControllerAction Avatar::onControllerHit(const NxControllersHit& hit)
-{
-    return NX_ACTION_NONE;
-}
-
-NxQueryReportResult	Avatar::onRaycastQuery(void* userData, NxU32 nbHits, const NxRaycastHit* hits)
-{
-    return NX_SQR_ABORT_ALL_QUERIES;
-}
 #endif
 
 //-------------------------------------------------------------------------------------
@@ -676,7 +660,7 @@ NxQueryReportResult	Avatar::onRaycastQuery(void* userData, NxU32 nbHits, const N
 
 
 
-// Just 1 some source code to sample movement instead of frameTime into update() and animate()
+// Just some source code to sample movement instead of frameTime into update() and animate()
 // => seems good but no feet responses ??!??!!? so still some stuff ...
 #if 0
 /*
@@ -705,5 +689,34 @@ NxQueryReportResult	Avatar::onRaycastQuery(void* userData, NxU32 nbHits, const N
         mSceneNode->translate(mvt);
 ...
         if (breakAfter1Loop) break;
+    }
+#endif
+
+// Code to manage ODE collisions with only 1 capsule
+#if 0
+void Avatar::createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry)
+{
+...
+    // Create the torso collision geometry
+    mCapsuleGeom = new OgreOde::CapsuleGeometry(mRadius*0.5, mHeight - mRadius, world);
+    Quaternion upQuat;
+    upQuat.FromAngleAxis(Radian(-Math::HALF_PI), Vector3::UNIT_X);
+    mCapsuleGeom->setOrientation(upQuat);
+
+void Avatar::animate(Real timeSinceLastFrame)
+{
+...
+    // Collide physics capsule with world
+    if (mCapsuleGeom != 0)
+    {
+        Vector3 aabbHalfSize = mEntity->getBoundingBox().getHalfSize();
+        Vector3 pos = mSceneNode->getPosition();
+        mCapsuleGeom->setPosition(pos + Vector3(0, mHeight*0.5f, 0));
+        mCapsuleGeomContact = false;
+        mCapsuleGeom->collide(mWorldGeometry, (OgreOde::CollisionListener*)this);
+        if (mCapsuleGeomContact)
+        {
+            if (mCapsuleGeomLastContact.getPosition()
+        }
     }
 #endif
