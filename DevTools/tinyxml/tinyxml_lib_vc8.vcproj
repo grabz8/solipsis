@@ -167,7 +167,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\tinyxml\include mkdir ..\..\Dependencies\tinyxml\include&#x0D;&#x0A;copy *.h ..\..\Dependencies\tinyxml\include /y&#x0D;&#x0A;if not exist ..\..\Dependencies\tinyxml\lib mkdir ..\..\Dependencies\tinyxml\lib&#x0D;&#x0A;copy &quot;$(OutDir)\tinyxmld.lib&quot; ..\..\Dependencies\tinyxml\lib /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\Dependencies\tinyxml\include&quot; mkdir &quot;..\..\Dependencies\tinyxml\include&quot;&#x0D;&#x0A;copy &quot;*.h&quot; &quot;..\..\Dependencies\tinyxml\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\tinyxml\lib&quot; mkdir &quot;..\..\Dependencies\tinyxml\lib&quot;&#x0D;&#x0A;copy &quot;$(OutDir)\tinyxmld.lib&quot; &quot;..\..\Dependencies\tinyxml\lib&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

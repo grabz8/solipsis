@@ -187,3 +187,8 @@ OgreApplication mutex added
 booleans replaced by 1 mutex to start render loop when window is set
 
 ---------------------------
+10/12/07
+
+quotes added in paths (include/lib paths, post-build events) to avoid troubles with paths containing special characters (like space)
+
+---------------------------

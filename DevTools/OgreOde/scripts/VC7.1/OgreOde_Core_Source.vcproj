@@ -50,11 +50,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\..\..\Dependencies\OgreOde\include mkdir ..\..\..\..\Dependencies\OgreOde\include
-xcopy ..\..\include\*.h ..\..\..\..\Dependencies\OgreOde\include /y
-if not exist ..\..\..\..\Dependencies\OgreOde\lib mkdir ..\..\..\..\Dependencies\OgreOde\lib
-copy $(OutDir)\OgreOde_Core_d.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\OgreOde\include&quot; mkdir &quot;..\..\..\..\Dependencies\OgreOde\include&quot;
+xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\OgreOde\include&quot; /y
+if not exist &quot;..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir &quot;..\..\..\..\Dependencies\OgreOde\lib&quot;
+copy &quot;$(OutDir)\OgreOde_Core_d.lib&quot; &quot;..\..\..\..\Dependencies\OgreOde\lib\.&quot; /y
+copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName)&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -117,11 +117,11 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\l
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist ..\..\..\..\Dependencies\OgreOde\include mkdir ..\..\..\..\Dependencies\OgreOde\include
-xcopy ..\..\include\*.h ..\..\..\..\Dependencies\OgreOde\include /y
-if not exist ..\..\..\..\Dependencies\OgreOde\lib mkdir ..\..\..\..\Dependencies\OgreOde\lib
-copy $(OutDir)\OgreOde_Core.lib $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\. /y
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName) /y
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\OgreOde\include&quot; mkdir &quot;..\..\..\..\Dependencies\OgreOde\include&quot;
+xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\OgreOde\include&quot; /y
+if not exist &quot;..\..\..\..\Dependencies\OgreOde\lib&quot; mkdir &quot;..\..\..\..\Dependencies\OgreOde\lib&quot;
+copy &quot;$(OutDir)\OgreOde_Core.lib&quot; &quot;..\..\..\..\Dependencies\OgreOde\lib\.&quot; /y
+copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\..\..\..\Dependencies\OgreOde\lib\$(TargetFileName)&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

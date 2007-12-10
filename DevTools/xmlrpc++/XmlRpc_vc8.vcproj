@@ -84,7 +84,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\xmlrpc++\include mkdir ..\..\Dependencies\xmlrpc++\include&#x0D;&#x0A;xcopy src\*.h ..\..\Dependencies\xmlrpc++\include /y&#x0D;&#x0A;if not exist ..\..\Dependencies\xmlrpc++\lib mkdir ..\..\Dependencies\xmlrpc++\lib&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\xmlrpc++\lib\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\Dependencies\xmlrpc++\include&quot; mkdir &quot;..\..\Dependencies\xmlrpc++\include&quot;&#x0D;&#x0A;xcopy &quot;src\*.h&quot; &quot;..\..\Dependencies\xmlrpc++\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\xmlrpc++\lib&quot; mkdir &quot;..\..\Dependencies\xmlrpc++\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\xmlrpc++\lib\$(TargetFileName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -155,7 +155,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\xmlrpc++\include mkdir ..\..\Dependencies\xmlrpc++\include&#x0D;&#x0A;xcopy src\*.h ..\..\Dependencies\xmlrpc++\include /y&#x0D;&#x0A;if not exist ..\..\Dependencies\xmlrpc++\lib mkdir ..\..\Dependencies\xmlrpc++\lib&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\xmlrpc++\lib\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\Dependencies\xmlrpc++\include&quot; mkdir &quot;..\..\Dependencies\xmlrpc++\include&quot;&#x0D;&#x0A;xcopy &quot;src\*.h&quot; &quot;..\..\Dependencies\xmlrpc++\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\xmlrpc++\lib&quot; mkdir &quot;..\..\Dependencies\xmlrpc++\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\xmlrpc++\lib\$(TargetFileName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

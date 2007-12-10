@@ -48,11 +48,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug DLL runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
-copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
-if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll
-copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y
-copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debugdll\. /y"/>
+				CommandLine="if not exist &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot;
+copy &quot;..\..\include\ode\*.h&quot; &quot;..\..\..\..\..\Dependencies\ode\include\ode\.&quot; /y
+if not exist &quot;..\..\..\..\..\Dependencies\ode\lib\debugdll&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\lib\debugdll&quot;
+copy &quot;..\..\lib\debugdll\$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\debugdll\.&quot; /y
+copy &quot;..\..\lib\debugdll\$(TargetName).dll&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\debugdll\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -110,11 +111,12 @@ copy $(ProjectDir)..\..\lib\debugdll\$(TargetName).dll $(ProjectDir)..\..\..\..\
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release DLL runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
-copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
-if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll
-copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y
-copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).dll $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releasedll\. /y"/>
+				CommandLine="if not exist &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot;
+copy &quot;..\..\include\ode\*.h&quot; &quot;..\..\..\..\..\Dependencies\ode\include\ode\.&quot; /y
+if not exist &quot;..\..\..\..\..\Dependencies\ode\lib\releasedll&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\lib\releasedll&quot;
+copy &quot;..\..\lib\releasedll\$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\releasedll\.&quot; /y
+copy &quot;..\..\lib\releasedll\$(TargetName).dll&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\releasedll\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -163,10 +165,11 @@ copy $(ProjectDir)..\..\lib\releasedll\$(TargetName).dll $(ProjectDir)..\..\..\.
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
-copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
-if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib
-copy $(ProjectDir)..\..\lib\debuglib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\debuglib\. /y"/>
+				CommandLine="if not exist &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot;
+copy &quot;..\..\include\ode\*.h&quot; &quot;..\..\..\..\..\Dependencies\ode\include\ode\.&quot; /y
+if not exist &quot;..\..\..\..\..\Dependencies\ode\lib\debuglib&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\lib\debuglib&quot;
+copy &quot;..\..\lib\debuglib\$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\debuglib\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -213,10 +216,11 @@ copy $(ProjectDir)..\..\lib\debuglib\$(TargetName).lib $(ProjectDir)..\..\..\..\
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode
-copy $(ProjectDir)..\..\include\ode\*.h $(ProjectDir)..\..\..\..\..\Dependencies\ode\include\ode\. /y
-if not exist $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib mkdir $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib
-copy $(ProjectDir)..\..\lib\releaselib\$(TargetName).lib $(ProjectDir)..\..\..\..\..\Dependencies\ode\lib\releaselib\. /y"/>
+				CommandLine="if not exist &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\include\ode&quot;
+copy &quot;..\..\include\ode\*.h&quot; &quot;..\..\..\..\..\Dependencies\ode\include\ode\.&quot; /y
+if not exist &quot;..\..\..\..\..\Dependencies\ode\lib\releaselib&quot; mkdir &quot;..\..\..\..\..\Dependencies\ode\lib\releaselib&quot;
+copy &quot;..\..\lib\releaselib\$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies\ode\lib\releaselib\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

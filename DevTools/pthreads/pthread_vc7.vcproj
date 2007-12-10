@@ -57,13 +57,13 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\pthreads\include mkdir ..\..\Dependencies\pthreads\include
-copy pthread.h ..\..\Dependencies\pthreads\include /y
-copy sched.h ..\..\Dependencies\pthreads\include /y
-copy semaphore.h ..\..\Dependencies\pthreads\include /y
-if not exist ..\..\Dependencies\pthreads\lib mkdir ..\..\Dependencies\pthreads\lib
-copy pthreadVC.lib ..\..\Dependencies\pthreads\lib\pthreadVC.lib /y
-copy pthreadVC.dll ..\..\Dependencies\pthreads\lib\pthreadVC.dll /y
+				CommandLine="if not exist &quot;..\..\Dependencies\pthreads\include&quot; mkdir &quot;..\..\Dependencies\pthreads\include&quot;
+copy &quot;pthread.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+copy &quot;sched.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+copy &quot;semaphore.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+if not exist &quot;..\..\Dependencies\pthreads\lib&quot; mkdir &quot;..\..\Dependencies\pthreads\lib&quot;
+copy &quot;pthreadVC.lib&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC.lib&quot; /y
+copy &quot;pthreadVC.dll&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC.dll&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -134,13 +134,13 @@ copy pthreadVC.dll ..\..\Dependencies\pthreads\lib\pthreadVC.dll /y
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\pthreads\include mkdir ..\..\Dependencies\pthreads\include
-copy pthread.h ..\..\Dependencies\pthreads\include /y
-copy sched.h ..\..\Dependencies\pthreads\include /y
-copy semaphore.h ..\..\Dependencies\pthreads\include /y
-if not exist ..\..\Dependencies\pthreads\lib mkdir ..\..\Dependencies\pthreads\lib
-copy pthreadVC_d.lib ..\..\Dependencies\pthreads\lib\pthreadVC_d.lib /y
-copy pthreadVC_d.dll ..\..\Dependencies\pthreads\lib\pthreadVC_d.dll /y
+				CommandLine="if not exist &quot;..\..\Dependencies\pthreads\include&quot; mkdir &quot;..\..\Dependencies\pthreads\include&quot;
+copy &quot;pthread.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+copy &quot;sched.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+copy &quot;semaphore.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y
+if not exist &quot;..\..\Dependencies\pthreads\lib&quot; mkdir &quot;..\..\Dependencies\pthreads\lib&quot;
+copy &quot;pthreadVC_d.lib&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC_d.lib&quot; /y
+copy &quot;pthreadVC_d.dll&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC_d.dll&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

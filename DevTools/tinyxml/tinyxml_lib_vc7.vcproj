@@ -44,10 +44,11 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\tinyxml\include mkdir ..\..\Dependencies\tinyxml\include
-copy *.h ..\..\Dependencies\tinyxml\include /y
-if not exist ..\..\Dependencies\tinyxml\lib mkdir ..\..\Dependencies\tinyxml\lib
-copy $(OutDir)\tinyxml.lib ..\..\Dependencies\tinyxml\lib /y"/>
+				CommandLine="if not exist &quot;..\..\Dependencies\tinyxml\include&quot; mkdir &quot;..\..\Dependencies\tinyxml\include&quot;
+copy &quot;*.h&quot; &quot;..\..\Dependencies\tinyxml\include&quot; /y
+if not exist &quot;..\..\Dependencies\tinyxml\lib&quot; mkdir &quot;..\..\Dependencies\tinyxml\lib&quot;
+copy &quot;$(OutDir)\tinyxml.lib&quot; &quot;..\..\Dependencies\tinyxml\lib&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -98,10 +99,11 @@ copy $(OutDir)\tinyxml.lib ..\..\Dependencies\tinyxml\lib /y"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\tinyxml\include mkdir ..\..\Dependencies\tinyxml\include
-copy *.h ..\..\Dependencies\tinyxml\include /y
-if not exist ..\..\Dependencies\tinyxml\lib mkdir ..\..\Dependencies\tinyxml\lib
-copy $(OutDir)\tinyxmld.lib ..\..\Dependencies\tinyxml\lib /y"/>
+				CommandLine="if not exist &quot;..\..\Dependencies\tinyxml\include&quot; mkdir &quot;..\..\Dependencies\tinyxml\include&quot;
+copy &quot;*.h&quot; &quot;..\..\Dependencies\tinyxml\include&quot; /y
+if not exist &quot;..\..\Dependencies\tinyxml\lib&quot; mkdir &quot;..\..\Dependencies\tinyxml\lib&quot;
+copy &quot;$(OutDir)\tinyxmld.lib&quot; &quot;..\..\Dependencies\tinyxml\lib&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

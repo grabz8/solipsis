@@ -41,12 +41,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\include
-if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7
-if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\Javascript
-copy Include\*.h $(ProjectDir)..\..\..\Dependencies\navi\include\. /y
-copy lib_vc7\navi_d.lib $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\. /y
-copy Javascript\Navi.js $(ProjectDir)..\..\..\Dependencies\navi\Javascript\. /y
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot;
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot;
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot;
+copy &quot;Include\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\include\.&quot; /y
+copy &quot;lib_vc7\navi_d.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\.&quot; /y
+copy &quot;Javascript\Navi.js&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript\.&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -97,12 +97,12 @@ if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\include
-if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7
-if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir $(ProjectDir)..\..\..\Dependencies\navi\Javascript
-copy Include\*.h $(ProjectDir)..\..\..\Dependencies\navi\include\. /y
-copy lib_vc7\navi.lib $(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\. /y
-copy Javascript\Navi.js $(ProjectDir)..\..\..\Dependencies\navi\Javascript\. /y
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\include&quot;
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7&quot;
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript&quot;
+copy &quot;Include\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\include\.&quot; /y
+copy &quot;lib_vc7\navi.lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\lib_vc7\.&quot; /y
+copy &quot;Javascript\Navi.js&quot; &quot;$(ProjectDir)..\..\..\Dependencies\navi\Javascript\.&quot; /y
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"

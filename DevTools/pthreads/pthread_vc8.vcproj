@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\pthreads\include mkdir ..\..\Dependencies\pthreads\include&#x0D;&#x0A;copy pthread.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;copy sched.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;copy semaphore.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;if not exist ..\..\Dependencies\pthreads\lib mkdir ..\..\Dependencies\pthreads\lib&#x0D;&#x0A;copy pthreadVC.lib ..\..\Dependencies\pthreads\lib\pthreadVC.lib /y&#x0D;&#x0A;copy pthreadVC.dll ..\..\Dependencies\pthreads\lib\pthreadVC.dll /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\Dependencies\pthreads\include&quot; mkdir &quot;..\..\Dependencies\pthreads\include&quot;&#x0D;&#x0A;copy &quot;pthread.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;copy &quot;sched.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;copy &quot;semaphore.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\pthreads\lib&quot; mkdir &quot;..\..\Dependencies\pthreads\lib&quot;&#x0D;&#x0A;copy &quot;pthreadVC.lib&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC.lib&quot; /y&#x0D;&#x0A;copy &quot;pthreadVC.dll&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC.dll&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -208,7 +208,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist ..\..\Dependencies\pthreads\include mkdir ..\..\Dependencies\pthreads\include&#x0D;&#x0A;copy pthread.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;copy sched.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;copy semaphore.h ..\..\Dependencies\pthreads\include /y&#x0D;&#x0A;if not exist ..\..\Dependencies\pthreads\lib mkdir ..\..\Dependencies\pthreads\lib&#x0D;&#x0A;copy pthreadVC_d.lib ..\..\Dependencies\pthreads\lib\pthreadVC_d.lib /y&#x0D;&#x0A;copy pthreadVC_d.dll ..\..\Dependencies\pthreads\lib\pthreadVC_d.dll /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\Dependencies\pthreads\include&quot; mkdir &quot;..\..\Dependencies\pthreads\include&quot;&#x0D;&#x0A;copy &quot;pthread.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;copy &quot;sched.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;copy &quot;semaphore.h&quot; &quot;..\..\Dependencies\pthreads\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\pthreads\lib&quot; mkdir &quot;..\..\Dependencies\pthreads\lib&quot;&#x0D;&#x0A;copy &quot;pthreadVC_d.lib&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC_d.lib&quot; /y&#x0D;&#x0A;copy &quot;pthreadVC_d.dll&quot; &quot;..\..\Dependencies\pthreads\lib\pthreadVC_d.dll&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
