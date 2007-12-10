@@ -45,6 +45,8 @@ void AutoCreatedWindow::windowResized(RenderWindow* rw)
 //-------------------------------------------------------------------------------------
 void AutoCreatedWindow::windowClosed(RenderWindow* rw)
 {
+    mInstance->requestTerminate();
+
     //Unattach OIS before window shutdown (very important under Linux)
     //Only close for window that created OIS (the main window in these demos)
     if (rw == mInstance->getRenderWindowPtr())
