@@ -98,3 +98,5 @@ to the mesh' normals direction ! Flip them resolved it.
 - doxygen on NaviagtorModule added + 2 classes are doxygen compliants
 
 - in plugin configs, mouse capture added (first person movement)
+
+- pb with Ageia PhysX character controller (diving into the floor) fixed, it was due to SKIN_WIDTH < 0.1
