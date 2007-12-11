@@ -120,11 +120,9 @@ COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel
 DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google homepage)
 DEMO_NAVI2     Set/Unset Navi demo2 (spatialStation official demo with 1 panel on YouTube video)
+DEMO_PHYSICS1  Set/Unset Physics demo (1 cube will drop into the spatialStation)
 NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
 LEXI           User avatar exported with LEXI plugin
 PHYSICS        Set/Unset Physics management by Ode and OgreODE
- DEMO_PHYSICS1 Set/Unset Physics demo (1 cube will drop into the spatialStation)
- CAPSULEGEOM   Set/Unset Physics capsule on user avatar (walls)
- FEET          Set/Unset Physics feet sphere on user avatar (floor + gravity)
 PHYSX          Set/Unset Physics management by Ageia PhysX
 TOKAMAK        Set/Unset Physics management by Tokamak

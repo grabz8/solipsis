@@ -194,3 +194,8 @@ pb with Ageia PhysX character controller (diving into the floor) fixed, it was d
 Instance was not terminated when closing window with ALT+F4
 
 ---------------------------
+11/12/07
+
+ODE updates: feet sphere removed and full capsule+body added to compute collisions with other bodies (like PhysX)
+
+---------------------------

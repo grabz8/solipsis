@@ -322,6 +322,7 @@ void Navigator::demoPhysics1()
         boxNode->attachObject(boxEntity);
         boxBody = new OgreOde::Body(physicsWorld, boxName + "Bod");
         boxBody->setMass(OgreOde::BoxMass(1, boxExtents));
+        boxBody->setUserData(1);
         boxNode->attachObject(boxBody);
         boxGeom = new OgreOde::BoxGeometry(boxExtents, physicsWorld, physicsWorld->getDefaultSpace());
         boxGeom->setBody(boxBody);

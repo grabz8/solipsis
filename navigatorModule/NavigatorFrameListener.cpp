@@ -146,12 +146,10 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         if (physicsWorld != 0)
             physicsWorld->setShowDebugGeometries(!physicsWorld->getShowDebugGeometries());
         break;
-#ifdef FEET
     case KC_END:
         if (physicsWorld != 0)
             mNavigator->getUserAvatar()->movementKeyPressed(KC_END);
         break;
-#endif
 #elif PHYSX
     case KC_END:
         if (physicsScene != 0)

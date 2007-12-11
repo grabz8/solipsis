@@ -188,9 +188,7 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             if ((mPhysicsWorld != 0) && (avatar->getPhysicsWorld() == 0))
             {
                 avatar->createPhysics(mPhysicsWorld, mPhysicsWorldGeometry);
-#ifdef CAPSULEGEOM
                 avatar->setMaxUpdateTimeStep(1.0f/60.0f);
-#endif
                 avatar->setGravity(true);
             }
 #elif PHYSX
@@ -537,6 +535,18 @@ bool OgrePeerManager::collision(OgreOde::Contact* contact)
     contact->setCoulombFriction(0.9f);
     contact->setBouncyness(0.25f);
     contact->setSoftness(0.8f, 10e-5f);
+
+    OgreOde::Geometry * const g1 = contact->getFirstGeometry();
+    OgreOde::Geometry * const g2 = contact->getSecondGeometry();
+    if ((g1 != mPhysicsWorldGeometry) && (g2 != mPhysicsWorldGeometry))
+    {
+        OgreOde::Body * const b1 = g1->getBody();
+        OgreOde::Body * const b2 = g2->getBody();
+        if ((b1->getUserData() == 1) && (b2->getUserData() == 2))
+            b1->addForceAt(contact->getNormal()*contact->getPenetrationDepth()*981, contact->getPosition());
+        if ((b1->getUserData() == 2) && (b2->getUserData() == 1))
+            b2->addForceAt(contact->getNormal()*contact->getPenetrationDepth()*981, contact->getPosition());
+    }
 
     return true;
 }

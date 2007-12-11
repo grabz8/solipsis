@@ -76,9 +76,14 @@ protected:
 #ifdef PHYSICS
     /// Physical world
     OgreOde::World* mWorld;
+    /// World geometry
+    OgreOde::TriangleMeshGeometry* mWorldGeometry;
     /// Ray to compute feet contact
     OgreOde::RayGeometry* mRayGeom;
-#ifdef CAPSULEGEOM
+    /// Last ray geometry contact
+    OgreOde::Contact mRayGeomLastContact;
+    /// Ray geometry contact detected ?
+    bool mRayGeomContact;
     /// Maximum time step to update collision
     Real mMaxUpdateTimeStep;
     /// Capsule to compute body contact
@@ -87,21 +92,10 @@ protected:
     OgreOde::Contact mCapsuleGeomLastContact;
     /// Capsule geometry contact detected ?
     bool mCapsuleGeomContact;
-#endif
-#ifdef FEET
-    /// Feet body to apply gravity
-    OgreOde::Body* mFeetBody;
-    /// Whether to compute the ray geometry contact
-    bool mRayGeomContact;
-    /// Sphere to compute feet contact
-    OgreOde::SphereGeometry* mFeetGeom;
-    /// Last sphere geometry contact
-    OgreOde::Contact mFeetGeomLastContact;
-    /// Whether to compute the feet geometry contact
-    bool mFeetGeomContact;
-#endif
-    /// World geometry
-    OgreOde::TriangleMeshGeometry* mWorldGeometry;
+    /// Capsule to compute body collisions
+    OgreOde::CapsuleGeometry* mCapsuleBodyGeom;
+    /// Body capsule
+    OgreOde::Body* mCapsuleBody;
 #elif PHYSX
     /// Physical scene
     NxScene* mPhysicsScene;
@@ -178,6 +172,10 @@ public:
     void createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry* worldGeometry);
     /** Destroy physics. */
     void destroyPhysics();
+    /** Set the maximum time step to update collision. */
+    void setMaxUpdateTimeStep(Real maxUpdateTimeStep);
+    /** Get the maximum time step to update collision. */
+    Real getMaxUpdateTimeStep();
 #elif PHYSX
     /** Get the physical scene. */
     NxScene* getPhysicsScene() { return mPhysicsScene; }
@@ -185,12 +183,6 @@ public:
     void createPhysics(NxScene* physicsScene, ::ControllerManager* controllerManager);
     /** Destroy physics. */
     void destroyPhysics();
-#endif
-#ifdef CAPSULEGEOM
-    /** Set the maximum time step to update collision. */
-    void setMaxUpdateTimeStep(Real maxUpdateTimeStep);
-    /** Get the maximum time step to update collision. */
-    Real getMaxUpdateTimeStep();
 #endif
 
     /** See OgrePeer. */
