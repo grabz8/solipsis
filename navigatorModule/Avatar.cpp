@@ -55,6 +55,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     mMaxUpdateTimeStep = -1.0;
     mCapsuleGeom = 0;
     mCapsuleGeomContact = false;
+    mCapsuleBodyTrans = 0;
     mCapsuleBodyGeom = 0;
     mCapsuleBody = 0;
 #elif PHYSX
@@ -177,18 +178,21 @@ void Avatar::createPhysics(OgreOde::World* world, OgreOde::TriangleMeshGeometry*
     mCapsuleBody->setAffectedByGravity(false);
     mCapsuleBody->setAutoSleep(false);
     mCapsuleBody->setUserData(2);
-    OgreOde::TransformGeometry* capsuleTrans = new OgreOde::TransformGeometry(mWorld, mWorld->getDefaultSpace());
+    mCapsuleBodyTrans = new OgreOde::TransformGeometry(mWorld, mWorld->getDefaultSpace());
     mCapsuleBodyGeom = new OgreOde::CapsuleGeometry(mRadius*0.5, mHeight*0.5, world);
     mCapsuleBodyGeom->setPosition(Vector3(0, aabbHalfSize.y, 0));
     mCapsuleBodyGeom->setOrientation(Quaternion(Degree(90),Vector3::UNIT_X));
-    capsuleTrans->setBody(mCapsuleBody);
-    capsuleTrans->setEncapsulatedGeometry(mCapsuleBodyGeom);
+    mCapsuleBodyTrans->setBody(mCapsuleBody);
+    mCapsuleBodyTrans->setEncapsulatedGeometry(mCapsuleBodyGeom);
     mCapsuleBody->setPosition(mSceneNode->getPosition());
 }
 
 //-------------------------------------------------------------------------------------
 void Avatar::destroyPhysics()
 {
+    delete mCapsuleBodyGeom;
+    delete mCapsuleBodyTrans;
+    delete mCapsuleBody;
     delete mCapsuleGeom;
     delete mRayGeom;
 

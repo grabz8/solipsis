@@ -92,6 +92,8 @@ protected:
     OgreOde::Contact mCapsuleGeomLastContact;
     /// Capsule geometry contact detected ?
     bool mCapsuleGeomContact;
+    /// Capsule transform geometry
+    OgreOde::TransformGeometry* mCapsuleBodyTrans;
     /// Capsule to compute body collisions
     OgreOde::CapsuleGeometry* mCapsuleBodyGeom;
     /// Body capsule
