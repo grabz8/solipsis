@@ -1,0 +1,21 @@
+TODO LIST for Solipsis tools : 
+	- Fix compilation time
+	- Replace the material -> noDepthMaterial for the rotation axes
+	- Change Guizmos size 
+	- Change the bounding box : must follow the orientation of the 3D object
+	- The bounding box size isn' modifed by the scale transformation ??? must add a rotation after ???
+	- Add comments to the headers MII & Tools for doxygen (brief ...)
+
+	- SOLID* solidA, solidB;    (hole of memory) destroy the 2 pointers after the deformation has been applied
+	- DIMPLE / PATH_CUT / HOLE : generate the normals of SBO::OutputSolid(...)
+	  ... possibility to create some copies of vertexes to not have a smoothed volume (not 100% smooth)
+	
+	- HALF_SHPERE/CONE : verify between PATH_CUT & DIMPLE at the creation of a half_object
+	- apply the last deformation when we close the properties frame (ref saveFile !!)
+	- replace the 'TUBE' by a cylinder and apply a 'HOLE+HOLLOW_SHAPE_CIRCLE' on it !!!
+	- UNDO & BOUNDINGBOX : the bounding box is not well reinitialized sometimes
+	- Object3D : replace some function from public to private ...
+	- TRANSFORMATIONS & Childs : apply the same update for the childs after a mSelection->move/rotate/scale
+			Object3D *obj = mSelection->getFirstSelectedObject();	
+			mii->upDateCommand(Object3D::SCALE, obj);
+			obj->apply(Object3D::SCALE, mTransfo.x + 1, mTransfo.y + 1, mTransfo.z + 1 );
