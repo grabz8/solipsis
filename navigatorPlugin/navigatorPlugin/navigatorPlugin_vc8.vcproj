@@ -99,7 +99,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y&#x0D;&#x0A;copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -185,7 +185,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll&#x0D;&#x0A;copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y&#x0D;&#x0A;copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

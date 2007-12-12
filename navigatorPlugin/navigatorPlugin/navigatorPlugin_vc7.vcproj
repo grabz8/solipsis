@@ -51,9 +51,9 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y
-copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\debugdll\. /y
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
+copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
+copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
 copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 "/>
 			<Tool
@@ -112,9 +112,9 @@ copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll&quot; mkdir $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y
-copy $(Projectdir)SolipsisNavigator.xpt $(ProjectDir)..\..\Dependencies\navigatorPlugin\releasedll\. /y
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
+copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
+copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
 copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 "/>
 			<Tool

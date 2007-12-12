@@ -56,12 +56,14 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Performing registration"
-				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\debug
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
+copy &quot;$(ProjectDir)..\readmeRunnerPlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug /y"/>
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner&quot;
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&quot;
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug&quot;
+copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\debug&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -127,12 +129,14 @@ copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\n
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Performing registration"
-				CommandLine="copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigator\release
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
+copy &quot;$(ProjectDir)..\readmeRunnerPlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx
-if not exist $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release mkdir $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release
-copy $(OutDir)\$(TargetFileName) $(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release /y"/>
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner&quot;
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx&quot;
+if not exist &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release&quot; mkdir &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release&quot;
+copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigatorRunner\navigatorRunnerAx\release&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
