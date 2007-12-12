@@ -64,6 +64,6 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\quake3settings.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\quake3settings.cfg" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\release\quake3settings.cfg" xcopy "%OGRE_HOME%\bin\release\quake3settings.cfg" "%dst%" /s /y
 :quake3settings_exist
-if not exist "%dst%\resources.cfg" xcopy "..\Media\resources.cfg" "%dst%" /s /y
-if not exist "%dst%\SolipsisFakeTerrain.cfg" xcopy "..\Media\SolipsisFakeTerrain.cfg" "%dst%" /s /y
-if not exist "%dst%\readme.txt" copy "..\readme.txt" "%dst%\readme.txt" /y
+xcopy "..\Media\resources.cfg" "%dst%" /s /y
+xcopy "..\Media\SolipsisFakeTerrain.cfg" "%dst%" /s /y
+copy "..\readme.txt" "%dst%" /y
