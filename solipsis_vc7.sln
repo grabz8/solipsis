@@ -36,6 +36,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorModule", "navigatorModule\navigatorModule_vc7.vcproj", "{509E40D6-0263-4228-A85B-BA1595F617A7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E87F3128-0E81-4542-A30D-43704D15C54E} = {E87F3128-0E81-4542-A30D-43704D15C54E}
+		{16DC2030-A313-4674-800F-1D995CCC344E} = {16DC2030-A313-4674-800F-1D995CCC344E}
 		{C89F7C52-11D9-471A-9094-239878213A49} = {C89F7C52-11D9-471A-9094-239878213A49}
 		{E737AF5B-9F63-4095-BA6F-25F173DF34E2} = {E737AF5B-9F63-4095-BA6F-25F173DF34E2}
 		{0200E671-E19F-4D61-B775-956227116A3A} = {0200E671-E19F-4D61-B775-956227116A3A}
@@ -49,6 +50,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navi
 		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MdlrTools", "MdlrTools\MdlrTools.vcproj", "{16DC2030-A313-4674-800F-1D995CCC344E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -57,6 +62,8 @@ Global
 		Release = Release
 		ReleaseDLL = ReleaseDLL
 		ReleaseLib = ReleaseLib
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{0200E671-E19F-4D61-B775-956227116A3A}.Debug.ActiveCfg = Debug|Win32
@@ -179,6 +186,18 @@ Global
 		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.ReleaseDLL.Build.0 = Release|Win32
 		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.ReleaseLib.ActiveCfg = Release|Win32
 		{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}.ReleaseLib.Build.0 = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.Debug.ActiveCfg = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.Debug.Build.0 = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.DebugDLL.ActiveCfg = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.DebugDLL.Build.0 = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.DebugLib.ActiveCfg = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.DebugLib.Build.0 = Debug|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.Release.ActiveCfg = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.Release.Build.0 = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.ReleaseDLL.ActiveCfg = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.ReleaseDLL.Build.0 = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.ReleaseLib.ActiveCfg = Release|Win32
+		{16DC2030-A313-4674-800F-1D995CCC344E}.ReleaseLib.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
