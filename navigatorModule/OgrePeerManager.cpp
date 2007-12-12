@@ -547,6 +547,10 @@ bool OgrePeerManager::collision(OgreOde::Contact* contact)
         if ((b1->getUserData() == 2) && (b2->getUserData() == 1))
             b2->addForceAt(contact->getNormal()*contact->getPenetrationDepth()*981, contact->getPosition());
     }
+/*    OgreOde::Body * const b1 = g1->getBody();
+    OgreOde::Body * const b2 = g2->getBody();
+    if (b1 != 0) b1->wake();
+    if (b2 != 0) b2->wake();*/
 
     return true;
 }
