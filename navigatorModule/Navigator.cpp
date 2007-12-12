@@ -4,6 +4,8 @@
 #include "DebugHelpers.h"
 #include "NaviLua.h"
 
+#include "Modeler.h"
+
 using namespace Solipsis;
 
 Navigator* Navigator::ms_singletonPtr = 0;
@@ -26,7 +28,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     mMaxAvatarPickingDistance(500),
     mRaySceneQuery(0),
     mPickedMovable(0),
-    mUserAvatar(0)
+    mUserAvatar(0),
+	mModeler(0)
 {
     ms_singletonPtr = this;
 
@@ -899,6 +902,45 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
 bool Navigator::OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
 {
 
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::startModeling()
+{
+	mState = SModeling;
+	// Init a new Modeler 
+	mModeler  = new Modeler(mSceneMgr,mCamera);
+	mModeler->init(mUserAvatar);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::endModeling()
+{	
+	// Go back in world
+	mState = SInWorld;
+
+	delete mModeler;
+	mModeler = NULL;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::createBox()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	mModeler->createBox(plpos);
+	//Quaternion plQuat = mUserAvatar->getSceneNode()->getOrientation();
+	//Degree plangleDegree;
+	//Vector3 plAxis;
+	//plQuat.ToAngleAxis(plangleDegree,plAxis);
+	//Vector3 plDir = /*plangleDegree.valueDegrees() * */ plAxis;
+
+	//plDir.normalise();
+	//
+	//Vector3 boxPos = plpos + 10*plDir;
+    
     return true;
 }
 

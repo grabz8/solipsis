@@ -81,7 +81,24 @@ protected:
     void chatPageLoaded(const NaviData& naviData);
 
     // Modeler callbacks
+    void modelerMainFileOpen(const NaviData& naviData);
+    void modelerMainFileSave(const NaviData& naviData);
     void modelerMainFileExit(const NaviData& naviData);
+
+    void modelerMainCreateBox(const NaviData& naviData);
+    void modelerMainCreateCorner(const NaviData& naviData);
+    void modelerMainCreatePyramid(const NaviData& naviData);
+    void modelerMainCreatePrism(const NaviData& naviData);
+    void modelerMainCreateCylinder(const NaviData& naviData);
+    void modelerMainCreateHalfCylinder(const NaviData& naviData);
+    void modelerMainCreateCone(const NaviData& naviData);
+    void modelerMainCreateHalfCone(const NaviData& naviData);
+    void modelerMainCreateSphere(const NaviData& naviData);
+    void modelerMainCreateHalfSphere(const NaviData& naviData);
+    void modelerMainCreateTorus(const NaviData& naviData);
+    void modelerMainCreateTube(const NaviData& naviData);
+    void modelerMainCreateRing(const NaviData& naviData);
+
 
 #ifdef UIDEBUG
     // Debug callbacks

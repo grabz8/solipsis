@@ -45,13 +45,22 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
-    // Updating Navi with the key pressed
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+
+	// Updating Navi with the key pressed
     if (NaviManager::Get().isAnyNaviFocused()) return true;
 
-    // In world ?
-    if (mNavigator->getState() != Navigator::SInWorld) return OgreFrameListener::keyPressed(evt);
+	if (mNavigator->getState() == Navigator::SModeling)
+	{
+		if (evt.mKey == KC_F9)
+			navigatorGUI->modelerMainUnload();
+		return OgreFrameListener::keyPressed(evt);
+	}
 
-    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    // In world ?
+    if (mNavigator->getState() != Navigator::SInWorld)
+		return OgreFrameListener::keyPressed(evt);
+
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
 
@@ -167,11 +176,18 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
-    // Updating Navi with the key pressed
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+   // Updating Navi with the key pressed
     if (NaviManager::Get().isAnyNaviFocused()) return true;
 
+	if (mNavigator->getState() == Navigator::SModeling)
+	{
+		return OgreFrameListener::keyReleased(evt);
+	}
+
     // In world ?
-    if (mNavigator->getState() != Navigator::SInWorld) return OgreFrameListener::keyReleased(evt);
+    if (mNavigator->getState() != Navigator::SInWorld) 
+		return OgreFrameListener::keyReleased(evt);
 
     switch (evt.mKey)
     {

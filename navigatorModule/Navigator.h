@@ -13,6 +13,8 @@
 
 namespace Solipsis {
 
+class Modeler;
+
 /** The main class of Navigator application.
  */
 class Navigator : public Instance, public NodeEventListener, public IOgrePeerManagerCallbacks
@@ -20,7 +22,8 @@ class Navigator : public Instance, public NodeEventListener, public IOgrePeerMan
 public:
     enum State {
         SLogin,         // User is choosing options, ... and finally log on world
-        SInWorld        // GUI displayed when user is in the world
+        SInWorld,       // GUI displayed when user is in the world
+		SModeling       // GUI displayed when user is modeling an object
     };
     enum ConnectionMode {
         CMExistingNode, // Use an existing node
@@ -79,6 +82,7 @@ public:
 
     // Get and set
     State getState();
+	void setState(State newState) {mState = newState;};
     ConnectionMode getConnectionMode();
     void setConnectionMode(ConnectionMode connectionMode);
     NodeStatus getNodeStatus();
@@ -136,6 +140,15 @@ public:
     /** See IOgrePeerManagerCallbacks. */
     virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
 
+	// Modeler part
+
+	/** Start modeling mode. */
+	bool startModeling();
+	/** Stop the modeling mode. */
+	bool endModeling();
+	/** Create a box. */
+	bool createBox();
+
 protected:
     /** These methods implement Instance
     */
@@ -162,6 +175,9 @@ protected:
     virtual void onPeerNew(NodeEvent::DatasPeerNew& evtDatas);
     virtual void onPeerLost(NodeEvent::DatasPeerLost& evtDatas);
     virtual void onStatusChanged(NodeEvent::DatasStatusChanged& evtDatas);
+
+	/// The modeler object
+	Modeler		*mModeler;
 };
 
 } // namespace Solipsis

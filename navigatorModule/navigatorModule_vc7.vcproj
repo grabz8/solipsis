@@ -35,10 +35,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib MdlrTools.lib"
 				OutputFile="$(OutDir)/Navigator.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\debugdll"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc7\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc7;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\debugdll;&quot;..\MdlrTools\obj\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -152,6 +152,9 @@
 				RelativePath=".\LuaBinding.cpp">
 			</File>
 			<File
+				RelativePath=".\Modeler.cpp">
+			</File>
+			<File
 				RelativePath=".\MovableText.cpp">
 			</File>
 			<File
@@ -260,6 +263,9 @@
 			</File>
 			<File
 				RelativePath=".\LuaBinding.h">
+			</File>
+			<File
+				RelativePath=".\Modeler.h">
 			</File>
 			<File
 				RelativePath=".\MovableText.h">

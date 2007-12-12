@@ -34,9 +34,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib"
+				AdditionalDependencies="Navigator.lib MdlrTools.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;;&quot;..\MdlrTools\obj\$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				SubSystem="2"
@@ -44,9 +44,7 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description=""
-				CommandLine=""/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -96,9 +94,7 @@
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description=""
-				CommandLine=""/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -125,8 +121,7 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\NavigatorApp.cpp"
-				>
+				RelativePath=".\NavigatorApp.cpp">
 			</File>
 		</Filter>
 		<Filter
