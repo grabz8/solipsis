@@ -52,6 +52,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MdlrTools", "MdlrTools\MdlrTools.vcproj", "{16DC2030-A313-4674-800F-1D995CCC344E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{B9DC0DBB-3268-4948-986D-759AF15FBBDD} = {B9DC0DBB-3268-4948-986D-759AF15FBBDD}
 	EndProjectSection
 EndProject
 Global
