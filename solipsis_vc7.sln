@@ -51,9 +51,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navigator", "navigator\navi
 		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MdlrTools", "MdlrTools\MdlrTools.vcproj", "{16DC2030-A313-4674-800F-1D995CCC344E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MdlrTools", "MdlrTools\MdlrTools_vc7.vcproj", "{16DC2030-A313-4674-800F-1D995CCC344E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B9DC0DBB-3268-4948-986D-759AF15FBBDD} = {B9DC0DBB-3268-4948-986D-759AF15FBBDD}
+		{9CCBCFF0-C83F-4E6C-A2B8-7C23409ECFF9} = {9CCBCFF0-C83F-4E6C-A2B8-7C23409ECFF9}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brep_vc7", "DevTools\brep\brep_vc7.vcproj", "{39A9638B-D487-471A-BA44-D5B81C0E91A4}"
@@ -73,8 +74,6 @@ Global
 		Release = Release
 		ReleaseDLL = ReleaseDLL
 		ReleaseLib = ReleaseLib
-	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{0200E671-E19F-4D61-B775-956227116A3A}.Debug.ActiveCfg = Debug|Win32
