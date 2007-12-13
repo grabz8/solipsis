@@ -1009,8 +1009,9 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 		indexCount = indexCountA + indexCountB;
 		// vertex data
 		delete vertex;		vertex = new Real [vertexCount * mVertexDecl/4];
-		for(unsigned int i=0; i<vertexCountA*mVertexDecl/4; i++)	*vertex++ = *vertexA++;
-		for(i=0; i<vertexCountB*mVertexDecl/4; i++)					*vertex++ = *vertexB++;
+        unsigned int i;
+		for(i=0; i<vertexCountA*mVertexDecl/4; i++)	*vertex++ = *vertexA++;
+		for(i=0; i<vertexCountB*mVertexDecl/4; i++)	*vertex++ = *vertexB++;
 		// index data
 		delete index;		index = new unsigned int [indexCount];
 		for(i=0; i<indexCountA; i++)	*index++ = *indexA++;

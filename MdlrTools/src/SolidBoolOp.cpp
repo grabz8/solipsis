@@ -240,7 +240,8 @@ void SBO::OutputSolid(BREP_SOLID* solid,
 
 	// index data
 	unsigned int id = 0;
-	for(unsigned int n = 0; n < faces.size(); n++)
+    unsigned int n;
+	for(n = 0; n < faces.size(); n++)
 	{
 		index[id++] = faces[n][0];
 		for(unsigned int f = 1; f < faces[n].size(); f++)

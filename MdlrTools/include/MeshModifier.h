@@ -456,7 +456,8 @@ static const int RTOD = 0;
 			unsigned int id = 2;
 
 			// the faces
-			for( unsigned int i = 0; i < points.size()-2; i+=2 )
+            unsigned int i;
+			for( i = 0; i < points.size()-2; i+=2 )
 			{
 				pIndex[i*3] = id++;		pIndex[i*3+1] = id+1;	pIndex[i*3+2] = id;
 				pIndex[i*3+3] = id++;	pIndex[i*3+4] = id++;	pIndex[i*3+5] = id--;
@@ -601,7 +602,8 @@ static const int RTOD = 0;
 
 
 			// the other faces
-			for( unsigned int i = 2; i < points.size(); i+=2 )
+            unsigned int i;
+			for( i = 2; i < points.size(); i+=2 )
 			{
 				pIndex[i*3] = id++;		pIndex[i*3+1] = id++;	pIndex[i*3+2] = id++ +1;
 				pIndex[i*3+3] = id--;	pIndex[i*3+4] = id--;	pIndex[i*3+5] = id++ -1;
@@ -683,7 +685,8 @@ static const int RTOD = 0;
 					temp = max;
 					profil.push_back( temp );
 					Real step = (max.y - min.y) / level;
-					for(unsigned int i=0; i<level; i++)
+                    unsigned int i;
+					for(i=0; i<level; i++)
 					{
 						temp.y -= step;
 						profil.push_back( temp );
@@ -702,7 +705,8 @@ static const int RTOD = 0;
 					temp = max;
 					profil.push_back( temp );
 					Real step = (max.y - min.y) / level;
-					for(unsigned int i=0; i<level; i++)
+                    unsigned int i;
+					for(i=0; i<level; i++)
 					{
 						temp.y -= step;
 						profil.push_back( temp );
@@ -762,7 +766,8 @@ static const int RTOD = 0;
 			// index : first cap
 			unsigned int first = pVertexCount;
 			unsigned int next = pVertexCount + 1;
-			for(unsigned int i=2; i<profil.size(); i++)
+            unsigned int i;
+			for(i=2; i<profil.size(); i++)
 			{
 				pIndex[pIndexCount++] = first;
 				pIndex[pIndexCount++] = pVertexCount + i;
