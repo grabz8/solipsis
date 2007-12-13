@@ -38,14 +38,15 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
-copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib
-copy $(ProjectDir)..\lib\DebugLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib\. /y"/>
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\lua\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\lua\include&quot;
+copy &quot;$(ProjectDir)..\src\lua.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\luaconf.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\lualib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\lauxlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib&quot;
+copy &quot;$(ProjectDir)..\lib\DebugLib_vc7\$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\debuglib\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -85,14 +86,15 @@ copy $(ProjectDir)..\lib\DebugLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\De
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release LIB runtime files ..."
-				CommandLine="if not exist $(ProjectDir)..\..\..\Dependencies\lua\include mkdir $(ProjectDir)..\..\..\Dependencies\lua\include
-copy $(ProjectDir)..\src\lua.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\luaconf.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
-if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib
-copy $(ProjectDir)..\lib\ReleaseLib_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib\. /y"/>
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\lua\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\lua\include&quot;
+copy &quot;$(ProjectDir)..\src\lua.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\luaconf.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\lualib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+copy &quot;$(ProjectDir)..\src\lauxlib.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\include\.&quot; /y
+if not exist &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib&quot;
+copy &quot;$(ProjectDir)..\lib\ReleaseLib_vc7\$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\lua\lib\releaselib\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -143,7 +145,8 @@ copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll
 copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y
-copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y"/>
+copy $(ProjectDir)..\lib\DebugDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\debugdll\. /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -193,7 +196,8 @@ copy $(ProjectDir)..\src\lualib.h $(ProjectDir)..\..\..\Dependencies\lua\include
 copy $(ProjectDir)..\src\lauxlib.h $(ProjectDir)..\..\..\Dependencies\lua\include\. /y
 if not exist $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll mkdir $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll
 copy $(ProjectDir)..\lib\ReleaseDll_vc7\$(TargetName).lib $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y
-copy $(ProjectDir)..\lib\ReleaseDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y"/>
+copy $(ProjectDir)..\lib\ReleaseDll_vc7\$(TargetName).dll $(ProjectDir)..\..\..\Dependencies\lua\lib\releasedll\. /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
