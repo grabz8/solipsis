@@ -21,7 +21,7 @@ rmdir Dependencies\tinyxml /S /Q
 rmdir Dependencies\tokamak /S /Q
 rmdir Dependencies\xmlrpc++ /S /Q
 rmdir Dependencies\brep /S /Q
-rmdir Dependencies\CSG /S /Q
+rmdir Dependencies\csg /S /Q
 rmdir Dependencies\MdlrTools /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
