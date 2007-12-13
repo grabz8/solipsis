@@ -63,9 +63,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="brep_d.lib CSG_d.lib"
 				OutputFile="obj/$(ConfigurationName)/$(ProjectName).lib"
-				AdditionalLibraryDirectories="..\Dependencies\brep\lib;..\Dependencies\CSG\lib"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -131,9 +130,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="brep.lib CSG.lib"
 				OutputFile="obj/$(ConfigurationName)/$(ProjectName).lib"
-				AdditionalLibraryDirectories="..\Dependencies\brep\lib;..\Dependencies\CSG\lib"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
