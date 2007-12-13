@@ -76,7 +76,7 @@ copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencie
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
-				UsePrecompiledHeader="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
 			<Tool
