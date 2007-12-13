@@ -37,11 +37,12 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying library files..."
+				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\brep&quot; mkdir &quot;..\..\Dependencies\brep&quot;
 xcopy &quot;*.h&quot; &quot;..\..\Dependencies\brep&quot; /y
 if not exist &quot;..\..\Dependencies\brep\lib&quot; mkdir &quot;..\..\Dependencies\brep\lib&quot;
-copy &quot;lib\brep_d.lib&quot; &quot;..\..\Dependencies\brep\lib\brep_d.lib&quot; /y"/>
+copy &quot;lib\brep_d.lib&quot; &quot;..\..\Dependencies\brep\lib\brep_d.lib&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -81,11 +82,12 @@ copy &quot;lib\brep_d.lib&quot; &quot;..\..\Dependencies\brep\lib\brep_d.lib&quo
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying library files..."
+				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\brep&quot; mkdir &quot;..\..\Dependencies\brep&quot;
 xcopy &quot;*.h&quot; &quot;..\..\Dependencies\brep&quot; /y
 if not exist &quot;..\..\Dependencies\brep\lib&quot; mkdir &quot;..\..\Dependencies\brep\lib&quot;
-copy &quot;lib\brep.lib&quot; &quot;..\..\Dependencies\brep\lib\brep.lib&quot; /y"/>
+copy &quot;lib\brep.lib&quot; &quot;..\..\Dependencies\brep\lib\brep.lib&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
