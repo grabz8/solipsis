@@ -217,7 +217,7 @@ void NavigatorGUI::modelerMainUnload()
         mNaviMgr.destroyNavi(mNavisNames[NAVI_MODELERMAIN]);
         mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
 
-		mNavigator->setState(Navigator::State::SInWorld);	
+		mNavigator->setState(Navigator::SInWorld);	
 		mNavigator->endModeling();
 		modelerMainUnload();
     }
