@@ -37,7 +37,7 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying library files..."
+				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\csg&quot; mkdir &quot;..\..\Dependencies\csg&quot;
 xcopy &quot;*.h&quot; &quot;..\..\Dependencies\csg&quot; /y
 if not exist &quot;..\..\Dependencies\csg\lib&quot; mkdir &quot;..\..\Dependencies\csg\lib&quot;
@@ -82,7 +82,7 @@ copy &quot;lib\csg_d.lib&quot; &quot;..\..\Dependencies\csg\lib\csg_d.lib&quot; 
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying library files..."
+				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\csg&quot; mkdir &quot;..\..\Dependencies\csg&quot;
 xcopy &quot;*.h&quot; &quot;..\..\Dependencies\csg&quot; /y
 if not exist &quot;..\..\Dependencies\csg\lib&quot; mkdir &quot;..\..\Dependencies\csg\lib&quot;
