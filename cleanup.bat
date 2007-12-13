@@ -22,6 +22,7 @@ rmdir Dependencies\tokamak /S /Q
 rmdir Dependencies\xmlrpc++ /S /Q
 rmdir Dependencies\brep /S /Q
 rmdir Dependencies\CSG /S /Q
+rmdir Dependencies\MdlrTools /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -63,6 +64,8 @@ rmdir DevTools\CSG\Release /S /Q
 rmdir DevTools\CSG\lib /S /Q
 
 rmdir Docs\doxygen\html /S /Q
+
+rmdir MdlrTools\obj /S /Q
 
 rmdir navigator\Debug /S /Q
 rmdir navigator\Release /S /Q
