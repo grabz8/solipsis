@@ -8,7 +8,7 @@
 */
 
 #include "Modeler.h"
-#include "../MdlrTools/include/Selection.h"
+#include "Selection.h"
 
 namespace Solipsis {
 
