@@ -560,96 +560,96 @@ void NavigatorGUI::modelerMainCreateBox(const NaviData& naviData)
 void NavigatorGUI::modelerMainCreateCorner(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateCorner()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createCorner();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreatePyramid(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreatePyramid()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createPyramid();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreatePrism(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreatePrism()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createPrism();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateCylinder(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateCylinder()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createCylinder();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfCylinder(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateHalfCylinder()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createHalfCyl();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateCone(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateCone()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createCone();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfCone(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateHalfCone()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createHalfCone();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateSphere(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateSphere()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createSphere();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfSphere(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateHalfSphere()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createHalfSphere();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateTorus(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateTorus()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createTorus();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateTube(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateTube()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createTube();
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainCreateRing()");
-	
-    modelerMainUnload();
+	mNavigator->startModeling();
+	mNavigator->createRing();
 }
 
 #ifdef UIDEBUG

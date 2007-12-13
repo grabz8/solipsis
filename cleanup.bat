@@ -20,6 +20,8 @@ rmdir Dependencies\pthreads /S /Q
 rmdir Dependencies\tinyxml /S /Q
 rmdir Dependencies\tokamak /S /Q
 rmdir Dependencies\xmlrpc++ /S /Q
+rmdir Dependencies\brep /S /Q
+rmdir Dependencies\CSG /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -53,6 +55,12 @@ rmdir DevTools\tokamak\tokamaksrc\tokamakdll /S /Q
 del DevTools\xmlrpc++\lib\*.lib /S /Q
 rmdir DevTools\xmlrpc++\Debug /S /Q
 rmdir DevTools\xmlrpc++\Release /S /Q
+rmdir DevTools\brep\Debug /S /Q
+rmdir DevTools\brep\Release /S /Q
+rmdir DevTools\brep\lib /S /Q
+rmdir DevTools\CSG\Debug /S /Q
+rmdir DevTools\CSG\Release /S /Q
+rmdir DevTools\CSG\lib /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 

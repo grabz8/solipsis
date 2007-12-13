@@ -910,8 +910,11 @@ bool Navigator::startModeling()
 {
 	mState = SModeling;
 	// Init a new Modeler 
-	mModeler  = new Modeler(mSceneMgr,mCamera);
-	mModeler->init(mUserAvatar);
+	if (!mModeler)
+	{
+		mModeler  = new Modeler(mSceneMgr,mCamera);
+		mModeler->init(mUserAvatar);
+	}
     return true;
 }
 
@@ -930,7 +933,6 @@ bool Navigator::endModeling()
 bool Navigator::createBox()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	mModeler->createBox(plpos);
 	//Quaternion plQuat = mUserAvatar->getSceneNode()->getOrientation();
 	//Degree plangleDegree;
 	//Vector3 plAxis;
@@ -940,8 +942,86 @@ bool Navigator::createBox()
 	//plDir.normalise();
 	//
 	//Vector3 boxPos = plpos + 10*plDir;
-    
-    return true;
+	return mModeler->createBox(plpos);
 }
 
+
+//-------------------------------------------------------------------------------------
+bool Navigator::createCorner()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createCorner(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createPyramid()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createPyramid(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createPrism()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createPrism(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createCylinder()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createCylinder(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createHalfCyl()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createHalfCyl(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createCone()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createCone(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createHalfCone()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createHalfCone(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createSphere()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createSphere(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createHalfSphere()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createHalfSphere(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createTorus()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createTorus(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createTube()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createTube(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createRing()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createRing(plpos);
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::createMesh()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	return mModeler->createMesh(plpos);
+}
 //-------------------------------------------------------------------------------------

@@ -35,6 +35,33 @@ public:
 	
 	/// Create a box 
 	bool createBox(Vector3	&player_pos);
+	/// Create a corner. 
+	bool createCorner(Vector3	&player_pos);
+	/// Create a pyramid. 
+	bool createPyramid(Vector3	&player_pos);
+	/// Create a prism. 
+	bool createPrism(Vector3	&player_pos);
+	/// Create a cylinder. 
+	bool createCylinder(Vector3	&player_pos);
+	/// Create a half cylinder. 
+	bool createHalfCyl(Vector3	&player_pos);
+	/// Create a cone. 
+	bool createCone(Vector3	&player_pos);
+	/// Create a Halfcone. 
+	bool createHalfCone(Vector3	&player_pos);
+	/// Create a sphere. 
+	bool createSphere(Vector3	&player_pos);
+	/// Create a half sphere. 
+	bool createHalfSphere(Vector3	&player_pos);
+	/// Create a torus. 
+	bool createTorus(Vector3	&player_pos);
+	/// Create a tube. 
+	bool createTube(Vector3	&player_pos);
+	/// Create a ring. 
+	bool createRing(Vector3	&player_pos);
+	/// Create a mesh. 
+	bool createMesh(Vector3	&player_pos);
+
 
 
 private : 

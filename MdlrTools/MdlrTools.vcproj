@@ -34,9 +34,8 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="brep.lib csg.lib"
 				OutputFile="obj/$(ConfigurationName)/$(ProjectName).lib"
-				AdditionalLibraryDirectories="../Dependencies/brep/lib/;../Dependencies/csg/lib/"/>
+				AdditionalLibraryDirectories="../Dependencies/brep/lib/;"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -69,15 +68,16 @@
 				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\samples\include&quot;;../Dependencies"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="FALSE"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="3"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="obj/$(ConfigurationName)/$(ProjectName).lib"/>
+				OutputFile="obj/$(ConfigurationName)/$(ProjectName).lib"
+				AdditionalLibraryDirectories=""/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
