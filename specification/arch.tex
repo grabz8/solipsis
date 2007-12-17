@@ -1,0 +1,51 @@
+\section{Architecture}
+The architecture of the protocol, depicted in Figure~\ref{}, outlines
+three major components that provide the basis for the protocol's
+operation: RayNet, a DHT and a cadastre service.
+
+\paragraph{RayNet}
+Nodes are organized in a three-dimensional overlay network based on
+the Raynet protocol. The arrangement of nodes in this overlay is based
+on the locations of the corresponding sites in the \sol world. In
+particular, each node is responsible for a section of the world
+centered around its own site and comprising a region of space around
+it. In simple terms, two nodes are neighbors in the overlay if their
+corresponding sites are neighboring in the \sol world\df{This is not
+  strictly true with raynet, right?}. This, mapping between overlay
+and 3D-world positions allows RayNet to provide efficient means to
+address and communicate with the nodes responsible for the sites
+encountered by avatars roaming in the \sol world.\df{This is currently
+a repetition. EDIT.}
+
+\paragraph{DHT}
+The second component visible in the protocol architecture is the
+Distributed Hash Table (DHT). While the RayNet overlay allows nodes to
+access data by means of location information, the DHT allows them to
+retrieve information about objects with a given identifier. This is
+essential to access information regarding avatars that are not, by
+definition, tied to a specific location in the \sol world. Moreover,
+it is also useful to access information about sites when their
+complete description has not yet been retrieved.\df{Using the DHT for
+  sites is convenient but not essential. Let's make sure we know why
+  we are doing this.}  The DHT associates each UID with the
+corresponding object's descriptor and with a list of the nodes that
+have cached a copy of the object's complete description as described
+in Section~\ref{sec:stor-inform-about}.
+
+\paragraph{Cadastre}
+Finally, the last component highlighted in the figure is a
+\emph{cadastre} service, responsible for managing the locations that
+are available for new sites in the \sol world. In this version, we
+assume a centralized version of the cadastre service, but we are
+actively working\df{We are, aren't we?} on a fully distributed
+implementation. Nodes may contact the service for to (i) obtain a list
+of the available locations for new sites; and (ii) to obtain a permit
+to create a new site with specified dimensions around a given 3D
+location.\df{Some signature mechanism would be nice here... how about
+  some P2P signing mechanism... is there any such a thing? How about
+  using quorums for that? Does this make any sense?}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "specification"
+%%% End: 
