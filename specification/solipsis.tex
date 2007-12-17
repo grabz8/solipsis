@@ -4,13 +4,14 @@
 \subsection{Data Structures Maintained at Node}
 Solipsis nodes maintain a set of data structures to manage the
 interaction with the objects that constitute the 3D world. In the
-following we list describe each of these structures for site nodes and
-for avatar nodes, respectively.
+following, we describe each of these structures for site nodes and for
+avatar nodes, respectively.
 
 \subsubsection{Site Nodes}
 \label{sec:sinodes}
 
 \paragraph{Visible List}
+
 
 
 \subsubsection{Avatar Nodes}
@@ -31,6 +32,14 @@ the outside world, that is with the Solipsis User Interface, as well
 as reactions to unexpected disconnections or network failures. 
 
 
+\paragraph{Avatar Moves}
+An avatar node reacts to a change in the location of its avatar by
+sending an \achange message to its current site node, that is the one
+associated with  location before the move.
+
+
+
+
 
 \subsubsection{Protocol Messages}
 Protocol Messages are exchanged asynchronously between Solipsis nodes
@@ -38,6 +47,40 @@ using UDP. This is true even when the two communicating nodes (e.g. a
 site and an avatar) actually reside on the same peer. As above, each
 message may be classified according to the type of its recipient:
 site, or avatar. 
+
+% \paragraph{\achange}
+% \recby{site node}
+% \param{set of (name, value) pairs} 
+% Inform the receiving site node of a change in one of the 
+\paragraph{\adesc}
+\recby{site node}
+\param{nd: NodeDescriptor} 
+Inform the receiving node of a new node descriptor for the avatar
+identified by \nd.\UID. If the site node's visible map does not
+contain an entry for \nd.\UID, then a new entry should be created and
+associated with the received descriptor \nd. If, instead, the map
+already contains such an entry, then the it SHOULD be update only if
+the if the version number nd.version is greater than the version
+number associated with the entry in the table. Otherwise the message
+MUST be silently discarded. 
+
+
+
+
+\paragraph{\newsnode}
+\recby{avatar node}
+\param{\cursite}
+Informs the avatar node that the site node responsible for its current
+location has changed. The avatar node MUST therefore\df{this and the
+  following could be SHOULD.} update its own \cursite reference to
+equal the one provided by the message.
+
+
+
+
+
+\paragraph{\avmoved}
+
 
 
 
