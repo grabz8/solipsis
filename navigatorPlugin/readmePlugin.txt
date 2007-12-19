@@ -13,5 +13,8 @@ Go into HKEY_CURRENT_USER\Software
 Add 1 Key "Solipsis"
 Go into HKEY_CURRENT_USER\Software\Solipsis
 Add 1 String Value "Install Directory"
-Set its value to the Navigator directory,
-for example: C:\tmp\Common\bin\navigator\release
+Set its value to the Navigator directory (eg. C:\tmp\Common\bin\navigator\release)
+Copy plugin files :
+Common\bin\navigator\release\npsolnav.dll
+Common\bin\navigator\release\SolipsisNavigator.xpt
+into your mozilla browser (eg. firefox) directory (eg. C:\Program Files\Mozilla Firefox\plugins)
