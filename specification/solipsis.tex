@@ -11,6 +11,27 @@ avatar nodes, respectively.
 \label{sec:sinodes}
 
 \paragraph{Visible List}
+The visible list, \vlist, is a map of object identifiers to object
+descriptors. It contains an entry for each object ) that is visible
+from the current site node's cell. Each element in the visible list
+may be a site or an avatar and may be inside or outside of the current
+node's cell. A more fine grained distinction is provided by the
+\emph{visible site list}, the \emph{avatar list}
+
+\paragraph{}
+\paragraph{RayNet}
+Site nodes have access to a \rn object that provides them with two
+functions.
+\begin{itemize}
+\item 
+$\gn()$: may be called by a site node and return the list of the node's
+neighbors. 
+\item 
+$\route(m, p)$: may be called by both avatars and site nodes and routes a
+message $m$ to the site node associated with the location $p$ in the
+coordinate space. 
+\end{itemize}
+
 
 
 
@@ -25,7 +46,13 @@ avatar nodes, respectively.
 
 
 \subsection{Behavioral Specification}
+\newcommand{\achange}{\ensuremath{\textsc{avChange}}\xspace}
+\newcommand{\adesc}{\ensuremath{\textsc{avDesc}}\xspace}
+\newcommand{\newsnode}{\ensuremath{\textsc{NewSiteNode}}\xspace}
+\newcommand{\cursite}{\ensuremath{\textsc{curSite}}\xspace}
 
+\newcommand{\recby}[1]{\textbf{received by:} #1}
+\newcommand{\param}[1]{\textbf{parameters:} #1}
 \subsubsection{Exogenous Actions}
 Exogenous actions comprise all the interactions of the protocol with
 the outside world, that is with the Solipsis User Interface, as well
@@ -34,8 +61,23 @@ as reactions to unexpected disconnections or network failures.
 
 \paragraph{Avatar Moves}
 An avatar node reacts to a change in the location of its avatar by
-sending an \achange message to its current site node, that is the one
+sending an \adesc message to its current site node, that is the one
 associated with  location before the move.
+
+\begin{algorithm}
+\caption{Avatar moves from one location $l_0$ to another $l_1$}
+\begin{algorithmic}
+\Procedure{avatarMove}{$l_0$, $l_1$}{}
+% \State \desc.\pos=\l
+% \State $n_0$=\rn.\gn($l_0$)
+% \State $n_1$=\rn.\gn($l_1$)
+% \If {$n_0 \neq n_1$}
+\desc.\pos=$l_1$
+\rn.\route(\desc, $l_0$)
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
 
 
 
@@ -52,18 +94,143 @@ site, or avatar.
 % \recby{site node}
 % \param{set of (name, value) pairs} 
 % Inform the receiving site node of a change in one of the 
+
+\newcommand{\nd}{\ensuremath{\textsc{nd}}\xspace}
+\newcommand{\UID}{\ensuremath{\textsc{UID}}\xspace}
+\newcommand{\pos}{\ensuremath{\textsc{pos}}\xspace}
+\newcommand{\sn}{\ensuremath{\textsc{sn}}\xspace}
+\newcommand{\vlist}{\ensuremath{\textsc{vList}}\xspace}
+\newcommand{\olist}{\ensuremath{\textsc{ownList}}\xspace}
 \paragraph{\adesc}
 \recby{site node}
 \param{nd: NodeDescriptor} 
 Inform the receiving node of a new node descriptor for the avatar
-identified by \nd.\UID. If the site node's visible map does not
-contain an entry for \nd.\UID, then a new entry should be created and
-associated with the received descriptor \nd. If, instead, the map
-already contains such an entry, then the it SHOULD be update only if
-the if the version number nd.version is greater than the version
-number associated with the entry in the table. Otherwise the message
-MUST be silently discarded. 
+identified by \nd.\UID. 
+A site node receiving the message performs the following steps.
 
+
+\begin{algorithm}
+\caption{site node receiving an \adesc message}
+\begin{algorithmic}
+\Procedure{receiveAvatarDescriptorFrom}{\adesc}{}
+\If {isVisibleFromMyCell(\nd.\vis, \nd.\pos)}
+  \If {\vlist contains \nd.\UID}
+     \If {\vlist.get(\nd.\UID).\sn $<$ \nd.\sn}
+        \State \vlist[\nd.\UID]=\nd
+     \EndIf
+  \Else
+     \State \vlist[\nd.\UID]=\nd
+  \EndIf
+\Else
+  \If {\vlist contains \nd.\UID}
+     \State \vlist.remove(\nd.\UID,\nd)
+  \EndIf
+\EndIf
+
+\If {isInMyCell(\nd.\pos)
+  \State \olist[\nd.\UID]=\nd
+\Else
+  \State \olist.remove(\nd.\UID)
+\EndIf
+\EndProcedure
+
+\Function {isVisibleFromMyCell}{$r$, $c$}{returns true if the current
+  site node's cell intersects the visibility region defined by the
+  circle with radius  $r$ centered at $p$}
+TBD\\
+\EndFunction
+
+\Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
+  a neighbor in the circular region centered at $p$ with radius $r$}
+\ForAll {n \in \rn.\gn}
+  \If (n.\pos \in \region($c$, $r$))
+    \Return \True
+\EndFor
+\Return \False
+\EndFunction
+
+\Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
+  a neighbor in the circular region centered at $p$ with radius $r$}
+\ForAll {n \in \rn.\gn}
+  \If (n.\pos \in \region($c$, $r$))
+    \Return \True
+\EndFor
+\Return \False
+\EndFunction
+
+\Function {isInMyCell}{$p$}{returns true if position $p$ is in the
+  current site node's cell}
+myD=\distance(n.\pos, \desc.\pos)
+\ForAll {n \in \rn.\gn}
+  \If {\distance(n.\pos, $p$)>myD}
+    \Return \False
+\EndFor
+\Return \True
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Periodically, site nodes inform the avatars in their cells as well as
+neighboring site nodes about visible objects. This is achieved through
+the combination of two mechanisms. First, site nodes send a \vupdate
+message every $T_v$ seconds to neighboring sites and avatars. This
+message contains copies of the descriptors of all the objects visible
+from the site node's cell. Second, every $T_c$, where $T_c<< T_v$,
+site nodes send a \cupdate message to inform neighboring sites and
+visiting avatars about changes occurred from the last \vupdate
+message. The \cupdate message also consists of a list of node
+descriptors. However, while the absence of a descriptor from a
+\vupdate message implies that the corresponding object is no longer
+within visibility, its absence from a \cupdate message simply implies
+that the object's descriptor has not changed since the last update.
+\inlinedf{Updates to neighboring sites nodes may be sent
+  directly. Updates to avatars however might be sent using some kind
+  of multicast tree.}
+
+\begin{algorithm}
+\caption{site node receiving an \adesc message}
+\begin{algorithmic}
+\Procedure{sendViewUpdate}{}{Executed every $T_v$ seconds by each site
+node.}
+\State \vupdate.\sn=\cursn++
+\State \vupdate.\descs=\vlist
+\ForAll {$n$ \in \rn.\gn}
+  \State send \vupdate to $n$
+\EndFor
+\ForAll {$d$ \in \olist}
+  \State send \vupdate to $d.\UID$
+\EndFor
+\EndProcedure
+
+\Procedure{sendChangedUpdate}{}{Executed every $T_c$ seconds by each site
+node.}
+\State \cupdate.\sn=\cursn++
+\State \cupdate.\descs=\clist
+\State $\clist=\emptyset$
+\ForAll {$n$ \in \rn.\gn}
+  \State send \cupdate to $n$
+\EndFor
+\ForAll {$d$ \in \olist}
+  \State send \cupdate to $d.\UID$
+\EndFor
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+
+
+% \item It verifies whether the avatar's location as specified in the
+%   node descriptor is inside its own cell. 
+%   If this is NOT the case then it uses the RayNet to forward the 
+
+
+% If the site node's visible map does not contain an entry for \nd.\UID,
+% then a new entry should be created and associated with the received
+% descriptor \nd. If, instead, the map already contains such an entry,
+% then the it SHOULD be update only if the if the version number
+% nd.version is greater than the version number associated with the
+% entry in the table. Otherwise the message MUST be silently discarded.
 
 
 
@@ -79,7 +246,7 @@ equal the one provided by the message.
 
 
 
-\paragraph{\avmoved}
+%\paragraph{\avmoved}
 
 
 

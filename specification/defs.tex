@@ -12,25 +12,81 @@ of roaming and one type of static objects, respectively,
 
 Objects may be described with several levels of details. In this
 version of the specification, we concentrate on a very coarse-grained
-subdivision between two such levels. Nonetheless, the protocol can
-easily support several levels of details with only minor
-modifications. The two levels we consider consist of a \emph{complete
-  description} of the object and of a an \emph{object
-  descriptor}\df{This will change. Ultimately we are going to have:
-  descriptor, and 3dData, which in turn consists of mesh, texture, and
-  animation.}. The former contains all the information necessary for
-the 3D visualization of an object, plus any sounds, videos, or
-multimedia content associated with it. From the point of view of this
-protocol, such a representation merely consists of a binary object
-that should be provided to the rendering component and of an
-associated version number. The object descriptor, on the other hand,
-consist of the minimal information required to display a rough
-representation of the object and includes the object's location, its
-shape, its size, and its visibility radius. The shape of the object is
+subdivision between two such levels: a complete description,
+comprising a full-fledged 3D model, and a simple predefined shape with
+no textures that is encoded in an  \emph{object
+  descriptor}
+
+% Nonetheless, the protocol can
+% easily support several levels of details with only minor
+% modifications. The two levels we consider consist of a \emph{complete
+%   description} of the object and of a an% \df{This will change. Ultimately we are going to have:
+%   descriptor, and 3dData, which in turn consists of mesh, texture, and
+%   animation.}.
+The 3D description of the object contains all the information
+necessary for the 3D visualization of an object, plus any sounds,
+videos, or multimedia content associated with it. From the point of
+view of this protocol, such a representation merely consists of a set
+of binary objects, or files, that should be provided to the rendering
+component. Each such object is associated with its own version number
+and may thus be updated independently of the others.
+
+The object descriptor, on the other hand, consist of the minimal
+information required to display a rough representation of the object
+and includes the object's location, its shape, its size, its
+orientation, and its visibility radius. The shape of the object is
 represented by an identifier that selects one from a set of predefined
 shapes; while its visibility radius identifies the distance from which
 the object should be visible in the absence of obstacles and without
-any visual aids.
+any visual aids. 
+
+The object descriptor is the means through which the \sol protocol
+tracks the evolution of an object. For this reason, each descriptor
+also contains a sequence number that is incremented each time the
+descriptor is modified by the object's owner.
+
+The object descriptor of an object also keeps track of which hosts
+have recorded a copy of the object's 3D description. Specifically,
+each descriptor contains two fields associated with each of the files
+that constitute the object's 3D model. The first field is the latest
+known version number of the file, while the second is a list of hosts
+that are known to have cached a copy of the version of the file
+indicated in the first field.
+
+Finally, in future versions of the protocol, the object descriptor may
+contain information required to implement progressive levels of
+details in the 3D representations of objects.
+A summary of the fields included in an object descriptor is shown in
+Table~\ref{tab:desc}.
+
+\begin{table}
+\begin{tabular}{|l|p{4cm}|}
+UID & universal identifier of the object\\
+Type & site or avatar\\
+location & location in the 3D world\\
+shape& shape from a predefined set\\
+size & size of the object\\
+orientation & orientation in the 3D world\\
+visibility & distance from which the object is visible in the absence
+of obstacles\\
+\hline\\
+seqNum & sequence number\\
+\hline\\
+$f_1$& first file for 3d model\\
+$v_1$& version number for first file\\
+$c_1$& list of hosts that have cached $v_1$ of $f_1$\\
+...& ...\\
+$f_n$& first file for 3d model\\
+$v_n$& version number for first file\\
+$c_n$& list of hosts that have cached $v_1$ of $f_1$\\
+\hline\\
+... & additional fields for progressive levels of details\\
+\hline
+\end{tabular}
+
+\caption{Format of an object descriptor}
+\label{tab:desc}
+\end{table}
 
 \paragraph{Solipsis Peers and Nodes}
 A \emph{Solipsis peer}, or simply \emph{peer}, is any host that
