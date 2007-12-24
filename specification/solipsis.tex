@@ -1,5 +1,26 @@
 \section{Solipsis Protocol Details}
 
+\newcommand{\nd}{\ensuremath{\textsc{nd}}\xspace}
+\newcommand{\UID}{\ensuremath{\textsc{UID}}\xspace}
+\newcommand{\pos}{\ensuremath{\textsc{pos}}\xspace}
+\newcommand{\sn}{\ensuremath{\textsc{sn}}\xspace}
+\newcommand{\vlist}{\ensuremath{\textsc{vList}}\xspace}
+\newcommand{\clist}{\ensuremath{\textsc{cList}}\xspace}
+\newcommand{\descs}{\ensuremath{\textsc{descs}}\xspace}
+\newcommand{\rn}{\ensuremath{\textsc{rNet}}\xspace}
+\newcommand{\gn}{\ensuremath{\textsc{getNeighs}}\xspace}
+\newcommand{\route}{\ensuremath{\textsc{route}}\xspace}
+\newcommand{\cursn}{\ensuremath{\textsc{cursn}}\xspace}
+\newcommand{\cupdate}{\ensuremath{\textsc{cUpd}}\xspace}
+\newcommand{\aupdate}{\ensuremath{\textsc{aUpd}}\xspace}
+\newcommand{\vupdate}{\ensuremath{\textsc{vUpd}}\xspace}
+
+\newcommand{\olist}{\ensuremath{\textsc{ownList}}\xspace}
+\newcommand{\ncache}{\ensuremath{\textsc{newCopy}}\xspace}
+\newcommand{\vn}{\ensuremath{\textsc{ver}}\xspace}
+
+\newcommand{\recby}[1]{\textbf{received by:} #1}
+\newcommand{\param}[1]{\textbf{parameters:} #1}
 
 \subsection{Data Structures Maintained at Node}
 Solipsis nodes maintain a set of data structures to manage the
@@ -11,17 +32,34 @@ avatar nodes, respectively.
 \label{sec:sinodes}
 
 \paragraph{Visible List}
-The visible list, \vlist, is a map of object identifiers to object
-descriptors. It contains an entry for each object ) that is visible
-from the current site node's cell. Each element in the visible list
-may be a site or an avatar and may be inside or outside of the current
-node's cell. A more fine grained distinction is provided by the
-\emph{visible site list}, the \emph{avatar list}
+The visible list, \vlist, is a table containing an entry for each
+object that is visible from the current site node's cell\footnote{The
+  protocol maintains an approximation of a visible list as described
+  in Section~\ref{sec:updvlist}}. Each entry consists of an object
+descriptor and of a timestamp indicating when the entry was last
+updated.  Each object in the table may represent a site or an avatar
+and may be inside or outside of the current node's cell. However, the
+implementation may use separate tables for each of these object
+categories, as long as the protocol's semantics remain the same as
+specified in this document.  A pseudocode declaration for the visible
+list is given in Algorithm~\ref{alg:vlist}.
 
-\paragraph{}
+\begin{algorithm}
+\end{algorithm}
+
+\paragraph{Changed List}
+The changed list \clist is a complement to the visible list described
+above and records the identifiers of the objects in the visible list
+whose descriptors have been recently updated (for more details see
+Section~\ref{}).
+
+% A more fine grained distinction is
+% provided by the \emph{visible site list}, the \emph{avatar list}
+
 \paragraph{RayNet}
-Site nodes have access to a \rn object that provides them with two
-functions.
+Site nodes have access to a \rn object that abstracts their interface
+with the RayNet overlay network. The \rn object provides each site
+node with with the following two functions.
 \begin{itemize}
 \item 
 $\gn()$: may be called by a site node and return the list of the node's
@@ -34,52 +72,24 @@ coordinate space.
 
 
 
-
 \subsubsection{Avatar Nodes}
 \label{sec:avnodes}
 
+\paragraph{Visible List}
+
+Similar to site nodes, avatar nodes also maintain a visible list
+containing an entry for each object that is potentially visible from
+avatar's location. In this case however, each entry in the list
+consists simply of an object descriptor without any timestamps. As in
+the case of site nodes, each object in the table may represent a site
+or an avatar in any of the surrounding cells, although the
+implementation may also use a separate table for each object category.
 
 
-
-
-
-
-
-\subsection{Behavioral Specification}
 \newcommand{\achange}{\ensuremath{\textsc{avChange}}\xspace}
 \newcommand{\adesc}{\ensuremath{\textsc{avDesc}}\xspace}
 \newcommand{\newsnode}{\ensuremath{\textsc{NewSiteNode}}\xspace}
 \newcommand{\cursite}{\ensuremath{\textsc{curSite}}\xspace}
-
-\newcommand{\recby}[1]{\textbf{received by:} #1}
-\newcommand{\param}[1]{\textbf{parameters:} #1}
-\subsubsection{Exogenous Actions}
-Exogenous actions comprise all the interactions of the protocol with
-the outside world, that is with the Solipsis User Interface, as well
-as reactions to unexpected disconnections or network failures. 
-
-
-\paragraph{Avatar Moves}
-An avatar node reacts to a change in the location of its avatar by
-sending an \adesc message to its current site node, that is the one
-associated with  location before the move.
-
-\begin{algorithm}
-\caption{Avatar moves from one location $l_0$ to another $l_1$}
-\begin{algorithmic}
-\Procedure{avatarMove}{$l_0$, $l_1$}{}
-% \State \desc.\pos=\l
-% \State $n_0$=\rn.\gn($l_0$)
-% \State $n_1$=\rn.\gn($l_1$)
-% \If {$n_0 \neq n_1$}
-\desc.\pos=$l_1$
-\rn.\route(\desc, $l_0$)
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
-
-
-
 
 
 
@@ -95,25 +105,97 @@ site, or avatar.
 % \param{set of (name, value) pairs} 
 % Inform the receiving site node of a change in one of the 
 
-\newcommand{\nd}{\ensuremath{\textsc{nd}}\xspace}
-\newcommand{\UID}{\ensuremath{\textsc{UID}}\xspace}
-\newcommand{\pos}{\ensuremath{\textsc{pos}}\xspace}
-\newcommand{\sn}{\ensuremath{\textsc{sn}}\xspace}
-\newcommand{\vlist}{\ensuremath{\textsc{vList}}\xspace}
-\newcommand{\olist}{\ensuremath{\textsc{ownList}}\xspace}
-\paragraph{\adesc}
-\recby{site node}
-\param{nd: NodeDescriptor} 
-Inform the receiving node of a new node descriptor for the avatar
-identified by \nd.\UID. 
-A site node receiving the message performs the following steps.
 
+
+
+
+
+
+
+
+
+
+% \paragraph{View Update and Change Update Messages}
+% Periodically, site nodes inform the avatars in their cells as well as
+% neighboring site nodes about visible objects. This is achieved through
+% the combination of two mechanisms. First, site nodes send a \vupdate
+% message every $T_v$ seconds to neighboring sites and avatars. This
+% message contains copies of the descriptors of all the objects visible
+% from the site node's cell. Second, with a frequency of up to one every
+% $T_c$, where $T_c<< T_v$, site nodes also send \cupdate messages to
+% inform neighboring sites and visiting avatars about changes occurred
+% from the previous update message. As described above, \cupdate
+% messages also consists of a list of node descriptors. However, while
+% the absence of a descriptor from a \vupdate message implies that the
+% corresponding object is no longer within visibility of the sender
+% node's cell, its absence from a \cupdate message simply implies that
+% the object's descriptor has not changed since the last update.
+% \inlinedf{Right now all updates are sent via unicast to site and
+%   avatar nodes. This is probably fine for messages addressed to site
+%   nodes. Messages addressed to avatar nodes, however, may benefit from
+%   the use of some kind of multicast tree.}
 
 \begin{algorithm}
-\caption{site node receiving an \adesc message}
 \begin{algorithmic}
-\Procedure{receiveAvatarDescriptorFrom}{\adesc}{}
-\If {isVisibleFromMyCell(\nd.\vis, \nd.\pos)}
+
+\Procedure{sendChangedUpdate}{}{Executed every $T_c$ seconds by each site
+node.}
+\State \cupdate.\sn=\cursn++
+\State \cupdate.\descs=\clist
+\State $\clist=\emptyset$
+\ForAll {$n \in \rn.\gn$}
+  \State send \cupdate to $n$
+\EndFor
+\ForAll {$d \in \olist$}
+  \State send \cupdate to $d.\UID$
+\EndFor
+\EndProcedure
+\end{algorithmic}
+\caption{site node sending \cupdate and \vupdate messages}
+\label{alg:scvupdate}
+\end{algorithm}
+
+
+\paragraph{\vupdate}
+\recby{site node, avatar node}
+\param{long \sn, list<NodeDescriptor> nds}
+A view update message contains the necessary information to update the
+visible lists of site and avatar nodes. The message SHOULD be sent by
+every site node every $T_u$ seconds and should be address to all
+neighboring site nodes as well as to all of the avatars that are
+currently in the sender node's cell. The contents of the message
+always consists of node descriptors representing objects that are
+currently visible. However, processing is different according to
+whether the recipient is an avatar or a site node. Avatar nodes
+interpret the message as containing ALL the objects that may be
+visible from their current locations. Site nodes on the other hand,
+interpret it as containing a subset of the objects that may currently
+be visible from their own cell. The pseudocode fragments corresponding
+to these interpretations are given in Algorithm~\ref{alg:vupdate}
+
+\begin{algorithm}
+\begin{algorithmic}
+\Procedure{sendViewUpdate}{}{Executed every $T_v$ seconds by each site
+node.}
+\State \vupdate.\sn=\cursn++
+\ForAll {$\nd \in \vlist$}
+   \State \nd.\sn=\nd.\sn++
+   \If {isInMyCell(\nd.\pos)}
+      \olist[\nd.\UID]=\nd
+   \EndIf
+\EndFor
+\State \vupdate.\descs=\vlist
+\ForAll {$n \in \rn.\gn$}
+  \State send \vupdate to $n$
+\EndFor
+\ForAll {$d \in \olist$}
+  \State send \vupdate to $d.\UID$
+\EndFor
+\EndProcedure
+
+\Procedure{receiveViewUpdate}{\vupdate msg}{Upon Receipt of a \vupdate
+  message by each avatar or site node.}
+\ForAll {$\nd \in msg.\descs$}
   \If {\vlist contains \nd.\UID}
      \If {\vlist.get(\nd.\UID).\sn $<$ \nd.\sn}
         \State \vlist[\nd.\UID]=\nd
@@ -121,102 +203,333 @@ A site node receiving the message performs the following steps.
   \Else
      \State \vlist[\nd.\UID]=\nd
   \EndIf
-\Else
-  \If {\vlist contains \nd.\UID}
-     \State \vlist.remove(\nd.\UID,\nd)
-  \EndIf
-\EndIf
-
-\If {isInMyCell(\nd.\pos)
-  \State \olist[\nd.\UID]=\nd
-\Else
-  \State \olist.remove(\nd.\UID)
-\EndIf
+\EndFor
 \EndProcedure
 
-\Function {isVisibleFromMyCell}{$r$, $c$}{returns true if the current
-  site node's cell intersects the visibility region defined by the
-  circle with radius  $r$ centered at $p$}
-TBD\\
-\EndFunction
 
-\Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
-  a neighbor in the circular region centered at $p$ with radius $r$}
-\ForAll {n \in \rn.\gn}
-  \If (n.\pos \in \region($c$, $r$))
-    \Return \True
-\EndFor
-\Return \False
-\EndFunction
+% \Procedure{Avatar.receiveViewUpdate}{\vupdate msg}{Upon Receipt of a \vupdate
+%   message by an avatar node.}
+% $\vlist=\emptyset$
+% \If {msg.\sn > sitesSN}
+%   sitesSN=msg.\sn
+%   \ForAll {\nd \in msg}
+%     \State \vlist[\nd.\UID]=\nd
+%   \EndFor
+%   \EndIf
+% \EndProcedure
 
-\Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
-  a neighbor in the circular region centered at $p$ with radius $r$}
-\ForAll {n \in \rn.\gn}
-  \If (n.\pos \in \region($c$, $r$))
-    \Return \True
-\EndFor
-\Return \False
-\EndFunction
-
-\Function {isInMyCell}{$p$}{returns true if position $p$ is in the
-  current site node's cell}
-myD=\distance(n.\pos, \desc.\pos)
-\ForAll {n \in \rn.\gn}
-  \If {\distance(n.\pos, $p$)>myD}
-    \Return \False
-\EndFor
-\Return \True
-\EndFunction
 \end{algorithmic}
+\caption{site node sending and site or avatar nodes receiving
+  \vupdate messages}
+\label{alg:vupdate}
 \end{algorithm}
 
-Periodically, site nodes inform the avatars in their cells as well as
-neighboring site nodes about visible objects. This is achieved through
-the combination of two mechanisms. First, site nodes send a \vupdate
-message every $T_v$ seconds to neighboring sites and avatars. This
-message contains copies of the descriptors of all the objects visible
-from the site node's cell. Second, every $T_c$, where $T_c<< T_v$,
-site nodes send a \cupdate message to inform neighboring sites and
-visiting avatars about changes occurred from the last \vupdate
-message. The \cupdate message also consists of a list of node
-descriptors. However, while the absence of a descriptor from a
-\vupdate message implies that the corresponding object is no longer
-within visibility, its absence from a \cupdate message simply implies
-that the object's descriptor has not changed since the last update.
-\inlinedf{Updates to neighboring sites nodes may be sent
-  directly. Updates to avatars however might be sent using some kind
-  of multicast tree.}
+
+\paragraph{\cupdate}
+\recby{site node, avatar node}
+\param{list<NodeDescriptor> nds}
+A change update message is structurally identical to a view update
+message and performs a similar task: updating information about
+visible objects. However, different from \vupdate messages, \cupdate
+messages only contain information about the objects whose descriptors
+have changed since the last \cupdate or \vupdate and are sent by site
+nodes whenever they detect a change in the set of objects in their
+visible list. To avoid flooding the network with \cupdate messages in
+the case of a very dynamic 3D world, nodes SHOULD avoid sending more
+\cupdate messages than one every $T_c$ seconds. If a node detects a
+change less than $T_c$ seconds after the last \cupdate, it SHOULD
+defer the new \cupdate so as not to exceed the maximum frequency of
+one every $T_c$ seconds. A reasonable value for $T_c$ should be on the
+order of $0.1 T_v$. The pseudocode fragment triggered by the receipt
+of a \cupdate message from a site or an avatar node are given in
+Algorithm~\ref{algo:reccupdate}.
+
 
 \begin{algorithm}
-\caption{site node receiving an \adesc message}
 \begin{algorithmic}
-\Procedure{sendViewUpdate}{}{Executed every $T_v$ seconds by each site
-node.}
-\State \vupdate.\sn=\cursn++
-\State \vupdate.\descs=\vlist
-\ForAll {$n$ \in \rn.\gn}
-  \State send \vupdate to $n$
-\EndFor
-\ForAll {$d$ \in \olist}
-  \State send \vupdate to $d.\UID$
+\Procedure{sendChangeUpdate}{}{Executed by each site node every $T_c$
+  seconds}
+\If {$\clist \neq \emptyset$}
+   \State \cupdate.\descs=\clist
+   \State $\clist=\emptyset$
+   \ForAll {$n \in \rn.\gn$}
+     \State send \cupdate to $n$
+   \EndFor
+   \ForAll {$d \in \olist$}
+     \State send \cupdate to $d.\UID$
+   \EndFor
+\EndIf
+\EndProcedure
+
+
+% \EndIf
+% \ForAll {$\nd \in \vlist$}
+%    \State \nd.\sn=\nd.\sn++
+%    \If {isInMyCell(\nd.\location)}
+%       \olist[\nd.\UID]=\nd
+%    \EndIf
+% \EndFor
+% \State \vupdate.\descs=\vlist
+% \ForAll {$n \in \rn.\gn$}
+%   \State send \vupdate to $n$
+% \EndFor
+% \ForAll {$d \in \olist$}
+%   \State send \vupdate to $d.\UID$
+% \EndFor
+% \EndProcedure
+
+\Procedure{receiveViewUpdate}{\vupdate msg}{Upon Receipt of a \vupdate
+  message by each avatar or site node.}
+\ForAll {$\nd \in msg.\descs$}
+  \If {\vlist contains \nd.\UID}
+     \If {\vlist.get(\nd.\UID).\sn $<$ \nd.\sn}
+        \State \vlist[\nd.\UID]=\nd
+     \EndIf
+  \Else
+     \State \vlist[\nd.\UID]=\nd
+  \EndIf
 \EndFor
 \EndProcedure
 
-\Procedure{sendChangedUpdate}{}{Executed every $T_c$ seconds by each site
-node.}
-\State \cupdate.\sn=\cursn++
-\State \cupdate.\descs=\clist
-\State $\clist=\emptyset$
-\ForAll {$n$ \in \rn.\gn}
-  \State send \cupdate to $n$
-\EndFor
-\ForAll {$d$ \in \olist}
-  \State send \cupdate to $d.\UID$
-\EndFor
-\EndProcedure
+
+% \Procedure{Avatar.receiveViewUpdate}{\vupdate msg}{Upon Receipt of a \vupdate
+%   message by an avatar node.}
+% $\vlist=\emptyset$
+% \If {msg.\sn > sitesSN}
+%   sitesSN=msg.\sn
+%   \ForAll {\nd \in msg}
+%     \State \vlist[\nd.\UID]=\nd
+%   \EndFor
+%   \EndIf
+% \EndProcedure
 
 \end{algorithmic}
+\caption{site node sending and site or avatar nodes receiving
+  \vupdate messages}
+\label{alg:vupdate}
 \end{algorithm}
+
+
+\paragraph{\aupdate}
+\recby{site node}
+\param{long sequenceNumber}
+\param{ObjectDescriptor sd} 
+\aupdate messages are the means used by avatar nodes to modify the
+object descriptor for their avatar: either to update the avatar's
+physical characteristics or ( identified by \nd.\UID) to move it to a
+different location. 
+
+Each avatar SHOULD route an \adesc message to the site node
+responsible for its current location every $T_u$ seconds. In addition,
+it MAY also inform the site node whenever the user attempts to move
+the avatar. As in the case of \cupdate messages, however, the
+frequency of \adesc messages from a given avatar node MUST not exceed
+one every $T_c$ seconds. Avatar nodes MUST therefore defer or cancel
+\aupdate messages that would cause this frequency limit to be
+exceeded.
+
+Site nodes respond to the receipt of an \aupdate message by updating
+the node descriptor in their visible lists and updating the
+corresponding sequence number, as shown in
+Algorithm~\ref{alg:recaupdate}.
+
+\paragraph{\ncache}
+%\sentby{host}
+\recby{site node, avatar node}
+\param{UID, \vn, $f$, url}
+The \ncache message informs an avatar or a site node that a host has
+cached a new copy of \vn version of the file $f$ associated with the
+object identified by UID. 
+
+The receiving node updates its private copy of the object descriptor
+as shown in Algorithm~\ref{alg:recncache}.
+
+
+
+
+% \section{Protocol Pseudocode}
+% This section of the specification describes the operations carried out
+% by site and avatar nodes in terms of pseudocode. The pieces of
+% pseudocode should be interpreted as guidelines for the implementation
+% of the protocol, and may be modified as long as its semantics are not
+% changed.
+
+% \subsubsection{Periodic Actions}
+% Both site and avatar nodes carry out periodic actions to maintain
+% consistent information in their visibility lists. The following is a
+% summary of these actions.
+
+% \paragraph{Site Nodes}
+% \begin{itemize}
+% \item send a \vupdate message to every neighbor every $T_v$ seconds.
+% \item send a \vupdate message to every avatar in own cell every $T_v$ seconds.
+% \end{itemize}
+% \paragraph{Avatar Nodes}
+% \begin{itemize}
+% \item send a \apropose message to the site responsible for their
+%   location (using the RayNet's route primitive) every $T_v$ seconds.
+% \end{itemize}
+% \subsubsection{Exogenous Actions}
+% Exogenous actions comprise all the interactions of the protocol with
+% the outside world, that is with the Solipsis User Interface, as well
+% as reactions to unexpected disconnections or network failures.
+
+% \paragraph{Avatar Moves}
+% The most basic form of interaction between a user and the \sol world
+% is the movement of controlled avatars. Each user should be able to
+% control the movements and the other aspects of the behavior of its
+% avatar, ultimately determining its interaction with the \sol
+% world. The movement of avatars however, is also subject to the laws of
+% physics and so is their interaction with other objects in the \sol
+% world, including other avatars. To achieve consistency between the
+% commands of users and the constraints dictated by the environment, we
+% have each site node act as a coordinator for the movements of the
+% avatars that are currently in its cell.\df{Will this scale properly?
+%   Do we need a more complex protocol in which avatar nodes also take
+%   an active part in collision detection and physics computations?}
+
+% Avatar nodes interact with site nodes by proposing movements. Site
+% nodes react by computing the resulting scene and communicating it to
+% the avatars. \df{Ultimately, this is what turned out to make the most
+%   sense to me. Please let me know if you agree with this!}
+
+
+
+% An avatar node reacts to a change in the location of its avatar by
+% sending an \adesc message to its current site node, that is the one
+% associated with  location before the move.
+
+% \begin{algorithm}
+% \caption{Avatar moves from one location $l_0$ to another $l_1$}
+% \begin{algorithmic}
+% \Procedure{avatarMove}{$l_0$, $l_1$}{}
+% % \State \desc.\pos=\l
+% % \State $n_0$=\rn.\gn($l_0$)
+% % \State $n_1$=\rn.\gn($l_1$)
+% % \If {$n_0 \neq n_1$}
+% \desc.\pos=$l_1$
+% \rn.\route(\desc, $l_0$)
+% \EndProcedure
+% \end{algorithmic}
+% \end{algorithm}
+
+
+
+
+
+% A site node receiving an \adesc message performs the following steps.
+
+% \begin{algorithm}
+% \caption{site node receiving an \adesc message}
+% \begin{algorithmic}
+% \Procedure{receiveAvatarDescriptorFrom}{\adesc}{}
+% \If {isVisibleFromMyCell(\nd.\vis, \nd.\pos)}
+%   \If {\vlist contains \nd.\UID}
+%      \If {\vlist.get(\nd.\UID).\sn $<$ \nd.\sn}
+%         \State \vlist[\nd.\UID]=\nd
+%      \EndIf
+%   \Else
+%      \State \vlist[\nd.\UID]=\nd
+%   \EndIf
+% \Else
+%   \If {\vlist contains \nd.\UID}
+%      \State \vlist.remove(\nd.\UID,\nd)
+%   \EndIf
+% \EndIf
+
+% \If {isInMyCell(\nd.\pos)
+%   \State \olist[\nd.\UID]=\nd
+% \Else
+%   \State \olist.remove(\nd.\UID)
+% \EndIf
+% \EndProcedure
+
+% \Function {isVisibleFromMyCell}{$r$, $c$}{returns true if the current
+%   site node's cell intersects the visibility region defined by the
+%   circle with radius  $r$ centered at $p$}
+% TBD\\
+% \EndFunction
+
+% \Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
+%   a neighbor in the circular region centered at $p$ with radius $r$}
+% \ForAll {n \in \rn.\gn}
+%   \If (n.\pos \in \region($c$, $r$))
+%     \Return \True
+% \EndFor
+% \Return \False
+% \EndFunction
+
+% \Function {existsNeighborInRegion}{$r$, $c$}{returns true if there is
+%   a neighbor in the circular region centered at $p$ with radius $r$}
+% \ForAll {n \in \rn.\gn}
+%   \If (n.\pos \in \region($c$, $r$))
+%     \Return \True
+% \EndFor
+% \Return \False
+% \EndFunction
+
+% \Function {isInMyCell}{$p$}{returns true if position $p$ is in the
+%   current site node's cell}
+% myD=\distance(n.\pos, \desc.\pos)
+% \ForAll {n \in \rn.\gn}
+%   \If {\distance(n.\pos, $p$)>myD}
+%     \Return \False
+% \EndFor
+% \Return \True
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+% \paragraph{View Update and Change Update Messages}
+% Periodically, site nodes inform the avatars in their cells as well as
+% neighboring site nodes about visible objects. This is achieved through
+% the combination of two mechanisms. First, site nodes send a \vupdate
+% message every $T_v$ seconds to neighboring sites and avatars. This
+% message contains copies of the descriptors of all the objects visible
+% from the site node's cell. Second, with a frequency of up to one every
+% $T_c$, where $T_c<< T_v$, site nodes also send \cupdate messages to
+% inform neighboring sites and visiting avatars about changes occurred
+% from the previous update message. As described above, \cupdate
+% messages also consists of a list of node descriptors. However, while
+% the absence of a descriptor from a \vupdate message implies that the
+% corresponding object is no longer within visibility of the sender
+% node's cell, its absence from a \cupdate message simply implies that
+% the object's descriptor has not changed since the last update.
+% \inlinedf{Right now all updates are sent via unicast to site and
+%   avatar nodes. This is probably fine for messages addressed to site
+%   nodes. Messages addressed to avatar nodes, however, may benefit from
+%   the use of some kind of multicast tree.}
+
+% \begin{algorithm}
+% \caption{site node receiving an \adesc message}
+% \begin{algorithmic}
+% \Procedure{sendViewUpdate}{}{Executed every $T_v$ seconds by each site
+% node.}
+% \State \vupdate.\sn=\cursn++
+% \State \vupdate.\descs=\vlist
+% \ForAll {$n$ \in \rn.\gn}
+%   \State send \vupdate to $n$
+% \EndFor
+% \ForAll {$d$ \in \olist}
+%   \State send \vupdate to $d.\UID$
+% \EndFor
+% \EndProcedure
+
+% \Procedure{sendChangedUpdate}{}{Executed every $T_c$ seconds by each site
+% node.}
+% \State \cupdate.\sn=\cursn++
+% \State \cupdate.\descs=\clist
+% \State $\clist=\emptyset$
+% \ForAll {$n$ \in \rn.\gn}
+%   \State send \cupdate to $n$
+% \EndFor
+% \ForAll {$d$ \in \olist}
+%   \State send \cupdate to $d.\UID$
+% \EndFor
+% \EndProcedure
+
+% \end{algorithmic}
+% \end{algorithm}
 
 
 
@@ -234,25 +547,17 @@ node.}
 
 
 
-\paragraph{\newsnode}
-\recby{avatar node}
-\param{\cursite}
-Informs the avatar node that the site node responsible for its current
-location has changed. The avatar node MUST therefore\df{this and the
-  following could be SHOULD.} update its own \cursite reference to
-equal the one provided by the message.
-
-
+% \paragraph{\newsnode}
+% \recby{avatar node}
+% \param{\cursite}
+% Informs the avatar node that the site node responsible for its current
+% location has changed. The avatar node MUST therefore\df{this and the
+%   following could be SHOULD.} update its own \cursite reference to
+% equal the one provided by the message.
 
 
 
 %\paragraph{\avmoved}
-
-
-
-
-
-
 
 
 

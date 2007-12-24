@@ -40,10 +40,6 @@ shapes; while its visibility radius identifies the distance from which
 the object should be visible in the absence of obstacles and without
 any visual aids. 
 
-The object descriptor is the means through which the \sol protocol
-tracks the evolution of an object. For this reason, each descriptor
-also contains a sequence number that is incremented each time the
-descriptor is modified by the object's owner.
 
 The object descriptor of an object also keeps track of which hosts
 have recorded a copy of the object's 3D description. Specifically,
@@ -52,6 +48,33 @@ that constitute the object's 3D model. The first field is the latest
 known version number of the file, while the second is a list of hosts
 that are known to have cached a copy of the version of the file
 indicated in the first field.
+
+The object descriptor is the means through which the \sol protocol
+tracks the evolution of an object. To maintain consistency, each node
+descriptor should be modified by only a single object at a time.  For
+this reason, each descriptor also contains a sequence number that is
+incremented each time the descriptor is modified.  The general rule
+for modifying object descriptors in the \sol protocol is that each
+descriptor may be modified only by the site node that is responsible
+for the current location of the corresponding object. This is
+straightforward in the case of static objects (sites), but is somewhat
+more complex in the case of roaming objects (avatars), as these may
+roam move from one location to another and thus from one site node to
+another. 
+
+Specifically, in the case of roaming object, the node responsible for
+the object's location may not be the same as the node that is
+currently owning the object. Yet, the owner of the object should still
+be entitled to modify attributes of the object descriptor such as the
+shape or the files associated with the 3D model. Details about how
+this is achieved are given in Section~\ref{}. %  o make this
+% possible, we also define for roaming objects, an additional
+% \emph{static descriptor}\df{need a better name}, which includes all
+% the fields in the object descriptors excluding location and
+% orientation. The static descriptor of a roaming object can only be
+% modified by the owner of the object, while the object descriptor is
+% managed by the node responsible for the object location, as described
+% in Section~\ref{}. 
 
 Finally, in future versions of the protocol, the object descriptor may
 contain information required to implement progressive levels of
@@ -62,11 +85,12 @@ Table~\ref{tab:desc}.
 \begin{table}
 \begin{tabular}{|l|p{4cm}|}
 UID & universal identifier of the object\\
+owner & identifier of the node owning the object\\
 Type & site or avatar\\
 location & location in the 3D world\\
+orientation & orientation in the 3D world\\
 shape& shape from a predefined set\\
 size & size of the object\\
-orientation & orientation in the 3D world\\
 visibility & distance from which the object is visible in the absence
 of obstacles\\
 \hline\\
@@ -127,8 +151,6 @@ in the \sol world. % This, mapping between overlay
 % address and communicate with the nodes responsible for the sites
 % encountered by avatars roaming in the \sol world.
 
-
-\
 
 
 %%% Local Variables: 
