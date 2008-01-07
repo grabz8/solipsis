@@ -22,7 +22,7 @@ public:
     // Convert 1 mesh into 1 neTriangleMesh
     static neTriangleMesh convertMesh(const MeshPtr mesh,
         const Vector3& position,
-        const Quaternion& orient,
+        const Quaternion& orientation,
         const Vector3& scale);
 };
 

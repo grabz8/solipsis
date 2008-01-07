@@ -115,7 +115,7 @@ public:
     // Cook 1 mesh into 1 NxTriangleMesh
     static NxTriangleMesh* cookMesh(const MeshPtr mesh,
         const Vector3& position,
-        const Quaternion& orient,
+        const Quaternion& orientation,
         const Vector3& scale);
 };
 

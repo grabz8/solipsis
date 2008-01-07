@@ -268,7 +268,7 @@ bool PhysXHelpers::shutdown()
 /*#include <fstream>*/
 NxTriangleMesh* PhysXHelpers::cookMesh(const MeshPtr mesh,
                                        const Vector3& position,
-                                       const Quaternion& orient,
+                                       const Quaternion& orientation,
                                        const Vector3& scale)
 {
     size_t vertexCount;
@@ -280,7 +280,7 @@ NxTriangleMesh* PhysXHelpers::cookMesh(const MeshPtr mesh,
     // Get mesh datas
     OgreHelpers::getMeshInformation(mesh, vertexCount, vertices, texCoords, indexCount, indices,
                                     position,
-                                    orient,
+                                    orientation,
                                     scale);
     NxVec3* NxVerts = new NxVec3[vertexCount];
     NxU32* NxIndices = new NxU32[indexCount];

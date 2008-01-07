@@ -9,7 +9,7 @@ using namespace Solipsis;
 //-------------------------------------------------------------------------------------
 neTriangleMesh TokamakHelpers::convertMesh(const MeshPtr mesh,
                                             const Vector3& position,
-                                            const Quaternion& orient,
+                                            const Quaternion& orientation,
                                             const Vector3& scale)
 {
     size_t vertexCount;
@@ -21,7 +21,7 @@ neTriangleMesh TokamakHelpers::convertMesh(const MeshPtr mesh,
     // Get mesh datas
     OgreHelpers::getMeshInformation(mesh, vertexCount, vertices, texCoords, indexCount, indices,
                                     position,
-                                    orient,
+                                    orientation,
                                     scale);
     neTriangleMesh triangleMesh;
     triangleMesh.vertexCount = (s32)vertexCount;
