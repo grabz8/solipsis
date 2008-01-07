@@ -434,7 +434,9 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 
 #ifdef SHADOWS
     mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
-    mSceneMgr->setShadowTextureSettings(512, 2, PixelFormat::PF_A4R4G4B4);
+    mSceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
+    Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
+    mSceneMgr->setShadowCameraSetup(shadowCameraSetup);
 #endif
 
     //TODO : need to set correct position         
