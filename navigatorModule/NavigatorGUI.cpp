@@ -230,7 +230,7 @@ void NavigatorGUI::switchDebug()
     if (mNavisStates[NAVI_DEBUG] == NSNotCreated)
     {
         // Create Navi UI debug
-        mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 256, 256, true, false);
+        mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_DEBUG], "uidebug.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_DEBUG], 0.50f);
         mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
