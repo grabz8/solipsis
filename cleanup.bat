@@ -73,6 +73,13 @@ rmdir navigator\Release /S /Q
 rmdir navigatorModule\Debug /S /Q
 rmdir navigatorModule\Release /S /Q
 
+rmdir navigatorPhysics\navigatorODE\Debug /S /Q
+rmdir navigatorPhysics\navigatorODE\Release /S /Q
+rmdir navigatorPhysics\navigatorPhysX\Debug /S /Q
+rmdir navigatorPhysics\navigatorPhysX\Release /S /Q
+rmdir navigatorPhysics\navigatorTokamak\Debug /S /Q
+rmdir navigatorPhysics\navigatorTokamak\Release /S /Q
+
 rmdir navigatorPlugin\navigatorActiveX\Debug_vc7 /S /Q
 rmdir navigatorPlugin\navigatorActiveX\Debug_vc8 /S /Q
 rmdir navigatorPlugin\navigatorActiveX\Release_vc7 /S /Q

@@ -199,3 +199,12 @@ Instance was not terminated when closing window with ALT+F4
 ODE updates: feet sphere removed and full capsule+body added to compute collisions with other bodies (like PhysX)
 
 ---------------------------
+20/12/07
+
+Generic interfaces created to host several physics engines through DLL/DSO,
+native Ogre plugin mechanism is used to create those plugins,
+Ogre is loading them through its plugins.cfg file,
+for instance, ODE, Ageia PhysX and Tokamak engines are implemented,
+interfaces are composed of simple methods required to manage 1 scene, 1 body (box), 1 character.
+
+---------------------------
