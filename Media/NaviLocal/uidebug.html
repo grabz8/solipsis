@@ -7,7 +7,7 @@
 		<script type="text/javascript" charset="utf-8">
 		    window.addEvent('domready', init);
 		    function init() {
-		        dbgTabs = new mootabs('dbgTabs');
+		        dbgTabs = new mootabs('dbgTabs', {width: '256px'});
 		    }
 		</script>
         <script type="text/javascript">
@@ -44,7 +44,7 @@
             .mootabs_panel {
 	            display: none;
 	            position: relative;
-	            width: 350px;
+	            width: 256px;
 	            top: -1px;
 	            font-family: Verdana;
 	            clear: both;
@@ -72,7 +72,7 @@
 	            position: absolute;
 	            left: 0px;
 	            top: 0px;
-	            width: 256px;
+	            width: 300px;
 	            height: 256px;
             }
             #tabs
