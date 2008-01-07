@@ -61,11 +61,21 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorODE", "navigatorPhysics\navigatorODE\navigatorODE_vc8.vcproj", "{123D21DE-C053-4711-9618-5E5ED1288ED6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DF22C2FB-C678-4378-8475-9CCE0A906756} = {DF22C2FB-C678-4378-8475-9CCE0A906756}
+		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorPhysX", "navigatorPhysics\navigatorPhysX\navigatorPhysX_vc8.vcproj", "{88F50959-2CC5-442A-B795-2A60751CD2E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorTokamak", "navigatorPhysics\navigatorTokamak\navigatorTokamak_vc8.vcproj", "{86D89821-3C23-420F-A73B-065874F930B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C} = {FDDA48B9-E566-4971-8A92-74B2CAD2173C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tokamakdll", "DevTools\tokamak\tokamaksrc\tokamakdll_vc8.vcproj", "{FDDA48B9-E566-4971-8A92-74B2CAD2173C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -280,6 +290,18 @@ Global
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseDLL|Win32.Build.0 = Release|Win32
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseLib|Win32.ActiveCfg = Release|Win32
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseLib|Win32.Build.0 = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.Debug|Win32.Build.0 = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.DebugDLL|Win32.ActiveCfg = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.DebugDLL|Win32.Build.0 = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.DebugLib|Win32.ActiveCfg = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.DebugLib|Win32.Build.0 = Debug|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.Release|Win32.ActiveCfg = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.Release|Win32.Build.0 = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.ReleaseDLL|Win32.ActiveCfg = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.ReleaseDLL|Win32.Build.0 = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.ReleaseLib|Win32.ActiveCfg = Release|Win32
+		{FDDA48B9-E566-4971-8A92-74B2CAD2173C}.ReleaseLib|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -68,14 +68,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csg_vc7", "DevTools\CSG\csg
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorODE", "navigatorPhysics\navigatorODE\navigatorODE_vc7.vcproj", "{ACAA3E94-744E-4B5F-A17D-D7B7431DFCFD}"
 	ProjectSection(ProjectDependencies) = postProject
+		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
 		{DF22C2FB-C678-4378-8475-9CCE0A906756} = {DF22C2FB-C678-4378-8475-9CCE0A906756}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorPhysX", "navigatorPhysics\navigatorPhysX\navigatorPhysX_vc7.vcproj", "{A6B44882-2D15-4606-B41C-AA4401FD58F2}"
 	ProjectSection(ProjectDependencies) = postProject
+		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorTokamak", "navigatorPhysics\navigatorTokamak\navigatorTokamak_vc7.vcproj", "{86D89821-3C23-420F-A73B-065874F930B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D} = {AFDF2257-A817-4D1B-8895-A830D6240B8D}
+		{509E40D6-0263-4228-A85B-BA1595F617A7} = {509E40D6-0263-4228-A85B-BA1595F617A7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tokamakdll", "DevTools\tokamak\tokamaksrc\tokamakdll_vc7.vcproj", "{AFDF2257-A817-4D1B-8895-A830D6240B8D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -281,6 +289,18 @@ Global
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseDLL.Build.0 = Release|Win32
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseLib.ActiveCfg = Release|Win32
 		{86D89821-3C23-420F-A73B-065874F930B6}.ReleaseLib.Build.0 = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.Debug.ActiveCfg = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.Debug.Build.0 = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.DebugDLL.ActiveCfg = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.DebugDLL.Build.0 = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.DebugLib.ActiveCfg = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.DebugLib.Build.0 = Debug|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.Release.ActiveCfg = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.Release.Build.0 = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.ReleaseDLL.ActiveCfg = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.ReleaseDLL.Build.0 = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.ReleaseLib.ActiveCfg = Release|Win32
+		{AFDF2257-A817-4D1B-8895-A830D6240B8D}.ReleaseLib.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
