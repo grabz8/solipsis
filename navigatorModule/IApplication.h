@@ -19,6 +19,12 @@ public:
     */
     static IApplication* createApplication(const char* appPath, bool standAloneAutoCreateWindow = false, const char* windowTitle = 0);
 
+    /** Get the singleton application object
+    @remarks
+	    Returns 0 if no application was previously created
+    */
+    static IApplication* getApplication();
+
     /** A client should call this last
     @remarks
 	    Returns false if there are still instances that are not destroyed

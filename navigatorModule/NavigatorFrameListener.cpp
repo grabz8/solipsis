@@ -68,6 +68,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     OgreOde::World* physicsWorld = mNavigator->getOgrePeerManager()->getPhysicsWorld();
 #elif PHYSX
     NxScene* physicsScene = mNavigator->getOgrePeerManager()->getPhysicsScene();
+#elif PHYSICSPLUGINS
+    IPhysicsScene* physicsScene = mNavigator->getOgrePeerManager()->getPhysicsScene();
 #endif
 
     switch (evt.mKey)
@@ -160,6 +162,19 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             mNavigator->getUserAvatar()->movementKeyPressed(KC_END);
         break;
 #elif PHYSX
+    case KC_END:
+        if (physicsScene != 0)
+            mNavigator->getUserAvatar()->movementKeyPressed(KC_END);
+        break;
+#elif PHYSICSPLUGINS
+    case KC_F10:
+        if (physicsScene != 0)
+            physicsScene->setDebugFlags((IPhysicsScene::DebugFlag)(physicsScene->getDebugFlags() ^ IPhysicsScene::DF_CONTACTS));
+        break;
+    case KC_F11:
+        if (physicsScene != 0)
+            physicsScene->setDebugFlags((IPhysicsScene::DebugFlag)(physicsScene->getDebugFlags() ^ IPhysicsScene::DF_GEOMETRIES));
+        break;
     case KC_END:
         if (physicsScene != 0)
             mNavigator->getUserAvatar()->movementKeyPressed(KC_END);

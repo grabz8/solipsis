@@ -6,6 +6,10 @@
 
 #include "Modeler.h"
 
+#ifdef PHYSICSPLUGINS
+#include "IPhysicsBody.h"
+#endif
+
 using namespace Solipsis;
 
 Navigator* Navigator::ms_singletonPtr = 0;
@@ -192,7 +196,7 @@ void Navigator::fakeSurroundingArea(int index)
            mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Solipsis/SkyBox3", 10, true);
            break;
-#if !defined(PHYSICS) && !defined(PHYSX) && !defined(TOKAMAK)
+#if !defined(PHYSICS) && !defined(PHYSX) && !defined(TOKAMAK) && !defined(PHYSICSPLUGINS)
         case 5: 
            mFakeTerrain = true;
            mSceneMgr->setWorldGeometry("SolipsisFakeTerrain.cfg"); //Add fake terrain (fake because local and not shared with other peers)
@@ -357,6 +361,7 @@ void Navigator::demoPhysics1()
         boxEntity->setMaterialName("2 - Default");
         boxNode->attachObject(boxEntity);
         NxBodyDesc boxBodyDesc;
+        boxBodyDesc.setToDefault();
         boxBodyDesc.angularDamping = 0.5f;
         NxBoxShapeDesc boxShapeDesc;
         boxShapeDesc.dimensions = NxVec3(boxExtents.x/2, boxExtents.y/2, boxExtents.z/2);
@@ -418,6 +423,34 @@ void Navigator::demoPhysics1()
     neV3 velocity;
     velocity.SetZero();
     boxBody->SetVelocity(velocity);
+#elif PHYSICSPLUGINS
+    static std::map<String, IPhysicsBody*> bodies;
+    IPhysicsScene* physicsScene = mOgrePeerManager->getPhysicsScene();
+    if (physicsScene == 0) return;
+
+    IPhysicsBody* boxBody = 0;
+    std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
+    if (boxIt != boxes.end())
+    {
+        boxNode = mSceneMgr->getSceneNode(boxNodeName);
+        boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
+        boxBody = (bodies.find(boxName))->second;
+    }
+    else
+    {
+        boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
+        boxNode->setScale(boxScale);
+        boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
+        boxEntity->setMaterialName("2 - Default");
+        boxNode->attachObject(boxEntity);
+        boxBody = physicsScene->createBody();
+        boxBody->createBox(boxNode, boxExtents);
+        boxes[boxName] = boxNode;
+        bodies[boxName] = boxBody;
+    }
+    boxBody->setPosition(boxPos);
+    boxBody->setLinearVelocity(Vector3::ZERO);
+    boxBody->setAngularVelocity(Vector3::ZERO);
 #endif
 }
 #endif

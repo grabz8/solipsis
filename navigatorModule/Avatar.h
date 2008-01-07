@@ -16,6 +16,9 @@ using namespace Ogre;
 #include "ControllerManager.h"
 #include "NxCapsuleController.h"
 #include "PhysXHelpers.h"
+#elif PHYSICSPLUGINS
+#include "IPhysicsScene.h"
+#include "IPhysicsCharacter.h"
 #endif
 
 namespace Solipsis {
@@ -107,6 +110,11 @@ protected:
     NxCapsuleController* mCapsuleController;
 /*    /// Scene query
     NxSceneQuery* mSceneQuery;*/
+#elif PHYSICSPLUGINS
+    /// Physics scene
+    IPhysicsScene* mPhysicsScene;
+    /// Physics Character
+    IPhysicsCharacter* mPhysicsCharacter;
 #else
     RaySceneQuery* mRaySceneQuery;
 #endif
@@ -137,9 +145,9 @@ private:
     KeyMotion mPgdownKeyMotion;
 
 public:
-    /** Constructor.
-    */
+    /** Constructor. */
     Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity);
+    /** Destructor. */
     virtual ~Avatar();
 
     /** Get the scene node. */
@@ -183,6 +191,13 @@ public:
     NxScene* getPhysicsScene() { return mPhysicsScene; }
     /** Create physics. */
     void createPhysics(NxScene* physicsScene, ::ControllerManager* controllerManager);
+    /** Destroy physics. */
+    void destroyPhysics();
+#elif PHYSICSPLUGINS
+    /** Get the physics scene. */
+    IPhysicsScene* getPhysicsScene() { return mPhysicsScene; }
+    /** Create physics. */
+    void createPhysics(IPhysicsScene* physicsScene);
     /** Destroy physics. */
     void destroyPhysics();
 #endif

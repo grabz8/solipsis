@@ -35,6 +35,8 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     mPhysicsWorldActor(0)
 #elif TOKAMAK
     ,mPhysicsSim(0)
+#elif PHYSICSPLUGINS
+    ,mPhysicsScene(0)
 #endif
 {
 }
@@ -66,6 +68,9 @@ OgrePeerManager::~OgrePeerManager()
 #elif TOKAMAK
     if (mPhysicsSim != 0)
         neSimulator::DestroySimulator(mPhysicsSim);
+#elif PHYSICSPLUGINS
+    if (mPhysicsScene != 0)
+        PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
 #endif
 }
 
@@ -198,6 +203,13 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
                 avatar->createPhysics(mPhysicsScene, mControllerManager);
                 avatar->setGravity(true);
             }
+#elif PHYSICSPLUGINS
+            // Simulate entry of local avatars into the physics scene
+            if ((mPhysicsScene != 0) && (avatar->getPhysicsScene() == 0))
+            {
+                avatar->createPhysics(mPhysicsScene);
+                avatar->setGravity(true);
+            }
 #endif
         }
     }
@@ -232,8 +244,8 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             SceneNode* node = (SceneNode*)actor->userData;
             NxVec3 pos = actor->getGlobalPosition();
             node->setPosition(pos.x, pos.y, pos.z);
-            NxQuat orient = actor->getGlobalOrientationQuat();
-            node->setOrientation(orient.w, orient.x, orient.y, orient.z);
+            NxQuat orientation = actor->getGlobalOrientationQuat();
+            node->setOrientation(orientation.w, orientation.x, orientation.y, orientation.z);
         }
     }
 #elif TOKAMAK
@@ -255,10 +267,14 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
             SceneNode* node = (SceneNode*)body->GetUserData();
             neV3 pos = body->GetPos();
             node->setPosition(pos.X(), pos.Y(), pos.Z());
-            neQ orient = body->GetRotationQ();
-            node->setOrientation(orient.W, orient.X, orient.Y, orient.Z);
+            neQ orientation = body->GetRotationQ();
+            node->setOrientation(orientation.W, orientation.X, orientation.Y, orientation.Z);
         }
     }
+#elif PHYSICSPLUGINS
+    // Step physics part 1
+    if (mPhysicsScene != 0)
+        mPhysicsScene->preStep(evt.timeSinceLastFrame);
 #endif
 
     // Animate
@@ -273,6 +289,10 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         mPhysicsScene->simulate(evt.timeSinceLastFrame);
         mPhysicsScene->flushStream();
     }
+#elif PHYSICSPLUGINS
+    // Step physics part 2
+    if (mPhysicsScene != 0)
+        mPhysicsScene->postStep();
 #endif
 
     return true;
@@ -337,6 +357,12 @@ neTriangleMesh& OgrePeerManager::getPhysicsWorldGeometry()
 std::map<String, neRigidBody*>& OgrePeerManager::getPhysicsBodies()
 {
     return mPhysicsBodies;
+}
+#elif PHYSICSPLUGINS
+//-------------------------------------------------------------------------------------
+IPhysicsScene* OgrePeerManager::getPhysicsScene()
+{
+    return mPhysicsScene;
 }
 #endif
 
@@ -449,7 +475,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
             "Unable to create the PhysX scene !",
             "OgrePeerManager::CreateSceneNode");
     }
-    mPhysicsScene->setTiming(1.0/60.0, 1, NX_TIMESTEP_VARIABLE);
+    mPhysicsScene->setTiming(1.0f/60.0f, 8, NX_TIMESTEP_FIXED);
     // Set the default material 0
 	NxMaterial* defaultMaterial = mPhysicsScene->getMaterialFromIndex(0); 
 	defaultMaterial->setRestitution(0.0f);
@@ -494,6 +520,18 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
                                                         worldCollisionEntity->getParentNode()->getScale());
     mPhysicsSim->SetTerrainMesh(&mPhysicsWorldGeometry);
     worldCollisionSceneNode->setVisible(false);
+#elif PHYSICSPLUGINS
+    IPhysicsEngine* engine = PhysicsEngineManager::getSingleton().getSelectedEngine();
+    // Create the physical scene
+    mPhysicsScene = engine->createScene();
+    if (!mPhysicsScene->create(mSceneMgr))
+        Exception(Exception::ERR_INTERNAL_ERROR,
+        "Unable to create the PhysX scene !",
+        "PhysXScene::PhysXScene");
+    // Create the scene collision mesh
+    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
+    mPhysicsScene->setTerrainMesh(*worldCollisionEntity);
+    worldCollisionEntity->getParentSceneNode()->setVisible(false);
 #else
     // Destroy collision mesh
     mSceneMgr->destroySceneNode("MC_station");

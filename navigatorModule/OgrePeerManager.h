@@ -24,6 +24,9 @@
 #pragma comment(lib, "tokamakdll.lib")
 #include "tokamak.h"
 #include "TokamakHelpers.h"
+#elif PHYSICSPLUGINS
+#include "IPhysicsScene.h"
+#include "PhysicsEngineManager.h"
 #endif
 
 using namespace Ogre;
@@ -62,6 +65,9 @@ private:
     neSimulator* mPhysicsSim;
     neTriangleMesh mPhysicsWorldGeometry;
     std::map<String, neRigidBody*> mPhysicsBodies;
+#elif PHYSICSPLUGINS
+    /// Physics scene
+    IPhysicsScene* mPhysicsScene;
 #endif
 
 public:
@@ -97,6 +103,8 @@ public:
     neSimulator* getPhysicsSim();
     neTriangleMesh& getPhysicsWorldGeometry();
     std::map<String, neRigidBody*>& getPhysicsBodies();
+#elif PHYSICSPLUGINS
+    IPhysicsScene* getPhysicsScene();
 #endif
 
 protected:

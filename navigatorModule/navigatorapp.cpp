@@ -7,12 +7,20 @@ using namespace Solipsis;
 //-------------------------------------------------------------------------------------
 // this is a simple C stub so that dll can be loaded dynamically
 // and the static method createNavigator can be called
-extern "C" {
-	NAVIGATORMODULEDIRECT_EXPORT IApplication* createApplication(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle)
-	{
-		return (IApplication*)IApplication::createApplication(appPath, standAloneAutoCreateWindow, windowTitle);
-	}
+extern "C" NAVIGATORMODULEDIRECT_EXPORT IApplication* createApplication(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle)
+{
+	return (IApplication*)IApplication::createApplication(appPath, standAloneAutoCreateWindow, windowTitle);
 }
+
+//-------------------------------------------------------------------------------------
+// this is a simple C stub so that dll can be loaded dynamically
+// and the static method getApplication can be called
+extern "C" NAVIGATORMODULEDIRECT_EXPORT IApplication* getNavigatorApp()
+{
+    return (IApplication*)IApplication::getApplication();
+}
+
+NavigatorApp* NavigatorApp::ms_Singleton = 0;
 
 //-------------------------------------------------------------------------------------
 IApplication* IApplication::createApplication(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle)
@@ -29,7 +37,11 @@ IApplication* IApplication::createApplication(const char* appPath, bool standAlo
     return NavigatorApp::ms_Singleton;
 }	
 
-NavigatorApp* NavigatorApp::ms_Singleton = 0;
+//-------------------------------------------------------------------------------------
+IApplication* IApplication::getApplication()
+{
+    return NavigatorApp::ms_Singleton;
+}
 
 //-------------------------------------------------------------------------------------
 NavigatorApp::NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle) :
@@ -42,6 +54,8 @@ NavigatorApp::NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow,
         mAppPath = appPath;
     if (windowTitle != 0)
         mWindowTitle = windowTitle;
+
+    mPhysicsEngineManager = new PhysicsEngineManager();
 }
 
 //-------------------------------------------------------------------------------------
@@ -49,6 +63,8 @@ NavigatorApp::~NavigatorApp()
 {
     assert(NavigatorApp::ms_Singleton == this);
     NavigatorApp::ms_Singleton = 0;
+
+    delete mPhysicsEngineManager;
 }
 
 //-------------------------------------------------------------------------------------
@@ -131,6 +147,14 @@ void NavigatorApp::_initialize()
     assert(mThreads.size() == 0);
     mThreads.clear();
     initialize(mStandAloneAutoCreateWindow, mWindowTitle);
+
+#ifdef PHYSICSPLUGINS
+//    PhysicsEngineManager::getSingleton().selectEngine("PhysX engine");
+    PhysicsEngineManager::getSingleton().selectEngine("ODE engine");
+//    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
+    PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
+#endif
+
     mInitialized = true;
 }
 
@@ -138,6 +162,11 @@ void NavigatorApp::_initialize()
 void NavigatorApp::_finalize()
 {
     assert(mThreads.size() == 0);
+
+#ifdef PHYSICSPLUGINS
+    PhysicsEngineManager::getSingleton().getSelectedEngine()->shutdown();
+#endif
+
     finalize();
     mInitialized = false;
 }

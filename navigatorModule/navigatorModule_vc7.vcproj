@@ -20,8 +20,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;PHYSICS;NPHYSX;NTOKAMAK"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;NPHYSICS;NPHYSX;NTOKAMAK;PHYSICSPLUGINS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -73,9 +73,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;PHYSICS;NPHYSX;NTOKAMAK"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;NPHYSICS;NPHYSX;NTOKAMAK;PHYSICSPLUGINS"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="TRUE"
 				RuntimeTypeInfo="TRUE"
@@ -206,6 +205,9 @@
 				RelativePath=".\Peer.cpp">
 			</File>
 			<File
+				RelativePath=".\PhysicsEngineManager.cpp">
+			</File>
+			<File
 				RelativePath=".\PhysXHelpers.cpp">
 			</File>
 			<File
@@ -254,6 +256,18 @@
 			</File>
 			<File
 				RelativePath=".\oSceneLoader\include\IOSMSceneCallbacks.h">
+			</File>
+			<File
+				RelativePath=".\IPhysicsBody.h">
+			</File>
+			<File
+				RelativePath=".\IPhysicsCharacter.h">
+			</File>
+			<File
+				RelativePath=".\IPhysicsEngine.h">
+			</File>
+			<File
+				RelativePath=".\IPhysicsScene.h">
 			</File>
 			<File
 				RelativePath=".\IWindow.h">
@@ -320,6 +334,9 @@
 			</File>
 			<File
 				RelativePath=".\Peer.h">
+			</File>
+			<File
+				RelativePath=".\PhysicsEngineManager.h">
 			</File>
 			<File
 				RelativePath=".\PhysXHelpers.h">

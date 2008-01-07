@@ -6,6 +6,7 @@
 #include "BasicThread.h"
 #include "OgreApplication.h"
 #include "Instance.h"
+#include "PhysicsEngineManager.h"
 
 namespace Solipsis {
 
@@ -59,6 +60,7 @@ protected:
     unsigned int mNumInstances;
     std::vector<MainThread*> mThreads;
     Instance* mStandAloneInstance;
+    PhysicsEngineManager* mPhysicsEngineManager;
 
 protected: 
     NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle);

@@ -52,6 +52,13 @@ namespace Solipsis {
     class IApplication;
     class IInstance;
     class IWindow;
+    class IPhysicsEngine;
+    class IPhysicsScene;
+    class IPhysicsBody;
+    class IPhysicsCharacter;
+
+    class OgreHelpers;
+    class PhysicsEngineManager;
 
 } // end namespace
 
