@@ -77,7 +77,7 @@ void OgreHelpers::getMeshInformation(const MeshPtr mesh,
                                      size_t &index_count,
                                      unsigned long*& indices,
                                      const Vector3& position,
-                                     const Quaternion& orient,
+                                     const Quaternion& orientation,
                                      const Vector3& scale)
 {
     bool added_shared = false;
@@ -148,7 +148,7 @@ void OgreHelpers::getMeshInformation(const MeshPtr mesh,
             {
                 posElem->baseVertexPointerToElement(vertex, &pReal);
                 Vector3 pt(pReal[0], pReal[1], pReal[2]);
-                vertices[current_offset + j] = (orient*(pt*scale)) + position;
+                vertices[current_offset + j] = (orientation*(pt*scale)) + position;
                 if (texCoordsElem != NULL)
                 {
                     texCoordsElem->baseVertexPointerToElement(vertex, &pReal);

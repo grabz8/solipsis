@@ -1,6 +1,7 @@
 #ifndef __OgreHelpers_h__
 #define __OgreHelpers_h__
 
+#include "NavigatorModule.h"
 #include "Ogre.h"
 
 using namespace Ogre;
@@ -12,7 +13,7 @@ namespace Solipsis {
 
 /** This static class contains several helper methods above Ogre.
  */
-class OgreHelpers
+class NAVIGATORMODULE_EXPORT OgreHelpers
 {
 private:
     // No instanciation
@@ -35,7 +36,7 @@ public:
         size_t &index_count,
         unsigned long*& indices,
         const Vector3& position,
-        const Quaternion& orient,
+        const Quaternion& orientation,
         const Vector3& scale);
     // Ray/triangle intersection return boolean result, distance and barycentric u,v
     // to compute texture coordinates
