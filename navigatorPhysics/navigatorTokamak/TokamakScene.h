@@ -44,7 +44,7 @@ public:
     virtual bool create(SceneManager* sceneManager);
 
     /// @copydoc IPhysicsScene::getDebugFlags
-    virtual DebugFlag getDebugFlags() { return DebugFlag::DF_NONE; }
+    virtual DebugFlag getDebugFlags() { return IPhysicsScene::DF_NONE; }
     /// @copydoc IPhysicsScene::setDebugFlags
     virtual void setDebugFlags(DebugFlag debugFlags) {}
 
