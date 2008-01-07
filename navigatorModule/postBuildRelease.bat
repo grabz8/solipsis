@@ -7,6 +7,10 @@ copy Event.h ..\Dependencies\navigatorModule\include\. /y
 copy IApplication.h ..\Dependencies\navigatorModule\include\. /y
 copy IInstance.h ..\Dependencies\navigatorModule\include\. /y
 copy IWindow.h ..\Dependencies\navigatorModule\include\. /y
+copy OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
+copy IPhysics*.h ..\Dependencies\navigatorModule\include\. /y
+copy PhysicsEngineManager.h ..\Dependencies\navigatorModule\include\. /y
+
 if not exist ..\Dependencies\navigatorModule\lib\Release mkdir ..\Dependencies\navigatorModule\lib\Release
 copy Release\Navigator.lib ..\Dependencies\navigatorModule\lib\Release\. /y
 copy Release\Navigator.dll ..\Dependencies\navigatorModule\lib\Release\. /y
