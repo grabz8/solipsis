@@ -233,9 +233,11 @@ void NavigatorGUI::switchDebug()
         mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256, true, false);
         mNaviMgr.setNaviMask(mNavisNames[NAVI_DEBUG], "uidebug.png");
         mNaviMgr.setNaviOpacity(mNavisNames[NAVI_DEBUG], 0.50f);
-        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
+        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
         mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
         mNavisStates[NAVI_DEBUG] = NSCreated;
+        mTreeDirty = true;
     }
     else
     {
@@ -246,6 +248,42 @@ void NavigatorGUI::switchDebug()
             mNavisStates[NAVI_DEBUG] = NSNotCreated;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::debugPageLoaded()");
+
+    // Refresh tree datas
+    debugRefreshTree(naviData);
+
+    // Show Navi UI debug
+    if (mNavisStates[NAVI_DEBUG] == NSCreated)
+        mNaviMgr.showNavi(mNavisNames[NAVI_DEBUG], true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::debugRefreshTree()");
+
+    if (!mTreeDirty) return;
+
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.disable()");
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.root.clear()");
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.insert({text:'Scenes', id:'Scenes'})");
+    String sceneName = mNavigator->getSceneMgrPtr()->getName();
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.get('Scenes').insert({text:'" + sceneName + "', id:'S_" + sceneName + "'})");
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
+    for (std::map<String,OgrePeer*>::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
+    {
+        String ogrePeerName = ogrePeer->second->getPeer()->getLogin();
+        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
+    }
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.enable()");
+
+    mTreeDirty = false;
 }
 #endif
 
@@ -283,7 +321,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
     // Get login name
 	std::string login;
     login = naviData["login"].str();
-    OGRE_LOG("login=" + (String)(login.c_str()));
+    OGRE_LOG("login=" + login);
 
     // Check
     if ((login.length() < 2) || (login.compare("null") == 0) || (login.compare("me") == 0))
@@ -294,7 +332,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
         // Valid login
         mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_LOGIN], "$('infosText').innerHTML = 'Connecting ...'");
         // Set avatar name
-        mNavigator->getUserAvatar()->setName(login.c_str());
+        mNavigator->getUserAvatar()->setName(login);
         // Call connect
         bool connected = mNavigator->connect();
         char txt[128]; sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
@@ -404,7 +442,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     udpPort = naviData["udpPort"].toInt();
     host = naviData["host"].str();
     port = naviData["port"].toInt();
-    OGRE_LOG("radioNode=" + (String)(radioNode.c_str()) + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + (String)(host.c_str()) + ", port=" + StringConverter::toString(port));
+    OGRE_LOG("radioNode=" + radioNode + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + host + ", port=" + StringConverter::toString(port));
     std::string radioProxyType;
 	std::string proxyHttpHost;
     int proxyHttpPort;
@@ -413,7 +451,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     proxyHttpHost = naviData["proxyHttpHost"].str();
     proxyHttpPort = naviData["proxyHttpPort"].toInt();
     proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
-    OGRE_LOG("radioProxyType=" + (String)(radioProxyType.c_str()) + ", proxyHttpHost=" + (String)(proxyHttpHost.c_str()) + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + (String)(proxyAutoconfUrl.c_str()));
+    OGRE_LOG("radioProxyType=" + radioProxyType + ", proxyHttpHost=" + proxyHttpHost + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + proxyAutoconfUrl);
 
     // Check
     bool valid_options = true;
@@ -663,7 +701,7 @@ void NavigatorGUI::debugCommand(const NaviData& naviData)
     std::string params;
     cmd = naviData["cmd"].str();
     params = naviData["params"].str();
-    OGRE_LOG("cmd=" + (String)(cmd.c_str()) + ", params=" + (String)(params.c_str()));
+    OGRE_LOG("cmd=" + cmd + ", params=" + params);
 
     // Push debug command
     DebugHelpers::debugCommands[String(cmd)] = String(params);
@@ -687,7 +725,7 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
     std::string naviName;
     naviName = naviData["naviName"].str();
     NaviPanel naviPanel = getNaviPanel(naviName);
-    OGRE_LOG("naviName=" + (String)(naviName.c_str()) + ", naviPanel=" + StringConverter::toString(naviPanel));
+    OGRE_LOG("naviName=" + naviName + ", naviPanel=" + StringConverter::toString(naviPanel));
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)

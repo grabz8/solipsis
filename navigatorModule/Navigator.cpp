@@ -858,6 +858,10 @@ void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 //-------------------------------------------------------------------------------------
 bool Navigator::generateFromPeer(Peer* peer)
 {
+#ifdef UIDEBUG
+    if (mNavigatorGUI != 0)
+        mNavigatorGUI->setTreeDirty(true);
+#endif
     return mOgrePeerManager->load(peer, peer->getLogin() + ".xml");
 }
 

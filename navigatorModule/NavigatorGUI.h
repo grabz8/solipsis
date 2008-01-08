@@ -37,6 +37,9 @@ protected:
     static const std::string mNavisNames[NAVI_COUNT];
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
+#ifdef UIDEBUG
+    bool mTreeDirty;
+#endif
 
 public:
     NavigatorGUI(Navigator* navigator);
@@ -66,6 +69,7 @@ public:
 
 #ifdef UIDEBUG
     void switchDebug();
+    void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
 #endif
 
 protected:
@@ -103,6 +107,8 @@ protected:
 #ifdef UIDEBUG
     // Debug callbacks
     void debugCommand(const NaviData& naviData);
+    void debugPageLoaded(const NaviData& naviData);
+    void debugRefreshTree(const NaviData& naviData);
 #endif
 
     // Helpers

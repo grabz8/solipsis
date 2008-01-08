@@ -4,10 +4,13 @@
         <title>uidebug</title>
         <script type="text/javascript" src="Navi.js"></script>
         <script type="text/javascript" src="mootabs1.2.js"></script>
+        <script type="text/javascript" src="mootree.js"></script>
 		<script type="text/javascript" charset="utf-8">
 		    window.addEvent('domready', init);
+            var allTree;
 		    function init() {
-		        dbgTabs = new mootabs('dbgTabs', {width: '256px'});
+		        dbgTabs = new mootabs('dbgTabs', {width:'256px', height:'236px', changeTransition:Fx.Transitions.Linear, duration:0});
+	            allTree = new MooTreeControl({div:'allTree', mode:'files', grid:true}, {text:'Root', open:true});
 		    }
 		</script>
         <script type="text/javascript">
@@ -31,12 +34,12 @@
 	            float: left;
 	            background-color: transparent;
 	            padding: 2px 8px 2px 8px;
-	            margin-right: 10px;
+	            margin-right: 2px;
 	            cursor: pointer;
 	            color: #FFFFFF;
 	            font-family: Verdana;
-	            font-size: 14px;
-	            line-height: 24px;
+	            font-size: 12px;
+	            line-height: 14px;
             }
             .mootabs_title li.active {
 	            border-top: 3px solid #B0E84D;
@@ -50,12 +53,14 @@
 	            clear: both;
 	            text-align: left;
 	            padding: 3px;
+	            overflow: auto;
             }
             .mootabs_panel.active {
                 background-color: transparent;
 	            display: block;
             }
         </style>
+        <link rel="stylesheet" href="mootree.css" type="text/css" media="screen" />
         <style type="text/css">
             body
             {
@@ -123,6 +128,7 @@
 					    <li title="Helpers">Helpers</li>
 					    <li title="Demos">Demos</li>
 					    <li title="Tests">Tests</li>
+					    <li title="Tree" onclick="new NaviData('debugRefreshTree').add({naviName:'uidebug'}).send();">Tree</li>
 				    </ul>
 				    <div id="Helpers" class="mootabs_panel">
                         <button id="helpersToggleAxisButton" class="buttonRow1" name="buttonHelpersToggleAxis" value="buttonHelpersToggleAxis" type="button" onclick="debugCommand('toggleAxis', document.getElementById('inputHelpersPosAxis').value)">toggleAxis</button>
@@ -147,6 +153,9 @@
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerLostButton" class="buttonRow1" name="buttonPeerLost" value="buttonPeerLost" type="button" onclick="debugCommand('testEvt', 'peerLost')">peerLost</button>
                         <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
+				    </div>
+				    <div id="Tree" class="mootabs_panel">
+                        <div id="allTree" />
 				    </div>
 			    </div>
             </div>
