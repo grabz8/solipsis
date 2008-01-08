@@ -26,6 +26,7 @@ namespace Solipsis {
     class TokamakPlugin;
     class TokamakEngine;
     class TokamakScene;
+    class TokamakCollider;
     class TokamakBody;
     class TokamakCharacter;
 

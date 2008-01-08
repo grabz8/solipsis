@@ -4,6 +4,8 @@
 #include "IPhysicsCharacter.h"
 #include "TokamakPluginPrerequisites.h"
 
+#include "TokamakBody.h"
+
 #include "tokamak.h"
 
 using namespace Ogre;
@@ -12,7 +14,7 @@ namespace Solipsis {
 
 /** This class manages a Tokamak character.
 */
-class TokamakCharacter : public IPhysicsCharacter
+class TokamakCharacter : public IPhysicsCharacter, public TokamakCollider
 {
 protected:
     /// Scene
@@ -23,6 +25,7 @@ protected:
     SceneNode* mNode;
     /// Capsule body
     neAnimatedBody* mCapsuleBody;
+/*    neRigidBody* mCapsuleBody;*/
     /// Capsule body contact detected ?
     bool mCapsuleBodyContact;
 
@@ -37,6 +40,7 @@ public:
     /// @copydoc IPhysicsCharacter::getPosition
     virtual void getPosition(Vector3& position);
 
+    bool isAnimated() { return true; }
     /** Collision callback. */
     void collisionCallback(neCollisionInfo& collisionInfo);
 

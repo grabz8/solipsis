@@ -33,9 +33,24 @@ void TokamakCharacter::create(SceneNode* node, Desc& desc)
     capsuleGeom->SetCylinder(mDesc.radius*2, mDesc.height);
     capsuleGeom->SetMaterialIndex(0);
     mCapsuleBody->UpdateBoundingInfo();
-    mCapsuleBody->SetCollisionID(0);
+    mCapsuleBody->SetCollisionID(1);
     mNode = node;
-    mCapsuleBody->SetUserData((u32)this);
+//    mCapsuleBody->SetUserData((u32)this);
+    mCapsuleBody->SetUserData((u32)((TokamakCollider*)this));
+/*    //BEGIN
+    mCapsuleBody = physicsSim->CreateRigidBody();
+    mCapsuleBody->SetPos(TokamakHelpers::Vector32neV3(desc.position));
+    neGeometry* capsuleGeom = mCapsuleBody->AddGeometry();
+    capsuleGeom->SetCylinder(mDesc.radius*2, mDesc.height);
+    mCapsuleBody->SetMass(1.0f);
+    mCapsuleBody->GravityEnable(false);
+    mCapsuleBody->SetInertiaTensor(neCylinderInertiaTensor(mDesc.radius*2, mDesc.height, mCapsuleBody->GetMass()));
+    capsuleGeom->SetMaterialIndex(0);
+    mCapsuleBody->UpdateBoundingInfo();
+    mCapsuleBody->SetCollisionID(1);
+    mNode = node;
+    mCapsuleBody->SetUserData((u32)((TokamakCollider*)this));
+    //END*/
 }
 
 //-------------------------------------------------------------------------------------
@@ -83,8 +98,13 @@ void TokamakCharacter::moveStep(Vector3& displacement)
     Vector3 newPosition = oldPosition + displacement;
     // Collide physics capsule body with scene
     Vector3 savedPosition = newPosition;
-    mCapsuleBody->SetPos(TokamakHelpers::Vector32neV3(newPosition + Vector3(0.0f, 0.0f, 0.0f)));
+/*    //BEGIN
+    mCapsuleBody->SetAngularMomentum(TokamakHelpers::Vector32neV3(Vector3::ZERO));
+	mCapsuleBody->SetTorque(TokamakHelpers::Vector32neV3(Vector3::ZERO));
+    mCapsuleBody->SetRotation(TokamakHelpers::Quaternion2neQ(Quaternion::IDENTITY));
+    //END*/
     mCapsuleBodyContact = false;
+    mCapsuleBody->SetPos(TokamakHelpers::Vector32neV3(newPosition + Vector3(0.0f, 0.0f, 0.0f)));
     if (mCapsuleBodyContact)
     {
 //        newPosition = oldPosition + displacement*Vector3(1.0f, 0.0f, 1.0f);

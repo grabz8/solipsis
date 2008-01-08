@@ -35,6 +35,7 @@ bool TokamakScene::create(SceneManager* sceneManager)
 
     // Set the collision callback
     mPhysicsSim->SetCollisionCallback(collisionCallback);
+//    mPhysicsSim->GetCollisionTable()->Set(1, -1, neCollisionTable::RESPONSE_IMPULSE_CALLBACK);
 
     // Set the default material 0
     mPhysicsSim->SetMaterial(0, 0.99f, 0.01f);
@@ -79,7 +80,10 @@ void TokamakScene::preStep(Real timeSinceLastFrame)
         for (std::map<String, neRigidBody*>::iterator it = mPhysicsBodies.begin();it != mPhysicsBodies.end(); ++it)
         {
             neRigidBody* body = it->second;
-            TokamakBody* tokamakBody = (TokamakBody*)body->GetUserData();
+            TokamakCollider* tokamakCollider = (TokamakCollider*)body->GetUserData();
+            if (tokamakCollider == 0) continue;
+            if (tokamakCollider->isAnimated()) continue;
+            TokamakBody* tokamakBody = (TokamakBody*)tokamakCollider;
             if (tokamakBody == 0) continue;
             SceneNode* node = tokamakBody->mNode;
             assert(node != 0);
@@ -159,30 +163,38 @@ void TokamakScene::collisionCallback(neCollisionInfo& collisionInfo)
     {
         if (collisionInfo.typeA == NE_RIGID_BODY)
         {
-            neAnimatedBody* animatedBody = (neAnimatedBody*)collisionInfo.bodyA;
-            TokamakCharacter* character = (TokamakCharacter*)animatedBody->GetUserData();
-            character->collisionCallback(collisionInfo);
+            neRigidBody* rigidBody = (neRigidBody*)collisionInfo.bodyA;
+//            TokamakBody* body = (TokamakBody*)rigidBody->GetUserData();
+//            body->collisionCallback(collisionInfo);
+            TokamakCollider* collider = (TokamakCollider*)rigidBody->GetUserData();
+            collider->collisionCallback(collisionInfo);
         }
         else if (collisionInfo.typeA == NE_ANIMATED_BODY)
         {
-            neRigidBody* rigidBody = (neRigidBody*)collisionInfo.bodyA;
-            TokamakBody* body = (TokamakBody*)rigidBody->GetUserData();
-            body->collisionCallback(collisionInfo);
+            neAnimatedBody* animatedBody = (neAnimatedBody*)collisionInfo.bodyA;
+//            TokamakCharacter* character = (TokamakCharacter*)animatedBody->GetUserData();
+//            character->collisionCallback(collisionInfo);
+            TokamakCollider* collider = (TokamakCollider*)animatedBody->GetUserData();
+            collider->collisionCallback(collisionInfo);
         }
     }
     if (collisionInfo.bodyB != 0)
     {
         if (collisionInfo.typeB == NE_RIGID_BODY)
         {
-            neAnimatedBody* animatedBody = (neAnimatedBody*)collisionInfo.bodyB;
-            TokamakCharacter* character = (TokamakCharacter*)animatedBody->GetUserData();
-            character->collisionCallback(collisionInfo);
+            neRigidBody* rigidBody = (neRigidBody*)collisionInfo.bodyB;
+//            TokamakBody* body = (TokamakBody*)rigidBody->GetUserData();
+//            body->collisionCallback(collisionInfo);
+            TokamakCollider* collider = (TokamakCollider*)rigidBody->GetUserData();
+            collider->collisionCallback(collisionInfo);
         }
         else if (collisionInfo.typeB == NE_ANIMATED_BODY)
         {
-            neRigidBody* rigidBody = (neRigidBody*)collisionInfo.bodyB;
-            TokamakBody* body = (TokamakBody*)rigidBody->GetUserData();
-            body->collisionCallback(collisionInfo);
+            neAnimatedBody* animatedBody = (neAnimatedBody*)collisionInfo.bodyB;
+//            TokamakCharacter* character = (TokamakCharacter*)animatedBody->GetUserData();
+//            character->collisionCallback(collisionInfo);
+            TokamakCollider* collider = (TokamakCollider*)animatedBody->GetUserData();
+            collider->collisionCallback(collisionInfo);
         }
     }
 }

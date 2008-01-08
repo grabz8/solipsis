@@ -10,9 +10,17 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+class TokamakCollider
+{
+public:
+    virtual bool isAnimated() = 0;
+    /** Collision callback. */
+    virtual void collisionCallback(neCollisionInfo& collisionInfo) = 0;
+};
+
 /** This class manages a Tokamak body.
 */
-class TokamakBody : public IPhysicsBody
+class TokamakBody : public IPhysicsBody, public TokamakCollider
 {
     friend class TokamakScene;
 
@@ -38,6 +46,7 @@ public:
     /// @copydoc IPhysicsBody::setAngularVelocity
     virtual void setAngularVelocity(const Vector3& velocity);
 
+    bool isAnimated() { return false; }
     /** Collision callback. */
     void collisionCallback(neCollisionInfo& collisionInfo) {}
 };

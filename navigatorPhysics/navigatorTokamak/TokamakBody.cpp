@@ -54,7 +54,7 @@ void TokamakBody::createBox(SceneNode* node, const Vector3& extents)
     mBody->SetCollisionID(0);
     mBody->GravityEnable(true);
     mNode = node;
-    mBody->SetUserData((u32)this);
+    mBody->SetUserData((u32)((TokamakCollider*)this));
 
     mScene->mPhysicsBodies[node->getName()] = mBody;
 }
