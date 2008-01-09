@@ -381,7 +381,21 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
         return false;
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(peer->getNetworkId() + "Avatar");
     Entity* entity = mSceneMgr->createEntity(peer->getNetworkId() + "Avatar", meshFilename);
-    entity->setQueryFlags(Navigator::QFAvatar);
+/* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
+   picking is expected, switch material of pickable entities, render into 1 picking texture, switch
+   back materials and finally get the entity according to the picked color value */
+/*    entity->setMaterialName("Solipsis/ColorPicking");
+    SubEntity* subEntity = entity->getSubEntity(0);
+    subEntity->setCustomParameter(1, Vector4(0.0f, 1.0f, 0.0f, 0.0f));*/
+/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//    entity->setQueryFlags(Navigator::QFAvatar);
+    ManualObject* selectionObject = new ManualObject(peer->getNetworkId() + "Sel");
+    AxisAlignedBox entityBbox = entity->getBoundingBox();
+    AxisAlignedBox selectionBbox;
+    selectionBbox.setExtents(entityBbox.getCenter() - entityBbox.getHalfSize()*0.5f, entityBbox.getCenter() + entityBbox.getHalfSize()*0.5f);
+    selectionObject->setBoundingBox(selectionBbox);
+    selectionObject->setQueryFlags(Navigator::QFAvatar);
+    node->attachObject(selectionObject);
 #ifdef SHADOWS
     entity->setCastShadows(true);
 #endif

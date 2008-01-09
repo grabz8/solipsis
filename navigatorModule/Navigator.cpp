@@ -499,7 +499,11 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             if (it->distance >= std::max(mMaxNaviPickingDistance, mMaxAvatarPickingDistance))
                 break;
             // only check this result if its a hit against an entity
-            if ((it->movable != 0) && (it->movable->getMovableType().compare("Entity") == 0))
+/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//            if ((it->movable != 0) && (it->movable->getMovableType().compare("Entity") == 0))
+            if ((it->movable != 0) &&
+                ((it->movable->getMovableType().compare("Entity") == 0) ||
+                (it->movable->getMovableType().compare("ManualObject") == 0)))
             {
                 // avatar ?
                 if (it->movable->getQueryFlags() == QFAvatar)
@@ -581,9 +585,12 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
         for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
         {
             if (ogrePeer->second->getType().compare("avatar") != 0) continue;
-            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
+/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
+            Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+            if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
-            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Peer:NetworkId=" + avatar->getPeer()->getNetworkId());
+            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Peer:NetworkId=" + avatar->getPeer()->getNetworkId() + ", Peer:Login=" + avatar->getPeer()->getLogin());
             return true;
         }
     }

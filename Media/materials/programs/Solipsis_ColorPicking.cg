@@ -1,0 +1,10 @@
+float4 ColorPicking_fp
+(
+    in float2 texCoord: TEXCOORD0,
+	 
+	uniform float4 color,
+	uniform sampler2D texture
+) : COLOR
+{
+   return color;
+}
