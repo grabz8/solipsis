@@ -1,7 +1,7 @@
 #ifndef __PhysicsEngineManager_h__
 #define __PhysicsEngineManager_h__
 
-#include <map>
+#include <vector>
 #include "NavigatorModule.h"
 #include "IPhysicsEngine.h"
 
@@ -14,12 +14,12 @@ namespace Solipsis {
 class NAVIGATORMODULE_EXPORT PhysicsEngineManager : public Singleton<PhysicsEngineManager>
 {
 public:
-    /// Map of engines
-    typedef std::map<String, IPhysicsEngine*> EngineMap;
+    /// List of engines
+    typedef std::vector<IPhysicsEngine*> EngineList;
 
 protected:
     /// List of available engines
-    EngineMap mEngines;
+    EngineList mEngines;
     /// Selected engine
     IPhysicsEngine* mSelected;
 
@@ -35,7 +35,7 @@ public:
     void removeEngine(IPhysicsEngine* engine);
 
     /** Get engines. */
-    EngineMap& getEngines();
+    EngineList& getEngines();
     /** Set current engine. */
     void selectEngine(const String& name);
     /** Get current engine. */
