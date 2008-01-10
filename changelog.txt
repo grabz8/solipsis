@@ -208,12 +208,16 @@ for instance, ODE, Ageia PhysX and Tokamak engines are implemented,
 interfaces are composed of simple methods required to manage 1 scene, 1 body (box), 1 character.
 
 ---------------------------
-
 09/01/08
 
 3D ray picking
  - Added 1 ManualObject's bbox smaller than avatar entity's bbox
  - some commented source to eventually inplement the pixel color picking
+
+---------------------------
+10/01/08
+
+Added physics engine choice into UI options according to available plugins
 
 ---------------------------
 

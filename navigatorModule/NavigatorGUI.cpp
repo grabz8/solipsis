@@ -414,6 +414,20 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
         sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
         mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
     }
+#ifdef PHYSICSPLUGINS
+    PhysicsEngineManager::EngineList &physicsEngines = PhysicsEngineManager::getSingleton().getEngines();
+    sprintf(txt, "$('selectPhysicsEngine').options.length = %d", physicsEngines.size());
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+    int e = 0;
+    for (PhysicsEngineManager::EngineList::iterator it=physicsEngines.begin(); it != physicsEngines.end(); ++it, ++e)
+    {
+        sprintf(txt, "$('selectPhysicsEngine').options['%d'].value = '%s'", e, (*it)->getName().c_str());
+        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        sprintf(txt, "$('selectPhysicsEngine').options['%d'].text = '%s'", e, (*it)->getName().c_str());
+        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+    }
+    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('selectPhysicsEngine').options.selectedIndex = 0");
+#endif
 
     // Show Navi UI options
     if (mNavisStates[NAVI_OPTIONS] == NSCreated)
@@ -533,6 +547,13 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
 
         mNaviMgr.setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
+
+#ifdef PHYSICSPLUGINS
+        if (PhysicsEngineManager::getSingleton().getSelectedEngine() != 0)
+            PhysicsEngineManager::getSingleton().getSelectedEngine()->shutdown();
+        PhysicsEngineManager::getSingleton().selectEngine(naviData["physicsEngine"].str());
+        PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
+#endif
 
         // Return to Navi UI login
         login();
