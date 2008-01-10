@@ -1,5 +1,5 @@
-#ifndef __PeerNode_h__
-#define __PeerNode_h__
+#ifndef __OgrePeer_h__
+#define __OgrePeer_h__
 
 #include "Peer.h"
 #include "Ogre.h"
@@ -39,4 +39,4 @@ public:
 
 } // namespace Solipsis
 
-#endif // #ifndef __PeerNode_h__
+#endif // #ifndef __OgrePeer_h__
