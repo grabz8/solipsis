@@ -14,8 +14,7 @@ Objects may be described with several levels of details. In this
 version of the specification, we concentrate on a very coarse-grained
 subdivision between two such levels: a complete description,
 comprising a full-fledged 3D model, and a simple predefined shape with
-no textures that is encoded in an  \emph{object
-  descriptor}
+no textures that is encoded in an \emph{object descriptor}
 
 % Nonetheless, the protocol can
 % easily support several levels of details with only minor
@@ -34,7 +33,7 @@ and may thus be updated independently of the others.
 The object descriptor, on the other hand, consist of the minimal
 information required to display a rough representation of the object
 and includes the object's location, its shape, its size, its
-orientation, and its visibility radius. The shape of the object is
+orientation, and its visibility radius, vRadius. The shape of the object is
 represented by an identifier that selects one from a set of predefined
 shapes; while its visibility radius identifies the distance from which
 the object should be visible in the absence of obstacles and without
@@ -78,34 +77,35 @@ this is achieved are given in Section~\ref{}. %  o make this
 
 Finally, in future versions of the protocol, the object descriptor may
 contain information required to implement progressive levels of
-details in the 3D representations of objects.
-A summary of the fields included in an object descriptor is shown in
-Table~\ref{tab:desc}.
+details in the 3D representations of objects.  A summary of the fields
+included in an object descriptor is shown in Table~\ref{tab:desc}.
 
 \begin{table}
-\begin{tabular}{|l|p{4cm}|}
-UID & universal identifier of the object\\
-owner & identifier of the node owning the object\\
-Type & site or avatar\\
-location & location in the 3D world\\
-orientation & orientation in the 3D world\\
-shape& shape from a predefined set\\
-size & size of the object\\
-visibility & distance from which the object is visible in the absence
-of obstacles\\
-\hline\\
-seqNum & sequence number\\
-\hline\\
-$f_1$& first file for 3d model\\
-$v_1$& version number for first file\\
-$c_1$& list of hosts that have cached $v_1$ of $f_1$\\
-...& ...\\
-$f_n$& first file for 3d model\\
-$v_n$& version number for first file\\
-$c_n$& list of hosts that have cached $v_1$ of $f_1$\\
-\hline\\
-... & additional fields for progressive levels of details\\
+\centering
+\begin{tabular}{|l|p{8cm}|}
 \hline
+  UID & universal identifier of the object\\
+  owner & identifier of the node owning the object\\
+  Type & site or avatar\\
+  location & location in the 3D world\\
+  orientation & orientation in the 3D world\\
+  shape& shape from a predefined set\\
+  size & size of the object\\
+  vRadius & distance from which the object is visible in the absence
+  of obstacles\\
+  \hline
+  seqNum & sequence number\\
+  \hline
+  $f_1$& first file for 3d model\\
+  $v_1$& version number for first file\\
+  $c_1$& list of hosts that have cached $v_1$ of $f_1$\\
+  ...& ...\\
+  $f_n$& first file for 3d model\\
+  $v_n$& version number for first file\\
+  $c_n$& list of hosts that have cached $v_1$ of $f_1$\\
+  \hline
+  ... & additional fields for progressive levels of details\\
+  \hline
 \end{tabular}
 
 \caption{Format of an object descriptor}
@@ -146,10 +146,12 @@ as that of the corresponding site, and is responsible for a section of
 the world, its \emph{cell}, centered around this location and
 comprising a region of space around it. In simple terms, two nodes are
 neighbors in the overlay if their corresponding sites are neighboring
-in the \sol world. % This, mapping between overlay
-% and 3D-world positions allows the  RayNet to provide efficient means to
-% address and communicate with the nodes responsible for the sites
-% encountered by avatars roaming in the \sol world.
+in the \sol world.
+
+% This, mapping between overlay and 3D-world positions allows the
+% RayNet to provide efficient means to address and communicate with
+% the nodes responsible for the sites encountered by avatars roaming
+% in the \sol world.
 
 
 
