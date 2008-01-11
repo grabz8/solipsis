@@ -60,7 +60,8 @@
 \newcommand{\vupd}{\ensuremath{\textsc{vUpdate}}\xspace}
 %from site to site, periodic
 
-\newcommand{\avupd}{\ensuremath{\textsc{avUpdate}}\xspace}
+\newcommand{\avupda}{\ensuremath{\textsc{avUpdate}}\xspace}
+\newcommand{\avupdb}{\ensuremath{\textsc{avUpdate}}\xspace}
 %from avatar to avatar, when avatar moves and with minimum frequency
 
 \newcommand{\ncache}{\ensuremath{\textsc{newCopy}}\xspace}
@@ -75,7 +76,20 @@
 
 
 
+\subsection{Constants}
+The following is a list of constants that affect the protocol
+operation. 
 
+\begin{tabular}{|l|l|p{6cm}}
+  \hline
+  \safed & distance between the bounding spheres of objects below which
+  the corresponding nodes must update their positions at a high
+  frequency.
+  \neighD & distance within which objects should exchange position
+  updates at a medium frequency
+  
+  \hline
+\end{tabular}
 
 \subsection{Data Structures Maintained at Node}
 Solipsis nodes maintain a set of data structures to manage the
@@ -286,12 +300,49 @@ descriptor (with a fresher sequence number) in nds.
 
 \subsubsection{View synchronization between avatar nodes}
 
+\msgentry{\avupda}
+\recby{avatar node}
+\sentby{avatar node}
+\sentwhen{when moving, periodically with interval $T_{upd}$}
+\param{ObjDescriptor nd}
 
-\msgentry{\avupd}
+\desc
+
+Avatar update messages are exchanged between neighboring avatars to
+maintain up-to-date information about close objects and particularly
+about those that may interact with their movements. Each avatar node
+should send an \avupda message whenever it changes its position or
+other attributes such as parameters of its current
+animation. Moreover, it should send additional \avupda messages to
+prevent their frequency from falling below one update every $T_{upd}$
+seconds. The contents of each \avupda message consists simply of the
+object descriptor of the sending avatar.
+
+Each avatar node computes the set of recipients of avatar update
+messages based on its size and that of the avatar nodes in its cell as
+specified in the node descriptors. Specifically, the set of recipients
+includes all the avatar that are at a distance that is less than or
+equal to the sum of their \bRadius values, plus the sender avatar's
+\bRadius, plus a safe distance parameter $\safed$. This guarantees
+that each update reaches all the avatars that may potentially collide
+with the current avatar before the next update\footnote{During
+  standard operation}.
+
+An avatar node reacts to the receipt of an \avupda by updating its
+visible list. Specifically, it inserts or updates the entry for the
+specified object descriptor. If the \vlist contains no entry for the
+specified object, then the received descriptor is simply inserted in
+it. If, on the other hand, the \vlist already contains entry for the
+object, the receiving node replaces it with the received one only if
+the latter is associated with a fresher sequence number.
+
+
+\msgentry{\avupdb}
 \recby{avatar node}
 \param{ObjDescriptor nd}
 \param{set$<$ObjDescriptor$>$ neighborhood}
 \desc
+
 Avatar update messages are exchanged between neighboring avatars to
 maintain up-to-date information about close objects and particularly
 about those that may interact with their movements. Each avatar node
