@@ -1,3 +1,6 @@
+- strange behaviour with the HTML tag <select/>, Navi author suggests to use the ComboBox class of Navi.js
+  + get last Navi SVN commit
+
 - in Mozilla plugin config
  - without NPPVpluginKeepLibraryInMemory, then Ogre Root is destroyed on each
    instance release but RenderSystem_Direct3D9_d cannot be re-loaded on next instance run
