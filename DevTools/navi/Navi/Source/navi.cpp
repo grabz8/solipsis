@@ -28,8 +28,8 @@ using namespace Ogre;
 using namespace NaviLibrary;
 using namespace NaviLibrary::NaviUtilities;
 
-Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
-	unsigned short width, unsigned short height, bool isMovable, bool visible, unsigned int maxUpdatesPerSec, bool forceMaxUpdate, unsigned short zOrder, float _opacity)
+Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition, 
+		   unsigned short width, unsigned short height, unsigned short zOrder)
 {
 	naviName = name;
 	naviWidth = width;
@@ -42,32 +42,31 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	isFocused = false;
 // END GREG
 	position = naviPosition;
-	movable = isMovable;
+	movable = true;
 	windowID = 0;
 	overlay = 0;
 	panel = 0;
 	needsUpdate = false;
-	maxUpdatePS = maxUpdatesPerSec;
-	forceMax = forceMaxUpdate;
+	maxUpdatePS = 48;
+	forceMax = false;
 	lastUpdateTime = 0;
-	opacity = _opacity;
+	opacity = 1;
 	usingMask = false;
 	ignoringTrans = true;
 	transparent = 0.05;
+	ignoringBounds = false;
 	usingColorKeying = false;
 	keyFuzziness = 0.0;
 	keyR = keyG = keyB = 255;
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
-	isMaterialOnly = false;
+	isMaterial = false;
 	okayToDelete = false;
-	isVisible = visible;
+	isVisible = true;
 	fadingOut = false;
-	fadingOutStart = 0;
-	fadingOutEnd = 0;
+	fadingOutStart = fadingOutEnd = 0;
 	fadingIn = false;
-	fadingInStart = 0;
-	fadingInEnd = 0;
+	fadingInStart = fadingInEnd = 0;
 	compensateNPOT = false;
 	texWidth = width;
 	texHeight = height;
@@ -79,8 +78,8 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	Ogre::WindowEventUtilities::addWindowEventListener(renderWin, this);
 }
 
-Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height, bool visible,
-			unsigned int maxUpdatesPerSec, bool forceMaxUpdate, float _opacity, Ogre::FilterOptions texFiltering)
+Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height,
+		   Ogre::FilterOptions texFiltering)
 {
 	naviName = name;
 	naviWidth = width;
@@ -98,26 +97,25 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	overlay = 0;
 	panel = 0;
 	needsUpdate = false;
-	maxUpdatePS = maxUpdatesPerSec;
-	forceMax = forceMaxUpdate;
+	maxUpdatePS = 48;
+	forceMax = false;
 	lastUpdateTime = 0;
-	opacity = _opacity;
+	opacity = 1;
 	usingMask = false;
 	ignoringTrans = true;
 	transparent = 0.05;
+	ignoringBounds = false;
 	usingColorKeying = false;
 	keyR = keyG = keyB = 255;
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
-	isMaterialOnly = true;
+	isMaterial = true;
 	okayToDelete = false;
-	isVisible = visible;
+	isVisible = true;
 	fadingOut = false;
-	fadingOutStart = 0;
-	fadingOutEnd = 0;
+	fadingOutStart = fadingOutEnd = 0;
 	fadingIn = false;
-	fadingInStart = 0;
-	fadingInEnd = 0;
+	fadingInStart = fadingInEnd = 0;
 	compensateNPOT = false;
 	texWidth = width;
 	texHeight = height;
@@ -167,7 +165,7 @@ void Navi::createOverlay(unsigned short zOrder)
 	overlay = overlayManager.create(naviName + "Overlay");
 	overlay->add2D(panel);
 	overlay->setZOrder(zOrder);
-	setDefaultPosition();
+	resetPosition();
 	if(isVisible) overlay->show();
 }
 
@@ -190,8 +188,7 @@ void Navi::createBrowser(Ogre::RenderWindow* renderWin, std::string homepage)
 
 void Navi::createMaterial(Ogre::FilterOptions texFiltering)
 {
-	if(opacity > 1) opacity = 1;
-	if(opacity < 0) opacity = 0;
+	limit<float>(opacity, 0, 1);
 
 	if(!Bitwise::isPO2(naviWidth) || !Bitwise::isPO2(naviHeight))
 	{
@@ -248,39 +245,25 @@ void Navi::createMaterial(Ogre::FilterOptions texFiltering)
 		texUnit->setTextureAnisotropy(4);
 }
 
-void Navi::setMask(std::string maskFileName, std::string groupName)
+// This is for when the rendering device has a hiccup and loses the dynamic texture
+void Navi::loadResource(Resource* resource)
 {
-	if(usingMask)
-		if(!TextureManager::getSingleton().getByName(naviName + "MaskTexture").isNull())
-			TextureManager::getSingleton().remove(naviName + "MaskTexture");
+	Texture *tex = static_cast<Texture*>(resource); 
 
-	if(maskFileName == "")
-	{
-		usingMask = false;
-		return;
-	}
-	
-	Image maskImage;
-	maskImage.load(maskFileName, groupName);
-
-	TexturePtr maskTexture = TextureManager::getSingleton().loadImage(
-		naviName + "MaskTexture", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		maskImage, TEX_TYPE_2D, 0, 1, false, PF_BYTE_BGRA);
-
-	if(maskTexture->getWidth() < texWidth || maskTexture->getHeight() < texHeight)
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-			"Mask width and height must each be greater than or equal to the actual width and height of the Navi's internal texture. On certain videocards, the internal texture size is bumped up to the next highest Power-of-Two. Mask Dimensions: " + 
-			StringConverter::toString(maskTexture->getWidth()) + "x" + StringConverter::toString(maskTexture->getHeight()) + ", " +
-			"Texture Dimensions: " + StringConverter::toString(texWidth) + "x" + StringConverter::toString(texHeight),
-			"Navi::setMask");
+	tex->setTextureType(TEX_TYPE_2D);
+	tex->setWidth(texWidth);
+	tex->setHeight(texHeight);
+	tex->setNumMipmaps(0);
+	tex->setFormat(PF_BYTE_BGRA);
+	tex->setUsage(TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+	tex->createInternalResources();
 
 	needsUpdate = true;
-	usingMask = true;
+	update();
 }
 
 void Navi::update()
 {
-	// No sense in updating if the Render Window isn't even visible
 	if(!isWinFocused) return;
 	if(!isVisible) return;
 
@@ -322,8 +305,7 @@ void Navi::update()
 		if(!pixels) return;
 	}
 
-	if(opacity > 1) opacity = 1;
-	if(opacity < 0) opacity = 0;
+	limit<float>(opacity, 0, 1);
 
 	TexturePtr texture = TextureManager::getSingleton().getByName(naviName + "Texture");
 	
@@ -341,10 +323,8 @@ void Navi::update()
 	
 	unsigned char B, G, R, A;
 
-	HardwarePixelBufferSharedPtr maskPBuffer;
-	uint8* maskData;
+	uint8* maskData = 0;
 	size_t maskPitch, maskDepth;
-	bool validMask = false;
 	int colDist = 0;
 	float tempOpa = 0;
 	float fadeMod = 1;
@@ -354,25 +334,20 @@ void Navi::update()
 		TexturePtr maskTexture = TextureManager::getSingleton().getByName(naviName + "MaskTexture");
 		if(!maskTexture.isNull())
 		{
-			maskPBuffer = maskTexture->getBuffer();
-			maskPBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
-			const PixelBox& maskPBox = maskPBuffer->getCurrentLock();
+			HardwarePixelBufferSharedPtr maskPBuffer = maskTexture->getBuffer();
+			maskData = new uint8[maskPBuffer->getSizeInBytes()];
+			PixelBox maskPixelBox(maskPBuffer->getWidth(), maskPBuffer->getHeight(), maskPBuffer->getDepth(), maskPBuffer->getFormat(), maskData);
+			maskPBuffer->blitToMemory(maskPixelBox);
 
-			maskData = static_cast<uint8*>(maskPBox.data);
-			maskDepth = PixelUtil::getNumElemBytes(maskPBox.format);
-			maskPitch = maskPBox.rowPitch*maskDepth;
-			validMask = true;
+			maskDepth = PixelUtil::getNumElemBytes(maskPBuffer->getFormat());
+			maskPitch = maskPixelBox.rowPitch*maskDepth;
 		}
 	}
 
 	if(fadingIn)
 	{
 		if(fadingInEnd < timer.getMilliseconds())
-		{
-			fadingInStart = 0;
-			fadingInEnd = 0;
-			fadingIn = false;
-		}
+			fadingInStart = fadingInEnd = fadingIn = 0;
 		else
 			fadeMod = (float)(timer.getMilliseconds() - fadingInStart) / (float)(fadingInEnd - fadingInStart);
 	} 
@@ -380,12 +355,10 @@ void Navi::update()
 	{
 		if(fadingOutEnd < timer.getMilliseconds())
 		{
-			fadingOutStart = 0;
-			fadingOutEnd = 0;
-			fadingOut = false;
-			isVisible = false;
-			if(!isMaterialOnly) overlay->hide();
-			fadeMod = 0;
+			fadingOutStart = fadingOutEnd = fadeMod = fadingOut = isVisible = 0;
+
+			if(!isMaterial)
+				overlay->hide();
 		}
 		else
 			fadeMod = 1 - (float)(timer.getMilliseconds() - fadingOutStart) / (float)(fadingOutEnd - fadingOutStart);
@@ -403,7 +376,7 @@ void Navi::update()
 				R = pixels[(y*browserPitch)+srcx+2]; // red
 				A = 255 * opacity; //alpha
 
-				if(validMask)
+				if(maskData)
 					A = maskData[(y*maskPitch)+(x*maskDepth)+3] * opacity;
 
 				if(usingColorKeying)
@@ -451,34 +424,97 @@ void Navi::update()
 		}
 	}
 
-	if(validMask) maskPBuffer->unlock();
+	if(maskData) delete[] maskData;
 	pixelBuffer->unlock();
 
 	needsUpdate = false;
 	lastUpdateTime = timer.getMilliseconds();
 }
 
-// This is for when the rendering device has a hiccup and loses the dynamic texture
-void Navi::loadResource(Resource* resource)
+bool Navi::isPointOverMe(int x, int y)
 {
-	Texture *tex = static_cast<Texture*>(resource); 
+	if(x < 0 || x > (int)winWidth) return false;
+	if(y < 0 || y > (int)winHeight) return false;
+	if(isMaterial || !isVisible) return false;
 
-	tex->setTextureType(TEX_TYPE_2D);
-	tex->setWidth(texWidth);
-	tex->setHeight(texHeight);
-	tex->setNumMipmaps(0);
-	tex->setFormat(PF_BYTE_BGRA);
-	tex->setUsage(TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
-	tex->createInternalResources();
+	if(panel->getLeft() < x && x < (panel->getLeft()+panel->getWidth()))
+		if(panel->getTop() < y && y < (panel->getTop()+panel->getHeight()))
+			return !ignoringTrans? true : 
+				naviCache[getRelativeY(y)*texPitch+getRelativeX(x)*texPixelSize+(texPixelSize-1)] > 255*transparent;
 
-	needsUpdate = true;
-	update();
+	return false;
 }
 
-void Navi::moveNavi(int deltaX, int deltaY)
+void Navi::onPageChanged(const EventType& eventIn) 
 {
-	if(movable && !isMaterialOnly)
-		panel->setPosition(panel->getLeft()+deltaX, panel->getTop()+deltaY);
+	needsUpdate = true;
+}
+
+void Navi::onNavigateBegin(const EventType& eventIn) {}
+
+void Navi::onNavigateComplete(const EventType& eventIn) 
+{
+	for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+		(*nel)->onNavigateComplete(this, eventIn.getEventUri(), eventIn.getIntValue());
+}
+
+void Navi::onUpdateProgress(const EventType& eventIn) {}
+
+void Navi::onStatusTextChange(const EventType& eventIn)
+{
+	std::string statusMsg = eventIn.getStringValue();
+    LogManager::getSingletonPtr()->logMessage("Navi> " + statusMsg);
+
+	if(isPrefixed(statusMsg, "NAVI_DATA:", false))
+	{
+		std::vector<std::string> stringVector = split(statusMsg, "?", false);
+		if(stringVector.size() == 3)
+		{
+			NaviData naviDataEvent(stringVector[1], stringVector[2]);
+
+			if(!eventListeners.empty())
+				for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); nel++)
+					(*nel)->onNaviDataEvent(this, naviDataEvent);
+
+			if(!delegateMap.empty())
+			{
+				ensureKeysMapIter = ensureKeysMap.find(stringVector[1]);
+				if(ensureKeysMapIter != ensureKeysMap.end())
+					naviDataEvent.ensure(ensureKeysMapIter->second);
+
+				dmBounds = delegateMap.equal_range(stringVector[1]);
+				for(delegateIter = dmBounds.first; delegateIter != dmBounds.second; delegateIter++)
+					delegateIter->second(naviDataEvent);
+			}
+		}
+	}
+}
+
+void Navi::onLocationChange(const EventType& eventIn) 
+{
+	for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+		(*nel)->onLocationChange(this, eventIn.getEventUri());
+}
+
+void Navi::onClickLinkHref(const EventType& eventIn) 
+{
+	for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+		(*nel)->onLinkClicked(this, eventIn.getStringValue());
+}
+
+void Navi::windowMoved(RenderWindow* rw) {}
+
+void Navi::windowResized(RenderWindow* rw) 
+{
+	winWidth = rw->getWidth();
+	winHeight = rw->getHeight();
+}
+
+void Navi::windowClosed(RenderWindow* rw) {}
+
+void Navi::windowFocusChange(RenderWindow* rw) 
+{
+	isWinFocused = rw->isVisible();
 }
 
 void Navi::navigateTo(std::string url)
@@ -488,7 +524,7 @@ void Navi::navigateTo(std::string url)
 	LLMozLib::getInstance()->navigateTo(windowID, url);
 }
 
-void Navi::navigateTo(std::string url, NaviData naviData)
+void Navi::navigateTo(std::string url, const NaviData &naviData)
 {
 	std::string suffix = "";
 
@@ -499,56 +535,105 @@ void Navi::navigateTo(std::string url, NaviData naviData)
 	LLMozLib::getInstance()->navigateTo(windowID, url + suffix);
 }
 
-std::string Navi::evaluateJS(const std::string &script)
+void Navi::navigateBack()
 {
+	LLMozLib::getInstance()->navigateBack(windowID);
+}
+
+void Navi::navigateForward()
+{
+	LLMozLib::getInstance()->navigateForward(windowID);
+}
+
+void Navi::navigateStop()
+{
+	LLMozLib::getInstance()->navigateStop(windowID);
+}
+
+bool Navi::canNavigateForward()
+{
+	return LLMozLib::getInstance()->canNavigateForward(windowID);
+}
+
+bool Navi::canNavigateBack()
+{
+	return LLMozLib::getInstance()->canNavigateBack(windowID);
+}
+
+std::string Navi::evaluateJS(std::string script, const NaviUtilities::Args &args)
+{
+	if(args.size() && script.size())
+	{
+		std::vector<std::string> temp = split(script, "?", false);
+		script.clear();
+
+		for(unsigned int i = 0; i < temp.size(); ++i)
+		{
+			script += temp[i];
+			if(args.size() > i && i != temp.size()-1)
+			{
+				if(args[i].isWideString())
+				{
+					script += "decodeURIComponent(\"" + encodeURIComponent(args[i].wstr()) + "\")";
+				}
+				else if(args[i].isNumber())
+				{
+					script += args[i].str();
+				}
+				else
+				{
+					std::string escapedStr = args[i].str();
+					replaceAll(escapedStr, "\"", "\\\"");
+					script += "\"" + escapedStr + "\"";
+				}
+			}
+		}
+	}
+
 	return LLMozLib::getInstance()->evaluateJavascript(windowID, script);
 }
 
-void Navi::addEventListener(NaviEventListener* newListener)
+Navi* Navi::addEventListener(NaviEventListener* newListener)
 {
 	if(newListener)
 	{
-		bool okayToAdd = true;
-// BEGIN GREG updates for VC7
-//		for each(NaviEventListener* test in eventListeners)
-//			if(test == newListener) okayToAdd = false;
-		for (std::vector<NaviEventListener*>::iterator test = eventListeners.begin(); test != eventListeners.end(); ++test)
-			if((*test) == newListener) okayToAdd = false;
-// END GREG updates for VC7
+		for(std::vector<NaviEventListener*>::iterator i = eventListeners.begin(); i != eventListeners.end(); ++i)
+			if(*i == newListener) return this;
 
-		if(okayToAdd)
-			eventListeners.push_back(newListener);
+		eventListeners.push_back(newListener);
 	}
+
+	return this;
 }
 
-void Navi::removeEventListener(NaviEventListener* removeListener)
+Navi* Navi::removeEventListener(NaviEventListener* removeListener)
 {
-	std::vector<NaviEventListener*>::iterator elIter;
-	elIter = eventListeners.begin();
-	
-	// Just to be paranoid, we loop through them all.
-	while(elIter != eventListeners.end())
+	for(std::vector<NaviEventListener*>::iterator i = eventListeners.begin(); i != eventListeners.end();)
 	{
-		if((*elIter) == removeListener)
-			elIter = eventListeners.erase(elIter);
+		if(*i == removeListener)
+			i = eventListeners.erase(i);
 		else
-			elIter++;
+			++i;
 	}
+
+	return this;
 }
 
-void Navi::bind(const std::string &naviDataName, const NaviDelegate &callback, const std::vector<std::string> &keys)
+Navi* Navi::bind(const std::string &naviDataName, const NaviDelegate &callback, const NaviUtilities::Strings &keys)
 {
-	if(callback.empty() || naviDataName.empty()) return;
+	if(callback.empty() || naviDataName.empty()) return this;
 	
 	delegateMap.insert(std::pair<std::string, NaviDelegate>(naviDataName, callback));
 
 	if(keys.size())
 		ensureKeysMap[naviDataName] = keys;
+
+	return this;
 }
 
-void Navi::unbind(const std::string &naviDataName, const NaviDelegate &callback)
+Navi* Navi::unbind(const std::string &naviDataName, const NaviDelegate &callback)
 {
-	if(delegateMap.empty()) return;
+	if(delegateMap.empty()) return this;
 	dmBounds = delegateMap.equal_range(naviDataName);
 
 	delegateIter = dmBounds.first;
@@ -570,50 +655,39 @@ void Navi::unbind(const std::string &naviDataName, const NaviDelegate &callback)
 
 	if(!delegateMap.count(naviDataName))
 		ensureKeysMap.erase(naviDataName);
+
+	return this;
 }
 
-void Navi::setBackgroundColor(float red, float green, float blue)
+Navi* Navi::setBackgroundColor(float red, float green, float blue)
 {
-	if(red > 1) red = 1;
-	if(red < 0) red = 0;
-	if(green > 1) green = 1;
-	if(green < 0) green = 0;
-	if(blue > 1) blue = 1;
-	if(blue < 0) blue = 0;
+	limit<float>(red, 0, 1);
+	limit<float>(green, 0, 1);
+	limit<float>(blue, 0, 1);
 
 	LLMozLib::getInstance()->setBackgroundColor(windowID, red*255, green*255, blue*255);
+
+	return this;
 }
 
-void Navi::setOpacity(float _opacity)
+Navi* Navi::setBackgroundColor(const std::string& hexColor)
 {
-	if(_opacity > 1) _opacity = 1;
-	if(_opacity < 0) _opacity = 0;
-	
-	opacity = _opacity;
+	unsigned char red, green, blue = 0;
 
-	needsUpdate = true;
+	if(hexStringToRGB(hexColor, red, green, blue))
+		LLMozLib::getInstance()->setBackgroundColor(windowID, red, green, blue);
+
+	return this;
 }
 
-void Navi::setIgnoreTransparentAreas(bool ignoreTrans, float defineThreshold)
-{
-	ignoringTrans = ignoreTrans;
-
-	if(defineThreshold > 1) defineThreshold = 1;
-	if(defineThreshold < 0) defineThreshold = 0;
-
-	transparent = defineThreshold;
-}
-
-void Navi::setColorKey(const std::string &keyColor, float keyFillOpacity, const std::string &keyFillColor, float keyFuzzy)
+Navi* Navi::setColorKey(const std::string &keyColor, float keyFillOpacity, const std::string &keyFillColor, float keyFuzzy)
 {
 	if(keyColor.length())
 	{
 		if(hexStringToRGB(keyColor, keyR, keyG, keyB) && hexStringToRGB(keyFillColor, keyFillR, keyFillG, keyFillB))
 		{
-			if(keyFillOpacity > 1) keyFillOpacity = 1;
-			if(keyFillOpacity < 0) keyFillOpacity = 0;
-			if(keyFuzzy > 1) keyFuzzy = 1;
-			if(keyFuzzy < 0) keyFuzzy = 0;
+			limit<float>(keyFillOpacity, 0, 1);
+			limit<float>(keyFuzzy, 0, 1);
 
 			keyFOpacity = keyFillOpacity;
 			usingColorKeying = true;
@@ -624,90 +698,141 @@ void Navi::setColorKey(const std::string &keyColor, float keyFillOpacity, const 
 	else usingColorKeying = false;
 	
 	needsUpdate = true;
+
+	return this;
 }
 
-void Navi::setDefaultPosition()
+Navi* Navi::setForceMaxUpdate(bool forceMaxUpdate)
 {
-	if(isMaterialOnly || !overlay || !panel) return;
+	forceMax = forceMaxUpdate;
+	return this;
+}
 
-	if(position.usingRelative && movable)
+Navi* Navi::setIgnoreBounds(bool ignoreBounds)
+{
+	ignoringBounds = ignoreBounds;
+	return this;
+}
+
+Navi* Navi::setIgnoreTransparent(bool ignoreTrans, float threshold)
+{
+	ignoringTrans = ignoreTrans;
+
+	limit<float>(threshold, 0, 1);
+
+	transparent = threshold;
+	return this;
+}
+
+Navi* Navi::setMask(std::string maskFileName, std::string groupName)
+{
+	if(usingMask)
+		if(!TextureManager::getSingleton().getByName(naviName + "MaskTexture").isNull())
+			TextureManager::getSingleton().remove(naviName + "MaskTexture");
+
+	if(maskFileName == "")
 	{
-		switch(position.data.rel.position)
-		{
-		case Left:
-			panel->setPosition(0 + position.data.rel.x, (winHeight/2)-(naviHeight/2) + position.data.rel.y);
-			break;
-		case TopLeft:
-			panel->setPosition(0 + position.data.rel.x, 0 + position.data.rel.y);
-			break;
-		case TopCenter:
-			panel->setPosition((winWidth/2)-(naviWidth/2) + position.data.rel.x, 0 + position.data.rel.y);
-			break;
-		case TopRight:
-			panel->setPosition(winWidth - naviWidth + position.data.rel.x, 0 + position.data.rel.y);
-			break;
-		case Right:
-			panel->setPosition(winWidth-naviWidth + position.data.rel.x, (winHeight/2)-(naviHeight/2) + position.data.rel.y);
-			break;
-		case BottomRight:
-			panel->setPosition(winWidth-naviWidth + position.data.rel.x, winHeight-naviHeight + position.data.rel.y);
-			break;
-		case BottomCenter:
-			panel->setPosition((winWidth/2)-(naviWidth/2) + position.data.rel.x, winHeight-naviHeight + position.data.rel.y);
-			break;
-		case BottomLeft:
-			panel->setPosition(0 + position.data.rel.x, winHeight-naviHeight + position.data.rel.y);
-			break;
-		case Center:
-			panel->setPosition((winWidth/2)-(naviWidth/2) + position.data.rel.x, (winHeight/2)-(naviHeight/2) + position.data.rel.y);
-			break;
-		default:
-			panel->setPosition(position.data.rel.x, position.data.rel.y);
-			break;
-		}
+		usingMask = false;
+		return this;
 	}
-	else if(position.usingRelative && !movable)
+	
+	Image maskImage;
+	maskImage.load(maskFileName, groupName);
+
+	TexturePtr maskTexture = TextureManager::getSingleton().loadImage(
+		naviName + "MaskTexture", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+		maskImage, TEX_TYPE_2D, 0, 1, false, PF_BYTE_BGRA);
+
+	if(maskTexture->getWidth() < texWidth || maskTexture->getHeight() < texHeight)
+		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
+			"Mask dimensions must be greater than or equal to the dimensions of the Navi's internal texture. " +
+				templateString("Mask Dimensions: ?x?, Texture Dimensions: ?x?", 
+				Args(maskTexture->getWidth())(maskTexture->getHeight())(texWidth)(texHeight)),
+			"Navi::setMask");
+
+	needsUpdate = true;
+	usingMask = true;
+
+	return this;
+}
+
+Navi* Navi::setMaxUPS(unsigned int maxUPS)
+{
+	maxUpdatePS = maxUPS;
+	return this;
+}
+
+Navi* Navi::setMovable(bool isMovable)
+{
+	if(!isMaterial)
+		movable = isMovable;
+
+	return this;
+}
+
+Navi* Navi::setOpacity(float opacity)
+{
+	limit<float>(opacity, 0, 1);
+	
+	this->opacity = opacity;
+
+	needsUpdate = true;
+	return this;
+}
+
+Navi* Navi::setPosition(const NaviPosition &naviPosition)
+{
+	if(isMaterial)
+		return this;
+
+	position = naviPosition;
+	resetPosition();
+	
+	return this;
+}
+
+Navi* Navi::resetPosition()
+{
+	if(isMaterial || !overlay || !panel) return this;
+
+	if(position.usingRelative)
 	{
+		int left = 0 + position.data.rel.x;
+		int center = (winWidth/2)-(naviWidth/2) + position.data.rel.x;
+		int right = winWidth - naviWidth + position.data.rel.x;
+
+		int top = 0 + position.data.rel.y;
+		int middle = (winHeight/2)-(naviHeight/2) + position.data.rel.y;
+		int bottom = winHeight-naviHeight + position.data.rel.y;
+
 		switch(position.data.rel.position)
 		{
 		case Left:
-			panel->setVerticalAlignment(GVA_CENTER);
-			panel->setPosition(0 + position.data.rel.x, -(naviHeight/2) + position.data.rel.y);
+			panel->setPosition(left, middle);
 			break;
 		case TopLeft:
-			panel->setPosition(0 + position.data.rel.x, 0 + position.data.rel.y);
+			panel->setPosition(left, top);
 			break;
 		case TopCenter:
-			panel->setHorizontalAlignment(GHA_CENTER);
-			panel->setPosition(-(naviWidth/2) + position.data.rel.x, 0 + position.data.rel.y);
+			panel->setPosition(center, top);
 			break;
 		case TopRight:
-			panel->setHorizontalAlignment(GHA_RIGHT);
-			panel->setPosition(-naviWidth + position.data.rel.x, 0 + position.data.rel.y);
+			panel->setPosition(right, top);
 			break;
 		case Right:
-			panel->setVerticalAlignment(GVA_CENTER);
-			panel->setHorizontalAlignment(GHA_RIGHT);
-			panel->setPosition(-naviWidth + position.data.rel.x, -(naviHeight/2) + position.data.rel.y);
+			panel->setPosition(right, middle);
 			break;
 		case BottomRight:
-			panel->setVerticalAlignment(GVA_BOTTOM);
-			panel->setHorizontalAlignment(GHA_RIGHT);
-			panel->setPosition(-naviWidth + position.data.rel.x, -naviHeight + position.data.rel.y);
+			panel->setPosition(right, bottom);
 			break;
 		case BottomCenter:
-			panel->setVerticalAlignment(GVA_BOTTOM);
-			panel->setHorizontalAlignment(GHA_CENTER);
-			panel->setPosition(-(naviWidth/2) + position.data.rel.x, -naviHeight + position.data.rel.y);
+			panel->setPosition(center, bottom);
 			break;
 		case BottomLeft:
-			panel->setVerticalAlignment(GVA_BOTTOM);
-			panel->setPosition(0 + position.data.rel.x, -naviHeight + position.data.rel.y);
+			panel->setPosition(left, bottom);
 			break;
 		case Center:
-			panel->setVerticalAlignment(GVA_CENTER);
-			panel->setHorizontalAlignment(GHA_CENTER);
-			panel->setPosition(-(naviWidth/2) + position.data.rel.x, -(naviHeight/2) + position.data.rel.y);
+			panel->setPosition(center, middle);
 			break;
 		default:
 			panel->setPosition(position.data.rel.x, position.data.rel.y);
@@ -716,228 +841,146 @@ void Navi::setDefaultPosition()
 	}
 	else
 		panel->setPosition(position.data.abs.left, position.data.abs.top);
+
+	return this;
 }
 
-void Navi::hide(bool fade, unsigned short fadeDurationMS)
+Navi* Navi::hide(bool fade, unsigned short fadeDurationMS)
 {
 	if(fadingIn || fadingOut)
-	{
-		fadingInStart = fadingInEnd = 0;
-		fadingIn = false;
-		fadingOutStart = fadingOutEnd = 0;
-		fadingOut = false;
-	}
+		fadingInStart = fadingInEnd = fadingOutStart = fadingOutEnd = fadingIn = fadingOut = 0;
 
 	if(fade)
 	{
 		fadingOutStart = timer.getMilliseconds();
-		fadingOutEnd = timer.getMilliseconds() + fadeDurationMS + 1; // The +1 is to avoid division by 0 later
+		fadingOutEnd = timer.getMilliseconds() + fadeDurationMS + 1;
 		fadingOut = true;
 	}
 	else
 	{
-		if(!isMaterialOnly) overlay->hide();
+		if(!isMaterial) overlay->hide();
 		isVisible = false;
 	}
+
+	return this;
 }
 
-void Navi::show(bool fade, unsigned short fadeDurationMS)
+Navi* Navi::show(bool fade, unsigned short fadeDurationMS)
 {
 	if(fadingIn || fadingOut)
-	{
-		fadingInStart = fadingInEnd = 0;
-		fadingIn = false;
-		fadingOutStart = fadingOutEnd = 0;
-		fadingOut = false;
-	}
+		fadingInStart = fadingInEnd = fadingOutStart = fadingOutEnd = fadingIn = fadingOut = 0;
 
 	if(fade)
 	{
 		fadingInStart = timer.getMilliseconds();
-		fadingInEnd = timer.getMilliseconds() + fadeDurationMS + 1; // The +1 is to avoid division by 0 later
+		fadingInEnd = timer.getMilliseconds() + fadeDurationMS + 1;
 		fadingIn = true;
 	}
 	else needsUpdate = true;
 
 	isVisible = true;
-	if(!isMaterialOnly) overlay->show();
+	if(!isMaterial) overlay->show();
+
+	return this;
 }
 
-bool Navi::isPointOverMe(int x, int y)
+Navi* Navi::focus()
 {
-	if(x < 0 || x > (int)winWidth) return false;
-	if(y < 0 || y > (int)winHeight) return false;
-	if(isMaterialOnly || !isVisible) return false;
+	if(NaviManager::GetPointer() && !isMaterial)
+		NaviManager::GetPointer()->focusNavi(0, 0, this);
 
-	// For absolute-positioned Navis
-	if(panel->getVerticalAlignment()==GVA_TOP && panel->getHorizontalAlignment()==GHA_LEFT)
-	{
-		if(isPointWithin(x, y, panel->getLeft(), (panel->getLeft()+panel->getWidth()), panel->getTop(), (panel->getTop()+panel->getHeight())))
-			return isPointOpaqueEnough(getRelativeX(x), getRelativeY(y));
-		else
-			return false;
-	}
-	else
-	{
-		// Hooray for relative-coordinate Kung Foo!
-
-		int left, right, top, bottom = 0;
-		
-		if(panel->getHorizontalAlignment()==GHA_LEFT)
-		{
-			left = 0 + position.data.rel.x;
-			right = left + naviWidth;
-		}
-		else if(panel->getHorizontalAlignment()==GHA_CENTER)
-		{
-			left = (winWidth/2)-(naviWidth/2) + position.data.rel.x;
-			right = left + naviWidth;
-		}
-		else if(panel->getHorizontalAlignment()==GHA_RIGHT)
-		{
-			left = winWidth - naviWidth + position.data.rel.x;
-			right = left + naviWidth;
-		}
-
-		if(panel->getVerticalAlignment()==GVA_TOP)
-		{
-			top = 0 + position.data.rel.y;
-			bottom = top + naviHeight;
-		}
-		else if(panel->getVerticalAlignment()==GVA_CENTER)
-		{
-			top = (winHeight/2)-(naviHeight/2) + position.data.rel.y;
-			bottom = top + naviHeight;
-		}
-		else if(panel->getVerticalAlignment()==GVA_BOTTOM)
-		{
-			top = winHeight - naviHeight + position.data.rel.y;
-			bottom = top + naviHeight;
-		}
-		
-		if(isPointWithin(x, y, left, right, top, bottom))
-			return isPointOpaqueEnough(getRelativeX(x), getRelativeY(y));
-		else
-			return false;
-	}
-
-	return false;
+	return this;
 }
 
-bool Navi::isPointWithin(int x, int y, int left, int right, int top, int bottom)
+Navi* Navi::moveNavi(int deltaX, int deltaY)
 {
-	if(left < x && x < right) if(top < y && y < bottom)	return true;
-
-	return false;
+	if(!isMaterial)
+		panel->setPosition(panel->getLeft()+deltaX, panel->getTop()+deltaY);
+	return this;
 }
 
-bool Navi::isPointOpaqueEnough(int x, int y)
+void Navi::getExtents(unsigned short &width, unsigned short &height)
 {
-	if(!ignoringTrans)
-		return true;
-
-	return naviCache[y*texPitch+x*texPixelSize+(texPixelSize-1)] > 255*transparent;
+	width = naviWidth;
+	height = naviHeight;
 }
 
 int Navi::getRelativeX(int absX)
 {
-	if(isMaterialOnly) return 0;
-	int left = 0;
+	if(isMaterial) return 0;
 
-	if(panel->getHorizontalAlignment()==GHA_LEFT)
-		left = panel->getLeft();
-	else if(panel->getHorizontalAlignment()==GHA_CENTER)
-		left = (winWidth/2)-(naviWidth/2) + position.data.rel.x;
-	else if(panel->getHorizontalAlignment()==GHA_RIGHT)
-		left = winWidth - naviWidth + position.data.rel.x;
+	int relX = absX - panel->getLeft();
+	limit<int>(relX, 0, naviWidth-1);
 
-	if(absX - left < 0)
-		return 0;
-	else if(naviWidth - 1 < absX - left)
-		return naviWidth - 1;
-
-	return absX - left;
+	return relX;
 }
 
 int Navi::getRelativeY(int absY)
 {
-	if(isMaterialOnly) return 0;
-	int top = 0;
+	if(isMaterial) return 0;
 
-	if(panel->getVerticalAlignment()==GVA_TOP)
-		top = panel->getTop();
-	else if(panel->getVerticalAlignment()==GVA_CENTER)
-		top = (winHeight/2)-(naviHeight/2) + position.data.rel.y;
-	else if(panel->getVerticalAlignment()==GVA_BOTTOM)
-		top = winHeight - naviHeight + position.data.rel.y;
-
-	if(absY - top < 0)
-		return 0;
-	else if(naviHeight - 1 < absY - top)
-		return naviHeight - 1;
+	int relY = absY - panel->getTop();
+	limit<int>(relY, 0, naviHeight - 1);
 	
-	return absY - top;
+	return relY;
 }
 
-void Navi::onStatusTextChange(const EventType& eventIn)
+bool Navi::isMaterialOnly()
 {
-	std::string statusMsg = eventIn.getStringValue();
+	return isMaterial;
+}
 
-	if(isPrefixed(statusMsg, "NAVI_DATA:", false))
+Ogre::PanelOverlayElement* Navi::getInternalPanel()
+{
+	if(isMaterial)
+		return 0;
+		
+	return panel;
+}
+
+std::string Navi::getName()
+{
+	return naviName;
+}
+
+std::string Navi::getMaterialName()
+{
+	return naviName + "Material";
+}
+
+bool Navi::getVisibility()
+{
+	return isVisible;
+}
+
+void Navi::getDerivedUV(Ogre::Real& u1, Ogre::Real& v1, Ogre::Real& u2, Ogre::Real& v2)
+{
+	u1 = v1 = 0;
+	u2 = v2 = 1;
+
+	if(compensateNPOT)
 	{
-		std::vector<std::string> stringVector = split(statusMsg, "?", false);
-		if(stringVector.size() == 3)
-		{
-			NaviData naviDataEvent(stringVector[1], stringVector[2]);
-
-			if(!eventListeners.empty())
-				for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); nel++)
-					(*nel)->onNaviDataEvent(naviName, naviDataEvent);
-
-			if(!delegateMap.empty())
-			{
-				ensureKeysMapIter = ensureKeysMap.find(stringVector[1]);
-				if(ensureKeysMapIter != ensureKeysMap.end())
-					naviDataEvent.ensure(ensureKeysMapIter->second);
-
-				dmBounds = delegateMap.equal_range(stringVector[1]);
-				for(delegateIter = dmBounds.first; delegateIter != dmBounds.second; delegateIter++)
-					delegateIter->second(naviDataEvent);
-			}
-		}
+		u2 = (Ogre::Real)naviWidth/texWidth;
+		v2 = (Ogre::Real)naviHeight/(Ogre::Real)texHeight;
 	}
 }
 
-void Navi::onPageChanged(const EventType& eventIn) 
+void Navi::injectMouseMove(int xPos, int yPos)
 {
-	needsUpdate = true;
+	LLMozLib::getInstance()->mouseMove(windowID, xPos, yPos);
 }
 
-void Navi::onNavigateBegin(const EventType& eventIn) {}
-
-void Navi::onNavigateComplete(const EventType& eventIn) {}
-
-void Navi::onUpdateProgress(const EventType& eventIn) {}
-void Navi::onLocationChange(const EventType& eventIn) {}
-void Navi::onClickLinkHref(const EventType& eventIn) 
+void Navi::injectMouseWheel(int relScroll)
 {
-// BEGIN GREG updates for VC7
-//	for each(NaviEventListener* nel in eventListeners)
-//		nel->onNaviLinkClicked(naviName, eventIn.getStringValue());
-	for (std::vector<NaviEventListener*>::iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
-		(*nel)->onNaviLinkClicked(naviName, eventIn.getStringValue());
-// END GREG updates for VC7
+	LLMozLib::getInstance()->scrollByLines(windowID, -(relScroll/30));
 }
 
-void Navi::windowMoved(RenderWindow* rw) {}
-void Navi::windowResized(RenderWindow* rw) 
+void Navi::injectMouseDown(int xPos, int yPos)
 {
-	winWidth = rw->getWidth();
-	winHeight = rw->getHeight();
+	LLMozLib::getInstance()->mouseDown(windowID, xPos, yPos);
 }
 
-void Navi::windowClosed(RenderWindow* rw) {}
-void Navi::windowFocusChange(RenderWindow* rw) 
+void Navi::injectMouseUp(int xPos, int yPos)
 {
-	isWinFocused = rw->isVisible();
+	LLMozLib::getInstance()->mouseUp(windowID, xPos, yPos);
 }

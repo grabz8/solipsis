@@ -5,13 +5,11 @@
 #include "NavigatorModule.h"
 #include "IPhysicsEngine.h"
 
-using namespace Ogre;
-
 namespace Solipsis {
 
 /** This class manages the physics engines
  */
-class NAVIGATORMODULE_EXPORT PhysicsEngineManager : public Singleton<PhysicsEngineManager>
+class NAVIGATORMODULE_EXPORT PhysicsEngineManager : public Ogre::Singleton<PhysicsEngineManager>
 {
 public:
     /// List of engines
@@ -37,7 +35,7 @@ public:
     /** Get engines. */
     EngineList& getEngines();
     /** Set current engine. */
-    void selectEngine(const String& name);
+    void selectEngine(const Ogre::String& name);
     /** Get current engine. */
     IPhysicsEngine* getSelectedEngine();
 

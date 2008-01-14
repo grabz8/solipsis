@@ -26,148 +26,21 @@
 #pragma once
 #endif
 
+#include "NaviPlatform.h"
+#include "NaviUtilities.h"
 #include <string>
 #include <map>
-#include <OgreAny.h>
 
 namespace NaviLibrary
 {
 	/**
-	* A generic value container that can contain a string, wide string, integer, float,
-	* double, or boolean value and can convert between them on-the-fly.
-	*/
-	class NaviDataValue
-	{
-		friend class NaviData;
-		std::wstring value;
-		
-	public:
-		/**
-		* Creates an empty NaviDataValue.
-		*/
-		NaviDataValue();
-
-		/**
-		* Creates a NaviDataValue from a string.
-		*/
-		NaviDataValue(const std::string &value);
-
-		/**
-		* Creates a NaviDataValue from a wide string.
-		*/
-		NaviDataValue(const std::wstring &value);
-
-		/**
-		* Creates a NaviDataValue from an integer.
-		*/
-		NaviDataValue(int value);
-
-		/**
-		* Creates a NaviDataValue from a float.
-		*/
-		NaviDataValue(float value);
-
-		/**
-		* Creates a NaviDataValue from a double.
-		*/
-		NaviDataValue(double value);
-
-		/**
-		* Creates a NaviDataValue from a boolean.
-		*/
-		NaviDataValue(bool value);
-
-		/**
-		* Assigns this NaviDataValue a string value
-		*/
-		NaviDataValue& operator=(const std::string &value);
-
-		/**
-		* Assigns this NaviDataValue a wide string value
-		*/
-		NaviDataValue& operator=(const std::wstring &value);
-
-		/**
-		* Assigns this NaviDataValue an integer value
-		*/
-		NaviDataValue& operator=(int value);
-
-		/**
-		* Assigns this NaviDataValue a float value
-		*/
-		NaviDataValue& operator=(float value);
-
-		/**
-		* Assigns this NaviDataValue a double value
-		*/
-		NaviDataValue& operator=(double value);
-
-		/**
-		* Assigns this NaviDataValue a boolean value
-		*/
-		NaviDataValue& operator=(bool value);
-
-		/**
-		* Returns the value of this NaviDataValue as a wide string
-		*/
-		std::wstring wstr() const;
-
-		/**
-		* Returns the value of this NaviDataValue as a string
-		*
-		* @note	If the value is actually a wide string, it will be downgraded via NaviUtilities::toMultibyte
-		*/
-		std::string str() const;
-
-		/**
-		* Returns whether or not the value of this NaviDataValue is empty
-		*/
-		inline bool isEmpty() const;
-		
-		/**
-		* Returns whether or not the value of this NaviDataValue is numeric (see NaviUtilities::isNumeric)
-		*
-		* @note	Boolean ("true"/"false") values are numeric.
-		*/
-		inline bool isNumber() const;
-
-		/**
-		* Returns the value of this NaviDataValue as an integer
-		*
-		* @note	If the value is unable to be cast into an integer, 0 will be returned
-		*/
-		int toInt() const;
-
-		/**
-		* Returns the value of this NaviDataValue as a float
-		*
-		* @note	If the value is unable to be cast into a float, 0 will be returned
-		*/
-		float toFloat() const;
-
-		/**
-		* Returns the value of this NaviDataValue as a double
-		*
-		* @note	If the value is unable to be cast into a double, 0 will be returned
-		*/
-		double toDouble() const;
-
-		/**
-		* Returns the value of this NaviDataValue as a boolean
-		*
-		* @note	If the value is unable to be cast into a boolean, false will be returned
-		*/
-		bool toBool() const;
-	};
-
-	/**
 	* A map container that holds pairs of named NaviDataValue's. Used for communication
 	* between the page of a Navi and the application.
 	*/
-	class NaviData
+	class _NaviExport NaviData
 	{
 		std::string name;
-		std::map<std::string,NaviDataValue> data;
+		std::map<std::string,NaviUtilities::MultiValue> data;
 
 	public:
 		/**
@@ -217,7 +90,7 @@ namespace NaviLibrary
 
 		/**
 		* This subscript operator works just like the subscript operator of a map. Returns a reference to
-		* a NaviDataValue object.
+		* a MultiValue object.
 		*
 		* @note
 		*	For example:
@@ -229,11 +102,11 @@ namespace NaviLibrary
 		*	std::string myMessage = myNaviData["newKey"].str(); // myMessage holds "Hello, new value."
 		*	\endcode
 		*/
-		const NaviDataValue& operator[](const std::string &keyName) const;
+		const NaviUtilities::MultiValue& operator[](const std::string &keyName) const;
 
 		/**
 		* This subscript operator works just like the subscript operator of a map. Returns a reference to
-		* a NaviDataValue object.
+		* a MultiValue object.
 		*
 		* @note
 		*	For example:
@@ -245,7 +118,7 @@ namespace NaviLibrary
 		*	std::string myMessage = myNaviData["newKey"].str(); // myMessage holds "Hello, new value."
 		*	\endcode
 		*/
-		NaviDataValue& operator[](const std::string &keyName);
+		NaviUtilities::MultiValue& operator[](const std::string &keyName);
 
 		/**
 		* Returns the number of data pairs in this NaviData.
@@ -259,7 +132,7 @@ namespace NaviLibrary
 		*
 		* @return	A string map representing the contents of this NaviData.
 		*/
-		const std::map<std::string,std::string>& toStringMap(bool encodeVals) const;
+		std::map<std::string,std::string> toStringMap(bool encodeVals) const;
 
 		/**
 		* Retrieves the contents of this NaviData as a Query String.
@@ -268,7 +141,7 @@ namespace NaviLibrary
 		*
 		* @return	A query string representing the contents of this NaviData.
 		*/
-		const std::string& toQueryString() const;
+		std::string toQueryString() const;
 	};
 
 }

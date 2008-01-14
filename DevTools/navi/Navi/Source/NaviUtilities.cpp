@@ -29,35 +29,41 @@
 #include <stdlib.h>
 #endif
 
-std::string NaviLibrary::NaviUtilities::getCurrentWorkingDirectory()
+using namespace NaviLibrary;
+
+std::string NaviUtilities::getCurrentWorkingDirectory()
 {
-	std::string currentWorkingDirectory = "";
+	std::string workingDirectory = "";
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 	char currentPath[_MAX_PATH];
 	getcwd(currentPath, _MAX_PATH);
-	currentWorkingDirectory = currentPath;
+	workingDirectory = currentPath;
 #endif
 
-	return currentWorkingDirectory;
+	return workingDirectory;
 }
 
-void NaviLibrary::NaviUtilities::translateLocalProtocols(std::string &strToTranslate)
+void NaviUtilities::translateLocalProtocols(std::string &strToTranslate)
 {
 	std::string localPath = "file:///";
 	localPath += getCurrentWorkingDirectory();
 	localPath += "/";
 
-	std::string localNaviDir = NaviManager::Get().localNaviDirectory;
+	NaviManager* naviMgr = NaviManager::GetPointer();
+	if(!naviMgr)
+		return;
+
+	std::string localNaviDir = naviMgr->localNaviDirectory;
 	if(localNaviDir.length())
 	{
 		localPath += localNaviDir;
 		localPath += "/";
 	}
 	
-	NaviLibrary::NaviUtilities::replaceAll(strToTranslate, "local://", localPath);
+	NaviUtilities::replaceAll(strToTranslate, "local://", localPath);
 }
 
-void NaviLibrary::NaviUtilities::translateResourceProtocols(std::string &strToTranslate)
+void NaviUtilities::translateResourceProtocols(std::string &strToTranslate)
 {
 	std::string resourceProtocol = "\"resource://";
 	std::string resourceDataURI = "";
@@ -120,7 +126,7 @@ void NaviLibrary::NaviUtilities::translateResourceProtocols(std::string &strToTr
 	}
 }
 
-std::string NaviLibrary::NaviUtilities::htmlToDataURI(std::string htmlString)
+std::string NaviUtilities::htmlToDataURI(std::string htmlString)
 {
 	translateLocalProtocols(htmlString);
 	translateResourceProtocols(htmlString);
@@ -133,13 +139,13 @@ std::string NaviLibrary::NaviUtilities::htmlToDataURI(std::string htmlString)
 	return encodedDataURI;
 }
 
-std::string NaviLibrary::NaviUtilities::resourceToDataURI(const std::string &resFileName, const std::string &resourceGroupName)
+std::string NaviUtilities::resourceToDataURI(const std::string &resFileName, const std::string &resourceGroupName)
 {
 	std::string resourceDataURI = "";
 
 	if(!Ogre::ResourceGroupManager::getSingleton().resourceExists(resourceGroupName, resFileName))
 	{
-		Ogre::LogManager::getSingleton().logMessage("WARNING! In NaviLibrary::NaviUtilities::resourceToDataURI, the resource '" +
+		Ogre::LogManager::getSingleton().logMessage("WARNING! In NaviUtilities::resourceToDataURI, the resource '" +
 			resFileName + "' in resource group '" + resourceGroupName + "' does not exist!");
 		return "";
 	}
@@ -243,7 +249,7 @@ std::string NaviLibrary::NaviUtilities::resourceToDataURI(const std::string &res
 	return "";
 }
 
-std::string NaviLibrary::NaviUtilities::encodeURIComponent(std::wstring strToEncode)
+std::string NaviUtilities::encodeURIComponent(std::wstring strToEncode)
 {
 	std::string result;
 	std::vector<int> temp;
@@ -283,7 +289,7 @@ std::string NaviLibrary::NaviUtilities::encodeURIComponent(std::wstring strToEnc
 	return result;
 }
 
-std::wstring NaviLibrary::NaviUtilities::decodeURIComponent(std::string strToDecode)
+std::wstring NaviUtilities::decodeURIComponent(std::string strToDecode)
 {
 	std::wstring result;
 	std::vector<int> temp;
@@ -333,7 +339,7 @@ std::wstring NaviLibrary::NaviUtilities::decodeURIComponent(std::string strToDec
 	return result;
 }
 
-std::string NaviLibrary::NaviUtilities::lowerString(std::string strToLower)
+std::string NaviUtilities::lowerString(std::string strToLower)
 {	
 	for(unsigned int i = 0; i < strToLower.length(); i++)
 		strToLower[i] = tolower(strToLower[i]);
@@ -341,7 +347,7 @@ std::string NaviLibrary::NaviUtilities::lowerString(std::string strToLower)
 	return strToLower;
 }
 
-bool NaviLibrary::NaviUtilities::isNumeric(const std::string &numberString)
+bool NaviUtilities::isNumeric(const std::string &numberString)
 {
 	std::istringstream converter(numberString);
 	int test;
@@ -349,7 +355,7 @@ bool NaviLibrary::NaviUtilities::isNumeric(const std::string &numberString)
 	return isPrefixed(numberString, "true") || isPrefixed(numberString, "false") ? true : !(converter >> test).fail();
 }
 
-std::wstring NaviLibrary::NaviUtilities::toWide(const std::string &stringToConvert)
+std::wstring NaviUtilities::toWide(const std::string &stringToConvert)
 {
 	size_t size = mbstowcs(0, stringToConvert.c_str(), 0) + 1;
 	wchar_t *temp = new wchar_t[size];
@@ -359,7 +365,7 @@ std::wstring NaviLibrary::NaviUtilities::toWide(const std::string &stringToConve
 	return result;
 }
 
-std::string NaviLibrary::NaviUtilities::toMultibyte(const std::wstring &wstringToConvert)
+std::string NaviUtilities::toMultibyte(const std::wstring &wstringToConvert)
 {
 	size_t size = wcstombs(0, wstringToConvert.c_str(), 0) + 1;
 	char *temp = new char[size];
@@ -369,12 +375,12 @@ std::string NaviLibrary::NaviUtilities::toMultibyte(const std::wstring &wstringT
 	return result;
 }
 
-void NaviLibrary::NaviUtilities::setLocale(const std::string &localeLanguage)
+void NaviUtilities::setLocale(const std::string &localeLanguage)
 {
 	setlocale(LC_CTYPE, localeLanguage.c_str());
 }
 
-int NaviLibrary::NaviUtilities::replaceAll(std::string &sourceStr, const std::string &replaceWhat, const std::string &replaceWith)
+int NaviUtilities::replaceAll(std::string &sourceStr, const std::string &replaceWhat, const std::string &replaceWith)
 {
 	int count = 0;
 
@@ -388,10 +394,9 @@ int NaviLibrary::NaviUtilities::replaceAll(std::string &sourceStr, const std::st
 	return count;
 }
 
-const std::vector<std::string>& NaviLibrary::NaviUtilities::split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty)
+std::vector<std::string> NaviUtilities::split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty)
 {
-	static std::vector<std::string> resultVector;
-	if(resultVector.size()) resultVector.clear();
+	std::vector<std::string> resultVector;
 
 	size_t idxA = 0;
 	size_t idxB = sourceStr.find(delimiter);
@@ -419,10 +424,9 @@ const std::vector<std::string>& NaviLibrary::NaviUtilities::split(const std::str
 	return resultVector;
 }
 
-const std::map<std::string,std::string>& NaviLibrary::NaviUtilities::splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty)
+std::map<std::string,std::string> NaviUtilities::splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty)
 {
-	static std::map<std::string,std::string> resultMap;
-	if(resultMap.size()) resultMap.clear();
+	std::map<std::string,std::string> resultMap;
 
 	size_t idx = 0;
 	std::string strA, strB;
@@ -445,7 +449,7 @@ const std::map<std::string,std::string>& NaviLibrary::NaviUtilities::splitToMap(
 	return resultMap;
 }
 
-std::string NaviLibrary::NaviUtilities::join(const std::vector<std::string> &sourceVector, const std::string &delimiter, bool ignoreEmpty)
+std::string NaviUtilities::join(const std::vector<std::string> &sourceVector, const std::string &delimiter, bool ignoreEmpty)
 {
 	std::string result = "";
 
@@ -456,7 +460,7 @@ std::string NaviLibrary::NaviUtilities::join(const std::vector<std::string> &sou
 	return result;
 }
 
-std::string NaviLibrary::NaviUtilities::joinFromMap(const std::map<std::string,std::string> &sourceMap, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty)
+std::string NaviUtilities::joinFromMap(const std::map<std::string,std::string> &sourceMap, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty)
 {
 	std::string result = "";
 
@@ -467,7 +471,115 @@ std::string NaviLibrary::NaviUtilities::joinFromMap(const std::map<std::string,s
 	return result;
 }
 
-bool NaviLibrary::NaviUtilities::hexStringToRGB(const std::string& hexString, unsigned char &R, unsigned char &G, unsigned char &B)
+NaviUtilities::MultiValue::MultiValue() { }
+
+NaviUtilities::MultiValue::MultiValue(const std::string &value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(const char *value) { *this = std::string(value); }
+
+NaviUtilities::MultiValue::MultiValue(const std::wstring &value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(int value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(size_t value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(float value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(double value) { *this = value; }
+
+NaviUtilities::MultiValue::MultiValue(bool value) { *this = value; }
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(const std::string &value)
+{
+	this->value = toWide(value);
+	isWide = false;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(const std::wstring &value)
+{
+	this->value = value;
+	isWide = true;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(int value)
+{
+	this->value = toWide(numberToString(value));
+	isWide = false;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(size_t value)
+{
+	this->value = toWide(numberToString(value));
+	isWide = false;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(float value)
+{
+	this->value = toWide(numberToString(value));
+	isWide = false;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(double value)
+{
+	this->value = toWide(numberToString(value));
+	isWide = false;
+	return *this;
+}
+
+NaviUtilities::MultiValue& NaviUtilities::MultiValue::operator=(bool value)
+{
+	this->value = toWide(numberToString(value));
+	isWide = false;
+	return *this;
+}
+
+std::wstring NaviUtilities::MultiValue::wstr() const { return value; }
+
+std::string NaviUtilities::MultiValue::str() const {return toMultibyte(value); }
+
+bool NaviUtilities::MultiValue::isEmpty() const { return value.empty(); }
+
+bool NaviUtilities::MultiValue::isNumber() const { return isNumeric(toMultibyte(value)); }
+
+bool NaviUtilities::MultiValue::isWideString() const { return isWide; }
+
+int NaviUtilities::MultiValue::toInt() const { return toNumber<int>(toMultibyte(value)); }
+
+float NaviUtilities::MultiValue::toFloat() const { return toNumber<float>(toMultibyte(value)); }
+
+double NaviUtilities::MultiValue::toDouble() const  { return toNumber<double>(toMultibyte(value)); }
+
+bool NaviUtilities::MultiValue::toBool() const { return toNumber<bool>(toMultibyte(value)); }
+
+std::string NaviUtilities::templateString(const std::string &templateStr, const NaviUtilities::Args &args)
+{
+	if(!(args.size() && templateStr.size()))
+		return templateStr;
+
+	std::string result;
+	std::vector<std::string> temp = split(templateStr, "?", false);
+
+	for(unsigned int i = 0; i < temp.size(); ++i)
+	{
+		result += temp[i];
+		if(args.size() > i && i != temp.size()-1)
+			result += args[i].str();			
+	}
+
+	return result;
+}
+
+void NaviUtilities::logTemplate(const std::string &templateStr, const NaviUtilities::Args &args)
+{
+	Ogre::LogManager::getSingleton().logMessage(templateString(templateStr, args));
+}
+
+bool NaviUtilities::hexStringToRGB(const std::string& hexString, unsigned char &R, unsigned char &G, unsigned char &B)
 {
 	if(hexString.length() == 7)
 	{
@@ -488,7 +600,7 @@ bool NaviLibrary::NaviUtilities::hexStringToRGB(const std::string& hexString, un
 * The following is freely-available code by René Nyffenegger
 * Obtained from: http://www.adp-gmbh.ch/cpp/common/base64.html
 */
-std::string NaviLibrary::NaviUtilities::encodeBase64(const std::string &strToEncode)
+std::string NaviUtilities::encodeBase64(const std::string &strToEncode)
 {
 	unsigned char const* bytes_to_encode = reinterpret_cast<const unsigned char*>(strToEncode.c_str());
 	unsigned int in_len = (unsigned int)strToEncode.length();

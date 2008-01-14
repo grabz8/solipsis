@@ -22,6 +22,8 @@
 
 #include "NaviMouse.h"
 
+#include <OgreBitwise.h>
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -29,42 +31,41 @@
 
 using namespace NaviLibrary;
 
-NaviMouse::NaviMouse(bool visibility)
+template<> NaviMouse* Singleton<NaviMouse>::instance = 0;
+
+NaviMouse::NaviMouse(unsigned short width, unsigned short height, bool visibility)
 {
 	mouseX = mouseY = 0;
 	activeCursor = 0;
 	defaultCursorName = "";
 	visible = visibility;
+	this->width = texWidth = width;
+	this->height = texHeight = height;
 
-	// BEGIN GREG mouse reload addon
-	// Create the texture
-/*	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual(
-		"NaviMouseTexture", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		Ogre::TEX_TYPE_2D, 64, 64, 0, Ogre::PF_BYTE_BGRA,
-		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, 0);*/
-	Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().createManual(
-		"NaviMouseTexture", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		Ogre::TEX_TYPE_2D, 64, 64, 0, Ogre::PF_BYTE_BGRA,
-		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, this);
-	fillTransparent((Ogre::Texture*)texture.get());
-	// END GREG mouse reload addon
-
-	Ogre::HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
-	pixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-	const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
-
-	Ogre::uint8* pDest = static_cast<Ogre::uint8*>(pixelBox.data);
-
-	// Fill the texture with a transparent color
-	for(size_t i = 0; i < (size_t)(64*64*4); i++)
+	bool compensateNPOT = false;
+	if(!Ogre::Bitwise::isPO2(width) || !Ogre::Bitwise::isPO2(height))
 	{
-		if((i+1)%4)	
-			pDest[i] = 64; // B, G, R
-		else 
-			pDest[i] = 0; // A
+		
+		if(Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(Ogre::RSC_NON_POWER_OF_2_TEXTURES))
+		{
+			if(Ogre::Root::getSingleton().getRenderSystem()->getCapabilities()->getNonPOW2TexturesLimited())
+				compensateNPOT = true;
+		}
+		else compensateNPOT = true;
+		
+		if(compensateNPOT)
+		{
+			texWidth = Ogre::Bitwise::firstPO2From(width);
+			texHeight = Ogre::Bitwise::firstPO2From(height);
+		}
 	}
 
-	pixelBuffer->unlock();
+	// Create the texture
+	texture = Ogre::TextureManager::getSingleton().createManual(
+		"NaviMouseTexture", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+		Ogre::TEX_TYPE_2D, texWidth, texHeight, 0, Ogre::PF_BYTE_BGRA,
+		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, this);
+	fillTransparent((Ogre::Texture*)texture.get());
 
 	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("NaviMouseMaterial", 
 		Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -74,11 +75,13 @@ NaviMouse::NaviMouse(bool visibility)
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 
-	panel = static_cast<Ogre::OverlayContainer*>(overlayManager.createOverlayElement("Panel", "NaviMousePanel"));
+	panel = static_cast<Ogre::PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", "NaviMousePanel"));
 	panel->setMetricsMode(Ogre::GMM_PIXELS);
 	panel->setPosition(0, 0);
-	panel->setDimensions(64, 64);
+	panel->setDimensions(width, height);
 	panel->setMaterialName("NaviMouseMaterial");
+	if(compensateNPOT)
+		panel->setUV(0, 0, (Ogre::Real)width/(Ogre::Real)texWidth, (Ogre::Real)height/(Ogre::Real)texHeight);	
 
 	overlay = overlayManager.create("NaviMouseOverlay");
 	overlay->add2D(panel);
@@ -92,8 +95,7 @@ NaviMouse::NaviMouse(bool visibility)
 
 NaviMouse::~NaviMouse()
 {
-	std::map<std::string, NaviCursor*>::iterator iter = cursors.begin();
-	while(iter != cursors.end())
+	for(iter = cursors.begin(); iter != cursors.end();)
 	{
 		NaviCursor* toDelete = iter->second;
 		iter = cursors.erase(iter);
@@ -111,7 +113,123 @@ NaviMouse::~NaviMouse()
 	Ogre::TextureManager::getSingletonPtr()->remove("NaviMouseTexture");
 }
 
-// BEGIN GREG mouse reload addon
+NaviMouse& NaviMouse::Get()
+{
+	if(!instance)
+		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
+			"An attempt was made to retrieve the NaviMouse Singleton before it has been instantiated! Did you forget to do 'new NaviMouse()'?", 
+			"NaviMouse::Get");
+
+	return *instance;
+}
+
+NaviMouse* NaviMouse::GetPointer()
+{
+	return instance;
+}
+
+NaviCursor* NaviMouse::createCursor(const std::string &cursorName, unsigned short hotspotX, unsigned short hotspotY)
+{
+	if(cursorName.empty()) 
+		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
+			"An attempt was made to create a NaviCursor with an empty name!", 
+			"NaviMouse::createCursor");
+
+	if(cursors.find(cursorName) != cursors.end())
+		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
+			"A NaviCursor named '" + cursorName + "' already exists! Could not create a new NaviCursor.",
+			"NaviMouse::createCursor");
+
+	return cursors[cursorName] = new NaviCursor(cursorName, hotspotX, hotspotY, texWidth, texHeight);
+}
+
+void NaviMouse::setDefaultCursor(const std::string &cursorName)
+{
+	if(cursorName.empty()) 
+		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
+			"An attempt was made to set the default cursor with an empty name!", 
+			"NaviMouse::setDefaultCursor");
+
+	iter = cursors.find(cursorName);
+	if(iter == cursors.end())
+		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
+			"A NaviCursor named '" + cursorName + "' does not exist! Could not set the default NaviCursor.", 
+			"NaviMouse::setDefaultCursor");
+
+	activeCursor = iter->second;
+	defaultCursorName = cursorName;
+}
+
+void NaviMouse::removeCursor(const std::string &cursorName)
+{
+	if(cursorName == defaultCursorName)
+		return;
+
+	iter = cursors.find(cursorName);
+	if(iter == cursors.end())
+		return;
+
+	NaviCursor* cursorToDelete = iter->second;
+	if(cursorToDelete == activeCursor)
+		activateCursor("default");
+
+	cursors.erase(iter);
+	delete cursorToDelete;
+}
+
+void NaviMouse::activateCursor(std::string cursorName)
+{
+	if(cursorName == "default")
+		cursorName = defaultCursorName;
+
+	iter = cursors.find(cursorName);
+	if(iter == cursors.end())
+		return;
+	else if(activeCursor == iter->second)
+		return;
+
+	activeCursor = iter->second;
+	activeCursor->update(true);
+	move(mouseX, mouseY);
+}
+
+void NaviMouse::show()
+{
+	if(visible)
+		return;
+
+	visible = true;
+	overlay->show();
+}
+
+void NaviMouse::hide()
+{
+	if(!visible)
+		return;
+
+	visible = false;
+	overlay->hide();
+}
+
+bool NaviMouse::isVisible()
+{
+	return visible;
+}
+
+void NaviMouse::move(int x, int y)
+{
+	panel->setPosition(x-activeCursor->hsX, y-activeCursor->hsY);
+	mouseX = x;
+	mouseY = y;
+}
+
+void NaviMouse::update()
+{
+	if(activeCursor && visible)
+		activeCursor->update();
+}
+
+// BEGIN GREG
 void NaviMouse::fillTransparent(Ogre::Texture* texture)
 {
 	Ogre::HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
@@ -131,125 +249,21 @@ void NaviMouse::fillTransparent(Ogre::Texture* texture)
 
 	pixelBuffer->unlock();
 }
+// END GREG
 
-void NaviMouse::loadResource(Ogre::Resource* resource)
+void NaviMouse::loadResource(Ogre::Resource *resource)
 {
-	if (resource == 0)
-		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-			"Null parameter!", 
-			"NaviMouse::loadResource");
+	Ogre::Texture *tex = static_cast<Ogre::Texture*>(resource); 
 
-	Ogre::Texture* texture = (Ogre::Texture*)resource;
-	fillTransparent(texture);
-	if (activeCursor) activeCursor->update(true);
-}
-// END GREG mouse reload addon
+	tex->setTextureType(Ogre::TEX_TYPE_2D);
+	tex->setWidth(texWidth);
+	tex->setHeight(texHeight);
+	tex->setNumMipmaps(0);
+	tex->setFormat(Ogre::PF_BYTE_BGRA);
+	tex->setUsage(Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+	fillTransparent(tex);
+	tex->createInternalResources();
 
-NaviCursor* NaviMouse::createCursor(std::string cursorName, unsigned short hotspotX, unsigned short hotspotY)
-{
-	if(cursorName.empty()) 
-		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
-			"A NaviCursor was attempted to be created with an empty name!", 
-			"NaviMouse::createCursor");
-
-	if(cursors.find(cursorName) == cursors.end())
-	{
-		NaviCursor* newCursor = new NaviCursor(cursorName, hotspotX, hotspotY);
-		cursors[cursorName] = newCursor;
-		return newCursor;
-	}
-	else
-	{
-		std::string errMsg = "A NaviCursor named '";
-		errMsg += cursorName;
-		errMsg += "' already exists! Could not create a new NaviCursor.";
-		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
-			errMsg, "NaviMouse::createCursor");
-	}
-
-	return 0;
-}
-
-void NaviMouse::setDefaultCursor(std::string cursorName)
-{
-	if(cursorName.empty()) 
-		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
-			"An attempt was made to set the default cursor with an empty name!", 
-			"NaviMouse::setDefaultCursor");
-
-	std::map<std::string, NaviCursor*>::iterator i = cursors.find(cursorName);
-	if(i != cursors.end())
-	{
-		activeCursor = i->second;
-		defaultCursorName = cursorName;
-	}
-	else
-	{
-		std::string errMsg = "A NaviCursor named '";
-		errMsg += cursorName;
-		errMsg += "' does not exist! Could not set the default NaviCursor.";
-		OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS, 
-			errMsg, "NaviMouse::setDefaultCursor");
-	}
-
-}
-
-void NaviMouse::removeCursor(std::string cursorName)
-{
-	if(cursorName == defaultCursorName) return;
-
-	std::map<std::string, NaviCursor*>::iterator i = cursors.find(cursorName);
-	if(i != cursors.end())
-	{
-		NaviCursor* cursorToDelete = i->second;
-		if(cursorToDelete == activeCursor)
-			activateCursor("default");
-		cursors.erase(i);
-		delete cursorToDelete;
-	}
-}
-
-void NaviMouse::activateCursor(std::string cursorName)
-{
-	if(cursorName == "default") cursorName = defaultCursorName;
-
-	std::map<std::string, NaviCursor*>::iterator i = cursors.find(cursorName);
-	
-	if(i != cursors.end())
-	{
-		if(activeCursor == i->second) return;
-		activeCursor = i->second;
+	if(activeCursor && visible)
 		activeCursor->update(true);
-		move(mouseX, mouseY);
-	}
-}
-
-void NaviMouse::show()
-{
-	if(!visible)
-	{
-		visible = true;
-		overlay->show();
-	}
-}
-
-void NaviMouse::hide()
-{
-	if(visible)
-	{
-		visible = false;
-		overlay->hide();
-	}
-}
-
-void NaviMouse::move(int x, int y)
-{
-	panel->setPosition(x-activeCursor->hsX, y-activeCursor->hsY);
-	mouseX = x;
-	mouseY = y;
-}
-
-void NaviMouse::update()
-{
-	if(activeCursor && visible) activeCursor->update();
 }

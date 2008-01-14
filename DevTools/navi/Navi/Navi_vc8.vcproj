@@ -217,6 +217,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\NaviPlatform.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Include\NaviSingleton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\NaviUtilities.h"
 				>
 			</File>

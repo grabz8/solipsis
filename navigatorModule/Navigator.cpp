@@ -2,6 +2,7 @@
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
+#include "Navi.h"
 #include "NaviLua.h"
 
 #include "Modeler.h"
@@ -227,9 +228,14 @@ void Navigator::demoNavi1()
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi1Video", "demoNavi1Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    //vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=mAJYQOANDCk", 512, 512, true, 15, true, 0.75f));
-    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512, true, 15, true, 0.75f));
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
+    vidNavi->show(true);
+    vidNavi->setMaxUPS(15);
+    vidNavi->setForceMaxUpdate(true);
+    vidNavi->setOpacity(0.75f);
+    vidEnt->setMaterialName(vidNavi->getMaterialName());
     //http://www.youtube.com/watch?v=ZQcUS4chhc4
+    //http://fr.youtube.com/watch?v=u5WIEep8DJg
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1VideoNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
     videoNode->attachObject(vidEnt);
     videoNode->yaw(Degree(45), Node::TS_WORLD);
@@ -237,7 +243,10 @@ void Navigator::demoNavi1()
     // Creates the Text Plane and subsequent NaviMaterial
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
-    txtEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512, true, 8, false));
+    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512);
+    txtNavi->show(true);
+    txtNavi->setMaxUPS(8);
+    txtEnt->setMaterialName(txtNavi->getMaterialName());
     SceneNode* txtNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1TextNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
     txtNode->attachObject(txtEnt);
     txtNode->yaw(Degree(-25), Node::TS_WORLD);
@@ -245,7 +254,10 @@ void Navigator::demoNavi1()
     // web knot
     Entity* knotEnt = mSceneMgr->createEntity("demoNavi1WebKnot", "knot.mesh");
     knotEnt->setQueryFlags(QFNaviPanel);
-    std::string googleMtlName = NaviLibrary::NaviManager::Get().createNaviMaterial(knotEnt->getName(), "http://www.google.com", 512, 512, true, 8, false);
+    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(knotEnt->getName(), "http://www.google.com", 512, 512);
+    knotNavi->show(true);
+    knotNavi->setMaxUPS(8);
+    std::string googleMtlName = txtNavi->getMaterialName();
     MaterialPtr googleMtl = (MaterialPtr)MaterialManager::getSingletonPtr()->getByName(googleMtlName);
     googleMtl->setDepthWriteEnabled(true);
     knotEnt->setMaterialName(googleMtlName);
@@ -261,11 +273,10 @@ void Navigator::demoNavi2(const String url)
     static bool active = false;
     String url2go(url);
     if (url.length() == 0)
-        url2go = "http://www.youtube.com/watch?v=mAJYQOANDCk";
-//        "http://www.youtube.com/watch?v=066_q4DIeqk"
+        url2go = "http://fr.youtube.com/watch?v=u5WIEep8DJg";
     if (active)
     {
-        NaviLibrary::NaviManager::Get().navigateNaviTo("demoNavi2Video", url2go);
+        NaviLibrary::NaviManager::Get().getNavi("demoNavi2Video")->navigateTo(url2go);
         return;
     }
     active = true;
@@ -277,7 +288,12 @@ void Navigator::demoNavi2(const String url)
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    vidEnt->setMaterialName(NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), url2go, 512, 512, true, 15, true, 0.75f));
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), url2go, 512, 512);
+    vidNavi->show(true);
+    vidNavi->setMaxUPS(15);
+    vidNavi->setForceMaxUpdate(true);
+    vidNavi->setOpacity(0.75f);
+    vidEnt->setMaterialName(vidNavi->getMaterialName());
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
     videoNode->attachObject(vidEnt);
     videoNode->setPosition(Vector3(18, -55, 104.5));
@@ -550,7 +566,7 @@ void Navigator::computeNaviHit(const String& naviName,
     closestResultUV.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
     // Navi textures are repeated not clamped so bound results to [0..1]
     unsigned short naviWidth, naviHeight;
-    NaviLibrary::NaviManager::Get().getNaviExtents(naviName, naviWidth, naviHeight);
+    NaviLibrary::NaviManager::Get().getNavi(naviName)->getExtents(naviWidth, naviHeight);
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
     OGRE_LOG("Navigator::computeNaviHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", closestResultUV=" + StringConverter::toString(closestResultUV));

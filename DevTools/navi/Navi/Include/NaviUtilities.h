@@ -26,6 +26,7 @@
 #pragma once
 #endif
 
+#include "NaviPlatform.h"
 #include <string>
 #include <iomanip>
 #include <OgreResourceGroupManager.h>
@@ -75,6 +76,9 @@ namespace NaviLibrary
 		* @note
 		*	For example:
 		*	\verbatim local://filename.html --> file:///C:\My Application\NaviLocal\filename.html \endverbatim
+		*
+		* @note
+		*	The NaviManager singleton must be instantiated prior to calling this utility function.
 		*
 		* @param	strToTranslate		The string to translate.
 		*/
@@ -240,7 +244,7 @@ namespace NaviLibrary
 		*
 		* @return	A string vector containing a series of ordered tokens.
 		*/
-		const std::vector<std::string>& split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty = true);
+		std::vector<std::string> split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty = true);
 
 		/**
 		* A more advanced form of splitting, parses a string into a string map. Exceptionally useful for use with Query Strings.
@@ -263,7 +267,7 @@ namespace NaviLibrary
 		*	std::string myColor = myMap["color"]; // myColor is now 'purple' 
 		*	\endcode
 		*/
-		const std::map<std::string,std::string>& splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
+		std::map<std::string,std::string> splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
 
 		/**
 		* Joins a string vector into a single string. (Effectively does the inverse of NaviUtilities::split)
@@ -288,6 +292,151 @@ namespace NaviLibrary
 		* @param	ignoreEmpty		Whether or not to ignore empty string values within the string map.
 		*/
 		std::string joinFromMap(const std::map<std::string,std::string> &sourceMap, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
+
+		/**
+		* A generic value container that can contain a string, wide string, integer, float,
+		* double, or boolean value and can convert between them on-the-fly.
+		*/
+		class _NaviExport MultiValue
+		{
+			std::wstring value;
+			bool isWide;
+			
+		public:
+			/**
+			* Creates an empty MultiValue.
+			*/
+			MultiValue();
+
+			/**
+			* Creates a MultiValue from a string.
+			*/
+			MultiValue(const std::string &value);
+
+			MultiValue(const char *value);
+
+			/**
+			* Creates a MultiValue from a wide string.
+			*/
+			MultiValue(const std::wstring &value);
+
+			/**
+			* Creates a MultiValue from an integer.
+			*/
+			MultiValue(int value);
+
+			/**
+			* Creates a MultiValue from a size_t.
+			*/
+			MultiValue(size_t value);
+
+			/**
+			* Creates a MultiValue from a float.
+			*/
+			MultiValue(float value);
+
+			/**
+			* Creates a MultiValue from a double.
+			*/
+			MultiValue(double value);
+
+			/**
+			* Creates a MultiValue from a boolean.
+			*/
+			MultiValue(bool value);
+
+			/**
+			* Assigns this MultiValue a string value
+			*/
+			MultiValue& operator=(const std::string &value);
+
+			/**
+			* Assigns this MultiValue a wide string value
+			*/
+			MultiValue& operator=(const std::wstring &value);
+
+			/**
+			* Assigns this MultiValue an integer value
+			*/
+			MultiValue& operator=(int value);
+
+			/**
+			* Assigns this MultiValue a size_t value
+			*/
+			MultiValue& operator=(size_t value);
+
+			/**
+			* Assigns this MultiValue a float value
+			*/
+			MultiValue& operator=(float value);
+
+			/**
+			* Assigns this MultiValue a double value
+			*/
+			MultiValue& operator=(double value);
+
+			/**
+			* Assigns this MultiValue a boolean value
+			*/
+			MultiValue& operator=(bool value);
+
+			/**
+			* Returns the value of this MultiValue as a wide string
+			*/
+			std::wstring wstr() const;
+
+			/**
+			* Returns the value of this MultiValue as a string
+			*
+			* @note	If the value is actually a wide string, it will be downgraded via NaviUtilities::toMultibyte
+			*/
+			std::string str() const;
+
+			/**
+			* Returns whether or not the value of this MultiValue is empty
+			*/
+			bool isEmpty() const;
+			
+			/**
+			* Returns whether or not the value of this MultiValue is numeric (see NaviUtilities::isNumeric)
+			*
+			* @note	Boolean ("true"/"false") values are numeric.
+			*/
+			bool isNumber() const;
+
+			/**
+			* Returns whether or not the value of this MultiValue is a wide string
+			*/
+			bool isWideString() const;
+
+			/**
+			* Returns the value of this MultiValue as an integer
+			*
+			* @note	If the value is unable to be cast into an integer, 0 will be returned
+			*/
+			int toInt() const;
+
+			/**
+			* Returns the value of this MultiValue as a float
+			*
+			* @note	If the value is unable to be cast into a float, 0 will be returned
+			*/
+			float toFloat() const;
+
+			/**
+			* Returns the value of this MultiValue as a double
+			*
+			* @note	If the value is unable to be cast into a double, 0 will be returned
+			*/
+			double toDouble() const;
+
+			/**
+			* Returns the value of this MultiValue as a boolean
+			*
+			* @note	If the value is unable to be cast into a boolean, false will be returned
+			*/
+			bool toBool() const;
+		};
 
 		/**
 		* This is an incredibly useful utility class for creating small inline vectors quickly.
@@ -323,6 +472,8 @@ namespace NaviLibrary
 		/**
 		* This is just a simple way to quickly make inline string vectors.
 		*
+		* Syntax is: Strings(x)(x)(x)(x)...
+		*
 		* @note
 		*	For example:
 		*	\code
@@ -339,6 +490,46 @@ namespace NaviLibrary
 		*/
 		typedef InlineVector<std::string> Strings;
 
+		/**
+		* This is a simple way to quickly make inline MultiValue vectors.
+		*
+		* Syntax is: Args(x)(x)(x)(x)...
+		*
+		* @note
+		*	For example:
+		*	\code
+		*	// Before:
+		*	vector<MultiValue> myArgs;
+		*	myArgs.push_back("SandyBob");
+		*	myArgs.push_back(naviData["class"]);
+		*	myArgs.push_back(1337);
+		*	myNavi->evaluateJS("displayInfo(?, ?, ?)", myArgs);
+		*
+		*	// After:
+		*	myNavi->evaluateJS("displayInfo(?, ?, ?)", Args("SandyBob")(navidata["class"])(1337));
+		*	\endcode
+		*/
+		typedef InlineVector<MultiValue> Args;
+
+		/**
+		* Translates a template string and some arguments into a full string.
+		*
+		* @note
+		*	For example:
+		*	\code
+		*	std::string myString = templateString("name: ?, strength: ?, color: ?", Args("ValhallaSword")(999)("Red"));
+		*	// myString is now = "name: ValhallaSword, strength: 999, color: Red";
+		*	\endcode
+		*/
+		std::string _NaviExport templateString(const std::string &templateStr, const Args &args);
+
+		/**
+		* A super-easy way to log debug info to the Ogre LogManager. See NaviUtilities::templateString for usage.
+		*
+		* This is just a shortcut for LogManager::GetSingleton().logMessage(templateString("a: ?, b: ?"), Args(a)(b)));
+		*/
+		void _NaviExport logTemplate(const std::string &templateStr, const Args &args);
+		
 		/**
 		* Converts a Hex Color String to R, G, B values.
 		*
@@ -360,6 +551,22 @@ namespace NaviLibrary
 		* @return	The Base64-encoded representation of the passed string.
 		*/
 		std::string encodeBase64(const std::string &strToEncode);
+
+		/**
+		* Ensures that a number (input) is within certain limits.
+		*
+		* @param	input	The number that will be limited.
+		* @param	min		The minimum limit.
+		* @param	max		The maximum limit.
+		*/
+		template<class NumberType>
+		inline void limit(NumberType &input, NumberType min, NumberType max)
+		{
+			if(input < min)
+				input = min;
+			else if(input > max)
+				input = max;
+		}
 	}
 }
 

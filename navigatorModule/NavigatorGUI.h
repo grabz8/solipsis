@@ -33,7 +33,7 @@ public:
 
 protected:
     Navigator* mNavigator;
-    NaviManager& mNaviMgr;
+    NaviManager* mNaviMgr;
     static const std::string mNavisNames[NAVI_COUNT];
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;

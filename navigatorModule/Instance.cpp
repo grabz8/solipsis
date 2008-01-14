@@ -287,9 +287,6 @@ bool Instance::createGUI() {
     if (!mNaviSupported)
         return true;
 
-    // Initializing Navi
-    NaviLibrary::NaviManager::Get().Startup(mWindow);
-
     return true;
 }
 
@@ -297,9 +294,6 @@ bool Instance::createGUI() {
 void Instance::destroyGUI() {
     if (!mNaviSupported)
         return;
-
-    // Finalizing Navi
-    NaviLibrary::NaviManager::Get().Shutdown();
 }
 
 //-------------------------------------------------------------------------------------

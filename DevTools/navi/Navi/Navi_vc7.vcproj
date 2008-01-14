@@ -180,6 +180,12 @@ if not exist &quot;$(ProjectDir)..\..\..\Dependencies\llmozlib\win32_vc7\runtime
 				RelativePath=".\Include\NaviMouse.h">
 			</File>
 			<File
+				RelativePath=".\Include\NaviPlatform.h">
+			</File>
+			<File
+				RelativePath=".\Include\NaviSingleton.h">
+			</File>
+			<File
 				RelativePath=".\Include\NaviUtilities.h">
 			</File>
 		</Filter>

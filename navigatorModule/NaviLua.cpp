@@ -1,5 +1,6 @@
 #include "NaviLua.h"
 #include "NaviManager.h"
+#include "Navi.h"
 #include "OgreHelpers.h"
 
 using namespace NaviLibrary;
@@ -74,7 +75,15 @@ LuaGlue (_createNavi)
 	{
 		naviPos = new NaviLibrary::NaviPosition(x, y);
 	}
-	NaviLibrary::NaviManager::Get().createNavi(pName, pUrl, *naviPos, w, h, bMoveable, bIsVisible, maxUpdates, bForceMaxUpdate, zOrder, opacity);
+	NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().createNavi(pName, pUrl, *naviPos, w, h, zOrder);
+	navi->setMovable(bMoveable);
+	if (bIsVisible)
+		navi->show();
+	else
+		navi->hide();
+	navi->setMaxUPS(maxUpdates);
+	navi->setForceMaxUpdate(bForceMaxUpdate);
+	navi->setOpacity(opacity);
 	delete naviPos;
 	return 0;
 }
@@ -84,7 +93,7 @@ LuaGlue (_setNaviMask)
 {
 	const char *pName = luaL_checkstring(L, 1);
 	const char *pMaskName = luaL_checkstring(L, 2);
-	NaviLibrary::NaviManager::Get().setNaviMask(pName, pMaskName);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setMask(pMaskName);
 	return 0;
 }
 
@@ -93,16 +102,18 @@ class cLuaNaviFunctor : public NaviLibrary::NaviEventListener
 {
 public:
 	cLuaNaviFunctor(const char *pLuaFunc, lua_State *pLua) {m_sLuaFunc = pLuaFunc; m_pLuaState = pLua;}
-	void onNaviDataEvent(const std::string &naviName, const NaviLibrary::NaviData &naviData);
-	void onNaviLinkClicked(const std::string &naviName, const std::string &linkHref);
+	void onNaviDataEvent(NaviLibrary::Navi *caller, const NaviLibrary::NaviData &naviData);
+	void onLinkClicked(NaviLibrary::Navi *caller, const std::string &linkHref);
+	void onLocationChange(NaviLibrary::Navi *caller, const std::string &url);
+	void onNavigateComplete(NaviLibrary::Navi *caller, const std::string &url, int responseCode);
 private:
 	std::string m_sLuaFunc;
 	lua_State *m_pLuaState;
 };
 
-void cLuaNaviFunctor::onNaviDataEvent(const std::string &naviName, const NaviLibrary::NaviData &naviData)
+void cLuaNaviFunctor::onNaviDataEvent(NaviLibrary::Navi *caller, const NaviLibrary::NaviData &naviData)
 {
-	std::string LuaCommand = m_sLuaFunc + "(\"Data\", \"" + naviName + "\", \"" + naviData.getName() + "\", {";
+	std::string LuaCommand = m_sLuaFunc + "(\"Data\", \"" + caller->getName() + "\", \"" + naviData.getName() + "\", {";
 	NaviLibrary::NaviData myData = naviData;
 
 	std::map<std::string,std::string> naviDataMap;
@@ -139,10 +150,10 @@ void cLuaNaviFunctor::onNaviDataEvent(const std::string &naviName, const NaviLib
 	}
 }
 
-void cLuaNaviFunctor::onNaviLinkClicked(const std::string &naviName, const std::string &linkHref)
+void cLuaNaviFunctor::onLinkClicked(NaviLibrary::Navi *caller, const std::string &linkHref)
 {
 #if 0
-	std::string LuaCommand = m_sLuaFunc + "(\"LinkClicked\", \"" + naviName + "\", \"" + linkHref + "\")";
+	std::string LuaCommand = m_sLuaFunc + "(\"LinkClicked\", \"" + caller->getName() + "\", \"" + linkHref + "\")";
 	if (0 != luaL_loadbuffer(m_pLuaState, LuaCommand.c_str(), LuaCommand.size(), NULL))
 	{
 		char ebuf[256];
@@ -158,6 +169,14 @@ void cLuaNaviFunctor::onNaviLinkClicked(const std::string &naviName, const std::
 #endif
 }
 
+void cLuaNaviFunctor::onLocationChange(NaviLibrary::Navi *caller, const std::string &url)
+{
+}
+
+void cLuaNaviFunctor::onNavigateComplete(NaviLibrary::Navi *caller, const std::string &url, int responseCode)
+{
+}
+
 static std::map<std::string, cLuaNaviFunctor *> s_mapFunctors;
 
 LuaGlue (_addNaviEventListener)
@@ -167,7 +186,7 @@ LuaGlue (_addNaviEventListener)
 	std::string luaFuncName = luaL_checkstring(L, argNum++);
 	
 	s_mapFunctors[luaFuncName] = new cLuaNaviFunctor(luaFuncName.c_str(), L);
-	NaviLibrary::NaviManager::Get().addNaviEventListener(pName, s_mapFunctors[luaFuncName]);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->addEventListener(s_mapFunctors[luaFuncName]);
 
 	return 0;
 }
@@ -190,7 +209,7 @@ LuaGlue(_removeNaviEventListener)
 	cLuaNaviFunctor *pFunctor = s_mapFunctors[luaFuncName];
 	if(pFunctor)
 	{
-		NaviLibrary::NaviManager::Get().removeNaviEventListener(pName, pFunctor);
+		NaviLibrary::NaviManager::Get().getNavi(pName)->removeEventListener(pFunctor);
 		s_mapFunctors[luaFuncName] = NULL;
 		delete pFunctor;
 	}
@@ -210,7 +229,7 @@ LuaGlue (_setNaviColorKey)
 	float keyFuzziness = (float) luaL_optnumber(L, argNum++, 0);
 
 
-	NaviLibrary::NaviManager::Get().setNaviColorKey(pName, pColorStr, keyFillOpacity, keyFillColor, keyFuzziness);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setColorKey(pColorStr, keyFillOpacity, keyFillColor, keyFuzziness);
 	return 0;
 }
 
@@ -244,14 +263,14 @@ LuaGlue(_navigateNaviTo)
 		std::map<std::string, std::string>::iterator it = mapTable.begin();
 		while(it != mapTable.end())
 		{
-			naviData[(*it).first] = NaviLibrary::NaviDataValue((*it).second);
+			naviData[(*it).first] = NaviLibrary::NaviUtilities::MultiValue((*it).second);
 			++it;
 		}
-		NaviLibrary::NaviManager::Get().navigateNaviTo(pName, pUrl, naviData);
+		NaviLibrary::NaviManager::Get().getNavi(pName)->navigateTo(pUrl, naviData);
 	}
 	else
 	{
-		NaviLibrary::NaviManager::Get().navigateNaviTo(pName, pUrl);
+		NaviLibrary::NaviManager::Get().getNavi(pName)->navigateTo(pUrl);
 	}
 
 	return 0;
@@ -262,7 +281,7 @@ LuaGlue(_setNaviOpacity)
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
 	float opacity = (float) luaL_optnumber(L, argNum++, 1.0);
-	NaviLibrary::NaviManager::Get().setNaviOpacity(pName, opacity);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setOpacity(opacity);
 
 	return 0;
 }
@@ -280,7 +299,7 @@ LuaGlue(_setNaviIgnoreTransparent)
 	argNum++;
 
 	float defineThreshold = (float) luaL_optnumber(L, argNum++, 0.05);
-	NaviLibrary::NaviManager::Get().setNaviIgnoreTransparent(pName, ignoreTrans, defineThreshold);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setIgnoreTransparent(ignoreTrans, defineThreshold);
 	return 0;
 }
 
@@ -290,7 +309,7 @@ LuaGlue(_setForceMaxUpdate)
 	const char *pName = luaL_checkstring(L, argNum++);
 	bool bOn = lua_toboolean(L, argNum++) != 0;
 
-	NaviLibrary::NaviManager::Get().setForceMaxUpdate(pName, bOn);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setForceMaxUpdate(bOn);
 	return 0;
 }
 
@@ -300,7 +319,7 @@ LuaGlue(_setMaxUpdatesPerSec)
 	const char *pName = luaL_checkstring(L, argNum++);
 	unsigned int iRate = (unsigned int) luaL_checkint(L, argNum++);
 
-	NaviLibrary::NaviManager::Get().setMaxUpdatesPerSec(pName, iRate);
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setMaxUPS(iRate);
 	return 0;
 }
 /////////////////////////////////////////////////////////////
@@ -311,7 +330,7 @@ LuaGlue(_naviEvaluateJS)
 	std::string naviName = luaL_checkstring(L, argNum++);
 	std::string script = luaL_checkstring(L, argNum++);
 
-	std::string r = NaviLibrary::NaviManager::Get().naviEvaluateJS(naviName, script);
+	std::string r = NaviLibrary::NaviManager::Get().getNavi(naviName)->evaluateJS(script);
 	lua_pushstring(L, r.c_str());
 	return 1;
 }
@@ -341,8 +360,15 @@ LuaGlue(_createNaviMaterial)
 	float opacity = (float) luaL_optnumber(L, argNum++, 1.0);
 	Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC;
 
-	std::string retString = NaviLibrary::NaviManager::Get().createNaviMaterial(naviName, homepage, w, h, 
-			isVisible, maxUpdatesPerSec, forceMaxUpdate, opacity, texFiltering);
+	NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().createNaviMaterial(naviName, homepage, w, h, texFiltering);
+	if (isVisible)
+		navi->show();
+	else
+		navi->hide();
+	navi->setMaxUPS(maxUpdatesPerSec);
+	navi->setForceMaxUpdate(forceMaxUpdate);
+	navi->setOpacity(opacity);
+	std::string retString = navi->getName();
 
 	lua_pushstring(L, retString.c_str());
 	return 1;
@@ -352,7 +378,7 @@ LuaGlue(_canNavigateBack)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
-	lua_pushboolean(L, NaviLibrary::NaviManager::Get().canNavigateBack(naviName));
+	lua_pushboolean(L, NaviLibrary::NaviManager::Get().getNavi(naviName)->canNavigateBack());
 	return 1;
 }
 
@@ -360,7 +386,7 @@ LuaGlue(_navigateNaviBack)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
-	NaviLibrary::NaviManager::Get().navigateNaviBack(naviName);
+	NaviLibrary::NaviManager::Get().getNavi(naviName)->navigateBack();
 	return 0;
 }
 
@@ -368,7 +394,7 @@ LuaGlue(_canNavigateForward)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
-	lua_pushboolean(L, NaviLibrary::NaviManager::Get().canNavigateForward(naviName));
+	lua_pushboolean(L, NaviLibrary::NaviManager::Get().getNavi(naviName)->canNavigateForward());
 	return 1;
 }
 
@@ -376,7 +402,7 @@ LuaGlue(_navigateNaviForward)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
-	NaviLibrary::NaviManager::Get().navigateNaviForward(naviName);
+	NaviLibrary::NaviManager::Get().getNavi(naviName)->navigateForward();
 	return 0;
 }
 
@@ -384,7 +410,7 @@ LuaGlue(_navigateNaviStop)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
-	NaviLibrary::NaviManager::Get().navigateNaviStop(naviName);
+	NaviLibrary::NaviManager::Get().getNavi(naviName)->navigateStop();
 	return 0;
 }
 
@@ -396,7 +422,7 @@ LuaGlue(_setNaviBackgroundColor)
 	float g = (float) luaL_optnumber(L, argNum++, 1.0);
 	float b = (float) luaL_optnumber(L, argNum++, 1.0);
 
-	NaviLibrary::NaviManager::Get().setNaviBackgroundColor(naviName, r, g, b);
+	NaviLibrary::NaviManager::Get().getNavi(naviName)->setBackgroundColor(r, g, b);
 	return 0;
 }
 
@@ -409,7 +435,7 @@ LuaGlue(_isAnyNaviFocused)
 
 LuaGlue(_getFocusedNaviName)
 {
-	lua_pushstring(L, NaviLibrary::NaviManager::Get().getFocusedNaviName().c_str());
+	lua_pushstring(L, NaviLibrary::NaviManager::Get().getFocusedNavi()->getName().c_str());
 	return 1;
 }
 
@@ -418,7 +444,7 @@ LuaGlue(_getNaviMaterialName)
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
 
-	lua_pushstring(L, NaviLibrary::NaviManager::Get().getNaviMaterialName(naviName).c_str());
+	lua_pushstring(L, NaviLibrary::NaviManager::Get().getNavi(naviName)->getMaterialName().c_str());
 	return 1;
 }
 
@@ -427,7 +453,7 @@ LuaGlue(_getNaviVisibility)
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
 
-	lua_pushboolean(L, NaviLibrary::NaviManager::Get().getNaviVisibility(naviName));
+    lua_pushboolean(L, NaviLibrary::NaviManager::Get().getNavi(naviName)->getVisibility());
 	return 1;
 }
 
@@ -443,7 +469,7 @@ LuaGlue(_showNavi)
 	const char *naviName = luaL_checkstring(L, argNum++);
 
 	if(naviName)
-		NaviLibrary::NaviManager::Get().showNavi(naviName);
+		NaviLibrary::NaviManager::Get().getNavi(naviName)->show();
 	return 0;
 }
 
@@ -453,7 +479,7 @@ LuaGlue(_hideNavi)
 	const char *naviName = luaL_checkstring(L, argNum++);
 
 	if(naviName)
-		NaviLibrary::NaviManager::Get().hideNavi(naviName);
+		NaviLibrary::NaviManager::Get().getNavi(naviName)->hide();
 	return 0;
 }
 

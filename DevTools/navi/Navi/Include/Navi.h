@@ -26,18 +26,15 @@
 #pragma once
 #endif
 
+#include "NaviPlatform.h"
 #include "NaviManager.h"
 #include <llmozlib.h>
 
 namespace NaviLibrary
 {
-	/**
-	* This class is pure private, Navi objects are solely handled by NaviManager
-	*/
-	class Navi : public LLEmbeddedBrowserWindowObserver, public Ogre::WindowEventListener, public Ogre::ManualResourceLoader
+	class _NaviExport Navi : public LLEmbeddedBrowserWindowObserver, public Ogre::WindowEventListener, public Ogre::ManualResourceLoader
 	{
 		friend NaviManager;
-		friend NaviCompare;
 
 		std::string naviName;
 		unsigned short naviWidth;
@@ -63,13 +60,14 @@ namespace NaviLibrary
 		bool usingMask;
 		bool ignoringTrans;
 		float transparent;
+		bool ignoringBounds;
 		bool usingColorKeying;
 		float keyFuzziness;
 		unsigned char keyR, keyG, keyB;
 		float keyFOpacity;
 		unsigned char keyFillR, keyFillG, keyFillB;
 		unsigned char* naviCache;
-		bool isMaterialOnly;
+		bool isMaterial;
 		std::vector<NaviEventListener*> eventListeners;
 		std::multimap<std::string, NaviDelegate> delegateMap;
 		std::multimap<std::string, NaviDelegate>::iterator delegateIter;
@@ -95,12 +93,11 @@ namespace NaviLibrary
 		size_t texPixelSize;
 		size_t texPitch;
 
-
 		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
-			unsigned short width, unsigned short height, bool isMovable, bool visible, unsigned int maxUpdatesPerSec, bool forceMaxUpdate, unsigned short zOrder, float _opacity);
+			unsigned short width, unsigned short height, unsigned short zOrder);
 
-		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height, bool visible,
-			unsigned int maxUpdatesPerSec, bool forceMaxUpdate, float _opacity, Ogre::FilterOptions texFiltering);
+		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height, 
+			Ogre::FilterOptions texFiltering);
 
 		~Navi();
 
@@ -110,55 +107,11 @@ namespace NaviLibrary
 
 		void createMaterial(Ogre::FilterOptions texFiltering = Ogre::FO_NONE);
 
-		void setMask(std::string maskFileName, std::string groupName);
+		void loadResource(Ogre::Resource* resource);
 
 		void update();
 
-		void loadResource(Ogre::Resource* resource);
-
-		void moveNavi(int deltaX, int deltaY);
-
-		void navigateTo(std::string url);
-
-		void navigateTo(std::string url, NaviData naviData);
-
-		std::string evaluateJS(const std::string &script);
-
-		void addEventListener(NaviEventListener* newListener);
-
-		void removeEventListener(NaviEventListener* removeListener);
-
-		void bind(const std::string &naviDataName, const NaviDelegate &callback, const std::vector<std::string> &keys);
-
-		void unbind(const std::string &naviDataName, const NaviDelegate &callback = NaviDelegate());
-
-		void setBackgroundColor(float red, float green, float blue);
-
-		void setOpacity(float _opacity);
-
-		void setIgnoreTransparentAreas(bool ignoreTrans, float defineThreshold);
-
-		void setColorKey(const std::string &keyColor, float keyFillOpacity = 0.0, const std::string &keyFillColor = "#000000", float keyFuzzy = 0.0);
-
-		void setDefaultPosition();
-
-		void hide(bool fade, unsigned short fadeDurationMS);
-
-		void show(bool fade, unsigned short fadeDurationMS);
-
 		bool isPointOverMe(int x, int y);
-
-		bool isPointWithin(int x, int y, int left, int right, int top, int bottom);
-
-		bool isPointOpaqueEnough(int x, int y);
-
-		int getRelativeX(int absX);
-
-		int getRelativeY(int absY);
-
-// BEGIN GREG
-        void setFocus(bool focus) { isFocused = focus; }
-// END GREG
 
 		void onPageChanged(const EventType& eventIn);
 		void onNavigateBegin(const EventType& eventIn);
@@ -172,7 +125,155 @@ namespace NaviLibrary
 		void windowResized(Ogre::RenderWindow* rw);
 		void windowClosed(Ogre::RenderWindow* rw);
 		void windowFocusChange(Ogre::RenderWindow* rw);
+	public:
 
+		/**
+		* Navigates this Navi to a certain URL.
+		*
+		* @param	url		The URL (Web Address) to navigate to.
+		*
+		* @note	You may use local:// and resource:// specifiers for the URL.
+		*/
+		void navigateTo(std::string url);
+
+		/**
+		* Navigates this Navi to a certain URL along with encoded NaviData.
+		*
+		* @param	url		The URL (Web Address) to navigate to.
+		*
+		* @param	naviData	The NaviData to send to the page.
+		*
+		* @note	You may use local:// and resource:// specifiers for the URL.
+		*
+		* @note	This method of sending NaviData has been deprecated, use JS evaluation instead.
+		*/
+		void navigateTo(std::string url, const NaviData &naviData);
+
+		/**
+		* Navigates the internal browser of this Navi backwards, if possible.
+		*/
+		void navigateBack();
+
+		/**
+		* Navigates the internal browser of this Navi forwards, if possible.
+		*/
+		void navigateForward();
+
+		/**
+		* Immediately halts the loading of the current page, if one is loading.
+		*/
+		void navigateStop();
+
+		/**
+		* Returns whether or not the internal browser of this Navi can navigate backwards.
+		*/
+		bool canNavigateBack();
+
+		/**
+		* Returns whether or not the internal browser of this Navi can navigate backwards.
+		*/
+		bool canNavigateForward();
+
+		/**
+		* Evaluates Javascript in the context of the current page and returns the result.
+		*
+		* @param	script	The Javascript to evaluate/execute.
+		*
+		* @param	args	An optional vector of MultiValues that will be used in the translation
+		*					of a templated string of Javascript.
+		*
+		* @return	If the action succeeds, this will return the result as a string (regardless
+		*			of internal Javascript datatype), otherwise this returns an empty string.
+		*
+		* @note
+		*	For example:
+		*	\code
+		*	myNavi->evaluateJS("$('myElement').setHTML('<b>Hello!</b>')");
+		*
+		*	// The following are examples of templated evaluation:
+		*	myNavi->evaluateJS("newCharacter(?, ?, ?)", Args(name)(age)(naviData["motto"]));
+		*	myNavi->evaluateJS("addChatMessage(?, ?)", Args(nickname)(someWideString));
+		*	myNavi->evaluateJS("$(?).setHTML(?)", Args("helloLabel")("Hello world!"));
+		*	myNavi->evaluateJS("?(?, ?)", Args("myFunction")(firstVar)(secondVar));
+		*	myNavi->evaluateJS("$(?).SetVariable(?, ?)", Args("myFlashID")("flashVariable")(favoriteColor));
+		*	\endcode
+		*
+		* @note	
+		*	Strings in the Args of templated evaluation will automatically be quoted/escaped.
+		*	Wide Strings will be encoded with NaviUtilities::encodeURIComponent and then wrapped in
+		*	the Javascript decoding function: "decodeURIComponent(xxx)".
+		*/
+		std::string evaluateJS(std::string script, const NaviUtilities::Args &args = NaviUtilities::Args());
+
+		Navi* addEventListener(NaviEventListener* newListener);
+
+		Navi* removeEventListener(NaviEventListener* removeListener);
+
+		Navi* bind(const std::string &naviDataName, const NaviDelegate &callback, const NaviUtilities::Strings &keys = NaviUtilities::Strings());
+
+		Navi* unbind(const std::string &naviDataName, const NaviDelegate &callback = NaviDelegate());
+
+		Navi* setBackgroundColor(float red, float green, float blue);
+
+		Navi* setBackgroundColor(const std::string& hexColor);
+
+		Navi* setColorKey(const std::string &keyColor, float keyFillOpacity = 0.0, const std::string &keyFillColor = "#000000", float keyFuzzy = 0.0);
+
+		Navi* setForceMaxUpdate(bool forceMaxUpdate);
+
+		Navi* setIgnoreBounds(bool ignoreBounds = true);
+
+		Navi* setIgnoreTransparent(bool ignoreTrans, float threshold = 0.05);
+
+		Navi* setMask(std::string maskFileName, std::string groupName = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+		Navi* setMaxUPS(unsigned int maxUPS = 0);
+
+		Navi* setMovable(bool isMovable = true);
+
+		Navi* setOpacity(float opacity);
+
+		Navi* setPosition(const NaviPosition &naviPosition);
+
+		Navi* resetPosition();
+
+		Navi* hide(bool fade = false, unsigned short fadeDurationMS = 300);
+
+		Navi* show(bool fade = false, unsigned short fadeDurationMS = 300);
+
+		Navi* focus();
+
+		Navi* moveNavi(int deltaX, int deltaY);
+
+		void getExtents(unsigned short &width, unsigned short &height);
+
+		int getRelativeX(int absX);
+
+		int getRelativeY(int absY);
+
+// BEGIN GREG
+        void setFocus(bool focus) { isFocused = focus; }
+// END GREG
+
+		bool isMaterialOnly();
+
+		Ogre::PanelOverlayElement* getInternalPanel();
+
+		std::string getName();
+
+		std::string getMaterialName();
+
+		bool getVisibility();
+
+		void getDerivedUV(Ogre::Real& u1, Ogre::Real& v1, Ogre::Real& u2, Ogre::Real& v2);
+
+		void injectMouseMove(int xPos, int yPos);
+
+		void injectMouseWheel(int relScroll);
+
+		void injectMouseDown(int xPos, int yPos);
+
+		void injectMouseUp(int xPos, int yPos);
 	};
 
 }

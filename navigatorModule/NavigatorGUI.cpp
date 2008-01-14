@@ -2,6 +2,7 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
+#include "Navi.h"
 
 using namespace Solipsis;
 
@@ -19,9 +20,11 @@ const std::string NavigatorGUI::mNavisNames[] = {
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
-    mNaviMgr(NaviManager::Get()),
     mCurrentNavi(-1)
 {
+    // Initializing Navi
+    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr());
+
     for (int n=0;n<NAVI_COUNT;n++)
         mNavisStates[n] = NSNotCreated;
 }
@@ -31,13 +34,16 @@ NavigatorGUI::~NavigatorGUI()
 {
     // Hide previous Navi UI
     hidePreviousNavi();
+
+    // Finalizing Navi
+    delete mNaviMgr;
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::startup()
 {
     // Startup NaviMouse and create the cursors
-    NaviMouse* mouse = mNaviMgr.StartupMouse();
+    NaviMouse* mouse = new NaviMouse();
     NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 3, 2);
 	defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
 	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
@@ -64,15 +70,15 @@ bool NavigatorGUI::startup()
 void NavigatorGUI::SetMouseVisibility(bool visible)
 {
     if (visible)
-        mNaviMgr.getMouse()->show();
+        NaviLibrary::NaviMouse::Get().show();
     else
-        mNaviMgr.getMouse()->hide();
+        NaviLibrary::NaviMouse::Get().hide();
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isMouseVisible()
 {
-    return mNaviMgr.getMouse()->isVisible();
+    return NaviLibrary::NaviMouse::Get().isVisible();
 }
 
 //-------------------------------------------------------------------------------------
@@ -84,15 +90,17 @@ void NavigatorGUI::login()
     if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
     {
         // Create Navi UI login
-        mNaviMgr.createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300, false, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_LOGIN], "uilogin.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_LOGIN], 0.75f);
-        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
-	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "connect", NaviDelegate(this, &NavigatorGUI::connect));
-	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "options", NaviDelegate(this, &NavigatorGUI::options));
-	    mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "quit", NaviDelegate(this, &NavigatorGUI::quit));
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
+        navi->setMovable(false);
+        navi->hide();
+        navi->setMask("uilogin.png");
+        navi->setOpacity(0.75f);
+        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
+	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
+	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
+	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
 #ifdef UIDEBUG
-        mNaviMgr.bind(mNavisNames[NAVI_LOGIN], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_LOGIN] = NSCreated;
     }
@@ -117,12 +125,12 @@ void NavigatorGUI::inWorld()
             return;
         }
 #ifdef UIDEBUG
-        mNaviMgr.bind(mNavisNames[NAVI_CHAT], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr->getNavi(mNavisNames[NAVI_CHAT])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_CHAT] = NSCreated;
     }
     else
-        mNaviMgr.showNavi(mNavisNames[NAVI_CHAT], true);
+        mNaviMgr->getNavi(mNavisNames[NAVI_CHAT])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -140,13 +148,14 @@ void NavigatorGUI::contextShow(int x, int y, const std::string& items)
         mNavisStates[NAVI_CONTEXT] = NSCreated;
     }
     else
-        mNaviMgr.showNavi(mNavisNames[NAVI_CONTEXT], true);
+        mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isContextVisible()
 {
-    return (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_CONTEXT]));
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT]);
+    return ((navi != 0) && navi->getVisibility());
 }
 
 //-------------------------------------------------------------------------------------
@@ -155,8 +164,9 @@ void NavigatorGUI::contextHide()
     if (mNavisStates[NAVI_CONTEXT] != NSNotCreated)
     {
         // Destroy Navi UI context
-        mNaviMgr.hideNavi(mNavisNames[NAVI_CONTEXT]);
-        mNaviMgr.destroyNavi(mNavisNames[NAVI_CONTEXT]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_CONTEXT] = NSNotCreated;
     }
 }
@@ -167,44 +177,47 @@ void NavigatorGUI::modelerMainShow()
     if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
     {
         // Create Navi UI modeler
-        mNaviMgr.createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512, true, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_MODELERMAIN], "uimdlrmain.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_MODELERMAIN], 0.75f);
-        mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
-	    mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "FileOpen", NaviDelegate(this, &NavigatorGUI::modelerMainFileOpen));
-	    mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
-	    mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateBox", NaviDelegate(this, &NavigatorGUI::modelerMainCreateBox)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateCorner", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCorner)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreatePyramid", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePyramid));
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreatePrism", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePrism));
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateCylinder", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCylinder)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateHalfCylinder", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfCylinder)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateCone", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCone)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateHalfCone", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfCone)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateSphere", NaviDelegate(this, &NavigatorGUI::modelerMainCreateSphere)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateHalfSphere", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfSphere)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateTorus", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTorus)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateTube", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTube)); 
-		mNaviMgr.bind(mNavisNames[NAVI_MODELERMAIN], "CreateRing", NaviDelegate(this, &NavigatorGUI::modelerMainCreateRing)); 
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512);
+        navi->setMovable(true);
+        navi->hide();
+        navi->setMask("uimdlrmain.png");
+        navi->setOpacity(0.75f);
+        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::modelerMainFileOpen));
+	    navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
+	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
+		navi->bind("CreateBox", NaviDelegate(this, &NavigatorGUI::modelerMainCreateBox)); 
+		navi->bind("CreateCorner", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCorner)); 
+		navi->bind("CreatePyramid", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePyramid));
+		navi->bind("CreatePrism", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePrism));
+		navi->bind("CreateCylinder", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCylinder)); 
+		navi->bind("CreateHalfCylinder", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfCylinder)); 
+		navi->bind("CreateCone", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCone)); 
+		navi->bind("CreateHalfCone", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfCone)); 
+		navi->bind("CreateSphere", NaviDelegate(this, &NavigatorGUI::modelerMainCreateSphere)); 
+		navi->bind("CreateHalfSphere", NaviDelegate(this, &NavigatorGUI::modelerMainCreateHalfSphere)); 
+		navi->bind("CreateTorus", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTorus)); 
+		navi->bind("CreateTube", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTube)); 
+		navi->bind("CreateRing", NaviDelegate(this, &NavigatorGUI::modelerMainCreateRing)); 
  
 		mNavisStates[NAVI_MODELERMAIN] = NSCreated;
     }
     else
-        mNaviMgr.showNavi(mNavisNames[NAVI_MODELERMAIN], true);
+        mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isModelerMainVisible()
 {
-    return (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_MODELERMAIN]));
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+    return ((navi != 0) && navi->getVisibility());
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainHide()
 {
     if (!isModelerMainVisible()) return;
-    mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
+    mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN])->hide();
 }
 
 //-------------------------------------------------------------------------------------
@@ -213,8 +226,9 @@ void NavigatorGUI::modelerMainUnload()
     if (mNavisStates[NAVI_MODELERMAIN] != NSNotCreated)
     {
         // Destroy Navi UI modeler
-        mNaviMgr.hideNavi(mNavisNames[NAVI_MODELERMAIN]);
-        mNaviMgr.destroyNavi(mNavisNames[NAVI_MODELERMAIN]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
 
 		mNavigator->setState(Navigator::SInWorld);	
@@ -230,21 +244,24 @@ void NavigatorGUI::switchDebug()
     if (mNavisStates[NAVI_DEBUG] == NSNotCreated)
     {
         // Create Navi UI debug
-        mNaviMgr.createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256, true, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_DEBUG], "uidebug.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_DEBUG], 0.50f);
-        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
-        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
-        mNaviMgr.bind(mNavisNames[NAVI_DEBUG], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256);
+        navi->setMovable(true);
+        navi->hide();
+        navi->setMask("uidebug.png");
+        navi->setOpacity(0.50f);
+        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
+        navi->bind("debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
+        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
         mNavisStates[NAVI_DEBUG] = NSCreated;
         mTreeDirty = true;
     }
     else
     {
         // Hide and destroy UI debug
-        if (mNaviMgr.getNaviVisibility(mNavisNames[NAVI_DEBUG])) {
-            mNaviMgr.hideNavi(mNavisNames[NAVI_DEBUG]);
-            mNaviMgr.destroyNavi(mNavisNames[NAVI_DEBUG]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+        if (navi->getVisibility()) {
+            navi->hide();
+            mNaviMgr->destroyNavi(navi);
             mNavisStates[NAVI_DEBUG] = NSNotCreated;
         }
     }
@@ -260,7 +277,7 @@ void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 
     // Show Navi UI debug
     if (mNavisStates[NAVI_DEBUG] == NSCreated)
-        mNaviMgr.showNavi(mNavisNames[NAVI_DEBUG], true);
+        mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -270,18 +287,20 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 
     if (!mTreeDirty) return;
 
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.disable()");
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.root.clear()");
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.insert({text:'Scenes', id:'Scenes'})");
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+
+    navi->evaluateJS("allTree.disable()");
+    navi->evaluateJS("allTree.root.clear()");
+    navi->evaluateJS("allTree.insert({text:'Scenes', id:'Scenes'})");
     String sceneName = mNavigator->getSceneMgrPtr()->getName();
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.get('Scenes').insert({text:'" + sceneName + "', id:'S_" + sceneName + "'})");
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
+    navi->evaluateJS("allTree.get('Scenes').insert({text:'" + sceneName + "', id:'S_" + sceneName + "'})");
+    navi->evaluateJS("allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
     for (std::map<String,OgrePeer*>::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
     {
         String ogrePeerName = ogrePeer->second->getPeer()->getLogin();
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
+        navi->evaluateJS("allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
     }
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_DEBUG], "allTree.enable()");
+    navi->evaluateJS("allTree.enable()");
 
     mTreeDirty = false;
 }
@@ -291,6 +310,8 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::loginPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
     // Set network config into informations text
     char txt[128];
@@ -306,17 +327,19 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
         infosText = "Connect to " + mNavigator->getConnectionHost() + " (port " + String(txt) + ")";
         break;
     };
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_LOGIN], "$('infosText').innerHTML = '" + infosText + "'");
+    navi->evaluateJS("$('infosText').innerHTML = '" + infosText + "'");
 
     // Show Navi UI login
     if (mNavisStates[NAVI_LOGIN] == NSCreated)
-        mNaviMgr.showNavi(mNavisNames[NAVI_LOGIN], true);
+        navi->show(true);
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::connect()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
     // Get login name
 	std::string login;
@@ -326,17 +349,17 @@ void NavigatorGUI::connect(const NaviData& naviData)
     // Check
     if ((login.length() < 2) || (login.compare("null") == 0) || (login.compare("me") == 0))
         // Malformed login
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_LOGIN], "$('infosText').innerHTML = 'Enter a valid login ...'");
+        navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid login ...'");
     else
     {
         // Valid login
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_LOGIN], "$('infosText').innerHTML = 'Connecting ...'");
+        navi->evaluateJS("$('infosText').innerHTML = 'Connecting ...'");
         // Set avatar name
         mNavigator->getUserAvatar()->setName(login);
         // Call connect
         bool connected = mNavigator->connect();
         char txt[128]; sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
+        navi->evaluateJS("$('infosText').innerHTML = ''");
     }
 }
 
@@ -351,14 +374,16 @@ void NavigatorGUI::options(const NaviData& naviData)
     if (mNavisStates[NAVI_OPTIONS] == NSNotCreated)
     {
         // Create Navi UI options
-        mNaviMgr.createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400, false, false);
-        mNaviMgr.setNaviMask(mNavisNames[NAVI_OPTIONS], "uioptions.png");
-        mNaviMgr.setNaviOpacity(mNavisNames[NAVI_OPTIONS], 0.75f);
-	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "pageLoaded", NaviDelegate(this, &NavigatorGUI::optionsPageLoaded));
-	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
-	    mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "back", NaviDelegate(this, &NavigatorGUI::optionsBack));
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400);
+        navi->setMovable(false);
+        navi->hide();
+        navi->setMask("uioptions.png");
+        navi->setOpacity(0.75f);
+	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::optionsPageLoaded));
+	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
+	    navi->bind("back", NaviDelegate(this, &NavigatorGUI::optionsBack));
 #ifdef UIDEBUG
-        mNaviMgr.bind(mNavisNames[NAVI_OPTIONS], "debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
         mNavisStates[NAVI_OPTIONS] = NSCreated;
     }
@@ -374,64 +399,66 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 
     OGRE_LOG("NavigatorGUI::optionsPageLoaded()");
 
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
+
     // Set current values
     if (mNavigator->getConnectionMode() == Navigator::CMStartNewNode)
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioNewNode').checked = 'checked'");
+        navi->evaluateJS("$('radioNewNode').checked = 'checked'");
     else
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioExistingNode').checked = 'checked'");
+        navi->evaluateJS("$('radioExistingNode').checked = 'checked'");
     sprintf(txt, "$('inputUdpPort').value = '%d'", mNavigator->getConnectionUdpPort());
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+    navi->evaluateJS(txt);
     sprintf(txt, "$('inputHost').value = '%s'", mNavigator->getConnectionHost().c_str());
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+    navi->evaluateJS(txt);
     sprintf(txt, "$('inputPort').value = '%d'", mNavigator->getConnectionPort());
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
+    navi->evaluateJS(txt);
+    navi->evaluateJS("$('infosText').innerHTML = ''");
     std::string proxyAutoconfUrl;
     std::string proxyHttpHost;
     int proxyHttpPort;
     int proxyType;
-    if (mNaviMgr.getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
+    if (mNaviMgr->getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
     {
         switch (proxyType)
         {
         case 0: // 0 for direct connection, no proxy
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeDirect').checked = 'checked'");
+            navi->evaluateJS("$('radioProxyTypeDirect').checked = 'checked'");
             break;
         case 4: // 4 for auto-detect proxy settings
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeAutodetect').checked = 'checked'");
+            navi->evaluateJS("$('radioProxyTypeAutodetect').checked = 'checked'");
             break;
         case 1: // 1 for manual proxy configuration
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeManual').checked = 'checked'");
+            navi->evaluateJS("$('radioProxyTypeManual').checked = 'checked'");
             break;
         default: // 2 for proxy auto-conf (PAC)
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('radioProxyTypeAutoconf').checked = 'checked'");
+            navi->evaluateJS("$('radioProxyTypeAutoconf').checked = 'checked'");
             break;
         }
         sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        navi->evaluateJS(txt);
         sprintf(txt, "$('inputProxyHttpPort').value = '%d'", proxyHttpPort);
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        navi->evaluateJS(txt);
         sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        navi->evaluateJS(txt);
     }
 #ifdef PHYSICSPLUGINS
     PhysicsEngineManager::EngineList &physicsEngines = PhysicsEngineManager::getSingleton().getEngines();
     sprintf(txt, "$('selectPhysicsEngine').options.length = %d", physicsEngines.size());
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+    navi->evaluateJS(txt);
     int e = 0;
     for (PhysicsEngineManager::EngineList::iterator it=physicsEngines.begin(); it != physicsEngines.end(); ++it, ++e)
     {
         sprintf(txt, "$('selectPhysicsEngine').options['%d'].value = '%s'", e, (*it)->getName().c_str());
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        navi->evaluateJS(txt);
         sprintf(txt, "$('selectPhysicsEngine').options['%d'].text = '%s'", e, (*it)->getName().c_str());
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], txt);
+        navi->evaluateJS(txt);
     }
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('selectPhysicsEngine').options.selectedIndex = 0");
+    navi->evaluateJS("$('selectPhysicsEngine').options.selectedIndex = 0");
 #endif
 
     // Show Navi UI options
     if (mNavisStates[NAVI_OPTIONS] == NSCreated)
-        mNaviMgr.showNavi(mNavisNames[NAVI_OPTIONS], true);
+        navi->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -446,6 +473,8 @@ void NavigatorGUI::quit(const NaviData& naviData)
 void NavigatorGUI::optionsOk(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::optionsOk()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
 
     // Get options
     std::string radioNode;
@@ -475,7 +504,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (udpPort < 0)
         {
             // Bad UDP port
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid UDP Port ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid UDP Port ...'");
             valid_options = false;
         }
     }
@@ -484,13 +513,13 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (host.length() < 2)
          {
            // Bad hostname
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid hostname ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid hostname ...'");
             valid_options = false;
         }
         if (port < 0)
         {
             // Bad port
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid Port ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid Port ...'");
             valid_options = false;
         }
     }
@@ -516,13 +545,13 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (proxyHttpHost.length() == 0)
         {
             // Bad url
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid HTTP proxy Address ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid HTTP proxy Address ...'");
             valid_options = false;
         }
         if (proxyHttpPort < 0)
         {
             // Bad port
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid HTTP proxy Port ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid HTTP proxy Port ...'");
             valid_options = false;
         }
     }
@@ -532,7 +561,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (proxyAutoconfUrl.length() == 0)
         {
             // Bad url
-            mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = 'Enter a valid proxy server URL ...'");
+            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid proxy server URL ...'");
             valid_options = false;
         }
     }
@@ -544,9 +573,9 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         mNavigator->setConnectionUdpPort(udpPort);
         mNavigator->setConnectionHost(host);
         mNavigator->setConnectionPort(port);
-        mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_OPTIONS], "$('infosText').innerHTML = ''");
+        navi->evaluateJS("$('infosText').innerHTML = ''");
 
-        mNaviMgr.setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
+        mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
 
 #ifdef PHYSICSPLUGINS
         if (PhysicsEngineManager::getSingleton().getSelectedEngine() != 0)
@@ -574,12 +603,14 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::chatPageLoaded()");
 
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
+
     // Set current values
-    mNaviMgr.naviEvaluateJS(mNavisNames[NAVI_CHAT], "$('inputChat').value = ''");
+    navi->evaluateJS("$('inputChat').value = ''");
 
     // Show Navi UI chat
     if (mNavisStates[NAVI_CHAT] == NSCreated)
-        mNaviMgr.showNavi(mNavisNames[NAVI_CHAT], true);
+        navi->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -750,7 +781,7 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)
-        mNaviMgr.showNavi(mNavisNames[naviPanel], true);
+        mNaviMgr->getNavi(mNavisNames[naviPanel])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -758,8 +789,9 @@ void NavigatorGUI::hidePreviousNavi()
 {
     // Hide previous Navi UI
     if (mCurrentNavi != -1) {
-        mNaviMgr.hideNavi(mNavisNames[mCurrentNavi]);
-        mNaviMgr.destroyNavi(mNavisNames[mCurrentNavi]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentNavi]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
         mNavisStates[mCurrentNavi] = NSNotCreated;
         mCurrentNavi = -1;
     }

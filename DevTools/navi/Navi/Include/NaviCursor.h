@@ -26,6 +26,7 @@
 #pragma once
 #endif
 
+#include "NaviPlatform.h"
 #include <string>
 #include <vector>
 #include <Ogre.h>
@@ -37,13 +38,13 @@ namespace NaviLibrary
 	*
 	* @note	You should instantiate this class through NaviMouse::createCursor.
 	*/
-	class NaviCursor
+	class _NaviExport NaviCursor
 	{
 		friend class NaviMouse;
+		Ogre::TexturePtr mouseTex;
 		std::string name;
-		unsigned short hsX;
-		unsigned short hsY;
-		struct Frame { unsigned short duration; std::string textureName; unsigned short index; };
+		unsigned short hsX, hsY, mWidth, mHeight;
+		struct Frame { unsigned short duration; Ogre::TexturePtr texture; unsigned short index; };
 		std::vector<Frame*> frames;
 		Frame* curFrame;
 		unsigned short frameCount;
@@ -52,7 +53,7 @@ namespace NaviLibrary
 		bool lockedDuration;
 
 		void update(bool force = false);
-		NaviCursor(std::string cursorName, unsigned short hotspotX = 0, unsigned short hotspotY = 0);
+		NaviCursor(const std::string &cursorName, unsigned short hotspotX, unsigned short hotspotY, unsigned short mouseWidth, unsigned short mouseHeight);
 		~NaviCursor();
 	public:
 		/**
@@ -72,8 +73,15 @@ namespace NaviLibrary
 		*
 		* @return	A pointer to the NaviCursor you added a frame to.
 		*/
-		NaviCursor* addFrame(unsigned short durationMS, std::string imageFilename, 
-			std::string imageResourceGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		NaviCursor* addFrame(unsigned short durationMS, const std::string &imageFilename, 
+			const std::string &imageResourceGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+		/**
+		* Gets the name of this NaviCursor.
+		*
+		* @return	The name of this cursor as a string.
+		*/
+		std::string getName();
 	};
 
 }

@@ -220,4 +220,8 @@ interfaces are composed of simple methods required to manage 1 scene, 1 body (bo
 Added physics engine choice into UI options according to available plugins
 
 ---------------------------
+14/01/08
 
+Commit of last SVN release of Navi (NaviDemo is delivered in last.zip)
+
+---------------------------
