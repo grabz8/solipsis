@@ -463,7 +463,6 @@ void Navi::onUpdateProgress(const EventType& eventIn) {}
 void Navi::onStatusTextChange(const EventType& eventIn)
 {
 	std::string statusMsg = eventIn.getStringValue();
-    LogManager::getSingletonPtr()->logMessage("Navi> " + statusMsg);
 
 	if(isPrefixed(statusMsg, "NAVI_DATA:", false))
 	{
