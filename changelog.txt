@@ -225,3 +225,8 @@ Added physics engine choice into UI options according to available plugins
 Commit of last SVN release of Navi (NaviDemo is delivered in last.zip)
 
 ---------------------------
+17/01/08
+
+NaviCursor mouse display on starting problem with last Navi delivery fixed
+
+---------------------------
