@@ -65,7 +65,6 @@ NaviMouse::NaviMouse(unsigned short width, unsigned short height, bool visibilit
 		"NaviMouseTexture", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 		Ogre::TEX_TYPE_2D, texWidth, texHeight, 0, Ogre::PF_BYTE_BGRA,
 		Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE, this);
-	fillTransparent((Ogre::Texture*)texture.get());
 
 	Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("NaviMouseMaterial", 
 		Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -157,6 +156,8 @@ void NaviMouse::setDefaultCursor(const std::string &cursorName)
 			"NaviMouse::setDefaultCursor");
 
 	activeCursor = iter->second;
+	activeCursor->update(true);
+	move(mouseX, mouseY);
 	defaultCursorName = cursorName;
 }
 
@@ -229,28 +230,6 @@ void NaviMouse::update()
 		activeCursor->update();
 }
 
-// BEGIN GREG
-void NaviMouse::fillTransparent(Ogre::Texture* texture)
-{
-	Ogre::HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
-	pixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-	const Ogre::PixelBox& pixelBox = pixelBuffer->getCurrentLock();
-
-	Ogre::uint8* pDest = static_cast<Ogre::uint8*>(pixelBox.data);
-
-	// Fill the texture with a transparent color
-	for(size_t i = 0; i < (size_t)(64*64*4); i++)
-	{
-		if((i+1)%4)	
-			pDest[i] = 64; // B, G, R
-		else 
-			pDest[i] = 0; // A
-	}
-
-	pixelBuffer->unlock();
-}
-// END GREG
-
 void NaviMouse::loadResource(Ogre::Resource *resource)
 {
 	Ogre::Texture *tex = static_cast<Ogre::Texture*>(resource); 
@@ -261,7 +240,6 @@ void NaviMouse::loadResource(Ogre::Resource *resource)
 	tex->setNumMipmaps(0);
 	tex->setFormat(Ogre::PF_BYTE_BGRA);
 	tex->setUsage(Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
-	fillTransparent(tex);
 	tex->createInternalResources();
 
 	if(activeCursor && visible)
