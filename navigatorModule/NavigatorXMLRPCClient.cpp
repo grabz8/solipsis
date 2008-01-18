@@ -533,9 +533,9 @@ bool NavigatorXMLRPCClient::getDesc(const Peer &peer)
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorXMLRPCClient::move(const Peer &peer)
+bool NavigatorXMLRPCClient::move(Peer &peer)
 {
-    const XmlRpc::XmlRpcValue params;
+    XmlRpc::XmlRpcValue params;
     XmlRpc::XmlRpcValue result;
 
 #ifdef UNPLUG_MODE
@@ -545,9 +545,9 @@ bool NavigatorXMLRPCClient::move(const Peer &peer)
     bool noError = mConnected = true;
 #else
     params[0] = peer.getNetworkId();
-    params[1] = peer.x;
-    params[2] = peer.y;
-    params[3] = peer.z;
+    params[1] = peer.getFakeX();
+    params[2] = peer.getFakeY();
+    params[3] = peer.getFakeZ();
     bool noError = mConnected = this->executeThreadSafe("Move", params, result);
 #endif
     if (noError)
@@ -562,7 +562,7 @@ bool NavigatorXMLRPCClient::move(const Peer &peer)
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::sendMessage(const String& message, std::list<Peer*> &peersList)
 {
-    const XmlRpc::XmlRpcValue params;
+    XmlRpc::XmlRpcValue params;
     XmlRpc::XmlRpcValue result;
 
     // Send the message to each peer
@@ -575,7 +575,7 @@ bool NavigatorXMLRPCClient::sendMessage(const String& message, std::list<Peer*> 
         result.fromXml(csaXml, &offset);
         bool noError = mConnected = true;
 #else
-        params[0] = peer.getNetworkId();
+        params[0] = (*peer)->getNetworkId();
         params[1] = message;
         bool noError = mConnected = this->executeThreadSafe("SendMessage", params, result);
 #endif

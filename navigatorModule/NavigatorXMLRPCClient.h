@@ -35,7 +35,7 @@ public:
     bool getEvents(std::list<NodeEvent*> &nodeEventsList);
     bool getStatus(String &status);
     bool getDesc(const Peer &peer);
-    bool move(const Peer &peer);
+    bool move(Peer &peer);
     bool sendMessage(const String& message, std::list<Peer*> &peersList);
 
 private:
