@@ -23,7 +23,7 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mCurrentNavi(-1)
 {
     // Initializing Navi
-    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr());
+    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
 
     for (int n=0;n<NAVI_COUNT;n++)
         mNavisStates[n] = NSNotCreated;

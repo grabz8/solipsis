@@ -230,3 +230,8 @@ Commit of last SVN release of Navi (NaviDemo is delivered in last.zip)
 NaviCursor mouse display on starting problem with last Navi delivery fixed
 
 ---------------------------
+21/01/08
+
+Commit of official Navi v1.5
+
+---------------------------

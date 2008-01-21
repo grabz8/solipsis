@@ -45,7 +45,7 @@ namespace NaviLibrary
 		*
 		* @return	A string containing the current working directory.
 		*/
-		std::string getCurrentWorkingDirectory();
+		std::string _NaviExport getCurrentWorkingDirectory();
 
 		/**
 		* Converts a String containing HTML into an equivalent Data URI, replaces all 'local://'
@@ -55,7 +55,7 @@ namespace NaviLibrary
 		*
 		* @return	A string containing a Data URI with 'text/html' mime-type, data encoded in Base64.
 		*/
-		std::string htmlToDataURI(std::string htmlString);
+		std::string _NaviExport htmlToDataURI(std::string htmlString);
 
 		/**
 		* Converts an Ogre Resource into an equivalent Data URI. Additional 'local://' and 'resource://'
@@ -68,7 +68,7 @@ namespace NaviLibrary
 		*
 		* @return	A string containing a Data URI with an automatically-identified mime-type, data encoded in Base64.
 		*/
-		std::string resourceToDataURI(const std::string &resFileName, const std::string &resourceGroupName = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		std::string _NaviExport resourceToDataURI(const std::string &resFileName, const std::string &resourceGroupName = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 		/**
 		* Replaces all 'local://' instances within a String with the correct NaviLocal directory.
@@ -82,7 +82,7 @@ namespace NaviLibrary
 		*
 		* @param	strToTranslate		The string to translate.
 		*/
-		void translateLocalProtocols(std::string &strToTranslate);
+		void _NaviExport translateLocalProtocols(std::string &strToTranslate);
 
 		/**
 		* Replaces all '"resource://Group/Filename.ext"' with an equivalent Data URI of the Ogre Resource.
@@ -93,7 +93,7 @@ namespace NaviLibrary
 		*
 		* @param	strToTranslate		The string to translate.
 		*/
-		void translateResourceProtocols(std::string &strToTranslate);
+		void _NaviExport translateResourceProtocols(std::string &strToTranslate);
 		
 		/**
 		* This is a C++ mirror implementation that I wrote for the Javascript function 'encodeURIComponent'.
@@ -103,7 +103,7 @@ namespace NaviLibrary
 		*
 		* @return	A standard string containing the encoded (UTF-8 percent-escaped) version of strToEncode.
 		*/
-		std::string encodeURIComponent(std::wstring strToEncode);
+		std::string _NaviExport encodeURIComponent(std::wstring strToEncode);
 
 		/**
 		* This is a C++ mirror implementation that I wrote for the Javascript function 'decodeURIComponent'.
@@ -114,7 +114,7 @@ namespace NaviLibrary
 		* @return	A wide string containing the decoded version of strToDecode. You may use toMultibyte() to convert this to
 		*			a standard string.
 		*/
-		std::wstring decodeURIComponent(std::string strToDecode);
+		std::wstring _NaviExport decodeURIComponent(std::string strToDecode);
 
 		/**
 		* Converts a string into its lower-case equivalent.
@@ -123,7 +123,7 @@ namespace NaviLibrary
 		*
 		* @return	A standard string containing the equivalent lower-case representation.
 		*/
-		std::string lowerString(std::string strToLower);
+		std::string _NaviExport lowerString(std::string strToLower);
 
 		/**
 		* Checks whether or not a string is prefixed with a certain prefix.
@@ -136,7 +136,7 @@ namespace NaviLibrary
 		*
 		* @return	Whether or not a match was found.
 		*/
-		inline bool isPrefixed(const std::string &sourceString, const std::string &prefix, bool ignoreCase = true)
+		inline bool _NaviExport isPrefixed(const std::string &sourceString, const std::string &prefix, bool ignoreCase = true)
 		{
 			return ignoreCase ? lowerString(sourceString.substr(0, prefix.length())) == lowerString(prefix) 
 				: sourceString.substr(0, prefix.length()) == prefix;
@@ -150,7 +150,7 @@ namespace NaviLibrary
 		*
 		* @return	Whether or not the string is numeric (can be successfully parsed into a number).
 		*/
-		bool isNumeric(const std::string &numberString);
+		bool _NaviExport isNumeric(const std::string &numberString);
 
 		/**
 		* Converts a Number (int, float, double, bool, etc.) to a String.
@@ -160,7 +160,7 @@ namespace NaviLibrary
 		* @return	If the conversion succeeds, returns the string equivalent of the number, otherwise an empty string.
 		*/
 		template<class NumberType>
-		inline std::string numberToString(const NumberType &number)
+		inline std::string _NaviExport numberToString(const NumberType &number)
 		{
 			std::ostringstream converter;
 
@@ -178,7 +178,7 @@ namespace NaviLibrary
 		* @return	If conversion succeeds, returns a number of type 'NumberType', otherwise returns a '0' equivalent.
 		*/
 		template<class NumberType>
-		inline NumberType toNumber(const std::string &numberString)
+		inline NumberType _NaviExport toNumber(const std::string &numberString)
 		{
 			if(isPrefixed(numberString, "true")) return 1;
 			else if(isPrefixed(numberString, "false")) return 0;
@@ -202,7 +202,7 @@ namespace NaviLibrary
 		*
 		* @return	The wide-equivalent of the passed string.
 		*/
-		std::wstring toWide(const std::string &stringToConvert);
+		std::wstring _NaviExport toWide(const std::string &stringToConvert);
 
 		/**
 		* Converts a wide string to a multibyte string (standard string), based on the current locale.
@@ -211,14 +211,14 @@ namespace NaviLibrary
 		*
 		* @return	The multibyte-equivalent of the passed string, based on the current locale.
 		*/
-		std::string toMultibyte(const std::wstring &wstringToConvert);
+		std::string _NaviExport toMultibyte(const std::wstring &wstringToConvert);
 
 		/**
 		* Sets the current locale, used for 'toMultibyte()'. If you never call this, the default is usually "English". 
 		*
 		* @param	localeLanguage	The name of the locale language to set. An empty string sets this to the current locale of the OS.
 		*/
-		void setLocale(const std::string &localeLanguage = "");
+		void _NaviExport setLocale(const std::string &localeLanguage = "");
 
 		/**
 		* Replaces all instances of 'replaceWhat' with 'replaceWith' inside a source string.
@@ -231,7 +231,7 @@ namespace NaviLibrary
 		*
 		* @return	The number of instances replaced within 'sourceStr'.
 		*/
-		int replaceAll(std::string &sourceStr, const std::string &replaceWhat, const std::string &replaceWith);
+		int _NaviExport replaceAll(std::string &sourceStr, const std::string &replaceWhat, const std::string &replaceWith);
 
 		/**
 		* Splits a string up into a series of tokens (contained within a string vector), delimited by a certain string.
@@ -244,7 +244,7 @@ namespace NaviLibrary
 		*
 		* @return	A string vector containing a series of ordered tokens.
 		*/
-		std::vector<std::string> split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty = true);
+		std::vector<std::string> _NaviExport split(const std::string &sourceStr, const std::string &delimiter, bool ignoreEmpty = true);
 
 		/**
 		* A more advanced form of splitting, parses a string into a string map. Exceptionally useful for use with Query Strings.
@@ -267,7 +267,7 @@ namespace NaviLibrary
 		*	std::string myColor = myMap["color"]; // myColor is now 'purple' 
 		*	\endcode
 		*/
-		std::map<std::string,std::string> splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
+		std::map<std::string,std::string> _NaviExport splitToMap(const std::string &sourceStr, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
 
 		/**
 		* Joins a string vector into a single string. (Effectively does the inverse of NaviUtilities::split)
@@ -278,7 +278,7 @@ namespace NaviLibrary
 		*
 		* @param	ignoreEmpty		Whether or not to ignore empty strings within the string vector.
 		*/
-		std::string join(const std::vector<std::string> &sourceVector, const std::string &delimiter, bool ignoreEmpty = true);
+		std::string _NaviExport join(const std::vector<std::string> &sourceVector, const std::string &delimiter, bool ignoreEmpty = true);
 
 		/**
 		* Joins a string map into a single string. (Effectively does the inverse of NaviUtilities::splitToMap)
@@ -291,7 +291,7 @@ namespace NaviLibrary
 		*
 		* @param	ignoreEmpty		Whether or not to ignore empty string values within the string map.
 		*/
-		std::string joinFromMap(const std::map<std::string,std::string> &sourceMap, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
+		std::string _NaviExport joinFromMap(const std::map<std::string,std::string> &sourceMap, const std::string &pairDelimiter, const std::string &keyValueDelimiter, bool ignoreEmpty = true);
 
 		/**
 		* A generic value container that can contain a string, wide string, integer, float,
@@ -313,6 +313,9 @@ namespace NaviLibrary
 			*/
 			MultiValue(const std::string &value);
 
+			/**
+			* Creates a MultiValue from a C-string.
+			*/
 			MultiValue(const char *value);
 
 			/**
@@ -453,7 +456,7 @@ namespace NaviLibrary
 		* @note	Adapted from http://erdani.org/publications/inline_containers.html
 		*/
 		template <class T>
-		class InlineVector : public std::vector<T>
+		class _NaviExport InlineVector : public std::vector<T>
 		{
 		public:
 			InlineVector() { }
@@ -493,7 +496,7 @@ namespace NaviLibrary
 		/**
 		* This is a simple way to quickly make inline MultiValue vectors.
 		*
-		* Syntax is: Args(x)(x)(x)(x)...
+		* Syntax is: \code Args(x)(x)(x)(x)... \endcode
 		*
 		* @note
 		*	For example:
@@ -514,6 +517,11 @@ namespace NaviLibrary
 		/**
 		* Translates a template string and some arguments into a full string.
 		*
+		* @param	templateStr	A string containing the base template, the '?' character will be replaced
+		*						with string representations of the passed arguments.
+		*
+		* @param	args	The arguments that will be used to fill in the template.
+		*
 		* @note
 		*	For example:
 		*	\code
@@ -524,9 +532,11 @@ namespace NaviLibrary
 		std::string _NaviExport templateString(const std::string &templateStr, const Args &args);
 
 		/**
-		* A super-easy way to log debug info to the Ogre LogManager. See NaviUtilities::templateString for usage.
+		* A super-easy way to log messages to the Ogre LogManager. For example, instead of: 
+		* \code LogManager::GetSingleton().logMessage(templateString("a: ?, b: ?"), Args(a)(b))); \endcode
+		* You can just use: \code logTemplate("a: ?, b: ?", Args(a)(b)); \endcode
 		*
-		* This is just a shortcut for LogManager::GetSingleton().logMessage(templateString("a: ?, b: ?"), Args(a)(b)));
+		* @note	See NaviUtilities::templateString for more information.
 		*/
 		void _NaviExport logTemplate(const std::string &templateStr, const Args &args);
 		
@@ -535,13 +545,13 @@ namespace NaviLibrary
 		*
 		* @param	hexString	A hex color string in format: "#XXXXXX"
 		*
-		* @param	R	The Red value to change.
-		* @param	G	The Green value to change.
-		* @param	B	The Blue value to change.
+		* @param[out]	R	The unsigned char to store the Red value in.
+		* @param[out]	G	The unsigned char to store the Green value in.
+		* @param[out]	B	The unsigned char to store the Blue value in.
 		*
 		* @return	Returns whether or not the conversion was successful.
 		*/
-		bool hexStringToRGB(const std::string& hexString, unsigned char &R, unsigned char &G, unsigned char &B);
+		bool _NaviExport hexStringToRGB(const std::string& hexString, unsigned char &R, unsigned char &G, unsigned char &B);
 
 		/** 
 		* Encodes a string into Base64.
@@ -550,7 +560,7 @@ namespace NaviLibrary
 		*
 		* @return	The Base64-encoded representation of the passed string.
 		*/
-		std::string encodeBase64(const std::string &strToEncode);
+		std::string _NaviExport encodeBase64(const std::string &strToEncode);
 
 		/**
 		* Ensures that a number (input) is within certain limits.
@@ -560,7 +570,7 @@ namespace NaviLibrary
 		* @param	max		The maximum limit.
 		*/
 		template<class NumberType>
-		inline void limit(NumberType &input, NumberType min, NumberType max)
+		inline void _NaviExport limit(NumberType &input, NumberType min, NumberType max)
 		{
 			if(input < min)
 				input = min;
