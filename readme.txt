@@ -126,3 +126,7 @@ LEXI           User avatar exported with LEXI plugin
 PHYSICS        Set/Unset Physics management by Ode and OgreODE
 PHYSX          Set/Unset Physics management by Ageia PhysX
 TOKAMAK        Set/Unset Physics management by Tokamak
+
+About Navi/LLMozLib Debug assertion, to avoid them:
+Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
+ XPCOM_DEBUG_BREAK = warn
