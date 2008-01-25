@@ -103,6 +103,9 @@ protected:
     void modelerMainCreateTube(const NaviData& naviData);
     void modelerMainCreateRing(const NaviData& naviData);
 
+	void modelerSliderTaperX(const NaviData& naviData);
+	void modelerSliderTaperY(const NaviData& naviData);
+
 
 #ifdef UIDEBUG
     // Debug callbacks

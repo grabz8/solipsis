@@ -201,7 +201,10 @@ void NavigatorGUI::modelerMainShow()
 		navi->bind("CreateTorus", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTorus)); 
 		navi->bind("CreateTube", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTube)); 
 		navi->bind("CreateRing", NaviDelegate(this, &NavigatorGUI::modelerMainCreateRing)); 
- 
+
+		navi->bind("UpdateTaperX",  NaviDelegate(this, &NavigatorGUI::modelerSliderTaperX));
+		navi->bind("UpdateTaperY", NaviDelegate(this, &NavigatorGUI::modelerSliderTaperY));
+  
 		mNavisStates[NAVI_MODELERMAIN] = NSCreated;
     }
     else
@@ -744,6 +747,34 @@ void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 	mNavigator->createRing();
 }
 
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerSliderTaperX(const NaviData& naviData)
+{
+	static std::string value = "0";
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+    // Set current values
+    navi->evaluateJS("document.getElementById('taperX').innerHTML");
+
+	if( value != "0" )
+	{
+		OGRE_LOG("slider TAPER X = " + (String)(value.c_str()));
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerSliderTaperY(const NaviData& naviData)
+{
+	static std::string value = "0";
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+    // Set current values
+    navi->evaluateJS("document.getElementById('taperY').innerHTML");
+	if( value != "0" )
+	{
+		OGRE_LOG("slider TAPER Y = " + (String)(value.c_str()));
+	}
+}
+
+//-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugCommand(const NaviData& naviData)
