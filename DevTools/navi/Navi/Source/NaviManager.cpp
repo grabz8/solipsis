@@ -301,13 +301,6 @@ bool NaviManager::injectMouseUp(int buttonID)
 	return false;
 }
 
-struct compare { 
-	bool operator()(Navi* a, Navi* b)
-	{
-		return(*a > *b); 
-	};
-};
-
 bool NaviManager::focusNavi(int x, int y, Navi* selection)
 {
 	deFocusAllNavis();
@@ -326,7 +319,7 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
 		if(!iter->second->isMaterial)
 			sortedNavis.push_back(iter->second);
 
-	
+	struct compare { bool operator()(Navi* a, Navi* b){ return(a->overlay->getZOrder() > b->overlay->getZOrder()); }};
 	std::sort(sortedNavis.begin(), sortedNavis.end(), compare());
 
 	if(sortedNavis.size())
