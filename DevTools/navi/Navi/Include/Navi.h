@@ -464,9 +464,6 @@ namespace NaviLibrary
 		* @param	focus	The focus to apply on this Navi.
 		*/
 		void setFocus(bool focus) { isFocused = focus; }
-
-		bool operator>( const Navi& nV )  const { return overlay->getZOrder() > nV.overlay->getZOrder(); };
-
 // END GREG
 
 		/**
