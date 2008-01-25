@@ -19,6 +19,8 @@
 
 namespace Solipsis {
 
+using namespace Ogre;
+
 // Increment if there are major upgrades 
 #define SOLMODVERSION "1.0.1" 
 
@@ -27,6 +29,10 @@ namespace Solipsis {
 #define SOL_ERROR_CANNOTOPENFILE 1
 /// Error writing to a file
 #define SOL_ERROR_CANNOTWRITETOFILE 1
+
+
+typedef std::vector<unsigned int> uintvector;
+typedef std::vector<Real> realvector;
 
 /**
  * Write a message in the SOLIPSIS log file

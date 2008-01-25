@@ -25,8 +25,8 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mVertexDecl = mVertexData->vertexDeclaration->getVertexSize(0);
 
 	// get the object datas
-	mVertex = 0;
-	mIndex = 0;
+	//mVertex = 0;
+	//mIndex = 0;
  	getDataFromBuffer( NULL, NULL );
 
 	// create the (backup) buffers
@@ -37,27 +37,28 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	// initialize the (backup) buffers
 	mBufCurrent->vertexCount	= mBufBackup->vertexCount	= mBufPrim->vertexCount	= mVertexCount;
 	mBufCurrent->indexCount		= mBufBackup->indexCount	= mBufPrim->indexCount	= mIndexCount;
-	mBufPrim->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
-	mBufBackup->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
-	mBufCurrent->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
-	mBufPrim->index				= new unsigned int [ mIndexCount ];
-	mBufBackup->index			= new unsigned int [ mIndexCount ];
-	mBufCurrent->index			= new unsigned int [ mIndexCount ];
+	mBufPrim->vertex.resize(mVertexCount*mVertexDecl/4);
+	mBufBackup->vertex.resize(mVertexCount*mVertexDecl/4);
+	mBufCurrent->vertex.resize(mVertexCount*mVertexDecl/4);
+	mBufPrim->index.resize(mIndexCount);
+	mBufBackup->index.resize(mIndexCount);
+	mBufCurrent->index.resize(mIndexCount);
 
 	for( unsigned int i = 0; i < mVertexCount*mVertexDecl/4; i++ )
 		mBufCurrent->vertex[i]	= mBufBackup->vertex[i]	= mBufPrim->vertex[i]	= mVertex[i];
+
 	for( unsigned int i = 0; i < mIndexCount; i++ )
 		mBufCurrent->index[i]	= mBufBackup->index[i]	= mBufPrim->index[i]	= mIndex[i];
 
 	// get the object size max / min
 	getSize( mSize, mCornerMin, mCornerMax );
 
-	mBufCurrent->size		= mBufBackup->size		= mBufPrim->size			= mSize;
+	mBufCurrent->size		= mBufBackup->size		= mBufPrim->size		= mSize;
 	mBufCurrent->cornerMax	= mBufBackup->cornerMax	= mBufPrim->cornerMax	= mCornerMax;
 	mBufCurrent->cornerMin	= mBufBackup->cornerMin	= mBufPrim->cornerMin	= mCornerMin;
 
-	mChilds = NULL;		// must be loaded from the .XML
-	mParent = 0;		// must be loaded from the .XML
+	mChilds = NULL;		// TODO : must be loaded from the .XML
+	mParent = 0;		// TODO : must be loaded from the .XML
 
 	mName = pName;
 
@@ -607,10 +608,11 @@ bool Object3D::apply(Command command, Real p1)
 bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 {
 	Vector3 rootTrans;					// root position for the transformation & deformations
-	Real *vertex = 0;
+	realvector vertex;
 	Real *vertexA = 0;
 	Real *vertexB = 0;
-	unsigned int vertexCount, indexCount, *index = 0;
+	uintvector	index;
+	unsigned int vertexCount, indexCount = 0;
 	unsigned int vertexCountA, indexCountA, *indexA = 0;
 	unsigned int vertexCountB, indexCountB, *indexB = 0;
 	Real mAngleBegin, mAngleEnd;
@@ -973,28 +975,70 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 	if( path_cut || dimple || hole )
 	{
 		// SOLID_A
+// ***********************************************************************************
+float* vvv;
+unsigned int* iii;
+
+vvv = new float[mBufBackup->vertexCount*mVertexDecl/4];
+for(realvector::iterator vv=mBufBackup->vertex.begin(); vv!=mBufBackup->vertex.end(); vv++)
+	*vvv++ = (*vv);
+vvv -= mBufBackup->vertexCount*mVertexDecl/4;
+iii = new unsigned int[mBufBackup->indexCount];
+for(uintvector::iterator ii=mBufBackup->index.begin(); ii!=mBufBackup->index.end(); ii++)
+	*iii++ = (*ii);
+iii -= mBufBackup->indexCount;
+// ***********************************************************************************
 		solidA = sbo->dataLoad( 
-			mBufBackup->vertex, mBufBackup->vertexCount, mVertexDecl/4,
-			mBufBackup->index, mBufBackup->indexCount/3 );
+//			(float *) &(mBufBackup->vertex), mBufBackup->vertexCount, mVertexDecl/4,
+//			(unsigned int *) &(mBufBackup->index), mBufBackup->indexCount/3 );
+			vvv, mBufBackup->vertexCount, mVertexDecl/4,
+			iii, mBufBackup->indexCount/3 );
 		solidA->DataCloseCallback();
+// ***********************************************************************************
+delete iii;
+iii = NULL;
+delete vvv;
+vvv = NULL;
+// ***********************************************************************************
 
 		// SOLID_B : generate a new SOLID
 		if( hole )
 			MeshModifier::genCylinder(
 				command,
-				vertex, vertexCount, mVertexDecl/4, 
-				index, indexCount,
+				&vertex, vertexCount, mVertexDecl/4, 
+				&index, indexCount,
 				hollow_sides, mHoleSizeY, mHoleSizeX,
 				mCornerMax, mCornerMin );
 		else
 			MeshModifier::genCylinderCut(
 				command,
-				vertex, vertexCount, mVertexDecl/4, 
-				index, indexCount, 
+				&vertex, vertexCount, mVertexDecl/4, 
+				&index, indexCount, 
 				mAngleBegin, mAngleEnd, 
 				mCornerMax, mCornerMin );
-		solidB = sbo->dataLoad( vertex, vertexCount, mVertexDecl/4, index, indexCount/3 );
+
+// ***********************************************************************************
+vvv = new float[vertexCount*mVertexDecl/4];
+for(realvector::iterator vv=vertex.begin(); vv!=vertex.end(); vv++)
+	*vvv++ = (*vv);
+vvv -= vertexCount*mVertexDecl/4;
+iii = new unsigned int[indexCount];
+for(uintvector::iterator ii=index.begin(); ii!=index.end(); ii++)
+	*iii++ = (*ii);
+iii -= indexCount;
+// ***********************************************************************************
+		solidB = sbo->dataLoad(
+//			(float*) &vertex, vertexCount, mVertexDecl/4,
+//			(unsigned int*) &index, indexCount/3 );
+			vvv, vertexCount, mVertexDecl/4,
+			iii, indexCount/3 );
 		solidB->DataCloseCallback();
+// ***********************************************************************************
+delete iii;
+iii = NULL;
+delete vvv;
+vvv = NULL;
+// ***********************************************************************************
 
 		// Apply a boolean operation from the solid B on A
 		sbo->applyBoolOp( SBO::OP_DIFFERENCE, solidA, solidB );
@@ -1008,24 +1052,27 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 		vertexCount = vertexCountA + vertexCountB;
 		indexCount = indexCountA + indexCountB;
 		// vertex data
-		delete vertex;		vertex = new Real [vertexCount * mVertexDecl/4];
+		//delete vertex;
+		vertex.clear();
+		vertex.resize(vertexCount * mVertexDecl/4);
         unsigned int i;
-		for(i=0; i<vertexCountA*mVertexDecl/4; i++)	*vertex++ = *vertexA++;
-		for(i=0; i<vertexCountB*mVertexDecl/4; i++)	*vertex++ = *vertexB++;
+		for(i=0; i<vertexCountA*mVertexDecl/4; i++) vertex[i] = *vertexA++;
+		for(i=vertexCountA*mVertexDecl/4; i<(vertexCountA+vertexCountB)*mVertexDecl/4; i++) vertex[i] = *vertexB++;
 		// index data
-		delete index;		index = new unsigned int [indexCount];
-		for(i=0; i<indexCountA; i++)	*index++ = *indexA++;
-		for(i=0; i<indexCountB; i++)	*index++ = *indexB++ + vertexCountA;
+		index.clear();
+		index.resize(indexCount);
+		for(i=0; i<indexCountA; i++) index[i] = *indexA++;
+		for(i=indexCountA; i<indexCountA+indexCountB; i++) index[i] = *indexB++ + vertexCountA;
 		// replace pointers at startup
-		vertex -= vertexCount * mVertexDecl/4;
-		index -= indexCount;
+		/*vertex -= vertexCount * mVertexDecl/4;
+		index -= indexCount;*/
 
 		// Update vertex & index datas
-		resizeBuffers( vertex, vertexCount, index, indexCount );
+		resizeBuffers(vertex, vertexCount,index, indexCount );
 		path_cut = dimple = hole = false;
 
-		delete mBufCurrent->vertex;
-		delete mBufCurrent->index;
+		//delete mBufCurrent->vertex;
+		//delete mBufCurrent->index;
 
 		mBufCurrent->vertex			= vertex;
 		mBufCurrent->vertexCount	= vertexCount;
@@ -1037,14 +1084,14 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 	// skew deformation
 	if( skew && (mType == CYLINDER || mType == TORUS || mType == TUBE) )
 	{
-		delete vertex;	vertex = 0;
-		delete index;	index = 0;
+		//delete vertex;	vertex = 0;
+		//delete index;	index = 0;
 
 		// Generate the new modified object3D
 		MeshModifier::genCylinderSkew(
 			command,
-			vertex, vertexCount, mVertexDecl/4, 
-			index, indexCount,
+			&vertex, vertexCount, mVertexDecl/4, 
+			&index, indexCount,
 			16, 1, 1,
 			mSkew, mRadiusDelta, mRevolutions, mType,
 			mBufCurrent->cornerMax, mBufCurrent->cornerMin );
@@ -1053,8 +1100,8 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 		resizeBuffers( vertex, vertexCount, index, indexCount );
 		skew = false;
 
-		delete mBufCurrent->vertex;
-		delete mBufCurrent->index;
+		//delete mBufCurrent->vertex;
+		//delete mBufCurrent->index;
 
 		mBufCurrent->vertex			= vertex;
 		mBufCurrent->vertexCount	= vertexCount;
@@ -1190,12 +1237,13 @@ void Object3D::getSize(Vector3 &size, Vector3 &min, Vector3 &max)
 	{
 		max = Vector3::ZERO;
 		min = Vector3::ZERO;
-		Real *vertex = mBufCurrent->vertex; // = mVertex;
+		realvector vertex = mBufCurrent->vertex; // = mVertex;
 
+		unsigned int id;
 		//for(unsigned int i=0; i<mVertexCount; i++)
 		for(unsigned int i=0; i<mBufCurrent->vertexCount; i++)
 		{
-			unsigned int id = i*mVertexDecl/4;
+			id = i*mVertexDecl/4;
 
 			if( vertex[id] > max.x )		max.x = vertex[id];
 			if( vertex[id+1] > max.y )		max.y = vertex[id+1];
@@ -1227,9 +1275,9 @@ void Object3D::getDataFromBuffer(vector<Vector3>* pVertex, vector<Face>* pTriang
 	MeshModifier::getMeshInformation(
 		mesh,
 		mVertexCount,
-		mVertex,
+		&mVertex,
 		mIndexCount,
-		mIndex);
+		&mIndex);
 
 	mTriangleCount = mIndexCount / 3;
 }
@@ -1312,21 +1360,38 @@ void Object3D::updateBufferVertex()
 
 	HardwareVertexBufferSharedPtr vbuf = mVertexData->vertexBufferBinding->getBuffer(posElem->getSource());
 	Real *vertex = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
-	Real *vertexNew = mBufCurrent->vertex;
+	realvector vertexNew = mBufCurrent->vertex;
 
 	for(unsigned int i=0; i<mVertexCount*mVertexDecl/4; i++)
-		*vertex++ = *vertexNew++;		//vertex[i] = mBufCurrent->vertex[i];
+	{
+//		Real temp = vertexNew[i];		//vertex[i] = mBufCurrent->vertex[i];
+//		vertex[i] = temp;
+
+		vertex[i] = vertexNew[i];
+	}
 
 	vbuf->unlock();
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::resizeBuffers( Real* pVertexData, size_t pVertexCount, unsigned* pIndexData, size_t pIndexCount )
+void Object3D::resizeBuffers( realvector &pVertexData, size_t pVertexCount, uintvector &pIndexData, size_t pIndexCount )
 {
 	SubMesh* subMesh = mEntity->getMesh()->getSubMesh(0);
 
 	// Update vertex count in the render operation
 	mVertexData->vertexCount = pVertexCount;
+
+	Real *vertextmp = new Real[pVertexData.size()];
+	for (int i= 0 ; i< pVertexData.size();i++)
+	{
+		vertextmp[i] = pVertexData[i];
+	}
+
+	unsigned int *indextmp = new unsigned int [pIndexData.size()];
+	for (int i= 0 ; i< pIndexData.size();i++)
+	{
+		indextmp[i] = pIndexData[i];
+	}
 
 	// Create new vertex buffer
 	HardwareVertexBufferSharedPtr vbuf =
@@ -1337,7 +1402,7 @@ void Object3D::resizeBuffers( Real* pVertexData, size_t pVertexCount, unsigned* 
 			HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
 
 	// Upload the vertex data to the card
-	vbuf->writeData( 0, vbuf->getSizeInBytes(), pVertexData, true );
+	vbuf->writeData( 0, vbuf->getSizeInBytes(), vertextmp, true );
 
 	// Bind buffer
 	mVertexData->vertexBufferBinding->setBinding(0, vbuf);
@@ -1358,13 +1423,16 @@ void Object3D::resizeBuffers( Real* pVertexData, size_t pVertexCount, unsigned* 
 		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
 
 	// Upload the index data to the card
-	ibuf->writeData( 0, ibuf->getSizeInBytes(), pIndexData, true );
+	ibuf->writeData( 0, ibuf->getSizeInBytes(), indextmp, true );
 
 	// Update index
 	subMesh->indexData->indexBuffer = ibuf;
 
 	// Notify mesh object that it has been loaded
 	mEntity->getMesh()->load();
+
+	delete vertextmp; vertextmp = 0;
+	delete indextmp; indextmp = 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1792,13 +1860,13 @@ bool Object3D::restoreBufferVertex( Buffer* pBufNew, Buffer* pBufOld )
 
 	// Restore / copy the old buffer by the new one
 	pBufOld->vertexCount		= pBufNew->vertexCount;
-	delete pBufOld->vertex;		//pBufOld->vertex = 0;
-	pBufOld->vertex				= new Real [pBufNew->vertexCount*mVertexDecl/4];
+	pBufOld->vertex.resize(pBufNew->vertexCount*mVertexDecl/4);
 
-	Real *vBackup = pBufOld->vertex;
-	Real *vCurrent = pBufNew->vertex;
-	for(unsigned int i=0; i<pBufNew->vertexCount*mVertexDecl/4; i++)
-		*vBackup++ = *vCurrent++;		//pBufOld->vertex[i]	= pBufNew->vertex[i];
+	//Real *vBackup = pBufOld->vertex;
+	//Real *vCurrent = pBufNew->vertex;
+	//for(unsigned int i=0; i<pBufNew->vertexCount*mVertexDecl/4; i++)
+	//	*vBackup++ = *vCurrent++;		//pBufOld->vertex[i]	= pBufNew->vertex[i];
+	pBufOld->vertex = pBufNew->vertex;
 
 	// update the bounding box sizes
 	pBufOld->size		= pBufNew->size;
@@ -1817,13 +1885,13 @@ bool Object3D::restoreBufferIndex( Buffer* pBufNew, Buffer* pBufOld )
 
 	// Restore / copy the old buffer by the new one
 	pBufOld->indexCount			= pBufNew->indexCount;
-	delete pBufOld->index;		//pBufOld->index = 0;
-	pBufOld->index				= new unsigned int [pBufNew->indexCount];
+	pBufOld->index.resize(pBufNew->indexCount);
 
-	unsigned int *iBackup = pBufOld->index;
-	unsigned int *iCurrent = pBufNew->index;
-	for(unsigned int i=0; i<pBufNew->indexCount; i++)
-		*iBackup++ = *iCurrent++;		//pBufOld->index[i]	= pBufNew->index[i];
+	//unsigned int *iBackup = pBufOld->index;
+	//unsigned int *iCurrent = pBufNew->index;
+	//for(unsigned int i=0; i<pBufNew->indexCount; i++)
+	//	*iBackup++ = *iCurrent++;		//pBufOld->index[i]	= pBufNew->index[i];
+	pBufOld->index = pBufNew->index;	
 
 	return true;
 }

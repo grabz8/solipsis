@@ -20,6 +20,8 @@ class ModifiedMaterialManager ;
 
 #define PRIMCOUNT 13
 const string SOLTYPESTRING[] = { "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","HALF_CYLINDER","CONE","HALF_CONE","SPHERE","HALF_SPHERE","TORUS","TUBE","RING","OTHER"};
+typedef std::vector<unsigned int> uintvector;
+typedef std::vector<Real> realvector;
 
 //-------------------------------------------------------------------------------------
 /// brief ...
@@ -64,9 +66,9 @@ public:
 
 	/// brief The structure for the backup : vertex & index buffers
 	typedef struct Buffer {
-		Real* vertex;
+		realvector vertex;
 		unsigned int vertexCount;
-		unsigned int* index;
+		uintvector index;
 		unsigned int indexCount;
 		Vector3 size;
 		Vector3 cornerMax;
@@ -322,7 +324,7 @@ public:
 	///brief Restore the backup buffer by the current one
 	void updateBackup() { restoreBuffer( mBufCurrent, mBufBackup ); }
 	///brief Resize the both verex & index hardware buffers
-	void resizeBuffers( Real* vertexData, size_t vertexCount, unsigned* indexData = 0, size_t indexCount = 0 );
+	void resizeBuffers( realvector &vertexData, size_t vertexCount, uintvector &indexData, size_t indexCount = 0 );
 
 	///brief Remove the last command added and re-apply all the others in the right order
 	bool undo();
@@ -441,18 +443,18 @@ protected:
 private:
 	VertexData* mVertexData;					/// brief ...
 
-	Real *mVertex;								/// brief ...
+	realvector mVertex;							/// brief ...
 	size_t mVertexCount;						/// brief ...
 	size_t mVertexDecl;							/// brief ...
 
-	unsigned *mIndex;							/// brief ...
+	uintvector mIndex;							/// brief ...
 	size_t mIndexCount;							/// brief ...
 	size_t mTriangleCount;						/// brief ...
 
 public:
 	Buffer *mBufPrim;							/// brief ...
 	Buffer *mBufBackup;							/// brief ...
-	Buffer *mBufCurrent;						/// brief ...
+	Buffer *mBufCurrent;							/// brief ...
 };
 
 static Object3D::Type objectStringToType(Ogre::String &toFind)

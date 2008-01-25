@@ -252,8 +252,8 @@ static const int RTOD = 0;
 	/// file MeshModifier.h
 	static void getMeshInformation(
 		Mesh* mesh, 
-		size_t &vertex_count, Real* &vertices,//Vector3* &vertices,
-		size_t &index_count, unsigned* &indices,
+		size_t &vertex_count, realvector* vertices,
+		size_t &index_count, uintvector* indices,
 		const Vector3 &position = Vector3::ZERO,
 		const Quaternion &orient = Quaternion::IDENTITY, const Vector3 &scale = Vector3::UNIT_SCALE )
 	{
@@ -266,6 +266,8 @@ static const int RTOD = 0;
 		size_t index_offset = index_count;
 		size_t prev_vert = vertex_count;
 		size_t prev_ind = index_count;
+
+		size_t vertexDecl;
 
 		// Calculate how many vertices and indices we're going to need
 		for(int i = 0;i < mesh->getNumSubMeshes();i++)
@@ -280,12 +282,16 @@ static const int RTOD = 0;
 					VertexData* vertex_data = mesh->sharedVertexData;
 					vertex_count += vertex_data->vertexCount;
 					added_shared = true;
+					// ...
+					vertexDecl = vertex_data->vertexDeclaration->getVertexSize(0);
 				}
 			}
 			else
 			{
 				VertexData* vertex_data = submesh->vertexData;
 				vertex_count += vertex_data->vertexCount;
+				// ...
+				vertexDecl = vertex_data->vertexDeclaration->getVertexSize(0);
 			}
 
 			// Add the indices
@@ -294,11 +300,11 @@ static const int RTOD = 0;
 		}
 
 		// Allocate space for the vertices and indices
-//		vertices = new Vector3[vertex_count];
-		indices = new unsigned[index_count];
+		indices->resize(index_count);
 
 		added_shared = false;
 
+		Real *tmpVertices;
 		// Run through the submeshes again, adding the data into the arrays
 		for(int i = 0;i < mesh->getNumSubMeshes();i++)
 		{
@@ -316,27 +322,17 @@ static const int RTOD = 0;
 				const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 				Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 				//unsigned char* vertex = static_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-				vertices = static_cast<Real*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-/*				Ogre::Real* pReal;
-				for(size_t j = 0; j < vertex_data->vertexCount; ++j, vertex += vbuf->getVertexSize())
-				{
-					posElem->baseVertexPointerToElement(vertex, &pReal);
+				size_t tt = vbuf->getNumVertices();
 
-					Vector3 pt;
+//vertices->resize(tt * vertexDecl/4);
+				vertices->clear();
+                tmpVertices = static_cast<Real*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+				for (int ind = 0 ; ind < vertex_data->vertexCount * vertexDecl/4 ; ind ++)
+					vertices->push_back(tmpVertices[ind]);
 
-					pt.x = (*pReal++);
-					pt.y = (*pReal++);
-					pt.z = (*pReal++);
-
-					pt = (orient * (pt * scale)) + position;
-
-					vertices[current_offset + j].x = pt.x;
-					vertices[current_offset + j].y = pt.y;
-					vertices[current_offset + j].z = pt.z;
-				}
-*/
 				vbuf->unlock();
 				next_offset += vertex_data->vertexCount;
+				tmpVertices = NULL;
 			}
 
 			Ogre::IndexData* index_data = submesh->indexData;
@@ -354,11 +350,16 @@ static const int RTOD = 0;
 				size_t offset = (submesh->useSharedVertices)?shared_offset:current_offset;
 
 				unsigned int vindex = use32bitindexes? *pInt++ : *pShort++;
-				indices[index_offset + 0] = vindex + offset;
+				//indices[index_offset + 0] = vindex + offset;
+				//vindex = use32bitindexes? *pInt++ : *pShort++;
+				//indices[index_offset + 1] = vindex + offset;
+				//vindex = use32bitindexes? *pInt++ : *pShort++;
+				//indices[index_offset + 2] = vindex + offset;
+				(*indices)[index_offset + 0] = vindex + offset;
 				vindex = use32bitindexes? *pInt++ : *pShort++;
-				indices[index_offset + 1] = vindex + offset;
+				(*indices)[index_offset + 1] = vindex + offset;
 				vindex = use32bitindexes? *pInt++ : *pShort++;
-				indices[index_offset + 2] = vindex + offset;
+				(*indices)[index_offset + 2] = vindex + offset;
 
 				index_offset += 3;
 			}
@@ -375,15 +376,16 @@ static const int RTOD = 0;
 
 	/// brief ...
 	static bool genCylinder( Object3D::Command command,
-						Real* &pVertex, unsigned int &pVertexCount, 
+						realvector* pVertex, unsigned int &pVertexCount, 
 						unsigned int pVertexDecl, 
-						unsigned int* &pIndex, unsigned int &pIndexCount,
+						uintvector* pIndex, unsigned int &pIndexCount,
 						unsigned int pSides, Real pRadius, Real pLength,
 						Vector3 pSizeMax, Vector3 pSizeMin )
 	{
 		if( pSides < 3 ) pSides = 3;
 		if( pRadius >= 1 ) pRadius = .95;
 		if( pSides == 4 ) pRadius *= 1.35;		// a bit smaller than sqrt(2) of a square side
+		int indVertex = 0;
 
 		pVertexCount = 0;
 		pIndexCount = 0;
@@ -436,45 +438,47 @@ static const int RTOD = 0;
 
 		// B. Create vertex data
 		{
-			pVertex = new Real[ points.size() * pVertexDecl ];
-			for( vector<Vector3>::iterator pt = points.begin(); pt != points.end(); pt++ )
+			pVertex->resize(points.size() * pVertexDecl);
+			int ind=0;
+			for( vector<Vector3>::iterator pt = points.begin(); pt != points.end(); pt++,indVertex+=pVertexDecl)
 			{
-				*pVertex++ = (*pt).x;		*pVertex++ = (*pt).y;		*pVertex++ = (*pt).z;	// vertex position
-				pVertex += 3;																	// normal
-				*pVertex++ = 0;																	// color
-				*pVertex++ = 0;				*pVertex++ = 1;										// texture coodrinates
+				(*pVertex)[indVertex] = (*pt).x;	(*pVertex)[indVertex+1] = (*pt).y;		(*pVertex)[indVertex+2] = (*pt).z;	// vertex position
+				//pVertex += 3;																// normal
+				(*pVertex)[indVertex+6] = 0;												// color
+				(*pVertex)[indVertex+7] = 0;		(*pVertex)[indVertex+8] = 1;			// texture coodrinates
 			}
-
-			pVertex -= ( points.size() * pVertexDecl );
+			
+			//pVertex -= ( points.size() * pVertexDecl );
+			indVertex -= ( points.size() * pVertexDecl );
 			pVertexCount = unsigned int(points.size());
 		}
 
 		// C. Create index data
 		{
 			pIndexCount = size_t( 2 * points.size() - 4 ) * 3;
-			pIndex = new unsigned int[ pIndexCount ];
+			pIndex->resize(pIndexCount);
 			unsigned int id = 2;
 
 			// the faces
-            unsigned int i;
-			for( i = 0; i < points.size()-2; i+=2 )
+            unsigned int ifaces;
+			for( ifaces = 0; ifaces < points.size()-2; ifaces+=2 )
 			{
-				pIndex[i*3] = id++;		pIndex[i*3+1] = id+1;	pIndex[i*3+2] = id;
-				pIndex[i*3+3] = id++;	pIndex[i*3+4] = id++;	pIndex[i*3+5] = id--;
+				(*pIndex)[ifaces*3] = id++;		(*pIndex)[ifaces*3+1] = id+1;	(*pIndex)[ifaces*3+2] = id;
+				(*pIndex)[ifaces*3+3] = id++;	(*pIndex)[ifaces*3+4] = id++;	(*pIndex)[ifaces*3+5] = id--;
 			}
-			i -= 2;
-			pIndex[i*3+1] = 2;		pIndex[i*3+4] = 2;		pIndex[i*3+5] = 3;
+			ifaces -= 2;
+			(*pIndex)[ifaces*3+1] = 2;		(*pIndex)[ifaces*3+4] = 2;		(*pIndex)[ifaces*3+5] = 3;
 
 			// the sides
 			id = 2;
 			for( size_t i = points.size()-2; i < (2*points.size()-4); i+=2 )
 			{
-				pIndex[i*3] = 0;		pIndex[i*3+1] = id+2;	pIndex[i*3+2] = id;
-				pIndex[i*3+3] = 1;		pIndex[i*3+4] = id+1;	pIndex[i*3+5] = id+3;
+				(*pIndex)[i*3] = 0;			(*pIndex)[i*3+1] = id+2;	(*pIndex)[i*3+2] = id;
+				(*pIndex)[i*3+3] = 1;		(*pIndex)[i*3+4] = id+1;	(*pIndex)[i*3+5] = id+3;
 				id+=2;
 			}
 			i -= 2;
-			pIndex[i*3+1] = 2;		pIndex[i*3+5] = 3;
+			(*pIndex)[i*3+1] = 2;		(*pIndex)[i*3+5] = 3;
 		}
 
 		// D. Compute the normals
@@ -485,18 +489,18 @@ static const int RTOD = 0;
 			static Vector3 v1, v2, v3, normal;
 
 			// get the normal from the face witch include the current vertex
-			id1 = pIndex[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
-			id2 = pIndex[3*n+1];	v2 = points[ id2 ];		id2 *= pVertexDecl;
-			id3 = pIndex[3*n+2];	v3 = points[ id3 ];		id3 *= pVertexDecl;
+			id1 = (*pIndex)[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
+			id2 = (*pIndex)[3*n+1];		v2 = points[ id2 ];		id2 *= pVertexDecl;
+			id3 = (*pIndex)[3*n+2];		v3 = points[ id3 ];		id3 *= pVertexDecl;
 			normal = VectorModifier::getNormal( v1, v2, v3 );
 
 			// normalize
 			normal.normalise();
 			
 			// apply the normal face to the 3 vertex of it
-			pVertex[ id1 + 3 ] = pVertex[ id2 + 3 ] = pVertex[ id3 + 3 ] = normal.x;
-			pVertex[ id1 + 4 ] = pVertex[ id2 + 4 ] = pVertex[ id3 + 4 ] = normal.y;
-			pVertex[ id1 + 5 ] = pVertex[ id2 + 5 ] = pVertex[ id3 + 5 ] = normal.z;
+			(*pVertex)[ id1 + 3 ] = (*pVertex)[ id2 + 3 ] = (*pVertex)[ id3 + 3 ] = normal.x;
+			(*pVertex)[ id1 + 4 ] = (*pVertex)[ id2 + 4 ] = (*pVertex)[ id3 + 4 ] = normal.y;
+			(*pVertex)[ id1 + 5 ] = (*pVertex)[ id2 + 5 ] = (*pVertex)[ id3 + 5 ] = normal.z;
 		}
 
 		return true;
@@ -504,15 +508,16 @@ static const int RTOD = 0;
 	
 	/// brief ...
 	static bool genCylinderCut( Object3D::Command command,
-						Real* &pVertex, unsigned int &pVertexCount, 
+						realvector* pVertex, unsigned int &pVertexCount, 
 						unsigned int pVertexDecl, 
-						unsigned int* &pIndex, unsigned int &pIndexCount,
+						uintvector* pIndex, unsigned int &pIndexCount,
 						Real pAngleBegin, Real pAngleEnd,
 						Vector3 pSizeMax, Vector3 pSizeMin )
 	{
 		if( 0 > pAngleBegin || pAngleBegin > 1) return false;
 		if( (pAngleBegin == 0) && (pAngleEnd == 1) ) return false;
 		if( pAngleBegin > pAngleEnd ) return false;	
+		int indVertex = 0;
 
 		pVertexCount = 0;
 		pIndexCount = 0;
@@ -577,48 +582,51 @@ static const int RTOD = 0;
 
 		// B. Create vertex data
 		{
-			pVertex = new Real[ points.size() * pVertexDecl ];
-			for( vector<Vector3>::iterator pt = points.begin(); pt != points.end(); pt++ )
+			int ind = 0;
+			pVertex->resize(points.size() * pVertexDecl);
+			for( vector<Vector3>::iterator pt = points.begin(); pt != points.end(); pt++,indVertex+=pVertexDecl )
 			{
-				*pVertex++ = (*pt).x;		*pVertex++ = (*pt).y;		*pVertex++ = (*pt).z;	// vertex position
-				pVertex += 3;																	// normal
-				*pVertex++ = 0;																	// color
-				*pVertex++ = 0;				*pVertex++ = 1;										// texture coodrinates
+				(*pVertex)[indVertex] = (*pt).x;	(*pVertex)[indVertex+1] = (*pt).y;		(*pVertex)[indVertex+2] = (*pt).z;	// vertex position
+				//pVertex += 3;																// normal
+				(*pVertex)[indVertex+6] = 0;												// color
+				(*pVertex)[indVertex+7] = 0;		(*pVertex)[indVertex+8] = 1;			// texture coodrinates
 			}
 
-			pVertex -= ( points.size() * pVertexDecl );
+			//pVertex -= ( points.size() * pVertexDecl );
+			indVertex -= ( points.size() * pVertexDecl );
 			pVertexCount = unsigned int(points.size());
 		}
 
 		// C. Create index data
 		{
 			pIndexCount = size_t( 2 * points.size() - 4 ) * 3;
-			pIndex = new unsigned int[ pIndexCount ];
+
+			pIndex->resize(pIndexCount);
 			unsigned int id = 0;
 
 			// the first (begin) cut plane
-			pIndex[0] = id++;		pIndex[1] = id++;		pIndex[2] = id+1;
-			pIndex[3] = id+1;		pIndex[4] = id--;		pIndex[5] = id++ -1;
+			(*pIndex)[0] = id++;		(*pIndex)[1] = id++;		(*pIndex)[2] = id+1;
+			(*pIndex)[3] = id+1;		(*pIndex)[4] = id--;		(*pIndex)[5] = id++ -1;
 
 
 			// the other faces
             unsigned int i;
 			for( i = 2; i < points.size(); i+=2 )
 			{
-				pIndex[i*3] = id++;		pIndex[i*3+1] = id++;	pIndex[i*3+2] = id++ +1;
-				pIndex[i*3+3] = id--;	pIndex[i*3+4] = id--;	pIndex[i*3+5] = id++ -1;
+				(*pIndex)[i*3] = id++;		(*pIndex)[i*3+1] = id++;	(*pIndex)[i*3+2] = id++ +1;
+				(*pIndex)[i*3+3] = id--;	(*pIndex)[i*3+4] = id--;	(*pIndex)[i*3+5] = id++ -1;
 			}
 
 			// the second (end) cut plane
 			i = points.size()-2;
-			pIndex[i*3+2] = 1;		pIndex[i*3+3] = 1;		pIndex[i*3+4] = 0;
+			(*pIndex)[i*3+2] = 1;		(*pIndex)[i*3+3] = 1;		(*pIndex)[i*3+4] = 0;
 
 			// the two sides
 			id = 2;
 			for( size_t i = points.size(); i < (2*points.size()-4); i+=2 )
 			{
-				pIndex[i*3] = 0;		pIndex[i*3+1] = id;		pIndex[i*3+2] = id+2;
-				pIndex[i*3+3] = 1;		pIndex[i*3+4] = id+3;	pIndex[i*3+5] = id+1;
+				(*pIndex)[i*3] = 0;			(*pIndex)[i*3+1] = id;		(*pIndex)[i*3+2] = id+2;
+				(*pIndex)[i*3+3] = 1;		(*pIndex)[i*3+4] = id+3;	(*pIndex)[i*3+5] = id+1;
 				id+=2;
 			}
 		}
@@ -631,18 +639,18 @@ static const int RTOD = 0;
 			static Vector3 v1, v2, v3, normal;
 
 			// get the normal from the face witch include the current vertex
-			id1 = pIndex[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
-			id2 = pIndex[3*n+1];	v2 = points[ id2 ];		id2 *= pVertexDecl;
-			id3 = pIndex[3*n+2];	v3 = points[ id3 ];		id3 *= pVertexDecl;
+			id1 = (*pIndex)[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
+			id2 = (*pIndex)[3*n+1];		v2 = points[ id2 ];		id2 *= pVertexDecl;
+			id3 = (*pIndex)[3*n+2];		v3 = points[ id3 ];		id3 *= pVertexDecl;
 			normal = VectorModifier::getNormal( v1, v2, v3 );
 
 			// normalize
 			normal.normalise();
 			
 			// apply the normal face to the 3 vertex of it
-			pVertex[ id1 + 3 ] = pVertex[ id2 + 3 ] = pVertex[ id3 + 3 ] = normal.x;
-			pVertex[ id1 + 4 ] = pVertex[ id2 + 4 ] = pVertex[ id3 + 4 ] = normal.y;
-			pVertex[ id1 + 5 ] = pVertex[ id2 + 5 ] = pVertex[ id3 + 5 ] = normal.z;
+			(*pVertex)[ id1 + 3 ] = (*pVertex)[ id2 + 3 ] = (*pVertex)[ id3 + 3 ] = normal.x;
+			(*pVertex)[ id1 + 4 ] = (*pVertex)[ id2 + 4 ] = (*pVertex)[ id3 + 4 ] = normal.y;
+			(*pVertex)[ id1 + 5 ] = (*pVertex)[ id2 + 5 ] = (*pVertex)[ id3 + 5 ] = normal.z;
 		}
 
 		return true;
@@ -650,15 +658,16 @@ static const int RTOD = 0;
 
 	/// brief ...
 	static bool genCylinderSkew( Object3D::Command command,
-						Real* &pVertex, unsigned int &pVertexCount, 
+						realvector* pVertex, unsigned int &pVertexCount, 
 						unsigned int pVertexDecl, 
-						unsigned int* &pIndex, unsigned int &pIndexCount,
+						uintvector* pIndex, unsigned int &pIndexCount,
 						unsigned int pSides, Real pRadius, Real pLength,
 						Real pSkew, Real pRadiusDelta, unsigned int pRevolutions, Object3D::Type pType,
 						Vector3 pSizeMax, Vector3 pSizeMin )
 	{
 		pVertexCount = 0;
 		pIndexCount = 0;
+		int indVertex = 0;
 
 		Vector3 rootTrans = (pSizeMax + pSizeMin) / 2;
 		vector<Vector3>::iterator it;
@@ -677,7 +686,8 @@ static const int RTOD = 0;
 			Vector3 max = pSizeMax;		max.z = 0;				//max.x *= pRadius;
 			Vector3 min = pSizeMin;		min.z = min.x = 0;		min.y = max.y - ((max.y - min.y) * pSkew / pRevolutions);
 			unsigned int level = 5;		// number of levels between the top & bottom faces
-			
+			int indVertex = 0;
+
 			switch( pType )
 			{
 			case Object3D::CYLINDER:
@@ -733,34 +743,35 @@ static const int RTOD = 0;
 		}
 
 		// create the vertex data
-		pVertex = new Real [ profil.size() * (pSides*pRevolutions + 3) * pVertexDecl ];
-		Real * vertexStart = pVertex;
+		pVertex->resize(profil.size() * (pSides*pRevolutions + 3) * pVertexDecl);
+		realvector* vertexStart = pVertex;
 		// create the index data
-		pIndex = new unsigned int [ ( (profil.size() * 2 * pSides*pRevolutions) + (profil.size() - 2) * 2 ) * 3 ];
+		pIndex->resize(( (profil.size() * 2 * pSides*pRevolutions) + (profil.size() - 2) * 2 ) * 3 );
 
 		// B. Build the 2 cap planes
 		{
 			// vertex : first cap
-			for(it=profil.begin(); it!=profil.end(); it++)
+			for(it=profil.begin(); it!=profil.end(); it++,indVertex+=9)
 			{
-				*pVertex++ = (*it).x;	*pVertex++ = (*it).y;	*pVertex++ = (*it).z;	// position
-				*pVertex++ = 0;			*pVertex++ = 0;			*pVertex++ = 1;			// normal
-				*pVertex++ = 0;															// colour
-				*pVertex++ = 0;			*pVertex++ = 1;									// tex. coord
+				(*pVertex)[indVertex] = (*it).x;	(*pVertex)[indVertex+1] = (*it).y;	(*pVertex)[indVertex+2] = (*it).z;	// position
+				(*pVertex)[indVertex+3] = 0;			(*pVertex)[indVertex+4] = 0;			(*pVertex)[indVertex+5] = 1;			// normal
+				(*pVertex)[indVertex+6] = 0;															// colour
+				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
 			}
 
+			Vector3 v;
 			// vertex : second cap
-			for(it=profil.begin(); it!=profil.end(); it++)
+			for(it=profil.begin(); it!=profil.end(); it++,indVertex+=9)
 			{
-				Vector3 v = (*it);
+				v = (*it);
 				v.y -= ( pSizeMax.y - pSizeMin.y );
 				v.y *= scale;
 				v.y += ( pSizeMax.y - pSizeMin.y ) * (1-pSkew) / pRevolutions;
 
-				*pVertex++ = v.x;		*pVertex++ = v.y;		*pVertex++ = v.z;		// position
-				*pVertex++ = 0;			*pVertex++ = 0;			*pVertex++ = -1;		// normal
-				*pVertex++ = 0;															// colour
-				*pVertex++ = 0;			*pVertex++ = 1;									// tex. coord
+				(*pVertex)[indVertex] = v.x;		(*pVertex)[indVertex+1] = v.y;		(*pVertex)[indVertex+2] = v.z;		// position
+				(*pVertex)[indVertex+3] = 0;			(*pVertex)[indVertex+4] = 0;			(*pVertex)[indVertex+5] = -1;		// normal
+				(*pVertex)[indVertex+6] = 0;															// colour
+				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
 			}
 
 			// index : first cap
@@ -769,9 +780,9 @@ static const int RTOD = 0;
             unsigned int i;
 			for(i=2; i<profil.size(); i++)
 			{
-				pIndex[pIndexCount++] = first;
-				pIndex[pIndexCount++] = pVertexCount + i;
-				pIndex[pIndexCount++] = next;
+				(*pIndex)[pIndexCount++] = first;
+				(*pIndex)[pIndexCount++] = pVertexCount + i;
+				(*pIndex)[pIndexCount++] = next;
 				next = pVertexCount + i;
 			}
 			pVertexCount += profil.size();
@@ -781,9 +792,9 @@ static const int RTOD = 0;
 			next = pVertexCount + 1;
 			for(i=2; i<profil.size(); i++)
 			{
-				pIndex[pIndexCount++] = first;
-				pIndex[pIndexCount++] = next;
-				pIndex[pIndexCount++] = pVertexCount + i;
+				(*pIndex)[pIndexCount++] = first;
+				(*pIndex)[pIndexCount++] = next;
+				(*pIndex)[pIndexCount++] = pVertexCount + i;
 				next = pVertexCount + i;
 			}
 			pVertexCount += profil.size();
@@ -795,17 +806,17 @@ static const int RTOD = 0;
 		{
 			// first segment
 			// vertex
-			for(it=profil.begin(); it!=profil.end(); it++)
+			for(it=profil.begin(); it!=profil.end(); it++,indVertex+=9)
 			{
-				*pVertex++ = (*it).x;	*pVertex++ = (*it).y;	*pVertex++ = (*it).z;	// position
-				pVertex += 3;															// normal
-				*pVertex++ = 0;															// colour
-				*pVertex++ = 0;			*pVertex++ = 1;									// tex. coord
+				(*pVertex)[indVertex] = (*it).x;	(*pVertex)[indVertex+1] = (*it).y;	(*pVertex)[indVertex+2] = (*it).z;	// position
+				//pVertex += 3;															// normal
+				(*pVertex)[indVertex+6] = 0;															// colour
+				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
 			}
 			// other segments
 			unsigned int id = pVertexCount;
 			Real angleStep = 2 * Math::PI / pSides;
-			for(unsigned int s=0; s<(pSides * pRevolutions); s++)
+			for(unsigned int s=0; s<(pSides * pRevolutions); s++,indVertex+=9)
 			{
 				for(it=profil.begin(); it!=profil.end(); it++)
 				{
@@ -821,24 +832,24 @@ static const int RTOD = 0;
 					v.y += heigth;
 					v.y -= ( pSizeMax.y - pSizeMin.y ) * ratio * ( 0.5 + (1-pSkew) * (pRevolutions-1) / pRevolutions );
 
-					*pVertex++ = v.x;		*pVertex++ = v.y;		*pVertex++ = v.z;	// position
-					pVertex += 3;														// normal
-					*pVertex++ = 0;														// colour
-					*pVertex++ = 0;			*pVertex++ = 1;								// tex. coord
+					(*pVertex)[indVertex] = v.x;		(*pVertex)[indVertex+1] = v.y;		(*pVertex)[indVertex+2] = v.z;	// position
+					//pVertex += 3;														// normal
+					(*pVertex)[indVertex+6] = 0;														// colour
+					(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;								// tex. coord
 
 					// index
-					pIndex[pIndexCount++] = id++;
-					pIndex[pIndexCount++] = id--;
-					pIndex[pIndexCount++] = id + profil.size();
+					(*pIndex)[pIndexCount++] = id++;
+					(*pIndex)[pIndexCount++] = id--;
+					(*pIndex)[pIndexCount++] = id + profil.size();
 
-					pIndex[pIndexCount++] = id++ + profil.size();
-					pIndex[pIndexCount++] = id;
-					pIndex[pIndexCount++] = id + profil.size();
+					(*pIndex)[pIndexCount++] = id++ + profil.size();
+					(*pIndex)[pIndexCount++] = id;
+					(*pIndex)[pIndexCount++] = id + profil.size();
 				}
 
-				pIndex[pIndexCount-5] = pVertexCount;
-				pIndex[pIndexCount-2] = pVertexCount;
-				pIndex[pIndexCount-1] = pVertexCount + profil.size();
+				(*pIndex)[pIndexCount-5] = pVertexCount;
+				(*pIndex)[pIndexCount-2] = pVertexCount;
+				(*pIndex)[pIndexCount-1] = pVertexCount + profil.size();
 				pVertexCount += profil.size();
 			}
 
@@ -847,6 +858,7 @@ static const int RTOD = 0;
 			// normals
 		}
 		pVertex = vertexStart;
+		indVertex = 0;
 
 /*		// D. Compute the normals
 		// TODO : ne pas calculer les normales des 2 faces CAP !!!
@@ -856,18 +868,18 @@ static const int RTOD = 0;
 			static Vector3 v1, v2, v3, normal;
 
 			// get the normal from the face witch include the current vertex
-			id1 = pIndex[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
-			id2 = pIndex[3*n+1];	v2 = points[ id2 ];		id2 *= pVertexDecl;
-			id3 = pIndex[3*n+2];	v3 = points[ id3 ];		id3 *= pVertexDecl;
+			id1 = (*pIndex)[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
+			id2 = (*pIndex)[3*n+1];	v2 = points[ id2 ];		id2 *= pVertexDecl;
+			id3 = (*pIndex)[3*n+2];	v3 = points[ id3 ];		id3 *= pVertexDecl;
 			normal = VectorModifier::getNormal( v1, v2, v3 );
 
 			// normalize
 			normal.normalise();
 			
 			// apply the normal face to the 3 vertex of it
-			pVertex[ id1 + 3 ] = pVertex[ id2 + 3 ] = pVertex[ id3 + 3 ] = normal.x;
-			pVertex[ id1 + 4 ] = pVertex[ id2 + 4 ] = pVertex[ id3 + 4 ] = normal.y;
-			pVertex[ id1 + 5 ] = pVertex[ id2 + 5 ] = pVertex[ id3 + 5 ] = normal.z;
+			(*pVertex)[ id1 + 3 ] = (*pVertex)[ id2 + 3 ] = (*pVertex)[ id3 + 3 ] = normal.x;
+			(*pVertex)[ id1 + 4 ] = (*pVertex)[ id2 + 4 ] = (*pVertex)[ id3 + 4 ] = normal.y;
+			(*pVertex)[ id1 + 5 ] = (*pVertex)[ id2 + 5 ] = (*pVertex)[ id3 + 5 ] = normal.z;
 		}
 */
 		profil.clear();
