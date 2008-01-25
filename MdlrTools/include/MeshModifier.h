@@ -471,7 +471,8 @@ static const int RTOD = 0;
 
 			// the sides
 			id = 2;
-			for( size_t i = points.size()-2; i < (2*points.size()-4); i+=2 )
+            size_t i;
+			for( i = points.size()-2; i < (2*points.size()-4); i+=2 )
 			{
 				(*pIndex)[i*3] = 0;			(*pIndex)[i*3+1] = id+2;	(*pIndex)[i*3+2] = id;
 				(*pIndex)[i*3+3] = 1;		(*pIndex)[i*3+4] = id+1;	(*pIndex)[i*3+5] = id+3;
