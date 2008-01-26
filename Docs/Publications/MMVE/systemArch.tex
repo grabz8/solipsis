@@ -146,7 +146,7 @@ Table~\ref{Table:descriptor}.
 
 \begin{table}
 \centering
-\begin{tabular}{|l|p{8cm}|}
+\begin{tabular}{|l|p{6cm}|}
 \hline
   UID & universal identifier of the object\\
   owner & identifier of the node owning the object\\
@@ -174,7 +174,7 @@ Table~\ref{Table:descriptor}.
   \label{Table:descriptor}
 \end{tabular}
 
-\caption{Format of an object descriptor}
+\caption{Example of a simple object descriptor}
 \label{tab:desc}
 \end{table}
 
@@ -321,13 +321,13 @@ of the relative bounding boxes as specified in the corresponding
 descriptors.
 
 
-\subsection{Managing inanimate objects}
+\subsection{Managing inanimate objects }
 \label{sec:manag-inan-objects}
+\jr{Object charge or responsability managing, or something like that}
 While avatars are the main actors in the \sol environment, objects
 also play an important part as they can interact with avatars, be
 picked up, be moved from one location to another, or even move freely
-through space subject to gravity or other forces. This requires our
-protocol to determine the current position of objects in addition to
+through space subject to gravity or other forces \jr{or according to a script of animation}. This requires our protocol to determine the current position of objects in addition to
 that of avatars. This is achieved through a combination of three
 mechanisms that depend on the state the object is currently in. 
 
@@ -346,11 +346,11 @@ corresponding descriptors are updated, and the avatar nodes starts
 computing physics and updating the descriptor for the object. Note
 that physics computation need not be performed by site nodes, in that
 an object can only be attached to a site when it is in static
-equilibrium. 
+equilibrium.\jr{I agree} 
 
 After interacting with the object, the avatar may pass the object on
 to another avatar, or leave it in the current or in a different
-site. In the first case, In the latter, on the other hand, the object
+site. In the first case, \jr{\bf{the recipient of the object takes charge of its management, and will have for example to compute its animation. If a host wants to entrust the charge of a object to a site node, animation and any kind of heavy processes have to be stopped. Only, before removing a object node from a host, it has to be left in a stationary state according to its physical characteristics, avoiding to visualize hanging objects dropped anywhere in the 3D space. In all cases, a host can decide to conserve the management of an object, even if the associated avatar is distant. Thanks to that, a host can manage a robotic-like entities that are controlled by user-defined software components, allowing for example to stream a video.}} In the latter, on the other hand, the object
 may be left in a stationary or in a dynamic state. If the object is
 stationary, then the site may take control of its descriptor and
 manage it without computing any physics. If it is moving, or subject
@@ -359,10 +359,7 @@ corresponding thread is instantiated on the host associated with the
 avatar to which the object was attached. This new object node takes
 responsibility for managing the object's movements and updating its
 descriptor until it is picked up by a new avatar or until it reaches
-an equilibrium state at some site. \jr{A object can be in  stationary state and management can be keep by the same host, for example if we want to put a pause during the animation, or if a process other than physics computation have to be executed, such as video streaming, connection to a personnal server or any kind of data based like a photo album, or web2.0 "`connection"', etc}.
-  
-
-
+an equilibrium state at some site.
 
 % say how avatar and object nodes can contact the site node
 
