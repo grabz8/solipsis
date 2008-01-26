@@ -300,6 +300,30 @@ objects or objects that have just joined the metaverse is propagated
 by site nodes to the avatars within their cells with a significantly
 lower frequency.
 
+An avatar joining \sol first contacts the site node responsible for
+its latest - or its joining - location. This may be done by using the
+Raynet to route a message to the avatar's position. The site node
+responds by informing the avatar about the entities that are visible
+from its current position. From this point on, the site and avatar
+node communicate periodically to implement the low frequency updates
+described above. The same is also done between site and object nodes,
+and effectively implements the low-frequency updates described above.
+
+
+In addition, avatar and object nodes interact with the avatar and
+object nodes around them in order to exchange critical up-to-date
+information about the entities that may collide with them.  Also,
+while sending an update to a nearby node, avatar and object nodes also
+include information received from other nearby nodes that are not
+within collision distance of the destination node; thus implementing
+the second level of \ptp updates. Finally, we observe that an avatar
+or object node may compute the set of entities within collision
+distance by comparing the their distance with the size of its and the
+neighboring entities' bounding boxes the avatar or object and the size
+of the relative bounding boxes as specified in the corresponding
+descriptors.
+
+
 \subsection{Managing inanimate objects}
 \label{sec:manag-inan-objects}
 While avatars are the main actors in the \sol environment, objects
