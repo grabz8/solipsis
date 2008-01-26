@@ -167,37 +167,62 @@ Table~\ref{Table:descriptor}.
 \label{tab:desc}
 \end{table}
 
-\paragraph{Solipsis Peers and Nodes}
-A \emph{Solipsis peer}, or simply \emph{peer}, is any host that
-participates in the \sol world by managing sites, avatars, or
-both. Each peer is associated with a single instance of the \sol
-platform, and throughout its lifetime, it may create or destroy its
-objects according to the requests of its users. Moreover, it owns and
-manages the objects it creates until they are
-destroyed.\footnote{Future version of the specification should include
-  the possibility to transfer the ownership of objects to other
-  peers.} Finally, similar to an object, each peer is associated with
-a unique identifier (UID).
+\subsection{Solipsis Hosts and Nodes}
+From a practical viewpoint, the \sol platform is distributed over a
+set of hosts that maintain information about every entity that is
+currently present in the metaverse.  Each host is associated with a
+single instance of the \sol platform, and throughout its lifetime, it
+may create new entities or destroy previously created ones according
+to the requests of the navigator component. Also, similar to an
+entity, each host is associated with a unique identifier (UID).
 
-Because each peer may be responsible for several objects at the same
-time, we will use the term \emph{node} to identify the subset of
-resources, and operations of a peer $p$, dedicated to the management
-of a given object $o$. Specifically, we define a \sol \emph{node} as a
-pair $(p, o)$ consisting of an object and of the corresponding
-managing peer. Moreover, we will distinguish between \emph{site nodes}
-and \emph{avatar nodes} according to what type of object the node
-refers to.
+Because each host may be responsible for several entities at the same
+time, we define a \emph{(Solipsis) node} as the set of resources
+dedicated to the management of a given entity. Each node incapsulates
+information about the corresponding entity's descriptor as well as the
+threads of control responsible for managing all the interactions of
+the node with the rest of the \sol metaverse as well as with the
+navigator platform.\df{Anything else to say about the node??}
 
 
+\subsection{Decentralized 3D models sharing}
+\label{sec:decentr-3d-models}
+An important task performed by the threads of control associated with
+\sol nodes is the management of the 3D-descriptions associated with
+entities. This involves both modifying the current entity's
+description, for example by adding a new animation, and, in the case
+of avatar nodes, downloading other entities' descriptions so that they
+can be displayed by the navigator component.
 
 
+3D-descriptions are managed by the nodes responsible for the
+corresponding entities, and may be downloaded by any node that needs
+to display the object or perform collision detection. However, having
+all hosts download a given 3D-description from the node responsible
+for its entity would place an unnecessary load on the corresponding
+host. For this reason we allow hosts to cache previously downloaded
+descriptions and to offer to other  \sol nodes running on the same or
+remote hosts. 
 
+To achieve this, we store the 3D-descriptions managed or downloaded by
+the nodes residing on a given host, in a common data repository that
+is shared by all the nodes running on the host. Moreover, as described
+in Section~\ref{sec:definitions}, we record in each entity's
+descriptor, a list of the hosts that currently hold a copy of any of
+the files that constitute the object's 3D description. 
 
-
-
-
-
-
+tight integration with the corresponding entities' nodes,
+3D-descriptions are not stored individually by each node, but, rather,
+they are stored in a common data repository shared by all the nodes
+running on the same \sol host. This allows multiple nodes running on
+the same host to access a common set of 3D description without having
+to download multiple copies of the same data. Whenever a node caches a
+3D-description, it informs the node responsible for the entity, which
+then updates the corresponding descriptor to include a reference to
+the new copy. Similarly, when a node detects that a host listed in the
+descriptor does not have the current copy of an entity's description,
+it sends a message to the corresponding node, which updates the
+descriptor accordingly.
 
 
 \subsection{P2P Architecture}
@@ -243,42 +268,6 @@ metaverse.\footnote{Extensions of the metaverse architecture to higher
 exploit very simple protocols to manage the interaction between
 avatars, objects and the sites they are currently located.
 
-
-
-% The neighborhood relationship between 
-% nodes is determined based on 
-
-
-% Decentralizing the management of a metaverse requires effective means
-% to manage the interactions among large number of hosts in a massively
-% distributed environment. In \sol, we achieve this goal by organizing
-% hosts in a peer-to-peer overlay network whose structure is modeled
-% after the structure of the virtual world itself.
-
-% ey to maintaining this overlay 
-
-
-% Nodes are organized in a three-dimensional overlay network based on
-% the Raynet protocol. The arrangement of nodes in this overlay is based
-% on the locations of the corresponding sites in the \sol world. In
-% particular, each node is responsible for a section of the world
-% centered around its own site and comprising a region of space around
-% it. In simple terms, two nodes are neighbors in the overlay if their
-% corresponding sites are neighboring in the \sol world\df{This is not
-%   strictly true with raynet, right?}. This, mapping between overlay
-% and 3D-world positions allows RayNet to provide efficient means to
-% address and communicate with the nodes responsible for the sites
-% encountered by avatars roaming in the \sol world.\df{This is currently
-% a repetition. EDIT.}
-
-
-
-
-
-
-RayNet, how does it work
-\subsection{Decentralized 3D models sharing}
-\label{sec:decentr-3d-models}
 \subsection{Decentralized physics computation}
 \label{sec:decentr-phys-comp}
 
