@@ -225,20 +225,13 @@ the nodes residing on a given host, in a common data repository that
 is shared by all the nodes running on the host. Moreover, as described
 in Section~\ref{sec:definitions}, we record in each entity's
 descriptor, a list of the hosts that currently hold a copy of any of
-the files that constitute the object's 3D description. 
-
-tight integration with the corresponding entities' nodes,
-3D-descriptions are not stored individually by each node, but, rather,
-they are stored in a common data repository shared by all the nodes
-running on the same \sol host. This allows multiple nodes running on
-the same host to access a common set of 3D description without having
-to download multiple copies of the same data. Whenever a node caches a
-3D-description, it informs the node responsible for the entity, which
-then updates the corresponding descriptor to include a reference to
-the new copy. Similarly, when a node detects that a host listed in the
-descriptor does not have the current copy of an entity's description,
-it sends a message to the corresponding node, which updates the
-descriptor accordingly.
+the files that constitute the object's 3D description.  Whenever a
+node caches a 3D-description, it informs the node responsible for the
+entity, which then updates the corresponding descriptor to include a
+reference to the new copy. Similarly, when a node detects that a host
+listed in the descriptor does not have the current copy of an entity's
+description, it sends a message to the corresponding node, which
+updates the descriptor accordingly.
 
 
 \subsection{P2P Architecture}
