@@ -1,13 +1,15 @@
-
 \section{Decentralized Virtual Worlds Management}
 \label{sec:decentr-virt-worlds}
-One of the key aspects of \sol is the ability to distribute the cost
-associated with the management of its metaverse. This is made possible
-through the decentralization of heavy processes like collision
-detection, computation of physics, as well as communication among the
-large number of nodes that participate in the metaverse. In this
-section, we present the main characteristics of the architecture and
-of the protocol enabling such decentralization. % First define the
+Our response to the demand for an efficient metaverse platform capable
+of 3D interactions among entities is the new version of \sol.  Its key
+characteristic is the ability to distribute the cost associated with
+the management of its metaverse among the hosts participating in
+it. This is made possible through the decentralization of heavy
+processes like collision detection, computation of physics, as well as
+communication among the large number of nodes that participate in the
+metaverse. In the following, we present the main characteristics of
+the architecture and of the protocol enabling such
+decentralization. % First define the
 % entities that constitute the \sol metaverse as well as their protocol
 % counterparts. Then we describe
 % components of the \sol 
@@ -15,31 +17,35 @@ of the protocol enabling such decentralization. % First define the
 
 \subsection{Definitions}
 \label{sec:definitions}
-The \sol  metaverse consists of a set of \emph{entities}, each
+The \sol metaverse consists of a set of \emph{entities}, each
 belonging to one of three categories: \emph{avatars}, \emph{objects},
 and \emph{sites}. Avatars are the main actors of the metaverse as they
 are the only entities that are capable of autonomous movement. In most
 cases they are virtual representations of the users of the metaverse
 and are directly controlled by them using the navigator platform
-described in Section~\ref{sec:navigator}. However, they can also be
-robotic-like entities that are controlled by user-defined software
-components.\df{Is this true???} Objects or, more properly, inanimated
-objects are virtual representation of inanimated objects from the real
-world such as furniture, books and whatever object may be moved or
-picked up by an avatar. Finally, sites constitute the basic building
-blocks of the metaverse and represents portions of the virtual space
-that may be occupied by objects or in which avatars can roam. 
+described in Section~\ref{sec:navigator}.  Objects, on the other hand,
+are virtual representation of entities from the real world such as
+furniture, books and whatever object may be moved or picked up by an
+avatar. Avatar and objects may also be robotic-like entities 
+controlled by user-defined software components. Finally, sites
+constitute the basic building blocks of the metaverse and represents
+portions of the virtual space that may be occupied by objects or in
+which avatars can roam.
 
 Avatars, objects, and sites are all associated with 3D-descriptions,
-each consisting of a mesh or prims based model, a set of textures,
-and, in the case of avatars or objects, also of an animation. \df{Are
-  there animations for objects and sites????} \jr{jerome :yes for
-  objects, we can associated an animation, that will be compute by a
-  host if he want to manage it. Also, the object can be take by a
-  avatar, in this case the client hosting the avatar have to manage it
-  (if nobody already animate it, and if he decides to animate it. If
-  nobody decide to manage this animation, the site takes the
-  responsability to manage this object node, but doesn't animate it}
+each consisting of a mesh or prims-based model\df{check}, a set of
+textures, and, in the case of avatars or objects, also of an
+animation.  Such 3D-descriptions constitute the basis for the rendering of
+entities in the navigator platform. 
+
+% \jr{jerome :yes for objects, we can associated an animation, that will
+%   be compute by a host if he want to manage it. Also, the object can
+%   be take by a avatar, in this case the client hosting the avatar have
+%   to manage it (if nobody already animate it, and if he decides to
+%   animate it. If nobody decide to manage this animation, the site
+%   takes the responsability to manage this object node, but doesn't
+%   animate it}
+
 % The 3D description of the object contains all the information
 % necessary for the 3D visualization of an object, plus any sounds,
 % videos, or multimedia content associated with it. From the point of
@@ -47,23 +53,28 @@ and, in the case of avatars or objects, also of an animation. \df{Are
 % of binary objects, or files, that should be provided to the rendering
 % component. Each such object is associated with its own version number
 % and may thus be updated independently of the others.
-Such 3D-descriptions constitute the basis for the rendering of
-entities in the navigator platform. Nonetheless, computing and
-transmitting a new 3D-descriptions every time an object changes its
-position, or an avatar moves would be to expensive both in terms of
-computation and communication cost \jr{You can remove this sentence,
-  as nobody really used it in the related works. World of warcraft and
-  co just transmit the position. You can write something like
-  "`\bf{The state in the universe of an entity is defined thanks to a
-    \emph{entity descriptor}}"' } For this reason, each entity is also
-associated with an \emph{entity descriptor}, from now on referred to
-simply as \emph{descriptor}. For each entity, the descriptor can contains
-information regarding its position, its physical properties, and
-whatever is needed to display the entity and compute its interaction
-with the rest of the metaverse. For example, a descriptor containing key frame can be used to synchronized animations, videos, etc. Moreover, filtering descriptors defining areas (concentric spheres, hierarchical partitionning, cells) associated with a level of detail or a set of visible objects could be used to achieve a efficient on-demand streaming respecting view-dependency criteria. Or finally, descriptors can contain information concerning the ressources or the serving capabilities of a node in order to auto-regulate the network load \cite{cavagna}.
 
-A sample of a descriptor containing the most relevant information is shown in
-Table~\ref{Table:descriptor}.
+The state of an entity in the metaverse is determined by an
+\emph{entity descriptor}, from now on referred to simply as
+\emph{descriptor}. An entity's descriptor can contains information
+regarding its position, its physical properties, and whatever is
+needed to display the entity and compute its interaction with the rest
+of the metaverse. For example, a descriptor containing key
+frame\df{one or many?} can be used to synchronized animations, videos,
+etc. Moreover, filtering descriptors defining areas (concentric
+spheres, hierarchical partitioning, cells) associated with a level of
+detail or a set of visible objects may be used to achieve efficient
+on-demand streaming while satisfying view-dependency
+criteria. Finally, descriptors may contain load-balancing information
+regarding, for example, the available resources or serving
+capabilities of a host.~\cite{cavagna}.\df{did some editing please
+  check}
+% auto-regulate the network load
+Table~\ref{Table:descriptor} shows a sample descriptor containing the
+most relevant information. Although the descriptor is shown as a
+single object, the \sol implementation may split it into several
+descriptors regarding, for example, physical properties,
+location, level of details, in order to reduce communication cost.
 
 
 % Each entity is associated with a unique identifier,
@@ -148,32 +159,31 @@ Table~\ref{Table:descriptor}.
 \centering
 \begin{tabular}{|l|p{6cm}|}
 \hline
-  UID & universal identifier of the object\\
-  owner & identifier of the node owning the object\\
-  Type & site or avatar\\
-  location & location in the 3D world\\
-  orientation & orientation in the 3D world\\
-  shape& shape from a predefined set\\
-  size & size of the object\\
-  pRadius & perceptibility radius: distance from which the object is
-  visible in the absence   of obstacles\\
-  bRadius & box radius: radius of the smallest sphere enclosing the object\\
+  $\mathsf{UID}$ & universal identifier of the entity\\
+  $\mathsf{seqNum}$ & sequence number\\
+\hline
+  $\mathsf{owner}$ & identifier of the node managing the entity\\
+  $\mathsf{type}$ & site or avatar\\
+  $\mathsf{loc}$ & location in the 3D space\\
+  $\mathsf{ori}$ & orientation in the 3D space\\
+  $\mathsf{shape}$& shape from a predefined set\\
+  $\mathsf{box}$ & bounding box of the object\\
+  $R_p$ & perceptibility radius: distance from which the object is
+  visible in the absence of obstacles\\
+  $R_b$ & box radius: radius of the smallest sphere enclosing the object\\
+  $\mathsf{objs}_a$ & list of entities (objects) attached to the current entity\\
   \hline
-  seqNum & sequence number\\
-  \hline
-  $f_1$& first file for 3d model\\
-  $v_1$& version number for first file\\
-  $c_1$& list of hosts that have cached $v_1$ of $f_1$\\
+  $f_1$ & first file of 3d-description \\
+  $v_1$ & version number for first file\\
+  $c_1$ & list of hosts that have cached $v_1$ of $f_1$\\
   ...& ...\\
-  $f_n$& first file for 3d model\\
-  $v_n$& version number for first file\\
-  $c_n$& list of hosts that have cached $v_1$ of $f_1$\\
+  $f_n$& n-th file of 3d-description\\
+  $v_n$& version number for n-th file\\
+  $c_n$& list of hosts that have cached $v_n$ of $f_n$\\
   \hline
   ... & additional fields for progressive levels of details\\
   \hline
-  \label{Table:descriptor}
 \end{tabular}
-
 \caption{Example of a simple object descriptor}
 \label{tab:desc}
 \end{table}
@@ -190,64 +200,38 @@ entity, each host is associated with a unique identifier (UID).
 Because each host may be responsible for several entities at the same
 time, we define a \emph{(Solipsis) node} as the set of resources
 dedicated to the management of a given entity. Each node incapsulates
-information about the corresponding entity's descriptor\jr{add a s, as we can have different kind of descriptor that defined the state of an entity (position, key animation, key frame for a video, ...)} as well as the
-threads of control responsible for managing all the interactions of
-the node with the rest of the \sol metaverse as well as with the
-navigator platform.\df{Anything else to say about the node??}\jr{nothing more !!!}
-
-
-\subsection{Decentralized 3D models sharing}
-\label{sec:decentr-3d-models}
-An important task performed by the threads of control associated with
-\sol nodes is the management of the 3D-descriptions associated with
-entities. This involves both modifying the current entity's
-description, for example by adding a new animation, and, in the case
-of avatar nodes, downloading other entities' descriptions so that they
-can be displayed by the navigator component.
-
-
-3D-descriptions are managed by the nodes responsible for the
-corresponding entities, and may be downloaded by any node that needs
-to display the object or perform collision detection. However, having
-all hosts download a given 3D-description from the node responsible
-for its entity would place an unnecessary load on the corresponding
-host. For this reason we allow hosts to cache previously downloaded
-descriptions and to offer \jr{replace "`and to offer"' by \bf{in order to offer them} ???}to other \sol nodes running on the same or
-remote hosts. 
-
-To achieve this, we store the 3D-descriptions \jr{ finally, why not call that "`State Node description"' or "`State description"' instead of "`3D-description"' ???} managed or downloaded by the nodes residing on a given host, in a common data repository that
-is shared by all the nodes running on the host. Moreover, as described
-in Section~\ref{sec:definitions}, we record in each entity's
-descriptor, a list of the hosts that currently hold a copy of any of
-the files that constitute the object's 3D description.  Whenever a
-node caches a 3D-description, it informs the node responsible for the
-entity, which then updates the corresponding descriptor to include a
-reference to the new copy. Similarly, when a node detects that a host
-listed in the descriptor does not have the current copy of an entity's
-description, it sends a message to the corresponding node, which
-updates the descriptor accordingly.\jr{I think that a figure could simply the understanding}
-
+information about the corresponding entity's descriptors as well as
+the threads of control responsible for managing all the interactions
+of the node with the rest of the \sol metaverse as well as with the
+navigator platform.
 
 \subsection{P2P Architecture}
 \label{sec:p2p-architecture}
-Recent years have seen the emergence of a large number of \ptp overlay
-networks that provide effective support for storing, retrieving, and
-communicating data in a fully decentralized fashion. The structure of
-an overlay is essentially a graph in which nodes are connected by
-virtual logical links, each of which may consist of several physical
-links in the underlying IP network. These logical links may be laid
-out according to some proximity metric so as to enable e\jr{remove the e ???} storage and
-retrieval of information. 
+A fundamental aspect of \solipsis is its completely decentralized
+architecture designed to accommodate large numbers of entities,
+accessed by large numbers of users distributed over the Internet.  The
+core of this decentralized architecture is a \ptp overlay network,
+which is essentially a graph where nodes are connected by virtual
+logical links, each of which may consist of several physical links in
+the underlying IP network. These logical links may be laid out
+according to some proximity metric so as to enable efficient storage
+and retrieval of information.
 
-In the context of \sol, we leverage the potentialities of \ptp
-overlays by building our metaverse on top of
-RayNet~\cite{beaumont}. Raynet is a multi-dimensional overlay network
-based on the context of Voronoi tessellation. As shown in figure \ref{Fig:Overview}, each node in the overlay is associated with a position in a multi-dimensional space. Neighborhood
+
+
+Recent years have seen the emergence of a large number of \ptp overlay
+networks, each characterized by its structure~\cite{}, lack of a
+structure, or search capabilities~\cite{}.  In the context of \sol, we
+leverage the potentialities of \ptp overlays by building our metaverse
+on top of RayNet~\cite{beaumont}. Raynet is a multi-dimensional
+overlay network based on the context of Voronoi tessellation. As shown
+in figure \ref{Fig:Overview}, each node in the overlay is associated
+with a position in a multi-dimensional space. Neighborhood
 relationships between peers are then determined by the distance
-between the corresponding points in such a space. Specifically, two
-Raynet nodes are neighbors in the overlay if the two corresponding
-points are neighbors in the Delaunay graph comprising all the points
-associated with Raynet nodes.
+between the corresponding points this space. Specifically, two Raynet
+nodes are neighbors in the overlay if the two corresponding points are
+neighbors in the Delaunay graph comprising all the points associated
+with Raynet nodes.
 
 \begin{figure}
 \center
@@ -272,102 +256,200 @@ Within the context of \sol, we use the Raynet structure to organize
 site nodes into a 3-dimensional overlay in which the positions of
 nodes mimic those of the corresponding sites in the
 metaverse.\footnote{Extensions of the metaverse architecture to higher
-  dimensions are naturally supported by the Raynet overlay.}\df{Check
-  if previous footnote makes sense.}\jr{I've introduce in related works the interest to have a N-dimensional overlay based for example on semantics or social proximity} This allows our architecture to
-exploit very simple protocols to manage the interaction between
-avatars, objects and the sites they are currently located in. 
+  dimensions are naturally supported by the Raynet overlay.} This
+allows our architecture to exploit very simple protocols to manage the
+interaction between avatars, objects and the sites they are currently
+located in as we describe in the following. 
 
 \subsection{Decentralized physics computation}
 \label{sec:decentr-phys-comp}
-The \ptp architecture of \sol is designed to scale to metaverses
-containing very large numbers of entities, possibly within the same
-site or within an otherwise small region of space. To make this
-possible, we designed a protocol that allows nodes to \jr{\bf{self-compute processes concerning them such as collision detection, physics animation, etc.}} compute
-collision detection and physics for a very small portion of the
-metaverse. Specifically, each avatar node is responsible for \jr{\bf{detecting its collision with 3D models of the scene and for computing its position in the space according to physical criteria like its physics characteristics and forces applied by entities close to it.}}computing
-its position of its avatar in the multiverse, based on its physical
-properties and those of the entities around it.
+The choice of a \ptp overlay such as Raynet is motivated by our goal
+to scale to metaverses containing very large numbers of entities,
+possibly within the same site or within an otherwise small region of
+space. Organizing sites nodes into such an overlay, however, is only
+half of the picture. \sol also incorporates a fully decentralized
+protocol that distributes the cost associated with heavy computations
+such as those regarding collision detection, physics, or animation. 
 
-We achieve this by means of a communication protocol that allows nodes
-to exchange information about entities' positions with three levels of
-updates. Critical information that is required for the computation of
-physics is exchanged directly in a peer-to-peer fashion between the
-avatars that may potentially collide with each other. Less critical
-information that is nonetheless necessary to provide the navigator
-with a clear picture \jr{\bf{snapshot} is used in this case} of the current scene \jr{add \bf{state} as the term "`game state"' is used for online game synchronisation}is instead propagated indirectly, in a multi-hop fashion \jr{should we use the term "`heartbeat"' in this case ???}. Finally, information about distant objects or objects that have just joined the metaverse is propagated by site nodes to the avatars within their cells with a significantly
-lower frequency.
 
-An avatar joining \sol first contacts the site node responsible for
-its latest - or its joining - location. This may be done by using the
-Raynet to route a message to the avatar's position. The site node
-responds by informing the avatar about the entities that are visible
-from its current position. From this point on, the site and avatar
-node communicate periodically to implement the low frequency updates
-described above. The same is also done between site and object nodes,
-and effectively implements the low-frequency updates described above.
+Each avatar node is responsible for computing its own position based
+on physical criteria like its mass, momentum, and forces applied
+by the entities in its surroundings. Our decentralized approach allows
+it to achieve this result by taking into account only a small set of
+3D models: those associated with the current site and with the
+entities that are in the avatar's immediate surroundings. 
+For example, in the case of collisions, each avatar may immediately
+rule out the entities that are at a distance that is greater than the
+radii, $R_b$, of the spheres enclosing its and their own bounding boxes
+plus a configurable safety distance.
 
+% the one
+% associated with the current site and those of
+
+% \jr{\bf{detecting its collision with 3D models of the scene and for
+%     computing its position in the space }}computing its position of its avatar in the
+% multiverse, based on its physical properties and those of the entities
+% around it.
+
+The basis for this decentralized computation of physics is a
+communication protocol that allows nodes to exchange information about
+entities' positions with three levels of heartbeat messages. Critical
+information that is required for the computation of collision
+detection is exchanged directly in a peer-to-peer fashion between the
+avatars that may potentially collide with each other, based on the
+size of their bounding boxes. Less critical information that is
+nonetheless necessary to provide the navigator with a clear snapshot
+of the current scene state is instead propagated indirectly, in a
+multi-hop fashion. Finally, information about distant objects or
+objects that have just joined the metaverse is propagated by site
+nodes to the avatars within their cells at a significantly lower
+frequency.
+
+An avatar joining \sol, first contacts the site node responsible for
+its latest - or its joining - location. This is easily achieved by
+using the Raynet to route a message containing its descriptor to the
+avatar's position. The Raynet automatically routes this message to the
+site node that is closes to his position. This node then reacts by
+sending to the avatar the descriptors of the entities that are
+potentially visible from its location. From this point on, the site
+and avatar node exchange these messages periodically to implement the
+low frequency updates described above. The same is also done between
+site and object nodes, and effectively implements the low-frequency
+updates described above.
 
 In addition, avatar and object nodes interact with the avatar and
-object nodes around them in order to exchange critical up-to-date
+object nodes around them in order to exchange the critical up-to-date
 information about the entities that may collide with them.  Also,
 while sending an update to a nearby node, avatar and object nodes also
 include information received from other nearby nodes that are not
 within collision distance of the destination node; thus implementing
-the second level of \ptp updates. Finally, we observe that an avatar
-or object node may compute the set of entities within collision
-distance by comparing the their distance with the size of its and the
-neighboring entities' bounding boxes the avatar or object and the size
-of the relative bounding boxes as specified in the corresponding
-descriptors.
+the second level of \ptp updates. % Finally, we observe that an avatar
+% or object node may compute the set of entities within collision
+% distance by comparing the their distance with the size of its and the
+% neighboring entities' bounding boxes the avatar or object and the size
+% of the relative bounding boxes as specified in the corresponding
+% descriptors.
 
 
-\subsection{Managing inanimate objects }
+
+ 
+\subsection{Dynamic Object Management }
 \label{sec:manag-inan-objects}
-\jr{Object charge or responsability managing, or something like that}
 While avatars are the main actors in the \sol environment, objects
 also play an important part as they can interact with avatars, be
 picked up, be moved from one location to another, or even move freely
-through space subject to gravity or other forces \jr{or according to a script of animation}. This requires our protocol to determine the current position of objects in addition to
-that of avatars. This is achieved through a combination of three
-mechanisms that depend on the state the object is currently in. 
+through space subject to gravity or other forces, or according to a
+script of animation. This requires our protocol to determine the
+current position of objects in addition to that of avatars. This is
+achieved through a combination of three mechanisms that depend on the
+state the object is currently in.
 
 Let us consider an object that is currently stationary within a site
 $S$'s cell. The position of the object is maintained by $S$'s site
-node, which maintains the main copy of the object's descriptor. As
-soon as an avatar tries to interact with the object, by moving it or
-picking it up, its avatar node sends a request to the site node to
-take over responsibility for the object. The site node grants such
-responsibility to the first avatar requesting it, according to the
-order in which requests reach the site node. 
+node, which also maintains the main copy of the object's
+descriptor. As soon as an avatar tries to interact with the object, by
+moving it or picking it up, its avatar node sends a request to the
+site node to take over responsibility for the object. The site node
+grants such responsibility to the first avatar requesting it,
+according to the order in which requests reach the site node.
 
 When permission to take over the object is granted, the object is
 dynamically detached from the site and attached to the avatar. The
 corresponding descriptors are updated, and the avatar nodes starts
-computing physics and updating the descriptor for the object. Note
+computing physics and maintaining the descriptor for the object. Note
 that physics computation need not be performed by site nodes, in that
 an object can only be attached to a site when it is in static
-equilibrium.\jr{I agree} 
+equilibrium.
 
 After interacting with the object, the avatar may pass the object on
 to another avatar, or leave it in the current or in a different
-site. In the first case, \jr{\bf{the recipient of the object takes charge of its management, and will have for example to compute its animation. If a host wants to entrust the charge of a object to a site node, animation and any kind of heavy processes have to be stopped. Only, before removing a object node from a host, it has to be left in a stationary state according to its physical characteristics, avoiding to visualize hanging objects dropped anywhere in the 3D space. In all cases, a host can decide to conserve the management of an object, even if the associated avatar is distant. Thanks to that, a host can manage a robotic-like entities that are controlled by user-defined software components, allowing for example to stream a video.}} In the latter, on the other hand, the object
+site. In the former case, the recipient of the object takes over its
+management, ans starts computing its physics, and animation, and
+updating its descriptor.  In the latter, on the other hand, the object
 may be left in a stationary or in a dynamic state. If the object is
 stationary, then the site may take control of its descriptor and
-manage it without computing any physics. If it is moving, or subject
-to forces that are not in equilibrium, then a new object node with a
-corresponding thread is instantiated on the host associated with the
-avatar to which the object was attached. This new object node takes
-responsibility for managing the object's movements and updating its
-descriptor until it is picked up by a new avatar or until it reaches
-an equilibrium state at some site.
+manage it without computing any physics. If, on the other hand, the
+object is moving, or subject to forces that are not in equilibrium,
+then a new object node with a corresponding thread is instantiated on
+the host associated with the avatar to which the object was
+attached. This new object node takes responsibility for managing the
+object's movements and updating its descriptor until it is picked up
+by a new avatar or until it reaches an equilibrium state at some site.
+It should be noted that a host may keep managing an object, even if
+the associated avatar is at a distant location. This allows hosts to
+manage robotic-like entities that are controlled by user-defined
+software components, for example by associating streaming video to
+objects.
 
-% say how avatar and object nodes can contact the site node
+\jr{ and will have for example to compute its
+animation. If a host wants to entrust the charge of a object to a site
+node, animation and any kind of heavy processes have to be
+stopped. Only, before removing a object node from a host, it has to be
+left in a stationary state according to its physical characteristics,
+avoiding to visualize hanging objects dropped anywhere in the 3D
+space.}
 
-% add note about R_b in the physics part
+\subsection{Decentralized 3D models sharing}
+\label{sec:decentr-3d-models}
+The architecture we have described so far assumes that nodes are able
+to retrieve the 3D-description of entities in order to compute
+collisions and display them after filtering them based on the
+information in their descriptors. In the following, we describe our
+mechanism for maintaining and retrieving these 3D-descriptions. As
+with the rest of the protocol, our goal is to distribute the cost of
+managing 3D-descriptions among \sol participants. 
 
-% talk about joining the overlay
+%  An important task
+% performed by the threads of control associated with \sol nodes is the
+% management of the 3D-descriptions associated with entities. This
+% involves both modifying the current entity's description, for example
+% by adding a new animation, and, in the case of avatar nodes,
+% downloading other entities' descriptions so that they can be displayed
+% by the navigator component.
 
-% talk about fault tolerance
+
+3D-descriptions are managed by the nodes responsible for the
+corresponding entities, and may be downloaded by any node that needs
+to display the object or perform collision detection. However, having
+all hosts download a given 3D-description from the node responsible
+for its entity would place an unnecessary load on the corresponding
+host. We address this issue, by having \sol nodes cache previously
+downloaded descriptions. This allows them to offer them for download
+to other \sol nodes running on the same or remote hosts.
+
+All the nodes residing on a host, store their own 3D-description as
+well as those of other visible objects in a shared repository that is
+accessible by all the nodes running on the same host. \jr{ finally,
+  why not call that "`State Node description"' or "`State
+  description"' instead of "`3D-description"' ???}\df{State
+  description sounds like the descriptor... this is the model, texture
+  and animation} Moreover, each node records in its entity's
+descriptor a list of the hosts that currently hold a copy of any of
+the files that constitute the associated 3D description.  Whenever a
+node caches a 3D-description, it informs the node responsible for the
+entity, which then updates the corresponding descriptor to include a
+reference to the new copy. Similarly, when a node detects that a host
+listed in the descriptor does not have the current copy of an entity's
+description, it sends a message to the corresponding node, which
+updates the descriptor accordingly.\jr{I think that a figure could
+  simply the understanding}
+
+\subsection{Managing Disconnections}
+The architecture of \sol is designed to tolerate unexpected
+disconnections of hosts throughout its operation. First, site nodes
+always cache the 3D-descriptions, in addition to the descriptors, of
+neighboring site nodes. This allows the RayNet to manage the
+disconnection of a site node by automatically assigning its management
+to any of the neighboring site nodes. The disconnection of an avatar
+or object node, on the other hand, is treated by attaching the object
+or avatar to its current site and by leaving it in a stationary state
+until the corresponding user reconnects.
+
+
+
+
+
+
 
 
 
