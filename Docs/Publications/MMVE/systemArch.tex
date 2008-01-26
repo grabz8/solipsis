@@ -301,6 +301,53 @@ lower frequency.
 
 \subsection{Managing inanimate objects}
 \label{sec:manag-inan-objects}
+While avatars are the main actors in the \sol environment, objects
+also play an important part as they can interact with avatars, be
+picked up, be moved from one location to another, or even move freely
+through space subject to gravity or other forces. This requires our
+protocol to determine the current position of objects in addition to
+that of avatars. This is achieved through a combination of three
+mechanisms that depend on the state the object is currently in. 
+
+Let us consider an object that is currently stationary within a site
+$S$'s cell. The position of the object is maintained by $S$'s site
+node, which maintains the main copy of the object's descriptor. As
+soon as an avatar tries to interact with the object, by moving it or
+picking it up, its avatar node sends a request to the site node to
+take over responsibility for the object. The site node grants such
+responsibility to the first avatar requesting it, according to the
+order in which requests reach the site node. 
+
+When permission to take over the object is granted, the object is
+dynamically detached from the site and attached to the avatar. The
+corresponding descriptors are updated, and the avatar nodes starts
+computing physics and updating the descriptor for the object. Note
+that physics computation need not be performed by site nodes, in that
+an object can only be attached to a site when it is in static
+equilibrium. 
+
+After interacting with the object, the avatar may pass the object on
+to another avatar, or leave it in the current or in a different
+site. In the first case, In the latter, on the other hand, the object
+may be left in a stationary or in a dynamic state. If the object is
+stationary, then the site may take control of its descriptor and
+manage it without computing any physics. If it is moving, or subject
+to forces that are not in equilibrium, then a new object node with a
+corresponding thread is instantiated on the host associated with the
+avatar to which the object was attached. This new object node takes
+responsibility for managing the object's movements and updating its
+descriptor until it is picked up by a new avatar or until it reaches
+an equilibrium state at some site. 
+
+
+
+% say how avatar and object nodes can contact the site node
+
+% add note about R_b in the physics part
+
+% talk about joining the overlay
+
+% talk about fault tolerance
 
 
 
