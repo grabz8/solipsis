@@ -57,17 +57,12 @@ computation and communication cost \jr{You can remove this sentence,
   "`\bf{The state in the universe of an entity is defined thanks to a
     \emph{entity descriptor}}"' } For this reason, each entity is also
 associated with an \emph{entity descriptor}, from now on referred to
-simply as \emph{descriptor}. For each entity, the descriptor contains
+simply as \emph{descriptor}. For each entity, the descriptor can contains
 information regarding its position, its physical properties, and
 whatever is needed to display the entity and compute its interaction
-with the rest of the metaverse. \jr{For example a key of animation,
-  corresponding to a state of the animation, such as an index doing
-  reference to a previously transmitted table of all positions of the
-  body defined by the angles of each joint of the skelet. This could
-  be compressed, how ??? Today it's a good question, we have just to
-  wait that standards integrate them !!!}
+with the rest of the metaverse. For example, a descriptor containing key frame can be used to synchronized animations, videos, etc. Moreover, filtering descriptors defining areas (concentric spheres, hierarchical partitionning, cells) associated with a level of detail or a set of visible objects could be used to achieve a efficient on-demand streaming respecting view-dependency criteria. Or finally, descriptors can contain information concerning the ressources or the serving capabilities of a node in order to auto-regulate the network load \cite{cavagna}.
 
-A sample descriptor containing the most relevant is shown it
+A sample of a descriptor containing the most relevant information is shown in
 Table~\ref{Table:descriptor}.
 
 
@@ -247,13 +242,19 @@ retrieval of information.
 In the context of \sol, we leverage the potentialities of \ptp
 overlays by building our metaverse on top of
 RayNet~\cite{raynet}. Raynet is a multi-dimensional overlay network
-based on the context of Voronoi tessellation. Each node in the overlay
-is associated with a point in a multi-dimensional space. Neighborhood
+based on the context of Voronoi tessellation. As shown in figure \ref{Fig:Overview}, each node in the overlay is associated with a position in a multi-dimensional space. Neighborhood
 relationships between peers are then determined by the distance
-between the corresponding points in such a space.  Specifically, two
+between the corresponding points in such a space. Specifically, two
 Raynet nodes are neighbors in the overlay if the two corresponding
 points are neighbors in the Delaunay graph comprising all the points
 associated with Raynet nodes.
+
+\begin{figure}
+\center
+\includegraphics[width=3in]{Figures/Overview.pdf}
+\caption{The p2p architecture showing the mapping of the raynet layer on the virtual world layer according to the proximity of nodes in the virtual space. As shows the host layer, clients, are connected thanks to a peer to peer network.}
+\label{Fig:Overview}
+\end{figure}
 
 Given a set of points generator $\{p \in \Re^d\}$, the Delaunay graph
 is obtained as the adjacency graph of the corresponding Voronoi
