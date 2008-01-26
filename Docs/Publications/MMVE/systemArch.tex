@@ -241,7 +241,7 @@ retrieval of information.
 
 In the context of \sol, we leverage the potentialities of \ptp
 overlays by building our metaverse on top of
-RayNet~\cite{raynet}. Raynet is a multi-dimensional overlay network
+RayNet~\cite{beaumont}. Raynet is a multi-dimensional overlay network
 based on the context of Voronoi tessellation. As shown in figure \ref{Fig:Overview}, each node in the overlay is associated with a position in a multi-dimensional space. Neighborhood
 relationships between peers are then determined by the distance
 between the corresponding points in such a space. Specifically, two
@@ -252,7 +252,7 @@ associated with Raynet nodes.
 \begin{figure}
 \center
 \includegraphics[width=3in]{Figures/Overview.pdf}
-\caption{The p2p architecture showing the mapping of the raynet layer on the virtual world layer according to the proximity of nodes in the virtual space. As shows the host layer, clients, are connected thanks to a peer to peer network.}
+\caption{The p2p architecture showing the mapping of the raynet layer on the virtual world layer according to the proximity of nodes in the virtual space. The host layer shows clients connected into a peer to peer scheme.}
 \label{Fig:Overview}
 \end{figure}
 
@@ -282,9 +282,9 @@ avatars, objects and the sites they are currently located in.
 The \ptp architecture of \sol is designed to scale to metaverses
 containing very large numbers of entities, possibly within the same
 site or within an otherwise small region of space. To make this
-possible, we designed a protocol that allows nodes to compute
+possible, we designed a protocol that allows nodes to \jr{\bf{self-compute processes concerning them such as collision detection, physics animation, etc.}} compute
 collision detection and physics for a very small portion of the
-metaverse. Specifically, each avatar node is responsible for computing
+metaverse. Specifically, each avatar node is responsible for \jr{\bf{detecting its collision with 3D models of the scene and for computing its position in the space according to physical criteria like its physics characteristics and forces applied by entities close to it.}}computing
 its position of its avatar in the multiverse, based on its physical
 properties and those of the entities around it.
 
@@ -294,10 +294,7 @@ updates. Critical information that is required for the computation of
 physics is exchanged directly in a peer-to-peer fashion between the
 avatars that may potentially collide with each other. Less critical
 information that is nonetheless necessary to provide the navigator
-with a clear picture of the current scene is instead propagated
-indirectly, in a multi-hop fashion. Finally, information about distant
-objects or objects that have just joined the metaverse is propagated
-by site nodes to the avatars within their cells with a significantly
+with a clear picture \jr{\bf{snapshot} is used in this case} of the current scene \jr{add \bf{state} as the term "`game state"' is used for online game synchronisation}is instead propagated indirectly, in a multi-hop fashion \jr{should we use the term "`heartbeat"' in this case ???}. Finally, information about distant objects or objects that have just joined the metaverse is propagated by site nodes to the avatars within their cells with a significantly
 lower frequency.
 
 An avatar joining \sol first contacts the site node responsible for
@@ -362,7 +359,8 @@ corresponding thread is instantiated on the host associated with the
 avatar to which the object was attached. This new object node takes
 responsibility for managing the object's movements and updating its
 descriptor until it is picked up by a new avatar or until it reaches
-an equilibrium state at some site. 
+an equilibrium state at some site. \jr{A object can be in  stationary state and management can be keep by the same host, for example if we want to put a pause during the animation, or if a process other than physics computation have to be executed, such as video streaming, connection to a personnal server or any kind of data based like a photo album, or web2.0 "`connection"', etc}.
+  
 
 
 
