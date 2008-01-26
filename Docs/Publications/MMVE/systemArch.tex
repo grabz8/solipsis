@@ -33,10 +33,10 @@ portions of the virtual space that may be occupied by objects or in
 which avatars can roam.
 
 Avatars, objects, and sites are all associated with 3D-descriptions,
-each consisting of a mesh or prims-based model\df{check}, a set of
-textures, and, in the case of avatars or objects, also of an
-animation.  Such 3D-descriptions constitute the basis for the rendering of
-entities in the navigator platform. 
+each consisting of a mesh- or prims-based model, a set of textures,
+and, in the case of avatars or objects, also of an animation.  Such
+3D-descriptions constitute the basis for the rendering of entities in
+the navigator platform.
 
 % \jr{jerome :yes for objects, we can associated an animation, that will
 %   be compute by a host if he want to manage it. Also, the object can
@@ -59,18 +59,21 @@ The state of an entity in the metaverse is determined by an
 \emph{descriptor}. An entity's descriptor can contains information
 regarding its position, its physical properties, and whatever is
 needed to display the entity and compute its interaction with the rest
-of the metaverse. For example, a descriptor containing key
-frame\df{one or many?} can be used to synchronized animations, videos,
-etc. Moreover, filtering descriptors defining areas (concentric
-spheres, hierarchical partitioning, cells) associated with a level of
-detail or a set of visible objects may be used to achieve efficient
-on-demand streaming while satisfying view-dependency
-criteria. Finally, descriptors may contain load-balancing information
-regarding, for example, the available resources or serving
-capabilities of a host~\cite{cavagna}. Table~\ref{tab:desc} shows a sample descriptor containing the most relevant information. Although the descriptor is shown as a
+of the metaverse. For example, a descriptor containing a key frame can
+be used to synchronize animations, videos, and so on. Moreover,
+filtering descriptors defining areas (concentric spheres, hierarchical
+partitioning, cells) associated with a level of detail or a set of
+visible objects may be used to achieve efficient on-demand streaming
+while satisfying view-dependency criteria. Finally, descriptors may
+contain load-balancing information regarding, for example, the
+available resources or serving capabilities of a
+host~\cite{cavagna}.
+% auto-regulate the network load
+Table~\ref{tab:desc} shows a sample descriptor containing the
+most relevant information. Although the descriptor is shown as a
 single object, the \sol implementation may split it into several
 descriptors regarding, for example, physical properties,
-location, level of details, in order to reduce communication cost.
+location, or level of details in order to reduce communication cost.
 
 
 % Each entity is associated with a unique identifier,
@@ -180,7 +183,7 @@ location, level of details, in order to reduce communication cost.
   ... & additional fields for progressive levels of details\\
   \hline
 \end{tabular}
-\caption{Example of a simple object descriptor}
+\caption{Example of a simple descriptor}
 \label{tab:desc}
 \end{table}
 
@@ -216,18 +219,17 @@ and retrieval of information.
 
 
 Recent years have seen the emergence of a large number of \ptp overlay
-networks, each characterized by its structure~\cite{}, lack of a
-structure, or search capabilities~\cite{}.  In the context of \sol, we
-leverage the potentialities of \ptp overlays by building our metaverse
-on top of RayNet~\cite{beaumont}. Raynet is a multi-dimensional
-overlay network based on the context of Voronoi tessellation. As shown
-in figure \ref{Fig:Overview}, each node in the overlay is associated
-with a position in a multi-dimensional space. Neighborhood
-relationships between peers are then determined by the distance
-between the corresponding points into this space. Specifically, two Raynet
-nodes are neighbors in the overlay if the two corresponding points are
-neighbors in the Delaunay graph comprising all the points associated
-with Raynet nodes.
+networks, with different structures and capabilities.  In the context
+of \sol, we leverage the potentialities of \ptp overlays by building
+our metaverse on top of RayNet~\cite{beaumont}. Raynet is a
+multi-dimensional overlay network based on the concept of Voronoi
+tessellation. As shown in Figure~\ref{Fig:Overview}, each node in the
+overlay is associated with a position in a multi-dimensional
+space. Neighborhood relationships between peers are then determined by
+the distance between the corresponding points this
+space. Specifically, two Raynet nodes are neighbors in the overlay if
+the two corresponding points are neighbors in the Delaunay graph
+comprising all the points associated with Raynet nodes.
 
 \begin{figure}
 \center
@@ -236,7 +238,7 @@ with Raynet nodes.
 \label{Fig:Overview}
 \end{figure}
 
-Given a set of points generator $\{p \in \Re^d\}$, the Delaunay graph
+Given a set of generator points$\{p \in \Re^d\}$, the Delaunay graph
 is obtained as the adjacency graph of the corresponding Voronoi
 diagram, which in turn is a tessellation of the d-dimensional space
 $\Re^d$. Specifically, the cell in the tessellation associated with a
@@ -244,9 +246,9 @@ point $p_x$ is such that it contains all the points that are closer to
 $p_x$ than to any other generator point in the set. This property
 enables Raynet to route to any node in the overlay by means of a
 simple greedy approach. Moreover, the addition of
-Kleinberg-like~\cite{} long-range links allows this routing process to
-converge to its destination node in a polylogarithmic number of hops
-on average. 
+Kleinberg-like~\cite{ jk:smallworld} long-range links allows this
+routing process to converge to its destination node in a
+polylogarithmic number of hops on average.
 
 Within the context of \sol, we use the Raynet structure to organize
 site nodes into a 3-dimensional overlay in which the positions of
@@ -261,11 +263,12 @@ located in as we describe in the following.
 \label{sec:decentr-phys-comp}
 The choice of a \ptp overlay such as Raynet is motivated by our goal
 to scale to metaverses containing very large numbers of entities,
-possibly within the same site or within an otherwise small region of
-space. Organizing sites nodes into such an overlay, however, is only
-half of the picture. \sol also incorporates a fully decentralized
-protocol that distributes the cost associated with heavy computations
-such as those regarding collision detection, physics, or animation. 
+possibly gathered within the same site or within an otherwise
+small region of space. Organizing sites nodes into such an overlay,
+however, is only half of the picture. \sol also incorporates a fully
+decentralized protocol that distributes the cost associated with heavy
+computations such as those regarding collision detection, physics, or
+animation.
 
 
 Each avatar node is responsible for computing its own position based
@@ -305,7 +308,7 @@ An avatar joining \sol, first contacts the site node responsible for
 its latest - or its joining - location. This is easily achieved by
 using the Raynet to route a message containing its descriptor to the
 avatar's position. The Raynet automatically routes this message to the
-site node that is closes to his position. This node then reacts by
+site node that is closest to this position. This node then reacts by
 sending to the avatar the descriptors of the entities that are
 potentially visible from its location. From this point on, the site
 and avatar node exchange these messages periodically to implement the
@@ -385,15 +388,15 @@ left in a stationary state according to its physical characteristics,
 avoiding to visualize hanging objects dropped anywhere in the 3D
 space.}
 
-\subsection{Decentralized 3D models sharing}
+\subsection{Decentralized 3D-Model Sharing}
 \label{sec:decentr-3d-models}
 The architecture we have described so far assumes that nodes are able
 to retrieve the 3D-description of entities in order to compute
-collisions and display them after filtering them based on the
+collisions and display the entities after filtering them based on the
 information in their descriptors. In the following, we describe our
 mechanism for maintaining and retrieving these 3D-descriptions. As
 with the rest of the protocol, our goal is to distribute the cost of
-managing 3D-descriptions among \sol participants. 
+managing 3D-descriptions among \sol participants.
 
 %  An important task
 % performed by the threads of control associated with \sol nodes is the
@@ -413,9 +416,9 @@ host. We address this issue, by having \sol nodes cache previously
 downloaded descriptions. This allows them to offer them for download
 to other \sol nodes running on the same or remote hosts.
 
-All the nodes residing on a host, store their own 3D-description as
+All the nodes residing on a host, store their own 3D-descriptions as
 well as those of other visible objects in a shared repository
-(depicted in Figure~\ref{Fig:host} that is accessible by all the nodes
+(depicted in Figure~\ref{Fig:host}) that is accessible by all the nodes
 running on the same host. \jr{ finally, why not call that "`State Node
   description"' or "`State description"' instead of "`3D-description"'
   ???}\df{State description sounds like the descriptor... this is the
@@ -424,7 +427,8 @@ entity's descriptor a list of the hosts that currently hold a copy of
 any of the files that constitute the associated 3D description.
 Whenever a node caches a 3D-description, it informs the node
 responsible for the entity, which then updates the corresponding
-descriptor to include a reference to the new copy. Similarly, when a
+descriptor to include a reference to the new copy and then propagates
+it with its subsequent heartbeat messages. Similarly, when a
 node detects that a host listed in the descriptor does not have the
 current copy of an entity's description, it sends a message to the
 corresponding node, which updates the descriptor accordingly.\jr{I

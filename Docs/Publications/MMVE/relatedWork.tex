@@ -1,14 +1,113 @@
-\section{Related Works}
-
-The Web3D consortium have originally the ambition to create a freely navigable online world \cite{pesce}. Unfortunately, due to technical constraints, such as bandwidth limitations, the VRML standard was only use to encode simple 3D contents in order to visualize them on web sites. Only, related research and bandwidth increase make it possible nowadays to draft the architecture of a Web3D, metavers or cyberspace. We demonstrate next why decentralized architecture are obviously necessary to reach a sufficient level of scalability.
+\section{Related Work}
+\label{sec:relwk}
+The Web3D consortium originally had the ambition to create a freely
+navigable online world~\cite{pesce}. Unfortunately, due to technical
+constraints, such as bandwidth limitations, the VRML standard was only
+use to encode simple 3D contents in order to visualize them on web
+sites. Only related research and bandwidth increase have now made it
+possible to draft the architecture of a Web3D, metaverse or
+cyberspace. We demonstrate next why decentralized architecture are
+obviously necessary to reach a sufficient level of scalability.
 \subsection{Compression and adaptive 3D Streaming}
-Many research works have been focused on compression of 3D models, and on adaptive streaming methods that allow a progressive and fast transmission over networks of the required 3D contents visualized from the current viewpoint. \\
-First, existing 3D compression algorithms use both techniques adapted from the 1D and 2D cases (like wavelets, entropy coding, and predictive coding), and completely different approaches that take advantage of the properties of 3D surfaces (like Edgebreaker, Subdivision Surfaces, and triangle strips)\cite{gioia}\cite{isenburg}. Otherwise, parametric solutions, that provide intuitive modeling tools, are widely used to create avatars, complex creatures, or vehicles in games. More complex 3D contents can be create thanks to procedural modeling solutions that have the drawback to require a reconstruction process executed on the fly on the client side. Parametric and procedural modeling provide very good compression rate compared to usual mesh compression algorithms, but no generic solutions exist to model a great variety of objects.\\ 
-The second solution consists in filtering the 3D contents required to visualize the scene from a given viewpoint. Indeed, a complete download of a huge 3D scene is not necessary to render with optimal details the virtual environment from a given viewpoint. First, the area of a 3D model projected on the screen depends on its size, but especially on its distance from the viewpoint. In this way, many solution have been proposed to adapt the resolution of a 3D models to the current viewpoint \cite{Funkhouser}. Continuous levels of detail allow to transmit refinements progressively as the viewpoint come closer to 3D objects \cite{Hoppe}\cite{Luebke}. Secondly, into huge and complex 3D scenes, most of 3D objects are occulted by other ones during the navigation. Thanks to a offline computation of 3D objects visible from regions resulting from a partitioning of the navigation area, server can signifanctly reduce the amount of data that have to be sent to the client, without affecting the visual quality \cite{teller}\cite{wonka}. Unfortunately, visibility filtering methods have to be prohibit during flying over navigation, since occultations are clearly limited. In fact, these filtering methods provide multi-resolution functionalities allowing an adaptive 3D streaming of the virtual environments.\\
+A lot of research work has focused on the compression of 3D models, as
+well as on adaptive streaming methods that allow a progressive and
+fast transmission over networks of the required 3D contents visualized
+from the current viewpoint.
+
+First, existing 3D compression algorithms use both techniques adapted
+from the 1D and 2D cases (like wavelets, entropy coding, and
+predictive coding), and completely different approaches that take
+advantage of the properties of 3D surfaces (like Edgebreaker,
+Subdivision Surfaces, and triangle
+strips)\cite{gioia}\cite{isenburg}. Also, parametric solutions, that
+provide intuitive modeling tools, are widely used to create avatars,
+complex creatures, or vehicles in games. More complex 3D contents can
+be created using procedural modeling solutions that have the
+drawback of requiring a reconstruction process executed on the fly on
+the client side. Parametric and procedural modeling provide very good
+compression rate compared to usual mesh compression algorithms, but no
+generic solutions exist to model a great variety of objects.
+
+The second solution consists in filtering the 3D contents required to
+visualize the scene from a given viewpoint. Indeed, a complete
+download of a huge 3D scene is not necessary to render with optimal
+details the virtual environment from a given viewpoint. First, the
+area of a 3D model projected on the screen depends not only on its
+size, but especially on its distance from the viewpoint. Many solution
+have therefore been proposed to adapt the resolution of 3D models to
+the current viewpoint~\cite{Funkhouser}. Continuous levels of detail
+allow to transmit refinements progressively as the viewpoint comes
+closer to 3D objects~\cite{Hoppe,Luebke}. Second, most of 3D objects
+in huge and complex 3D scenes are occulted by other ones during the
+navigation. Thanks to an offline computation of 3D objects visible
+from regions resulting from a partitioning of the navigation area,
+servers can signifanctly reduce the amount of data that has to be sent
+to the client, without affecting the visual
+quality~\cite{teller,wonka}. Unfortunately, visibility filtering
+methods have to be disabled during flying-over navigation, since
+occultations are clearly limited. In fact, these filtering methods
+provide multi-resolution functionalities allowing an adaptive 3D
+streaming of the virtual environments.
+
 \subsection{Centralized architectures}
-Several architectures take advantage of filtering methods presented previously \cite{npsnet}\cite{massive}\cite{ring}\cite{dive}. Commercial platforms such as Google Earth and Second Life have recentky known a tremendous craze from the public. The first one allows navigation into and over a well-detailed model of the earth, with terrain and buildings. Google earth takes advantage of an adaptive streaming of terrain textures \cite{tanner}, associated with a multi-resolution wavelet based representation for terrain, and static levels of detail for buildings. The second one provides an advanced level of a social network service combined with general aspects of a metavers. The Second Life client integrates modeling tools allowing the creation of the virtual environments by the users. More than fifty online virtual worlds appeared these last years, and are usually based on centralized architectures.\\
-Generally, huge environments are partitioned according to a grid in regions that are managed by dedicated servers, called region servers. Unfortunately, in order to synchronize the game states of the world for all connected clients, most of process such as collision detection, physics computation, animation, are executed on the server side. Moreover, the region server is the only source that can provide to clients the 3D models of the scene required for visualization. Thus, the number of clients, which can navigate into a region managed by only one server, is clearly limited.
+Several architectures take advantage of filtering methods presented
+previously~\cite{npsnet,massive,ring,dive}. Commercial platforms such
+as Google Earth~\cite{googleearth} and Second Life~\cite{secondlife}
+have recentky known a tremendous craze from the public. The first
+allows navigation into and over a well-detailed model of the earth,
+with terrain and buildings. In doing this, it takes advantage of an
+adaptive streaming of terrain textures \cite{tanner}, associated with
+a multi-resolution wavelet-based representation for terrain, and
+static levels of detail for buildings. The second provides an advanced
+social-network service combined with general aspects of a
+metaverse. The Second Life client integrates modeling tools that allow
+users to create new components of the virtual environment.
+
+In addition to the above, more than fifty online virtual worlds have
+appeared over the last few years, and are usually based on centralized
+architectures. Huge environments are generally partitioned, according
+to a grid, in regions that are managed by dedicated servers, called
+region servers. Unfortunately, in order to synchronize the game states
+of the world for all connected clients, most processes such as
+collision detection, physics computation, and animation, are executed
+on the server side. Moreover, the region server is the only source
+that can provide clients with the 3D models of the scene  for its
+visualization. Thus, the number of clients that can navigate into a
+region managed by only one server is clearly limited.
 
 \subsection{Peer to Peer Architectures for Virtual Worlds}
-A centralized architecture cannot lead to a truly self-scalable solution, even with the use of multiple servers. Indeed, client-server architectures lead to prohibitive deployment and maintenance costs when it comes to very large scale applications with thousands of connected clients. On the other hand, thanks to their \emph{Self-Adaptation} features, P2P network overlays have clearly proved that they are equivalent to powerful servers. Based on the fact that if peers have nearly the same viewpoint, they are likely to need the same data, geometric proximity is obviously the main criterion for setting up peers connectivity within virtual environments. Finding and maintaining the appropriate peers connectivity is a very difficult problem in a dynamic environment where peers viewpoint are allowed to move freely and peers can disconnect or appear at any time (this dynamic is called churn in peer-to-peer terminology). Solipsis \cite{keller}\cite{keller2003} and VON \cite{hu} are the first P2P layer providing a solution for 2D environments. In these P2P architectures, peers are connected to each other according to their current 2D position. Dedicated algorithms are used to achieve the global stability of the P2P network while fulfilling a global connectivity constraint (i.e. there must exist at least one path between each pair of peers). Maintain in real-time peers connectivity in a N-dimensionnal space is much more complex, but thanks to this solution, proximity criterion could be extended to semantic or social proximity. Douglas et al. have proposed a region based approach using a distributed spatial data index in a multidimensional space to find nearby objects with which direct connections can be formed \cite{douglas}. Finally, Cavagna et al. show that server-less P2P networks can efficiently deal with very large environments by first using well-suited descriptors to specify areas on interest for continuous levels of detail (for on-demand streaming), and by secondly exchanging between peers their own serving capabilities (for a self-regulation of peer upload bandwidth) \cite{cavagna}.    
+A centralized architecture cannot lead to a truly self-scalable
+solution, even with the use of multiple servers. Indeed, client-server
+architectures lead to prohibitive deployment and maintenance costs
+when it comes to very large scale applications with thousands of
+connected clients. On the other hand, thanks to their
+\emph{self-adaptation} features, P2P network overlays have clearly
+proved to be an effective alternative to powerful servers. 
+
+Based on the fact that if peers have nearly the same viewpoint, they
+are likely to need the same data, geometric proximity is obviously the
+main criterion for setting up peer connectivity within virtual
+environments. However, finding and maintaining the appropriate peer
+connectivity is a very difficult problem in a dynamic environment and
+in the presence of churn, that is where peer viewpoints are allowed to
+move freely and when peers can disconnect or appear at any
+time. Solipsis~\cite{keller,keller2003} and VON~\cite{hu} are
+the first P2P layers providing a solution for 2D environments. In these
+P2P architectures, peers are connected to each other according to
+their current 2D position. Dedicated algorithms are used to achieve
+the global stability of the P2P network while fulfilling a global
+connectivity constraint (i.e. there must exist at least one path
+between each pair of peers). 
+
+Maintaining real-time peer connectivity in a n-dimensionnal space is
+much more complex. For this reason, Douglas et al.~\cite{douglas}
+have proposed a region-based approach using a distributed spatial data
+index in a multidimensional space to find nearby objects with which
+direct connections can be established. Finally, Cavagna et
+al.~\cite{cavagna} show that server-less P2P networks can efficiently
+deal with very large environments, first by using well-suited
+descriptors to specify areas of interest for continuous levels of
+detail (for on-demand streaming), and second by having peers exchange
+information about their own serving capabilities (for 
+self-regulating peer-upload bandwidth).
  
