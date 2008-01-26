@@ -1,3 +1,4 @@
+
 \section{Decentralized Virtual Worlds Management}
 \label{sec:decentr-virt-worlds}
 One of the key aspects of \sol  is the ability to distribute the cost
@@ -30,9 +31,15 @@ blocks of the metaverse and represents portions of the virtual space
 that may be occupied by objects or in which avatars can roam. 
 
 Avatars, objects, and sites are all associated with 3D-descriptions,
-each consisting of a mesh or prims based model, a set of textures, and, in the
-case of avatars or objects, also of an animation. \df{Are there animations for
-  objects and sites????} \jr{jerome :yes for objects, we can associated an animation, that will be compute by a host if he want to manage it. Also, the object can be take by a avatar, in this case the client hosting the avatar have to manage it (if nobody already animate it, and if he decides to animate it. If nobody decide to manage this animation, the site takes the responsability to manage this object node, but doesn't animate it}
+each consisting of a mesh or prims based model, a set of textures,
+and, in the case of avatars or objects, also of an animation. \df{Are
+  there animations for objects and sites????} \jr{jerome :yes for
+  objects, we can associated an animation, that will be compute by a
+  host if he want to manage it. Also, the object can be take by a
+  avatar, in this case the client hosting the avatar have to manage it
+  (if nobody already animate it, and if he decides to animate it. If
+  nobody decide to manage this animation, the site takes the
+  responsability to manage this object node, but doesn't animate it}
 % The 3D description of the object contains all the information
 % necessary for the 3D visualization of an object, plus any sounds,
 % videos, or multimedia content associated with it. From the point of
@@ -44,12 +51,21 @@ Such 3D-descriptions constitute the basis for the rendering of
 entities in the navigator platform. Nonetheless, computing and
 transmitting a new 3D-descriptions every time an object changes its
 position, or an avatar moves would be to expensive both in terms of
-computation and communication cost \jr{You can remove this sentence, as nobody really used it in the related works. World of warcraft and co just transmit the position. You can write something like "`\bf{The state in the universe of an entity is defined thanks to a \emph{entity descriptor}}"' } For this reason, each entity is
-also associated with an \emph{entity descriptor}, from now on referred
-to simply as \emph{descriptor}. For each entity, the descriptor
-contains information regarding its position, its physical properties,
-and whatever is needed to display the entity and compute its
-interaction with the rest of the metaverse. \jr{For example a key of animation, corresponding to a state of the animation, such as an index doing reference to a previously transmitted  table of all positions of the body defined by the angles of each joint of the skelet. This could be compressed, how ??? Today it's a good question, we have just to wait that standards integrate them !!!}
+computation and communication cost \jr{You can remove this sentence,
+  as nobody really used it in the related works. World of warcraft and
+  co just transmit the position. You can write something like
+  "`\bf{The state in the universe of an entity is defined thanks to a
+    \emph{entity descriptor}}"' } For this reason, each entity is also
+associated with an \emph{entity descriptor}, from now on referred to
+simply as \emph{descriptor}. For each entity, the descriptor contains
+information regarding its position, its physical properties, and
+whatever is needed to display the entity and compute its interaction
+with the rest of the metaverse. \jr{For example a key of animation,
+  corresponding to a state of the animation, such as an index doing
+  reference to a previously transmitted table of all positions of the
+  body defined by the angles of each joint of the skelet. This could
+  be compressed, how ??? Today it's a good question, we have just to
+  wait that standards integrate them !!!}
 
 A sample descriptor containing the most relevant is shown it
 Table~\ref{Table:descriptor}.
