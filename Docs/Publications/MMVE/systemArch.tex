@@ -274,10 +274,35 @@ metaverse.\footnote{Extensions of the metaverse architecture to higher
   dimensions are naturally supported by the Raynet overlay.}\df{Check
   if previous footnote makes sense.}\jr{I've introduce in related works the interest to have a N-dimensional overlay based for example on semantics or social proximity} This allows our architecture to
 exploit very simple protocols to manage the interaction between
-avatars, objects and the sites they are currently located.
+avatars, objects and the sites they are currently located in. 
 
 \subsection{Decentralized physics computation}
 \label{sec:decentr-phys-comp}
+The \ptp architecture of \sol is designed to scale to metaverses
+containing very large numbers of entities, possibly within the same
+site or within an otherwise small region of space. To make this
+possible, we designed a protocol that allows nodes to compute
+collision detection and physics for a very small portion of the
+metaverse. Specifically, each avatar node is responsible for computing
+its position of its avatar in the multiverse, based on its physical
+properties and those of the entities around it.
+
+We achieve this by means of a communication protocol that allows nodes
+to exchange information about entities' positions with three levels of
+updates. Critical information that is required for the computation of
+physics is exchanged directly in a peer-to-peer fashion between the
+avatars that may potentially collide with each other. Less critical
+information that is nonetheless necessary to provide the navigator
+with a clear picture of the current scene is instead propagated
+indirectly, in a multi-hop fashion. Finally, information about distant
+objects or objects that have just joined the metaverse is propagated
+by site nodes to the avatars within their cells with a significantly
+lower frequency.
+
+\subsection{Managing inanimate objects}
+\label{sec:manag-inan-objects}
+
+
 
 %%% Local Variables: 
 %%% mode: latex
