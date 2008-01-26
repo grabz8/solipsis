@@ -1,7 +1,7 @@
 
 \section{Decentralized Virtual Worlds Management}
 \label{sec:decentr-virt-worlds}
-One of the key aspects of \sol  is the ability to distribute the cost
+One of the key aspects of \sol is the ability to distribute the cost
 associated with the management of its metaverse. This is made possible
 through the decentralization of heavy processes like collision
 detection, computation of physics, as well as communication among the
@@ -195,10 +195,10 @@ entity, each host is associated with a unique identifier (UID).
 Because each host may be responsible for several entities at the same
 time, we define a \emph{(Solipsis) node} as the set of resources
 dedicated to the management of a given entity. Each node incapsulates
-information about the corresponding entity's descriptor as well as the
+information about the corresponding entity's descriptor\jr{add a s, as we can have different kind of descriptor that defined the state of an entity (position, key animation, key frame for a video, ...)} as well as the
 threads of control responsible for managing all the interactions of
 the node with the rest of the \sol metaverse as well as with the
-navigator platform.\df{Anything else to say about the node??}
+navigator platform.\df{Anything else to say about the node??}\jr{nothing more !!!}
 
 
 \subsection{Decentralized 3D models sharing}
@@ -217,11 +217,10 @@ to display the object or perform collision detection. However, having
 all hosts download a given 3D-description from the node responsible
 for its entity would place an unnecessary load on the corresponding
 host. For this reason we allow hosts to cache previously downloaded
-descriptions and to offer to other  \sol nodes running on the same or
+descriptions and to offer \jr{replace "`and to offer"' by \bf{in order to offer them} ???}to other \sol nodes running on the same or
 remote hosts. 
 
-To achieve this, we store the 3D-descriptions managed or downloaded by
-the nodes residing on a given host, in a common data repository that
+To achieve this, we store the 3D-descriptions \jr{ finally, why not call that "`State Node description"' or "`State description"' instead of "`3D-description"' ???} managed or downloaded by the nodes residing on a given host, in a common data repository that
 is shared by all the nodes running on the host. Moreover, as described
 in Section~\ref{sec:definitions}, we record in each entity's
 descriptor, a list of the hosts that currently hold a copy of any of
@@ -231,7 +230,7 @@ entity, which then updates the corresponding descriptor to include a
 reference to the new copy. Similarly, when a node detects that a host
 listed in the descriptor does not have the current copy of an entity's
 description, it sends a message to the corresponding node, which
-updates the descriptor accordingly.
+updates the descriptor accordingly.\jr{I think that a figure could simply the understanding}
 
 
 \subsection{P2P Architecture}
@@ -242,7 +241,7 @@ communicating data in a fully decentralized fashion. The structure of
 an overlay is essentially a graph in which nodes are connected by
 virtual logical links, each of which may consist of several physical
 links in the underlying IP network. These logical links may be laid
-out according to some proximity metric so as to enable e storage and
+out according to some proximity metric so as to enable e\jr{remove the e ???} storage and
 retrieval of information. 
 
 In the context of \sol, we leverage the potentialities of \ptp
@@ -273,7 +272,7 @@ site nodes into a 3-dimensional overlay in which the positions of
 nodes mimic those of the corresponding sites in the
 metaverse.\footnote{Extensions of the metaverse architecture to higher
   dimensions are naturally supported by the Raynet overlay.}\df{Check
-  if previous footnote makes sense.} This allows our architecture to
+  if previous footnote makes sense.}\jr{I've introduce in related works the interest to have a N-dimensional overlay based for example on semantics or social proximity} This allows our architecture to
 exploit very simple protocols to manage the interaction between
 avatars, objects and the sites they are currently located.
 
