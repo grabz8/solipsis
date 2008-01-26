@@ -1,21 +1,68 @@
 
-The Metaverse concept, first described by Neal Stevenson in his science fiction novel 'Snow Crash' published in 1992, and more generally depicted in the whole cyberpunk writing movement, has deeply influenced generations of virtual reality pioneers, artists, game designers and nowadays virtual worlds enthusiasts. Over the last sixteen years, the notion has evolved toward a synonym for virtual world, loosing progressively the 'Universe' part of the concatenation and the huge and infiniteness feeling emanating from it.
+The Metaverse concept, first described by Neal Stevenson in his
+science fiction novel 'Snow Crash' published in 1992, and more
+generally depicted in the whole cyberpunk writing movement, has deeply
+influenced generations of virtual reality pioneers, artists, game
+designers and nowadays virtual worlds enthusiasts. Over the last
+sixteen years, the notion has evolved toward a synonym for virtual
+world, loosing progressively the 'Universe' part of the concatenation
+and the huge and infiniteness feeling emanating from it.
 
-However, for us the Metaverse is a system of numerous, interconnected virtual and typically user-generated worlds (or Metaworlds) all accessible through a single user interface. According to this strict definition, the only Metaverse existing today is a prehistoric one: the World Wide Web itself. Plenty of virtual worlds flourish these days claiming they are the Metaverse, but they only are a part of it, as websites are the leaves of the worldwide web tree. We need three things to reach this cyberpunk authors' dream. First, a way to sustain the incredible amount of data and MIPS involved, then a set of protocols to provide interoperability and finally new tools to build virtual worlds as easily as a traditional HTML page. These requirements are the cornerstones of our project.
+However, for us the Metaverse is a system of numerous, interconnected
+virtual and typically user-generated worlds (or Metaworlds) all
+accessible through a single-user interface. According to this strict
+definition, the only Metaverse existing today is a prehistoric one:
+the World Wide Web itself. Plenty of virtual worlds flourish these
+days claiming they are the Metaverse, but they only are a part of it,
+as websites are the leaves of the worldwide web tree. We need three
+things to reach this cyberpunk authors' dream. First, a way to sustain
+the incredible amount of data and MIPS involved, then a set of
+protocols to provide interoperability and finally new tools to build
+virtual worlds as easily as a traditional HTML page. These
+requirements are the cornerstones of our project.
 
-After a synthetic overview of the Solipsis research project (§I) and a focus on related works (§II), we will describe how we envision to manage decentralized virtual worlds, describing in details our peer-to-peer architecture, and also how we manage 3D models sharing and physics computation. Finally, we will focus on how to stream 3D contents in an adaptative way and then present our navigator which is the user interface used to interact with Solipsis' Metaverse.
+After a synthetic overview of the Solipsis research project (§I) and a
+focus on related work (§II), we will describe how we envision to
+manage decentralized virtual worlds, describing in details our
+peer-to-peer architecture, and also how we manage 3D-model sharing and
+physics computation. Finally, we will focus on how to stream 3D
+contents in an adaptative\df{Where?????} way and then present our
+navigator, which is the user interface used to interact with the Solipsis
+Metaverse.
 
 
 \section{Project overview}
 
-In a word, Solipsis is a platform for massively multi-participant and user-generated virtual worlds. It relies on a peer-to-peer architecture, which makes scalability its main characteristic: the universe may be inhabited by an unlimited number of participants. As there is no central authority, the virtual universe is by definition public and the inhabitants' freedom, as well as the world builders and developers' imagination, are boundless.
+In a word, Solipsis is a platform for massively multi-participant and
+user-generated virtual worlds. It relies on a peer-to-peer
+architecture that makes scalability its main characteristic: the
+universe may thus be inhabited by an unlimited number of participants. As
+there is no central authority, the virtual universe is by definition
+public and the inhabitants' freedom, as well as the world builders and
+developers' imagination, are boundless.
 
 \subsection{Expected results}
 
-We seek to spark off the emergence of an unbound public virtual universe that is designed, created, run, but also potentially hosted, by people throughout the world. Freedom can be spotted as the main characteristic of this opensourced system (license GNU/GPL v2+) because the virtual universe does not belong to any organization; it belongs to all the users. 
+We seek to spark off the emergence of an unbounded public virtual
+universe that is designed, created, run, but also potentially hosted,
+by people throughout the world. Freedom can be spotted as the main
+characteristic of this opensourced system (license GNU/GPL v2+)
+because the virtual universe does not belong to any organization; it
+belongs to all the users.
 
-The major deliverable is a new network communication protocol adapted to the strong constraints of self-produced environments, to massively multi-user applications and to virtual reality, which make the system more scalable as the resources used are the users'. 
+The major deliverable is a new network communication protocol adapted
+to the strong constraints of self-produced environments, to massively
+multi-user applications and to virtual reality, which make the system
+more scalable as the resources its uses are those provided by its
+users.
 
-We also work on creating an ergonomic and user-friendly interface to allow non-professional agents to easily create 3D scenes and contents (declarative or automatic modelling, tagging..). Nevertheless, we do not want to mark a break with the actual flat 2D web: but we aim to start a smooth transition towards an immersive Internet making the most of both 2D and 3D. As you will see in part §VI, our navigator can be embedded in a regular webpage - in-web world - or map regular webpages as an interactive texture on any 3D surface - in-world web.
+We also work on creating an ergonomic and user-friendly interface to
+allow non-professional agents to easily create 3D scenes and contents
+(declarative or automatic modeling, tagging..). Nevertheless, we do
+not want to mark a break with the actual flat 2D web; rather, we aim
+to start a smooth transition towards an immersive Internet making the
+most of both 2D and 3D. As we will see in part §V, our navigator can
+be embedded in a regular webpage - in-web world - or map regular
+webpages as an interactive texture on any 3D surface - in-world web.
 
 The last major expected results are some deep analysis on the customs (virtual social life, game, education, services..) to give directions for future developments.

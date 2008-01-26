@@ -418,21 +418,21 @@ downloaded descriptions. This allows them to offer them for download
 to other \sol nodes running on the same or remote hosts.
 
 All the nodes residing on a host, store their own 3D-description as
-well as those of other visible objects in a shared repository that is
-accessible by all the nodes running on the same host. \jr{ finally,
-  why not call that "`State Node description"' or "`State
-  description"' instead of "`3D-description"' ???}\df{State
-  description sounds like the descriptor... this is the model, texture
-  and animation} Moreover, each node records in its entity's
-descriptor a list of the hosts that currently hold a copy of any of
-the files that constitute the associated 3D description.  Whenever a
-node caches a 3D-description, it informs the node responsible for the
-entity, which then updates the corresponding descriptor to include a
-reference to the new copy. Similarly, when a node detects that a host
-listed in the descriptor does not have the current copy of an entity's
-description, it sends a message to the corresponding node, which
-updates the descriptor accordingly.\jr{I think that a figure could
-  simply the understanding}
+well as those of other visible objects in a shared repository
+(depicted in Figure~\ref{Fig:host} that is accessible by all the nodes
+running on the same host. \jr{ finally, why not call that "`State Node
+  description"' or "`State description"' instead of "`3D-description"'
+  ???}\df{State description sounds like the descriptor... this is the
+  model, texture and animation} Moreover, each node records in its
+entity's descriptor a list of the hosts that currently hold a copy of
+any of the files that constitute the associated 3D description.
+Whenever a node caches a 3D-description, it informs the node
+responsible for the entity, which then updates the corresponding
+descriptor to include a reference to the new copy. Similarly, when a
+node detects that a host listed in the descriptor does not have the
+current copy of an entity's description, it sends a message to the
+corresponding node, which updates the descriptor accordingly.\jr{I
+  think that a figure could simply the understanding}
 
 \subsection{Managing Disconnections}
 The architecture of \sol is designed to tolerate unexpected
