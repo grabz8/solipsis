@@ -59,6 +59,7 @@ if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal"
 if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\OgreOde_Core_d.dll" xcopy "..\Dependencies\OgreOde\lib\OgreOde_Core_d.dll" "%dst%" /s /y
+
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\Plugins.cfg" xcopy "%OGRE_HOME%\bin\debug\Plugins.cfg" "%dst%" /s /y
