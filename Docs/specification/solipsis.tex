@@ -162,6 +162,7 @@ specified in this document.
 
 \dstruct{\vlist}
 \mby{Avatar Node}
+
 Similar to site nodes, avatar nodes also maintain a visible list,
 \vlist, containing an entry for each object that is potentially
 visible from the avatar's location. As in the case of site nodes, each
@@ -172,11 +173,13 @@ table for each set of objects.
 
 \dstruct{\snode}
 \mby{Avatar Node}
+
 Each avatar maintains an $\snode$ pointer, that always refer to site
 node that is currently responsible for the avatar's location.
 
 \dstruct{\modtab}
 \mby{Host}
+
 Each host maintains a model table \modtab that is accessible by all
 avatar and site nodes associated with the host. The table contains
 references to local copies of 3D models cached by the current host. At
@@ -354,6 +357,7 @@ descriptor (with a fresher sequence number) in nds.
 \sentwhen{when requesting management of object}
 \param{UID objUID}
 \desc
+
 The message is sent by an avatar node whenever it detects that it has
 collided with an object, or whenever the avatar intends to touch or
 pick up the object. After the message has been sent the avatar node
@@ -444,6 +448,7 @@ position.
 \recby{site node, avatar node}
 \param{UID, \vn, $f$, url}
 \desc
+
 The \ncache message informs an avatar or a site node that a host has
 cached a new copy of \vn version of the file $f$ associated with the
 object identified by UID. 
@@ -456,6 +461,7 @@ to include a reference to the new cached copy. \df{Need to agree on
 \msgentry{\modreq}
 \recby{host}
 \desc
+
 Hosts may obtain copies of 3D models by contacting one or more nodes
 that have cached their latest version as specified in object
 descriptors. To achieve this, they should send a \modreq message
@@ -469,6 +475,7 @@ message as specified in the following.
 
 \msgentry{\modrep}
 \desc
+
 A host receiving a \modreq message from another host should react by
 looking up the desired 3D model in its own model table. If the table
 contains a version of the required 3D model that is at least as recent
