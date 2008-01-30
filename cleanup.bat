@@ -9,6 +9,12 @@ echo ========== Cleaning up... ==========
 rmdir Common\bin\navigator\debug /S /Q
 rmdir Common\bin\navigator\release /S /Q
 
+rmdir Common\bin\node\debug /S /Q
+rmdir Common\bin\node\release /S /Q
+
+rmdir Common\bin\nodeSimulator\debug /S /Q
+rmdir Common\bin\nodeSimulator\release /S /Q
+
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
 rmdir Dependencies\navi /S /Q
@@ -97,6 +103,11 @@ rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc8 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc8 /S /Q
+
+rmdir node\bin /S /Q
+
+rmdir nodeSimulator\Debug /S /Q
+rmdir nodeSimulator\Release /S /Q
 
 echo ============== Done! ===============
 pause

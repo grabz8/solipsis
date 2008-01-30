@@ -235,3 +235,9 @@ NaviCursor mouse display on starting problem with last Navi delivery fixed
 Commit of official Navi v1.5
 
 ---------------------------
+30/01/08
+
+Node/Navigator beta developments, nodeSimulator added, generic interface (INodeClient) and
+Solipsis Xml messages helpers (XmlDatas) added
+
+---------------------------
