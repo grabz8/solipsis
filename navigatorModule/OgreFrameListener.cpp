@@ -34,7 +34,8 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
 #endif
 
     // Populate the camera and scene manager containers
-    mCamNode = cam->getParentSceneNode()->getParentSceneNode();
+    if ((cam != 0) && (cam->getParentSceneNode() != 0))
+        mCamNode = cam->getParentSceneNode()->getParentSceneNode();
 
     mSceneMgr = sceneMgr;
 
@@ -86,6 +87,9 @@ bool OgreFrameListener::keyReleased(const KeyboardEvt& evt)
 //-------------------------------------------------------------------------------------
 bool OgreFrameListener::mouseMoved(const MouseEvt& evt)
 {
+    if (mCamNode == 0)
+        return true;
+
     mCamNode->yaw(Degree(-mRotate*evt.mState.mXrel));
     mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
 
