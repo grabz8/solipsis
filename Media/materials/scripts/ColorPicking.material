@@ -1,0 +1,28 @@
+fragment_program Solipsis/ColorPickingfp cg
+{
+	source Solipsis_ColorPicking.cg
+	entry_point ColorPicking_fp
+	profiles ps_1_1
+	default_params
+	{
+		// Specify a default value for a new parameter
+		// Note that we don't need to specify whether it's a pixel of vertex shader parameter
+		param_named color float4 1 0 0 0
+	}
+}
+material Solipsis/ColorPicking
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			depth_write on
+
+			fragment_program_ref Solipsis/ColorPickingfp
+			{
+				param_named_auto color custom 1
+			}
+		}
+	}
+}
