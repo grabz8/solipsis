@@ -1,0 +1,7 @@
+USELIB("libexpat\libexpat.lib");
+USELIB("c:\tmp\compile\ulxmlrpcpp.lib");
+// UNIX-only USEUNIT("..\ulxmlrpcpp\contrib\mprocess_rpc_server.cpp");
+USEUNIT("..\ulxmlrpcpp\contrib\ssl_connection.cpp");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+DllEntryPoint

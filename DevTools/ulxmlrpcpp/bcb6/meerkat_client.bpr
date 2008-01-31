@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="c:\tmp\compile\meerkat_client.exe"/>
+    <OBJFILES value="c:\tmp\compile\ulxmlrpcpp-1.5\\meerkat_client.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="libexpat\libexpat.lib c:\tmp\compile\ulxmlrpcpp.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi qrpt.bpi dbrtl.bpi vcldb.bpi 
+      bdertl.bpi ibsmp.bpi vcldbx.bpi teeui.bpi teedb.bpi tee.bpi teeqr.bpi 
+      ibxpress.bpi bcbie.bpi vclie.bpi inetdb.bpi inet.bpi nmfast.bpi dclocx.bpi 
+      bcb2kaxserver.bpi"/>
+    <PATHCPP value=".;..\ulxmlrpcpp\apps"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="__DLL___"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL;_RTLDLL;USEPACKAGES"/>
+    <MAINSOURCE value="meerkat_client.bpf"/>
+    <INCLUDEPATH value="..;..\ulxmlrpcpp\apps;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include"/>
+    <LIBPATH value="..\ulxmlrpcpp\apps;..\expat;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-src_suffix cpp -D__DLL___ -I.. -I..\ulxmlrpcpp\apps -I..\..\ulxmlrpcpp 
+      -I..\ulxmlrpcpp\tests -I..\ulxmlrpcpp -I..\expat -I$(BCB)\include -boa"/>
+    <CFLAG1 value="-vGc -vGt -vGd -Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC -tWM -c"/>
+    <PFLAGS value="-N2&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; -N0&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; 
+      -$YD -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-l&quot;c:\tmp\compile\&quot; -I&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; -D&quot;&quot; -ap -Tpe -x 
+      -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(PACKAGES) $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="cg32.lib $(LIBFILES) $(LIBRARIES) import32.lib cw32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="meerkat_client.bpf" FORMNAME="" UNITNAME="meerkat_client" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\apps\meerkat_client.cpp" FORMNAME="" UNITNAME="meerkat_client" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="libexpat\libexpat.lib" FORMNAME="" UNITNAME="libexpat" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="c:\tmp\compile\ulxmlrpcpp.lib" FORMNAME="" UNITNAME="ulxmlrpcpp" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1031
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=26
+Item0=..;..\ulxmlrpcpp\apps;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;..
+Item1=..;..\ulxmlrpcpp\apps;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item2=..\ulxmlrpcpp\apps;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item3=..\ulxmlrpcpp\apps;..;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item4=..\ulxmlrpcpp\apps;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item5=..\ulxmlrpcpp\apps;.. ;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item6=..\ulxmlrpcpp\apps;..\expat;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item7=..\ulxmlrpcpp\apps;expat;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item8=expat;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item9=..\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item10=..\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)\include
+Item11=..\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)/include
+Item12=..\ulxmlrpcpp\apps;..\ulxmlrpcpp
+Item13=..\ulxmlrpcpp
+Item14=..\ulxmlrpcpp\apps;..\ulxmlrpcpp\ulxmlrpcpp
+Item15=..\ulxmlrpcpp\ulxmlrpcpp
+Item16=..\ulxmlrpcpp\apps;..\ulxmlrpcpp\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item17=..\ulxmlrpcpp\apps;E:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item18=E:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item19=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps\;e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item20=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item21=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item22=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item23=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item24=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps\;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item25=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=12
+Item0=..\ulxmlrpcpp\apps;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;output;bin
+Item2=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;output
+Item3=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item4=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;..\output
+Item5=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib
+Item6=$(BCB)\lib\obj;$(BCB)\lib
+Item7=..\ulxmlrpcpp\apps;D:\CBuilder5\ulxmlrpcpp\;$(BCB)\lib\obj;$(BCB)\lib
+Item8=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps\;..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item9=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item11=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=3
+Item0=__DLL___
+Item1=_DEBUG;ULXR_SHOW_CONTENT;ULXR_SHOW_HTTP;ULXR_SHOW_WRTIE;ULXR_SHOW_READ;ULXR_SHOW_XML;DEBUG;__DLL___
+Item2=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=7
+Item0=c:\tmp\compile\ulxmlrpcpp-1.5\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=output
+Item4=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item5=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item6=D:\CBuilder5\Projects\output\
+
+[HistoryLists\hlFinalOutputDir]
+Count=8
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile
+Item2=c:\tmp\compile\ulxmlrpcpp\
+Item3=c:\temp
+Item4=output\
+Item5=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item6=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item7=output
+
+[HistoryLists\hIBPIOutputDir]
+Count=9
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile
+Item2=c:\tmp\compile\ulxmlrpcpp\
+Item3=c:\temp
+Item4=e:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item5=output\
+Item6=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item7=D:\CBuilder5\Projects\output\
+Item8=output
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=localhost/rpc2
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=1
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

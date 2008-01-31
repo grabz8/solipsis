@@ -1,0 +1,16 @@
+
+Contributed by Lubos Pochman, lpochman@insightful.com
+
+Following are two files that can be used as a demo of your package (C++)
+and a Java client. It is based on the demo from package http://xml.apache.org/xmlrpc/,
+and it requires .jar file to run it.
+
+You can run it (after build):
+
+./sum_server &
+java -cp xmlrpc-1.1.jar:. SumClient
+
+To build the java client:
+
+javac -classpath xmlrpc-1.1.jar SumClient.java
+

@@ -1,0 +1,14 @@
+TEST: http-Handler
+
+MOD: val1_server shut_down()
+
+--------------------------
+
+Digest authentication
+
+compressed connction: bzip2,gzip,deflate,compress,identity
+ ==> not HTTP 1.0
+
+IP V6
+
+handle namespace in free functions

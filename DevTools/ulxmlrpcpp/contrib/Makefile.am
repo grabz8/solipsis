@@ -1,0 +1,5 @@
+SUBDIRS=java-demo
+
+CLEANFILES = *.~* *.~~* *~
+
+

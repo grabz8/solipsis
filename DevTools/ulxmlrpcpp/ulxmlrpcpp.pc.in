@@ -1,0 +1,9 @@
+prefix=@prefix@
+Name: ulxmlrpcpp
+Description: Ultra lightweight XML RPC library for C++
+Version: @VERSION@
+URL: http://ulxmlrpcpp.sf.net
+Requires: expat
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/
+

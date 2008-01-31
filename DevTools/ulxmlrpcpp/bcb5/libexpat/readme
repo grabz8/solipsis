@@ -1,0 +1,23 @@
+$Id: readme 127 2002-08-30 10:48:59Z ewald-arnold $
+
+This directory may or may not contain the precompiled expat Windoze binary
+and helper files for Borland C++ 5.0 depending on where you obtained this
+package from.
+
+Due to the fact that I could not link with the original binaries from the
+expat site I compiled myself. In case you have the same problems and can't
+compile yourself you might use my files. If they are not already here you
+can download them from
+
+  http://sourceforge.net/projects/ulxmlrpcpp
+
+or take the project files and compile yourself from the expat distribution.
+
+To compile all the examples and apps copy/move libexpat.dll, libexpat.lib 
+and expat.h to this directory.
+
+Expat is under GPL and available at http://expat.sourceforge.net.
+
+Happy calling
+Ewald Arnold
+

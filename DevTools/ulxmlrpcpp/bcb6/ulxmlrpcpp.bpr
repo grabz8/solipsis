@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="c:\tmp\compile\ulxmlrpcpp.dll"/>
+    <OBJFILES value="c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_xmlparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_xmlparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_callparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_callparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_callparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxmlrpcpp.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_call.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_valueparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_valueparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_valueparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_dispatcher.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_except.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_expatwrap.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_http_client.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_http_protocol.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_protocol.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_http_server.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_requester.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_response.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_responseparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_responseparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_responseparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_tcpip_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_ssl_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_value.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_mutex.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_signature.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_mtrpc_server.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_htmlform_handler.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_wbxmlparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_cached_resource.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_file_resource.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.5\\ulxr_virtual_resource.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="libexpat\libexpat.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib vcl.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi qrpt.bpi dbrtl.bpi vcldb.bpi 
+      bdertl.bpi ibsmp.bpi vcldbx.bpi teeui.bpi teedb.bpi tee.bpi teeqr.bpi 
+      ibxpress.bpi bcbie.bpi vclie.bpi inetdb.bpi inet.bpi nmfast.bpi dclocx.bpi 
+      bcb2kaxserver.bpi"/>
+    <PATHCPP value=".;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp;..\ulxmlrpcpp"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="__DLL___"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL;_RTLDLL;USEPACKAGES"/>
+    <MAINSOURCE value="ulxmlrpcpp.bpf"/>
+    <INCLUDEPATH value="..\ulxmlrpcpp;..;..\expat;$(BCB)\include"/>
+    <LIBPATH value="..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-src_suffix cpp -D__DLL___ -I..\ulxmlrpcpp -I.. -I..\expat 
+      -I$(BCB)\include -boa"/>
+    <CFLAG1 value="-WD -vGc -vGt -vGd -Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; -N0&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; 
+      -$YD -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-l&quot;c:\tmp\compile\&quot; -I&quot;c:\tmp\compile\ulxmlrpcpp-1.5\&quot; -D&quot;&quot; -aa -Tpd -x 
+      -Gn -Gi -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0d32.obj $(PACKAGES) $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="cg32.lib $(LIBFILES) $(LIBRARIES) import32.lib cw32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="ulxmlrpcpp.bpf" FORMNAME="" UNITNAME="ulxmlrpcpp" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="libexpat\libexpat.lib" FORMNAME="" UNITNAME="libexpat" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_xmlparse.cpp" FORMNAME="" UNITNAME="ulxr_xmlparse" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_xmlparse_base.cpp" FORMNAME="" UNITNAME="ulxr_xmlparse_base" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_callparse.cpp" FORMNAME="" UNITNAME="ulxr_callparse" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_callparse_base.cpp" FORMNAME="" UNITNAME="ulxr_callparse_base" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_callparse_wb.cpp" FORMNAME="" UNITNAME="ulxr_callparse_wb" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxmlrpcpp.cpp" FORMNAME="" UNITNAME="ulxmlrpcpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_call.cpp" FORMNAME="" UNITNAME="ulxr_call" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_valueparse.cpp" FORMNAME="" UNITNAME="ulxr_valueparse" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_valueparse_base.cpp" FORMNAME="" UNITNAME="ulxr_valueparse_base" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_valueparse_wb.cpp" FORMNAME="" UNITNAME="ulxr_valueparse_wb" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_connection.cpp" FORMNAME="" UNITNAME="ulxr_connection" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_dispatcher.cpp" FORMNAME="" UNITNAME="ulxr_dispatcher" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_except.cpp" FORMNAME="" UNITNAME="ulxr_except" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_expatwrap.cpp" FORMNAME="" UNITNAME="ulxr_expatwrap" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_http_client.cpp" FORMNAME="" UNITNAME="ulxr_http_client" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_http_protocol.cpp" FORMNAME="" UNITNAME="ulxr_http_protocol" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_protocol.cpp" FORMNAME="" UNITNAME="ulxr_protocol" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_http_server.cpp" FORMNAME="" UNITNAME="ulxr_http_server" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_requester.cpp" FORMNAME="" UNITNAME="ulxr_requester" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_response.cpp" FORMNAME="" UNITNAME="ulxr_response" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_responseparse.cpp" FORMNAME="" UNITNAME="ulxr_responseparse" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_responseparse_base.cpp" FORMNAME="" UNITNAME="ulxr_responseparse_base" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_responseparse_wb.cpp" FORMNAME="" UNITNAME="ulxr_responseparse_wb" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_tcpip_connection.cpp" FORMNAME="" UNITNAME="ulxr_tcpip_connection" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_ssl_connection.cpp" FORMNAME="" UNITNAME="ulxr_ssl_connection" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_value.cpp" FORMNAME="" UNITNAME="ulxr_value" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_mutex.cpp" FORMNAME="" UNITNAME="ulxr_mutex" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_signature.cpp" FORMNAME="" UNITNAME="ulxr_signature" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_mtrpc_server.cpp" FORMNAME="" UNITNAME="ulxr_mtrpc_server" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_htmlform_handler.cpp" FORMNAME="" UNITNAME="ulxr_htmlform_handler" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_wbxmlparse.cpp" FORMNAME="" UNITNAME="ulxr_wbxmlparse" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_cached_resource.cpp" FORMNAME="" UNITNAME="ulxr_cached_resource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_file_resource.cpp" FORMNAME="" UNITNAME="ulxr_file_resource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ulxmlrpcpp\ulxr_virtual_resource.cpp" FORMNAME="" UNITNAME="ulxr_virtual_resource" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1031
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=19
+Item0=..\ulxmlrpcpp;..;..\expat;$(BCB)\include
+Item1=..;..\expat;$(BCB)\include
+Item2=..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item3=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item4=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item5=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item6=..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item7=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item8=..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item9=C:\Programme\Borland\CBuilder5\Projects\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item10=C:\Programme\Borland\CBuilder5\Projects\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item11=C:\Programme\Borland\CBuilder5\Projects;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item12=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;..;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item13=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include
+Item14=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item15=..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item16=..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item17=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl;..\..\Expat-1.95.2\Source\lib
+Item18=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=11
+Item0=..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item1=$(BCB)\lib\obj;$(BCB)\lib
+Item2=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item3=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item4=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item5=C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item6=C:\Programme\Borland\CBuilder5\Projects;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item7=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item8=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\temp
+Item9=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\expat;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=5
+Item0=__DLL___
+Item1=_DEBUG;DEBUG;__DLL___
+Item2=_DEBUG;ULXR_SHOW_CONTENT;ULXR_SHOW_HTTP;ULXR_SHOW_WRTIE;ULXR_SHOW_READ;ULXR_SHOW_XML;DEBUG;__DLL___
+Item3=_DEBUG;__DLL__
+Item4=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=4
+Item0=c:\tmp\compile\ulxmlrpcpp-1.5\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=output
+
+[HistoryLists\hlFinalOutputDir]
+Count=5
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=output\
+Item4=output
+
+[HistoryLists\hIBPIOutputDir]
+Count=5
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item4=output
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=c:\tmp\compile\httpfunc.exe
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=1
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>

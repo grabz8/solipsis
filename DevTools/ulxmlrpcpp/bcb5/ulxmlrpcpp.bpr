@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="c:\tmp\compile\ulxmlrpcpp_23.dll"/>
+    <OBJFILES value="c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_xmlparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_xmlparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_callparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_callparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_callparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxmlrpcpp.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_call.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_valueparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_valueparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_valueparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_dispatcher.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_except.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_expatwrap.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_http_client.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_http_protocol.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_protocol.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_http_server.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_requester.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_response.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_responseparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_responseparse_base.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_responseparse_wb.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_tcpip_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_ssl_connection.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_value.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_log4j.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_mutex.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_signature.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_mtrpc_server.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_htmlform_handler.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_wbxmlparse.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_cached_resource.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_file_resource.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\ulxr_virtual_resource.obj"/>
+    <RESFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="libexpat\libexpat.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="VCL50.lib"/>
+    <PACKAGES value="VCL50.bpi VCLX50.bpi bcbsmp50.bpi QRPT50.bpi VCLDB50.bpi VCLBDE50.bpi 
+      ibsmp50.bpi VCLDBX50.bpi TEEUI50.bpi TEEDB50.bpi TEE50.bpi TEEQR50.bpi 
+      VCLIB50.bpi bcbie50.bpi VCLIE50.bpi INETDB50.bpi INET50.bpi NMFAST50.bpi 
+      dclocx50.bpi bcb2kaxserver50.bpi"/>
+    <PATHCPP value=".;..\ulxmlrpcpp"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="__DLL___"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL;_RTLDLL;USEPACKAGES"/>
+    <MAINSOURCE value="ulxmlrpcpp.bpf"/>
+    <INCLUDEPATH value="..\ulxmlrpcpp;..;..\expat;$(BCB)\include"/>
+    <LIBPATH value="..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-WD -vGc -vGt -vGd -Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWD -tWM -c"/>
+    <PFLAGS value="-N2&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; -N0&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; 
+      -$YD -$W -$O- -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-l&quot;c:\tmp\compile\&quot; -I&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; -D&quot;&quot; -aa -Tpd -x 
+      -Gn -Gi -v"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0d32.obj $(PACKAGES) $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="cg32.lib $(LIBFILES) $(LIBRARIES) import32.lib cw32mti.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1031
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=19
+Item0=..\ulxmlrpcpp;..;..\expat;$(BCB)\include
+Item1=..;..\expat;$(BCB)\include
+Item2=..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item3=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item4=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item5=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item6=..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item7=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item8=..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item9=C:\Programme\Borland\CBuilder5\Projects\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item10=C:\Programme\Borland\CBuilder5\Projects\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item11=C:\Programme\Borland\CBuilder5\Projects;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item12=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;..;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item13=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include
+Item14=..\..\ulxmlrpcpp;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item15=..;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item16=..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item17=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl;..\..\Expat-1.95.2\Source\lib
+Item18=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=11
+Item0=..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item1=$(BCB)\lib\obj;$(BCB)\lib
+Item2=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp\;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item3=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp_HEAD\ulxmlrpcpp;X:\ulxmlrpcpp;\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item4=\\SONNE\HOMES\src\ulxr\ulxmlrpcpp\ulxmlrpcpp;C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item5=C:\Programme\Borland\CBuilder5\Projects\;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item6=C:\Programme\Borland\CBuilder5\Projects;..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item7=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\tmp\compile\ulxmlrpcpp\
+Item8=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib;c:\temp
+Item9=..\ulxmlrpcpp;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\expat;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=5
+Item0=__DLL___
+Item1=_DEBUG;DEBUG;__DLL___
+Item2=_DEBUG;ULXR_SHOW_CONTENT;ULXR_SHOW_HTTP;ULXR_SHOW_WRTIE;ULXR_SHOW_READ;ULXR_SHOW_XML;DEBUG;__DLL___
+Item3=_DEBUG;__DLL__
+Item4=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=4
+Item0=c:\tmp\compile\ulxmlrpcpp-1.7\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=output
+
+[HistoryLists\hlFinalOutputDir]
+Count=5
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=output\
+Item4=output
+
+[HistoryLists\hIBPIOutputDir]
+Count=5
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile\ulxmlrpcpp\
+Item2=c:\temp
+Item3=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item4=output
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=c:\tmp\compile\httpfunc.exe
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

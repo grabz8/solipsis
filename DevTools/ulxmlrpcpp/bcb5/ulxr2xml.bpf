@@ -1,0 +1,6 @@
+USEUNIT("..\stubber\ulxr2xml\main.cpp");
+USEUNIT("..\stubber\ulxr2xml\yacc.cpp");
+USEUNIT("..\stubber\ulxr2xml\scanner.cpp");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+main

@@ -1,0 +1,13 @@
+$Id: readme 130 2002-08-30 10:55:39Z ewald-arnold $
+
+This directory may or may not contain the precompiled expat Windoze binary
+and helper files depending on where you obtained this package from.
+
+To compile all the examples and apps copy/move libexpat.dll to this directory
+or somewhere else in your PATH.
+
+Expat is under GPL and available at http://expat.sourceforge.net.
+
+Happy calling
+Ewald Arnold
+

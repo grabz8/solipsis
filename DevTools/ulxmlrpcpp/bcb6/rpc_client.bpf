@@ -1,0 +1,8 @@
+USEUNIT("..\ulxmlrpcpp\tests\rpc_client.cpp");
+USELIB("libexpat\libexpat.lib");
+USELIB("c:\tmp\compile\ulxmlrpcpp.lib");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+
+
+main

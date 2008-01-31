@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="c:\tmp\compile\ulxr2xml.exe"/>
+    <OBJFILES value="c:\tmp\compile\ulxmlrpcpp-1.7\\main.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\yacc.obj 
+      c:\tmp\compile\ulxmlrpcpp-1.7\\scanner.obj"/>
+    <RESFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value="VCL50.bpi VCLX50.bpi bcbsmp50.bpi QRPT50.bpi VCLDB50.bpi VCLBDE50.bpi 
+      ibsmp50.bpi VCLDBX50.bpi TEEUI50.bpi TEEDB50.bpi TEE50.bpi TEEQR50.bpi 
+      VCLIB50.bpi bcbie50.bpi VCLIE50.bpi INETDB50.bpi INET50.bpi NMFAST50.bpi 
+      dclocx50.bpi bcb2kaxserver50.bpi"/>
+    <PATHCPP value=".;..\stubber\ulxr2xml"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS;_USRDLL;EXPAT_EXPORTS;YY_NO_UNISTD_H"/>
+    <SYSDEFINES value="_MSC_VER=1100;_NO_VCL;_ASSERTE;NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="ulxr2xml.bpf"/>
+    <INCLUDEPATH value="..\stubber\ulxr2xml;..\..;$(BCB)\include;.."/>
+    <LIBPATH value="..\stubber\ulxr2xml;..\generator\ulxr2xml\expat;..\generator\ulxr2xml;..\generator\dcopidl;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-vGc -vGt -vGd -Od -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC -tWM -c"/>
+    <PFLAGS value="-N2&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; -N0&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; 
+      -$YD -$W -$O- -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-l&quot;c:\tmp\compile\&quot; -I&quot;c:\tmp\compile\ulxmlrpcpp-1.7\&quot; -D&quot;&quot; -ap -Tpe -x 
+      -Gn -v"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(PACKAGES) $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="cg32.lib $(LIBFILES) $(LIBRARIES) import32.lib cw32mt.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1031
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=30
+Item0=..\stubber\ulxr2xml;..\..;$(BCB)\include;..
+Item1=..\stubber\ulxr2xml;..\..;$(BCB)\include
+Item2=..\stubber\ulxr2xml;..\stubber\ulxr2xml;..\..;$(BCB)\include
+Item3=..\stubber\ulxr2xml;..\generator\ulxr2xml;..\..;$(BCB)\include
+Item4=..\stubber\ulxr2xml;..\generator\ulxr2xml;..;$(BCB)\include
+Item5=..\stubber\ulxr2xml;..\generator\ulxr2xml;..\;..;$(BCB)\include
+Item6=..\stubber\ulxr2xml;..\generator\ulxr2xml\expat;..\generator\ulxr2xml;..\generator\dcopidl;..;$(BCB)\include
+Item7=..\generator\ulxr2xml\expat;..\generator\ulxr2xml;..\generator\dcopidl;..;$(BCB)\include
+Item8=..\generator\ulxr2xml;..\generator\dcopidl;..;$(BCB)\include
+Item9=..\generator\dcopidl;..;$(BCB)\include
+Item10=..\generator\dcopidl;..stubber;..\stubber;..\ulxmlrpcpp\stubber;..;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item11=..stubber;..\stubber;..\ulxmlrpcpp\stubber;..;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item12=..\stubber;..\ulxmlrpcpp\stubber;..;..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item13=..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item14=..;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include
+Item15=..\..\ulxmlrpcpp;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item16=..;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item17=.. ;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include\
+Item18=.. ;..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl;C:\wx2\include
+Item19=..\ulxmlrpcpp\tests;..\ulxmlrpcpp;..\expat;$(BCB)\include;$(BCB)\include\vcl
+Item20=..\ulxmlrpcpp\tests;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl;expat
+Item21=..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl;expat
+Item22=..\ulxmlrpcpp\tests;..\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+Item23=..\ulxmlrpcpp\tests;..\ulxmlrpcpp;$(BCB)\include
+Item24=..\ulxmlrpcpp\tests;..\ulxmlrpcpp;$(BCB)/include
+Item25=..\ulxmlrpcpp\tests;..\ulxmlrpcpp
+Item26=..\ulxmlrpcpp
+Item27=..\ulxmlrpcpp\tests;..\ulxmlrpcpp\ulxmlrpcpp
+Item28=..\ulxmlrpcpp\ulxmlrpcpp
+Item29=..\ulxmlrpcpp\tests;..\ulxmlrpcpp\ulxmlrpcpp;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=21
+Item0=..\stubber\ulxr2xml;..\generator\ulxr2xml\expat;..\generator\ulxr2xml;..\generator\dcopidl;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\generator\ulxr2xml\expat;..\generator\ulxr2xml;..\generator\dcopidl;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\generator\ulxr2xml;..\generator\dcopidl;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..\generator\dcopidl;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..\generator\dcopidl;..stubber;..\stubber;..\ulxmlrpcpp\stubber;..\ulxmlrpcpp\tests;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item5=..stubber;..\stubber;..\ulxmlrpcpp\stubber;..\ulxmlrpcpp\tests;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item6=..\stubber;..\ulxmlrpcpp\stubber;..\ulxmlrpcpp\tests;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item7=..\ulxmlrpcpp\tests;..\expat;$(BCB)\lib\obj;$(BCB)\lib
+Item8=..\ulxmlrpcpp\tests;$(BCB)\lib\obj;$(BCB)\lib;output;expat
+Item9=..\ulxmlrpcpp\tests;$(BCB)\lib\obj;$(BCB)\lib;output;bin
+Item10=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;output;bin
+Item11=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;output
+Item12=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item13=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib;..\output
+Item14=..\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib
+Item15=$(BCB)\lib\obj;$(BCB)\lib
+Item16=..\ulxmlrpcpp\apps;D:\CBuilder5\ulxmlrpcpp\;$(BCB)\lib\obj;$(BCB)\lib
+Item17=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps\;..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item18=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item19=..\ulxmlrpcpp;$(BCB)\lib\obj;$(BCB)\lib
+Item20=e:\Eigene Dateien\c++\ulxmlrpcpp\ulxmlrpcpp\apps;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=9
+Item0=_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS;_USRDLL;EXPAT_EXPORTS;YY_NO_UNISTD_H
+Item1=_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS;_USRDLL;EXPAT_EXPORTS;
+Item2=_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS;_USRDLL;EXPAT_EXPORTS;_STATIC
+Item3=_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS;_USRDLL;EXPAT_EXPORTS
+Item4=_DEBUG;COMPILED_FROM_DSP;WIN32;_WINDOWS;_MBCS
+Item5=__DLL___;YY_NO_UNISTD_H
+Item6=__DLL___
+Item7=_DEBUG;ULXR_SHOW_CONTENT;ULXR_SHOW_HTTP;ULXR_SHOW_WRTIE;ULXR_SHOW_READ;ULXR_SHOW_XML;DEBUG;__DLL___
+Item8=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=8
+Item0=c:\tmp\compile\ulxmlrpcpp-1.7\
+Item1=c:\tmp\compile\ulxr_43\
+Item2=c:\tmp\compile\ulxmlrpcpp\
+Item3=c:\temp
+Item4=output
+Item5=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item6=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item7=D:\CBuilder5\Projects\output\
+
+[HistoryLists\hlFinalOutputDir]
+Count=8
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile
+Item2=c:\tmp\compile\ulxmlrpcpp\
+Item3=c:\temp
+Item4=output\
+Item5=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item6=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item7=output
+
+[HistoryLists\hIBPIOutputDir]
+Count=9
+Item0=c:\tmp\compile\
+Item1=c:\tmp\compile
+Item2=c:\tmp\compile\ulxmlrpcpp\
+Item3=c:\temp
+Item4=e:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output\
+Item5=output\
+Item6=E:\Eigene Dateien\c++\ulxmlrpcpp\bcb5\output
+Item7=D:\CBuilder5\Projects\output\
+Item8=output
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=--gen-user-ctor --gen-visitable-method --file-name=D:\home\arnold\svn\ulxr\trunk\ulxr\generator\ulxr2xml\ulxridl-orig.xml
+HostApplication=c:\tmp\compile\ulxr2xml.exe
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

@@ -1,0 +1,18 @@
+USEUNIT("..\stubber\xml2ulxr\xml2ulxr.cpp");
+USEUNIT("..\stubber\xml2ulxr\xmlparse_base.cpp");
+USEUNIT("..\stubber\xml2ulxr\expatwrap.cpp");
+USEUNIT("..\stubber\xml2ulxr\GenServerMethod.cpp");
+USEUNIT("..\stubber\xml2ulxr\GenClientMethod.cpp");
+USEUNIT("..\stubber\xml2ulxr\GenerateMethod.cpp");
+USEUNIT("..\stubber\xml2ulxr\UlxrIdlParser.cpp");
+USEUNIT("..\stubber\xml2ulxr\xmlparser.cpp");
+USEUNIT("..\stubber\xml2ulxr\xmlexcept.cpp");
+USEUNIT("..\stubber\xml2ulxr\ulxrIdlClass.cpp");
+USEUNIT("..\stubber\xml2ulxr\GenClientFunction.cpp");
+USEUNIT("..\stubber\xml2ulxr\GenServerFunction.cpp");
+USE("..\stubber\ulxr2xml\ulxridl-orig.xml", File);
+USELIB("libexpat\libexpat.lib");
+USELIB("c:\tmp\compile\ulxmlrpcpp_23.lib");
+//---------------------------------------------------------------------------
+This file is used by the project manager only and should be treated like the project file
+main

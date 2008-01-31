@@ -1,0 +1,772 @@
+dnl Script taken from cppunit
+dnl
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(Makefile.am)
+
+# autoconf 2.50 or higher to rebuild aclocal.m4, because the
+# AC_CREATE_PREFIX_CONFIG_H macro needs the AS_DIRNAME macro.
+AC_PREREQ(2.53)
+
+# Making releases:
+#   ULXMLRPCPP_MINOR_VERSION += 1; ==> Major changes
+#   ULXMLRPCPP_PATCH_VERSION += 1; ==> Minor changes
+#
+#   ULXMLRPCPP_MICRO_VERSION += 1; ==> take older branches into account!!
+#   ULXMLRPCPP_INTERFACE_AGE += 1;
+#   ULXMLRPCPP_BINARY_AGE    += 1;
+#
+# if any functions have been added, set ULXMLRPCPP_INTERFACE_AGE to 0.
+# if backwards compatibility has been broken, set ULXMLRPCPP_BINARY_AGE and ULXMLRPCPP_INTERFACE_AGE to 0.
+#
+ULXMLRPCPP_MAJOR_VERSION=1
+ULXMLRPCPP_MINOR_VERSION=7
+ULXMLRPCPP_PATCH_VERSION=3
+
+ULXMLRPCPP_MICRO_VERSION=23
+ULXMLRPCPP_INTERFACE_AGE=0
+ULXMLRPCPP_BINARY_AGE=0
+ULXMLRPCPP_VERSION=$ULXMLRPCPP_MAJOR_VERSION.$ULXMLRPCPP_MINOR_VERSION.$ULXMLRPCPP_PATCH_VERSION
+
+AC_SUBST(ULXMLRPCPP_MAJOR_VERSION)
+AC_SUBST(ULXMLRPCPP_MINOR_VERSION)
+AC_SUBST(ULXMLRPCPP_MICRO_VERSION)
+AC_SUBST(ULXMLRPCPP_INTERFACE_AGE)
+AC_SUBST(ULXMLRPCPP_BINARY_AGE)
+AC_SUBST(ULXMLRPCPP_VERSION)
+
+# libtool versioning
+ULXMLRPCPP_LT_RELEASE=$ULXMLRPCPP_MAJOR_VERSION.$ULXMLRPCPP_MINOR_VERSION
+ULXMLRPCPP_LT_CURRENT=`expr $ULXMLRPCPP_MICRO_VERSION - $ULXMLRPCPP_INTERFACE_AGE`
+ULXMLRPCPP_LT_REVISION=$ULXMLRPCPP_INTERFACE_AGE
+ULXMLRPCPP_LT_AGE=`expr $ULXMLRPCPP_BINARY_AGE - $ULXMLRPCPP_INTERFACE_AGE`
+
+AC_SUBST(ULXMLRPCPP_LT_RELEASE)
+AC_SUBST(ULXMLRPCPP_LT_CURRENT)
+AC_SUBST(ULXMLRPCPP_LT_REVISION)
+AC_SUBST(ULXMLRPCPP_LT_AGE)
+
+AC_CONFIG_AUX_DIR(config)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(ulxmlrpcpp, $ULXMLRPCPP_VERSION)
+
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+
+# ----------------------------------------------------------------------------
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl Checks for programs.
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_CPP
+AM_PROG_LEX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# The libtool macro AC_PROG_LIBTOOL checks for the C preprocessor.
+# Configure gets confused if we try to check for a C preprocessor
+# without first checking for the C compiler
+# (see http://sources.redhat.com/ml/autoconf/2001-07/msg00036.html),
+# so we invoke AC_PROG_CC explicitly.
+AC_PROG_CC
+AC_PROG_CXX
+AC_LANG(C++)
+
+AC_LIBTOOL_DLOPEN
+AC_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
+
+EA_EXTRA_LIB=""
+EA_EXTRA_INC=""
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_WSTRING],
+[
+
+AC_MSG_CHECKING([for std::wstring])
+dnl AC_LANG([C++])
+
+cat > conftest.$ac_ext <<EOF
+#include <string>
+int main()
+{
+  std::wstring s;
+}
+EOF
+
+ac_compile_link='${CXX} $CXXFLAGS $all_includes $all_libraries $CPPFLAGS conftest.$ac_ext'
+if AC_TRY_EVAL(ac_compile_link); then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE(HAVE_WSTRING, 1, [Define if you have the std::wstring type.])
+else
+  AC_MSG_RESULT(no)
+fi
+
+AC_SUBST(HAVE_WSTRING)
+dnl AC_LANG_POP([])
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_UNICODE],
+[
+AC_ARG_ENABLE(unicode, [  --enable-unicode        generate library with wchar_t/std::wstring instead of char/std::string])
+
+if test x$enable_unicode = xyes; then
+  echo "*******************************************************"
+  echo "**  Compiling for unicode environment"
+  echo "*******************************************************"
+  AC_DEFINE(ULXR_UNICODE, 1, [Define to compile for unicode environment.])
+else
+  echo "*******************************************************"
+  echo "**  Compiling for non-unicode environment"
+  echo "*******************************************************"
+  AH_TEMPLATE([ULXR_UNICODE],
+   [Define to compile for unicode environment.])
+fi
+  AC_DEFINE(ULXR_UNICODE_ONLY_HELPERS, 1, [Define to compile only the unicode helper methods.])
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_LOG4J],
+[
+AC_ARG_ENABLE(log4j, [  --enable-log4j        log to log4j logging host instead of stdout])
+
+if test x$enable_log4j = xyes; then
+  echo "*******************************************************"
+  echo "**  Logging to log4j logging host enabled"
+  echo "*******************************************************"
+  AC_DEFINE(ULXR_LOG4J, 1, [Define to use log4j logging host.])
+else
+  echo "*******************************************************"
+  echo "**  Logging to log4j logging host enabled"
+  echo "*******************************************************"
+  AH_TEMPLATE([ULXR_LOG4J],
+   [Define to use log4j logging host.])
+fi
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_EPOLL],
+[
+AC_ARG_ENABLE(epoll, [  --enable-epoll        enable usage of epoll() system call])
+
+if test x$enable_epoll = xyes; then
+  echo "*******************************************************"
+  echo "**  Using epoll() system call if available"
+  echo "*******************************************************"
+  AC_DEFINE(ULXR_USE_EPOLL, 1, [Define to use epoll() if available.])
+else
+  echo "*******************************************************"
+  echo "**  Never using epoll() system call"
+  echo "*******************************************************"
+  AH_TEMPLATE([ULXR_USE_EPOLL],
+   [Define to use epoll() if available.])
+fi
+])
+
+# ----------------------------------------------------------------------------
+
+dnl ULXMLRPCPP_val='ULXMLRPCPP_HAVE_RTTI'
+dnl AC_ARG_ENABLE(typeinfo-name,
+dnl [  --disable-typeinfo-name disable use of RTTI for class names],
+dnl [
+dnl     test x$enableval = 'xno' && ULXMLRPCPP_val='0'
+dnl ])
+
+dnl ------------------------------------------------------------------------
+dnl Find a file (or one of more files in a list of dirs)
+dnl params: filename path result(NO = none)
+dnl ------------------------------------------------------------------------
+dnl
+AC_DEFUN([EA_FIND_FILE],
+[
+MYPATH=`echo $2 | sed s/\:/\ /g`
+$3=NO
+$4=NO
+for i in $MYPATH;
+do
+  for j in $1;
+  do
+    echo "configure: __oline__: $i/$j" >&AS_MESSAGE_LOG_FD()
+    for f in $i/$j;
+    do
+      if test -r $f; then
+        echo "taking that" >&AS_MESSAGE_LOG_FD()
+        $3=$i
+        $4=`basename $f`
+        break 3
+      fi
+    done
+  done
+done
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_LIBEXPAT],
+[
+
+# "Unusual" places for expat
+expat_inc_dirs="/usr/local/include"
+expat_lib_dirs="/usr/local/lib"
+
+AC_CHECK_HEADERS(expat.h)
+
+if test "$ac_cv_header_expat_h" != "yes"; then
+  echo "checking for expat.h at unusual places: $expat_inc_dirs"
+  EA_FIND_FILE(expat.h, $expat_inc_dirs, expat_inc, dummy)
+  if test x$expat_inc != xNO; then
+    echo "found expat.h at $expat_inc"
+    EA_EXTRA_INC="$EA_EXTRA_INC -I$expat_inc"
+  else
+    echo "*******************************************************"
+    echo "***  expat.h not found."
+    echo "***  Download expat from http://expat.sourceforge.net"
+    echo "********************************************************"
+    exit 1
+  fi
+fi
+
+AC_CHECK_LIB(expat, XML_ParserCreate, [
+ LIBEXPAT="-lexpat"
+ ac_cv_have_expat=yes
+])
+
+if test "$ac_cv_have_expat" != "yes"; then
+  echo "checking for libexpat.so* at unusual places: $expat_lib_dirs"
+  EA_FIND_FILE(libexpat.so*, $expat_lib_dirs, expat_lib, expat_name)
+  if test x$expat_lib != xNO; then
+    echo "found libexpat.so* as $expat_name at $expat_lib"
+    LIBEXPAT="-lexpat"
+    EA_EXTRA_LIB="$EA_EXTRA_LIB -L$expat_lib"
+  else
+    echo "*******************************************************"
+    echo "***  libexpat.so* not found."
+    echo "***  Download expat from http://expat.sourceforge.net"
+    echo "********************************************************"
+    exit 1
+  fi
+fi
+
+AC_SUBST(LIBEXPAT)
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_PTHREAD],
+[
+
+ACX_PTHREAD(ac_cv_have_pthread=yes,
+            ac_cv_have_pthread=no)
+LIBPTHREAD="$PTHREAD_LIBS"
+CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+CC="$PTHREAD_CC"
+
+if test "$ac_cv_have_pthread" != "yes"; then
+  echo "*******************************************************"
+  echo "***  pthread not found."
+  echo "***  multithreaded features are not compiled."
+  echo "********************************************************"
+  AH_TEMPLATE([ULXR_MULTITHREADED],
+    [Define if you have a multithreaded environment.])
+else
+  echo "*******************************************************"
+  echo "***  gthread/pthread found"
+  echo "********************************************************"
+  AC_DEFINE(ULXR_MULTITHREADED, 1,
+    [Define if you have a multithreaded environment.])
+fi
+
+AC_SUBST(LIBPTHREAD)
+])
+
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_SSL],
+[
+AC_CHECK_HEADERS(openssl/ssl.h)
+
+LIBSSL=""
+
+AC_CHECK_LIB(crypto, main, [
+LIBSSL="-lcrypto"
+])
+
+AC_CHECK_LIB(ssl, SSL_read, [
+LIBSSL="$LIBSSL -lssl"
+ac_cv_have_ssl=yes
+],,"$LIBSSL")
+
+
+if test "$ac_cv_have_ssl" != "yes"; then
+  echo "*******************************************************"
+  echo "***  ssl (OpenSSL) NOT found."
+  echo "***  Ignoring siliently"
+  echo "********************************************************"
+
+  AH_TEMPLATE([ULXR_INCLUDE_SSL_STUFF],
+   [Define to compile with ssl support.])
+
+else
+  echo "*******************************************************"
+  echo "***  ssl (OpenSSL) found."
+  echo "********************************************************"
+  AC_DEFINE(ULXR_INCLUDE_SSL_STUFF, 1, [Define to compile with ssl support.])
+  dnl should fix RedHat problem
+  EA_EXTRA_INC="$EA_EXTRA_INC -I/usr/include/kerberos/"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <openssl/ssl.h>]], [[unsigned x = SSL_ERROR_WANT_ACCEPT; ]])],[AC_DEFINE(ULXR_HAVE_SSL_ERROR_WANT_ACCEPT, 1, Define if your ssl has SSL_ERROR_WANT_ACCEPT)
+  ],[])
+fi
+
+AC_SUBST(LIBSSL)
+])
+
+
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_SOCKET],
+[
+AC_CHECK_HEADERS(sys/socket.h)
+dnl contained in libc by default
+LIBSOCKET=""
+AC_CHECK_LIB(socket, socket, [
+dnl for Solaris
+LIBSOCKET="-lsocket"
+ac_cv_have_socket=yes
+])
+
+AC_SUBST(LIBSOCKET)
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_CHECK_STRCASECMP],
+[
+AC_CHECK_LIB(c, strcasecmp, [
+ac_cv_have_strcasecmp=yes
+AC_DEFINE(HAVE_STRCASECMP, 1, [Define if you have strcasecmp])
+])
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_DOXYGEN],
+[
+AC_ARG_ENABLE(doxygen, [  --enable-doxygen        enable documentation generation with doxygen (auto)])
+AC_ARG_ENABLE(dot, [  --enable-dot            use 'dot' to generate graphs in doxygen (auto)])
+AC_ARG_ENABLE(html-docs, [  --enable-html-docs      enable HTML generation with doxygen (yes)], [], [ enable_html_docs=yes])
+AC_ARG_ENABLE(latex-docs, [  --enable-latex-docs     enable LaTeX documentation generation with doxygen (no)], [], [ enable_latex_docs=no])
+
+if test "x$enable_doxygen" = xno; then
+        enable_doc=no
+else
+        AC_PATH_PROG(DOXYGEN, doxygen, , $PATH)
+        if test x$DOXYGEN = x; then
+                if test "x$enable_doxygen" = xyes; then
+                        AC_MSG_ERROR([could not find doxygen])
+                fi
+                enable_doc=no
+        else
+                enable_doc=yes
+                AC_PATH_PROG(DOT, dot, , $PATH)
+        fi
+fi
+
+AM_CONDITIONAL(DOC, test x$enable_doc = xyes)
+
+if test x$DOT = x; then
+        if test "x$enable_dot" = xyes; then
+                AC_MSG_ERROR([could not find dot])
+        fi
+        enable_dot=no
+else
+        enable_dot=yes
+fi
+
+AC_SUBST(enable_dot)
+AC_SUBST(enable_html_docs)
+AC_SUBST(enable_latex_docs)
+])
+
+# ----------------------------------------------------------------------------
+
+ULXR_FQDN=`hostname -f`
+AC_SUBST(ULXR_FQDN)
+
+dnl ------------------------------------------------------------------------
+
+possible_paths="${HOME}/Documents/src/ups/trunk/bin/fop-0.93 ${PATH}"
+EA_FIND_FILE("fop", $possible_paths, fop_path, fop_bin)
+if test x$fop_path != xNO; then
+  FOP=$fop_path/$fop_bin
+  echo "** $FOP"
+else
+  FOP=fop
+  echo "*******************************************************"
+  echo "***  fop processor not found."
+  echo "********************************************************"
+fi
+
+AC_SUBST(FOP)
+
+dnl ------------------------------------------------------------------------
+
+possible_paths="${PATH}"
+EA_FIND_FILE("pngcrush", $possible_paths, pngcrush_path, pngcrush_bin)
+if test x$pngcrush_path != xNO; then
+  PNGCRUSH=$pngcrush_path/$pngcrush_bin
+  echo "** $PNGCRUSH"
+else
+  PNGCRUSH=pngcrush
+  echo "*******************************************************"
+  echo "***  pngcrush not found."
+  echo "********************************************************"
+fi
+
+AC_SUBST(PNGCRUSH)
+
+# ----------------------------------------------------------------------------
+
+AC_PATH_PROG(BZIP2, bzip2, , $PATH)
+if test x$BZIP2 = x; then
+   echo "********************************************************"
+   echo "**  bzip2 not found, existing gzip is assumed instead"
+   echo "********************************************************"
+   ZIPPER=gzip
+   ZIPPER_EXT=gz
+else
+   ZIPPER=bzip2
+   ZIPPER_EXT=bz2
+fi
+AC_SUBST(ZIPPER)
+AC_SUBST(ZIPPER_EXT)
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_DOXYGEN],[
+AC_PATH_PROG(DOXYGEN, doxygen, , $PATH)
+if test x$DOXYGEN = x; then
+  DOXYGEN=doxygen
+  echo "*******************************************************"
+  echo "***  doxygen not found."
+  echo "********************************************************"
+fi
+
+AC_SUBST(DOXYGEN)
+
+AC_PATH_PROG(DOT, dot, , $PATH)
+if ! test x$DOT = x; then
+  DOT_PATH=`dirname $DOT`
+  HAVE_DOT=yes
+else
+  DOT_PATH=/usr/bin
+  echo "*******************************************************"
+  echo "***  dot not found."
+  echo "********************************************************"
+  HAVE_DOT=no
+fi
+
+AC_SUBST(DOT_PATH)
+AC_SUBST(DOT)
+AC_SUBST(HAVE_DOT)
+])
+
+dnl ------------------------------------------------------------------------
+
+AC_DEFUN([EA_ENABLE_DOCBOOK],[
+possible_paths="/usr/bin /usr/local/bin"
+EA_FIND_FILE("xsltproc xmlto", $possible_paths, xsltproc_path, xsltproc_bin)
+if test x$xsltproc_path != xNO; then
+  XSLTPROC=$xsltproc_path/$xsltproc_bin
+  echo "** $XSLTPROC"
+else
+  XSLTPROC=xsltproc
+  echo "*******************************************************"
+  echo "***  xsl processor not found."
+  echo "********************************************************"
+fi
+
+AC_SUBST(XSLTPROC)
+
+])
+
+# ----------------------------------------------------------------------------
+
+AC_DEFUN([AC_C_BIGENDIAN_CROSS],
+[AC_CACHE_CHECK(whether byte ordering is bigendian, ac_cv_c_bigendian,
+[ac_cv_c_bigendian=unknown
+# See if sys/param.h defines the BYTE_ORDER macro.
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <sys/param.h>], [
+#if !BYTE_ORDER || !BIG_ENDIAN || !LITTLE_ENDIAN
+ bogus endian macros
+#endif], [# It does; now see whether it defined to BIG_ENDIAN or not.
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <sys/param.h>], [
+#if BYTE_ORDER != BIG_ENDIAN
+ not big endian
+#endif], ac_cv_c_bigendian=yes, ac_cv_c_bigendian=no)])
+if test $ac_cv_c_bigendian = unknown; then
+AC_TRY_RUN([main () {
+  /* Are we little or big endian?  From Harbison&Steele.  */
+  union
+  {
+    long l;
+    char c[sizeof (long)];
+  } u;
+  u.l = 1;
+  exit (u.c[sizeof (long) - 1] == 1);
+}], ac_cv_c_bigendian=no, ac_cv_c_bigendian=yes,
+[ echo $ac_n "cross-compiling... " 2>&AC_FD_MSG ])
+fi])
+if test $ac_cv_c_bigendian = unknown; then
+AC_MSG_CHECKING(to probe for byte ordering)
+[
+cat >conftest.c <<EOF
+short ascii_mm[] = { 0x4249, 0x4765, 0x6E44, 0x6961, 0x6E53, 0x7953, 0 };
+short ascii_ii[] = { 0x694C, 0x5454, 0x656C, 0x6E45, 0x6944, 0x6E61, 0 };
+void _ascii() { char* s = (char*) ascii_mm; s = (char*) ascii_ii; }
+short ebcdic_ii[] = { 0x89D3, 0xE3E3, 0x8593, 0x95C5, 0x89C4, 0x9581, 0 };
+short ebcdic_mm[] = { 0xC2C9, 0xC785, 0x95C4, 0x8981, 0x95E2, 0xA8E2, 0 };
+void _ebcdic() { char* s = (char*) ebcdic_mm; s = (char*) ebcdic_ii; }
+int main() { _ascii (); _ebcdic (); return 0; }
+EOF
+] if test -f conftest.c ; then
+     if ${CC-cc} -c conftest.c -o conftest.o && test -f conftest.o ; then
+        if test `grep -l BIGenDianSyS conftest.o` ; then
+           echo $ac_n ' big endian probe OK, ' 1>&AC_FD_MSG
+           ac_cv_c_bigendian=yes
+        fi
+        if test `grep -l LiTTleEnDian conftest.o` ; then
+           echo $ac_n ' little endian probe OK, ' 1>&AC_FD_MSG
+           if test $ac_cv_c_bigendian = yes ; then
+            ac_cv_c_bigendian=unknown;
+           else
+            ac_cv_c_bigendian=no
+           fi
+        fi
+        echo $ac_n 'guessing bigendian ...  ' >&AC_FD_MSG
+     fi
+  fi
+AC_MSG_RESULT($ac_cv_c_bigendian)
+fi
+if test $ac_cv_c_bigendian = yes; then
+  AC_DEFINE(WORDS_BIGENDIAN, 1, [whether byteorder is bigendian])
+  BYTEORDER=4321
+else
+  BYTEORDER=1234
+fi
+AC_DEFINE_UNQUOTED(BYTEORDER, $BYTEORDER, [1234 = LIL_ENDIAN, 4321 = BIGENDIAN])
+if test $ac_cv_c_bigendian = unknown; then
+  AC_MSG_ERROR(unknown endianess - sorry, please pre-set ac_cv_c_bigendian)
+fi
+])
+
+# ----------------------------------------------------------------------------
+
+EA_ENABLE_EPOLL
+EA_ENABLE_DOCBOOK
+EA_ENABLE_DOXYGEN
+EA_CHECK_WSTRING
+EA_ENABLE_UNICODE
+EA_ENABLE_LOG4J
+EA_CHECK_LIBEXPAT
+EA_CHECK_SOCKET
+EA_CHECK_STRCASECMP
+EA_CHECK_PTHREAD
+EA_ENABLE_DOXYGEN
+EA_CHECK_SSL
+
+AC_SUBST(EA_EXTRA_INC)
+AC_SUBST(EA_EXTRA_LIB)
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([arpa/inet.h \
+                  fcntl.h \
+                  netdb.h \
+                  netinet/in.h \
+                  stddef.h \
+                  stdlib.h \
+                  string.h \
+                  strings.h \
+                  sys/socket.h \
+                  sys/systeminfo.h \
+                  sys/time.h \
+                  sys/epoll.h \
+                  unistd.h \
+                  krb5.h \
+])
+
+# Checks for library functions.
+AC_C_BIGENDIAN_CROSS
+AC_FUNC_FORK
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_MALLOC
+AC_FUNC_MKTIME
+AC_FUNC_REALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_TYPE_SIGNAL
+AC_FUNC_STAT
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([gethostbyaddr gethostbyname gethostname gethost getnameinfo \
+                getaddrinfo\
+                memmove memset select socket strcasecmp strchr strdup \
+                strerror strtol sysinfo ctime_r ftime gettimeofday])
+
+AM_ICONV
+
+# ----------------------------------------------------------------------------
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <cstdio>]], [[char *s; int len; std::sprintf(s, "%d", len );]])],[AC_DEFINE(HAVE_STD_SPRINTF, 1, Define if you have std::sprintf)
+],[])
+
+# ----------------------------------------------------------------------------
+
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <ctime>]], [[time_t tm; std::ctime(&tm);]])],[AC_DEFINE(HAVE_STD_CTIME, 1, Define if you have std:ctime)
+],[])
+
+# ----------------------------------------------------------------------------
+
+ULXR_VERSION_NUMBER=`printf "0x00%02x%02x%02x"  $ULXMLRPCPP_MAJOR_VERSION $ULXMLRPCPP_MINOR_VERSION $ULXMLRPCPP_PATCH_VERSION`
+AC_DEFINE_UNQUOTED(ULXR_VERSION_NUMBER, [$ULXR_VERSION_NUMBER], [version as long int])
+AC_SUBST(ULXR_VERSION_NUMBER)
+
+AH_VERBATIM([ULXR_DATADIR],
+[/* root directory for the built-in http server, primarily for non-gnu systems */
+#if !defined(ULXR_DATADIR)
+# define ULXR_DATADIR "c:\\ulxmlrpcpp"
+#endif])
+
+AH_VERBATIM([ULXR_VERSION],
+[# define ULXR_VERSION  VERSION
+])
+
+AH_VERBATIM([ULXMLRPCPP_VERSION],
+[# define ULXMLRPCPP_VERSION VERSION
+])
+
+AH_VERBATIM([ULXR_PACKAGE],
+[# define ULXR_PACKAGE  PACKAGE
+])
+
+AH_VERBATIM([ULXR_ENABLE_GET_PEERNAME],
+[# define ULXR_ENABLE_GET_PEERNAME 1
+])
+
+AH_TEMPLATE([ULXR_USE_INTRINSIC_VALUE_TYPES],
+[define if you want to automatically create Value()s from int, bool, ..])
+
+AH_TEMPLATE([ULXR_STRUCT_MEMBER_FROM_NAME_VALUE],
+[define if you want to create a Struct::Member like this: ("name" << value) ])
+
+AH_TEMPLATE([ULXR_NO_WSA_STARTUP],
+[define if WinSocket already started somewhere else.])
+
+AH_TEMPLATE([ULXR_OMIT_TCP_STUFF],
+[define if you want to omit tcp/ip and http stuff.])
+
+AH_TEMPLATE([ULXR_USE_WXSTRING],
+[use WxWindows strings instead of basic_string.])
+
+AH_TEMPLATE([ULXR_ENABLE_DNS_LOOKUP],
+[Call gethostbyaddr() to get host name. Default: use ip addr + port])
+
+AH_TEMPLATE([ULXR_DEBUG_OUTPUT],
+[debugging: show debug information.])
+
+AH_TEMPLATE([ULXR_SHOW_CONTENT],
+[debugging: show transfered data.])
+
+AH_TEMPLATE([ULXR_SHOW_HTTP],
+[debugging: show http header contents.])
+
+AH_TEMPLATE([ULXR_SHOW_WRITE],
+[debugging: show each written character.])
+
+AH_TEMPLATE([ULXR_SHOW_READ],
+[debugging: show each read characters.])
+
+AH_TEMPLATE([ULXR_SHOW_XML],
+[debugging: show xml data.])
+
+AH_TEMPLATE([DEBUG],
+[Define to turn debugging globally on.])
+
+AH_TEMPLATE([ULXR_REUSE_SOCKET],
+[Define to re-use a server socket (saves time while debugging).])
+
+# ----------------------------------------------------------------------------
+
+AC_OUTPUT(\
+  \
+  ulxmlrpcpp.doxygen
+  ulxmlrpcpp.pc
+  Makefile \
+  config/Makefile \
+  expat/Makefile \
+  stubber/Makefile \
+  stubber/ulxr2xml/Makefile \
+  stubber/xml2ulxr/Makefile \
+  stubber/xml2ulxr/orig-meth/Makefile \
+  stubber/xml2ulxr/new-meth/Makefile \
+  ulxmlrpcpp/Makefile \
+  \
+  rpm/Makefile \
+  rpm/ulxmlrpcpp-generic.spec \
+  rpm/fedora/Makefile \
+  \
+  bcb5/Makefile \
+  bcb5/libexpat/Makefile \
+  \
+  bcb6/Makefile \
+  bcb6/libexpat/Makefile \
+  \
+  contrib/Makefile \
+  contrib/java-demo/Makefile \
+  \
+  msvc/Makefile \
+  msvc/ulxmlrpcpp/Makefile \
+  msvc71/Makefile \
+  msvc71/ulxmlrpcpp/Makefile \
+  \
+  ulxmlrpcpp/contrib/Makefile \
+  ulxmlrpcpp/apps/Makefile \
+  ulxmlrpcpp/httpd/Makefile \
+  ulxmlrpcpp/po/Makefile \
+  ulxmlrpcpp/tests/Makefile \
+  ulxmlrpcpp/tests/foo-cert.pem \
+  ulxmlrpcpp/tests/stressing-server.sh \
+  ulxmlrpcpp/tests/stressing-client.sh \
+  ulxmlrpcpp/tests/contrib/Makefile \
+  ulxmlrpcpp/tests/contrib/ca-cert.pem \
+  ulxmlrpcpp/tests/contrib/nosignedcert.pem \
+  ulxmlrpcpp/tests/contrib/sessioncert.pem \
+  ulxmlrpcpp/tests/contrib/signedcert2.pem \
+  ulxmlrpcpp/tests/contrib/signedcerta.pem \
+  ulxmlrpcpp/tests/contrib/signedcert.pem \
+  \
+  ulxmlrpcpp/docs/Makefile \
+  ulxmlrpcpp/docs/api/Makefile \
+  ulxmlrpcpp/docs/en/Makefile \
+  ulxmlrpcpp/docs/en/img/Makefile \
+  ulxmlrpcpp/docs/en/common/Makefile \
+  ulxmlrpcpp/docs/en/images/Makefile \
+  ulxmlrpcpp/docs/en/images/callouts/Makefile \
+)

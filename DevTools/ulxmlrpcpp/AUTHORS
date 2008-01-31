@@ -1,0 +1,38 @@
+Original author and maintainer
+  Ewald Arnold <ulxmlrpcpp at ewald-arnold.de>
+
+Port to Solaris
+  Lubos Pochman <lpochman at insightful.com>
+
+Port to M$ VC++
+Port to WxWindows (alternative for string class)
+  Reda BOUREBABA <reda.bourebaba at wanadoo.fr>
+
+Stream operators for building Array and Struct
+  Johannes E. Schindelin <Johannes.Schindelin at gmx.de>
+
+Extended SSL connection class
+Multiprocess server
+BSD fixes
+Hunting bugs
+  Dmitry Nizovtsev <funt at alarit.com>
+  Olexander Shtepa <isk at alarit.com>
+
+Original patches for chunked http mode
+  Dave Bacher <dbacher at dustnetworks.com>
+
+Timeout to wait for a call
+Server socket closing possibility
+Potential possibility of memory leaks
+  Radoslaw Garbacz <rgarbacz at aycan.de>
+
+Support for cookies
+Persistent connection flag for Requester
+  Ilan Tayary <yonatanz at yonatanz.com>
+
+Several patches
+  Christian Welzel gawain at camlann.de
+
+Patch for epoll()
+  Bruno Corsi dos Santos <corsibp at yahoo.com.br>
+

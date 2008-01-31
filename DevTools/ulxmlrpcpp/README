@@ -1,0 +1,77 @@
+$Id: README 572 2004-06-28 18:28:43Z ewald-arnold $
+
+              Ultra Lightweight Xml Rpc Library for C++
+
+ulxmlrpcpp is a library to perform calls via XML-RPC in an object oriented
+approach implemented in C++. It is intended to have simple interfaces and to be
+easy to learn. But it shall still be fully compliant to the standards and safe
+in it's use.
+
+Unlike other implementations is does not insist on HTTP for transportation but
+might also accept other ways. For example a simple serial line with a user
+defined protocol.
+
+This library uses expat as xml parser. In the unlikely case that you don't have
+it on your system download it from http://expat.sourceforge.net.
+
+The following files are useful to learn more about this library:
+
+  * contrib/*
+      Contributed demos or other useful stuff
+
+  * ulxmlrpcpp/tests/*
+      Validators and test applications. Intended mainly for visual checking.
+      For the expected output see the according *.out.
+
+      val1_[server|client] are most important since they check most of the
+      functionality several thousand times.
+
+      secure_[server|client] demonstrates an approach to send and receive secure calls.
+      But don't take the encryption algorithm to serious, it is just to show how to do it
+      basically :-) Replace it by your favourite encryption algorithm.
+
+      mt_[server|client] does all the processing in parallel using threads.
+
+  * ulxmlrpcpp/apps/*
+      More or less useful applications in the real world
+
+  * ulxmlrpcpp/docs/en/index.html
+      The handbook with an introduction.
+
+  * ulxmlrpcpp/docs/api/html/index.html
+      The api docs. They are not part of the source distribution. Either download
+      them from the same place or generate yourself if you have doxygen installed.
+      Just type "make apidoc" in the the source directory.
+
+
+In ulxr_config.h/ulxr_config-bcb5.h/ulxr_config-msvc.h/... there are some #define's
+that might be useful on non-autoconf systems or when you need to set up some things
+manually after running "configure".
+
+There is also a directory for Borland BCB5 or M$VC++ users with project files.
+See "bcb5" resp. msvc and its subdirectories with the READMEs.
+
+BCB5 users will want to turn off CodeGuard to increase the speed after they have
+verified that everything is working correctly with their applications.
+
+ulxmlrpcpp is known to run fine on Linux, OpenBSD and Solaris, Windoze ports are working
+but not very reliably (BCB5 is ok from my point of view).
+
+Ports to not yet working platforms and compilers are *highly* welcome.
+
+
+A note about installing the pico http server on non-autoconf systems (Windoze
+without Cygwin environment for example):
+
+ Create a home directory for the pico http server, for example c:\ulxmlrpcpp
+ and move everything from ulxmlrpcpp\httpd there. After starting the test
+ application "tests\http_server.exe" you should be able to see the default
+ "homepage" from ulxmlrpcpp at "http://127.0.0.1:32001".
+ The username is "ali-baba" and the password is "open-sesame".
+
+
+Send comments, suggestions and bugfixes to ulxmlrpcpp@ewald-arnold.de.
+
+Happy calling
+Ewald Arnold
+

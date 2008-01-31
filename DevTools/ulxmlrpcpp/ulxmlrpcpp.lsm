@@ -1,0 +1,14 @@
+Begin3
+Title:          ulxmlrpcpp 
+Version:        1.2
+Entered-date:   2002-05-17
+Description:    Ultra Leightweight XML-RPC Library for C++
+Keywords:       xml, rpc, xml-rpc, library, c++ 
+Author:         Ewald Arnold <ulxmlrpcpp@ewald-arnold.de> 
+Maintained-by:  Ewald Arnold <ulxmlrpcpp@ewald-arnold.de> 
+Primary-site:
+Home-page:      http://ulxmlrpcpp.sourceforge.net
+Original-site:  
+Platforms:      Platform independent (at least intended to be :-)
+Copying-policy: GNU Lesser General Public License
+End
