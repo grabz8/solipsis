@@ -1,0 +1,322 @@
+#include "Avatar.h"
+#include "OgreHelpers.h"
+
+using namespace Solipsis;
+
+String Avatar::mDefaultStateAnimName[SCount] = {
+    "",
+    "Idle",
+    "Walk",
+    "Run",
+    "Fly",
+    "Swim"
+};
+
+#define EPSILON_SPEED 0.1f
+#define MAX_SPEED 1.0f
+#define TRANSLATION_SPEED_MPS 6.0f
+#define ROTATION_SPEED_RPS Radian(Math::HALF_PI)
+
+//-------------------------------------------------------------------------------------
+Avatar::Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+    OgrePeer(object, isLocal),
+    mState(SNone),
+    mMvtType(MT3rdPerson),
+    mSceneNode(sceneNode),
+    mEntity(entity),
+    mAnimationState(0),
+    mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mRightKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+{
+    mUpdatedObject = 0;
+    if (isLocal)
+        mUpdatedObject = new XmlObject(object->getUid());
+    mOrientation = sceneNode->getOrientation();
+
+    for (int a = 0;a < SCount; ++a)
+        mStateAnimName[a] = mDefaultStateAnimName[a];
+
+    mSceneNode->attachObject(entity);
+
+    // Set Name Label
+    mNameLabel = new MovableText(StringConverter::toString(object->getUid()) + "Label", object->getName(), false);
+    mNameLabel->setScale(0.1f);
+    mNameLabel->setCharacterHeight(1);
+    mNameLabel->setColor(ColourValue::White);
+    mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
+    Real aabbHeight = entity->getBoundingBox().getSize().y;
+    mNameLabel->setAdditionalHeight(aabbHeight);
+    mSceneNode->attachObject(mNameLabel);
+
+    mGravity = false;
+}
+
+//-------------------------------------------------------------------------------------
+Avatar::~Avatar()
+{
+    if (mSceneNode == 0) return;
+
+    if (mEntity != 0) {
+        mSceneNode->detachObject(mEntity);
+        mSceneNode->getCreator()->destroyEntity(mEntity);
+    }
+    mSceneNode->getCreator()->destroySceneNode(mSceneNode->getName());
+
+    delete mUpdatedObject;
+}
+
+//-------------------------------------------------------------------------------------
+SceneNode* Avatar::getSceneNode()
+{
+    return mSceneNode;
+}
+
+//-------------------------------------------------------------------------------------
+Entity* Avatar::getEntity()
+{
+    return mEntity;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setNameVisibility(bool visible)
+{
+    mNameLabel->setVisible(visible);
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setState(State state)
+{
+//    OGRE_LOG("Avatar::setState()" + StringConverter::toString((int)state));
+    if (mStateAnimName[mState].length() > 0)
+        stopAnimation();
+    if (mStateAnimName[state].length() > 0)
+        startAnimation(mStateAnimName[state]);
+    mState = state;
+}
+
+//-------------------------------------------------------------------------------------
+Avatar::State Avatar::getState()
+{
+    return mState;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setStateAnimName(State state, const String& name)
+{
+    mStateAnimName[state] = name;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setMvtType(MvtType mvtType)
+{
+    mMvtType = mvtType;
+}
+
+//-------------------------------------------------------------------------------------
+Avatar::MvtType Avatar::getMvtType()
+{
+    return mMvtType;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setGravity(bool enabled) {
+    mGravity = enabled;
+}
+
+//-------------------------------------------------------------------------------------
+bool Avatar::isGravityEnabled() {
+    return mGravity;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::update(Real timeSinceLastFrame)
+{
+    animate(timeSinceLastFrame);
+}
+
+//-------------------------------------------------------------------------------------
+bool Avatar::update(XmlObject* updateObject)
+{
+    if (updateObject->getDefinedAttributes().Test(XmlObject::DAPosition))
+    {
+        mSceneNode->setPosition(updateObject->getPosition());
+    }
+    if (updateObject->getDefinedAttributes().Test(XmlObject::DAOrientation))
+    {
+        mSceneNode->setOrientation(updateObject->getOrientation());
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::startAnimation(const String &name, bool loop)
+{
+    if (name.length() == 0) return;
+    mAnimationState = mEntity->getAnimationState(name);
+    mAnimationState->setLoop(loop);
+    mAnimationState->setEnabled(true);
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::stopAnimation()
+{
+    if (mStateAnimName[mState].length() == 0) return;
+    AnimationState* animationStateToStop = mEntity->getAnimationState(mStateAnimName[mState]);
+    animationStateToStop->setLoop(false);
+    animationStateToStop->setEnabled(false);
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::animate(Real timeSinceLastFrame)
+{
+    Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
+    Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
+    Vector3 vri = mSceneNode->getOrientation()*Vector3::UNIT_Z;
+    Real frontBackMvt;
+    Real leftRightMvt;
+    Real upDownMvt;
+    Vector3 mvt = Vector3(0, 0, 0);
+    State nextState = mState;
+    Real animOffset = 0;
+
+    mUpKeyMotion.update(timeSinceLastFrame);
+    mDownKeyMotion.update(timeSinceLastFrame);
+    frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
+    mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+    if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
+        nextState = SWalk;
+    if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
+        nextState = SRun;
+
+    mLeftKeyMotion.update(timeSinceLastFrame);
+    mRightKeyMotion.update(timeSinceLastFrame);
+    leftRightMvt = mLeftKeyMotion.getMotion() - mRightKeyMotion.getMotion();
+    if (mMvtType == MT1stPerson)
+    {
+        // First person straff
+        mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+            nextState = SWalk;
+    }
+    else
+    {
+        // Third person rotation
+        yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+            nextState = SWalk;
+    }
+
+    if (mPgupKeyMotion.isPressed() && mGravity)
+        setGravity(false);
+
+    mPgupKeyMotion.update(timeSinceLastFrame);
+    mPgdownKeyMotion.update(timeSinceLastFrame);
+    upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
+//    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
+//        nextState = SFly;
+
+    if ((mState == SWalk) || (mState == SRun))
+        if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
+            animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
+        else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)
+            animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+        else
+            nextState = SIdle;
+    else
+        animOffset = timeSinceLastFrame;
+    if (mAnimationState != 0)
+        mAnimationState->addTime(animOffset);
+
+    if (mState != nextState)
+        setState(nextState);
+
+    // Compute displacement vector
+    Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
+//    if (mGravity)
+//        displacement.y += -9.80665f*timeSinceLastFrame;
+// gravity should be activated/deactivated on node, then node will add this Y- displacement in its computation
+// ?????????? QUESTION ?????????? new position OR key movement event ????????????
+
+    // Update XML object
+    if (isLocal())
+    {
+        mUpdatedObject->setPosition(mSceneNode->getPosition() + displacement);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::movementKeyPressed(Solipsis::KeyCode code)
+{
+    using namespace Solipsis;
+    switch (code) {
+       case KC_UP:
+           mUpKeyMotion.setState(true);
+       break;
+       case KC_DOWN:
+           mDownKeyMotion.setState(true);
+       break;
+       case KC_LEFT:
+           mLeftKeyMotion.setState(true);
+       break;
+       case KC_RIGHT:
+           mRightKeyMotion.setState(true);
+       break;
+       case KC_PGUP:
+           mPgupKeyMotion.setState(true);
+       break;
+       case KC_PGDOWN:
+           mPgdownKeyMotion.setState(true);
+       break;
+/*
+       case KC_END:
+           setGravity(!isGravityEnabled());
+       break;
+*/
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::movementKeyReleased(Solipsis::KeyCode code)
+{
+    using namespace Solipsis;
+    switch (code) {
+       case KC_UP:
+           mUpKeyMotion.setState(false);
+       break;
+       case KC_DOWN:
+           mDownKeyMotion.setState(false);
+       break;
+       case KC_LEFT:
+           mLeftKeyMotion.setState(false);
+       break;
+       case KC_RIGHT:
+           mRightKeyMotion.setState(false);
+       break;
+       case KC_PGUP:
+           mPgupKeyMotion.setState(false);
+       break;
+       case KC_PGDOWN:
+           mPgdownKeyMotion.setState(false);
+       break;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::yaw(const Radian& angle)
+{
+    // Update XML object
+    if (isLocal())
+    {
+        Quaternion rotation;
+        rotation.FromAngleAxis(angle, Vector3::UNIT_Y);
+        mOrientation = mOrientation*rotation;
+        mUpdatedObject->setOrientation(mOrientation);
+    }
+}
+
+//-------------------------------------------------------------------------------------
