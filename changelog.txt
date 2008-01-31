@@ -244,5 +244,7 @@ Solipsis Xml messages helpers (XmlDatas) added
 31/01/08
 
 Node/Navigator beta developments, 3rd-parties added : expat, ulxmlcpp
+Node/Navigator beta developments, most simple version of Navigator connecting to Node(Peer)
+(into navigatorModuleOnlyNav in order to keep 1 full demo-stable version into navigatorModule)
 
 ---------------------------
