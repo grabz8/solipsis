@@ -9,7 +9,6 @@
 #include "ulxmlrpcpp/ulxr_except.h"
 #include "ulxmlrpcpp/ulxr_signature.h"
 #include "ulxmlrpcpp/ulxr_mtrpc_server.h"
-
 #pragma comment(lib, "ulxmlrpcpp_23.lib")
 #else
 #include <XmlRpc.h>
