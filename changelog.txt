@@ -241,3 +241,8 @@ Node/Navigator beta developments, nodeSimulator added, generic interface (INodeC
 Solipsis Xml messages helpers (XmlDatas) added
 
 ---------------------------
+31/01/08
+
+Node/Navigator beta developments, 3rd-parties added : expat, ulxmlcpp
+
+---------------------------

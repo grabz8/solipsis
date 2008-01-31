@@ -29,6 +29,8 @@ rmdir Dependencies\xmlrpc++ /S /Q
 rmdir Dependencies\brep /S /Q
 rmdir Dependencies\csg /S /Q
 rmdir Dependencies\MdlrTools /S /Q
+rmdir Dependencies\expat /S /Q
+rmdir Dependencies\ulxmlrpcpp /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -68,6 +70,12 @@ rmdir DevTools\brep\lib /S /Q
 rmdir DevTools\CSG\Debug /S /Q
 rmdir DevTools\CSG\Release /S /Q
 rmdir DevTools\CSG\lib /S /Q
+rmdir DevTools\expat\win32\bin /S /Q
+rmdir DevTools\expat\win32\tmp /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Debug /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Release /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Debug /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
