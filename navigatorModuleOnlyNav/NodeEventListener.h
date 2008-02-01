@@ -16,6 +16,7 @@ class NodeEventListener : public BasicThread
 protected:
     // XMLRPC client
     NavigatorXMLRPCClient*& mXmlRpcClient;
+    NavigatorXMLRPCClient* mXmlRpcClientAsync;
 
 private:
     // mutex to secure events lists accesses

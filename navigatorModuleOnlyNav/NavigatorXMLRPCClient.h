@@ -15,10 +15,12 @@ namespace Solipsis {
 class NavigatorXMLRPCClient : public XMLRPCNodeClientLogger
 {
 protected:
-    XMLRPCNodeClient nodeClient;
+    XMLRPCNodeClient mNodeClient;
+    XMLRPCNodeClient* mSharedCnx;
 
 public:
-    NavigatorXMLRPCClient(const char *host, int port, const char *uri = 0);
+    NavigatorXMLRPCClient(const std::string& host, int port, const std::string& uri);
+    NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx);
     ~NavigatorXMLRPCClient();
 
     /** log on Solipsis node server.
@@ -50,7 +52,7 @@ public:
 
 protected:
     /// @copydoc XMLRPCNodeClientLogger::logMessage
-    virtual void logMessage(std::string message);
+    virtual void logMessage(const std::string& message);
 };
 
 } // namespace Solipsis

@@ -591,7 +591,7 @@ bool Navigator::quit()
 //-------------------------------------------------------------------------------------
 bool Navigator::connect()
 {
-    mXmlRpcClient = new NavigatorXMLRPCClient(mHost.c_str(), mPort);
+    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, "");
 
     //Try connection
     XmlLogin xmlLogin("user", "demo");

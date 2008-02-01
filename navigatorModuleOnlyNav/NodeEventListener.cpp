@@ -9,6 +9,7 @@ using namespace Solipsis;
 NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
     BasicThread("NodeEventListener"),
     mXmlRpcClient(xmlRpcClient),
+    mXmlRpcClientAsync(0),
     mNodeEventsListsMutex(PTHREAD_MUTEX_INITIALIZER),
     mNodeEventsListReceiving(&mNodeEventsList1),
     mNodeEventsListProcessing(&mNodeEventsList2)
@@ -18,17 +19,21 @@ NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
 //-------------------------------------------------------------------------------------
 NodeEventListener::~NodeEventListener()
 {
+    delete mXmlRpcClientAsync;
 }
 
 //-------------------------------------------------------------------------------------
 void NodeEventListener::run()
 {
+    delete mXmlRpcClientAsync;
+    mXmlRpcClientAsync = new NavigatorXMLRPCClient(*mXmlRpcClient);
+
     // receive new events
     // Events processing is performed by the rendering thread to ensure synchronization with the rendering engine
     while (!isStopRequested())
     {
         XmlEvt* xmlEvt = 0;
-        if (mXmlRpcClient->NavigatorXMLRPCClient::handleEvt(&xmlEvt) && (xmlEvt != 0))
+        if (mXmlRpcClientAsync->handleEvt(&xmlEvt) && (xmlEvt != 0))
         {
             pthread_mutex_lock(&mNodeEventsListsMutex);
             mNodeEventsListReceiving->push_back(xmlEvt);

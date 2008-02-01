@@ -7,17 +7,27 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-NavigatorXMLRPCClient::NavigatorXMLRPCClient(const char *host, int port, const char *uri) :
-    nodeClient(host, port, uri)
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, const std::string& uri) :
+    mNodeClient(host, port, uri),
+    mSharedCnx(0)
 {
-    nodeClient.setLogger(this);
+    mNodeClient.setLogger(this);
+}
+
+//-------------------------------------------------------------------------------------
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx) :
+    mNodeClient(sharedCnx.mNodeClient.getHost(), sharedCnx.mNodeClient.getPort(), sharedCnx.mNodeClient.getUri()),
+    mSharedCnx(&sharedCnx.mNodeClient)
+{
+    mNodeClient.setLogger(this);
+    mNodeClient.shareCnx(mSharedCnx);
 }
 
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::~NavigatorXMLRPCClient()
 {
-    if (nodeClient.isConnected())
-        nodeClient.logout();
+    if (!mSharedCnx && mNodeClient.isConnected())
+        mNodeClient.logout();
 }
 
 //-------------------------------------------------------------------------------------
@@ -29,7 +39,7 @@ bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<ObjectUID>
     myObjects.clear();
 
     xmlParams.append("<solipsis>").append(xmlLogin.toXmlString()).append("</solipsis>");
-    XMLRPCNodeClient::RetCode retCode = nodeClient.login(xmlParams, xmlResp);
+    XMLRPCNodeClient::RetCode retCode = mNodeClient.login(xmlParams, xmlResp);
     if (retCode != INodeClient::RCOk)
         return false;
 
@@ -57,13 +67,13 @@ bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<ObjectUID>
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::logout()
 {
-    return (nodeClient.logout() == INodeClient::RCOk);
+    return (mNodeClient.logout() == INodeClient::RCOk);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::isConnected()
 {
-    return nodeClient.isConnected();
+    return mNodeClient.isConnected();
 }
 
 //-------------------------------------------------------------------------------------
@@ -72,7 +82,7 @@ bool NavigatorXMLRPCClient::handleEvt(XmlEvt** xmlEvt)
     std::string xmlResp;
 
     *xmlEvt = 0;
-    XMLRPCNodeClient::RetCode retCode = nodeClient.handleEvt(xmlResp);
+    XMLRPCNodeClient::RetCode retCode = mNodeClient.handleEvt(xmlResp);
     if (retCode == INodeClient::RCNoEvt)
         return true;
     if (retCode != INodeClient::RCOk)
@@ -98,7 +108,7 @@ bool NavigatorXMLRPCClient::sendEvt(const XmlEvt& xmlEvt, std::string& xmlResp)
     std::string xmlEvtStr;
 
     xmlEvtStr.append("<solipsis>").append(xmlEvt.toXmlString()).append("</solipsis>");
-    XMLRPCNodeClient::RetCode retCode = nodeClient.sendEvt(xmlEvtStr, xmlResp);
+    XMLRPCNodeClient::RetCode retCode = mNodeClient.sendEvt(xmlEvtStr, xmlResp);
     if (retCode != INodeClient::RCOk)
         return false;
 
@@ -106,7 +116,7 @@ bool NavigatorXMLRPCClient::sendEvt(const XmlEvt& xmlEvt, std::string& xmlResp)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorXMLRPCClient::logMessage(std::string message)
+void NavigatorXMLRPCClient::logMessage(const std::string& message)
 {
     OGRE_LOG(message);
 }
