@@ -27,6 +27,9 @@ specifically for nodeId="00000001" :
 - 10s later : send the Deltastation1 scene object
 - 10s later : send the z6-salamandra avatar object
 
+According to use of XMLRPC++ or ULXMLRPCPP (ULXR defined), then HandleEvt will respond
+NOEVT or will block until 1 EVT must be processed
+
 
 --------------------------------------------------------------------------------
 HOW TO BUILD
