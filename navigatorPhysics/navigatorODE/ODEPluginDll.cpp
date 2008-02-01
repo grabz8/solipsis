@@ -28,4 +28,4 @@ extern "C" _NavigatorODEPluginExport void dllStopPlugin(void)
     delete _ODEPlugin;
 }
 
-} // end namespace
+} // namespace Solipsis

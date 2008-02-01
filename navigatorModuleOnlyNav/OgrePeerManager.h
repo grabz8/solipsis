@@ -1,5 +1,5 @@
-#ifndef __OgrePeerManager__
-#define __OgrePeerManager__
+#ifndef __OgrePeerManager_h__
+#define __OgrePeerManager_h__
 
 #include <map>
 #include <list>
@@ -72,4 +72,4 @@ protected:
 
 } // namespace Solipsis
 
-#endif // #ifndef __OgrePeerManager__
+#endif // #ifndef __OgrePeerManager_h__

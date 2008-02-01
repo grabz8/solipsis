@@ -1,5 +1,5 @@
-#ifndef __ITokamakScene_h__
-#define __ITokamakScene_h__
+#ifndef __TokamakScene_h__
+#define __TokamakScene_h__
 
 #include "IPhysicsScene.h"
 #include "TokamakPluginPrerequisites.h"
@@ -86,6 +86,6 @@ protected:
     static void collisionCallback(neCollisionInfo& collisionInfo);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __ITokamakScene_h__
+#endif // #ifndef __TokamakScene_h__

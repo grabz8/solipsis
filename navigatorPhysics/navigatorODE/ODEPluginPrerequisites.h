@@ -29,6 +29,6 @@ namespace Solipsis {
     class ODEBody;
     class ODECharacter;
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // __ODEPluginPrerequisites_h__

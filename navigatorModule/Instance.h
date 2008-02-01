@@ -1,5 +1,5 @@
-#ifndef __INSTANCE_H__
-#define __INSTANCE_H__
+#ifndef __Instance_h__
+#define __Instance_h__
 
 #include <pthread.h>
 #include "IInstance.h"
@@ -138,6 +138,6 @@ private:
     bool handleEvents();
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __INSTANCE_H__
+#endif // #ifndef __Instance_h__

@@ -30,6 +30,6 @@ public:
     virtual void destroyScene(IPhysicsScene* scene);
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __PhysXEngine_h__

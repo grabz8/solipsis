@@ -30,6 +30,6 @@ namespace Solipsis {
     class TokamakBody;
     class TokamakCharacter;
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // __TokamakPluginPrerequisites_h__

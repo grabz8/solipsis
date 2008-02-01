@@ -1,5 +1,5 @@
-#ifndef __IODECharacter_h__
-#define __IODECharacter_h__
+#ifndef __ODECharacter_h__
+#define __ODECharacter_h__
 
 #include "IPhysicsCharacter.h"
 #include "ODEPluginPrerequisites.h"
@@ -59,6 +59,6 @@ protected:
     bool collision(OgreOde::Contact* contact);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IODECharacter_h__
+#endif // #ifndef __ODECharacter_h__

@@ -1,5 +1,5 @@
-#ifndef __IODEBody_h__
-#define __IODEBody_h__
+#ifndef __ODEBody_h__
+#define __ODEBody_h__
 
 #include "IPhysicsBody.h"
 #include "ODEPluginPrerequisites.h"
@@ -35,6 +35,6 @@ public:
     virtual void setAngularVelocity(const Vector3& velocity);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IODEBody_h__
+#endif // #ifndef __ODEBody_h__

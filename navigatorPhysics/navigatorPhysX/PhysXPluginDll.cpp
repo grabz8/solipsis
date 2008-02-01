@@ -28,4 +28,4 @@ extern "C" _NavigatorPhysXPluginExport void dllStopPlugin(void)
     delete _PhysXPlugin;
 }
 
-} // end namespace
+} // namespace Solipsis

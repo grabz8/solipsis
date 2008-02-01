@@ -1,5 +1,5 @@
-#ifndef __NAVIGATORAPP_H__
-#define __NAVIGATORAPP_H__
+#ifndef __NavigatorApp_h__
+#define __NavigatorApp_h__
 
 #include <vector>
 #include <pthread.h>
@@ -81,6 +81,6 @@ protected:
     void _finalize();
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __NAVIGATORAPP_H__
+#endif // #ifndef __NavigatorApp_h__

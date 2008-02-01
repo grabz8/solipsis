@@ -12,6 +12,6 @@ namespace Platform {
 // Sleeping function
 void sleep(unsigned long durationMs);
 
-}
+} // namespace Platform
 
 #endif // #ifndef __Platform_h__

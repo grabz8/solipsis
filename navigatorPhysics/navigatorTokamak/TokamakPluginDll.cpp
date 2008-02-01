@@ -28,4 +28,4 @@ extern "C" _NavigatorTokamakPluginExport void dllStopPlugin(void)
     delete _TokamakPlugin;
 }
 
-} // end namespace
+} // namespace Solipsis

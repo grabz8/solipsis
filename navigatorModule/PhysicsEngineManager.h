@@ -73,6 +73,6 @@ public:
     static PhysicsEngineManager* getSingletonPtr(void);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __PhysicsEngineManager_h__
+#endif // #ifndef __PhysicsEngineManager_h__

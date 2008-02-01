@@ -1,5 +1,5 @@
-#ifndef __ITokamakBody_h__
-#define __ITokamakBody_h__
+#ifndef __TokamakBody_h__
+#define __TokamakBody_h__
 
 #include "IPhysicsBody.h"
 #include "TokamakPluginPrerequisites.h"
@@ -51,6 +51,6 @@ public:
     void collisionCallback(neCollisionInfo& collisionInfo) {}
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __ITokamakBody_h__
+#endif // #ifndef __TokamakBody_h__

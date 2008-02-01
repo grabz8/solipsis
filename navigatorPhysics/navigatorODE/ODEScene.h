@@ -1,5 +1,5 @@
-#ifndef __IODEScene_h__
-#define __IODEScene_h__
+#ifndef __ODEScene_h__
+#define __ODEScene_h__
 
 #include "IPhysicsScene.h"
 #include "ODEPluginPrerequisites.h"
@@ -79,6 +79,6 @@ protected:
     virtual bool collision(OgreOde::Contact* contact);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IODEScene_h__
+#endif // #ifndef __ODEScene_h__

@@ -1,5 +1,5 @@
-#ifndef __IPhysXCharacter_h__
-#define __IPhysXCharacter_h__
+#ifndef __PhysXCharacter_h__
+#define __PhysXCharacter_h__
 
 #include "IPhysicsCharacter.h"
 #include "PhysXPluginPrerequisites.h"
@@ -39,6 +39,6 @@ public:
     virtual void getPosition(Vector3& position);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IPhysXCharacter_h__
+#endif // #ifndef __PhysXCharacter_h__

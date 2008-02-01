@@ -110,6 +110,6 @@ public:
     virtual void destroyCharacter(IPhysicsCharacter* character) = 0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __IPhysicsScene_h__

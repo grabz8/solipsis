@@ -45,6 +45,6 @@ public:
     virtual void getPosition(Vector3& position) = 0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __IPhysicsCharacter_h__

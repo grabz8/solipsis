@@ -36,6 +36,6 @@ public:
     virtual void setAngularVelocity(const Vector3& velocity) = 0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __IPhysicsBody_h__

@@ -1,5 +1,5 @@
-#ifndef __NAVIGATORMODULE_H__
-#define __NAVIGATORMODULE_H__
+#ifndef __NavigatorModule_h__
+#define __NavigatorModule_h__
 
 #include <cassert>
 #include <cstdio>
@@ -55,6 +55,6 @@ namespace Solipsis {
 
     class OgreHelpers;
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __NAVIGATORMODULE_H__
+#endif // #ifndef __NavigatorModule_h__

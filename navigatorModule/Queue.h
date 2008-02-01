@@ -83,6 +83,6 @@ private:
     bool _isFull() { return ((size() == 0) || (mHead == ((mTail + 1)%size()))); }
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __Queue_h__

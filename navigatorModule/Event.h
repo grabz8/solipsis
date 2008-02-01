@@ -252,6 +252,6 @@ public:
     const Evt& getEvt() const { return mEvt; }
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __Event_h__

@@ -1,5 +1,5 @@
-#ifndef __IAPPLICATION_H__
-#define __IAPPLICATION_H__
+#ifndef __IApplication_h__
+#define __IApplication_h__
 
 #include "NavigatorModule.h"
 
@@ -46,6 +46,6 @@ public:
     virtual bool destroyInstance(IInstance* instance) = 0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __IAPPLICATION_H__
+#endif // #ifndef __IApplication_h__

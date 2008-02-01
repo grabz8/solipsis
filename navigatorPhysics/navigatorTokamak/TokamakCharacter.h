@@ -1,5 +1,5 @@
-#ifndef __ITokamakCharacter_h__
-#define __ITokamakCharacter_h__
+#ifndef __TokamakCharacter_h__
+#define __TokamakCharacter_h__
 
 #include "IPhysicsCharacter.h"
 #include "TokamakPluginPrerequisites.h"
@@ -49,6 +49,6 @@ protected:
     void moveStep(Vector3& displacement);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __ITokamakCharacter_h__
+#endif // #ifndef __TokamakCharacter_h__

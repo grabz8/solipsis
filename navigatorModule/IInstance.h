@@ -1,5 +1,5 @@
-#ifndef __IINSTANCE_H__
-#define __IINSTANCE_H__
+#ifndef __IInstance_h__
+#define __IInstance_h__
 
 #include "NavigatorModule.h"
 
@@ -34,6 +34,6 @@ public:
     virtual void requestTerminate() = 0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __IINSTANCE_H__
+#endif // #ifndef __IInstance_h__

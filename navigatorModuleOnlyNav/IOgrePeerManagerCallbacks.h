@@ -1,5 +1,5 @@
-#ifndef __IOgrePeerManagerCallbacks__
-#define __IOgrePeerManagerCallbacks__
+#ifndef __IOgrePeerManagerCallbacks_h__
+#define __IOgrePeerManagerCallbacks_h__
 
 #include "tinyxml.h"
 #include "OgrePeer.h"
@@ -22,4 +22,4 @@ public:
 
 } // namespace Solipsis
 
-#endif // #ifndef __IOgrePeerManagerCallbacks__
+#endif // #ifndef __IOgrePeerManagerCallbacks_h__

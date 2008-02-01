@@ -1,5 +1,5 @@
-#ifndef __IWINDOW_H__
-#define __IWINDOW_H__
+#ifndef __IWindow_h__
+#define __IWindow_h__
 
 #include "NavigatorModule.h"
 
@@ -23,6 +23,6 @@ public:
     virtual unsigned int getHeight()=0;
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __IWINDOW_H__
+#endif // #ifndef __IWindow_h__

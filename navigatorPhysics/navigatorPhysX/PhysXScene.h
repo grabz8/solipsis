@@ -1,5 +1,5 @@
-#ifndef __IPhysXScene_h__
-#define __IPhysXScene_h__
+#ifndef __PhysXScene_h__
+#define __PhysXScene_h__
 
 #include "IPhysicsScene.h"
 #include "PhysXPluginPrerequisites.h"
@@ -80,6 +80,6 @@ public:
     ::ControllerManager* getNxControllerManager() { return mNxControllerManager; }
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IPhysXScene_h__
+#endif // #ifndef __PhysXScene_h__

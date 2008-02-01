@@ -30,6 +30,6 @@ namespace Solipsis {
     class PhysXCharacter;
     class PhysXHelpers;
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // __PhysXPluginPrerequisites_h__

@@ -32,8 +32,8 @@ D:        Step right
 -----------------------------------------------------------------------------
 */
 
-#ifndef __OgreFrameListener_H__
-#define __OgreFrameListener_H__
+#ifndef __OgreFrameListener_h__
+#define __OgreFrameListener_h__
 
 #include <stack>
 #include "Ogre.h"
@@ -120,4 +120,4 @@ public:
 
 } // namespace Solipsis
 
-#endif
+#endif // #ifndef __OgreFrameListener_h__

@@ -1,5 +1,5 @@
-#ifndef __AUTOCREATEDWINDOW_H__
-#define __AUTOCREATEDWINDOW_H__
+#ifndef __AutoCreatedWindow_h__
+#define __AutoCreatedWindow_h__
 
 #include "Ogre.h"
 #include "IWindow.h"
@@ -76,6 +76,6 @@ public:
     void initialize();
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // __AUTOCREATEDWINDOW_H__
+#endif // #ifndef __AutoCreatedWindow_h__

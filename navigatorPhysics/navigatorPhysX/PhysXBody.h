@@ -1,5 +1,5 @@
-#ifndef __IPhysXBody_h__
-#define __IPhysXBody_h__
+#ifndef __PhysXBody_h__
+#define __PhysXBody_h__
 
 #include "IPhysicsBody.h"
 #include "PhysXPluginPrerequisites.h"
@@ -35,6 +35,6 @@ public:
     virtual void setAngularVelocity(const Vector3& velocity);
 };
 
-} // end namespace
+} // namespace Solipsis
 
-#endif // #ifndef __IPhysXBody_h__
+#endif // #ifndef __PhysXBody_h__

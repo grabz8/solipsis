@@ -34,6 +34,6 @@ public:
     void uninstall();
 };
 
-} // end namespace
+} // namespace Solipsis
 
 #endif // #ifndef __TokamakPlugin_h__
