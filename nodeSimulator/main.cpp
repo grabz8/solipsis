@@ -9,7 +9,7 @@ using namespace Solipsis;
 class NodeClientLogger : public Solipsis::XMLRPCNodeClientLogger
 {
 public:
-    virtual void logMessage(std::string message)
+    virtual void logMessage(const std::string& message)
     {
         fprintf(stdout, "%s\n", message.c_str());
     }
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
     if (client)
     {
-        nodeClient = new Solipsis::XMLRPCNodeClient("localhost", 8550);
+        nodeClient = new Solipsis::XMLRPCNodeClient("localhost", 8550, "");
         nodeClient->setLogger(&nodeClientLogger);
         Solipsis::INodeClient::RetCode retCode;
 

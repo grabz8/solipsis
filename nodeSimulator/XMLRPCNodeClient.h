@@ -3,6 +3,7 @@
 
 #include "INodeClient.h"
 #include "XmlRpc.h"
+#include <string>
 #include <pthread.h>
 
 namespace Solipsis {
@@ -12,7 +13,7 @@ namespace Solipsis {
 class XMLRPCNodeClientLogger
 {
 public:
-    virtual void logMessage(std::string message) = 0;
+    virtual void logMessage(const std::string& message) = 0;
 };
 
 /** This class manages XMLRPC Node client interface.
@@ -25,6 +26,9 @@ protected:
     static const char NODEID_TAG[];
 
 protected:
+    std::string mHost;
+    int mPort;
+    std::string mUri;
     NodeId mNodeId;
     bool mConnected;
 
@@ -33,8 +37,13 @@ private:
     XMLRPCNodeClientLogger* mLogger;
 
 public:
-    XMLRPCNodeClient(const char *host, int port, const char *uri = 0);
+    XMLRPCNodeClient(const std::string& host, int port, const std::string& uri);
     ~XMLRPCNodeClient();
+
+    const std::string& getHost() { return mHost; }
+    int getPort() { return mPort; }
+    const std::string& getUri() { return mUri; }
+    void shareCnx(XMLRPCNodeClient* nodeClient);
 
     /// @copydoc INodeClient::login
     virtual RetCode login(const std::string& xmlParams, std::string& xmlResp);

@@ -79,8 +79,13 @@ INodeClient::RetCode HandleEvtMethod::_execute(const INodeClient::NodeId& nodeId
     case -1:
         node.mFirstEvtDate = now;
         node.mState++;
+#ifdef ULXR
+        Sleep(11000);
+        time(&now);
+#else
         break;
     case 0:
+#endif
         if (now - node.mFirstEvtDate > 10)
         {
             xmlRespStr = "\
@@ -108,6 +113,10 @@ INodeClient::RetCode HandleEvtMethod::_execute(const INodeClient::NodeId& nodeId
         }
         break;
     case 1:
+#ifdef ULXR
+        Sleep(11000);
+        time(&now);
+#endif
         if (now - node.mFirstEvtDate > 20)
         {
             xmlRespStr = "\
@@ -171,6 +180,10 @@ INodeClient::RetCode HandleEvtMethod::_execute(const INodeClient::NodeId& nodeId
         }
         break;
     case 2:
+#ifdef ULXR
+        Sleep(11000);
+        time(&now);
+#endif
         if (now - node.mFirstEvtDate > 30)
         {
             xmlRespStr = "\
@@ -198,6 +211,10 @@ INodeClient::RetCode HandleEvtMethod::_execute(const INodeClient::NodeId& nodeId
         }
         break;
     default:
+#ifdef ULXR
+        while (!node.mAvatarDirty)
+            Sleep(10);
+#endif
         if (node.mAvatarDirty)
         {
             std::stringstream xmlRespStream;
@@ -213,7 +230,8 @@ INodeClient::RetCode HandleEvtMethod::_execute(const INodeClient::NodeId& nodeId
 ";
             xmlRespStr = xmlRespStream.str();
             node.mAvatarDirty = false;
-       }
+        }
+
         break;
     }
     /////////////////////////////////////

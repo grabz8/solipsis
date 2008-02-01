@@ -11,8 +11,11 @@ const char XMLRPCNodeClient::RESPONSE_TAG[] = "response";
 const char XMLRPCNodeClient::NODEID_TAG[] = "nodeId";
 
 //-------------------------------------------------------------------------------------
-XMLRPCNodeClient::XMLRPCNodeClient(const char *host, int port, const char *uri) :
-    XmlRpcClient(host, port, uri),
+XMLRPCNodeClient::XMLRPCNodeClient(const std::string& host, int port, const std::string& uri) :
+    mHost(host),
+    mPort(port),
+    mUri(uri),
+    XmlRpcClient(host.c_str(), port, uri.empty() ? 0 : uri.c_str()),
     mNodeId(""),
     mConnected(false),
     mCallsMutex(PTHREAD_MUTEX_INITIALIZER),
@@ -23,11 +26,13 @@ XMLRPCNodeClient::XMLRPCNodeClient(const char *host, int port, const char *uri) 
 //-------------------------------------------------------------------------------------
 XMLRPCNodeClient::~XMLRPCNodeClient()
 {
-    if (isConnected())
-    {
-        LOG("XMLRPCNodeClient::~XMLRPCNodeClient() last chance disconnection");
-        logout();
-    }
+}
+
+//-------------------------------------------------------------------------------------
+void XMLRPCNodeClient::shareCnx(XMLRPCNodeClient* nodeClient)
+{
+    mNodeId = nodeClient->mNodeId;
+    mConnected = nodeClient->mConnected;
 }
 
 //-------------------------------------------------------------------------------------
@@ -38,8 +43,9 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::login(const std::string& xmlParams, 
     xmlResp.clear();
     const XmlRpc::XmlRpcValue params(xmlParams);
     XmlRpc::XmlRpcValue result;
-    mConnected = this->executeThreadSafe("Login", params, result);
-    if (mConnected)
+    mConnected = false;
+    bool success = this->executeThreadSafe("Login", params, result);
+    if (success)
     {
         // Parse response
         int offset = 0;
@@ -48,7 +54,6 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::login(const std::string& xmlParams, 
         if (retCode == INodeClient::RCError)
         {
             LOG("XMLRPCNodeClient::login() retCode=" + convert2string(retCode) + ", Error:" + (std::string)resultStruct[RESPONSE_TAG]);
-            mConnected = false;
             return retCode;
         }
         mNodeId = resultStruct[NODEID_TAG];
@@ -59,9 +64,9 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::login(const std::string& xmlParams, 
         if (xmlDoc.Error())
         {
             LOG("XMLRPCNodeClient::login() Unable to parse response !");
-            mConnected = false;
             return INodeClient::RCError;
         }
+        mConnected = true;
         LOG("XMLRPCNodeClient::login()\nxmlParams=\n" + xmlParams + "\nxmlResp=\n" + xmlResp + "\nretCode=" + convert2string(retCode) + "\nmNodeId=" + mNodeId);
     }
 
@@ -78,8 +83,8 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::logout()
 
     const XmlRpc::XmlRpcValue params(mNodeId);
     XmlRpc::XmlRpcValue result;
-    mConnected = this->executeThreadSafe("Logout", params, result);
-    if (mConnected)
+    bool success = this->executeThreadSafe("Logout", params, result);
+    if (success)
     {
         // Parse response
         int offset = 0;
@@ -117,8 +122,8 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::handleEvt(std::string& xmlResp)
     xmlResp.clear();
     const XmlRpc::XmlRpcValue params(mNodeId);
     XmlRpc::XmlRpcValue result;
-    mConnected = this->executeThreadSafe("HandleEvt", params, result);
-    if (mConnected)
+    bool success = this->executeThreadSafe("HandleEvt", params, result);
+    if (success)
     {
         // Parse response
         int offset = 0;
@@ -146,8 +151,8 @@ XMLRPCNodeClient::RetCode XMLRPCNodeClient::sendEvt(const std::string& xmlEvt, s
     params[0] = mNodeId;
     params[1] = xmlEvt;
     XmlRpc::XmlRpcValue result;
-    mConnected = this->executeThreadSafe("SendEvt", params, result);
-    if (mConnected)
+    bool success = this->executeThreadSafe("SendEvt", params, result);
+    if (success)
     {
         // Parse response
         int offset = 0;

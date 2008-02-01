@@ -32,7 +32,7 @@ void NodeServer::init(void)
         bool wbxml = false;
         bool secure = false;
         bool chunked = false;
-        bool persistent = false;
+        bool persistent = true;
         ulxr::CppString host = ULXR_PCHAR("localhost");
         unsigned port = mPort;
         ulxr::CppString sec = ULXR_PCHAR("unsecured");
