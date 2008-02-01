@@ -248,3 +248,11 @@ Node/Navigator beta developments, most simple version of Navigator connecting to
 (into navigatorModuleOnlyNav in order to keep 1 full demo-stable version into navigatorModule)
 
 ---------------------------
+01/02/08
+
+Node/Navigator First test with then ULXMLRPCPP MultiThreaded lib instead of the XMLRPC++ SingleThreaded lib,
+client connection is then shared with the NodeEventListener thread in order to call blocking method HandleEvt,
+1 dedicated thread is then used on server-side, SendEvt method can be called in parallel
+For 1 navigator (client) => 1 server-thread (Login/Logout/SendEvt) + 1 server-thread (HandleEvt)
+
+---------------------------
