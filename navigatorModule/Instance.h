@@ -110,6 +110,8 @@ public:
     RenderWindow* getRenderWindowPtr();
     Camera* getCameraPtr();
 
+    bool isNaviSupported() { return mNaviSupported; }
+
 protected: 
     virtual bool initialize();
     virtual bool finalize();

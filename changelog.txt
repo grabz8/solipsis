@@ -256,3 +256,8 @@ client connection is then shared with the NodeEventListener thread in order to c
 For 1 navigator (client) => 1 server-thread (Login/Logout/SendEvt) + 1 server-thread (HandleEvt)
 
 ---------------------------
+03/02/08
+
+Bug fix about Navi not currently supported into Web Browsers plugins since Navi 1.5 update
+
+---------------------------
