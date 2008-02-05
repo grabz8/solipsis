@@ -428,17 +428,51 @@ management of the object cannot be acquired.
 
 
 \subsubsection{Joining Operations}
-An avatar node wishing to join the \sol world should first select a
-joining position. This should in general be the last position of the
-avatar in the \sol world but may also be any other position, as in the
-case of an avatar joining for the first time. The actual joining
-operation simply consists in routing an \avhb message to this joining
-position.
+\paragraph{Avatars}
+An avatar node wishing to join the \sol needs two pieces of
+information: a joining position, and the identifier, or the IP and
+port, of at least one site node. The joining position should in
+general be the last of the avatar in the \sol world but may also be
+any other position, as in the case of an avatar joining for the first
+time. The identifier or IP address and port number of a site node are
+instead required to initialize the Raynet proxy so that it can
+effectively route messages enabling the avatar to join the \sol
+metaverse.
 
-\toadd JOIN OPERATION FOR SITE NODES
+Once these two pieces of information are available, the actual joining
+operation consists simply of initializing the Raynet proxy and routing
+an \avhb message to the avatar's joining position.
+
+
+\paragraph{Sites}
+A site node wishing to join the \sol world\df{Here we need to add
+  right management} needs, at a minimum, two pieces of information,
+the desired position of its site and the identifier or IP address
+and port of an existing site node that is currently in the \sol
+world. 
+
+Once the two pieces of information are available, the site node
+initializes the RayNet layer by providing it with the information
+regarding an existing site node in \sol. Then after a setup time
+$T_{setup}$, it performs a join operation on the RayNet, thereby
+joining the overlay. From this moment on, the node starts listening
+for messages from avatars and neighboring site nodes and starts
+disseminating the update messages as described above. 
+ 
 
 \subsubsection{Persistence}
+Persistence is the ability of the \sol metaverse to maintain
+information about an entity while the corresponding host is
+offline. This should be achieved both when hosts disconnect nicely,
+possibly informing other peers, and when they disconnect abruptly
+without any advance notice. In \sol, we consider two types of
+persistency: one regarding sites and one regarding objects. Avatars,
+on the other hand, disappear whenever the corresponding hosts
+disconnect and reappear upon its reconnection.
 
+\paragraph{Site Persistence}
+Site persistence is achieved in \sol through replication and the
+self-repairing capabilities of the Raynet overlay. 
 
 \subsubsection{Managing 3D Descriptions}
 
@@ -633,23 +667,64 @@ node.}
  \State Descriptor d=\vlist.get(\objUID)
  \If {\nnot d is null}
    %\If {\nnot d.pers}
-     \State \oreq.\objUID=\objUID
-     \State send \oreq to d.\magNode
+   \State \oreq.\objUID=\objUID
+   \State send \oreq to d.\magNode
   % \EndIf
  \EndIf
 \EndProcedure
 %\end{algorithmic}
 
 
-% \Procedure{recvOReq}{\oreq}{}
- 
-%    \If {old = null \lor old.\seqNum \lt \avhb.nd.\seqNum}
-%        \vlist.put(\avhb.nd.\UID,\avhb.nd)
-%    \EndIf
+\Procedure{recvOReq}{\oreq}{}
+ \State Descriptor d=\vlist.get(\objUID)
 
-% \EndProcedure
+
+ \If {old = null \lor old.\seqNum \lt \avhb.nd.\seqNum}
+   \vlist.put(\avhb.nd.\UID,\avhb.nd)
+ \EndIf
+
+\EndProcedure
 
 \end{algorithmic}
+
+
+
+
+
+TODO:
+
+- think about whether we absolutely need a DHT and what the advantages
+and drawbacks of having it are. 
+
+- add assumptions section
+
+- define identifiers
+
+- incorporate signing mechanisms for important messages
+   - define important 
+   - decide whether it is used
+       - always
+       - periodically
+       - challenge-response
+
+- update descriptor (or  what else???) with following information
+about files:
+   - hash of file
+   - IP addresses of where to get it
+
+- use DHT to get files when all else fails... (check)
+
+- specify how to use DHT to map identifiers onto URL (make sure we
+need it)
+
+
+
+
+
+
+
+
+
 
 % % \State \snhb.\sn=\cursn++
 
