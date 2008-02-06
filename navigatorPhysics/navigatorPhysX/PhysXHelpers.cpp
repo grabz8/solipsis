@@ -242,7 +242,7 @@ bool PhysXHelpers::init()
     {
         Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to initialize the PhysX SDK ! errorCode=" + StringConverter::toString((int)errorCode),
-            "OgrePeerManager::CreateSceneNode");
+            "PhysXHelpers::init");
     }
     mNxPhysicsSDK->setParameter(NX_SKIN_WIDTH, 0.01f);
     mNxPhysicsSDK->setParameter(NX_DEFAULT_SLEEP_LIN_VEL_SQUARED, 0.15f*0.15f);
