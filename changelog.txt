@@ -261,3 +261,8 @@ For 1 navigator (client) => 1 server-thread (Login/Logout/SendEvt) + 1 server-th
 Bug fix about Navi not currently supported into Web Browsers plugins since Navi 1.5 update
 
 ---------------------------
+11/02/08
+
+Setup projects (vc7 + vc8) added to create installation packages of the navigator
+
+---------------------------
