@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "navigator", "navigator_vc7\navigator.vdproj", "{3EDC13D9-C63C-4C40-909F-BCCFA66C6109}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{3EDC13D9-C63C-4C40-909F-BCCFA66C6109}.Debug.ActiveCfg = Debug
+		{3EDC13D9-C63C-4C40-909F-BCCFA66C6109}.Debug.Build.0 = Debug
+		{3EDC13D9-C63C-4C40-909F-BCCFA66C6109}.Release.ActiveCfg = Release
+		{3EDC13D9-C63C-4C40-909F-BCCFA66C6109}.Release.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
