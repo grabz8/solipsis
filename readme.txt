@@ -14,6 +14,10 @@ PREREQUISITES
 DXSDK (August 2007) => C:\WINDOWS\system32\d3dx9*_35.dll
 otherwise install at least August 2007 DX Redist package from http://www.microsoft.com/downloads
 
+Ageia PhysX drivers
+If you are using PhysX plugin then check you have a recent release of PhysX drivers
+supporting Engine release 2.7.2 from http://www.ageia.com/drivers/drivers.html
+
 
 --------------------------------------------------------------------------------
 HELP
