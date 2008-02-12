@@ -48,6 +48,7 @@ namespace NaviLibrary
 		bool isWinFocused;
 // BEGIN GREG
 		bool isFocused;
+        bool autoUpdatedOnFocus;
 // END GREG
 		NaviPosition position;
 		bool movable;
@@ -369,6 +370,15 @@ namespace NaviLibrary
 		*						value is used as the number of updates per second to actually do.
 		*/
 		Navi* setMaxUPS(unsigned int maxUPS = 0);
+
+// BEGIN GREG
+		/**
+		* Toggles whether or not this Navi must be updated when focused.
+		*
+		* @param	isAutoUpdatedOnFocus	Whether or not this Navi should be updated when focused.
+		*/
+		Navi* setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus = false);
+// END GREG
 
 		/**
 		* Toggles whether or not this Navi is movable. (not applicable to NaviMaterials)
