@@ -301,6 +301,10 @@ bool NaviManager::injectMouseUp(int buttonID)
 	return false;
 }
 
+// BEGIN GREG updates for VC7
+struct compare { bool operator()(Navi* a, Navi* b){ return(*a > *b); }};
+// END GREG updates for VC7
+
 bool NaviManager::focusNavi(int x, int y, Navi* selection)
 {
 	deFocusAllNavis();
@@ -319,7 +323,9 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
 		if(!iter->second->isMaterial)
 			sortedNavis.push_back(iter->second);
 
-	struct compare { bool operator()(Navi* a, Navi* b){ return(a->overlay->getZOrder() > b->overlay->getZOrder()); }};
+// BEGIN GREG updates for VC7
+//	struct compare { bool operator()(Navi* a, Navi* b){ return(a->overlay->getZOrder() > b->overlay->getZOrder()); }};
+// END GREG updates for VC7
 	std::sort(sortedNavis.begin(), sortedNavis.end(), compare());
 
 	if(sortedNavis.size())
