@@ -94,6 +94,8 @@ void NavigatorGUI::login()
         // Create Navi UI login
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
         navi->setMovable(false);
+        navi->setAutoUpdateOnFocus(true);
+        navi->setMaxUPS(24);
         navi->hide();
         navi->setMask("uilogin.png");
         navi->setOpacity(0.75f);
@@ -251,6 +253,8 @@ void NavigatorGUI::switchDebug()
         // Create Navi UI debug
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256);
         navi->setMovable(true);
+        navi->setAutoUpdateOnFocus(true);
+        navi->setMaxUPS(24);
         navi->hide();
         navi->setMask("uidebug.png");
         navi->setOpacity(0.50f);
@@ -381,6 +385,8 @@ void NavigatorGUI::options(const NaviData& naviData)
         // Create Navi UI options
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400);
         navi->setMovable(false);
+        navi->setAutoUpdateOnFocus(true);
+        navi->setMaxUPS(8);
         navi->hide();
         navi->setMask("uioptions.png");
         navi->setOpacity(0.75f);
