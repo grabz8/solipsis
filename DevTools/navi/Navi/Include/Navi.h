@@ -465,6 +465,9 @@ namespace NaviLibrary
 		*/
 		void setFocus(bool focus) { isFocused = focus; }
 // END GREG
+// BEGIN GREG updates for VC7
+        bool operator>(const Navi& navi)  const { return overlay->getZOrder() > navi.overlay->getZOrder(); };
+// END GREG updates for VC7
 
 		/**
 		* Returns whether or not this Navi was created as a NaviMaterial.
