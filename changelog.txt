@@ -266,3 +266,12 @@ Bug fix about Navi not currently supported into Web Browsers plugins since Navi 
 Setup projects (vc7 + vc8) added to create installation packages of the navigator
 
 ---------------------------
+12/02/08
+
+Navi comparison operator VC7 compatibility fix restored after Navi1.5 revision
+
+Navi::setAutoUpdateOnFocus() added in order to avoid consuming CPU on automatic updation of
+currently focused navi panel, now the Navi must be declared with autoUpdatedOnFocus=true to see
+the blinking cursor in input widgets
+
+---------------------------
