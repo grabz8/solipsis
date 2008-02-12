@@ -40,6 +40,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	isWinFocused = true;
 // BEGIN GREG
 	isFocused = false;
+    autoUpdatedOnFocus = false;
 // END GREG
 	position = naviPosition;
 	movable = true;
@@ -90,6 +91,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	isWinFocused = true;
 // BEGIN GREG
 	isFocused = false;
+    autoUpdatedOnFocus = false;
 // END GREG
 	position = NaviPosition();
 	movable = false;
@@ -269,7 +271,7 @@ void Navi::update()
 
 // BEGIN GREG
 //	if(forceMax || fadingIn || fadingOut)
-	if(forceMax || fadingIn || fadingOut || isFocused)
+	if(forceMax || fadingIn || fadingOut || (autoUpdatedOnFocus && isFocused))
 // END GREG
 	{
 		if(maxUpdatePS)
@@ -296,7 +298,7 @@ void Navi::update()
 	unsigned char* pixels = 0;
 
 // BEGIN GREG
-	if(isFocused) needsUpdate = true;
+	if(autoUpdatedOnFocus && isFocused) needsUpdate = true;
 // END GREG
 	if(needsUpdate || forceMax)
 	{
@@ -760,6 +762,14 @@ Navi* Navi::setMaxUPS(unsigned int maxUPS)
 	maxUpdatePS = maxUPS;
 	return this;
 }
+
+// BEGIN GREG
+Navi* Navi::setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus)
+{
+    autoUpdatedOnFocus = isAutoUpdatedOnFocus;
+	return this;
+}
+// END GREG
 
 Navi* Navi::setMovable(bool isMovable)
 {
