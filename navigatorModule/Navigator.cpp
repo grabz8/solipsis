@@ -257,7 +257,7 @@ void Navigator::demoNavi1()
     NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(knotEnt->getName(), "http://www.google.com", 512, 512);
     knotNavi->show(true);
     knotNavi->setMaxUPS(8);
-    std::string googleMtlName = txtNavi->getMaterialName();
+    std::string googleMtlName = knotNavi->getMaterialName();
     MaterialPtr googleMtl = (MaterialPtr)MaterialManager::getSingletonPtr()->getByName(googleMtlName);
     googleMtl->setDepthWriteEnabled(true);
     knotEnt->setMaterialName(googleMtlName);
