@@ -71,6 +71,7 @@ bool OgreFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     switch (evt.mKey)
     {
+    case KC_A: 
     case KC_ESCAPE: 
         mContinue = false;
         break;

@@ -77,18 +77,22 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     switch (evt.mKey)
     {
 #ifdef UIDEBUG
+    case KC_P: // Show/Hide debug panel
     case KC_PAUSE: // Show/Hide debug panel
         if (navigatorGUI != 0)
             navigatorGUI->switchDebug();
         break;
 #endif
 
+    case KC_Y: // Switch to 1st person camera
     case KC_1: // Switch to 1st person camera
         setCameraMode(CM1stPerson);
         break;
+    case KC_H: // Switch to 1st person camera with mouse
     case KC_2: // Switch to 1st person camera with mouse
         setCameraMode(CM1stPersonWithMouse);
         break;
+    case KC_N: // Switch to 3rd person camera
     case KC_3: // Switch to 3rd person camera
         setCameraMode(CM3rdPerson);
         break;
