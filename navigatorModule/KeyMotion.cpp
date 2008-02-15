@@ -9,7 +9,7 @@ KeyMotion::KeyMotion(Real impulse, Real maxSpeed, Real accelerationFactor, Real 
   mAccelerationFactor(accelerationFactor),
   mDecelerationFactor(decelerationFactor),
   mPressed(false),
-  mMotion(0.0)
+  mMotion(0.0f)
 {
 }
 
@@ -45,7 +45,7 @@ void KeyMotion::update(Real timeSinceLastFrame)
     {
         mMotion *= mDecelerationFactor;
         if (mMotion < mImpulse)
-            mMotion = 0.0;
+            mMotion = 0.0f;
     }
 }
 
