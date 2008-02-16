@@ -6,8 +6,7 @@ constraints, such as bandwidth limitations, the VRML standard was only
 used to encode simple 3D contents in order to visualize them on web
 sites. Only related research and bandwidth increase have now made it
 possible to draft the architecture of a Web3D, metaverse or
-cyberspace. % We demonstrate next why decentralized architectures are
-% obviously necessary to reach a sufficient level of scalability.
+cyberspace. 
 \subsection{Compression and adaptive 3D Streaming}
 A lot of research work has focused on the compression of 3D models, as
 well as on adaptive streaming methods that allow a progressive and
@@ -19,7 +18,7 @@ from the 1D and 2D cases (like wavelets, entropy coding, and
 predictive coding), and completely different approaches that take
 advantage of the properties of 3D surfaces (like Edgebreaker,
 Subdivision Surfaces, and triangle
-strips)\cite{gioia}\cite{isenburg}. Also, parametric solutions, that
+strips)\cite{gioia}. Also, parametric solutions, that
 provide intuitive modeling tools, are widely used to create avatars,
 complex creatures, or vehicles in games. More complex 3D contents can
 be created using procedural modeling solutions that have the
@@ -37,13 +36,13 @@ size, but especially on its distance from the viewpoint. Many solutions
 have therefore been proposed to adapt the resolution of 3D models to
 the current viewpoint~\cite{Funkhouser}. Continuous levels of detail
 allow to transmit refinements progressively as the viewpoint comes
-closer to 3D objects~\cite{Hoppe,Luebke}. Second, most of 3D objects
+closer to 3D objects~\cite{Hoppe}. Second, most of 3D objects
 in huge and complex 3D scenes are occulted by other ones during the
 navigation. Thanks to an offline computation of 3D objects visible
 from regions resulting from a partitioning of the navigation area,
 servers can signifanctly reduce the amount of data that has to be sent
 to the client, without affecting the visual
-quality~\cite{teller,wonka}. Unfortunately, visibility filtering
+quality~\cite{teller}. Unfortunately, visibility filtering
 methods have to be disabled during flying-over navigation, since
 occultations are clearly limited. In fact, these filtering methods
 provide multi-resolution functionalities allowing an adaptive 3D
@@ -91,7 +90,7 @@ environments. However, finding and maintaining the appropriate peer
 connectivity is a very difficult problem in a dynamic environment and
 in the presence of churn, that is where peer viewpoints are allowed to
 move freely and when peers can disconnect or appear at any
-time. Solipsis~\cite{keller,keller2003} and VON~\cite{hu} are
+time. Solipsis~\cite{keller2003} and VON~\cite{hu} are
 the first P2P layers providing a solution for 2D environments. In these
 P2P architectures, peers are connected to each other according to
 their current 2D position. Dedicated algorithms are used to achieve
