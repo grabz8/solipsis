@@ -9,11 +9,7 @@ processes like collision detection, computation of physics, as well as
 communication among the large number of nodes that participate in the
 metaverse. In the following, we present the main characteristics of
 the architecture and of the protocol enabling such
-decentralization. % First define the
-% entities that constitute the \sol metaverse as well as their protocol
-% counterparts. Then we describe
-% components of the \sol 
-
+decentralization. 
 
 \subsection{Definitions}
 \label{sec:definitions}
@@ -37,22 +33,6 @@ each consisting of a mesh- or prims-based model, a set of textures,
 and, in the case of avatars or objects, also of an animation.  Such
 3D-descriptions constitute the basis for the rendering of entities in
 the navigator platform.
-
-% \jr{jerome :yes for objects, we can associated an animation, that will
-%   be compute by a host if he want to manage it. Also, the object can
-%   be take by a avatar, in this case the client hosting the avatar have
-%   to manage it (if nobody already animate it, and if he decides to
-%   animate it. If nobody decide to manage this animation, the site
-%   takes the responsability to manage this object node, but doesn't
-%   animate it}
-
-% The 3D description of the object contains all the information
-% necessary for the 3D visualization of an object, plus any sounds,
-% videos, or multimedia content associated with it. From the point of
-% view of this protocol, such a representation merely consists of a set
-% of binary objects, or files, that should be provided to the rendering
-% component. Each such object is associated with its own version number
-% and may thus be updated independently of the others.
 
 The state of an entity in the metaverse is determined by an
 \emph{entity descriptor}, from now on referred to simply as
