@@ -234,7 +234,12 @@ comprising all the points associated with Raynet nodes.
 \begin{figure}
 \center
 \includegraphics[width=3in]{Figures/Overview.pdf}
-\caption{The p2p architecture showing the mapping of the raynet layer on the virtual world layer according to the proximity of nodes in the virtual space. The host layer shows clients connected into a peer to peer scheme.}
+\caption{The p2p architecture showing the mapping of the Raynet layer
+  on the virtual world layer according to the proximity of nodes in
+  the virtual space. The host layer shows clients connected into a
+  peer to peer scheme. Note that while the position of avatars and
+  object is shown for clarity on the Raynet layer, only site nodes
+  actively join the RayNet and form the corresponding Voronoi diagram.}
 \label{Fig:Overview}
 \end{figure}
 
@@ -251,13 +256,13 @@ routing process to converge to its destination node in a
 polylogarithmic number of hops on average.
 
 Within the context of \sol, we use the Raynet structure to organize
-site nodes into a 3-dimensional overlay in which the positions of
-nodes mimic those of the corresponding sites in the
+\emph{site nodes} into a 3-dimensional overlay in which the positions
+of nodes mimic those of the corresponding sites in the
 metaverse.\footnote{Extensions of the metaverse architecture to higher
   dimensions are naturally supported by the Raynet overlay.} This
 allows our architecture to exploit very simple protocols to manage the
 interaction between avatars, objects and the sites they are currently
-located in as we describe in the following. 
+located in as we describe in the following.
 
 \subsection{Decentralized physics computation}
 \label{sec:decentr-phys-comp}
@@ -305,16 +310,15 @@ nodes to the avatars within their cells at a significantly lower
 frequency.
 
 An avatar joining \sol, first contacts the site node responsible for
-its latest - or its joining - location. This is easily achieved by
-using the Raynet to route a message containing its descriptor to the
-avatar's position. The Raynet automatically routes this message to the
-site node that is closest to this position. This node then reacts by
-sending to the avatar the descriptors of the entities that are
-potentially visible from its location. From this point on, the site
-and avatar node exchange these messages periodically to implement the
-low frequency updates described above. The same is also done between
-site and object nodes, and effectively implements the low-frequency
-updates described above.
+its latest - or its joining - location. Although not part of the
+overlay, the avatar can do this by using the Raynet to route a
+message containing its descriptor to the site node that is closest to
+its own position. This node then reacts by sending the avatar the
+descriptors of the entities that are potentially visible from its
+location. From this point on, the site and avatar nodes exchange these
+messages periodically to implement the low frequency updates described
+above. The same is also done between site and object nodes, and
+effectively implements the low-frequency updates described above.
 
 In addition, avatar and object nodes interact with the avatar and
 object nodes around them in order to exchange the critical up-to-date
