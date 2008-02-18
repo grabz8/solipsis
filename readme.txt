@@ -78,6 +78,12 @@ Download Ogre source package (branch 1.4)
 Download Ogre Dependencies for VS8.1 (http://www.ogre3d.org/index.php?option=com_content&task=view&id=412&Itemid=132)
 and unzip them into ogrenew subdirectory
 
+WARNING: If you are using 1 prebuilt release of Ogre SDK, take care this release was built with same
+release of Visual Studio you will use, examples:
+ OGRE 1.4.x SDK for Visual C++ .Net 2003 (7.1) with Visual Studio .Net 2003
+ OGRE 1.4.x SDK for Visual C++ .Net 2005 (8.0) SP1 with Visual Studio Express 2005 or VS2005Pro
+ OGRE 1.4.x SDK for Visual C++ .Net 2008 (9.0) with Visual Studio Express 2008
+
 Check you installed correctly the DirectX SDK August 2007 (at least ;-) )
 - C:\Program Files\Microsoft DirectX SDK (August 2007) present
 - the env. var. DXSDK is defined
