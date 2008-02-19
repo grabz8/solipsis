@@ -69,6 +69,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_02AA33ADC6F14B229C75B13D3F04DE61"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_02E8F5DB9A6248C59E863AADABE62B65"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1132,12 +1138,6 @@
         "Entry"
         {
         "MsmKey" = "8:_405A407287664E279EC9925222665CD9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_40A5256F96164A7F889C4AAFF5383FF0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2253,6 +2253,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_88B50284272249A4BC1234B096063FFE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_89369F84E3894DC0BE1A794CF536760E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2614,6 +2620,12 @@
         "Entry"
         {
         "MsmKey" = "8:_9D08A00CDC8D40AC8D1590C57DC32295"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9D3499415D1B45D4A197BF09E125122E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3070,6 +3082,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B62EC8D77AAA4D2680637021BE77344C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B684DDE0632146378452C101D1E303FF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4697,6 +4715,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_02AA33ADC6F14B229C75B13D3F04DE61"
+            {
+            "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\navigatorActiveX.dll"
+            "TargetName" = "8:navigatorActiveX.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:FALSE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_02E8F5DB9A6248C59E863AADABE62B65"
             {
             "SourcePath" = "8:..\\..\\Media\\cache\\scenes\\outgateR.mesh"
@@ -5785,7 +5823,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -8257,26 +8295,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{A582A373-4685-4296-BEFE-614B80A702C3}:_40A5256F96164A7F889C4AAFF5383FF0"
-            {
-            "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\Navigator.pdb"
-            "TargetName" = "8:Navigator.pdb"
-            "Tag" = "8:"
-            "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_40B49EAE7CE54CF3B70EF4B90E475E91"
             {
             "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\components\\websrvcs.dll"
@@ -10425,7 +10443,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -11125,7 +11143,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -11966,6 +11984,26 @@
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_88B50284272249A4BC1234B096063FFE"
+            {
+            "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\SolipsisNavigator.xpt"
+            "TargetName" = "8:SolipsisNavigator.xpt"
+            "Tag" = "8:"
+            "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -13186,6 +13224,26 @@
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_9D3499415D1B45D4A197BF09E125122E"
+            {
+            "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\npsolnav.dll"
+            "TargetName" = "8:npsolnav.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -14485,7 +14543,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -14717,6 +14775,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{A582A373-4685-4296-BEFE-614B80A702C3}:_B684DDE0632146378452C101D1E303FF"
+            {
+            "SourcePath" = "8:..\\..\\Common\\bin\\navigator\\release\\readmePlugin.txt"
+            "TargetName" = "8:readmePlugin.txt"
+            "Tag" = "8:"
+            "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:FALSE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{A582A373-4685-4296-BEFE-614B80A702C3}:_B6F045BB070F4F9BAFD2D4CA0C5CE298"
             {
             "SourcePath" = "8:..\\..\\Media\\materials\\textures\\droplet.png"
@@ -14745,7 +14823,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -15305,7 +15383,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
@@ -16385,7 +16463,7 @@
             "Folder" = "8:_117473287E0945BAAFF28750A467BE5E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
+            "Vital" = "11:FALSE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
             "System" = "11:FALSE"
