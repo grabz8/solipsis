@@ -84,6 +84,11 @@ release of Visual Studio you will use, examples:
  OGRE 1.4.x SDK for Visual C++ .Net 2005 (8.0) SP1 with Visual Studio Express 2005 or VS2005Pro
  OGRE 1.4.x SDK for Visual C++ .Net 2008 (9.0) with Visual Studio Express 2008
 
+ZLib: If you are using 1 prebuilt release of Ogre SDK, ZLib is not embedded, download last version on http://www.zlib.net,
+open visualc6/zlib.dsw, upgrade it, Edit the LIB_Debug and LIB_Release project settings and in the Resources|General section, remove the resource name,
+build LIB_Debug and LIB_Release configs, copy zlib.h and zconf.h into ogrenew/Dependencies/include, copy zlib.lib and zlibd.lib from visualc6/Win32_LIB_<config>
+into ogrenew/Dependencies/lib/<config>
+
 Check you installed correctly the DirectX SDK August 2007 (at least ;-) )
 - C:\Program Files\Microsoft DirectX SDK (August 2007) present
 - the env. var. DXSDK is defined
