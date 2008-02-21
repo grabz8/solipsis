@@ -282,4 +282,24 @@ between hosts (seen into future devpts about Peer-Navigator XML communications)
 
 DigitalOcean (virtualDive) test button added
 
+Peer/Navigator beta-developments (vc7 & vc8 configs):
+ Protocols into \protocols added with P2N (ie. Peer-to-Navigator) client/server interface classes
+  XML datas used by client or server libraries
+  client xmlrpc++
+  server xmlrpc++ (single-threaded)
+  server ulxmlrpcpp (multi-threaded)
+ Peer side
+  Peer physics plugins into \peerPhysics with only PhysX plugin for instance (ODE plugin will be developped later)
+  Peer module (Peer.dll) into \nodeSimulator is using Ogre, peerPhysics plugins + 1 of P2N server (xmlrpc++ or ulxmlrpcpp)
+  Peer application (Peer.exe) into \nodeSimulator
+ Navigator side
+  Navigator into \navigatorModuleOnlyNav + P2N client (xmlrpc++)
+Limitations:
+ nodeSimulator is only 1 Solipsis Peer simulator, only 1 client (avatarNode) is simulated
+Tests:
+ Peer & Navigator on same PC
+ Peer & Navigator on 2 differents PC 
+ servers xmlrpc++ & ulxmlrpcpp
+ Peer & Navigator plugin on IE/Mozilla on same PC
+
 ---------------------------
