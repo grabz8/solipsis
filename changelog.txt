@@ -275,3 +275,11 @@ currently focused navi panel, now the Navi must be declared with autoUpdatedOnFo
 the blinking cursor in input widgets
 
 ---------------------------
+21/02/08
+
+setlocale() added into navigator main application to ensure NUMERIC representation compatibility
+between hosts (seen into future devpts about Peer-Navigator XML communications)
+
+DigitalOcean (virtualDive) test button added
+
+---------------------------
