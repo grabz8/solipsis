@@ -31,6 +31,8 @@ rmdir Dependencies\csg /S /Q
 rmdir Dependencies\MdlrTools /S /Q
 rmdir Dependencies\expat /S /Q
 rmdir Dependencies\ulxmlrpcpp /S /Q
+rmdir Dependencies\protocols /S /Q
+rmdir Dependencies\peerModule /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -114,8 +116,23 @@ rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc8 /S /Q
 
 rmdir node\bin /S /Q
 
+rmdir protocols\XmlDatas\Debug /S /Q
+rmdir protocols\XmlDatas\Release /S /Q
+rmdir protocols\P2NClient\xmlrpc++\Debug /S /Q
+rmdir protocols\P2NClient\xmlrpc++\Release /S /Q
+rmdir protocols\P2NServer\xmlrpc++\Debug /S /Q
+rmdir protocols\P2NServer\xmlrpc++\Release /S /Q
+rmdir protocols\P2NServer\ulxmlrpcpp\Debug /S /Q
+rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
+
 rmdir nodeSimulator\Debug /S /Q
 rmdir nodeSimulator\Release /S /Q
+
+rmdir peerPhysics\peerPhysX\Debug /S /Q
+rmdir peerPhysics\peerPhysX\Release /S /Q
+
+rmdir navigatorModuleOnlyNav\Debug /S /Q
+rmdir navigatorModuleOnlyNav\Release /S /Q
 
 echo ============== Done! ===============
 pause
