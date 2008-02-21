@@ -1,49 +1,52 @@
 #ifndef __Node_h__
 #define __Node_h__
 
-#include "NodeServer.h"
+#include <list>
+#include <pthread.h>
 #include "Ogre.h"
+#include "IP2NClient.h"
+#include "XmlDatas.h"
 
-/**
- *
- */
+using namespace Ogre;
+
+namespace Solipsis {
+
+/** This class represents a generic Node.
+*/
 class Node
 {
-private:
-    static Node* mSingleton;
-	NodeServer mXMLPRCServer;
+public:
+    typedef std::list<XmlEvt*> XmlEvtToHandleList;
+
+protected:
+    /// Node unique identifier
+    NodeId mNodeId;
+    /// Type
+    String mType;
+    /// Mutex
+    pthread_mutex_t mEvtsMutex;
+    /// List of events to handle
+    XmlEvtToHandleList mEvtsToHandleList;
 
 public:
-    int mConnectionsCount;
-    Ogre::Vector3 mAvatarPosition;
-    Ogre::Quaternion mAvatarOrientation;
-    time_t mFirstEvtDate;
-    int mState;
-    int mAvatarDirty;
+    /** Constructor. */
+    Node(const NodeId& nodeId, const String& type);
+    /** Destructor. */
+    virtual ~Node();
 
-public:
-	/** Default Constructor
-	 */
-	Node(int port = 8550, int verbosity = 2);
+    /** Gets the identifier. */
+    const NodeId& getNodeId();
+    /** Gets the type. */
+    const String& getType();
 
-	/** Destructor
-	 */
-	~Node();
-
-    static Node* getSingletonPtr() { return mSingleton; }
-    static Node& getSingleton() { return *mSingleton; }
-
-private:
-	/** Copie Constructor (not allowed)
-	 */
-	Node(const Node& node);
-
-	/** Copy assignement operator (not allowed)
-	 */
-	Node& operator=(const Node& node);
-
-public:
-
+    /** Process an event. */
+    virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
+    /** Get next event to handle. */
+    virtual XmlEvt* getNextEvtToHandle();
+    /** Free event (handled event). */
+    virtual bool freeEvt(XmlEvt* evt);
 };
+
+} // namespace Solipsis
 
 #endif // #ifndef __Node_h__

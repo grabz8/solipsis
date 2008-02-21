@@ -17,9 +17,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\ulxmlrpcpp\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;ULXR"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NODESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,9 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib XmlDatas.lib XMLRPCP2NServer.lib"
+				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;&quot;..\Dependencies\ulxmlrpcpp\lib\$(ConfigurationName)DLL&quot;;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -97,9 +98,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -120,8 +121,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\ulxmlrpcpp\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;ULXR"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NODESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -139,9 +140,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib XmlDatas.lib ULXMLRPCPPP2NServer.lib"
+				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;&quot;..\Dependencies\ulxmlrpcpp\lib\$(ConfigurationName)DLL&quot;;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -185,7 +187,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AbstractNodeMethod.cpp"
+				RelativePath=".\Avatar.cpp"
 				>
 			</File>
 			<File
@@ -193,19 +195,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\HandleEvtMethod.cpp"
+				RelativePath=".\BasicThread.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\LoginMethod.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LogoutMethod.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\main.cpp"
+				RelativePath=".\Entity.cpp"
 				>
 			</File>
 			<File
@@ -213,19 +207,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NodeServer.cpp"
+				RelativePath=".\NodeManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SendEvtMethod.cpp"
+				RelativePath=".\OgreHelpers.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\XmlDatas.cpp"
+				RelativePath=".\Peer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\XMLRPCNodeClient.cpp"
+				RelativePath=".\PhysicsEngineManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PlatformWin.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Site.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SiteNode.cpp"
 				>
 			</File>
 		</Filter>
@@ -235,7 +241,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AbstractNodeMethod.h"
+				RelativePath=".\Avatar.h"
 				>
 			</File>
 			<File
@@ -243,19 +249,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\HandleEvtMethod.h"
+				RelativePath=".\BasicThread.h"
 				>
 			</File>
 			<File
-				RelativePath=".\INodeClient.h"
+				RelativePath=".\Entity.h"
 				>
 			</File>
 			<File
-				RelativePath=".\LoginMethod.h"
+				RelativePath=".\IPeer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\LogoutMethod.h"
+				RelativePath=".\IPhysicsBody.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IPhysicsCharacter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IPhysicsEngine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IPhysicsScene.h"
 				>
 			</File>
 			<File
@@ -263,23 +281,43 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NodeServer.h"
+				RelativePath=".\NodeManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\NodeServerMethods.h"
+				RelativePath=".\OgreHelpers.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SendEvtMethod.h"
+				RelativePath=".\Peer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\XmlDatas.h"
+				RelativePath=".\PeerModule.h"
 				>
 			</File>
 			<File
-				RelativePath=".\XMLRPCNodeClient.h"
+				RelativePath=".\PhysicsEngineManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Platform.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PlatformWin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Site.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SiteNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeListener.h"
 				>
 			</File>
 		</Filter>
