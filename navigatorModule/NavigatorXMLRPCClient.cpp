@@ -254,41 +254,6 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
     char csaXmlNoEvent[] = "<value><array><data></data></array></value>";
     char *csaXml = csaXmlNoEvent;
 #ifdef UIDEBUG
-    // FAKE example to simulate lost of peer (c3-bolig) according to its networkId
-    /* 
-    <value>
-        <array>
-            <data>
-
-                <value>
-                    <struct>
-                        <member>
-                            <name>timestamp</name>
-                            <value>12341234</value>
-                        </member>
-                        <member>
-                            <name>type</name>
-                            <value>LOST</value>
-                        </member>
-                        <member>
-                            <name>datas</name>
-                            <value>
-                                <struct>
-                                    <member>
-                                        <name>id_</name>
-                                        <value>5061_11_08312f6affa5059b69cfcc461d43c06a928a3068</value>
-                                    </member>
-                                </struct>
-                            </value>
-                        </member>
-                    </struct>
-                </value>
-
-            </data>
-        </array>
-    </value>
-    */
-    char csaXmlLost[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>LOST</value></member><member><name>datas</name><value><struct><member><name>id_</name><value>5061_11_08312f6affa5059b69cfcc461d43c06a928a3068</value></member></struct></value></member></struct></value></data></array></value>";
     // FAKE example to simulate new peer (stationspatiale)
     /* 
     <value>
@@ -376,16 +341,18 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
     </value>
     */
     char csaXmlNew[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5500_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>Deltastation1</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
+    // FAKE example to simulate new peer (DigitalOcean1)
+    char csaXmlDO1[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5501_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>DigitalOcean1</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
     std::map<String,String>::iterator dbgCmd = DebugHelpers::debugCommands.find("testEvt");
     if (dbgCmd != DebugHelpers::debugCommands.end())
     {
-        if (dbgCmd->second.compare("peerLost") == 0)
-        {
-            csaXml = csaXmlLost;
-        }
-        else if (dbgCmd->second.compare("peerNew") == 0)
+        if (dbgCmd->second.compare("peerNew") == 0)
         {
             csaXml = csaXmlNew;
+        }
+        else if (dbgCmd->second.compare("peerDO1") == 0)
+        {
+            csaXml = csaXmlDO1;
         }
         DebugHelpers::debugCommands.erase(dbgCmd);
     }
