@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot;&#x0D;&#x0A;copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot;&#x0D;&#x0A;copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -160,6 +160,7 @@
 				AdditionalDependencies="ws2_32.lib uuid.lib libexpat.lib"
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
 				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -185,7 +186,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot;&#x0D;&#x0A;copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp&quot;&#x0D;&#x0A;copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
