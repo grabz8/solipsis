@@ -21,6 +21,7 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
 int main(int argc, char *argv[])
 #endif
 {
+    setlocale(LC_NUMERIC, "English");
     try
     {
         // Create application
