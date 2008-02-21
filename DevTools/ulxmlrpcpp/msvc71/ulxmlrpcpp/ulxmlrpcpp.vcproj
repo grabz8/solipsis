@@ -50,7 +50,8 @@
 copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y
 if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL&quot;
 copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y
-copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y"/>
+copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -100,7 +101,8 @@ copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ul
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib uuid.lib libexpat.lib"
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
-				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"/>
+				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
+				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -110,7 +112,8 @@ copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ul
 copy &quot;..\..\ulxmlrpcpp\*.h&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\include\ulxmlrpcpp\.&quot; /y
 if not exist &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot; mkdir &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL&quot;
 copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y
-copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y"/>
+copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\.&quot; /y
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
