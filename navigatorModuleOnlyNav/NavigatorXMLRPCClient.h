@@ -2,7 +2,7 @@
 #define __NavigatorXMLRPCClient_h__
 
 #include <list>
-#include "XMLRPCNodeClient.h"
+#include "IP2NClient.h"
 #include "XmlDatas.h"
 #include "Ogre.h"
 
@@ -12,33 +12,33 @@ namespace Solipsis {
 
 /** This class manages XMLRPC requests and responses processed by the Navigator.
  */
-class NavigatorXMLRPCClient : public XMLRPCNodeClientLogger
+class NavigatorXMLRPCClient : public IP2NClientLogger
 {
 protected:
-    XMLRPCNodeClient mNodeClient;
-    XMLRPCNodeClient* mSharedCnx;
+    IP2NClient* mP2NClient;
+    IP2NClient* mSharedCnx;
 
 public:
-    NavigatorXMLRPCClient(const std::string& host, int port, const std::string& uri);
+    NavigatorXMLRPCClient(const std::string& host, int port, const std::string& extras);
     NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx);
     ~NavigatorXMLRPCClient();
 
-    /** log on Solipsis node server.
+    /** log on Solipsis host.
     @param xmlLogin Login parameters
-    @param objects List of owned objects
+    @param myEntities List of owned entities
     @returns True if login succeeded
     */
-    bool login(const XmlLogin& xmlLogin, std::list<ObjectUID>& myObjects);
-    /** log off Solipsis node server.
+    bool login(const XmlLogin& xmlLogin, std::list<EntityUID>& myXmlEntities);
+    /** log off Solipsis host.
     @returns True if logout succeeded
     */
     bool logout();
-    /** test if client is connected to Solipsis node server.
+    /** test if client is connected to Solipsis host.
     @returns True if client is connected
     */
     bool isConnected();
 
-    /** handle a node event.
+    /** handle an event.
     @param xmlEvt If exists, the allocated event to handle
     @returns True if handle operation succeded (even if no event returned)
     */
@@ -51,7 +51,7 @@ public:
     bool sendEvt(const XmlEvt& xmlEvt, std::string& xmlResp);
 
 protected:
-    /// @copydoc XMLRPCNodeClientLogger::logMessage
+    /// @copydoc IP2NClientLogger::logMessage
     virtual void logMessage(const std::string& message);
 };
 

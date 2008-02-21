@@ -16,10 +16,13 @@ String Avatar::mDefaultStateAnimName[SCount] = {
 #define MAX_SPEED 1.0f
 #define TRANSLATION_SPEED_MPS 6.0f
 #define ROTATION_SPEED_RPS Radian(Math::HALF_PI)
+#define SMOOTH_FACTOR 10.0f
+#define XMLUPDATE_DISPLACEMENT_THRESHOLD 0.001f
+#define XMLUPDATE_ROTATION_THRESHOLD Radian(Math::PI*0.001f)
 
 //-------------------------------------------------------------------------------------
-Avatar::Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* entity) :
-    OgrePeer(object, isLocal),
+Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+    OgrePeer(xmlEntity, isLocal),
     mState(SNone),
     mMvtType(MT3rdPerson),
     mSceneNode(sceneNode),
@@ -32,10 +35,9 @@ Avatar::Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* en
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 {
-    mUpdatedObject = 0;
+    mUpdatedXmlEntity = 0;
     if (isLocal)
-        mUpdatedObject = new XmlObject(object->getUid());
-    mOrientation = sceneNode->getOrientation();
+        mUpdatedXmlEntity = new XmlEntity(mXmlEntity->getUid());
 
     for (int a = 0;a < SCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
@@ -43,7 +45,7 @@ Avatar::Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* en
     mSceneNode->attachObject(entity);
 
     // Set Name Label
-    mNameLabel = new MovableText(StringConverter::toString(object->getUid()) + "Label", object->getName(), false);
+    mNameLabel = new MovableText(StringConverter::toString(mXmlEntity->getUid()) + "Label", mXmlEntity->getName(), false);
     mNameLabel->setScale(0.1f);
     mNameLabel->setCharacterHeight(1);
     mNameLabel->setColor(ColourValue::White);
@@ -52,7 +54,12 @@ Avatar::Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* en
     mNameLabel->setAdditionalHeight(aabbHeight);
     mSceneNode->attachObject(mNameLabel);
 
-    mGravity = false;
+    if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
+        sceneNode->setPosition(mXmlEntity->getPosition());
+    else
+        sceneNode->setPosition(Vector3::ZERO);
+    mLastRealPosition = sceneNode->getPosition();
+    mGravity = mXmlEntity->getFlags() & EFGravity;
 }
 
 //-------------------------------------------------------------------------------------
@@ -66,7 +73,7 @@ Avatar::~Avatar()
     }
     mSceneNode->getCreator()->destroySceneNode(mSceneNode->getName());
 
-    delete mUpdatedObject;
+    delete mUpdatedXmlEntity;
 }
 
 //-------------------------------------------------------------------------------------
@@ -123,12 +130,14 @@ Avatar::MvtType Avatar::getMvtType()
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::setGravity(bool enabled) {
+void Avatar::setGravity(bool enabled)
+{
     mGravity = enabled;
 }
 
 //-------------------------------------------------------------------------------------
-bool Avatar::isGravityEnabled() {
+bool Avatar::isGravityEnabled()
+{
     return mGravity;
 }
 
@@ -139,15 +148,27 @@ void Avatar::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-bool Avatar::update(XmlObject* updateObject)
+bool Avatar::update(XmlEntity* xmlEntity)
 {
-    if (updateObject->getDefinedAttributes().Test(XmlObject::DAPosition))
+    static int c;
+    static unsigned long l = (unsigned long)-1;
+    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
+        mXmlEntity->setFlags(xmlEntity->getFlags());
+    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
     {
-        mSceneNode->setPosition(updateObject->getPosition());
-    }
-    if (updateObject->getDefinedAttributes().Test(XmlObject::DAOrientation))
-    {
-        mSceneNode->setOrientation(updateObject->getOrientation());
+        mLastRealPosition = xmlEntity->getPosition();
+#ifdef LOGSNDRCV
+        OGRE_LOG("RCV " + StringConverter::toString(mLastRealPosition));
+#endif
+        unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
+        if (l == (unsigned long)-1) { l = n; c = 0; }
+        c++;
+        if (n - l > 10000)
+        {
+            Real fr = (Real)c/10.0f;
+            OGRE_LOG("Avatar::update() fr=" + StringConverter::toString(fr));
+            l = n; c = 0;
+        }
     }
 
     return true;
@@ -184,6 +205,8 @@ void Avatar::animate(Real timeSinceLastFrame)
     State nextState = mState;
     Real animOffset = 0;
 
+    mUpdatedXmlEntity->setDefinedAttributes(mUpdatedXmlEntity->getDefinedAttributes() & ~(XmlEntity::DAFlags | XmlEntity::DADisplacement | XmlEntity::DAOrientation));
+
     mUpKeyMotion.update(timeSinceLastFrame);
     mDownKeyMotion.update(timeSinceLastFrame);
     frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
@@ -210,9 +233,13 @@ void Avatar::animate(Real timeSinceLastFrame)
         if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
             nextState = SWalk;
     }
+    if (!mSceneNode->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
+        mUpdatedXmlEntity->setOrientation(mSceneNode->getOrientation());
 
-    if (mPgupKeyMotion.isPressed() && mGravity)
+    if (mPgupKeyMotion.isPressed() && isGravityEnabled())
         setGravity(false);
+    if ((mUpdatedXmlEntity->getFlags() & EFGravity) != mGravity)
+        mUpdatedXmlEntity->setFlags(mUpdatedXmlEntity->getFlags() ^ EFGravity);
 
     mPgupKeyMotion.update(timeSinceLastFrame);
     mPgdownKeyMotion.update(timeSinceLastFrame);
@@ -235,18 +262,31 @@ void Avatar::animate(Real timeSinceLastFrame)
     if (mState != nextState)
         setState(nextState);
 
-    // Compute displacement vector
+    // Move physics character
     Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
-//    if (mGravity)
-//        displacement.y += -9.80665f*timeSinceLastFrame;
-// gravity should be activated/deactivated on node, then node will add this Y- displacement in its computation
-// ?????????? QUESTION ?????????? new position OR key movement event ????????????
 
-    // Update XML object
+    // Update XML entity
     if (isLocal())
     {
-        mUpdatedObject->setPosition(mSceneNode->getPosition() + displacement);
+        Vector3 d = displacement/timeSinceLastFrame;
+        if ((d - mUpdatedXmlEntity->getDisplacement()).length() > XMLUPDATE_DISPLACEMENT_THRESHOLD)
+        {
+            mUpdatedXmlEntity->setDisplacement(d);
+#ifdef LOGSNDRCV
+            OGRE_LOG("SND " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
+#endif
+        }
     }
+    // Smooth X,Z + Smoothless Y positionning (smooth even with only 8 updates/sec)
+    Vector3 renderedDisplacement = mLastRealPosition - mSceneNode->getPosition();
+    Real motionXZ = std::min(1.0f, SMOOTH_FACTOR*timeSinceLastFrame);
+    Real motionY = std::min(1.0f, SMOOTH_FACTOR*2*timeSinceLastFrame);
+    Vector3 m(motionXZ, motionY, motionXZ);
+    mSceneNode->translate(renderedDisplacement*m);
+    // Direct positionning
+    //mSceneNode->setPosition(mLastRealPosition);
+    // Smooth X,Z + Direct Y positionning
+    //mSceneNode->setPosition(mSceneNode->getPosition()*Vector3(1, 0, 1) + mLastRealPosition*Vector3::UNIT_Y);
 }
 
 //-------------------------------------------------------------------------------------
@@ -272,11 +312,9 @@ void Avatar::movementKeyPressed(Solipsis::KeyCode code)
        case KC_PGDOWN:
            mPgdownKeyMotion.setState(true);
        break;
-/*
        case KC_END:
            setGravity(!isGravityEnabled());
        break;
-*/
     }
 }
 
@@ -309,14 +347,9 @@ void Avatar::movementKeyReleased(Solipsis::KeyCode code)
 //-------------------------------------------------------------------------------------
 void Avatar::yaw(const Radian& angle)
 {
-    // Update XML object
+    // Update XML entity
     if (isLocal())
-    {
-        Quaternion rotation;
-        rotation.FromAngleAxis(angle, Vector3::UNIT_Y);
-        mOrientation = mOrientation*rotation;
-        mUpdatedObject->setOrientation(mOrientation);
-    }
+        mSceneNode->yaw(angle);
 }
 
 //-------------------------------------------------------------------------------------

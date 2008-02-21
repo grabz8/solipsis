@@ -13,8 +13,8 @@ namespace Solipsis {
 class OgrePeer
 {
 protected:
-    /// Associated object
-    XmlObject* mObject;
+    /// Associated entity
+    XmlEntity* mXmlEntity;
     /// Type
     bool mIsLocal;
     /// Level of detail
@@ -23,20 +23,20 @@ protected:
 public:
     /** Constructor.
     */
-    OgrePeer(XmlObject* object, bool isLocal);
+    OgrePeer(XmlEntity* xmlEntity, bool isLocal);
     virtual ~OgrePeer();
 
-    /** Gets the object. */
-    XmlObject* getObject();
-    /** Gets the updated object. */
-    virtual XmlObject* getUpdatedObject() { return 0; }
-    /** Test if this peer is a local object. */
+    /** Gets the entity. */
+    XmlEntity* getXmlEntity();
+    /** Gets the updated entity. */
+    virtual XmlEntity* getUpdatedXmlEntity() { return 0; }
+    /** Test if this peer is a local entity. */
     bool isLocal() { return mIsLocal; }
 
     /** Update. */
     virtual void update(Real timeSinceLastFrame) = 0;
-    /** Update object. */
-    virtual bool update(XmlObject* updateObject) = 0;
+    /** Update entity. */
+    virtual bool update(XmlEntity* xmlEntity) = 0;
 };
 
 } // namespace Solipsis

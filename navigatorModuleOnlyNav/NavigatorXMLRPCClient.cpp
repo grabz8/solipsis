@@ -7,40 +7,40 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, const std::string& uri) :
-    mNodeClient(host, port, uri),
-    mSharedCnx(0)
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, const std::string& extras)
 {
-    mNodeClient.setLogger(this);
+    mP2NClient = IP2NClient::createClient(host, port, extras);
+    mP2NClient->setLogger(this);
+    mSharedCnx = 0;
 }
 
 //-------------------------------------------------------------------------------------
-NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx) :
-    mNodeClient(sharedCnx.mNodeClient.getHost(), sharedCnx.mNodeClient.getPort(), sharedCnx.mNodeClient.getUri()),
-    mSharedCnx(&sharedCnx.mNodeClient)
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx)
 {
-    mNodeClient.setLogger(this);
-    mNodeClient.shareCnx(mSharedCnx);
+    mP2NClient = IP2NClient::createClient(sharedCnx.mP2NClient->getHost(), sharedCnx.mP2NClient->getPort(), sharedCnx.mP2NClient->getExtras());
+    mP2NClient->setLogger(this);
+    mSharedCnx = sharedCnx.mP2NClient;
+    mP2NClient->shareCnx(mSharedCnx);
 }
 
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::~NavigatorXMLRPCClient()
 {
-    if (!mSharedCnx && mNodeClient.isConnected())
-        mNodeClient.logout();
+    if ((mSharedCnx == 0) && mP2NClient->isConnected())
+        mP2NClient->logout();
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<ObjectUID>& myObjects)
+bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<EntityUID>& myXmlEntities)
 {
     std::string xmlParams;
     std::string xmlResp;
 
-    myObjects.clear();
+    myXmlEntities.clear();
 
     xmlParams.append("<solipsis>").append(xmlLogin.toXmlString()).append("</solipsis>");
-    XMLRPCNodeClient::RetCode retCode = mNodeClient.login(xmlParams, xmlResp);
-    if (retCode != INodeClient::RCOk)
+    IP2NClient::RetCode retCode = mP2NClient->login(xmlParams, xmlResp);
+    if (retCode != IP2NClient::RCOk)
         return false;
 
     TiXmlDocument xmlDoc;
@@ -52,13 +52,17 @@ bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<ObjectUID>
         OGRE_LOG("Invalid response ! xmlResp=\n" + xmlResp);
         return false;
     }
-    if ((elt = xmlDoc.RootElement()->FirstChildElement("objects")) == 0)
+    if ((elt = xmlDoc.RootElement()->FirstChildElement("entities")) == 0)
         return true;
-    for (elt = elt->FirstChildElement("object"); elt != 0; elt = elt->NextSiblingElement("object"))
+    for (elt = elt->FirstChildElement("entity"); elt != 0; elt = elt->NextSiblingElement("entity"))
     {
         const char* attr = elt->Attribute("uid");
         if (attr != 0)
-            myObjects.push_back(static_cast<ObjectUID>(strtoul(attr, 0, 10)));
+        {
+            EntityUID uid;
+            convertStringToEntityUID(attr, uid);
+            myXmlEntities.push_back(uid);
+        }
     }
 
     return true;
@@ -67,13 +71,13 @@ bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<ObjectUID>
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::logout()
 {
-    return (mNodeClient.logout() == INodeClient::RCOk);
+    return (mP2NClient->logout() == IP2NClient::RCOk);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorXMLRPCClient::isConnected()
 {
-    return mNodeClient.isConnected();
+    return mP2NClient->isConnected();
 }
 
 //-------------------------------------------------------------------------------------
@@ -82,10 +86,10 @@ bool NavigatorXMLRPCClient::handleEvt(XmlEvt** xmlEvt)
     std::string xmlResp;
 
     *xmlEvt = 0;
-    XMLRPCNodeClient::RetCode retCode = mNodeClient.handleEvt(xmlResp);
-    if (retCode == INodeClient::RCNoEvt)
+    IP2NClient::RetCode retCode = mP2NClient->handleEvt(xmlResp);
+    if (retCode == IP2NClient::RCNoEvt)
         return true;
-    if (retCode != INodeClient::RCOk)
+    if (retCode != IP2NClient::RCOk)
         return false;
 
     TiXmlDocument xmlDoc;
@@ -108,8 +112,8 @@ bool NavigatorXMLRPCClient::sendEvt(const XmlEvt& xmlEvt, std::string& xmlResp)
     std::string xmlEvtStr;
 
     xmlEvtStr.append("<solipsis>").append(xmlEvt.toXmlString()).append("</solipsis>");
-    XMLRPCNodeClient::RetCode retCode = mNodeClient.sendEvt(xmlEvtStr, xmlResp);
-    if (retCode != INodeClient::RCOk)
+    IP2NClient::RetCode retCode = mP2NClient->sendEvt(xmlEvtStr, xmlResp);
+    if (retCode != IP2NClient::RCOk)
         return false;
 
     return true;

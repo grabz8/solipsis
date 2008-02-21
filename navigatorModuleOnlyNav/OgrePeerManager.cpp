@@ -25,6 +25,7 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     mSceneMgr(sceneMgr),
     mCallbacks(callbacks)
 {
+    mOgrePeersMap.clear();
 }
 
 //-------------------------------------------------------------------------------------
@@ -33,15 +34,15 @@ OgrePeerManager::~OgrePeerManager()
 }
 
 //-------------------------------------------------------------------------------------
-void OgrePeerManager::setMyObjects(std::list<ObjectUID> myObjects)
+void OgrePeerManager::setMyEntities(std::list<EntityUID> myEntities)
 {
-    mMyObjects.clear();
-    for (std::list<ObjectUID>::iterator it=myObjects.begin(); it != myObjects.end(); ++it)
-        mMyObjects[(*it)] = 0;
+    mMyXmlEntities.clear();
+    for (std::list<EntityUID>::iterator it=myEntities.begin(); it != myEntities.end(); ++it)
+        mMyXmlEntities[(*it)] = 0;
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::load(XmlObject* object)
+bool OgrePeerManager::load(XmlEntity* xmlEntity)
 {
     class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
     public:
@@ -54,7 +55,7 @@ bool OgrePeerManager::load(XmlObject* object)
     TiXmlDocumentPtr xmlDoc = TiXmlDocumentPtr(new TiXmlDocument());
 
     // Open XML file and parse it
-    String xmlFile = object->getName() + ".xml";
+    String xmlFile = xmlEntity->getName() + ".xml";
     DataStreamPtr stream;
     try
     {
@@ -97,33 +98,33 @@ bool OgrePeerManager::load(XmlObject* object)
         OgrePeer* newOgrePeer = 0;
         if (String(elt->Value()).compare("avatarNode") == 0)
         {
-            newOgrePeer = createAvatarNode(object, elt);
+            newOgrePeer = createAvatarNode(xmlEntity, elt);
             if (newOgrePeer == 0)
                 OGRE_LOG("OgrePeerManager::load() Unable to load avatarNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
         }
         else if (String(elt->Value()).compare("sceneNode") == 0)
         {
-            newOgrePeer = createSceneNode(object, elt);
+            newOgrePeer = createSceneNode(xmlEntity, elt);
             if (newOgrePeer == 0)
                 OGRE_LOG("OgrePeerManager::load() Unable to load sceneNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
         }
         if (newOgrePeer != 0)
-            mOgrePeersMap[object->getUid()] = newOgrePeer;
+            mOgrePeersMap[xmlEntity->getUid()] = newOgrePeer;
     }
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::remove(const ObjectUID& objectUId, bool local)
+bool OgrePeerManager::remove(const EntityUID& entity, bool local)
 {
     bool peerFound = false;
     for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
     {
         if (ogrePeer->second->isLocal() != local) continue;
-        if (ogrePeer->second->getObject()->getUid() == objectUId)
+        if (ogrePeer->second->getXmlEntity()->getUid() == entity)
         {
-            delete ogrePeer->second->getObject();
+            delete ogrePeer->second->getXmlEntity();
             delete ogrePeer->second;
             mOgrePeersMap.erase(ogrePeer);
             return true;
@@ -144,7 +145,7 @@ bool OgrePeerManager::removeAll(bool local)
         for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
         {
             if (ogrePeer->second->isLocal() != local) continue;
-            delete ogrePeer->second->getObject();
+            delete ogrePeer->second->getXmlEntity();
             delete ogrePeer->second;
             mOgrePeersMap.erase(ogrePeer);
             loopAgain = true;
@@ -156,16 +157,16 @@ bool OgrePeerManager::removeAll(bool local)
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::update(const ObjectUID& objectUId, XmlObject* object)
+bool OgrePeerManager::update(XmlEntity* xmlEntity)
 {
-    OgrePeer* ogrePeer = mOgrePeersMap[objectUId];
-    if (ogrePeer == 0)
+    OgrePeersMap::iterator it = mOgrePeersMap.find(xmlEntity->getUid());
+    if ((it == mOgrePeersMap.end()) || (it->second == 0))
         return false;
 
-    bool result;
-    result = ogrePeer->update(object);
+    OgrePeer* ogrePeer = it->second;
+    bool result = ogrePeer->update(xmlEntity);
 
-    delete object;
+    delete xmlEntity;
 
     return result;
 }
@@ -177,13 +178,13 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
     for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
         it->second->update(evt.timeSinceLastFrame);
 
-    // Send updated objects events to node
-    XmlEvt xmlEvt(ETUpdatedObject);
+    // Send updated entities events to node
+    XmlEvt xmlEvt(ETUpdatedEntity);
     for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
     {
-        XmlObject* updatedObject = it->second->getUpdatedObject();
-        if (updatedObject == 0) continue;
-        xmlEvt.setDatas(updatedObject);
+        XmlEntity* updatedXmlEntity = it->second->getUpdatedXmlEntity();
+        if (updatedXmlEntity == 0) continue;
+        xmlEvt.setDatas(updatedXmlEntity);
         mEvtsList.push_back(xmlEvt);
     }
 
@@ -191,7 +192,7 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 }
 
 //-------------------------------------------------------------------------------------
-OgrePeer* OgrePeerManager::createAvatarNode(XmlObject* object, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
 {
     if (mSceneMgr == 0)
         Exception(Exception::ERR_INTERNAL_ERROR,
@@ -203,7 +204,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlObject* object, TiXmlElement* xml
     const char* skeletonFilename = xmlElt->Attribute("skeletonFilename");
     if ((name == 0) || (meshFilename == 0) || (skeletonFilename == 0))
         return false;
-    String uidString = StringConverter::toString(object->getUid());
+    String uidString = StringConverter::toString(xmlEntity->getUid());
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Avatar");
     Entity* entity = mSceneMgr->createEntity(uidString + "Avatar", meshFilename);
 /* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
@@ -225,17 +226,8 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlObject* object, TiXmlElement* xml
     entity->setCastShadows(true);
 #endif
 
-    node->setPosition(object->getPosition());
-#ifdef LEXI
-    if (peer->getLogin().find("salamandra") != String::npos)
-        node->setPosition(0, 0.67f, 7.14f);
-#else
-        node->setPosition(17, -56.9f, 120);
-#endif
-
-    bool isLocal = (mMyObjects.find(object->getUid()) != mMyObjects.end());
-    Avatar* peerAvatar = new Avatar(object, isLocal, node, entity);
-    peerAvatar->setGravity(false);
+    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
+    Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, node, entity);
     peerAvatar->setStateAnimName(Avatar::SWalk, "Walk");
     peerAvatar->setStateAnimName(Avatar::SRun, "Run");
     peerAvatar->setStateAnimName(Avatar::SFly, "Fly");
@@ -253,7 +245,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlObject* object, TiXmlElement* xml
 }
 
 //-------------------------------------------------------------------------------------
-OgrePeer* OgrePeerManager::createSceneNode(XmlObject* object, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
 {
     if (mSceneMgr == 0)
         Exception(Exception::ERR_INTERNAL_ERROR,
@@ -262,7 +254,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlObject* object, TiXmlElement* xmlE
 
     const char* name = xmlElt->Attribute("name");
     const char* filename = xmlElt->Attribute("filename");
-    String uidString = StringConverter::toString(object->getUid());
+    String uidString = StringConverter::toString(xmlEntity->getUid());
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Scene");
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
@@ -279,14 +271,14 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlObject* object, TiXmlElement* xmlE
     mSceneMgr->setShadowCameraSetup(shadowCameraSetup);
 #endif
 
-    node->setPosition(object->getPosition());
+    node->setPosition(xmlEntity->getPosition());
     node->setPosition(18,-58,133);
 
     // Destroy the scene collision mesh
     mSceneMgr->destroyEntity("MC_station");
 
-    bool isLocal = (mMyObjects.find(object->getUid()) != mMyObjects.end());
-    Scene* peerScene = new Scene(object, isLocal, node);
+    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
+    Scene* peerScene = new Scene(xmlEntity, isLocal, node);
 
     if (mCallbacks != 0)
         if (!mCallbacks->OnSceneNodeCreate(xmlElt, peerScene))

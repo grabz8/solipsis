@@ -32,8 +32,8 @@ public:
     };
 
 protected:
-    /// Updated object
-    XmlObject* mUpdatedObject;
+    /// Updated entity
+    XmlEntity* mUpdatedXmlEntity;
     /// Default animation names
     static String mDefaultStateAnimName[SCount];
     /// Animation names
@@ -42,7 +42,7 @@ protected:
     State mState;
     /// Current movement type
     MvtType mMvtType;
-    Quaternion mOrientation;
+    Vector3 mLastRealPosition;
 
     /// Scene node
     SceneNode* mSceneNode;
@@ -86,12 +86,21 @@ private:
 
 public:
     /** Constructor. */
-    Avatar(XmlObject* object, bool isLocal, SceneNode* sceneNode, Entity* entity);
+    Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity);
     /** Destructor. */
     virtual ~Avatar();
 
-    /** Gets the updated object. */
-    virtual XmlObject* getUpdatedObject() { return mUpdatedObject; mOrientation = mSceneNode->getOrientation(); }
+    /** Gets the updated entity. */
+    virtual XmlEntity* getUpdatedXmlEntity()
+    {
+        if (mUpdatedXmlEntity->getDefinedAttributes() & (
+            XmlEntity::DAFlags |
+            XmlEntity::DADisplacement |
+            XmlEntity::DAPosition |
+            XmlEntity::DAOrientation))
+            return mUpdatedXmlEntity;
+        return 0;
+    }
 
     /** Get the scene node. */
     SceneNode* getSceneNode();
@@ -120,7 +129,7 @@ public:
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
-    virtual bool update(XmlObject* updateObject);
+    virtual bool update(XmlEntity* xmlEntity);
 
     /** Starts 1 animation. */
     void startAnimation(const String &name, bool loop = true);

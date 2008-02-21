@@ -8,8 +8,6 @@ copy ..\navigatorModule\IApplication.h ..\Dependencies\navigatorModule\include\.
 copy ..\navigatorModule\IInstance.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\IWindow.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
-rem copy ..\navigatorModule\IPhysics*.h ..\Dependencies\navigatorModule\include\. /y
-rem copy ..\navigatorModule\PhysicsEngineManager.h ..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\Dependencies\navigatorModule\lib\Debug mkdir ..\Dependencies\navigatorModule\lib\Debug
 copy Debug\Navigator.lib ..\Dependencies\navigatorModule\lib\Debug\. /y
@@ -55,15 +53,16 @@ if exist "%dst%\OIS_d.dll" goto OIS_d_exist
 :OIS_d_exist
 if not exist "%dst%\pthreadVC_d.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC_d.dll" "%dst%" /s /y
 if not exist "%dst%\xul.dll" xcopy "..\Dependencies\llmozlib\win32_%vc%\runtime\Debug\*.*" "%dst%" /s /y
+if not exist "%dst%\XmlDatas.dll" xcopy "..\Dependencies\protocols\XmlDatas\lib\DebugDLL\XmlDatas.dll" "%dst%" /s /y
+if not exist "%dst%\XMLRPCP2NClient.dll" xcopy "..\Dependencies\protocols\P2NClient\xmlrpc++\DebugDLL\XMLRPCP2NClient.dll" "%dst%" /s /y
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
 if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
-rem if not exist "%dst%\OgreOde_Core_d.dll" xcopy "..\Dependencies\OgreOde\lib\OgreOde_Core_d.dll" "%dst%" /s /y
 
-rem if exist "%dst%\Plugins.cfg" goto Plugins_exist
+if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\Plugins.cfg" xcopy "%OGRE_HOME%\bin\debug\Plugins.cfg" "%dst%" /s /y
-rem :Plugins_exist
+:Plugins_exist
 if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Debug\quake3settings.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\quake3settings.cfg" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\quake3settings.cfg" xcopy "%OGRE_HOME%\bin\debug\quake3settings.cfg" "%dst%" /s /y

@@ -199,9 +199,9 @@ protected:
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 
-    virtual void onPeerNew(XmlObject* object);
-    virtual void onPeerLost(XmlObject* object);
-    virtual void onPeerUpdated(XmlObject* object);
+    virtual void onPeerNew(XmlEntity* xmlEntity);
+    virtual void onPeerLost(XmlEntity* xmlEntity);
+    virtual void onPeerUpdated(XmlEntity* xmlEntity);
 
 	/// The modeler object
 	Modeler		*mModeler;

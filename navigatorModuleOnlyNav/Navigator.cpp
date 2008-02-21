@@ -472,13 +472,13 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
         // retrieve avatar instance
         for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
         {
-            if (ogrePeer->second->getObject()->getType() != OTAvatar) continue;
+            if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
 /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
 //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
-            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Object:Uid=" + avatar->getObject()->getUid() + ", Object:Name=" + avatar->getObject()->getName());
+            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Entity:Uid=" + avatar->getXmlEntity()->getUid() + ", Entity:Name=" + avatar->getEntity()->getName());
             return true;
         }
     }
@@ -595,8 +595,8 @@ bool Navigator::connect()
 
     //Try connection
     XmlLogin xmlLogin("user", "demo");
-    std::list<ObjectUID> myObjects;
-    bool nodeResponse = mXmlRpcClient->login(xmlLogin, myObjects);
+    std::list<EntityUID> myEntities;
+    bool nodeResponse = mXmlRpcClient->login(xmlLogin, myEntities);
 
     if (!nodeResponse)
     {
@@ -605,8 +605,8 @@ bool Navigator::connect()
     }
     else
     {
-        // Set my objects into OgrePeer manager
-        mOgrePeerManager->setMyObjects(myObjects);
+        // Set my entitys into OgrePeer manager
+        mOgrePeerManager->setMyEntities(myEntities);
 
         // Connected !
 
@@ -635,7 +635,7 @@ bool Navigator::sendMessage(const String& message)
     if (mXmlRpcClient == 0)
         Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
-    XmlEvt xmlEvt(ETActionOnObject);
+    XmlEvt xmlEvt(ETActionOnEntity);
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 }
@@ -677,7 +677,7 @@ void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::onPeerNew(XmlObject* object)
+void Navigator::onPeerNew(XmlEntity* xmlEntity)
 {
     OGRE_LOG("Navigator::onPeerNew()");
 
@@ -685,25 +685,25 @@ void Navigator::onPeerNew(XmlObject* object)
     if (mNavigatorGUI != 0)
         mNavigatorGUI->setTreeDirty(true);
 #endif
-    if (!mOgrePeerManager->load(object))
-        OGRE_LOG("Navigator::onPeerNew() Unable to load object !");
+    if (!mOgrePeerManager->load(xmlEntity))
+        OGRE_LOG("Navigator::onPeerNew() Unable to load entity !");
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::onPeerLost(XmlObject* object)
+void Navigator::onPeerLost(XmlEntity* xmlEntity)
 {
     OGRE_LOG("Navigator::onPeerLost()");
 
-    if (!mOgrePeerManager->remove(object->getUid(), false))
+    if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
         Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::onPeerUpdated(XmlObject* object)
+void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 {
 //    OGRE_LOG("Navigator::onPeerUpdated()");
 
-    if (!mOgrePeerManager->update(object->getUid(), object))
+    if (!mOgrePeerManager->update(xmlEntity))
         Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer !", "Navigator::onPeerUpdated");
 }
 
@@ -718,14 +718,14 @@ void Navigator::processEvents()
     {
         switch ((*evt)->getType())
         {
-        case ETNewObject:
-            onPeerNew((XmlObject*)((*evt)->getDatas()));
+        case ETNewEntity:
+            onPeerNew((XmlEntity*)((*evt)->getDatas()));
             break;
-        case ETLostObject:
-            onPeerLost((XmlObject*)((*evt)->getDatas()));
+        case ETLostEntity:
+            onPeerLost((XmlEntity*)((*evt)->getDatas()));
             break;
-        case ETUpdatedObject:
-            onPeerUpdated((XmlObject*)((*evt)->getDatas()));
+        case ETUpdatedEntity:
+            onPeerUpdated((XmlEntity*)((*evt)->getDatas()));
             break;
         default: // Caller already check type consistency
             break;
@@ -761,12 +761,6 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
     if (ogrePeer->isLocal())
     {
         mUserAvatar = (Avatar*)ogrePeer;
-#ifdef LEXI
-        if (mUserAvatar->getEntity()->getMesh()->getName().find("salamandra") != String::npos)
-            mUserAvatar->getSceneNode()->setPosition(0, 0.67f, 0);
-#else
-        mUserAvatar->getSceneNode()->setPosition(17, -57, 115);
-#endif
 
         // create the sun light
         Light *sunLight = mSceneMgr->createLight("SunLight");
@@ -786,19 +780,11 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
 
         // Create First person camera node/pitch node
         SceneNode* camNode = mUserAvatar->getSceneNode()->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
-#ifdef LEXI
-        if (entity->getMesh()->getName().find("salamandra") != String::npos)
-            camNode->setPosition(Vector3(0, 1, 0)*avatarHalfSize);
-#endif
         camNode->yaw(Radian(-Math::HALF_PI));
         SceneNode* pitchCamNode = camNode->createChildSceneNode("FirstPersonCamPitchNode");
 
         // Create the Third camera node/pitch node
         camNode = mUserAvatar->getSceneNode()->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
-#ifdef LEXI
-        if (entity->getMesh()->getName().find("salamandra") != String::npos)
-            camNode->setPosition(Vector3(0, -0.67, 0) + Vector3(-4, 1.1, 0)*avatarSize);
-#endif
         camNode->yaw(Radian(-Math::HALF_PI));
         pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
 

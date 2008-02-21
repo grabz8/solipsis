@@ -17,13 +17,13 @@ namespace Solipsis {
 class OgrePeerManager : public FrameListener
 {
 public:
-    typedef std::map<ObjectUID, XmlObject*> ObjectsMap;
-    typedef std::map<ObjectUID, OgrePeer*> OgrePeersMap;
+    typedef std::map<EntityUID, XmlEntity*> XmlEntitiesMap;
+    typedef std::map<EntityUID, OgrePeer*> OgrePeersMap;
     typedef std::list<XmlEvt> EvtsList;
 
 private:
-    // Objects
-    ObjectsMap mMyObjects;
+    // Entities
+    XmlEntitiesMap mMyXmlEntities;
 
     // <Peer's name, OgrePeer> map
     OgrePeersMap mOgrePeersMap;
@@ -41,20 +41,20 @@ public:
 	OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
 	~OgrePeerManager();
 
-	// Set my objects
-	void setMyObjects(std::list<ObjectUID> myObjects);
+	// Set my entities
+	void setMyEntities(std::list<EntityUID> myEntities);
 
 	// Load
-	bool load(XmlObject* object);
+	bool load(XmlEntity* xmlEntity);
 
 	// Remove 1 peer according to its ID and if it is local or networked
-    bool remove(const ObjectUID& objectUId, bool local);
+    bool remove(const EntityUID& entity, bool local);
 
     // Remove all peers (locals or networked)
     bool removeAll(bool local);
 
 	// Update
-    bool update(const ObjectUID& objectUId, XmlObject* object);
+    bool update(XmlEntity* xmlEntity);
 
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
@@ -66,8 +66,8 @@ public:
     EvtsList& getEvtsToSendList() { return mEvtsList; }
 
 protected:
-	virtual OgrePeer* createAvatarNode(XmlObject* object, TiXmlElement* xmlElt);
-	virtual OgrePeer* createSceneNode(XmlObject* object, TiXmlElement* xmlElt);
+	virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
+	virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
 };
 
 } // namespace Solipsis

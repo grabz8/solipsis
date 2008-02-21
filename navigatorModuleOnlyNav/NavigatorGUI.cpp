@@ -302,7 +302,7 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
     navi->evaluateJS("allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
     for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
     {
-        String ogrePeerName = ogrePeer->second->getObject()->getName();
+        String ogrePeerName = ogrePeer->second->getXmlEntity()->getName();
         navi->evaluateJS("allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
     }
     navi->evaluateJS("allTree.enable()");

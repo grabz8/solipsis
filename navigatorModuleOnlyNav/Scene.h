@@ -17,7 +17,7 @@ protected:
     RaySceneQuery* mRaySceneQuery;
 
 public:
-    Scene(XmlObject* object, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
+    Scene(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
     virtual ~Scene();
 
     // Set and get
@@ -26,7 +26,7 @@ public:
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
-    virtual bool update(XmlObject* updateObject);
+    virtual bool update(XmlEntity* xmlEntity);
 
 protected:
     void destroy();

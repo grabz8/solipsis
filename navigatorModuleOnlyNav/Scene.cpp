@@ -4,8 +4,8 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-Scene::Scene(XmlObject* object, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
-    OgrePeer(object, isLocal),
+Scene::Scene(XmlEntity* entity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
+    OgrePeer(entity, isLocal),
     mSceneNode(sceneNode),
     mStaticGeometry(0),
     mRaySceneQuery(raySceneQuery)
@@ -33,15 +33,15 @@ void Scene::update(Ogre::Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-bool Scene::update(XmlObject* updateObject)
+bool Scene::update(XmlEntity* xmlEntity)
 {
-    if (updateObject->getDefinedAttributes().Test(XmlObject::DAPosition))
+    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
     {
-        mSceneNode->setPosition(updateObject->getPosition());
+        mSceneNode->setPosition(xmlEntity->getPosition());
     }
-    if (updateObject->getDefinedAttributes().Test(XmlObject::DAOrientation))
+    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
     {
-        mSceneNode->setOrientation(updateObject->getOrientation());
+        mSceneNode->setOrientation(xmlEntity->getOrientation());
     }
 
     return true;

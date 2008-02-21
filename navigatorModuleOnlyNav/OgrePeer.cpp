@@ -4,8 +4,8 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-OgrePeer::OgrePeer(XmlObject* object, bool isLocal) :
-    mObject(object),
+OgrePeer::OgrePeer(XmlEntity* xmlEntity, bool isLocal) :
+    mXmlEntity(xmlEntity),
     mIsLocal(isLocal),
     mLod(0)
 {
@@ -18,9 +18,9 @@ OgrePeer::~OgrePeer()
 }
 
 //-------------------------------------------------------------------------------------
-XmlObject* OgrePeer::getObject()
+XmlEntity* OgrePeer::getXmlEntity()
 {
-    return mObject;
+    return mXmlEntity;
 }
 
 //-------------------------------------------------------------------------------------

@@ -30,7 +30,8 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 #endif
 
     // Updating Navi
-    NaviManager::Get().Update();
+    if (mNavigator->isNaviSupported())
+        NaviManager::Get().Update();
 
     if (mNavigator->isConnected()) {
         // Process received events
@@ -52,7 +53,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
 
 	// Updating Navi with the key pressed
-    if (NaviManager::Get().isAnyNaviFocused()) return true;
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
 
 	if (mNavigator->getState() == Navigator::SModeling)
 	{
@@ -169,7 +170,7 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
    // Updating Navi with the key pressed
-    if (NaviManager::Get().isAnyNaviFocused()) return true;
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
 
 	if (mNavigator->getState() == Navigator::SModeling)
 	{
@@ -225,43 +226,46 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 {
     // Updating Navi with the mouse motion
     // 3D picking of Navi panels if any NaviMaterial focused
-    if ((mNavigator->getState() == Navigator::SInWorld) &&
-        NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
-        && (mCameraMode != CM1stPerson))
+    if (mNavigator->isNaviSupported())
     {
-        std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
-        if (evt.mState.mZrel != 0) NaviManager::Get().getFocusedNavi()->injectMouseWheel(evt.mState.mZrel);
-        // normalize (x, y) on 0..1 and get the ray emitted from the camera
-        Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-        // Compute Navi panel mouse location
-        Real closestDistance = -1.0f;
-        Vector2 closestUV;
-        Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
-        int naviX, naviY;
-        if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
-                                            closestDistance,
-                                            closestUV,
-                                            closestTriUV0, closestTriUV1, closestTriUV2))
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
+            && (mCameraMode != CM1stPerson))
         {
-            // compute texture coordinates of the hit
-            mNavigator->computeNaviHit(focusedNavi,
-                                       closestUV,
-                                       closestTriUV0, closestTriUV1, closestTriUV2,
-                                       naviX, naviY);
-            NaviManager::Get().getFocusedNavi()->injectMouseMove(naviX, naviY);
+            std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
+            if (evt.mState.mZrel != 0) NaviManager::Get().getFocusedNavi()->injectMouseWheel(evt.mState.mZrel);
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute Navi panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            int naviX, naviY;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
+                                                closestDistance,
+                                                closestUV,
+                                                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeNaviHit(focusedNavi,
+                                           closestUV,
+                                           closestTriUV0, closestTriUV1, closestTriUV2,
+                                           naviX, naviY);
+                NaviManager::Get().getFocusedNavi()->injectMouseMove(naviX, naviY);
+            }
         }
-    }
-    else
-        if (evt.mState.mZrel != 0) NaviManager::Get().injectMouseWheel(evt.mState.mZrel);
+        else
+            if (evt.mState.mZrel != 0) NaviManager::Get().injectMouseWheel(evt.mState.mZrel);
 
-    // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
-    NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
+        // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
+        NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
+    }
 
     if (mNavigator->getState() != Navigator::SInWorld)
         return true;
 
     // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
-    if (NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
         return true;
 
     Real mouseWheel = evt.mState.mZrel;
@@ -300,7 +304,6 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (getCameraMode() == CM1stPerson)
     {
         mNavigator->getUserAvatar()->yaw(Degree(-mRotate*evt.mState.mXrel));
-//        mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
         mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
     }
 
