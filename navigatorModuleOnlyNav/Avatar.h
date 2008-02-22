@@ -93,7 +93,7 @@ public:
     /** Gets the updated entity. */
     virtual XmlEntity* getUpdatedXmlEntity()
     {
-        if (mUpdatedXmlEntity->getDefinedAttributes() & (
+        if (isLocal() && mUpdatedXmlEntity->getDefinedAttributes() & (
             XmlEntity::DAFlags |
             XmlEntity::DADisplacement |
             XmlEntity::DAPosition |

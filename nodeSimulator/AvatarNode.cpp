@@ -69,6 +69,8 @@ bool AvatarNode::addAwareEntity(Entity* entity)
     mAwareEntities[entity->getXmlEntity()->getUid()] = entity;
     if (entity->getXmlEntity()->getOwner().compare(mNodeId) == 0)
         mOwnedEntities[entity->getXmlEntity()->getUid()] = entity;
+    else
+        entity->addEntityListener(this);
 
 #ifdef PHYSICSPLUGINS
     entity->createPhysics(mPhysicsScene);
@@ -92,11 +94,14 @@ bool AvatarNode::removeAwareEntity(Entity* entity)
 {
     pthread_mutex_lock(&mMutex);
 
+    if (entity->getXmlEntity()->getOwner().compare(mNodeId) != 0)
+        entity->removeEntityListener(this);
+
+    mAwareEntities.erase(entity->getXmlEntity()->getUid());
+
 #ifdef PHYSICSPLUGINS
     entity->destroyPhysics();
 #endif
-
-    mAwareEntities.erase(entity->getXmlEntity()->getUid());
 
     pthread_mutex_unlock(&mMutex);
 
@@ -155,6 +160,7 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
             if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
             {
                 avatar->getXmlEntity()->setOrientation(xmlEntity->getOrientation());
+                mAvatar.throwUpdateToEntityListeners(*this, mAvatar, xmlEvt);
             }
         }
         pthread_mutex_unlock(&mMutex);
@@ -213,12 +219,36 @@ c++;
 #endif
             evt->setDatas(&mAvatar.mUpdatedXmlEntity);
             mEvtsToHandleList.push_back(evt);
+            mAvatar.throwUpdateToEntityListeners(*this, mAvatar, *evt);
             mAvatar.mDirty = false;
         }
         pthread_mutex_unlock(&mEvtsMutex);
     }
 
     pthread_mutex_unlock(&mMutex);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool AvatarNode::updated(const Node& node, Entity& entity, XmlEvt& xmlEvt)
+{
+    pthread_mutex_lock(&mEvtsMutex);
+//    XmlEvt* evt = new XmlEvt(ETUpdatedEntity);
+//    evt->setDatas(xmlEvt.getDatas());
+//    mEvtsToHandleList.push_back(evt);
+    if (mXmlEntityMap.find(entity.getXmlEntity()->getUid()) == mXmlEntityMap.end())
+        mXmlEntityMap[entity.getXmlEntity()->getUid()] = new XmlEntity(entity.getXmlEntity()->getUid());
+    XmlEntity* local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
+    local->setDefinedAttributes(((XmlEntity*)xmlEvt.getDatas())->getDefinedAttributes());
+    if (local->getDefinedAttributes() & XmlEntity::DAPosition)
+        local->setPosition(((XmlEntity*)xmlEvt.getDatas())->getPosition());
+    if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
+        local->setOrientation(((XmlEntity*)xmlEvt.getDatas())->getOrientation());
+    XmlEvt* evt = new XmlEvt(ETUpdatedEntity);
+    evt->setDatas(local);
+    mEvtsToHandleList.push_back(evt);
+    pthread_mutex_unlock(&mEvtsMutex);
 
     return true;
 }

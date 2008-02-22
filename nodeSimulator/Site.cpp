@@ -1,6 +1,8 @@
 #include "Site.h"
 #include "OgreHelpers.h"
 
+using namespace Ogre;
+
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------

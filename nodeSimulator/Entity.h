@@ -7,9 +7,23 @@
 #include "IPhysicsScene.h"
 #endif
 
-using namespace Ogre;
-
 namespace Solipsis {
+
+class Node;
+class Entity;
+
+/** An interface class defining a listener which can be used to receive
+    notifications of updated entities.
+*/
+class EntityListener
+{
+public:
+    /** Called when an entity is updated.
+        @return
+            True to go ahead, false otherwise.
+    */
+    virtual bool updated(const Node& node, Entity& entity, XmlEvt& xmlEvt) = 0;
+};
 
 /** This class manages 1 entity by its descriptor.
 */
@@ -30,6 +44,9 @@ protected:
     /// Physics scene
     IPhysicsScene* mPhysicsScene;
 #endif
+
+    /// Set of registered entity listeners
+    std::set<EntityListener*> mEntityListeners;
 
 public:
     /** Constructor. */
@@ -52,8 +69,15 @@ public:
     virtual void destroyPhysics();
 #endif
 
+    /** Removes a EntityListener from the list of listening classes. */
+    void addEntityListener(EntityListener* newListener);
+    /** Removes a EntityListener from the list of listening classes. */
+    void removeEntityListener(EntityListener* oldListener);
+    /** Throw an update to list of listening classes. */
+    void throwUpdateToEntityListeners(const Node& node, Entity& entity, XmlEvt& xmlEvt);
+
     /** Update. */
-    virtual bool update(Real timeSinceLastFrame) = 0;
+    virtual bool update(Ogre::Real timeSinceLastFrame) = 0;
 };
 
 } // namespace Solipsis

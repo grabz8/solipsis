@@ -5,7 +5,7 @@
 
 namespace Solipsis {
 
-/** A interface class defining a listener which can be used to receive
+/** An interface class defining a listener which can be used to receive
     notifications of time events.
 */
 class TimeListener

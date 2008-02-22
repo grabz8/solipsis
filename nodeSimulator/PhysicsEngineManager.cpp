@@ -1,5 +1,6 @@
 #include "PhysicsEngineManager.h"
 
+using namespace Ogre;
 using namespace Solipsis;
 
 template<> PhysicsEngineManager* Singleton<PhysicsEngineManager>::ms_Singleton = 0;

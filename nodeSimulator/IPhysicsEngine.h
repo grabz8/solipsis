@@ -5,8 +5,6 @@
 #include "OgrePrerequisites.h"
 #include "Ogre.h"
 
-using namespace Ogre;
-
 namespace Solipsis {
 
 /** This class represents a generic Physics engine.
@@ -20,7 +18,7 @@ public:
     /** Get the name of the physics engine.
     @remarks An implementation must be supplied for this method to uniquely identify the engine.
     */
-    virtual const String& getName() const = 0;
+    virtual const Ogre::String& getName() const = 0;
 
     /** Perform the initialization. 
     @remarks An implementation must be supplied for this method.

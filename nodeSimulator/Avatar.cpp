@@ -1,5 +1,7 @@
 #include "Avatar.h"
 
+using namespace Ogre;
+
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------

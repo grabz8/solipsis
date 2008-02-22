@@ -5,8 +5,6 @@
 #include "OgrePrerequisites.h"
 #include "Ogre.h"
 
-using namespace Ogre;
-
 namespace Solipsis {
 
 /** This class represents a generic Physics character.
@@ -19,13 +17,13 @@ public:
     /// Description of 1 character
     typedef struct {
         /// Position 
-        Vector3 position;
+        Ogre::Vector3 position;
         /// Radius
-        Real radius;
+        Ogre::Real radius;
         /// Height
-        Real height;
+        Ogre::Real height;
         /// Max offset character can step up (stair's step, ...)
-        Real stepOffset;
+        Ogre::Real stepOffset;
     } Desc;
 public:
     IPhysicsCharacter() {}
@@ -38,11 +36,11 @@ public:
     /** Move.
     @remarks An implementation must be supplied for this method.
     */
-    virtual void move(Vector3& displacement) = 0;
+    virtual void move(Ogre::Vector3& displacement) = 0;
     /** Get current position.
     @remarks An implementation must be supplied for this method.
     */
-    virtual void getPosition(Vector3& position) = 0;
+    virtual void getPosition(Ogre::Vector3& position) = 0;
 };
 
 } // end namespace

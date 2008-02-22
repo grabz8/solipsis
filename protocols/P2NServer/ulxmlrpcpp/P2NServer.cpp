@@ -184,7 +184,7 @@ bool P2NServer::getExtraInformation(const std::string& extras, const std::string
     idx = extras.find(information);
     if (idx == std::string::npos)
         return false;
-    idx += information.length() + 1;
+    idx += information.length();
     if (extras.length() < idx)
         return false;
     spc = extras.find(' ', idx);

@@ -5,8 +5,6 @@
 #include "OgrePrerequisites.h"
 #include "Ogre.h"
 
-using namespace Ogre;
-
 namespace Solipsis {
 
 /** This class represents a generic Physics scene.
@@ -53,13 +51,13 @@ public:
     @remarks An implementation must be supplied for this method.
     @param maxStepInSeconds The max duration of each step in seconds
     */
-    virtual void setTiming(Real maxStepInSeconds) = 0;
+    virtual void setTiming(Ogre::Real maxStepInSeconds) = 0;
     /** Get the physics timing parameters.
     @remarks An implementation must be supplied for this method.
     @param maxStepInSeconds The max duration of each step in seconds
     @param timeSinceLastFrame The last frame duration
     */
-    virtual void getTiming(Real& maxStepInSeconds, Real& timeSinceLastFrame) = 0;
+    virtual void getTiming(Ogre::Real& maxStepInSeconds, Ogre::Real& timeSinceLastFrame) = 0;
 
     /** Pre-compute 1 step.
     @remarks An implementation must be supplied for this method.
@@ -68,7 +66,7 @@ public:
     computation.
     @param timeSinceLastFrame The duration of the last frame in seconds
     */
-    virtual void preStep(Real timeSinceLastFrame) = 0;
+    virtual void preStep(Ogre::Real timeSinceLastFrame) = 0;
     /** Post-compute 1 step.
     @remarks An implementation must be supplied for this method.
     We simulate 1 physics step with 2 calls because some physics engines (like PhysX)
@@ -80,19 +78,19 @@ public:
     /** Get the gravity.
     @remarks An implementation must be supplied for this method.
     */
-    virtual void getGravity(Vector3& gravity) = 0;
+    virtual void getGravity(Ogre::Vector3& gravity) = 0;
     /** Set the gravity.
     @remarks An implementation must be supplied for this method.
     */
-    virtual void setGravity(Vector3& gravity) = 0;
+    virtual void setGravity(Ogre::Vector3& gravity) = 0;
 
     /** Set the collision mesh of the terrain.
     @remarks An implementation must be supplied for this method.
     */
-    virtual bool setTerrainMesh(const MeshPtr mesh,
-                                const Vector3& position,
-                                const Quaternion& orientation,
-                                const Vector3& scale) = 0;
+    virtual bool setTerrainMesh(const Ogre::MeshPtr mesh,
+                                const Ogre::Vector3& position,
+                                const Ogre::Quaternion& orientation,
+                                const Ogre::Vector3& scale) = 0;
 
     /** Create 1 body.
     @remarks An implementation must be supplied for this method.

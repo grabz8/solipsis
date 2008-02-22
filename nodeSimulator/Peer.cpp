@@ -263,7 +263,7 @@ bool Peer::_initialize()
 #endif
 
     // create and start the Node server
-    mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "");
+    mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=4");
 	mP2NServer->init();
 	if (!mP2NServer->start())
         return false;

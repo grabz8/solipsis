@@ -13,14 +13,16 @@
 #include "PhysicsEngineManager.h"
 #endif
 
-using namespace Ogre;
-
 namespace Solipsis {
 
 /** This class manages 1 avatar node.
 */
-class AvatarNode : public Node, public TimeListener
+class AvatarNode : public Node, public TimeListener, public EntityListener
 {
+public:
+    /// <EntityUID, XmlEntity*> map
+    typedef std::map<EntityUID, XmlEntity*> XmlEntityMap;
+
 protected:
     /// Mutex
     pthread_mutex_t mMutex;
@@ -31,6 +33,8 @@ protected:
     Entity::EntityMap mOwnedEntities;
     /// Map of entities avatar is aware of
     Entity::EntityMap mAwareEntities;
+
+    XmlEntityMap mXmlEntityMap;
 
 #ifdef PHYSICSPLUGINS
     /// Physics scene
@@ -63,6 +67,9 @@ public:
 
     /** See Solipsis::TimeListener. */
     virtual bool tick(Real timeSinceLastTick);
+
+    /** See Solipsis::EntityListener. */
+    virtual bool updated(const Node& node, Entity& entity, XmlEvt& xmlEvt);
 };
 
 } // namespace Solipsis

@@ -14,9 +14,9 @@ class Avatar : public Entity
 {
 protected:
     /// Radius
-    Real mRadius;
+    Ogre::Real mRadius;
     /// Height
-    Real mHeight;
+    Ogre::Real mHeight;
 #ifdef PHYSICSPLUGINS
     /// Physics Character
     IPhysicsCharacter* mPhysicsCharacter;
@@ -40,7 +40,7 @@ public:
 #endif
 
     /** See Entity. */
-    virtual bool update(Real timeSinceLastFrame);
+    virtual bool update(Ogre::Real timeSinceLastFrame);
 };
 
 } // namespace Solipsis

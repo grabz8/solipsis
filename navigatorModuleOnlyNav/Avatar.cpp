@@ -170,6 +170,10 @@ bool Avatar::update(XmlEntity* xmlEntity)
             l = n; c = 0;
         }
     }
+    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
+    {
+        mSceneNode->setOrientation(xmlEntity->getOrientation());
+    }
 
     return true;
 }
@@ -195,79 +199,80 @@ void Avatar::stopAnimation()
 //-------------------------------------------------------------------------------------
 void Avatar::animate(Real timeSinceLastFrame)
 {
-    Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
-    Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
-    Vector3 vri = mSceneNode->getOrientation()*Vector3::UNIT_Z;
-    Real frontBackMvt;
-    Real leftRightMvt;
-    Real upDownMvt;
-    Vector3 mvt = Vector3(0, 0, 0);
     State nextState = mState;
     Real animOffset = 0;
 
-    mUpdatedXmlEntity->setDefinedAttributes(mUpdatedXmlEntity->getDefinedAttributes() & ~(XmlEntity::DAFlags | XmlEntity::DADisplacement | XmlEntity::DAOrientation));
-
-    mUpKeyMotion.update(timeSinceLastFrame);
-    mDownKeyMotion.update(timeSinceLastFrame);
-    frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
-    mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
-    if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
-        nextState = SWalk;
-    if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
-        nextState = SRun;
-
-    mLeftKeyMotion.update(timeSinceLastFrame);
-    mRightKeyMotion.update(timeSinceLastFrame);
-    leftRightMvt = mLeftKeyMotion.getMotion() - mRightKeyMotion.getMotion();
-    if (mMvtType == MT1stPerson)
-    {
-        // First person straff
-        mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
-        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
-            nextState = SWalk;
-    }
-    else
-    {
-        // Third person rotation
-        yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
-        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
-            nextState = SWalk;
-    }
-    if (!mSceneNode->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
-        mUpdatedXmlEntity->setOrientation(mSceneNode->getOrientation());
-
-    if (mPgupKeyMotion.isPressed() && isGravityEnabled())
-        setGravity(false);
-    if ((mUpdatedXmlEntity->getFlags() & EFGravity) != mGravity)
-        mUpdatedXmlEntity->setFlags(mUpdatedXmlEntity->getFlags() ^ EFGravity);
-
-    mPgupKeyMotion.update(timeSinceLastFrame);
-    mPgdownKeyMotion.update(timeSinceLastFrame);
-    upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
-//    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
-//        nextState = SFly;
-
-    if ((mState == SWalk) || (mState == SRun))
-        if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
-            animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
-        else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)
-            animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
-        else
-            nextState = SIdle;
-    else
-        animOffset = timeSinceLastFrame;
-    if (mAnimationState != 0)
-        mAnimationState->addTime(animOffset);
-
-    if (mState != nextState)
-        setState(nextState);
-
-    // Move physics character
-    Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
-
-    // Update XML entity
     if (isLocal())
     {
+        Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
+        Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
+        Vector3 vri = mSceneNode->getOrientation()*Vector3::UNIT_Z;
+        Real frontBackMvt;
+        Real leftRightMvt;
+        Real upDownMvt;
+        Vector3 mvt = Vector3(0, 0, 0);
+
+        mUpdatedXmlEntity->setDefinedAttributes(mUpdatedXmlEntity->getDefinedAttributes() & ~(XmlEntity::DAFlags | XmlEntity::DADisplacement | XmlEntity::DAOrientation));
+
+        mUpKeyMotion.update(timeSinceLastFrame);
+        mDownKeyMotion.update(timeSinceLastFrame);
+        frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
+        mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+        if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
+            nextState = SWalk;
+        if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
+            nextState = SRun;
+
+        mLeftKeyMotion.update(timeSinceLastFrame);
+        mRightKeyMotion.update(timeSinceLastFrame);
+        leftRightMvt = mLeftKeyMotion.getMotion() - mRightKeyMotion.getMotion();
+        if (mMvtType == MT1stPerson)
+        {
+            // First person straff
+            mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+                nextState = SWalk;
+        }
+        else
+        {
+            // Third person rotation
+            yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+                nextState = SWalk;
+        }
+        if (!mSceneNode->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
+            mUpdatedXmlEntity->setOrientation(mSceneNode->getOrientation());
+
+        if (mPgupKeyMotion.isPressed() && isGravityEnabled())
+            setGravity(false);
+        if ((mUpdatedXmlEntity->getFlags() & EFGravity) != mGravity)
+            mUpdatedXmlEntity->setFlags(mUpdatedXmlEntity->getFlags() ^ EFGravity);
+
+        mPgupKeyMotion.update(timeSinceLastFrame);
+        mPgdownKeyMotion.update(timeSinceLastFrame);
+        upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
+    //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
+    //        nextState = SFly;
+
+        if ((mState == SWalk) || (mState == SRun))
+            if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
+                animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
+            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)
+                animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+            else
+                nextState = SIdle;
+        else
+            animOffset = timeSinceLastFrame;
+        if (mAnimationState != 0)
+            mAnimationState->addTime(animOffset);
+
+        if (mState != nextState)
+            setState(nextState);
+
+        // Move physics character
+        Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
+
+        // Update XML entity
         Vector3 d = displacement/timeSinceLastFrame;
         if ((d - mUpdatedXmlEntity->getDisplacement()).length() > XMLUPDATE_DISPLACEMENT_THRESHOLD)
         {
@@ -287,6 +292,27 @@ void Avatar::animate(Real timeSinceLastFrame)
     //mSceneNode->setPosition(mLastRealPosition);
     // Smooth X,Z + Direct Y positionning
     //mSceneNode->setPosition(mSceneNode->getPosition()*Vector3(1, 0, 1) + mLastRealPosition*Vector3::UNIT_Y);
+
+    if (!isLocal())
+    {
+        Real frontBackMvt = renderedDisplacement.length();
+        if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
+            nextState = SWalk;
+        if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
+            nextState = SRun;
+        if ((mState == SWalk) || (mState == SRun))
+            if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
+                animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
+            else
+                nextState = SIdle;
+        else
+            animOffset = timeSinceLastFrame;
+        if (mAnimationState != 0)
+            mAnimationState->addTime(animOffset);
+
+        if (mState != nextState)
+            setState(nextState);
+    }
 }
 
 //-------------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 #include "NodeManager.h"
+#include "Peer.h"
 
 namespace Solipsis {
 
@@ -16,15 +17,21 @@ NodeManager::~NodeManager()
 AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
 {
     // Authentication
+    EntityUID AvatarEntityId;
     NodeId nodeId;
-    if (xmlLogin->getUsername().compare("user") == 0)
-        nodeId = "00000001";
+    if (xmlLogin->getPwd().compare("demo") == 0)
+    {
+        char nidhex[16];
+        sprintf(nidhex, "%08X", Peer::getSingleton().mConnectionsCount + 1);
+        nodeId = nidhex;
+        AvatarEntityId = 0x10000 + Peer::getSingleton().mConnectionsCount + 1;
+    }
     else
         return 0;
 
     // Create the avatar node
     std::string xmlAvatarStr = "\
-<entity uid=\"11111111\" owner=\"00000001\" type=\"0\" name=\"User\">\
+<entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
  <flags bitmask=\"1\" />\
  <position x=\"17.0\" y=\"-57.0\" z=\"115.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
@@ -54,7 +61,9 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
     mNodes[nodeId] = avatarNode;
 
     // Simulate the scene around the avatar
-    std::string xmlSiteStr = "\
+    if (nodeId.compare("00000001") == 0)
+    {
+        std::string xmlSiteStr = "\
 <entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\">\
  <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
@@ -111,14 +120,32 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  </content>\
 </entity>\
 ";
-    TiXmlDocument xmlSiteDoc;
-    xmlSiteDoc.Parse(xmlSiteStr.c_str());
-    XmlEntity* siteEntityDesc = new XmlEntity();
-    siteEntityDesc->fromXmlElt(xmlSiteDoc.RootElement());
-    nodeId = "00000002";
-    SiteNode* siteNode = new SiteNode(nodeId, siteEntityDesc);
-    mNodes[nodeId] = siteNode;
-    avatarNode->addAwareEntity(&siteNode->getEntity());
+        TiXmlDocument xmlSiteDoc;
+        xmlSiteDoc.Parse(xmlSiteStr.c_str());
+        XmlEntity* siteEntityDesc = new XmlEntity();
+        siteEntityDesc->fromXmlElt(xmlSiteDoc.RootElement());
+        NodeId siteNodeId = "00000010";
+        SiteNode* siteNode = new SiteNode(siteNodeId, siteEntityDesc);
+        mNodes[siteNodeId] = siteNode;
+//        avatarNode->addAwareEntity(&siteNode->getEntity());
+    }
+
+    // Add other avatars to aware of
+    for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+        if (node->first != avatarNode->getNodeId())
+        {
+            if (node->second->getType().compare("avatar") == 0)
+            {
+                AvatarNode* an = (AvatarNode*)node->second;
+                avatarNode->addAwareEntity(&an->getEntity());
+                an->addAwareEntity(&avatarNode->getEntity());
+            }
+            else if (node->second->getType().compare("site") == 0)
+            {
+                SiteNode* sn = (SiteNode*)node->second;
+                avatarNode->addAwareEntity(&sn->getEntity());
+            }
+        }
 
     return avatarNode;
 }

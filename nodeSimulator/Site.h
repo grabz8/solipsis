@@ -23,7 +23,7 @@ public:
 #endif
 
     /** See Entity. */
-    virtual bool update(Real timeSinceLastFrame);
+    virtual bool update(Ogre::Real timeSinceLastFrame);
 };
 
 } // namespace Solipsis

@@ -303,3 +303,8 @@ Tests:
  Peer & Navigator plugin on IE/Mozilla on same PC
 
 ---------------------------
+22/02/08
+
+nodeSimulator updated in order to manage several connected entities (position, orientation are updated only)
+
+---------------------------

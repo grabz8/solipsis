@@ -62,6 +62,25 @@ void Entity::destroyPhysics()
 }
 #endif
 
+//-----------------------------------------------------------------------
+void Entity::addEntityListener(EntityListener* newListener)
+{
+	mEntityListeners.insert(newListener);
+}
+
+//-----------------------------------------------------------------------
+void Entity::removeEntityListener(EntityListener* oldListener)
+{
+	mEntityListeners.erase(oldListener);
+}
+
+//-----------------------------------------------------------------------
+void Entity::throwUpdateToEntityListeners(const Node& node, Entity& entity, XmlEvt& xmlEvt)
+{
+    for (std::set<EntityListener*>::iterator i = mEntityListeners.begin(); i != mEntityListeners.end(); ++i)
+        (*i)->updated(node, entity, xmlEvt);
+}
+
 //-------------------------------------------------------------------------------------
 
 } // namespace Solipsis
