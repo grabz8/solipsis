@@ -308,3 +308,14 @@ Tests:
 nodeSimulator updated in order to manage several connected entities (position, orientation are updated only)
 
 ---------------------------
+
+---------------------------
+10/03/08
+
+MdlrTools updated :
+	- ADD Possibility to move/rotate/scale primitives
+	- ADD Material edition
+	- ADD Load/Save Objects (Selection or full save)
+	- UPDATE : Navi UI properties frame 
+	
+---------------------------

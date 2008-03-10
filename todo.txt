@@ -1,3 +1,15 @@
+[MdlrTools]
+- Manage FrameListener to be able to pick axes for moving 
+- Manage drag'n drop
+- Manage a full undo function
+- Rebuild correctly primitive's normals and UV maps coords when applying a transformation	
+
+[Navigator]
+
+- Fix post build compilation : tokamakd.dll and OgreOde_Core_d.dll are not copied in the runtime directory
+- To fix : pref.js causes crash at first loading after a full clean
+- Fix bug after clean : missing Ogre DirectX renderer plugin in runtime dir
+
 - when using graphics cards with TEXTURE_POW2 caps, Navi can use textures non-POW2 but is unable to
   work with mask image non-POW2, texture is created on 1st POW2 size but not mask image
   exception : 
