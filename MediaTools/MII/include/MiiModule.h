@@ -16,7 +16,9 @@ public:
 	~MiiModule();
 
 	bool createGUI( RenderWindow* pWindow );
+	// Frames display
 	void showFrameProperties();
+	void showFrameProperties(bool pShow);
 	void hideFrameProperties();
 	bool setupEventHandlers(void);
 	bool handleQuit(const CEGUI::EventArgs& e);
@@ -57,6 +59,12 @@ public:
 	bool handleOpenProperties(const CEGUI::EventArgs& e);
 	bool isPropertiesFrameOpened();
 
+	bool handleRotationXScroll(const CEGUI::EventArgs& e);
+	bool handleRotationYScroll(const CEGUI::EventArgs& e);
+	bool handleRotationZScroll(const CEGUI::EventArgs& e);
+	bool handleScaleXScroll(const CEGUI::EventArgs& e);
+	bool handleScaleYScroll(const CEGUI::EventArgs& e);
+	bool handleScaleZScroll(const CEGUI::EventArgs& e);
 	bool handleTaperXScroll(const CEGUI::EventArgs& e);
 	bool handleTaperYScroll(const CEGUI::EventArgs& e);
 	bool handlePathCutBeginScroll(const CEGUI::EventArgs& e);
@@ -65,28 +73,36 @@ public:
 	bool handleDimpleEndScroll(const CEGUI::EventArgs& e);
 	bool handleHoleSizeXScroll(const CEGUI::EventArgs& e);
 	bool handleHoleSizeYScroll(const CEGUI::EventArgs& e);
+	bool handleHollowShapeCombo(const CEGUI::EventArgs& e);
 	bool handleTwistBeginScroll(const CEGUI::EventArgs& e);
 	bool handleTwistEndScroll(const CEGUI::EventArgs& e);
 	bool handleTopShearXScroll(const CEGUI::EventArgs& e);
 	bool handleTopShearYScroll(const CEGUI::EventArgs& e);
+	bool handleSkewScroll(const CEGUI::EventArgs& e);
 	bool handleRadiusDeltaScroll(const CEGUI::EventArgs& e);
+	bool handleRevolutionsText(const CEGUI::EventArgs& e);
 
 
-	//	Frame Material Properties part
+	///	Frame Material Properties part
+		/// Choose Color Diffuse, Ambient, Specular, and apply to the current object :
 	bool handleOpenChooseAmbiantColor(const CEGUI::EventArgs& e);
 	bool handleOpenChooseDiffusColor(const CEGUI::EventArgs& e);
 	bool handleOpenChooseSpecularColor(const CEGUI::EventArgs& e);
 	bool handleCloseChooseColor(const CEGUI::EventArgs& e);
 	bool handleApplyChooseColor(const CEGUI::EventArgs& e) ;
+	bool handleCheckLock(const CEGUI::EventArgs& e) ;
+		/// Change and apply textures 
 	bool handleAddTexture(const CEGUI::EventArgs& e) ;
 	bool handleRemoveTexture(const CEGUI::EventArgs& e) ;
 	bool handleApplyTexture(const CEGUI::EventArgs& e) ;
-	bool handleCheckLock(const CEGUI::EventArgs& e) ;
-	bool handleChangeShininess(const CEGUI::EventArgs& e) ;
 	bool handleTexturesScrollBarChange(const CEGUI::EventArgs& e);
 	bool handleClickOnMaterialPropertiesWindow(const CEGUI::EventArgs& e);
+		/// Change and apply other parameters (Shininess, transparency, UV mapping)
+	bool handleChangeShininess(const CEGUI::EventArgs& e) ;
+	bool handleTransparencyScrollBar(const CEGUI::EventArgs& e);
 	bool handleTexturePositionScrollBar(const CEGUI::EventArgs& e);
 	bool handleTextureScaleScrollBar(const CEGUI::EventArgs& e);
+	bool handleTextureRotateScrollBar(const CEGUI::EventArgs& e);
 
 	// MouseListener
 	bool mouseMoved( const OIS::MouseEvent &e );
@@ -96,14 +112,19 @@ public:
 	bool keyPressed( const OIS::KeyEvent &e );
 	bool keyReleased( const OIS::KeyEvent &e );
 
-	// Frames display
-	void showFrameProperties(bool pShow);
 
 	/// Start mode link when the user click on the Menu PopUp on "Link"
 	bool mModeLink ;
 
 	/// Update the command => backup if the command is different from the last used 
-	void		upDateCommand(Object3D::Command newCommand);
+	void upDateCommand(Object3D::Command pCommand, Object3D* obj);
+	///brief Put all Transformation's Scroll Bars to the initial position
+	void UpdateTransfoSrollBarToInitialPosition();
+	///brief Add a button representing a transformation to the list of transformation in the Transformation Properties
+	void AddTransformationToList( Object3D::Command pCommand );
+
+	///brief List of all the CEGUI imageset used for making the texture images in the window Material Properties
+	std::vector<CEGUI::PushButton*> mTransfoButton;		
 
 private:
 	/// Configure the menus
@@ -133,12 +154,12 @@ private:
 	Entity			*mGenericRing;
 
 	//Material Properties : 
-	///brief Update the window Material Properties. Put the correct color for ambient, diffuse and specular, and show the goods textures.
+	///brief Update the window Material Properties. Put the correct color for ambient, diffuse and specular, and show corrects textures.
 	void onUptadeMaterialProperties();
 	///brief Close the window Material Properties. Clear the 2 lists mTexturesImageSets and mTextureImageWindows.
 	void onCloseMaterialProperties();
 	///biref Create a CEGUI texture and add it in the list mTexturesImageSets.
-	///param pTexture texture to add
+	///param pTexture = texture to add
 	void AddCEGUITexture( TexturePtr pTexture);
 	///brief Create a new Window Sample for display textures in the Properties Window, and put it in the end of the list mTextureImageWindows.
 	void addNewWindowTextureSample();
@@ -147,8 +168,9 @@ private:
 	///brief Clear the list of CEGUI Windows Sample (mTextureImageWindows) and delete the windows record in this list.
 	void clearWindowsImageList();
 
-	///brief Class for manage the window "Choose Color"
+	///brief Class for show and manage the window "Choose Color" 
 	CChooseColorWindow * mChooseColorWindow ;
+	///brief Enum for know which colour it is just modify.
 	enum ModifiedColor {
 		NONE,
 		AMBIANT,
@@ -165,6 +187,12 @@ private:
 	///brief Number of texture selected. 0 is the default texture.
 	int mNumTextureSelected ;
 
+	///brief Create a new Object3D with a file XML :
+	///param doc is XML document where we can found all informations about the new object
+	///param path where texture are created
+	///param e is just for call event
+	///return a pointer to the new Object3D
+	Object3D * createObjectWithXML(TiXmlDocument doc, string path, const CEGUI::EventArgs& e); 
 
 
 	/// The execution path (to go back home each time)

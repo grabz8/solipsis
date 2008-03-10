@@ -1,5 +1,8 @@
 #include ".\transformations.h"
-#include "CEGUImousecursor.h"	//for Ray tracing
+//#include "CEGUImousecursor.h"	//for Ray tracing
+#include <NaviManager.h>
+
+using namespace NaviLibrary;
 
 Transformations::Transformations(void)
 {
@@ -180,7 +183,7 @@ Vector3 Transformations::drapNdrop( const OIS::MouseEvent &e )
 		}
 	}
 	mOldpos = newpos;
-	return moving ;
+	return moving;
 }
 //-------------------------------------------------------------------------------------
 void Transformations::eventSelection()
@@ -425,10 +428,16 @@ void Transformations::attachRotateGizmos(bool pAttach)
 RaySceneQueryResult& Transformations::raySceneQuery( const OIS::MouseEvent &e )
 {
 	// Setup the ray scene query, use CEGUI's mouse position
-	CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
+
+/*	CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
 	Ray mouseRay = mCamera->getCameraToViewportRay( 
 		mousePos.d_x/float(e.state.width), 
 		mousePos.d_y/float(e.state.height) );
+*/
+	Ray mouseRay = mCamera->getCameraToViewportRay( 
+		e.state.X.abs/float(e.state.width), 
+		e.state.Y.abs/float(e.state.height) );
+
 	mRaySceneQuery->setRay( mouseRay );
 	mRaySceneQuery->setSortByDistance( true, 5 );
 
@@ -548,10 +557,16 @@ void Transformations::onClickToTransformObject(const OIS::MouseEvent &e, const S
 Vector3 Transformations::getMousePosOnDummyPlane (const OIS::MouseEvent &e)
 {
 	//ray tracing :
-	CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
+/*	CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
 	Ray mouseRay = mCamera->getCameraToViewportRay(
 		mousePos.d_x/float(e.state.width), 
 		mousePos.d_y/float(e.state.height) );
+*/
+
+	Ray mouseRay = mCamera->getCameraToViewportRay( 
+		e.state.X.abs/float(e.state.width), 
+		e.state.Y.abs/float(e.state.height) );
+
 	mRaySceneQuery->setRay(mouseRay);
 	mRaySceneQuery->setSortByDistance(true);
 	RaySceneQueryResult &result = mRaySceneQuery->execute();

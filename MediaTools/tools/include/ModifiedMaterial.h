@@ -6,7 +6,7 @@
 
 /// brief This is the ModifiedMaterial class associated to an Ogre material. It make possible to easily modify colours and texture of a material 
 /// file ModifiedMaterial.h
-/// author François FOURNEL
+/// author François FOURNEL & Patrice DESFONDS
 /// date 2007.07.18
 
 
@@ -153,6 +153,22 @@ public:
 	///biref Get the scale of the texture
 	///return Vector2 (U, V) 
 	Ogre::Vector2 getTextureScale();
+
+	///biref Sets the anticlockwise rotation factor applied to texture coordinates. (in radian)
+	///param pAngle  angle  The angle of rotation (anticlockwise).   
+	void setTextureRotate(Ogre::Radian pAngle);
+	///biref Get the rotate of the texture (in radian)
+	///return the value of rotation
+	Ogre::Radian getTextureRotate();
+
+	///biref Sets the alpha value to be applied to this object. 
+	///param pValue alpha value (between 0 - 1) 
+	void setAlpha(float pValue);
+	///biref Get the alpha value of the object
+	///return the value of alpha
+	float getAlpha();
+
+
 
 private:
 	MaterialPtr mMaterial;								///brief Ogre Material associated to the ModifiedMaterial class

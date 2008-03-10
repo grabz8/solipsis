@@ -80,8 +80,14 @@ public:
 	///return An Ogre iterator on the textures of the object.
 	TextureVectorIterator getTextureIterator();
 
+	///brief Method which navigate through the collection of textures of the object and set the previous texture.
+	void setPreviousTexture();	
+
 	///brief Method which navigate through the collection of textures of the object and set the previous texture as the current texture applied on the object.
 	void setPreviousTextureAsCurrent();	
+
+	///brief Method which navigate through the collection of textures of the object and set the next texture.
+	void setNextTexture();
 
 	///brief Method which navigate through the collection of textures of the object and set the next texture as the current texture applied on the object.
 	void setNextTextureAsCurrent();
@@ -150,7 +156,6 @@ public:
 	///biref Get the alpha value of the object
 	///return the value of alpha
 	float getAlpha();
-
 
 private:
 	ModifiedMaterial* mModifiedMaterial;				///brief ModifiedMaterial associated to the object's material.

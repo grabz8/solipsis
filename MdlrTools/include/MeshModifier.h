@@ -675,7 +675,7 @@ static const int RTOD = 0;
 
 		// scale between the begin and the end cap
 		if( pSkew == 0 ) pSkew = .00001;
-		Real scale = ( pSkew > 0 && pSkew < 1 ) ? ( 1 / pSkew ) - 1 : 1;
+		Real scale = ( pSkew > 0 && pSkew < 1 ) ? ( 1 / pSkew ) - 1 : 0.01;
 		
 		// height between the base of each cap
 		Real heigth = ( pSizeMax.y - pSizeMin.y ) * (1-pSkew/2);
@@ -745,7 +745,6 @@ static const int RTOD = 0;
 
 		// create the vertex data
 		pVertex->resize(profil.size() * (pSides*pRevolutions + 3) * pVertexDecl);
-		realvector* vertexStart = pVertex;
 		// create the index data
 		pIndex->resize(( (profil.size() * 2 * pSides*pRevolutions) + (profil.size() - 2) * 2 ) * 3 );
 
@@ -755,9 +754,9 @@ static const int RTOD = 0;
 			for(it=profil.begin(); it!=profil.end(); it++,indVertex+=9)
 			{
 				(*pVertex)[indVertex] = (*it).x;	(*pVertex)[indVertex+1] = (*it).y;	(*pVertex)[indVertex+2] = (*it).z;	// position
-				(*pVertex)[indVertex+3] = 0;			(*pVertex)[indVertex+4] = 0;			(*pVertex)[indVertex+5] = 1;			// normal
-				(*pVertex)[indVertex+6] = 0;															// colour
-				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
+				(*pVertex)[indVertex+3] = 0;		(*pVertex)[indVertex+4] = 0;		(*pVertex)[indVertex+5] = 1;		// normal
+				(*pVertex)[indVertex+6] = 0;																				// colour
+				(*pVertex)[indVertex+7] = 0;		(*pVertex)[indVertex+8] = 1;											// tex. coord
 			}
 
 			Vector3 v;
@@ -769,10 +768,10 @@ static const int RTOD = 0;
 				v.y *= scale;
 				v.y += ( pSizeMax.y - pSizeMin.y ) * (1-pSkew) / pRevolutions;
 
-				(*pVertex)[indVertex] = v.x;		(*pVertex)[indVertex+1] = v.y;		(*pVertex)[indVertex+2] = v.z;		// position
-				(*pVertex)[indVertex+3] = 0;			(*pVertex)[indVertex+4] = 0;			(*pVertex)[indVertex+5] = -1;		// normal
-				(*pVertex)[indVertex+6] = 0;															// colour
-				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
+				(*pVertex)[indVertex] = v.x;		(*pVertex)[indVertex+1] = v.y;		(*pVertex)[indVertex+2] = v.z;	// position
+				(*pVertex)[indVertex+3] = 0;		(*pVertex)[indVertex+4] = 0;		(*pVertex)[indVertex+5] = -1;	// normal
+				(*pVertex)[indVertex+6] = 0;																			// colour
+				(*pVertex)[indVertex+7] = 0;		(*pVertex)[indVertex+8] = 1;										// tex. coord
 			}
 
 			// index : first cap
@@ -807,17 +806,18 @@ static const int RTOD = 0;
 		{
 			// first segment
 			// vertex
-			for(it=profil.begin(); it!=profil.end(); it++,indVertex+=9)
+			for(it=profil.begin(); it!=profil.end(); it++)
 			{
-				(*pVertex)[indVertex] = (*it).x;	(*pVertex)[indVertex+1] = (*it).y;	(*pVertex)[indVertex+2] = (*it).z;	// position
-				//pVertex += 3;															// normal
-				(*pVertex)[indVertex+6] = 0;															// colour
-				(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;									// tex. coord
+				(*pVertex)[indVertex++] = (*it).x;	(*pVertex)[indVertex++] = (*it).y;	(*pVertex)[indVertex++] = (*it).z;	// position
+				indVertex += 3;																								// normal
+				(*pVertex)[indVertex++] = 0;																				// colour
+				(*pVertex)[indVertex++] = 0;		(*pVertex)[indVertex++] = 1;											// tex. coord
+
 			}
 			// other segments
 			unsigned int id = pVertexCount;
-			Real angleStep = 2 * Math::PI / pSides;
-			for(unsigned int s=0; s<(pSides * pRevolutions); s++,indVertex+=9)
+			Real angleStep = Math::TWO_PI / pSides;
+			for(unsigned int s=0; s<(pSides * pRevolutions); s++)
 			{
 				for(it=profil.begin(); it!=profil.end(); it++)
 				{
@@ -833,10 +833,11 @@ static const int RTOD = 0;
 					v.y += heigth;
 					v.y -= ( pSizeMax.y - pSizeMin.y ) * ratio * ( 0.5 + (1-pSkew) * (pRevolutions-1) / pRevolutions );
 
-					(*pVertex)[indVertex] = v.x;		(*pVertex)[indVertex+1] = v.y;		(*pVertex)[indVertex+2] = v.z;	// position
-					//pVertex += 3;														// normal
-					(*pVertex)[indVertex+6] = 0;														// colour
-					(*pVertex)[indVertex+7] = 0;			(*pVertex)[indVertex+8] = 1;								// tex. coord
+					(*pVertex)[indVertex++] = v.x;	(*pVertex)[indVertex++] = v.y;		(*pVertex)[indVertex++] = v.z;	// position
+					indVertex += 3;																						// normal
+					(*pVertex)[indVertex++] = 0;																		// colour
+					(*pVertex)[indVertex++] = 0;	(*pVertex)[indVertex++] = 1;										// tex. coord
+
 
 					// index
 					(*pIndex)[pIndexCount++] = id++;
@@ -858,7 +859,6 @@ static const int RTOD = 0;
 
 			// normals
 		}
-		pVertex = vertexStart;
 		indVertex = 0;
 
 /*		// D. Compute the normals
@@ -869,7 +869,7 @@ static const int RTOD = 0;
 			static Vector3 v1, v2, v3, normal;
 
 			// get the normal from the face witch include the current vertex
-			id1 = (*pIndex)[3*n];		v1 = points[ id1 ];		id1 *= pVertexDecl;
+			id1 = (*pIndex)[3*n];	v1 = points[ id1 ];		id1 *= pVertexDecl;
 			id2 = (*pIndex)[3*n+1];	v2 = points[ id2 ];		id2 *= pVertexDecl;
 			id3 = (*pIndex)[3*n+2];	v3 = points[ id3 ];		id3 *= pVertexDecl;
 			normal = VectorModifier::getNormal( v1, v2, v3 );

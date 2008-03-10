@@ -1,13 +1,16 @@
 #include "Object3D.h"
-//#include "Primitives.h"
 #include "ModifiedMaterialManager.h"
 #include "ModifiedMaterial.h"
 #include "VectorModifier.h"
 #include "MeshModifier.h"
+#include "FileBrowser.h"
+#include "SolidBoolOp.h"
 
 #include "SolipsisErrorHandler.h"
 // Tinyxml
 #include "tinyxml.h"
+
+
 
 //-------------------------------------------------------------------------------------
 Object3D::Object3D(String pName, SceneNode* pNode)
@@ -22,53 +25,50 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mVertexDecl = mVertexData->vertexDeclaration->getVertexSize(0);
 
 	// get the object datas
-	mPoints = new vector<Vector3>;
-	mFaces = new vector<Face>;
-	mPointsBackup = new vector<Vector3>;
-	mVertexs = 0;
-	mTriangles = 0;
+	mVertex = 0;
+	mIndex = 0;
+ 	getDataFromBuffer( NULL, NULL );
 
- 	getDataFromBuffer( mPoints, mFaces );
+	// create the (backup) buffers
+	mBufPrim		= new Buffer();
+	mBufBackup		= new Buffer();
+	mBufCurrent		= new Buffer();
 
-	// backup the array vertexData
-	for( vector<Vector3>::iterator i = mPoints->begin(); i != mPoints->end(); i++ )
-		mPointsBackup->push_back( (*i) );
+	// initialize the (backup) buffers
+	mBufCurrent->vertexCount	= mBufBackup->vertexCount	= mBufPrim->vertexCount	= mVertexCount;
+	mBufCurrent->indexCount		= mBufBackup->indexCount	= mBufPrim->indexCount	= mIndexCount;
+	mBufPrim->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
+	mBufBackup->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
+	mBufCurrent->vertex			= new Real [ mVertexCount*mVertexDecl/4 ];
+	mBufPrim->index				= new unsigned int [ mIndexCount ];
+	mBufBackup->index			= new unsigned int [ mIndexCount ];
+	mBufCurrent->index			= new unsigned int [ mIndexCount ];
+
+	for( unsigned int i = 0; i < mVertexCount*mVertexDecl/4; i++ )
+		mBufCurrent->vertex[i]	= mBufBackup->vertex[i]	= mBufPrim->vertex[i]	= mVertex[i];
+	for( unsigned int i = 0; i < mIndexCount; i++ )
+		mBufCurrent->index[i]	= mBufBackup->index[i]	= mBufPrim->index[i]	= mIndex[i];
 
 	// get the object size max / min
 	getSize( mSize, mCornerMin, mCornerMax );
-	
-	mModified = false;
+
+	mBufCurrent->size		= mBufBackup->size		= mBufPrim->size			= mSize;
+	mBufCurrent->cornerMax	= mBufBackup->cornerMax	= mBufPrim->cornerMax	= mCornerMax;
+	mBufCurrent->cornerMin	= mBufBackup->cornerMin	= mBufPrim->cornerMin	= mCornerMin;
+
 	mChilds = NULL;		// must be loaded from the .XML
-	mParent = 0;				// must be loaded from the .XML
+	mParent = 0;		// must be loaded from the .XML
 
 	mName = pName;
 
-	//mType = BOX;
-	mPathCutBegin = 0;
-	mPathCutEnd = 1;
-	mHollow = 0;
-	mHollowShape = CIRCLE;
-	mTwistBegin = 0;
-	mTwistEnd = 0;
-	mTaperX = 0;
-	mTaperY = 0;
-	mTopShearX = 0;
-	mTopShearY = 0;
-	mSkew = 0;
-	mDimpleBegin = 0;
-	mDimpleEnd = 1;
-	mHoleSizeX = 0;
-	mHoleSizeY = 0;
-	mProfileCuteBegin = 0;
-	mProfileCuteEnd = 1;
-	mRadiusDelta = 0;
-	mRevolutions = 0;
+	//mType = OTHER;
+	resetParameters();
 
 	mModifiedMaterialManager = new ModifiedMaterialManager() ;
 	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material"+mName);
 	mEntity->getSubEntity(0)->setMaterialName( tmpMaterial->getName());
 	mModifiedMaterialManager->initialise(tmpMaterial);
-	TexturePtr PtrTexture = TextureManager::getSingleton().load( "default_texture.tga", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+	TexturePtr PtrTexture = TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	mModifiedMaterialManager->addTexture(PtrTexture);
 	mModifiedMaterialManager->setCurrentTexture(PtrTexture );
 
@@ -89,8 +89,7 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mPrimitivesCount = 0;
 
 	// Init the last command 
-	mLastCommand = NONECOMMAND;
-
+	mCommandLast = NONE;
 }
 
 //-------------------------------------------------------------------------------------
@@ -99,13 +98,11 @@ Object3D::~Object3D()
 	//delete mEntity;		
 	mEntity = 0;
 	mNode = 0;
-	delete mPoints;		mPoints = 0;
-	delete mFaces;		mFaces = 0;
 	delete mChilds;		mChilds = 0;
 }
 
 //-------------------------------------------------------------------------------------
-int		Object3D::loadFromFile(TiXmlDocument &doc)
+int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 {
 	Ogre::String extractedAttribute;
 
@@ -140,18 +137,84 @@ int		Object3D::loadFromFile(TiXmlDocument &doc)
 	
 	TiXmlElement *trans = e->FirstChildElement("transformation")->FirstChildElement("transfo");
 	TCommand toAdd;
-	Real converted;
+//	Real converted;
 	stringstream sDebug;
+	String valueTransfo ;
 	while (trans!= NULL)
 	{
-		from_string(trans->Attribute("type"),(int &)toAdd.first);
-		from_string(trans->Attribute("value"),toAdd.second);
-		mCommands.push_back(toAdd);
-		from_string(toAdd.second.c_str(),converted);
-		apply(toAdd.first,converted); 
+		from_string( trans->Attribute("type"),(int &)toAdd.first );
+		from_string( trans->Attribute("valueX"),valueTransfo );
+		toAdd.second.x = atoi(valueTransfo.c_str() ) / 1000.;
+		from_string( trans->Attribute("valueY"),valueTransfo );
+		toAdd.second.y = atoi(valueTransfo.c_str() )  / 1000.;
+		from_string( trans->Attribute("valueZ"),valueTransfo );
+		toAdd.second.z = atoi(valueTransfo.c_str() )  / 1000.;
+
+		Vector3 v = toAdd.second;
+		switch( toAdd.first )
+		{
+		case TRANSLATE : 
+			if( v.x || v.y || v.z ) apply( TRANSLATE, v.x, v.y, v.z );
+			break;
+		case ROTATE : 
+			if( v.x || v.y || v.z ) apply( ROTATE, v.x, v.y, v.z );
+			break;
+		case SCALE : 
+			if( v.x != 1 || v.y != 1 || v.z != 1 ) 
+			{
+				setScale( v.x, v.y, v.z );
+				apply( SCALE, v.x, v.y, v.z );
+			}
+			break;
+		case TAPERX : 
+		case TAPERY : 
+			if( v.x ) apply( TAPERX, v.x, 0, 0 );
+			if( v.y ) apply( TAPERY, v.y, 0, 0 );
+			break;
+		case TOP_SHEARX : 
+		case TOP_SHEARY : 
+			if( v.x ) apply( TOP_SHEARX, v.x, 0, 0 );
+			if( v.y ) apply( TOP_SHEARY, v.y, 0, 0 );
+			break;
+		case TWIST_BEGIN :
+		case TWIST_END : 
+			if( v.x ) apply( TWIST_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( TWIST_END, v.y, 0, 0 );
+			break;
+		case PATH_CUT_BEGIN : 
+		case PATH_CUT_END : 
+			if( v.x ) apply( PATH_CUT_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( PATH_CUT_END, v.y, 0, 0 );
+			break;
+		case DIMPLE_BEGIN : 
+		case DIMPLE_END : 
+			if( v.x ) apply( DIMPLE_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( DIMPLE_END, v.y, 0, 0 );
+			break;
+		case HOLE_SIZEX : 
+		case HOLE_SIZEY : 
+		case HOLLOW_SHAPE : 
+			if( v.x ) apply( HOLE_SIZEX, v.x, 0, 0 );
+			if( v.y ) apply( HOLE_SIZEY, v.y, 0, 0 );
+			if( v.z ) apply( HOLLOW_SHAPE, v.z, 0, 0 );
+			break;
+		case SKEW : 
+		case REVOLUTION : 
+		case RADIUS_DELTA : 
+			if( v.x ) apply( SKEW, v.x, 0, 0 );
+			if( v.y ) apply( REVOLUTION, v.y, 0, 0 );
+			if( v.z ) apply( RADIUS_DELTA, v.z, 0, 0 );
+			break;
+		}
+		restoreBuffer( mBufCurrent, mBufBackup );
+		resetParameters();
+
+		mCommandList.push_back(toAdd);
+		mCommandLast = toAdd.first;
+
 		sDebug << "Applying tranformation : " << toAdd.first << " with value : " << toAdd.second << " to " << mName << endl; 
-		SOLIPSISINFO(sDebug.str().c_str());
-		trans = trans->NextSiblingElement("transfo");
+		SOLIPSISINFO( sDebug.str().c_str() );
+		trans = trans->NextSiblingElement( "transfo" );
 	}
 
 	e = doc.RootElement()->FirstChildElement("material");
@@ -171,7 +234,40 @@ int		Object3D::loadFromFile(TiXmlDocument &doc)
 	from_string(e->FirstChildElement("matspec")->Attribute("b"),cv.b);
 	from_string(e->FirstChildElement("matspec")->Attribute("a"),cv.a);
 	setSpecular(cv);
-	setCurrentTexture(e->FirstChildElement("texturelist")->FirstChildElement("texture")->Attribute("Name"));
+	float value = 0 ;
+	from_string(e->FirstChildElement("matshin")->Attribute("value"),value);
+	setShininess( value);
+	from_string(e->FirstChildElement("matopac")->Attribute("value"),value);
+	setAlpha( value);
+		//texture scroll, scale and rotate :
+	Ogre::Vector2 tmpVec  ;
+	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
+	from_string(e->FirstChildElement("texturescroll")->Attribute("v"),tmpVec.y);
+	setTextureScroll( tmpVec.x, tmpVec.y );
+	from_string(e->FirstChildElement("texturescale")->Attribute("u"),tmpVec.x);
+	from_string(e->FirstChildElement("texturescale")->Attribute("v"),tmpVec.y);
+	setTextureScale( tmpVec.x, tmpVec.y );
+	from_string(e->FirstChildElement("texturerotate")->Attribute("value"),value);
+	setTextureRotate( Degree(value));
+		//Textures List :
+	trans = e->FirstChildElement("texturelist")->FirstChildElement("texture");
+	TexturePtr texture ;
+	string currenttexture ;
+			//add texture to the current list :
+	while (trans != NULL)
+	{
+		texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+		addTexture( texture) ;
+
+		from_string( trans->Attribute("currenttexture") , currenttexture);
+		if( strcmp (currenttexture.c_str() , "true" ) == 0 )
+		{
+			setCurrentTexture( texture );
+		}
+		trans = trans->NextSiblingElement("texture");
+	}
+	
 
 	e = doc.RootElement()->FirstChildElement("threeD");
 	Vector3 tmp;
@@ -231,6 +327,10 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<objcreator Name=\"" << mCreatorName << "\" />" << endl;
 	toSave << "\t\t<objgroup Name=\"" << mGroupName << "\" />" << endl;
 	toSave << "\t\t<objrigths mod=\"" << mCanBeModified << "\" cop=\"" << mCanBeCopied<< "\" />" << endl;
+	String parentName = "NULL" ;
+	if(mParent != NULL)
+		parentName = mParent->getName() ;
+	toSave << "\t\t<objparent Name=\"" << parentName << "\" />" << endl;
 	toSave << "\t</properties>" << endl;
 
 	toSave << "\t<model>" << endl;
@@ -253,11 +353,20 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<radiusdelta value=\"" << mRadiusDelta << "\" />" << endl;
 	toSave << "\t\t<transformation>" << endl;
 
-	std::list<TCommand>::iterator itCommands = mCommands.begin();
-	while (itCommands != mCommands.end())
+	std::list<TCommand>::iterator itCommands = mCommandList.begin();
+	char valueTransfo [20] ;
+	while (itCommands != mCommandList.end())
 	{
-		if ((*itCommands).first != NONECOMMAND)
-			toSave << "\t\t\t<transfo type =\"" << (*itCommands).first << "\" value=\"" << (*itCommands).second << "\" />" << endl;
+		if ((*itCommands).first != NONE)
+		{
+			toSave << "\t\t\t<transfo type =\"" << (*itCommands).first ;
+			itoa( (*itCommands).second.x*1000, valueTransfo, 10);
+			toSave << "\" valueX=\"" << valueTransfo ;
+			itoa( (*itCommands).second.y*1000, valueTransfo, 10);
+			toSave << "\" valueY=\"" << valueTransfo ;
+			itoa( (*itCommands).second.z*1000, valueTransfo, 10);
+			toSave << "\" valueZ=\"" << valueTransfo << "\" />" << endl;
+		}
 
 		itCommands++;
 	}
@@ -271,13 +380,50 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<matdiff r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
 	cv  = getSpecular();
 	toSave << "\t\t<matspec r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
+	float value  = getShininess();
+	toSave << "\t\t<matshin value=\"" << value << "\" />" << endl;
+	value = mModifiedMaterialManager->getAlpha();
+	toSave << "\t\t<matopac value=\"" << value << "\" />" << endl;
+	//texture scroll, scale and rotate :
+	Ogre::Vector2 tmpVec  = mModifiedMaterialManager->getTextureScroll();
+	toSave << "\t\t<texturescroll u=\"" << tmpVec.x << "\" v=\"" << tmpVec.y << "\" />" << endl;
+	tmpVec  = mModifiedMaterialManager->getTextureScale();
+	toSave << "\t\t<texturescale u=\"" << tmpVec.x << "\" v=\"" << tmpVec.y << "\" />" << endl;
+	value  = mModifiedMaterialManager->getTextureRotate().valueDegrees();
+	toSave << "\t\t<texturerotate value=\"" << value << "\" />" << endl;
+	//texture list :
 	toSave << "\t\t<texturelist>" << endl;
-	toSave << "\t\t\t<texture Name=\"" << getCurrentTexture()->getName() << "\" />"  << endl;
+	std::string texturePath ;
+	size_t nameSizeChar = 0;
+
+
+	std::string filePath (fileName);
+	nameSizeChar = filePath.find_last_of( '\\' );
+	std::string textureNewPath ( filePath, 0, nameSizeChar+1 );
+	std::string currentTexture ;
+
+	for (int i=1; i< mModifiedMaterialManager->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
+	{
+		texturePath = mModifiedMaterialManager->getTexture(i)->getName();
+		nameSizeChar = texturePath.find_last_of( '\\' );
+		std::string textureName (texturePath, nameSizeChar+1,texturePath.length() );
+
+		if( mModifiedMaterialManager->getTexture(i) == mModifiedMaterialManager->getCurrentTexture() )
+		{
+			currentTexture = "true" ;
+		}
+		else
+			currentTexture = "false" ;
+
+		//save in XML :
+		toSave << "\t\t\t<texture Name=\"" << textureName << "\" currenttexture=\"" << currentTexture << "\" />"  << endl;		
+	}
+
 	toSave << "\t\t</texturelist>" << endl;
 	toSave << "\t</material>" << endl;
 
 	toSave << "\t<threeD>" << endl;
-	Vector3 tmp = getPosition();
+	Vector3 tmp = getPosition(true);
 	toSave << "\t\t<objposition x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
 	tmp = getOrientation();
 	toSave << "\t\t<objorientation x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
@@ -313,6 +459,13 @@ String Object3D::getName()
 }
 
 //-------------------------------------------------------------------------------------
+void Object3D::setScale(Real pX, Real pY, Real pZ )
+{
+	mScaleX = pX;
+	mScaleY = pY;
+	mScaleZ = pZ;
+}
+//-------------------------------------------------------------------------------------
 void Object3D::setPathCutBegin(Real value)
 {
 	mPathCutBegin = value;
@@ -322,18 +475,6 @@ void Object3D::setPathCutBegin(Real value)
 void Object3D::setPathCutEnd(Real value)
 {
 	mPathCutEnd = value;
-}
-
-//-------------------------------------------------------------------------------------
-void Object3D::setHollow(Real value)
-{
-	mHollow = value;
-}
-
-//-------------------------------------------------------------------------------------
-void Object3D::setHollowShape(Shape shape)
-{
-	mHollowShape = shape;
 }
 
 //-------------------------------------------------------------------------------------
@@ -397,7 +538,19 @@ void Object3D::setHoleSizeY(Real value)
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::setSkew(int value)
+void Object3D::setHollow(Real value)
+{
+	mHollow = value;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setHollowShape(Shape shape)
+{
+	mHollowShape = shape;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setSkew(Real value)
 {
 	mSkew = value;
 }
@@ -414,6 +567,37 @@ void Object3D::setRadiusDelta(Real value)
 	mRadiusDelta = value;
 }
 
+//-------------------------------------------------------------------------------------
+void Object3D::resetParameters()
+{
+	mRotationX = 0;
+	mRotationY = 0;
+	mRotationZ = 0;
+	mScaleX = 1;
+	mScaleY = 1;
+	mScaleZ = 1;
+	mPathCutBegin = 0;
+	mPathCutEnd = 1;
+	mTwistBegin = 0;
+	mTwistEnd = 0;
+	mTaperX = 0;
+	mTaperY = 0;
+	mTopShearX = 0;
+	mTopShearY = 0;
+	mDimpleBegin = 0;
+	mDimpleEnd = 1;
+	mHoleSizeX = 0;
+	mHoleSizeY = 0;
+	mHollow = 0;
+	mHollowShape = SQUARE;
+	mProfileCuteBegin = 0;
+	mProfileCuteEnd = 1;
+	mSkew = 0;
+	mRadiusDelta = 0;
+	mRevolutions = 1;
+}
+
+//-------------------------------------------------------------------------------------
 bool Object3D::apply(Command command, Real p1)
 {
 	return apply(command,p1,0,0);
@@ -423,935 +607,487 @@ bool Object3D::apply(Command command, Real p1)
 bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 {
 	Vector3 rootTrans;					// root position for the transformation & deformations
-	vector<Vector3>::iterator u,v,w;	// list point iteractor
+	Real *vertex = 0;
+	Real *vertexA = 0;
+	Real *vertexB = 0;
+	unsigned int vertexCount, indexCount, *index = 0;
+	unsigned int vertexCountA, indexCountA, *indexA = 0;
+	unsigned int vertexCountB, indexCountB, *indexB = 0;
+	Real mAngleBegin, mAngleEnd;
+	bool path_cut = false; 
+	bool dimple = false;
+	bool hole = false;
+	bool skew = false;
+	static unsigned int hollow_sides = 4;
+	static SBO *sbo = new SBO();
+	SOLID *solidA, *solidB;
 
-	switch(command)
+
+	switch( command )
 	{
 	// basic transformations
 	case TRANSLATE:
 		{
-			/*
-			for( v = mPoints->begin(); v != mPoints->end(); v++)
-				(*v) += Vector3(p1, p2, p3);
+			if(0)
+			{
+				for(unsigned int i=0; i<mVertexCount; i++)
+				{
+					unsigned int id = i*mVertexDecl/4;
+					mBufCurrent->vertex[id] += p1;
+					mBufCurrent->vertex[id+1] += p2;
+					mBufCurrent->vertex[id+2] += p3;
+				}
 
-			mModified = true;
-			update();
-			*/
-
-			mNode->translate( p1, p2, p3 );
-
-			return true;
+				update();
+			}
+			else
+				mNode->translate( p1, p2, p3 );
+			break;
 		}
-		break;
 
 	case ROTATE:
 		{
 			// transfomation center / axe
-			rootTrans = Vector3::ZERO ; //mNode->getPosition();
+			rootTrans = Vector3::ZERO; //mNode->getPosition();
 			static Real angleX,angleY,angleZ;
 			angleX = Math::DegreesToRadians( p1 ); // p1 * 0.01745329252);		// * PI / 180
 			angleY = Math::DegreesToRadians( p2 );
 			angleZ = Math::DegreesToRadians( p3 );
+			Vector3 vertex, normal;
+			unsigned int id;
 
 			// transformation ...
-			for( v = mPoints->begin(); v != mPoints->end(); v++)
-			{		
-				(*v) -= rootTrans;
-				if( p1 && !p2 && !p3 ) VectorModifier::rotateX( (*v), angleX );			// rotation on X
-				else if( !p1 && p2 && !p3 ) VectorModifier::rotateY( (*v), angleY );	// rotation on Y
-				else if( !p1 && !p2 && p3 ) VectorModifier::rotateZ( (*v), angleZ );	// rotation on Z
-				else VectorModifier::rotateXYZ( (*v), angleX, angleY, angleZ );			// rotation on X & Y & Z
-				(*v) += rootTrans;
+			for(unsigned int i=0; i<mVertexCount; i++)
+			{
+				id = i*mVertexDecl/4;
+				vertex.x = mBufCurrent->vertex[id];			normal.x = mBufCurrent->vertex[id+3];
+				vertex.y = mBufCurrent->vertex[id+1];		normal.y = mBufCurrent->vertex[id+4];
+				vertex.z = mBufCurrent->vertex[id+2];		normal.z = mBufCurrent->vertex[id+5];
+
+				//vertex -= rootTrans;
+				if( p1 && !p2 && !p3 )			// rotation on X
+				{
+					VectorModifier::rotateX( vertex, angleX );
+					VectorModifier::rotateX( normal, angleX );
+				}
+				else if( !p1 && p2 && !p3 )		// rotation on Y
+				{
+					VectorModifier::rotateY( vertex, angleY );
+					VectorModifier::rotateY( normal, angleY );
+				}
+				else if( !p1 && !p2 && p3 )		// rotation on Z
+				{
+					VectorModifier::rotateZ( vertex, angleZ );
+					VectorModifier::rotateZ( normal, angleZ );
+				}
+				else							// rotation on X & Y & Z
+				{
+					VectorModifier::rotateXYZ( vertex, angleX, angleY, angleZ );	
+					VectorModifier::rotateXYZ( normal, angleX, angleY, angleZ );
+				}
+				//vertex += rootTrans;
+
+				mBufCurrent->vertex[id] = vertex.x;			mBufCurrent->vertex[id+3] = normal.x;
+				mBufCurrent->vertex[id+1] = vertex.y;		mBufCurrent->vertex[id+4] = normal.y;
+				mBufCurrent->vertex[id+2] = vertex.z;		mBufCurrent->vertex[id+5] = normal.z;
 			}
 
-			mModified = true;
 			update();
-			return true;
+			break;
 		}
-		break;
 
 	case SCALE:
 		{
-			// transformation center / axe
-			rootTrans = mNode->getPosition();
+			//if( p1 <= 0 && p2 <= 0 && p3 <= 0 ) return false;
+			if( p1 != 1 ) { p2 = mScaleY; p3 = mScaleZ; }
+			else if( p2 != 1 ) { p1 = mScaleX; p3 = mScaleZ; }
+			else if( p3 != 1 ) { p1 = mScaleX; p2 = mScaleY; }
+			setScale( p1, p2, p3 );
 
-			// transformation ...
-			for( v = mPoints->begin(); v != mPoints->end(); v++)
+			for(unsigned int i=0; i<mVertexCount; i++)
 			{
-				(*v) -= rootTrans;
-				(*v) *= Vector3(p1, p2, p3);
-				(*v) += rootTrans;
+				unsigned int id = i*mVertexDecl/4;
+				mBufCurrent->vertex[id]		= mBufBackup->vertex[id] * p1;
+				mBufCurrent->vertex[id+1]	= mBufBackup->vertex[id+1] * p2;
+				mBufCurrent->vertex[id+2]	= mBufBackup->vertex[id+2] * p3;
 			}
 
-			mModified = true;
 			update();
-			return true;
+			break;
 		}
-		break;
 
 	// advanced deformations
 	case TAPERX:
 		{
-			Real dep = 0;
-			Vector3 center;
-			if( 0 < p1 && p1 <= 1 )
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTaperX( p1 );
+			
+			for(unsigned int i=0; i<mVertexCount; i++)
 			{
-				// on effectu une translation des sommets sur l'axe X 
-				// dep = Som.Y * Transl / Size.Y
-				// if( Som.X < Center.X ) 
-				//		Som.X += dep
-				// else 
-				//		Som.X -= dep
-				center = mCornerMax + mCornerMin; //mNode->getPosition().y;
-				w = mPointsBackup->begin();
-				for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//dep = (*v).y * p1 * mSize.x / mSize.y;
-					//dep = p1 * (mSize.x/2 * (*v).y / mCornerMax.y);
-					dep = (*w).x * 
-						p1 * 
-						( ( (*w).x / ( mSize.x+mCornerMin.x ) ) * 
-						(*w).y / ( mSize.y+mCornerMin.y ) );
-					//(*v).x += ((*w).x < center ? +dep : -dep);				// with delta incr modif
-					(*v).x = (*w).x + ((*w).x < center.z ? +dep : -dep);
-					w++; 
-				}
-
-				mModified = true;
-				setTaperX(p1);
+				unsigned int id = i*mVertexDecl/4;
+				Real dep = mBufBackup->vertex[id] * p1 * mBufBackup->vertex[id+1] / mBufBackup->size.y;//( mSize.y + mCornerMin.y );
+				mBufCurrent->vertex[id] = mBufBackup->vertex[id] - dep;
 			}
 
-			if( mModified ) update();
-			return true;
+			update();
+			break;
 		}
-		break;
-
 	case TAPERY:
 		{
-			Real dep = 0;
-			Real center = 0;
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTaperY(p1);
 
-			if( 0 < p1 && p1 <= 1 )
+			for(unsigned int i=0; i<mVertexCount; i++)
 			{
-				// on effectu une translation des sommets sur l'axe Z 
-				// dep = Som.Y * Transl / Size.Y
-				// if( Som.Z < Center.Z ) 
-				//		Som.Z += dep
-				// else 
-				//		Som.Z -= dep
-				center = mCornerMax.z + mCornerMin.z; //mNode->getPosition().z;
-				w = mPointsBackup->begin();
-                for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//dep = (*v).y * p1 * mSize.z / mSize.y;
-					//dep = p1 * (mSize.z/2 * (*v).y/mCornerMax.y);
-					dep = (*w).z * 
-						p1 * 
-						( ( (*w).z / ( mSize.z+mCornerMin.z ) ) * 
-						(*w).y / ( mSize.y+mCornerMin.y ) );
-					//(*v).z += ((*w).z < center ? +dep : -dep);				// with delta incr modif
-					(*v).z = (*w).z + ((*w).z < center ? +dep : -dep);
-					w++; 
-				}
-
-				mModified = true;
-				setTaperY(p1);
+				unsigned int id = i*mVertexDecl/4;
+				Real dep = mBufBackup->vertex[id+2] * p1 * mBufBackup->vertex[id+1] / mBufBackup->size.y;//( mSize.y + mCornerMin.y );
+				mBufCurrent->vertex[id+2] = mBufBackup->vertex[id+2] - dep;
 			}
 
-			if( mModified ) update();
-			return true;
+			update();
+			break;
 		}
-		break;
-
-	case PATH_CUT_BEGIN:
-		setPathCutBegin( p1 );
-		return false;
-	case PATH_CUT_END:
-		setPathCutEnd( p1 );
-		return false;
-		{
-			//p1 = .10;
-			//p2 = .90;
-
-			p1 = mPathCutBegin;
-			p2 = mPathCutEnd;
-
-			if( 0 > p1 || p1 > 1) return false;
-			if( (p1 == 0) && (p2 == 1) ) return false;
-			if( p1 > p2 ) return false;	
-			
-			rootTrans = (mCornerMax+mCornerMin)/2;
-
-			p1 = 2 * Math::PI * p1;
-			p2 = 2 * Math::PI * -(1-p2);
-
-			// list of points & index face in intersection
-			list< pair<Vector3, unsigned int> >::iterator vi;
-			list< pair<Vector3, unsigned int> > vertexIntersect;
-			// list of points for the creation of the intersection object / planes
-			list< Vector3 >::iterator vab;
-			list< Vector3 > vertexPlaneA, vertexPlaneB;	
-
-			list<int> deleteFace;			// list of the index of the future deleted faces
-
-			Face face;						// Temporary triangle face
-			Vector3 interPos;				// Temporary point for the intersections
-			Real *vertexTemp, *vStart;		// Temporary vertex array
-			unsigned* triangleTemp;			// Temporary triangle array
-			
-			// cette deformation consiste a couper / faire une operation booleenne entre l'objet
-			// et 2 demi-plans !
-			// ces demi-plans demarrent du centre de l'objet sur le plan XZ
-			// pour un PATH_BEGIN = 0, on demarre le premier demi plan en -X sur le plan XZ
-			// pour un PATH_END = 1, on termine le second demi plan en -X sur le plan XZ, c'est a dire
-			// que l'on couvre l'objet sur 1 radian ==> on conserve la totalitee de l'objet
-			//
-			// pour un PATH_BEGIN = 0.25, on demarre le premier demi plan en +Y sur le plan YZ
-			// pour un PATH_END = 0.75, on termine le second demi plan en -Y sur le plan YZ, c'est a dire
-			// que l'on couvre l'objet sur 0.5 radian ==> on ne garde donc que la moitiee de l'objet se
-			// trouvant dans le champ +X
-			{}
-			// A. build the planes by 2 triangular faces
-			//
-			//		 4 _____ 2
-			//         \  / \
-			//          \/   \   
-			//        6 /\____\ 1
-			//          \ 3  /
-			//           \  /
-			//            \/ 5
-			//            
-			static Vector3 pt1, pt2, pt3, pt4, pt5, pt6;
-			// W. Update the planes position & orientation
-			{
-				pt1 = Vector3( rootTrans + mCornerMax * Vector3( 0, 0, 1.02 ) );
-				pt2 = Vector3( rootTrans + mCornerMin * Vector3( 0, 0, 1.02 ) );
-				pt3 = Vector3( rootTrans + mCornerMax * Vector3( -1.5, 0, 1.02 ) ) - rootTrans;
-				pt4 = Vector3( rootTrans + mCornerMin * Vector3( +1.5, 0, 1.02 ) ) - rootTrans;
-				pt5 = pt3;
-				pt6 = pt4;
-				VectorModifier::rotateZ( pt3, p1 );		pt3 += rootTrans;
-				VectorModifier::rotateZ( pt4, p1 );		pt4 += rootTrans;
-				VectorModifier::rotateZ( pt5, p2 );		pt5 += rootTrans;
-				VectorModifier::rotateZ( pt6, p2 );		pt6 += rootTrans;
-			}
-
-			// Y. Build the 2 'cut' planes
-			Plane planeA( pt1, pt3, pt2 );
-			Plane planeB( pt1, pt2, pt5 );
-
-			// A. ray cast for the insterection	tests
-			static Ray* line = new Ray();
-			line->setOrigin( pt1 );
-			line->setDirection( pt2 );
-
-			// B. List of pairs points / faces in intersection with the 1/2 planes axe
-			{
-				for(unsigned int id = 0; id < mTriangleCount; id++)
-				{ 
-					getFace( id, face );
-
-					if( MeshModifier::interLineTriangle(
-						getPoint(face.id1), getPoint(face.id2), getPoint(face.id3), 
-						line->getOrigin(), line->getDirection(), 
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneA, interPos );
-						VectorModifier::addToList( vertexPlaneB, interPos );
-					}
-				}
-			}
-
-			// C. List of pairs point / face in intersection between planes and object edges
-			// for each triangular face, test the intersection between the three edges and the two planes
-			{
-				for(unsigned int id = 0; id < mTriangleCount; id++)
-				{ 
-					getFace( id, face );
-
-					// premier demi-plan (A)
-					if( MeshModifier::interLineRectangle(		// premiere arrete
-						pt1, pt2, pt3, pt4,
-						getPoint(face.id1),
-						getPoint(face.id2),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneA, interPos );
-					}
-					if( MeshModifier::interLineRectangle(		// deuxieme arrete
-						pt1, pt2, pt3, pt4,
-						getPoint(face.id2),
-						getPoint(face.id3),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneA, interPos );
-					}
-					if( MeshModifier::interLineRectangle(		// troisieme arrete
-						pt1, pt2, pt3, pt4,
-						getPoint(face.id3),
-						getPoint(face.id1),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneA, interPos );
-					}
-
-					// second demi-plan (B)
-					if( MeshModifier::interLineRectangle(		// premiere arrete
-						pt1, pt2, pt5, pt6,
-						getPoint(face.id1),
-						getPoint(face.id2),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneB, interPos );
-					}
-					if( MeshModifier::interLineRectangle(		// deuxieme arrete
-						pt1, pt2, pt5, pt6,
-						getPoint(face.id2),
-						getPoint(face.id3),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneB, interPos );
-					}
-					if( MeshModifier::interLineRectangle(		// troisieme arrete
-						pt1, pt2, pt5, pt6,
-						getPoint(face.id3),
-						getPoint(face.id1),
-						interPos ) )
-					{
-						VectorModifier::addToList( vertexIntersect, pair<Vector3, unsigned int>( interPos, id ) );
-						VectorModifier::addToList( vertexPlaneB, interPos );
-					}
-				}
-			}
-
-			// D. Delete the object faces in intersection with one plane
-			{
-				for( vi = vertexIntersect.begin(); vi != vertexIntersect.end(); vi++ )
-				{	
-					// TODO : attention lors de la suppression d'une face a ne pas forcement supprimer les
-					//        3 sommets ; l'un d'eux peut etre utiliser par une autre face !!!
-					VectorModifier::addToList( deleteFace, (*vi).second );
-				}
-			}
-
-			// E. Update the mVertex array
-			{
-				HardwareVertexBufferSharedPtr vbuf = mVertexData->vertexBufferBinding->getBuffer(0 /*posElem->getSource()*/);
-				Real *pVert = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
-
-				vertexTemp = new Real[ 
-					(mVertexCount+vertexIntersect.size()+deleteFace.size()*3+vertexPlaneA.size()+vertexPlaneB.size()) * mVertexDecl/4 ];
-				vStart = vertexTemp;
-				// TODO : the old vertexs stay in the mVertexs array !!! -> they should be removed -> modif their indexes
-				for( size_t i=0; i<(mVertexCount*mVertexDecl/4); i++ )
-					*vertexTemp++ = *pVert++;
-
-				vbuf->unlock();
-			}
-
-			// F. Update the mTriangles array
-			{
-				triangleTemp = new unsigned[ 
-					(	mTriangleCount
-						- deleteFace.size()
-						+ vertexIntersect.size()
-						+ vertexPlaneA.size() -2
-						+ vertexPlaneB.size() -2 
-					) * 3 ];
-				
-				size_t j = 0;
-				for( size_t i=0; i<(mTriangleCount-deleteFace.size()); i++ )
-				{
-					for( list<int>::iterator idf=deleteFace.begin(); idf!=deleteFace.end(); idf++ )
-					{
-						while( j == (*idf) ) 
-						{ j++; idf++; }
-					}
-					triangleTemp[i*3]	= mTriangles[j*3];
-					triangleTemp[i*3+1]	= mTriangles[j*3+1];
-					triangleTemp[i*3+2]	= mTriangles[j*3+2];
-					j++;
-				}
-			
-				mTriangleCount -= deleteFace.size();
-			}
-
-			// G. build the new cut faces between the object and the planes
-			// G.1. pop the first list element (point)
-			// G.2. pop the nearest neighbor from the first element
-			// G.3. pop the nearest neighbor from the second element
-			// G.4. build a face with those three points
-			// G.5. the second point get position from the third one
-			// G.6. idem G.3. ...
-if( 1 )
-			{
-				size_t id1, id2, id3 = 0;
-				Vector3 normal, second, third, first;
-				bool newFaces = false;
-
-				if( !vertexPlaneA.empty() )
-				{	
-					id1 = mVertexCount++;
-					id2 = mVertexCount++;
-					id3 = mVertexCount++;
-
-					first = (*vertexPlaneA.begin());										// G.1.
-					vertexPlaneA.remove( first );
-					second = VectorModifier::getNearestPoint( vertexPlaneA, first );		// G.2.
-					vertexPlaneA.remove( second );
-					normal = planeA.normal;
-
-					// first vertex															// G.4.		...
-					*vertexTemp++ = first.x;	*vertexTemp++ = first.y;	*vertexTemp++ = first.z;	// position
-					*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-					*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-					*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-					// second vertex
-					*vertexTemp++ = second.x;	*vertexTemp++ = second.y;	*vertexTemp++ = second.z;	// position
-					*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-					*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-					*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-					while( vertexPlaneA.size() )
-					{
-						third = VectorModifier::getNearestPoint( vertexPlaneA, second );	// G.3.		G.6.
-						vertexPlaneA.remove( third );
-
-						// third vertex
-						*vertexTemp++ = third.x;	*vertexTemp++ = third.y;	*vertexTemp++ = third.z;	// position
-						*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-						*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-						*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-						// face ( first, second, third )
-						triangleTemp[ mTriangleCount*3 ]	= id1;
-						triangleTemp[ mTriangleCount*3+1 ]	= id2;
-						triangleTemp[ mTriangleCount*3+2 ]	= id3;
-						mTriangleCount++;
-
-						second = third;														// G.5.
-						id2 = id3;
-						id3 = mVertexCount++;
-						newFaces = true;
-					}
-				}
-
-				if( !vertexPlaneB.empty() )
-				{
-					if( id3 ) id1 = id3;
-					else id1 = mVertexCount++;
-					id2 = mVertexCount++;
-					id3 = mVertexCount++;
-
-					first = (*vertexPlaneB.begin());										// G.1.
-					vertexPlaneB.remove( first );
-					second = VectorModifier::getNearestPoint( vertexPlaneB, first );		// G.2.
-					vertexPlaneB.remove( second );
-					normal = planeB.normal;
-
-					// first vertex															// G.4.		...
-					*vertexTemp++ = first.x;	*vertexTemp++ = first.y;	*vertexTemp++ = first.z;	// position
-					*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-					*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-					*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-					// second vertex
-					*vertexTemp++ = second.x;	*vertexTemp++ = second.y;	*vertexTemp++ = second.z;	// position
-					*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-					*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-					*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-					while( vertexPlaneB.size() )
-					{
-						third = VectorModifier::getNearestPoint( vertexPlaneB, second );	// G.3.		G.6.
-						vertexPlaneB.remove( third );
-
-						// third vertex
-						*vertexTemp++ = third.x;	*vertexTemp++ = third.y;	*vertexTemp++ = third.z;	// position
-						*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-						*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-						*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-						// face ( first, second, third )
-						triangleTemp[ mTriangleCount*3 ]	= id1;
-						triangleTemp[ mTriangleCount*3+2 ]	= id2;		// TODO : normales -> lignes inversees ??
-						triangleTemp[ mTriangleCount*3+1 ]	= id3;		// TODO : normales -> lignes inversees ??
-						mTriangleCount++;
-
-						second = third;
-						id2 = id3;
-						id3 = mVertexCount++;
-						newFaces = true;
-					}
-				}
-
-				if( newFaces ) mVertexCount--;
-			}
-
-			// H. rebuild the new (deleted) faces of the object
-if( 1 )
-			{
-				if( vertexIntersect.size() > 1 )
-				{
-					list<Vector3> list;
-					Plane planeDef, plane;
-					Ogre::Plane::Side side;
-					size_t index, id1, id2, id3 = 0;
-					Vector3 vv, vvv, normal, second, third, first;
-					bool reverseNormal = false;
-					bool newFaces = false;
-					
-					vertexIntersect.sort();
-					vi = vertexIntersect.begin();
-					while( vi != vertexIntersect.end() )
-					{
-						// get the 3 points from the object face (index face)
-						index = (*vi).second;
-						getFace( index, face );
-
-						// take the list of points that has the same index face
-						while( vi != vertexIntersect.end() && (*vi).second == index )
-						{
-							list.push_back( (*vi).first );
-							vi++;
-						}
-
-						// only one point is in intersection so only one face will be created
-						if( list.size() == 1 )
-						{
-							// the 3 points from the original face
-							u = mPoints->begin() + face.id1;
-							vertexPlaneA.push_back( (*u) );
-							v = mPoints->begin() + face.id2;
-							vertexPlaneA.push_back( (*v) );
-							w = mPoints->begin() + face.id3;
-							vertexPlaneA.push_back( (*w) );
-						}
-
-						// more than one point from this index face is in intersection
-						// so more than one face will be created
-						else
-						{
-							// first
-							u = mPoints->begin() + face.id1;
-							side = planeA.getSide( (*u) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneA.push_back( (*u) );
-							side = planeB.getSide( (*u) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneB.push_back( (*u) );
-
-							// second
-							v = mPoints->begin() + face.id2;
-							side = planeA.getSide( (*v) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneA.push_back( (*v) );
-							side = planeB.getSide( (*v) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneB.push_back( (*v) );
-
-							// third
-							w = mPoints->begin() + face.id3;
-							side = planeA.getSide( (*w) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneA.push_back( (*w) );
-							side = planeB.getSide( (*w) );
-							if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-								vertexPlaneB.push_back( (*w) );
-
-							// get the points from the intersection list
-							for( vab = list.begin(); vab != list.end(); vab++ )
-							{
-								side = planeA.getSide( (*vab)-planeA.normal );
-								if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-									//vertexPlaneA.push_front( (*vab) );
-									vertexPlaneA.push_back( (*vab) );
-								side = planeB.getSide( (*vab)-planeB.normal );
-								if( side == Ogre::Plane::NO_SIDE || side == Ogre::Plane::NEGATIVE_SIDE )
-									//vertexPlaneB.push_front( (*vab) );
-									vertexPlaneB.push_back( (*vab) );
-							}
-						}
-
-						// compute the normal from the face (u, v, w)
-						planeDef.redefine( (*u), (*v), (*w) );
-						
-						// clear the temporary list of point
-						list.clear();
-
-						// build the new faces
-						if( vertexPlaneA.size() > 2 )
-						{	
-							id1 = id3 ? id3 : mVertexCount++;
-							id2 = mVertexCount++;
-							id3 = mVertexCount++;
-
-							first = (*vertexPlaneA.begin());
-							vertexPlaneA.remove( first );
-							second = VectorModifier::getNearestPoint( vertexPlaneA, first );
-							vertexPlaneA.remove( second );
-							plane.redefine( first, second, VectorModifier::getNearestPoint( vertexPlaneA, second ) );
-							normal = planeDef.normal;
-
-							// test if the normal is in the wrong way
-							//if( plane.normal.dotProduct( Vector3::UNIT_SCALE ) * normal.dotProduct( Vector3::UNIT_SCALE ) < 0 ) 
-							if( plane.normal.dotProduct( normal ) < 0 ) 
-								reverseNormal = true;
-
-							// first vertex
-							*vertexTemp++ = first.x;	*vertexTemp++ = first.y;	*vertexTemp++ = first.z;	// position
-							*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-							*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-							*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-							// second vertex
-							*vertexTemp++ = second.x;	*vertexTemp++ = second.y;	*vertexTemp++ = second.z;	// position
-							*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-							*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-							*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-							while( !vertexPlaneA.empty() )
-							{
-								third = VectorModifier::getNearestPoint( vertexPlaneA, second );
-								vertexPlaneA.remove( third );
-
-								// third vertex
-								*vertexTemp++ = third.x;	*vertexTemp++ = third.y;	*vertexTemp++ = third.z;	// position
-								*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-								*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-								*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-								// face ( first, second, third )
-								triangleTemp[ mTriangleCount*3 ]	= id1;
-								triangleTemp[ mTriangleCount*3+1 ]	= reverseNormal ? id3 : id2;
-								triangleTemp[ mTriangleCount*3+2 ]	= reverseNormal ? id2 : id3;
-								mTriangleCount++;
-
-								second = third;
-								id2 = id3;
-								id3 = mVertexCount++;
-								newFaces = true;
-							}
-							reverseNormal = false;
-						}
-
-						if( vertexPlaneB.size() > 2 )
-						{	
-							id1 = id3 ? id3 : mVertexCount++;
-							id2 = mVertexCount++;
-							id3 = mVertexCount++;
-
-							first = (*vertexPlaneB.begin());
-							vertexPlaneB.remove( first );
-							second = VectorModifier::getNearestPoint( vertexPlaneB, first );
-							vertexPlaneB.remove( second );
-							plane.redefine( first, second, VectorModifier::getNearestPoint( vertexPlaneB, second ) );
-							normal = planeDef.normal;
-
-							// test if the normal is in the wrong way
-							//if( plane.normal.dotProduct( Vector3::UNIT_SCALE ) * normal.dotProduct( Vector3::UNIT_SCALE ) < 0 ) 
-							if( plane.normal.dotProduct( normal ) < 0 ) 
-								reverseNormal = true;
-
-							// first vertex
-							*vertexTemp++ = first.x;	*vertexTemp++ = first.y;	*vertexTemp++ = first.z;	// position
-							*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-							*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-							*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-							// second vertex
-							*vertexTemp++ = second.x;	*vertexTemp++ = second.y;	*vertexTemp++ = second.z;	// position
-							*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-							*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-							*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-
-							while( !vertexPlaneB.empty() )
-							{
-								third = VectorModifier::getNearestPoint( vertexPlaneB, second );
-								vertexPlaneB.remove( third );
-
-								// third vertex
-								*vertexTemp++ = third.x;	*vertexTemp++ = third.y;	*vertexTemp++ = third.z;	// position
-								*vertexTemp++ = normal.x;	*vertexTemp++ = normal.y;	*vertexTemp++ = normal.z;	// normal
-								*vertexTemp++ = 1;//ColourValue( 1, .8, .8, .5 );									// colour
-								*vertexTemp++ = 0;			*vertexTemp++ = 0;										// tex.coord
-								
-								// face ( first, second, third )
-								triangleTemp[ mTriangleCount*3 ]	= id1;
-								triangleTemp[ mTriangleCount*3+1 ]	= reverseNormal ? id3 : id2;
-								triangleTemp[ mTriangleCount*3+2 ]	= reverseNormal ? id2 : id3;
-								mTriangleCount++;
-
-								second = third;
-								id2 = id3;
-								id3 = mVertexCount++;
-								newFaces = true;
-								
-							}
-							reverseNormal = false;
-						}
-					}
-					if( newFaces ) mVertexCount--;
-				}
-			}
-
-			// I. Update the mVertex, mTriangles arrays and resize the hardware buffer
-			free( mVertexs ); //delete[] mVertexs;
-			free( mTriangles ); //delete[] mTriangles;
-			vertexTemp = vStart;
-			resizeBuffers( mVertexCount, vertexTemp, mTriangleCount*3, triangleTemp );
-//			free( triangleTemp );
-//			free( vertexTemp );
-			{}
-
-
-/*
-SOLIPSISINFO( "-----------------------------------------------" );
-static char text[64];
-size_t id = 0;
-for( size_t i=0; i<mVertexCount*mVertexDecl/4; i+=(mVertexDecl/4) )
-{
-	sprintf( text, "%2u -> %f %f %f", id++, vStart[i],vStart[i+1],vStart[i+2] );
-	SOLIPSISINFO( text );
-}
-SOLIPSISINFO( "   " );
-id = 0;
-for( size_t i=0; i<mTriangleCount; i++ )
-{
-	sprintf( text, "%2u -> %i %i %i", id++, triangleTemp[i*3],triangleTemp[i*3+1],triangleTemp[i*3+2] );
-	SOLIPSISINFO( text );
-}
-*/
-
-
-			mModified = true;
-			if(mModified) 
-			{
-				getDataFromBuffer( mPoints, mFaces );
-		//		update();
-			}
-
-
-/*
-SOLIPSISINFO( "-----------------------------------------------" );
-id = 0;
-for( v=mPoints->begin(); v!=mPoints->end(); v++ )
-{
-	sprintf( text, "%2u -> %f %f %f", id++, (*v).x,(*v).y,(*v).z );
-	SOLIPSISINFO( text );
-}
-SOLIPSISINFO( "   " );
-id = 0;
-for( vector<Face>::iterator v=mFaces->begin(); v!=mFaces->end(); v++ )
-{
-	sprintf( text, "%2u -> %i %i %i", id++, (*v).id1,(*v).id2,(*v).id3 );
-	SOLIPSISINFO( text );
-}
-*/
-
-
-			return true;
-		}
-		break;
-
-	case DIMPLE_BEGIN:
-		{
-			// idem PATH_CUT mais en travaillant avec le plan ZY et non plus XZ
-			// ...
-		}
-		break;
-	case DIMPLE_END:
-		{
-			// idem PATH_CUT mais en travaillant avec le plan ZY et non plus XZ
-			// ...
-		}
-		break;
-
-	case HOLE_SIZEX:
-		break;
-	case HOLE_SIZEY:
-		break;
-
-	case HOLLOW_SHAPE:
-		break;
-
-	case TWIST_BEGIN:
-		{
-			if( 0 >= p1 && p1 >= 1 || 0 >= mTwistEnd && mTwistEnd >= 1 ) return false;
-
-			Vector3 center = mNode->getPosition();
-			Real ratio, angle;
-
-			p1 *= Math::PI * 2; // 6.2831853;
-			mTwistEnd *= Math::PI * 2;
-			
-			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-				(*v) -= center;
-				ratio = (*w).y / mCornerMax.y / 2;		// 1 = top, 0 = bottom
-				angle = ratio * (p1 - mTwistEnd) + mTwistEnd;			// ratio = 1 -> angle = p1		ratio = 0 -> angle = mTwistEnd
-				(*v) = (*w);
-				VectorModifier::rotateY( (*v), angle );
-				(*v) += center;
-				w++;
-			}
-
-			mModified = true;
-			if( mModified ) update();
-
-			return true;
-		}
-		break;
-	case TWIST_END:
-		{
-			if( 0 >= mTwistBegin && mTwistBegin >= 1 || 0 >= p2 && p2 >= 1 ) return false;
-
-			Vector3 center = mNode->getPosition();
-			Real ratio, angle;
-
-			mTwistBegin *= Math::PI * 2; // 6.2831853;
-			p2 *= Math::PI * 2;
-			
-			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-				(*v) -= center;
-				ratio = (*w).y / mCornerMax.y / 2;		// 1 = top, 0 = bottom
-				angle = ratio * (mTwistBegin - p2) + p2;			// ratio = 1 -> angle = mTwistBegin		ratio = 0 -> angle = p2
-				(*v) = (*w);
-				VectorModifier::rotateY( (*v), angle );
-				(*v) += center;
-				w++;
-			}
-
-			mModified = true;
-			if( mModified ) update();
-
-		}
-		break;
 
 	case TOP_SHEARX:
 		{
-			if( 0 >= p1 && p1 >= 1 || 0 >= mTopShearY && mTopShearY >= 1 ) return false;
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTopShearX( p1 );
 
-			if( p1 )
+			// on effectu une translation des sommets sur l'axe X 
+			// Som.X += Som.Y * Transl / Size.Y
+/*			w = mPointsBackup->begin();
+			for( v = mPoints->begin(); v != mPoints->end(); v++ )
 			{
-				// on effectu une translation des sommets sur l'axe X 
-				// Som.X += Som.Y * Transl / Size.Y
-				w = mPointsBackup->begin();
-                for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//(*v).x += (*v).y * p1 * mSize.x / mSize.y;		// other version
-					//(*v).x += (*v).y * p1 * mSize.x / mCornerMax.y;				// with delta incr modif
-					(*v).x = (*w).x + (*w).y * p1 * mSize.x / mCornerMax.y;
-					w++;
-				}
-
-				mModified = true;
+			//(*v).x += (*v).y * p1 * mSize.x / mSize.y;		// other version
+			//(*v).x += (*v).y * p1 * mSize.x / mCornerMax.y;				// with delta incr modif
+			(*v).x = (*w).x + (*w).y * p1 * mSize.x / mCornerMax.y;
+			w++;
+			}
+*/
+			for(unsigned int i=0; i<mVertexCount; i++)
+			{
+				unsigned int id = i*mVertexDecl/4;
+				mBufCurrent->vertex[id] = mBufBackup->vertex[id];
+				//mBufCurrent->vertex[id] += p1 * mSize.x * mBufBackup->vertex[id+1] / mCornerMax.y;
+				mBufCurrent->vertex[id] += p1 * mBufBackup->size.x * mBufBackup->vertex[id+1] / mBufBackup->cornerMax.y;
 			}
 
-			if( mTopShearY )
-			{
-				// on effectu une translation des sommets sur l'axe Z 
-				// Som.Z += Som.Y * Transl / Size.Y
-				w = mPointsBackup->begin();
-                for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//(*v).z += (*v).y * mTopShearY * mSize.z / mCornerMax.y;				// with delta incr modif
-					(*v).z = (*w).z + (*w).y * mTopShearY * mSize.z / mCornerMax.y;
-					w++;
-				}
-
-				mModified = true;
-			}
-
-			if( mModified ) update();
-
-			return true;
+			update();
+			break;
 		}		
-		break;
 	case TOP_SHEARY:
 		{
-			if( 0 >= mTopShearX && mTopShearX >= 1 || 0 >= p2 && p2 >= 1 ) return false;
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTopShearY( p1 );
 
-			if( mTopShearX )
+			// on effectu une translation des sommets sur l'axe Z 
+			// Som.Z += Som.Y * Transl / Size.Y
+/*			w = mPointsBackup->begin();
+			for( v = mPoints->begin(); v != mPoints->end(); v++ )
 			{
-				// on effectu une translation des sommets sur l'axe X 
-				// Som.X += Som.Y * Transl / Size.Y
-				w = mPointsBackup->begin();
-                for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//(*v).x += (*v).y * mTopShearX * mSize.x / mSize.y;		// other version
-					//(*v).x += (*v).y * mTopShearX * mSize.x / mCornerMax.y;				// with delta incr modif
-					(*v).x = (*w).x + (*w).y * mTopShearX * mSize.x / mCornerMax.y;
-					w++;
-				}
-
-				mModified = true;
+				//(*v).z += (*v).y * p2 * mSize.z / mCornerMax.y;				// with delta incr modif
+				(*v).z = (*w).z + (*w).y * p2 * mSize.z / mCornerMax.y;
+				w++;
+			}
+*/
+			for(unsigned int i=0; i<mVertexCount; i++)
+			{
+				unsigned int id = i*mVertexDecl/4;
+				mBufCurrent->vertex[id+2] = mBufBackup->vertex[id+2];
+				//mBufCurrent->vertex[id+2] += p1 * mSize.z * mBufBackup->vertex[id+1] / mCornerMax.y;
+				mBufCurrent->vertex[id+2] += p1 * mBufBackup->size.z * mBufBackup->vertex[id+1] / mBufBackup->cornerMax.y;
 			}
 
-			if( p2 )
-			{
-				// on effectu une translation des sommets sur l'axe Z 
-				// Som.Z += Som.Y * Transl / Size.Y
-				w = mPointsBackup->begin();
-                for( v = mPoints->begin(); v != mPoints->end(); v++ )
-				{
-					//(*v).z += (*v).y * p2 * mSize.z / mCornerMax.y;				// with delta incr modif
-					(*v).z = (*w).z + (*w).y * p2 * mSize.z / mCornerMax.y;
-					w++;
-				}
+			update();
+			break;
+		}
 
-				mModified = true;
+	case TWIST_BEGIN:
+		{
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTwistBegin( p1 );
+
+			p1 *= Math::PI * 2; // 6.2831853;
+			Vector3 center = mNode->getPosition();
+			Real ratio, angle;
+			
+/*			w = mPointsBackup->begin();
+			for( v = mPoints->begin(); v != mPoints->end(); v++ )
+			{
+				(*v) -= center;
+				ratio = (*w).y / mCornerMax.y / 2;		// 1 = top, 0 = bottom
+				angle = ratio * (p1 );//- mTwistEnd) + mTwistEnd;			// ratio = 1 -> angle = p1		ratio = 0 -> angle = mTwistEnd
+				(*v) = (*w);
+				VectorModifier::rotateY( (*v), angle );
+				(*v) += center;
+				w++;
+			}
+*/
+			for(unsigned int i=0; i<mVertexCount; i++)
+			{
+				unsigned int id = i*mVertexDecl/4;
+				Vector3 v;
+				v.x = mBufBackup->vertex[id];
+				v.y = mBufBackup->vertex[id+1];
+				v.z = mBufBackup->vertex[id+2];
+
+				v -= center;
+				ratio = mBufBackup->vertex[id+1] / mCornerMax.y / 2;			// 1 = top, 0 = bottomm
+				angle = ratio * p1;
+				VectorModifier::rotateY( v, angle );
+				if( 0 < mTwistEnd )
+				{
+					ratio = 0.5 - mBufBackup->vertex[id+1] / mCornerMax.y / 2;	// 1 = top, 0 = bottom
+					angle = ratio * mTwistEnd * Math::PI * 2;
+					VectorModifier::rotateY( v, -angle );
+				}
+				v += center;
+
+				mBufCurrent->vertex[id] = v.x;
+				mBufCurrent->vertex[id+1] = v.y;
+				mBufCurrent->vertex[id+2] = v.z;
 			}
 
-			if( mModified ) update();
+			update();
+			break;
+		}
+	case TWIST_END:
+		{
+			if( 0 > p1 || p1 > 1 ) return false;
+			setTwistEnd( p1 );
 
-			return true;
-		}		
+			p1 *= Math::PI * 2; // 6.2831853;
+			Vector3 center = mNode->getPosition();
+			Real ratio, angle;
+		
+/*			w = mPointsBackup->begin();
+			for( v = mPoints->begin(); v != mPoints->end(); v++ )
+			{
+				(*v) -= center;
+				ratio = 0.5 - ( (*w).y / mCornerMax.y / 2) ;		// 1 = top, 0 = bottom
+				//angle = ratio * (mTwistBegin - p1) + p1;			// ratio = 1 -> angle = mTwistBegin		ratio = 0 -> angle = p2
+				angle = ratio * ( -p1);// + p1;
+				(*v) = (*w);
+				VectorModifier::rotateY( (*v), angle );
+				(*v) += center;
+				w++;
+			}
+*/
+			for(unsigned int i=0; i<mVertexCount; i++)
+			{
+				unsigned int id = i*mVertexDecl/4;
+				Vector3 v;
+				v.x = mBufBackup->vertex[id];
+				v.y = mBufBackup->vertex[id+1];
+				v.z = mBufBackup->vertex[id+2];
+
+				v -= center;
+				if( 0 < mTwistBegin )
+				{
+					ratio = mBufBackup->vertex[id+1] / mCornerMax.y / 2;		// 1 = top, 0 = bottomm
+					angle = ratio * mTwistBegin * Math::PI * 2;
+					VectorModifier::rotateY( v, angle );
+				}
+				ratio = 0.5 - mBufBackup->vertex[id+1] / mCornerMax.y / 2;		// 1 = top, 0 = bottom
+				angle = ratio * p1;
+				VectorModifier::rotateY( v, -angle );
+				v += center;
+
+				mBufCurrent->vertex[id] = v.x;
+				mBufCurrent->vertex[id+1] = v.y;
+				mBufCurrent->vertex[id+2] = v.z;
+			}
+
+			update();
+			break;
+		}
+
+	case PATH_CUT_BEGIN:
+		if( (p1 == 0) && (mPathCutEnd == 1) ) return false;
+		if( (p1 - mPathCutEnd) >= 0 ) return false;
+		setPathCutBegin( p1 );
+		mAngleBegin = mPathCutBegin;
+		mAngleEnd = mPathCutEnd;
+		path_cut = true;
+		break;
+	case PATH_CUT_END:
+		if( (mPathCutBegin == 0) && (p1 == 1) ) return false;
+		if( (mPathCutBegin - p1) >= 0 ) return false;
+		setPathCutEnd( p1 );
+		mAngleBegin = mPathCutBegin;
+		mAngleEnd = mPathCutEnd;
+		path_cut = true;
+		break;
+
+	case DIMPLE_BEGIN:
+		if( (p1 == 0) && (mDimpleEnd == 1) ) return false;
+		if( (p1 - mDimpleEnd) >= 0 ) return false;
+		setDimpleBegin( p1 );
+		mAngleBegin = mDimpleBegin;
+		mAngleEnd = mDimpleEnd;
+		dimple = true;
+		break;
+	case DIMPLE_END:
+		if( (mDimpleBegin == 0) && (p1 == 1) ) return false;
+		if( (mDimpleBegin - p1) >= 0 ) return false;
+		setDimpleEnd( p1 );
+		mAngleBegin = mDimpleBegin;
+		mAngleEnd = mDimpleEnd;
+		dimple = true;
+		break;
+
+	case HOLE_SIZEX:
+		setHoleSizeX( p1 );
+		hole = true;
+		break;
+	case HOLE_SIZEY:
+		setHoleSizeY( p1 );
+		hole = true;
+		break;
+	case HOLLOW_SHAPE:
+		switch( int(p1) )
+		{
+		case 0: setHollowShape( CIRCLE ); hollow_sides = 16; break;
+		default:
+		case 1: setHollowShape( SQUARE ); hollow_sides = 4; break;
+		case 2: setHollowShape( TRIANGLE ); hollow_sides = 3; break;
+		}
+		hole = true;
 		break;
 
 	case SKEW:
+		setSkew( p1 );
+		skew = true;
 		break;
-
 	case REVOLUTION:
+		setRevolutions( p1 );
+		skew = true;
 		break;
-
 	case RADIUS_DELTA:
-		break;
-
-	default:
+		setRadiusDelta( p1 );
+		skew = true;
 		break;
 	}
 
+	//path_cut / dimple / hole deformation
+	if( path_cut || dimple || hole )
+	{
+		// SOLID_A
+		solidA = sbo->dataLoad( 
+			mBufBackup->vertex, mBufBackup->vertexCount, mVertexDecl/4,
+			mBufBackup->index, mBufBackup->indexCount/3 );
+		solidA->DataCloseCallback();
+
+		// SOLID_B : generate a new SOLID
+		if( hole )
+			MeshModifier::genCylinder(
+				command,
+				vertex, vertexCount, mVertexDecl/4, 
+				index, indexCount,
+				hollow_sides, mHoleSizeY, mHoleSizeX,
+				mCornerMax, mCornerMin );
+		else
+			MeshModifier::genCylinderCut(
+				command,
+				vertex, vertexCount, mVertexDecl/4, 
+				index, indexCount, 
+				mAngleBegin, mAngleEnd, 
+				mCornerMax, mCornerMin );
+		solidB = sbo->dataLoad( vertex, vertexCount, mVertexDecl/4, index, indexCount/3 );
+		solidB->DataCloseCallback();
+
+		// Apply a boolean operation from the solid B on A
+		sbo->applyBoolOp( SBO::OP_DIFFERENCE, solidA, solidB );
+		sbo->OutputSolid( solidA, vertexA, vertexCountA, mVertexDecl/4, indexA, indexCountA );
+		sbo->OutputSolid( solidB, vertexB, vertexCountB, mVertexDecl/4, indexB, indexCountB );
+//		delete solidA;
+//		delete solidB;
+
+		// Merge the 2 modified solids
+		// sizes
+		vertexCount = vertexCountA + vertexCountB;
+		indexCount = indexCountA + indexCountB;
+		// vertex data
+		delete vertex;		vertex = new Real [vertexCount * mVertexDecl/4];
+		for(unsigned int i=0; i<vertexCountA*mVertexDecl/4; i++)	*vertex++ = *vertexA++;
+		for(i=0; i<vertexCountB*mVertexDecl/4; i++)					*vertex++ = *vertexB++;
+		// index data
+		delete index;		index = new unsigned int [indexCount];
+		for(i=0; i<indexCountA; i++)	*index++ = *indexA++;
+		for(i=0; i<indexCountB; i++)	*index++ = *indexB++ + vertexCountA;
+		// replace pointers at startup
+		vertex -= vertexCount * mVertexDecl/4;
+		index -= indexCount;
+
+		// Update vertex & index datas
+		resizeBuffers( vertex, vertexCount, index, indexCount );
+		path_cut = dimple = hole = false;
+
+		delete mBufCurrent->vertex;
+		delete mBufCurrent->index;
+
+		mBufCurrent->vertex			= vertex;
+		mBufCurrent->vertexCount	= vertexCount;
+		mBufCurrent->index			= index;
+		mBufCurrent->indexCount		= indexCount;
+//		updateBoundingBox();
+	}
+
+	// skew deformation
+	if( skew && (mType == CYLINDER || mType == TORUS || mType == TUBE) )
+	{
+		delete vertex;	vertex = 0;
+		delete index;	index = 0;
+
+		// Generate the new modified object3D
+		MeshModifier::genCylinderSkew(
+			command,
+			vertex, vertexCount, mVertexDecl/4, 
+			index, indexCount,
+			16, 1, 1,
+			mSkew, mRadiusDelta, mRevolutions, mType,
+			mBufCurrent->cornerMax, mBufCurrent->cornerMin );
+
+		// Update vertex & index datas
+		resizeBuffers( vertex, vertexCount, index, indexCount );
+		skew = false;
+
+		delete mBufCurrent->vertex;
+		delete mBufCurrent->index;
+
+		mBufCurrent->vertex			= vertex;
+		mBufCurrent->vertexCount	= vertexCount;
+		mBufCurrent->index			= index;
+		mBufCurrent->indexCount		= indexCount;
+	}
+
+	// childs
+ 	if (mChilds)
+	{
+		vector< Object3D* >::iterator itr ;
+		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		{
+			if(command == ROTATE)
+			{
+				(*itr)->mCentreSelection = mCentreSelection ;
+				(*itr)->mCentreRotation = mCentreRotation ;
+				(*itr)->mCentreObject = mCentreObject ;
+				(*itr)->findRotationPosition( p1, p2, p2, mCentreSelection, mCentreRotation, mCentreObject);
+			}
+			(*itr)->apply( command, p1, p2, p3 ) ;
+		}
+	}
+
+	mNode->_updateBounds();
 	return true;
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::updateBackup()
+Vector3 Object3D::getPosition(bool worldPosition )
 {
-	vector< Vector3 >::iterator v = mPoints->begin();
+	if (worldPosition)
+		return mNode->getWorldPosition();
 
-	mPointsBackup->clear();
-
-	for( size_t size = 0; size < mPoints->size(); size++ )
-	{
-		mPointsBackup->push_back( (*v) );
-		v++;
-	}
-}
-
-//-------------------------------------------------------------------------------------
-Vector3 Object3D::getPosition()
-{
 	return mNode->getPosition();
 }
 //-------------------------------------------------------------------------------------
@@ -1359,7 +1095,6 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 {
 	SceneNode * pObjScenNode = pObj->getEntity()->getParentSceneNode();
 	Vector3 Wpostion = pObjScenNode->getWorldPosition() ;;
-	showBoundingBox(false);
 	if( isLink(pObj) )
 	{			//remove it ...
 		removeChild( pObj);			//to mChilds
@@ -1370,15 +1105,22 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 		pObj->setParent( NULL );	//update pObj's parent
 	}
 	else
-	{			//add it ...
-		addChild( pObj);			//... to mChilds
-									//... to this current node	 
-		pSceneMgr->getRootSceneNode()->removeChild( pObjScenNode ) ;
-		mNode->addChild( pObjScenNode );
-		pObjScenNode->setPosition( Wpostion - mNode->getWorldPosition() );
-		pObj->setParent( this) ;	//update pObj's parent
+	{
+		if(pObj->getParent() == NULL)//if this object hasn't parent :
+		{
+			//we can add it ...
+			addChild( pObj);			//... to mChilds
+										//... to this current node	 
+			pSceneMgr->getRootSceneNode()->removeChild( pObjScenNode ) ;
+			mNode->addChild( pObjScenNode );
+			pObjScenNode->setPosition( Wpostion - mNode->getWorldPosition() );
+			pObj->setParent( this) ;	//update pObj's parent
+		}
+		else	//if this object has a parent :
+		{
+			pObj->getParent()->linkObject(pObj, pSceneMgr) ;
+		}
 	}
-	showBoundingBox(true);
 	return true;
 }
 //-------------------------------------------------------------------------------------
@@ -1399,12 +1141,6 @@ bool Object3D::isLink(Object3D* pObj)
 Vector3 Object3D::getOrientation()
 {
 	return Vector3(mNode->getOrientation().getYaw().valueDegrees(),mNode->getOrientation().getPitch().valueDegrees(),mNode->getOrientation().getRoll().valueDegrees());
-}
-
-//-------------------------------------------------------------------------------------
-Vector3 Object3D::getScale()
-{
-	return mNode->getScale();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1448,20 +1184,25 @@ void Object3D::setParent(Object3D* pParent)
 //-------------------------------------------------------------------------------------
 void Object3D::getSize(Vector3 &size, Vector3 &min, Vector3 &max)
 {
-	if( !mPoints->empty() )
+	//if( mVertexCount )
+	if( mBufCurrent->vertexCount )
 	{
 		max = Vector3::ZERO;
 		min = Vector3::ZERO;
-		vector<Vector3>::iterator i;
-		for( i = mPoints->begin(); i != mPoints->end(); i++ )
-		{
-			if( (*i).x > max.x )  max.x = (*i).x;
-			if( (*i).y > max.y )  max.y = (*i).y;
-			if( (*i).z > max.z )  max.z = (*i).z;
+		Real *vertex = mBufCurrent->vertex; // = mVertex;
 
-			if( (*i).x < min.x )  min.x = (*i).x;
-			if( (*i).y < min.y )  min.y = (*i).y;
-			if( (*i).z < min.z )  min.z = (*i).z;
+		//for(unsigned int i=0; i<mVertexCount; i++)
+		for(unsigned int i=0; i<mBufCurrent->vertexCount; i++)
+		{
+			unsigned int id = i*mVertexDecl/4;
+
+			if( vertex[id] > max.x )		max.x = vertex[id];
+			if( vertex[id+1] > max.y )		max.y = vertex[id+1];
+			if( vertex[id+2] > max.z )		max.z = vertex[id+2];
+
+			if( vertex[id] < min.x )		min.x = vertex[id];
+			if( vertex[id+1] < min.y )		min.y = vertex[id+1];
+			if( vertex[id+2] < min.z )		min.z = vertex[id+2];
 		}
 
 		size.x = max.x - min.x;
@@ -1476,183 +1217,151 @@ void Object3D::getDataFromBuffer(vector<Vector3>* pVertex, vector<Face>* pTriang
 	Mesh* mesh = mEntity->getMesh().get();
 
 	// Clear the vertex array
-//	if( mVertexs ) free( mVertexs );
-	if( !pVertex->empty() ) pVertex->clear();
-	
+//	if( mVertex ) free( mVertex );
+
 	// Clear the triangle array
-//	if( mTriangles ) free( mTriangles );
-	if( !pTriangle->empty() ) pTriangle->clear();
+//	if( mIndex ) free( mTriangle );
 
 	// Get the informations
 	MeshModifier::getMeshInformation(
 		mesh,
 		mVertexCount,
-		mVertexs,
-		mTriangleIndexCount,
-		mTriangles);
+		mVertex,
+		mIndexCount,
+		mIndex);
 
-	mTriangleCount = mTriangleIndexCount / 3;
-
-	// Update the vertex array
-	for( size_t i=0; i<mVertexCount; i++ )
-		pVertex->push_back( mVertexs[i] );
-
-	// Update the triangle array
-	for( size_t i=0; i<mTriangleIndexCount; i+=3 )
-	{
-		Face face;
-		face.id1 = mTriangles[i];
-		face.id2 = mTriangles[i+1];
-		face.id3 = mTriangles[i+2];
-
-		pTriangle->push_back( face );
-	}
+	mTriangleCount = mIndexCount / 3;
 }
 
 //-------------------------------------------------------------------------------------
 void Object3D::setPoint(unsigned int index, const Vector3 &value)
 {
-	//assert(index < mPoints->size() && "Point index is out of bounds!!");
-	//(*mPoints)[index] = value;
-
 	assert(index < mVertexCount && "Point index is out of bounds!!");
-	mVertexs[index] = value;
-
-
-	/*
-	int idFace = (*p).second;
-				getFace( idFace, face );
-				
-				v = mPoints->begin() + face.id1;
-				(*v) = mVertexs[ face.id1 ] * .9;
-	*/
-
-	mModified = true;
+	mVertex[index*mVertexDecl/4] = value.x;
+	mVertex[index*mVertexDecl/4+1] = value.y;
+	mVertex[index*mVertexDecl/4+2] = value.z;
 } 
 
 //-------------------------------------------------------------------------------------
 Vector3 inline Object3D::getPoint(unsigned int index)
 {
-	//assert(index < mPoints->size() && "Point index is out of bounds!!");
 	assert(index < mVertexCount && "Point index is out of bounds!!");
 
-	return (*mPoints)[index];
+	Vector3 v;
+	v.x = mVertex[index*mVertexDecl/4];
+	v.y = mVertex[index*mVertexDecl/4+1];
+	v.z = mVertex[index*mVertexDecl/4+2];
+
+	return v;
 }
 
 //-------------------------------------------------------------------------------------
 size_t Object3D::getNumPoints(void)
 {
-	//return (unsigned short)mPoints->size();
 	return mVertexCount;
 }
 
 //-------------------------------------------------------------------------------------
 void inline Object3D::getFace(unsigned int index, Object3D::Face &face)
 {
-	face.id1 = mTriangles[index*3];
-	face.id2 = mTriangles[index*3+1];
-	face.id3 = mTriangles[index*3+2];
+	if( index < mIndexCount )
+	{
+		face.id1 = mIndex[index*3];
+		face.id2 = mIndex[index*3+1];
+		face.id3 = mIndex[index*3+2];
+	}
 }
 
 //-------------------------------------------------------------------------------------
 size_t Object3D::getNumFaces(void)
 {
-	//return (unsigned short)mFaces->size();
-	return mTriangleCount;
+	return mIndexCount;
 }
 
 //-------------------------------------------------------------------------------------
 void inline Object3D::update()
 {
 	if( mEntity )
-		if( mModified ) 
-		{
-			// update the hardware vertex buffer
-			updateVertexBuffer();
+	{
+		// update the hardware vertex buffer
+		updateBufferVertex();
 
-			// update the bounding box corners
-			getSize( mSize, mCornerMin, mCornerMax );
-			mEntity->getMesh()->_setBounds( AxisAlignedBox( 
-				mCornerMin.x, mCornerMin.y, mCornerMin.z,
-				mCornerMax.x, mCornerMax.y, mCornerMax.z ) );
-			mEntity->getMesh()->_setBoundingSphereRadius( Math::Sqrt( 3 * mCornerMax.x * mCornerMax.x ) );
-		}
+		// update the bounding box corners
+		updateBoundingBox();
+	}
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::updateVertexBuffer()
+void inline Object3D::updateBoundingBox()
+{
+	getSize( mSize, mCornerMin, mCornerMax );
+
+	mEntity->getMesh()->_setBounds( AxisAlignedBox( 
+		mCornerMin.x, mCornerMin.y, mCornerMin.z,
+		mCornerMax.x, mCornerMax.y, mCornerMax.z ) );
+	mEntity->getMesh()->_setBoundingSphereRadius( Math::Sqrt( 3 * mCornerMax.x * mCornerMax.x ) );
+}
+//-------------------------------------------------------------------------------------
+void Object3D::updateBufferVertex()
 {
 	MeshPtr mesh = mEntity->getMesh();
 	SubMesh* subMesh = mesh->getSubMesh(0);
 
-//	vertexData = mEntity->getVertexDataForBinding();
 	const VertexElement* posElem = mVertexData->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 
 	HardwareVertexBufferSharedPtr vbuf = mVertexData->vertexBufferBinding->getBuffer(posElem->getSource());
+	Real *vertex = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
+	Real *vertexNew = mBufCurrent->vertex;
 
-	// Get base pointer
-	Real *pVert = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
-	vector<Vector3>::iterator i = mPoints->begin();
+	for(unsigned int i=0; i<mVertexCount*mVertexDecl/4; i++)
+		*vertex++ = *vertexNew++;		//vertex[i] = mBufCurrent->vertex[i];
 
-	for( size_t v = 0; v < mVertexCount; v++)
-	{
-		*pVert++ = (*i).x;
-		*pVert++ = (*i).y;
-		*pVert++ = (*i).z; 
-
-		pVert += mVertexDecl/4 - 3;
-		i++;
-	}
-	
 	vbuf->unlock();
-
-	mModified = false;
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::resizeBuffers( size_t vertexCount, Real* vertexData, size_t indexCount, unsigned* indexData )
+void Object3D::resizeBuffers( Real* pVertexData, size_t pVertexCount, unsigned* pIndexData, size_t pIndexCount )
 {
 	SubMesh* subMesh = mEntity->getMesh()->getSubMesh(0);
 
 	// Update vertex count in the render operation
-	mVertexData->vertexCount = vertexCount;
+	mVertexData->vertexCount = pVertexCount;
 
 	// Create new vertex buffer
 	HardwareVertexBufferSharedPtr vbuf =
 		HardwareBufferManager::getSingleton().createVertexBuffer(
-			mVertexDecl, //offset
+			mVertexDecl,
 			mVertexData->vertexCount, //mVertexBufferCapacity,
 			//HardwareBuffer::HBU_STATIC_WRITE_ONLY);
 			HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
 
 	// Upload the vertex data to the card
-	vbuf->writeData( 0, vbuf->getSizeInBytes(), vertexData, true );
+	vbuf->writeData( 0, vbuf->getSizeInBytes(), pVertexData, true );
 
 	// Bind buffer
 	mVertexData->vertexBufferBinding->setBinding(0, vbuf);
 
-	
-
 
 
 	// Set parameters of the submesh
-	subMesh->indexData->indexCount = indexCount;
+	// Update index count in the render operation
+	subMesh->indexData->indexCount = pIndexCount;
 	subMesh->indexData->indexStart = 0;
 
 	// Create new index buffer
 	HardwareIndexBufferSharedPtr ibuf = 
 		HardwareBufferManager::getSingleton().createIndexBuffer(
-			HardwareIndexBuffer::IT_32BIT,	//HardwareIndexBuffer::IT_16BIT
-			subMesh->indexData->indexCount, //mIndexBufferCapacity,
-			//HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-			HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
+		HardwareIndexBuffer::IT_32BIT,	//HardwareIndexBuffer::IT_16BIT
+		subMesh->indexData->indexCount, //mIndexBufferCapacity,
+		//HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+		HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // TODO: Custom HBU_?
 
 	// Upload the index data to the card
-	ibuf->writeData( 0, ibuf->getSizeInBytes(), indexData, true );
+	ibuf->writeData( 0, ibuf->getSizeInBytes(), pIndexData, true );
 
-	// Update index count in the render operation
+	// Update index
 	subMesh->indexData->indexBuffer = ibuf;
-	
+
 	// Notify mesh object that it has been loaded
 	mEntity->getMesh()->load();
 }
@@ -1669,6 +1378,11 @@ void Object3D::showBoundingBox(bool pValue)
 			(*itr)->showBoundingBox(pValue);
 		}
 	}
+}
+//-------------------------------------------------------------------------------------
+bool Object3D::getShowBoundingBox()
+{
+	return mNode->getShowBoundingBox() ;
 }
 //-------------------------------------------------------------------------------------
 TexturePtr Object3D::getTexture(const String& name)
@@ -1694,6 +1408,8 @@ void Object3D::addTexture(TexturePtr texture)
 		}
 	}
 }
+
+//-------------------------------------------------------------------------------------
 void Object3D::deleteTexture(TexturePtr pTexture) 
 {
 	//Remove texture if it exists :
@@ -1829,7 +1545,7 @@ ColourValue Object3D::getSpecular()
 	return mModifiedMaterialManager->getModifiedMaterial()->getSpecular() ;
 }
 //-------------------------------------------------------------------------------------
-float Object3D::getShininess ()
+float Object3D::getShininess()
 {
 	return mModifiedMaterialManager->getModifiedMaterial()->getShininess() ;
 }
@@ -1842,31 +1558,21 @@ void Object3D::move (float pValueX, float pValueY, float pValueZ)
 void Object3D::scale (float pValueX, float pValueY, float pValueZ)
 {
 	apply( Object3D::SCALE, pValueX, pValueY, pValueZ);
+	mNode->_updateBounds();
 
-	if (mChilds)
-	{
-		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
-		{
-			(*itr)->scale(pValueX, pValueY, pValueZ);
-		}
-	}
 }
 //-------------------------------------------------------------------------------------
 void Object3D::rotate (float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
 					   SceneNode * pCentreRotation, SceneNode* pCentreObject)
 {
-	findRotationPosition( pValueX, pValueY, pValueZ, pCentreSelection, pCentreRotation, pCentreObject);
+	mCentreSelection = pCentreSelection ;
+	mCentreRotation = pCentreRotation;
+	mCentreObject = pCentreObject ;
+
+	findRotationPosition( pValueX, pValueY, pValueZ, mCentreSelection, mCentreRotation, mCentreObject);
 	apply( Object3D::ROTATE, pValueX, pValueY, pValueZ );
 
-	if (mChilds)
-	{
-		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
-		{
-			(*itr)->rotate(pValueX, pValueY, pValueZ, pCentreSelection, pCentreRotation, pCentreObject);
-		}
-	}
+
 }
 //-------------------------------------------------------------------------------------
 void Object3D::findRotationPosition( float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
@@ -1903,7 +1609,7 @@ void Object3D::setTextureScroll(float pU, float pV)
 		}
 	}
 }
-//--------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void Object3D::setTextureScale(float pU, float pV)
 {
 	mModifiedMaterialManager->setTextureScale( pU, pV) ;
@@ -1918,6 +1624,293 @@ void Object3D::setTextureScale(float pU, float pV)
 	}
 }
 //-------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------
+void Object3D::setTextureRotate(Ogre::Radian pAngle)
+{
+	mModifiedMaterialManager->setTextureRotate( pAngle) ;
 
+	if (mChilds)
+	{
+		vector< Object3D* >::iterator itr ;
+		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		{
+			(*itr)->setTextureRotate(pAngle) ;
+		}
+	}
+}
+//-------------------------------------------------------------------------------------
+void Object3D::setAlpha(float pValue)
+{
+	mModifiedMaterialManager->setAlpha( pValue ) ;
+
+	if (mChilds)
+	{
+		vector< Object3D* >::iterator itr ;
+		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		{
+			(*itr)->setAlpha( pValue ) ;
+		}
+	}
+}
+//-------------------------------------------------------------------------------------
+float Object3D::getAlpha()
+{
+	return mModifiedMaterialManager->getAlpha() ;
+}
+//-------------------------------------------------------------------------------------
+bool Object3D::addCommand( TCommand &pTCommand, Command &pOldCommand ) 
+{
+	bool updateVertex = false;
+	bool updateVertexIndex = false;
+
+	// test for a new transformation
+	if( pTCommand.first == mCommandLast )
+		// always on the same transformation, no need to update the vertex & index buffers
+		return false;
+	else
+	{
+		// another transformation has been used
+		// and it can be a neightboor
+		// if it's not the case, push this command
+		if( mCommandLast == TRANSLATE )
+		{
+			pTCommand.second = Vector3( mNode->getPosition().x, mNode->getPosition().y, mNode->getPosition().z );
+			goto UPDATE;
+		}
+		else if( mCommandLast == ROTATE )
+		{
+			pTCommand.second = Vector3( mRotationX, mRotationY, mRotationZ );
+			updateVertex = true;
+			goto UPDATE;
+		} 
+		else if( mCommandLast == SCALE )
+		{
+			pTCommand.second = Vector3( mScaleX, mScaleY, mScaleZ );
+			updateVertex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == TAPERX && pTCommand.first != TAPERY
+			||   mCommandLast == TAPERY && pTCommand.first != TAPERX )
+		{
+			pTCommand.second = Vector3( mTaperX, mTaperY, 0 ); 
+			updateVertex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == TOP_SHEARX && pTCommand.first != TOP_SHEARY 
+			||   mCommandLast == TOP_SHEARY && pTCommand.first != TOP_SHEARX )
+		{
+			pTCommand.second = Vector3( mTopShearX, mTopShearY, 0 ); 
+			updateVertex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == TWIST_BEGIN && pTCommand.first != TWIST_END
+			||   mCommandLast == TWIST_END && pTCommand.first != TWIST_BEGIN )
+		{
+			pTCommand.second = Vector3( mTwistBegin, mTwistEnd, 0 ); 
+			updateVertex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == PATH_CUT_BEGIN && pTCommand.first != PATH_CUT_END
+			||   mCommandLast == PATH_CUT_END && pTCommand.first != PATH_CUT_BEGIN )
+		{
+			pTCommand.second = Vector3( mPathCutBegin, mPathCutEnd, 0 ); 
+			updateVertexIndex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == DIMPLE_BEGIN && pTCommand.first != DIMPLE_END
+			||   mCommandLast == DIMPLE_END && pTCommand.first != DIMPLE_BEGIN )
+		{
+			pTCommand.second = Vector3( mDimpleBegin, mDimpleEnd, 0 ); 
+			updateVertexIndex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == HOLE_SIZEX && pTCommand.first != HOLE_SIZEY 
+			||   mCommandLast == HOLE_SIZEX && pTCommand.first != HOLLOW_SHAPE
+			||   mCommandLast == HOLE_SIZEY && pTCommand.first != HOLE_SIZEX 
+			||   mCommandLast == HOLE_SIZEY && pTCommand.first != HOLLOW_SHAPE
+			||   mCommandLast == HOLLOW_SHAPE && pTCommand.first != HOLE_SIZEX
+			||   mCommandLast == HOLLOW_SHAPE && pTCommand.first != HOLE_SIZEY )
+		{
+			pTCommand.second = Vector3( mHoleSizeX, mHoleSizeY, mHollowShape ); 
+			updateVertexIndex = true;
+			goto UPDATE;
+		}
+		else if( mCommandLast == SKEW && pTCommand.first != REVOLUTION
+			||   mCommandLast == SKEW && pTCommand.first != RADIUS_DELTA
+			||   mCommandLast == REVOLUTION && pTCommand.first != SKEW
+			||   mCommandLast == REVOLUTION && pTCommand.first != RADIUS_DELTA
+			||   mCommandLast == RADIUS_DELTA && pTCommand.first != SKEW
+			||   mCommandLast == RADIUS_DELTA && pTCommand.first != REVOLUTION )
+		{
+			pTCommand.second = Vector3( mSkew, mRadiusDelta, mRevolutions ); 
+			updateVertexIndex = true;
+			goto UPDATE;
+		}
+		else
+		{
+			// the new command is a neightboor of the last one ( TAPERX & TAPERY for example )
+			// so do nothing ...
+		}
+	}
+
+
+UPDATE:
+
+	if( updateVertex || updateVertexIndex )
+	{
+		//restoreBuffer( mBufCurrent, mBufBackup );
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		if( updateVertexIndex ) 
+			restoreBufferIndex( mBufCurrent, mBufBackup );
+
+		resetParameters();
+
+		pOldCommand = mCommandLast;
+		Command temp = pTCommand.first;
+		pTCommand.first = mCommandLast;
+		mCommandList.push_back( pTCommand );
+		mCommandLast = temp;
+
+		return true;
+	}
+
+	return false;
+}
+
+//-------------------------------------------------------------------------------------
+bool Object3D::restoreBuffer( Buffer* pBufNew, Buffer* pBufOld )
+{
+	return ( restoreBufferVertex( pBufNew, pBufOld ) && restoreBufferIndex( pBufNew, pBufOld ) );
+}
+
+//-------------------------------------------------------------------------------------
+bool Object3D::restoreBufferVertex( Buffer* pBufNew, Buffer* pBufOld )
+{
+	if( pBufNew == 0 || pBufOld == 0 ) 
+		// one or two buffers are empty ! so do nothing
+		return false;
+
+	// Restore / copy the old buffer by the new one
+	pBufOld->vertexCount		= pBufNew->vertexCount;
+	delete pBufOld->vertex;		//pBufOld->vertex = 0;
+	pBufOld->vertex				= new Real [pBufNew->vertexCount*mVertexDecl/4];
+
+	Real *vBackup = pBufOld->vertex;
+	Real *vCurrent = pBufNew->vertex;
+	for(unsigned int i=0; i<pBufNew->vertexCount*mVertexDecl/4; i++)
+		*vBackup++ = *vCurrent++;		//pBufOld->vertex[i]	= pBufNew->vertex[i];
+
+	// update the bounding box sizes
+	pBufOld->size		= pBufNew->size;
+	pBufOld->cornerMax	= pBufNew->cornerMax;
+	pBufOld->cornerMin	= pBufNew->cornerMin;
+
+	return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Object3D::restoreBufferIndex( Buffer* pBufNew, Buffer* pBufOld )
+{
+	if( pBufNew == 0 || pBufOld == 0 ) 
+		// one or two buffers are empty ! so do nothing
+		return false;
+
+	// Restore / copy the old buffer by the new one
+	pBufOld->indexCount			= pBufNew->indexCount;
+	delete pBufOld->index;		//pBufOld->index = 0;
+	pBufOld->index				= new unsigned int [pBufNew->indexCount];
+
+	unsigned int *iBackup = pBufOld->index;
+	unsigned int *iCurrent = pBufNew->index;
+	for(unsigned int i=0; i<pBufNew->indexCount; i++)
+		*iBackup++ = *iCurrent++;		//pBufOld->index[i]	= pBufNew->index[i];
+
+	return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Object3D::undo()
+{
+	if( mCommandList.empty() ) return false;
+
+	mCommandList.pop_back();
+	if( mCommandList.empty() )
+	{
+		restoreBuffer( mBufPrim, mBufCurrent );
+		updateBoundingBox();
+	}
+
+	restoreBuffer( mBufPrim, mBufBackup );
+	resizeBuffers( 
+		mBufCurrent->vertex, mBufCurrent->vertexCount,
+		mBufCurrent->index, mBufCurrent->indexCount );
+
+	list<TCommand>::iterator cmd;
+	for( cmd = mCommandList.begin(); cmd != mCommandList.end(); cmd++ )
+	{
+		Vector3 v = (*cmd).second;
+		switch( (*cmd).first )
+		{
+		case TRANSLATE: 
+			if( v.x || v.y || v.z ) apply( TRANSLATE, v.x, v.y, v.z );
+			break;
+		case ROTATE: 
+			if( v.x || v.y || v.z ) apply( ROTATE, v.x, v.y, v.z );
+			break;
+		case SCALE: 
+			if( v.x != 1 || v.y != 1 || v.z != 1 ) 
+			{
+				setScale( v.x, v.y, v.z );
+				apply( SCALE, v.x, v.y, v.z );
+			}
+			break;
+		case TAPERX: 
+		case TAPERY: 
+			if( v.x ) apply( TAPERX, v.x, 0, 0 );
+			if( v.y ) apply( TAPERY, v.y, 0, 0 );
+			break;
+		case TOP_SHEARX: 
+		case TOP_SHEARY: 
+			if( v.x ) apply( TOP_SHEARX, v.x, 0, 0 );
+			if( v.y ) apply( TOP_SHEARY, v.y, 0, 0 );
+			break;
+		case TWIST_BEGIN:
+		case TWIST_END: 
+			if( v.x ) apply( TWIST_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( TWIST_END, v.y, 0, 0 );
+			break;
+		case PATH_CUT_BEGIN: 
+		case PATH_CUT_END: 
+			if( v.x ) apply( PATH_CUT_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( PATH_CUT_END, v.y, 0, 0 );
+			break;
+		case DIMPLE_BEGIN: 
+		case DIMPLE_END: 
+			if( v.x ) apply( DIMPLE_BEGIN, v.x, 0, 0 );
+			if( v.y ) apply( DIMPLE_END, v.y, 0, 0 );
+			break;
+		case HOLE_SIZEX: 
+		case HOLE_SIZEY: 
+		case HOLLOW_SHAPE: 
+			if( v.x ) apply( HOLE_SIZEX, v.x, 0, 0 );
+			if( v.y ) apply( HOLE_SIZEY, v.y, 0, 0 );
+			if( v.z ) apply( HOLLOW_SHAPE, v.z, 0, 0 );
+			break;
+		case SKEW: 
+		case REVOLUTION: 
+		case RADIUS_DELTA: 
+			if( v.x ) apply( SKEW, v.x, 0, 0 );
+			if( v.y ) apply( REVOLUTION, v.y, 0, 0 );
+			if( v.z ) apply( RADIUS_DELTA, v.z, 0, 0 );
+			break;
+		}
+		restoreBuffer( mBufCurrent, mBufBackup );
+		resetParameters();
+	}
+
+//	resizeBuffers( 
+//		mBufCurrent->vertex, mBufCurrent->vertexCount,
+//		mBufCurrent->index, mBufCurrent->indexCount );
+
+	return true;
+}
 

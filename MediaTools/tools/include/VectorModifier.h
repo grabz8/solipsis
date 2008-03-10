@@ -93,33 +93,45 @@ public:
 	}
 
 	/// brief remove the occurences from a vector list of int
-	static void addToList( list<int> &list, int value)
+	static bool addToList( list<int> &list, int value)
 	{
 		std::list<int>::iterator v = list.begin();
 
 		while( (*v) != value && v != list.end() ) v++;
 		if( (*v) != value ) 
+		{
 			list.push_back( value );
+			return true;
+		}
+		return false;
 	}
 
 	/// brief remove the occurences from a vector list of Vector3
-	static void addToList( list<Vector3> &list, Vector3 vec)
+	static bool addToList( list<Vector3> &list, Vector3 vec)
 	{
 		std::list<Vector3>::iterator v = list.begin();
 
 		while( (*v) != vec && v != list.end() ) v++;
 		if( (*v) != vec ) 
+		{
 			list.push_back( vec );
+			return true;
+		}
+		return false;
 	}
 
 	/// brief remove the occurences from a vector list of pair<Vector3, int>
-	static void addToList( list< pair<Vector3, unsigned int> > &list, pair<Vector3, unsigned int> pr)
+	static bool addToList( list< pair<unsigned int, Vector3> > &list, pair<unsigned int, Vector3> pr)
 	{
-		std::list< pair<Vector3, unsigned int> >::iterator p = list.begin();
+		std::list< pair<unsigned int, Vector3> >::iterator p = list.begin();
 		
 		while( (*p) != pr && p != list.end() ) p++;
 		if( (*p) != pr ) 
+		{
 			list.push_back( pr );
+			return true;
+		}
+		return false;
 	}
 
 	/// brief get the nearest point from another contained in a list

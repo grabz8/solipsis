@@ -131,3 +131,100 @@ bool SOLdeleteFile(const char *filePath)
 #endif 
 	return true;
 }
+
+/**
+ * Copy a file 
+ *
+ *	\brief
+ *
+ *		Copy a file from a path to another
+ *
+ *	\param srcPath = The path to the source file 
+ *	\param destPath = The path to the destination file
+ *	\return true if the file is successfully copied
+ */
+bool SOLcopyFile(const char *srcPath,const char *destPath)
+{
+	std::ifstream in(srcPath, std::ios::in | std::ios::binary);
+	std::ofstream out(destPath, std::ios::out | std::ios::binary | std::ios::trunc);
+
+	if (!in)
+	{
+		SOLIPSISWARNING("SOLcopyFile : Unable to open source file :",srcPath);
+		return false;
+	}
+
+	if (!out)
+	{
+		SOLIPSISWARNING("SOLcopyFile : Unable to open dest file :",destPath);
+		return false;
+	}
+	
+	std::streamsize c = 0;
+	char tmpBuf[2048];
+
+	while (!in.eof())
+	{
+		// Read until 2048 chars in the source file
+		in.read(tmpBuf, 2048);
+		// Number of chars we read
+		c = in.gcount();
+		// Write read characters to dest file
+		out.write(tmpBuf, c);
+	}
+	// Close the two files
+	in.close();
+	out.close();
+
+	return true;
+}
+
+bool SOLisDirectory(const char* pathName)
+{
+	struct stat my_stat;
+	if (stat(pathName, &my_stat) != 0) return false;
+	return ((my_stat.st_mode & S_IFDIR) != 0);
+}
+
+bool SOLlistDirectoryFiles(const char* path,std::vector<std::string> *toFill)
+{
+#ifdef WIN32
+	WIN32_FIND_DATA File;
+	HANDLE hSearch;
+	BOOL re;
+	std::string nomFic;
+
+	hSearch=FindFirstFile("*.*", &File);
+	if(hSearch ==  INVALID_HANDLE_VALUE)
+	{
+		return FALSE;
+	}
+
+	re=TRUE;
+	do
+	{
+		nomFic = File.cFileName;
+		if ((nomFic != ".") && (nomFic != ".."))
+		{
+			if (!SOLisDirectory(nomFic.c_str()))
+			{ // It is not a directory name
+				toFill->push_back(nomFic);
+			}
+		}
+		/* Traitement */
+		re = FindNextFile(hSearch, &File);
+	} while(re);
+
+	FindClose(hSearch);
+#else
+	struct dirent *lecture;
+	DIR *rep;
+	rep = opendir("path");
+	while ((lecture = readdir(rep)))
+	{
+		toFill->push_back(lecture->d_name);
+	}
+	closedir(rep);
+#endif
+	return true;
+}

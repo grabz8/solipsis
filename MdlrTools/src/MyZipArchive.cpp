@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include "SolipsisErrorHandler.h"
 
-#include "../../MdlrTools/src/minizip/zip.h"
-#include "../../MdlrTools/src/minizip/unzip.h"
+#include "minizip/zip.h"
+#include "minizip/unzip.h"
 #include "FileBuffer.h"
 
 #include <fstream>

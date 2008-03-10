@@ -6,7 +6,7 @@ using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
 // this is a simple C stub so that dll can be loaded dynamically
-// and the static method createApplication can be called
+// and the static method createNavigator can be called
 extern "C" NAVIGATORMODULEDIRECT_EXPORT IApplication* createApplication(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle)
 {
 	return (IApplication*)IApplication::createApplication(appPath, standAloneAutoCreateWindow, windowTitle);
@@ -150,8 +150,8 @@ void NavigatorApp::_initialize()
 
 #ifdef PHYSICSPLUGINS
 //    PhysicsEngineManager::getSingleton().selectEngine("PhysX engine");
-    PhysicsEngineManager::getSingleton().selectEngine("ODE engine");
-//    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
+//    PhysicsEngineManager::getSingleton().selectEngine("ODE engine");
+    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
     PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
 #endif
 

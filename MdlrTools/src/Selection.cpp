@@ -32,7 +32,7 @@ bool Selection::clickNode(Entity* pEnt)
 	if (!obj)
 		return true;
 		
-		//test if obj is a child :
+	//test if obj is a child :
 	while(obj->getParent() != NULL )
 	{
 		obj = obj->getParent() ;
@@ -62,14 +62,14 @@ bool Selection::clickNode(Entity* pEnt)
 			obj->showBoundingBox(false) ;
 			itr = mListNode.erase(itr);
 		} 
-		else			
+		else
 		{
 			// add the selected object to the selection
 			obj->showBoundingBox(true) ;
 			mListNode.push_back(obj);
 		}
 	}
-	else							// no objects have already been selected
+	else	// no objects have already been selected
 	{
 		// add the selected object to the selection
 		obj->showBoundingBox(true);
@@ -128,7 +128,7 @@ void Selection::move (float pValueX, float pValueY, float pValueZ)
 		Object3DPtrListIterator itr;
 
 		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
-			(*itr)->move(pValueX, pValueY, pValueZ);
+			(*itr)->apply( Object3D::TRANSLATE, pValueX, pValueY, pValueZ );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -139,7 +139,8 @@ void Selection::scale (float pValueX, float pValueY, float pValueZ)
 		Object3DPtrListIterator itr;
 
 		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
-			get3DObject((*itr)->getEntity())->scale(pValueX, pValueY, pValueZ);			
+			//get3DObject((*itr)->getEntity())->scale(pValueX, pValueY, pValueZ);		
+			(*itr)->apply( Object3D::SCALE, pValueX, pValueY, pValueZ );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -152,9 +153,54 @@ void Selection::rotate (float pValueX, float pValueY, float pValueZ)
 		Vector3 centreSelection = getCenterPosition() ;
 
 		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
+			//get3DObject((*itr)->getEntity())->rotate( pValueX, pValueY, pValueZ, centreSelection, mCentreRotation, mCentreObject) ; 
+			(*itr)->apply( Object3D::ROTATE, pValueX, pValueY, pValueZ );
+	}
+}
+//-------------------------------------------------------------------------------------
+void Selection::moveTo (float pValueX, float pValueY, float pValueZ)
+{
+	if( !mListNode.empty() )
+	{
+		Object3DPtrListIterator itr;
+
+		Vector3 vec = getCenterPosition() ;
+
+		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
+			(*itr)->apply( Object3D::TRANSLATE, pValueX-vec.x, pValueY-vec.y, pValueZ-vec.z );
+	}
+}
+//-------------------------------------------------------------------------------------
+void Selection::scaleTo (float pValueX, float pValueY, float pValueZ)
+{
+	if( !mListNode.empty() )
+	{
+		Object3DPtrListIterator itr;
+
+		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
 		{
-			get3DObject((*itr)->getEntity())->rotate( pValueX, pValueY, pValueZ, centreSelection, mCentreRotation, mCentreObject) ; 
+			//Vector3 vec = (*itr)->getScale();
+			//get3DObject((*itr)->getEntity())->scale(pValueX, pValueY, pValueZ);		
+			(*itr)->apply( Object3D::SCALE, pValueX, pValueY, pValueZ );
+			//(*itr)->apply( Object3D::SCALE, vec.x-pValueX, vec.y-pValueY, vec.z-pValueZ );
 		}
+	}
+}
+//-------------------------------------------------------------------------------------
+void Selection::rotateTo (float pValueX, float pValueY, float pValueZ)
+{
+	if( !mListNode.empty() )
+	{
+		Object3DPtrListIterator itr;
+		static Vector3 vec = Vector3::ZERO;
+
+		//Vector3 centreSelection = getCenterPosition() ;
+
+		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
+			//get3DObject((*itr)->getEntity())->rotate( pValueX, pValueY, pValueZ, centreSelection, mCentreRotation, mCentreObject) ; 
+			(*itr)->apply( Object3D::ROTATE, pValueX-vec.x, pValueY-vec.y, pValueZ-vec.z );
+
+		vec = Vector3(pValueX, pValueY, pValueZ);
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -255,7 +301,7 @@ void Selection::clearObjects()
 		itObj++;
 	}
 }
-
+//-------------------------------------------------------------------------------------
 Object3D* Selection::getFirstSelectedObject()
 {
 	if (mListNode.empty())
@@ -264,7 +310,7 @@ Object3D* Selection::getFirstSelectedObject()
 	mCurrentObject = mListNode.begin();
 	return (*mCurrentObject);
 }
-
+//-------------------------------------------------------------------------------------
 Object3D* Selection::getNextSelectedObject()
 {
 	// go to the next object in the list
@@ -274,14 +320,11 @@ Object3D* Selection::getNextSelectedObject()
 		return NULL;
 	return (*mCurrentObject);
 }
-
+//-------------------------------------------------------------------------------------
 size_t Selection::getNumSelectedObjects()
 {
 	return mListNode.size();
 }
-
-
-
 //-------------------------------------------------------------------------------------
 void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection)
 {

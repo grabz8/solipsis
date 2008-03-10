@@ -142,7 +142,7 @@ bool MiiModule::handleAddTexture(const CEGUI::EventArgs& e)
 		//Create the new OGRE texture with the file selected :
 		TexturePtr PtrTexture = TextureManager::getSingleton().load( TextureFilePath, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-		//Test if this texture is not already in the list :
+		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
 			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
@@ -167,6 +167,9 @@ bool MiiModule::handleAddTexture(const CEGUI::EventArgs& e)
 
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture);
+
+		// Go back to the main directory
+		_chdir(mExecPath.c_str());
 	}
 
 	return true ;
@@ -194,6 +197,9 @@ void  MiiModule::AddCEGUITexture( TexturePtr pTexture)
 
 	//Remember this Imageset in the list :
 	mTexturesImageSets.push_back(textureImageset);
+
+	// Go back to the main directory
+	_chdir(mExecPath.c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -297,11 +303,6 @@ void MiiModule::onUptadeMaterialProperties()
 	tmpScrollBar->setScrollPosition( UV.x) ;
 	tmpScrollBar = (CEGUI::Scrollbar*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/VTextureScrollBar");
 	tmpScrollBar->setScrollPosition( UV.y) ;
-	//set the editBox for the texture position UV
-    text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/UTextureEdit");
-	text->setText(CEGUI::PropertyHelper::floatToString(UV.x));
-    text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/VTextureEdit");
-	text->setText(CEGUI::PropertyHelper::floatToString(UV.y));
 
 	//set scroll bars positions for the scale of the texture:
 	UV = obj->getMaterialManager()->getTextureScale() ;
@@ -309,12 +310,16 @@ void MiiModule::onUptadeMaterialProperties()
 	tmpScrollBar->setScrollPosition( UV.x/2.0) ;
 	tmpScrollBar = (CEGUI::Scrollbar*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/ScaleVTextureScrollBar");
 	tmpScrollBar->setScrollPosition( UV.y/2.0) ;
-	//set the editBox for the texture scale UV
-    text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/ScaleUTextureEdit");
-	text->setText(CEGUI::PropertyHelper::floatToString(UV.x));
-    text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/ScaleVTextureEdit");
-	text->setText(CEGUI::PropertyHelper::floatToString(UV.y));
 
+	//set croll bar positions for the texture rotation :
+	Ogre::Radian angle = obj->getMaterialManager()->getTextureRotate() ;
+	tmpScrollBar = (CEGUI::Scrollbar*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/RotateTextureScrollBar");
+	tmpScrollBar->setScrollPosition(angle.valueDegrees()/360.0) ;
+
+	//set croll bar positions for the texture rotation :
+	float alpha = obj->getMaterialManager()->getAlpha() ;
+	tmpScrollBar = (CEGUI::Scrollbar*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/TransparencyScrollBar");
+	tmpScrollBar->setScrollPosition(alpha) ;
 }
 //-------------------------------------------------------------------------------------
 bool MiiModule::handleChangeShininess(const CEGUI::EventArgs& e) 
@@ -590,5 +595,41 @@ bool MiiModule::handleTextureScaleScrollBar(const CEGUI::EventArgs& e)
 	Object3D * obj = mSelection->getFirstSelectedObject();
 	obj->setTextureScale( U*2, V*2);
 	
+	return true ;
+}
+//-------------------------------------------------------------------------------------
+bool MiiModule::handleTextureRotateScrollBar(const CEGUI::EventArgs& e)
+{
+	//get scroll bars positions :
+	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
+	CEGUI::Scrollbar * tmpScrollBar = (CEGUI::Scrollbar *)(wmgr.getWindow((CEGUI::utf8*)"FrmProperties/TabCtrl/Page3/RotateTextureScrollBar"));
+	float angle = tmpScrollBar->getScrollPosition();
+
+	//set correct edit box :
+	CEGUI::Editbox *text  =  NULL;
+	text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/RotateTextureEdit");
+	text->setText(CEGUI::PropertyHelper::floatToString(angle*360));
+
+	//Apply position to the texture :
+	Object3D * obj = mSelection->getFirstSelectedObject();
+	obj->setTextureRotate( Degree( angle*360) );
+	return true;
+}
+//-------------------------------------------------------------------------------------
+bool MiiModule::handleTransparencyScrollBar(const CEGUI::EventArgs& e)
+{
+	//get scroll bars positions :
+	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
+	CEGUI::Scrollbar * tmpScrollBar = (CEGUI::Scrollbar *)(wmgr.getWindow((CEGUI::utf8*)"FrmProperties/TabCtrl/Page3/TransparencyScrollBar"));
+	float value = tmpScrollBar->getScrollPosition();
+
+	//set correct edit box :
+	CEGUI::Editbox *text  =  NULL;
+	text = (CEGUI::Editbox*)CEGUI::WindowManager::getSingleton().getWindow("FrmProperties/TabCtrl/Page3/TransparencyEdit");
+	text->setText(CEGUI::PropertyHelper::floatToString(value) );
+
+	//Apply position to the texture :
+	Object3D * obj = mSelection->getFirstSelectedObject();
+	obj->setAlpha( value );
 	return true ;
 }

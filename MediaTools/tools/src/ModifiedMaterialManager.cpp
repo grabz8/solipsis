@@ -199,11 +199,11 @@ void ModifiedMaterialManager::deleteLastTexture()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 {
-	if( pTexture->getName() != "default_texture.tga" )	//if it is not the default texture ...
+	if( pTexture->getName() != "default_texture.jpg" )	//if it is not the default texture ...
 		if (mTextures.size() > 0)	//if there are 2 textures or more ...
 		{	
 			if( (*mCurrentTextureIterator) == pTexture)
-				setCurrentTexture( "default_texture.tga" ) ;
+				setCurrentTexture( "default_texture.jpg" ) ;
 
 			if( (*mDefaultTextureIterator) == pTexture)
 				this->setDefaultTextureAsCurrent();
@@ -243,4 +243,24 @@ void ModifiedMaterialManager::setTextureScale(float pU, float pV)
 Ogre::Vector2 ModifiedMaterialManager::getTextureScale()
 {
 	return (mModifiedMaterial->getTextureScale() ) ;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setTextureRotate(Ogre::Radian pAngle)
+{
+	mModifiedMaterial->setTextureRotate( pAngle) ;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+Ogre::Radian ModifiedMaterialManager::getTextureRotate()
+{
+	return mModifiedMaterial->getTextureRotate();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setAlpha(float pValue)
+{
+	mModifiedMaterial->setAlpha( pValue ) ;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float ModifiedMaterialManager::getAlpha()
+{
+	return mModifiedMaterial->getAlpha() ;
 }

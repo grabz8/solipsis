@@ -48,6 +48,9 @@ private:
 	// Scene manager
 	SceneManager* mSceneMgr;
 
+	// Scene object filename
+	std::string xmlObjectFilename;
+
     // Callbacks
     IOgrePeerManagerCallbacks* mCallbacks;
 
@@ -76,6 +79,9 @@ public:
 
 	// Load
 	bool load(Peer* peer, const String xmlFile);
+
+	// Get the scene object filename
+	String getXmlObjectFilename();
 
 	// Remove 1 peer according to its ID and if it is local or networked
     bool remove(String& peerId, bool local);
@@ -110,6 +116,7 @@ public:
 protected:
 	virtual OgrePeer* createAvatarNode(Peer* peer, TiXmlElement* xmlElt);
 	virtual OgrePeer* createSceneNode(Peer* peer, TiXmlElement* xmlElt);
+	virtual OgrePeer* createObjectNode(Peer* peer, TiXmlElement* xmlElt);
 
 #ifdef PHYSICS
 protected:

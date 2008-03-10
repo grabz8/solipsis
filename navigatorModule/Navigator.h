@@ -11,9 +11,15 @@
 #include "LuaBinding.h"
 #include "NavigatorLua.h"
 
+#include "Selection.h"
+#include "Transformations.h"
+#include <OIS/OIS.h>
+
+
 namespace Solipsis {
 
 class Modeler;
+
 
 /** The main class of Navigator application.
  */
@@ -38,7 +44,7 @@ public:
     {
         QFNaviPanel = 1<<0,
         QFAvatar = QFNaviPanel<<1
-    };
+	};
 
 private:
     static Navigator* ms_singletonPtr;
@@ -174,6 +180,23 @@ public:
 	bool createRing();
 	/** Create a mesh. */
 	bool createMesh();
+	/** Load from a XML file.*/
+	bool XMLLoad();
+	/** Save to a XML file. */
+	bool XMLSave(bool all = false, const char* pathToSave = NULL);
+
+	/// The modeler object
+	Modeler		*mModeler;
+	bool		isOnLeftCTRL;
+
+	void onMouseMoved(const MouseEvt& evt);
+	void onMousePressed(const MouseEvt& evt);
+	void onMouseReleased(const MouseEvt& evt);
+
+	void undo();
+	void suppr();
+	void modifGizmo(Vector3 dep);
+	
 
 
 protected:
@@ -202,9 +225,6 @@ protected:
     virtual void onPeerNew(NodeEvent::DatasPeerNew& evtDatas);
     virtual void onPeerLost(NodeEvent::DatasPeerLost& evtDatas);
     virtual void onStatusChanged(NodeEvent::DatasStatusChanged& evtDatas);
-
-	/// The modeler object
-	Modeler		*mModeler;
 };
 
 } // namespace Solipsis

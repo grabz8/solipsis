@@ -5,6 +5,8 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 
+#include "Modeler.h"
+
 using namespace Solipsis;
 
 // this internal OSM-loader callbacks class is used to force OFF shadows casting of entities
@@ -127,15 +129,29 @@ bool OgrePeerManager::load(Peer* peer, const String xmlFile)
         }
         else if (String(elt->Value()).compare("sceneNode") == 0)
         {
+			xmlObjectFilename = xmlFile;
             newOgrePeer = createSceneNode(peer, elt);
             if (newOgrePeer == 0)
                 OGRE_LOG("OgrePeerManager::load() Unable to load sceneNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
+        }
+		else if (String(elt->Value()).compare("objectNode") == 0)
+        {
+			//xmlObjectFilename = xmlFile;
+            newOgrePeer = createObjectNode(peer, elt);
+            if (newOgrePeer == 0)
+                OGRE_LOG("OgrePeerManager::load() Unable to load objectNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
         }
         if (newOgrePeer != 0)
             mOgrePeersMap[peer->getNetworkId()] = newOgrePeer;
     }
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::string OgrePeerManager::getXmlObjectFilename()
+{
+	return xmlObjectFilename;
 }
 
 //-------------------------------------------------------------------------------------
@@ -563,6 +579,27 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
         }
 
     return peerScene;
+}
+
+//-------------------------------------------------------------------------------------
+OgrePeer* OgrePeerManager::createObjectNode(Peer* peer, TiXmlElement* xmlElt)
+{
+	if (mSceneMgr == 0)
+		Exception(Exception::ERR_INTERNAL_ERROR,
+		"No scene manager !",
+		"OgrePeerManager::CreateObjectNode");
+
+	const char* name = xmlElt->Attribute("name");
+	const char* filename = xmlElt->Attribute("filename");
+
+	Modeler* modeler = Modeler::getSingletonPtr( mSceneMgr, NULL );
+	if(modeler)
+	{
+		modeler->init( NULL );
+		modeler->XMLLoad( Vector3::ZERO, filename );
+	}
+
+	return NULL;
 }
 
 #ifdef PHYSICS

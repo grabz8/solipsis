@@ -22,8 +22,8 @@ const string SOLTYPESTRING[] = { "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","
 //-------------------------------------------------------------------------------------
 /// brief ...
 /// file Object3D.h
-/// author Gilles GAUDIN
-/// date yyyy.mm.dd
+/// author Gilles GAUDIN & Stephane CHAPLAIN & Patrice DESFONDS
+/// date 2007.mm.dd
 class Object3D
 {
 public:
@@ -40,26 +40,36 @@ public:
 
 	/// brief The 10 possible actions that could be applied on an object
 	enum Command { 
+		NONE,
 		// the 3 basic transformations
-		TRANSLATE, ROTATE, SCALE,
+		TRANSLATE, ROTATE, 
+		SCALE, SCALEX, SCALEY, SCALEZ, 
 		// the other 10 mesh transformation
-		TAPERX,TAPERY, 
-		PATH_CUT_BEGIN,PATH_CUT_END, 
-		DIMPLE_BEGIN,DIMPLE_END, 
-		HOLE_SIZEX,HOLE_SIZEY, 
-		HOLLOW_SHAPE, 
-		TWIST_BEGIN,TWIST_END, 
+		TAPERX, TAPERY, 
 		TOP_SHEARX,TOP_SHEARY, 
-		SKEW, 
-		REVOLUTION, 
-		RADIUS_DELTA,
-		NONECOMMAND}; 
+		TWIST_BEGIN,TWIST_END, 
+		PATH_CUT_BEGIN, PATH_CUT_END, 
+		DIMPLE_BEGIN, DIMPLE_END, 
+		HOLE_SIZEX, HOLE_SIZEY, HOLLOW_SHAPE, 
+		SKEW, REVOLUTION, RADIUS_DELTA }; 
 
 	/// brief The type of hollow shape that could be used
-	enum Shape { CIRCLE, SQUARE, TRIANGLE, NONE };
+	enum Shape { CIRCLE, SQUARE, TRIANGLE };
 
 	/// brief The structure for a triangle face
 	typedef struct Face { unsigned int id1; unsigned int id2; unsigned int id3; };
+	typedef struct FaceVec { Vector3 pt1; Vector3 pt2; Vector3 pt3; };
+
+	/// brief The structure for the backup : vertex & index buffers
+	typedef struct Buffer {
+		Real* vertex;
+		unsigned int vertexCount;
+		unsigned int* index;
+		unsigned int indexCount;
+		Vector3 size;
+		Vector3 cornerMax;
+		Vector3 cornerMin;
+	};
 
 	/// brief Constructor
 	Object3D(String name, SceneNode* node);
@@ -68,7 +78,7 @@ public:
 
 	/// \brief Load a object3D from a file 
 	/// \param fileName = The path to the file to load
-	int		loadFromFile(TiXmlDocument &doc);
+	int		loadFromFile(TiXmlDocument &doc, string texturepath);
 	/// Save a object3D to a file 
 	/// \param fileName = The path to the file to save
 	int		saveToFile(const char* fileName);
@@ -78,6 +88,11 @@ public:
 	void setName(String name);
 	/// brief
 	String getName();
+	/// brief Reset all transformation & deformation parameters
+	void resetParameters();
+	/// brief set/get the scale parameter values
+	void setScale(Real pX, Real pY, Real pZ );
+	Vector3 getScale() {return Vector3 (mScaleX, mScaleY, mScaleZ) ;};
 	/// brief set/get the Taper X parameter value
 	virtual void setTaperX(Real value);
 	Real getTaperX() {return mTaperX;};
@@ -121,8 +136,8 @@ public:
 	virtual void setTopShearY(Real value);
 	Real getTopShearY() {return mTopShearY;};
 	/// brief set/get the Skew parameter value
-	virtual void setSkew(int value);
-	int getSkew() {return mSkew;};
+	virtual void setSkew(Real value);
+	Real getSkew() {return mSkew;};
 	/// brief set/get the Revolutions parameter value
 	virtual void setRevolutions(int value);
 	int getRevolutions() {return mRevolutions;};
@@ -131,14 +146,14 @@ public:
 	Real getRadiusDelta() {return mRadiusDelta;};
 
 	/// brief Apply an action to modifiy the object
-	bool apply(Command command, Real p1);
+	bool apply( Command command, Real p1 );
 	/// brief Apply an action to modifiy the object
-	bool apply(Command command, Real p1, Real p2, Real p3);
-	/// brief replace the backup vertex data by the backup vertex data
-	void updateBackup();
+	bool apply( Command command, Real p1, Real p2, Real p3 );
 
 	/// brief Return the object center position
-	Vector3 getPosition();
+	/// param worldPosition = if TRUE, return the world position
+	/// return the object center position
+	Vector3 getPosition(bool worldPosition = false);
 	
 	/// brief Link a child to the object. The node of pObj become the child of the node of this object
 	///		and pObj is added to th the list mChilds. If oObj is already linked, it unlinks it.
@@ -159,10 +174,6 @@ public:
 	
 	/// brief Return the object orientation
 	Vector3 getOrientation();	
-	/// brief Return the object scale
-	Vector3 getScale();
-
-
 	
 
 	/// brief ...
@@ -214,6 +225,11 @@ public:
 	/// Show or Hide the bounding box of this object and for all its child
 	///	 param pValue TRUE for show bounding box, FALSE for hide it.
 	void showBoundingBox(bool pValue);
+	///brief Get if the bounding box is show or not.
+	///return True is bounding box is shown, and false is it is hiden.
+	bool getShowBoundingBox();
+	///brief Update the size of the bounding box.
+	void updateBoundingBox();
 
 	///brief Get a pointer in the Material manager of this object
 	///return mModifiedMaterialManager
@@ -246,51 +262,89 @@ public:
 	ColourValue getSpecular();
 	float getShininess ();
 
-	///biref Sets the translation offset of the texture (ie scrolls the texture) and apply on all childs
+	///brief Sets the translation offset of the texture (ie scrolls the texture) and apply on all childs
 	///param pU  The amount the texture should be moved horizontally (u direction). 
 	///param pV  The amount the texture should be moved vertically (v direction). 
 	void setTextureScroll(float pU, float pV);
-
-	///biref Sets the scaling factor applied to texture coordinates and apply on all childs 
+	///brief Sets the scaling factor applied to texture coordinates and apply on all childs 
 	///param pU  The amount the texture should be scalled horizontally (u direction). 
 	///param pV  The amount the texture should be scalled vertically (v direction). 
 	void setTextureScale(float pU, float pV);
+	///brief Sets the anticlockwise rotation factor applied to texture coordinates. (in radian)
+	///param pAngle  angle  The angle of rotation (anticlockwise).   
+	void setTextureRotate(Ogre::Radian pAngle);
+	///brief Sets the alpha value to be applied to this object and all it childs. 
+	///param pValue alpha value (between 0 - 1) 
+	void setAlpha(float pValue);
+	///brief Get the alpha value of the object
+	///return the value of alpha
+	float getAlpha();
 
-	// get Vertex number
+	//brief Get Vertex number
 	int getVertexCount() {return (int)mVertexCount;};
-	// get Face number
-	int getFaceCount() {return (int)mFaces->size();};
-	// get Tri number
+	//brief Get Tri number
 	int getTriCount() {return (int)mTriangleCount;};
-	// get Mesh Size
+	//brief Get Mesh Size
 	Vector3 getMeshSize() {return mSize;};
-	// get primitives count
+	//brief Get primitives count
 	int getPrimitivesCount() {return mPrimitivesCount;};
 
 	void move (float pValueX, float pValueY, float pValueZ);
 	void scale (float pValueX, float pValueY, float pValueZ);
 	void rotate (float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,SceneNode * pCentreRotation, SceneNode* pCentreObject);
 
-	/// The last command used 
-	Command			mLastCommand;
-	/// The commands history list 
-	typedef std::pair<Command,Ogre::String> TCommand;
-	std::list<TCommand> mCommands; 
+
+	///brief The last command used 
+	Command	mCommandLast;
+	///brief The commands history list 
+	//typedef std::pair<Command,Ogre::String> TCommand;
+	typedef std::pair<Command,Vector3> TCommand;
+	std::list<TCommand> mCommandList; 
+
+	///brief Add a command to the list of commands and update the list of points
+	///param pCommand : command to add
+	bool addCommand(TCommand &pTCommand, Command &pOldCommand );
+
+	///brief Restore the second buffer by the first one
+	///param pBufNew : the new reference buffer 
+	///param pBufOld : the old buffer to be restored
+	bool restoreBuffer( Buffer* pBufNew, Buffer* pBufOld );
+	///brief Restore the second vertex buffer by the first one
+	///param pBufNew : the new reference buffer 
+	///param pBufOld : the old buffer to be restored
+	bool restoreBufferVertex( Buffer* pBufNew, Buffer* pBufOld );
+	///brief Restore the second index buffer by the first one
+	///param pBufNew : the new reference buffer 
+	///param pBufOld : the old buffer to be restored
+	bool restoreBufferIndex( Buffer* pBufNew, Buffer* pBufOld );
+	///brief Restore the backup buffer by the current one
+	void updateBackup() { restoreBuffer( mBufCurrent, mBufBackup ); }
+	///brief Resize the both verex & index hardware buffers
+	void resizeBuffers( Real* vertexData, size_t vertexCount, unsigned* indexData = 0, size_t indexCount = 0 );
+
+	///brief Remove the last command added and re-apply all the others in the right order
+	bool undo();
+
+
+	Vector3 mCentreSelection;
+	SceneNode *mCentreRotation;
+	SceneNode *mCentreObject;
+
 
 private:
-	/// brief ...
+	///brief Get the global size and the max & min corner sizes of the object
 	void getSize(Vector3 &size, Vector3 &min, Vector3 &max); 
-	/// brief Copy the hardware vertex data to a vector Vertex
+	///brief Copy the hardware vertex data to a vector Vertex
 	void getDataFromBuffer(vector<Vector3>* pVertex, vector<Face>* pFace);
-	/// brief Change the location of an existing point in the point list
+	///brief Change the location of an existing point in the point list
 	void setPoint(unsigned int index, const Vector3 &value);
-	/// brief Return the location of an existing point in the point list
+	///brief Return the location of an existing point in the point list
 	Vector3 getPoint(unsigned int index);
-	/// brief Return the total number of points in the point list
+	///brief Return the total number of points in the point list
 	size_t getNumPoints(void);
-	/// brief Return the face from the index faces
+	///brief Return the face from the index faces
 	void getFace(unsigned int index, Face &face);
-	/// brief Return the total number of faces
+	///brief Return the total number of faces
 	size_t getNumFaces(void);
 
 	/// Put mCentreRotation and mCentreObject on their correct position
@@ -299,13 +353,10 @@ private:
 	void findRotationPosition(float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
 							 SceneNode * pCentreRotation, SceneNode* pCentreObject);
 
-	/// brief Call this to update the hardware buffer after making changes.  
+	///brief Call this to update the hardware buffer after making changes.  
 	void update();
-
-	/// brief ...
-	void updateVertexBuffer();
-	/// brief ...
-	void resizeBuffers( size_t vertexCount, Real* vertexData, size_t indexCount, unsigned* indexData );
+	///brief Update only the hardware vertex buffer from the current vretex buffer
+	void updateBufferVertex();
 
 protected:
 	Entity* mEntity;							/// brief The associate 3D entity
@@ -314,10 +365,6 @@ protected:
 	Vector3 mSize;								/// brief The object size
 	Vector3 mCornerMin;							/// brief ...
 	Vector3 mCornerMax;							/// brief ...
-	vector<Vector3>* mPoints;					/// brief The list of points that define the object
-	vector<Vector3>* mPointsBackup;				/// brief The list of points that define the object
-	vector<Face>* mFaces;						/// brief The list of faces that build the object
-	bool mModified;								/// brief Tell if the list of points has been modified
 	vector<Object3D*>* mChilds;					/// brief The list of the sub objects / childs
 	Object3D* mParent;							/// brief The parent
 	
@@ -328,6 +375,12 @@ protected:
 	Real Rotate;								/// brief ...
 	Real Scale;									/// brief ...
 
+	Real mRotationX;							/// brief ...
+	Real mRotationY;							/// brief ...
+	Real mRotationZ;							/// brief ...
+	Real mScaleX;								/// brief ...
+	Real mScaleY;								/// brief ...
+	Real mScaleZ;								/// brief ...
 	Real mTaperX;								/// brief ...
 	Real mTaperY;								/// brief ...
     Real mPathCutBegin;							/// brief ...
@@ -342,8 +395,8 @@ protected:
 	Real mTwistEnd;								/// brief ...
 	Real mTopShearX;							/// brief ...
 	Real mTopShearY;							/// brief ...
-	int  mSkew;									/// brief ...
-	int  mRevolutions;							/// brief ...
+	Real mSkew;									/// brief ...
+	unsigned int mRevolutions;					/// brief ...
 	Real mRadiusDelta;							/// brief ...
 	Real mProfileCuteBegin;						/// brief ...
 	Real mProfileCuteEnd;						/// brief ...
@@ -384,13 +437,20 @@ protected:
 	void setParent(Object3D* object);
 
 private:
-	Vector3 *mVertexs;							/// brief ...
-	size_t mVertexCount;						/// brief ...
-	unsigned *mTriangles;						/// brief ...
-	size_t mTriangleCount;						/// brief ...
-	size_t mTriangleIndexCount;					/// brief ...
-	size_t mVertexDecl;							/// brief ...
 	VertexData* mVertexData;					/// brief ...
+
+	Real *mVertex;								/// brief ...
+	size_t mVertexCount;						/// brief ...
+	size_t mVertexDecl;							/// brief ...
+
+	unsigned *mIndex;							/// brief ...
+	size_t mIndexCount;							/// brief ...
+	size_t mTriangleCount;						/// brief ...
+
+public:
+	Buffer *mBufPrim;							/// brief ...
+	Buffer *mBufBackup;							/// brief ...
+	Buffer *mBufCurrent;						/// brief ...
 };
 
 static Object3D::Type objectStringToType(Ogre::String &toFind)
@@ -411,9 +471,6 @@ public:
 	Object3DBox(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = BOX;
-
-//		apply( Object3D::PATH_CUT_BEGIN, 0.02 );
-//		apply( Object3D::PATH_CUT_END, 0.92 );
 	}
 };
 
@@ -424,14 +481,15 @@ public:
 	Object3DCorner(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = CORNER;
-		mTaperX = 1;
-		mTopShearX = 0.5;
 
-		//apply( Object3D::TAPER, 1, 0 );
 		apply( Object3D::TAPERX, 1);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
 		apply( Object3D::TOP_SHEARX, 0.5);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		restoreBufferVertex( mBufCurrent, mBufPrim );
+
+		setTaperX( 0 );
+		setTopShearX( 0 );
 	}
 };
 
@@ -442,13 +500,14 @@ public:
 	Object3DPyramid(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = PYRAMID;
-		mTaperX = 1;
-		mTaperY = 1;
 
-		//apply( Object3D::TAPER, 1, 1 );
 		apply( Object3D::TAPERX, 1);
 		apply( Object3D::TAPERY, 1);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		restoreBufferVertex( mBufCurrent, mBufPrim );
+
+		setTaperX( 0 );
+		setTaperY( 0 );
 	}
 };
 
@@ -459,13 +518,14 @@ public:
 	Object3DPrism(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = PRISM;
-		mTaperX = 1;
-		mTaperY = 1;
 
-		//apply( Object3D::TAPER, 1, 1 );
 		apply( Object3D::TAPERX, 1);
 		apply( Object3D::TAPERY, 1);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		restoreBufferVertex( mBufCurrent, mBufPrim );
+
+		setTaperX( 0 );
+		setTaperY( 0 );
 	}
 };
 
@@ -486,13 +546,14 @@ public:
 	Object3DHalfCylinder(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = HALF_CYLINDER;
-		mPathCutBegin = 0.25;
-		mPathCutEnd = 0.75;
 
-		//apply( Object3D::PATH_CUT, 0.25, 0.75 );
 		apply( Object3D::PATH_CUT_BEGIN, 0.25);
 		apply( Object3D::PATH_CUT_END, 0.75 );
-		updateBackup();
+		//restoreBuffer( mBufCurrent, mBufBackup );
+		//restoreBuffer( mBufCurrent, mBufPrim );
+
+		setPathCutBegin( 0 );
+		setPathCutEnd( 1 );
 	}
 };
 
@@ -506,10 +567,13 @@ public:
 		mTaperX = 1;
 		mTaperY = 1;
 
-		//apply( Object3D::TAPER, 1, 1 );
 		apply( Object3D::TAPERX, 1);
 		apply( Object3D::TAPERY, 1);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		restoreBufferVertex( mBufCurrent, mBufPrim );
+
+		setTaperX( 0 );
+		setTaperY( 0 );
 	}
 };
 
@@ -520,18 +584,19 @@ public:
 	Object3DHalfCone(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = HALF_CONE;
-		mPathCutBegin = 0.25;
-		mPathCutEnd = 0.75;
-		mTaperX = 1;
-		mTaperY = 1;
 
-		//apply( Object3D::PATH_CUT, 0.25, 0.75 );
-		apply( Object3D::PATH_CUT_BEGIN, 0.25);
-		apply( Object3D::PATH_CUT_END, 0.75 );
-		//apply( Object3D::TAPER, 1, 1 );
 		apply( Object3D::TAPERX, 1);
 		apply( Object3D::TAPERY, 1);
-		updateBackup();
+		restoreBufferVertex( mBufCurrent, mBufBackup );
+		apply( Object3D::PATH_CUT_BEGIN, 0.25);
+		apply( Object3D::PATH_CUT_END, 0.75 );
+		//restoreBuffer( mBufCurrent, mBufBackup );
+		//restoreBuffer( mBufCurrent, mBufPrim );
+
+		setTaperX( 0 );
+		setTaperY( 0 );
+		setPathCutBegin( 0 );
+		setPathCutEnd( 1 );
 	}
 };
 
@@ -542,7 +607,6 @@ public:
 	Object3DSphere(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = SPHERE;
-		mDimpleEnd = 1;
 	}
 };
 
@@ -553,13 +617,16 @@ public:
 	Object3DHalfSphere(String pName, SceneNode* pNode) : Object3D(pName, pNode)
 	{
         mType = HALF_SPHERE;
-		mPathCutEnd = 0.5;
-		mDimpleEnd = 1;
 
-		//apply( Object3D::PATH_CUT, 0, 0.5 );
-		apply( Object3D::PATH_CUT_BEGIN, 0.0);
-		apply( Object3D::PATH_CUT_END, 0.5 );
-		updateBackup();
+		//apply( Object3D::PATH_CUT_BEGIN, 0.0 );
+		//apply( Object3D::PATH_CUT_END, 0.5 );
+		apply( Object3D::PATH_CUT_BEGIN, 0.25);
+		apply( Object3D::PATH_CUT_END, 0.75 );
+		//restoreBuffer( mBufCurrent, mBufBackup );
+		//restoreBuffer( mBufCurrent, mBufPrim );
+
+		setPathCutBegin( 0 );
+		setPathCutEnd( 1 );
 	}
 };
 
@@ -572,6 +639,9 @@ public:
         mType = TORUS;
 		mHoleSizeX = 1;
 		mHoleSizeY = 0.25;
+
+		setHoleSizeX( 0 );
+		setHoleSizeY( 0 );
 	}
 };
 
@@ -584,7 +654,10 @@ public:
         mType = TUBE;
 		mHoleSizeX = 1;
 		mHoleSizeY = 0.25;
-		mRevolutions = 1;
+		mHollowShape = CIRCLE;
+
+		setHoleSizeX( 0 );
+		setHoleSizeY( 0 );
 	}
 };
 
@@ -597,7 +670,9 @@ public:
         mType = RING;
 		mHoleSizeX = 1;
 		mHoleSizeY = 0.25;
-		mRevolutions = 1;
+
+		setHoleSizeX( 0 );
+		setHoleSizeY( 0 );
 	}
 };
 

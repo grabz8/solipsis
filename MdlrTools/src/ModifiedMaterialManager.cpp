@@ -26,7 +26,6 @@ void ModifiedMaterialManager::initialise(const MaterialPtr& material)
 		TexturePtr texture = TextureManager::getSingleton().getByName(textureName);
 		addTexture(texture);
 	}
-
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -119,11 +118,27 @@ TextureVectorIterator ModifiedMaterialManager::getTextureIterator()
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setPreviousTexture()
+{
+	if (mCurrentTextureIterator == mTextures.begin()) mCurrentTextureIterator = mTextures.end();
+	mCurrentTextureIterator--;
+	//mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setPreviousTextureAsCurrent()
 {
 	if (mCurrentTextureIterator == mTextures.begin()) mCurrentTextureIterator = mTextures.end();
 	mCurrentTextureIterator--;
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setNextTexture()
+{
+	mCurrentTextureIterator++;
+	if (mCurrentTextureIterator == mTextures.end()) mCurrentTextureIterator = mTextures.begin();
+	//  mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -157,18 +172,17 @@ void ModifiedMaterialManager::setDefaultTextureAsCurrent()
 {
 	mCurrentTextureIterator = mDefaultTextureIterator;
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
-
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::addTexture(TexturePtr texture)
 {
 	mTextures.push_back(texture);
-	mDefaultTextureIterator = mTextures.begin();
-	mCurrentTextureIterator = mDefaultTextureIterator;
+
+	//mDefaultTextureIterator = mTextures.end();
+	//mDefaultTextureIterator--;
+	//mCurrentTextureIterator = mDefaultTextureIterator;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::resetModifications()
@@ -176,11 +190,13 @@ void ModifiedMaterialManager::resetModifications()
 	setDefaultTextureAsCurrent();
 	resetColour();
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 int ModifiedMaterialManager::getNbTexture()
 {
 	return mTextures.size();
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::deleteLastTexture()
 {
@@ -198,10 +214,12 @@ void ModifiedMaterialManager::deleteLastTexture()
 	}
 
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 {
 	if( pTexture->getName() != "default_texture.jpg" )	//if it is not the default texture ...
+		/*
 		if (mTextures.size() > 0)	//if there are 2 textures or more ...
 		{	
 			if( (*mCurrentTextureIterator) == pTexture)
@@ -213,7 +231,14 @@ void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 			setCurrentTexture( getCurrentTexture() ) ;
 			mTextures.remove( pTexture );
 		}
+		*/
+	{
+		setPreviousTextureAsCurrent();
+		mTextures.remove( pTexture );
+	}
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 bool ModifiedMaterialManager::isPresentInList(TexturePtr pTexture) 
 {
 	TextureVector::iterator itr ;
@@ -226,41 +251,49 @@ bool ModifiedMaterialManager::isPresentInList(TexturePtr pTexture)
 	}
 	return false ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setTextureScroll(float pU, float pV)
 {
 	mModifiedMaterial->setTextureScroll( pU, pV ) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 Ogre::Vector2 ModifiedMaterialManager::getTextureScroll()
 {
 	return (mModifiedMaterial->getTextureScroll() ) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setTextureScale(float pU, float pV)
 {
 	mModifiedMaterial->setTextureScale( pU, pV) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 Ogre::Vector2 ModifiedMaterialManager::getTextureScale()
 {
 	return (mModifiedMaterial->getTextureScale() ) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setTextureRotate(Ogre::Radian pAngle)
 {
 	mModifiedMaterial->setTextureRotate( pAngle) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 Ogre::Radian ModifiedMaterialManager::getTextureRotate()
 {
 	return mModifiedMaterial->getTextureRotate();
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setAlpha(float pValue)
 {
 	mModifiedMaterial->setAlpha( pValue ) ;
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 float ModifiedMaterialManager::getAlpha()
 {

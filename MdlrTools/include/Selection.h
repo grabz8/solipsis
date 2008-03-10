@@ -134,6 +134,36 @@ public:
 /*
  *
  *	\brief 
+ *		translate selection to
+ *
+ *	\param pValueX, pValueY, pValueZ = values representing the destination
+ *
+*/	
+	void moveTo (float pValueX, float pValueY, float pValueZ);
+
+/*
+ *
+ *	\brief 
+ *		Scale selection to
+ *
+ *	\param pValueX, pValueY, pValueZ = values representing the scale transformation
+ *
+*/	
+	void scaleTo (float pValueX, float pValueY, float pValueZ);
+
+/*
+ *
+ *	\brief 
+ *		rotate selection to
+ *
+ *	\param pValueX, pValueY, pValueZ = values representing the rotation transformation
+ *
+*/
+	void rotateTo (float pValueX, float pValueY, float pValueZ);
+
+/*
+ *
+ *	\brief 
  *		Get if the selection is empty
  *
  *	\return TRUE if the selection is empty, else return FALSE.
@@ -260,7 +290,7 @@ private:
 
 	
 	Object3DPtrList		mListNode;			/// brief The current selection list
-	Object3DPtrList		mObjectList;		///	biref List of all selectionnable objects
+	Object3DPtrList		mObjectList;		///	brief List of all selectionnable objects
 	
 	Object3DPtrListIterator	mCurrentObject;	///	biref The current selected node in the list 
 

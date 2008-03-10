@@ -23,9 +23,7 @@ mMaterial(material), mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.
 		mTextureUnitState = mPass->getTextureUnitState(0);
 	}else{
 		mTextureUnitState = mPass->createTextureUnitState();
-	}
-
-
+	}	
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -265,4 +263,29 @@ Ogre::Vector2 ModifiedMaterial::getTextureScale()
 	result.x = mTextureUnitState->getTextureUScale ();
 	result.y = mTextureUnitState->getTextureVScale ();
 	return result ;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterial::setTextureRotate(Ogre::Radian pAngle)
+{
+	mTextureUnitState->setTextureRotate( pAngle) ;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+Ogre::Radian ModifiedMaterial::getTextureRotate()
+{
+	return mTextureUnitState->getTextureRotate();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterial::setAlpha(float pValue)
+{
+    mPass->setSceneBlending(SBT_TRANSPARENT_ALPHA );
+
+	ColourValue colour = mPass->getDiffuse();
+	colour.a = pValue;
+	mPass->setDiffuse(colour);
+
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float ModifiedMaterial::getAlpha()
+{
+	return mPass->getDiffuse().a ;
 }

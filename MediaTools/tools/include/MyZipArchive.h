@@ -21,7 +21,7 @@ class FileBuffer;
 
 /// brief This is the class representing a MyZipArchive. From a path it can read or write zip and files in this zip.
 /// file MyZipArchive.h
-/// author François FOURNEL
+/// author François FOURNEL & Patrice DESFONDS
 /// date 2007.06.25
 
 class MyZipArchive
@@ -52,6 +52,11 @@ public:
 	///return The data of a file of the archive.
 	FileBuffer readFile(const String& filePath);
 
+	///brief Method which return the name of a file of the archive (in a string). it will be an empty name if the archive or the file isn't present.
+	///param pNumFile Number of the file in the archive, 0 is the first.
+	///return Name of a file of the archive.
+	String getName(const int pNumFile);
+
 	///brief Method which write a file to the zip. If the file already exists, it will be overwritten (It will be removed with the function removeFile). It will do nothing if the archive or the file isn't present. 
 	///param filePath Path of the file in the archive, universal for all OS (with "/").
 	///param fileBuffer File to write.
@@ -64,6 +69,11 @@ public:
 	///brief Method which remove a file with a given path in a zip (if it is possible). In fact it rebuild the zip ,according to the original zip, without the file to remove. It won't do anything if the archive or the file is not present.
 	///param filePath Path of the file in the archive, universal for all OS (with "/").
 	void removeFile(const String& filePath);
+
+	///brief Method which return the number of file present in the current archive
+	///return the number of file present in this archive
+	int getNbFile() ;
+
 
 
 private:

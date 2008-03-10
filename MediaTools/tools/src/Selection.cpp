@@ -91,12 +91,6 @@ void Selection::deselect_all()
 }
 
 //-------------------------------------------------------------------------------------
-bool Selection::empty_selection()
-{
-	return mListNode.empty();
-}
-
-//-------------------------------------------------------------------------------------
 void Selection::set_lock(bool p_lock)
 {
 	mLock = p_lock ;
@@ -231,7 +225,20 @@ Object3D* Selection::get3DObject(Entity *pEnt)
 	}
 	return NULL;
 }
-
+//-------------------------------------------------------------------------------------
+Object3D* Selection::get3DObject(const String pName)
+{
+	std::list<Object3D *>::iterator itObj = mObjectList.begin();
+	while (itObj != mObjectList.end())
+	{
+		if (strcmp ( (*itObj)->getName().c_str() , pName.c_str()) == 0 )
+		{
+			return (*itObj);
+		}
+		itObj++;
+	}
+	return NULL;
+}
 //-------------------------------------------------------------------------------------
 void Selection::clearObjects()
 {
@@ -293,6 +300,7 @@ void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pVa
 	pNode->setPosition( ObjectPosition );
 }
 
+//-------------------------------------------------------------------------------------
 void Selection::updateBackup()
 {
 	if( getNumSelectedObjects() != 0 )//!mListNode.empty() )
@@ -303,4 +311,9 @@ void Selection::updateBackup()
 			(*itr)->updateBackup();
 		}
 	}
+}
+//-------------------------------------------------------------------------------------
+const Object3DPtrList Selection::getObjectList()
+{
+	return mObjectList ;
 }

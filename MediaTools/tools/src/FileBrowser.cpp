@@ -3,6 +3,7 @@
 	#include "windows.h"
 	#include <String>
 	//#include <string.h>
+	#include <Winbase.h>
 #else
 	#warning "Code is not Linux compatible at the moment...."
 #endif
@@ -56,6 +57,7 @@ namespace FileBrowser
 
 		if (!GetSaveFileName(&openFile))
 		{
+			/*
 			HRESULT h = GetLastError();
 			LPVOID lpMsgBuf;
 			if (!FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &lpMsgBuf,0,NULL ))
@@ -65,6 +67,8 @@ namespace FileBrowser
 			}
 			if (lpMsgBuf)
 				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
+			*/
+			return NULL ;
 		}
 	
 		char* path = new char[strlen(buffer)];
@@ -170,5 +174,6 @@ namespace FileBrowser
 	return NULL;
 #endif 
 	}
-}
 
+
+}

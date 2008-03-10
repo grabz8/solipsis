@@ -1,3 +1,13 @@
+/**
+	\file 
+		ChooseColorWindow.h
+	\brief
+		Solipsis class for manage amm materials of one object
+	\author
+		ARTEFACTO -  François FOURNEL & Patrice DESFONDS
+*/
+
+
 #ifndef __ModifiedMaterialManager_h_
 #define __ModifiedMaterialManager_h_
 
@@ -13,13 +23,13 @@ typedef MapIterator<TextureMap> TextureMapIterator;
 typedef std::list<TexturePtr> TextureVector;
 typedef VectorIterator<TextureVector> TextureVectorIterator;
 
-/// brief This class manage all materials of one object.
-
 
 class ModifiedMaterialManager
 {
 public:
+	///brief Constructor
 	ModifiedMaterialManager(void);
+	///brief Destructor
 	~ModifiedMaterialManager(void);
 
 	///brief Method which initialises the class according to a material.
@@ -125,6 +135,21 @@ public:
 	///biref Get the scale of the texture
 	///return Vector2 (U, V) 
 	Ogre::Vector2 getTextureScale();
+
+	///biref Sets the anticlockwise rotation factor applied to texture coordinates. (in radian)
+	///param pAngle  angle  The angle of rotation (anticlockwise).   
+	void setTextureRotate(Ogre::Radian pAngle);
+	///biref Get the rotate of the texture (in radian)
+	///return the value of rotation
+	Ogre::Radian getTextureRotate();
+
+	///biref Sets the alpha value to be applied to this object. 
+	///param pValue alpha value (between 0 - 1) 
+	void setAlpha(float pValue);
+	///biref Get the alpha value of the object
+	///return the value of alpha
+	float getAlpha();
+
 
 private:
 	ModifiedMaterial* mModifiedMaterial;				///brief ModifiedMaterial associated to the object's material.

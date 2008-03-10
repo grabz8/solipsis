@@ -37,27 +37,35 @@ protected:
 	bool handleFileExit(const CEGUI::EventArgs& e); 
 
 	//----------------------------------------------------------------------------------------------
-	// Functions with mouse for Select, Move, Rotate and Scale
-	void selectObject (const OIS::MouseEvent &e);			//Select an object with the mouse
+	///brief For select an object with the mouse
+	void selectObject (const OIS::MouseEvent &e);	
 
-	RaySceneQueryResult& raySceneQuery( const OIS::MouseEvent &e );			//***
+	///brief Make raytracing and retrun the result :
+	RaySceneQueryResult& raySceneQuery( const OIS::MouseEvent &e );
 
 protected:
-	MiiModule* mii;
-	RaySceneQuery *mRaySceneQuery;		// The ray scene query pointer		//***
-	Selection* mSelection;				// The newly created object
+	MiiModule* mii;						///brief The class for interface
+	RaySceneQuery *mRaySceneQuery;		///brief The ray scene query pointer
+	Selection* mSelection;				///brief The newly created object
 
 	
 private:
+	///brief TRUE if the key CTRL is down
 	bool mKey_LCTRL;
+	///brief TRUE if the key ALT is down
 	bool mKey_LALT;
 
+	///brief Class for manage camera
 	CCamera * mCameraManagement;
 
-	//mouse's parameters:
+	///brief Mouse's parameters 
 	float mMouse_Speed ;
 
+	///brief The old Mouse position
 	Vector3 mOldpos ;
+
+	///brief Vector3 to know the value of current transformation (Rotate, Move, Scale) :
+	Vector3 mTransfo ;
 
 };
 

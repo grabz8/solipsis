@@ -8,7 +8,7 @@
 
 #include "SolipsisErrorHandler.h"
 // Tinyxml
-#include "../Dependencies/tinyxml/include/tinyxml.h"
+#include "tinyxml/include/tinyxml.h"
 
 namespace Solipsis {
 
@@ -89,6 +89,8 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mEnableCollision = mEnableGravity = false;
 	mPrimitivesCount = 0;
 
+	mCentreSelection = Vector3::ZERO;
+
 	// Init the last command 
 	mCommandLast = NONE;
 }
@@ -119,7 +121,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 
 	e = doc.RootElement()->FirstChildElement("model");
 	// we do not need to restore the primitive type that has been restored before 
-	from_string(e->FirstChildElement("taperx")->Attribute("value"),mTaperX);
+/*	from_string(e->FirstChildElement("taperx")->Attribute("value"),mTaperX);
 	from_string(e->FirstChildElement("tapery")->Attribute("value"),mTaperY);
 	from_string(e->FirstChildElement("pathcutbegin")->Attribute("value"),mPathCutBegin);
 	from_string(e->FirstChildElement("pathcutend")->Attribute("value"),mPathCutEnd);
@@ -135,10 +137,12 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("skew")->Attribute("value"),mSkew);
 	from_string(e->FirstChildElement("revolutions")->Attribute("value"),mRevolutions);
 	from_string(e->FirstChildElement("radiusdelta")->Attribute("value"),mRadiusDelta);
-	
+	*/	
+	//resetParameters();
+
 	TiXmlElement *trans = e->FirstChildElement("transformation")->FirstChildElement("transfo");
 	TCommand toAdd;
-//	Real converted;
+	//	Real converted;
 	stringstream sDebug;
 	String valueTransfo ;
 	while (trans!= NULL)
@@ -208,7 +212,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 			break;
 		}
 		restoreBuffer( mBufCurrent, mBufBackup );
-		resetParameters();
+//		resetParameters();
 
 		mCommandList.push_back(toAdd);
 		mCommandLast = toAdd.first;
@@ -235,13 +239,13 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("matspec")->Attribute("b"),cv.b);
 	from_string(e->FirstChildElement("matspec")->Attribute("a"),cv.a);
 	setSpecular(cv);
-	float value = 0 ;
+	float value = 0;
 	from_string(e->FirstChildElement("matshin")->Attribute("value"),value);
 	setShininess( value);
 	from_string(e->FirstChildElement("matopac")->Attribute("value"),value);
 	setAlpha( value);
-		//texture scroll, scale and rotate :
-	Ogre::Vector2 tmpVec  ;
+	//texture scroll, scale and rotate :
+	Ogre::Vector2 tmpVec;
 	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
 	from_string(e->FirstChildElement("texturescroll")->Attribute("v"),tmpVec.y);
 	setTextureScroll( tmpVec.x, tmpVec.y );
@@ -250,16 +254,17 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	setTextureScale( tmpVec.x, tmpVec.y );
 	from_string(e->FirstChildElement("texturerotate")->Attribute("value"),value);
 	setTextureRotate( Degree(value));
-		//Textures List :
+	//Textures List :
 	trans = e->FirstChildElement("texturelist")->FirstChildElement("texture");
 	TexturePtr texture ;
 	string currenttexture ;
-			//add texture to the current list :
+	//add texture to the current list :
 	while (trans != NULL)
 	{
-		texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		//texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		texture = TextureManager::getSingleton().load( trans->Attribute("Name") , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-		addTexture( texture) ;
+		addTexture (texture) ;
 
 		from_string( trans->Attribute("currenttexture") , currenttexture);
 		if( strcmp (currenttexture.c_str() , "true" ) == 0 )
@@ -275,7 +280,28 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("objposition")->Attribute("x"),tmp.x);
 	from_string(e->FirstChildElement("objposition")->Attribute("y"),tmp.y);
 	from_string(e->FirstChildElement("objposition")->Attribute("z"),tmp.z);
+
+/*	std::string parentName;
+	from_string(e->FirstChildElement("objparent")->Attribute("Name"),parentName);
+	Object3D* parent = getParent();
+	if( pos == Vector3::ZERO )
+	{
+		// place this object where it has been saved the last time
+		if( parent )
+			tmp	+= parent->getPosition(false);
+	}
+	else
+	{
+		// place this object where the avatar is
+		if( parent )
+			tmp += pos;
+		else
+			tmp = pos;
+	}
+*/
 	mNode->setPosition(tmp);
+	mCentreSelection = tmp;
+
 	from_string(e->FirstChildElement("objorientation")->Attribute("x"),tmp.x);
 	from_string(e->FirstChildElement("objorientation")->Attribute("y"),tmp.y);
 	from_string(e->FirstChildElement("objorientation")->Attribute("z"),tmp.z);
@@ -336,7 +362,7 @@ int		Object3D::saveToFile(const char* fileName)
 
 	toSave << "\t<model>" << endl;
 	toSave << "\t\t<primitive Name=\"" << SOLTYPESTRING[(int)mType] << "\" />" << endl;
-	toSave << "\t\t<taperx value=\"" << mTaperX << "\" />" << endl;
+/*	toSave << "\t\t<taperx value=\"" << mTaperX << "\" />" << endl;
 	toSave << "\t\t<tapery value=\"" << mTaperY << "\" />" << endl;
 	toSave << "\t\t<pathcutbegin value=\"" << mPathCutBegin << "\" />" << endl;
 	toSave << "\t\t<pathcutend value=\"" << mPathCutEnd << "\" />" << endl;
@@ -352,8 +378,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<skew value=\"" << mSkew << "\" />" << endl;
 	toSave << "\t\t<revolutions value=\"" << mRevolutions << "\" />" << endl;
 	toSave << "\t\t<radiusdelta value=\"" << mRadiusDelta << "\" />" << endl;
-	toSave << "\t\t<transformation>" << endl;
-
+*/	toSave << "\t\t<transformation>" << endl;
 	std::list<TCommand>::iterator itCommands = mCommandList.begin();
 	char valueTransfo [20] ;
 	while (itCommands != mCommandList.end())
@@ -424,7 +449,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t</material>" << endl;
 
 	toSave << "\t<threeD>" << endl;
-	Vector3 tmp = getPosition(true);
+	Vector3 tmp = getPosition(false);
 	toSave << "\t\t<objposition x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
 	tmp = getOrientation();
 	toSave << "\t\t<objorientation x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
@@ -444,6 +469,7 @@ int		Object3D::saveToFile(const char* fileName)
 
 	toSave << "</SOLObject>" << endl;
 	toSave.close();
+
 	return 0; // no error
 }
 
@@ -457,6 +483,22 @@ void Object3D::setName(String name)
 String Object3D::getName()
 {
 	return mName;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setTranslate(Real pX, Real pY, Real pZ )
+{
+	mTranslateX = pX;
+	mTranslateY = pY;
+	mTranslateZ = pZ;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setRotate(Real pX, Real pY, Real pZ )
+{
+	mRotateX = pX;
+	mRotateY = pY;
+	mRotateZ = pZ;
 }
 
 //-------------------------------------------------------------------------------------
@@ -539,12 +581,6 @@ void Object3D::setHoleSizeY(Real value)
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::setHollow(Real value)
-{
-	mHollow = value;
-}
-
-//-------------------------------------------------------------------------------------
 void Object3D::setHollowShape(Shape shape)
 {
 	mHollowShape = shape;
@@ -571,31 +607,22 @@ void Object3D::setRadiusDelta(Real value)
 //-------------------------------------------------------------------------------------
 void Object3D::resetParameters()
 {
-	mRotationX = 0;
-	mRotationY = 0;
-	mRotationZ = 0;
-	mScaleX = 1;
-	mScaleY = 1;
-	mScaleZ = 1;
-	mPathCutBegin = 0;
-	mPathCutEnd = 1;
-	mTwistBegin = 0;
-	mTwistEnd = 0;
-	mTaperX = 0;
-	mTaperY = 0;
-	mTopShearX = 0;
-	mTopShearY = 0;
+	mTranslateX = mTranslateY = mTranslateZ = 0;
+	mRotateX = mRotateY = mRotateZ = 0;
+	mScaleX = mScaleY = mScaleZ = 1;
+
+	mTaperX = mTaperY = 0;
+	mTopShearX = mTopShearY = 0;
+	mTwistBegin = mTwistEnd = 0;
 	mDimpleBegin = 0;
 	mDimpleEnd = 1;
-	mHoleSizeX = 0;
-	mHoleSizeY = 0;
-	mHollow = 0;
+	mPathCutBegin = 0;
+	mPathCutEnd = 1;
+	mHoleSizeX = mHoleSizeY = 0;
 	mHollowShape = SQUARE;
-	mProfileCuteBegin = 0;
-	mProfileCuteEnd = 1;
 	mSkew = 0;
-	mRadiusDelta = 0;
 	mRevolutions = 1;
+	mRadiusDelta = 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -625,25 +652,18 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 	SOLID *solidA, *solidB;
 
 
+	mCommandLast = command;
 	switch( command )
 	{
 	// basic transformations
 	case TRANSLATE:
 		{
-			if(0)
-			{
-				for(unsigned int i=0; i<mVertexCount; i++)
-				{
-					unsigned int id = i*mVertexDecl/4;
-					mBufCurrent->vertex[id] += p1;
-					mBufCurrent->vertex[id+1] += p2;
-					mBufCurrent->vertex[id+2] += p3;
-				}
+			mNode->translate( p1, p2, p3 );
 
-				update();
-			}
-			else
-				mNode->translate( p1, p2, p3 );
+			mTranslateX += p1;
+			mTranslateY += p2;
+			mTranslateZ += p3;
+
 			break;
 		}
 
@@ -700,11 +720,18 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 
 	case SCALE:
 		{
-			//if( p1 <= 0 && p2 <= 0 && p3 <= 0 ) return false;
-			if( p1 != 1 ) { p2 = mScaleY; p3 = mScaleZ; }
-			else if( p2 != 1 ) { p1 = mScaleX; p3 = mScaleZ; }
-			else if( p3 != 1 ) { p1 = mScaleX; p2 = mScaleY; }
-			setScale( p1, p2, p3 );
+			Real s1 = p1;
+			Real s2 = p2;
+			Real s3 = p3;
+			if( p1 != 1 ) { s2 = mScaleY; s3 = mScaleZ; }
+//			else if( p2 != 1 ) { s1 = mScaleX; s3 = mScaleZ; }
+//			else if( p3 != 1 ) { s1 = mScaleX; s2 = mScaleY; }
+
+			if( p1 == 1 ) s1 = mScaleX;
+			if( p2 == 1 ) s2 = mScaleY;
+			if( p3 == 1 ) s3 = mScaleZ;
+
+			setScale( s1, s2, s3 );
 
 			for(unsigned int i=0; i<mVertexCount; i++)
 			{
@@ -755,17 +782,6 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			if( 0 > p1 || p1 > 1 ) return false;
 			setTopShearX( p1 );
 
-			// on effectu une translation des sommets sur l'axe X 
-			// Som.X += Som.Y * Transl / Size.Y
-/*			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-			//(*v).x += (*v).y * p1 * mSize.x / mSize.y;		// other version
-			//(*v).x += (*v).y * p1 * mSize.x / mCornerMax.y;				// with delta incr modif
-			(*v).x = (*w).x + (*w).y * p1 * mSize.x / mCornerMax.y;
-			w++;
-			}
-*/
 			for(unsigned int i=0; i<mVertexCount; i++)
 			{
 				unsigned int id = i*mVertexDecl/4;
@@ -782,16 +798,6 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			if( 0 > p1 || p1 > 1 ) return false;
 			setTopShearY( p1 );
 
-			// on effectu une translation des sommets sur l'axe Z 
-			// Som.Z += Som.Y * Transl / Size.Y
-/*			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-				//(*v).z += (*v).y * p2 * mSize.z / mCornerMax.y;				// with delta incr modif
-				(*v).z = (*w).z + (*w).y * p2 * mSize.z / mCornerMax.y;
-				w++;
-			}
-*/
 			for(unsigned int i=0; i<mVertexCount; i++)
 			{
 				unsigned int id = i*mVertexDecl/4;
@@ -809,22 +815,10 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			if( 0 > p1 || p1 > 1 ) return false;
 			setTwistBegin( p1 );
 
-			p1 *= Math::PI * 2; // 6.2831853;
-			Vector3 center = mNode->getPosition();
+			p1 *= Math::TWO_PI; // 6.2831853;
 			Real ratio, angle;
+//			Vector3 center = mNode->getPosition();
 			
-/*			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-				(*v) -= center;
-				ratio = (*w).y / mCornerMax.y / 2;		// 1 = top, 0 = bottom
-				angle = ratio * (p1 );//- mTwistEnd) + mTwistEnd;			// ratio = 1 -> angle = p1		ratio = 0 -> angle = mTwistEnd
-				(*v) = (*w);
-				VectorModifier::rotateY( (*v), angle );
-				(*v) += center;
-				w++;
-			}
-*/
 			for(unsigned int i=0; i<mVertexCount; i++)
 			{
 				unsigned int id = i*mVertexDecl/4;
@@ -833,22 +827,23 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 				v.y = mBufBackup->vertex[id+1];
 				v.z = mBufBackup->vertex[id+2];
 
-				v -= center;
+//				v -= center;
 				ratio = mBufBackup->vertex[id+1] / mCornerMax.y / 2;			// 1 = top, 0 = bottomm
 				angle = ratio * p1;
 				VectorModifier::rotateY( v, angle );
 				if( 0 < mTwistEnd )
 				{
 					ratio = 0.5 - mBufBackup->vertex[id+1] / mCornerMax.y / 2;	// 1 = top, 0 = bottom
-					angle = ratio * mTwistEnd * Math::PI * 2;
+					angle = ratio * mTwistEnd * Math::TWO_PI;
 					VectorModifier::rotateY( v, -angle );
 				}
-				v += center;
+//				v += center;
 
 				mBufCurrent->vertex[id] = v.x;
 				mBufCurrent->vertex[id+1] = v.y;
 				mBufCurrent->vertex[id+2] = v.z;
 			}
+			p1 /= Math::TWO_PI;
 
 			update();
 			break;
@@ -858,23 +853,10 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			if( 0 > p1 || p1 > 1 ) return false;
 			setTwistEnd( p1 );
 
-			p1 *= Math::PI * 2; // 6.2831853;
-			Vector3 center = mNode->getPosition();
+			p1 *= Math::TWO_PI; // 6.2831853;
 			Real ratio, angle;
+//			Vector3 center = mNode->getPosition();
 		
-/*			w = mPointsBackup->begin();
-			for( v = mPoints->begin(); v != mPoints->end(); v++ )
-			{
-				(*v) -= center;
-				ratio = 0.5 - ( (*w).y / mCornerMax.y / 2) ;		// 1 = top, 0 = bottom
-				//angle = ratio * (mTwistBegin - p1) + p1;			// ratio = 1 -> angle = mTwistBegin		ratio = 0 -> angle = p2
-				angle = ratio * ( -p1);// + p1;
-				(*v) = (*w);
-				VectorModifier::rotateY( (*v), angle );
-				(*v) += center;
-				w++;
-			}
-*/
 			for(unsigned int i=0; i<mVertexCount; i++)
 			{
 				unsigned int id = i*mVertexDecl/4;
@@ -883,60 +865,69 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 				v.y = mBufBackup->vertex[id+1];
 				v.z = mBufBackup->vertex[id+2];
 
-				v -= center;
+//				v -= center;
 				if( 0 < mTwistBegin )
 				{
 					ratio = mBufBackup->vertex[id+1] / mCornerMax.y / 2;		// 1 = top, 0 = bottomm
-					angle = ratio * mTwistBegin * Math::PI * 2;
+					angle = ratio * mTwistBegin * Math::TWO_PI;
 					VectorModifier::rotateY( v, angle );
 				}
 				ratio = 0.5 - mBufBackup->vertex[id+1] / mCornerMax.y / 2;		// 1 = top, 0 = bottom
 				angle = ratio * p1;
 				VectorModifier::rotateY( v, -angle );
-				v += center;
+//				v += center;
 
 				mBufCurrent->vertex[id] = v.x;
 				mBufCurrent->vertex[id+1] = v.y;
 				mBufCurrent->vertex[id+2] = v.z;
 			}
+			p1 /= Math::TWO_PI;
 
 			update();
 			break;
 		}
 
 	case PATH_CUT_BEGIN:
-		if( (p1 == 0) && (mPathCutEnd == 1) ) return false;
-		if( (p1 - mPathCutEnd) >= 0 ) return false;
-		setPathCutBegin( p1 );
-		mAngleBegin = mPathCutBegin;
-		mAngleEnd = mPathCutEnd;
-		path_cut = true;
-		break;
+		{
+			if( (p1 == 0) && (mPathCutEnd == 1) ) return false;
+			if( (p1 - mPathCutEnd) >= 0 ) return false;
+			setPathCutBegin( p1 );
+			mAngleBegin = mPathCutBegin;
+			mAngleEnd = mPathCutEnd;
+			path_cut = true;
+			break;
+		}
 	case PATH_CUT_END:
-		if( (mPathCutBegin == 0) && (p1 == 1) ) return false;
-		if( (mPathCutBegin - p1) >= 0 ) return false;
-		setPathCutEnd( p1 );
-		mAngleBegin = mPathCutBegin;
-		mAngleEnd = mPathCutEnd;
-		path_cut = true;
-		break;
+		{
+			if( (mPathCutBegin == 0) && (p1 == 1) ) return false;
+			if( (mPathCutBegin - p1) >= 0 ) return false;
+			setPathCutEnd( p1 );
+			mAngleBegin = mPathCutBegin;
+			mAngleEnd = mPathCutEnd;
+			path_cut = true;
+			break;
+		}
 
 	case DIMPLE_BEGIN:
-		if( (p1 == 0) && (mDimpleEnd == 1) ) return false;
-		if( (p1 - mDimpleEnd) >= 0 ) return false;
-		setDimpleBegin( p1 );
-		mAngleBegin = mDimpleBegin;
-		mAngleEnd = mDimpleEnd;
-		dimple = true;
-		break;
+		{
+			if( (p1 == 0) && (mDimpleEnd == 1) ) return false;
+			if( (p1 - mDimpleEnd) >= 0 ) return false;
+			setDimpleBegin( p1 );
+			mAngleBegin = mDimpleBegin;
+			mAngleEnd = mDimpleEnd;
+			dimple = true;
+			break;
+		}
 	case DIMPLE_END:
-		if( (mDimpleBegin == 0) && (p1 == 1) ) return false;
-		if( (mDimpleBegin - p1) >= 0 ) return false;
-		setDimpleEnd( p1 );
-		mAngleBegin = mDimpleBegin;
-		mAngleEnd = mDimpleEnd;
-		dimple = true;
-		break;
+		{
+			if( (mDimpleBegin == 0) && (p1 == 1) ) return false;
+			if( (mDimpleBegin - p1) >= 0 ) return false;
+			setDimpleEnd( p1 );
+			mAngleBegin = mDimpleBegin;
+			mAngleEnd = mDimpleEnd;
+			dimple = true;
+			break;
+		}
 
 	case HOLE_SIZEX:
 		setHoleSizeX( p1 );
@@ -980,12 +971,12 @@ float* vvv;
 unsigned int* iii;
 
 vvv = new float[mBufBackup->vertexCount*mVertexDecl/4];
+iii = new unsigned int[mBufBackup->indexCount];
 for(realvector::iterator vv=mBufBackup->vertex.begin(); vv!=mBufBackup->vertex.end(); vv++)
 	*vvv++ = (*vv);
-vvv -= mBufBackup->vertexCount*mVertexDecl/4;
-iii = new unsigned int[mBufBackup->indexCount];
 for(uintvector::iterator ii=mBufBackup->index.begin(); ii!=mBufBackup->index.end(); ii++)
 	*iii++ = (*ii);
+vvv -= mBufBackup->vertexCount*mVertexDecl/4;
 iii -= mBufBackup->indexCount;
 // ***********************************************************************************
 		solidA = sbo->dataLoad( 
@@ -996,8 +987,8 @@ iii -= mBufBackup->indexCount;
 		solidA->DataCloseCallback();
 // ***********************************************************************************
 delete iii;
-iii = NULL;
 delete vvv;
+iii = NULL;
 vvv = NULL;
 // ***********************************************************************************
 
@@ -1019,12 +1010,12 @@ vvv = NULL;
 
 // ***********************************************************************************
 vvv = new float[vertexCount*mVertexDecl/4];
+iii = new unsigned int[indexCount];
 for(realvector::iterator vv=vertex.begin(); vv!=vertex.end(); vv++)
 	*vvv++ = (*vv);
-vvv -= vertexCount*mVertexDecl/4;
-iii = new unsigned int[indexCount];
 for(uintvector::iterator ii=index.begin(); ii!=index.end(); ii++)
 	*iii++ = (*ii);
+vvv -= vertexCount*mVertexDecl/4;
 iii -= indexCount;
 // ***********************************************************************************
 		solidB = sbo->dataLoad(
@@ -1035,8 +1026,8 @@ iii -= indexCount;
 		solidB->DataCloseCallback();
 // ***********************************************************************************
 delete iii;
-iii = NULL;
 delete vvv;
+iii = NULL;
 vvv = NULL;
 // ***********************************************************************************
 
@@ -1052,7 +1043,6 @@ vvv = NULL;
 		vertexCount = vertexCountA + vertexCountB;
 		indexCount = indexCountA + indexCountB;
 		// vertex data
-		//delete vertex;
 		vertex.clear();
 		vertex.resize(vertexCount * mVertexDecl/4);
         unsigned int i;
@@ -1068,12 +1058,11 @@ vvv = NULL;
 		index -= indexCount;*/
 
 		// Update vertex & index datas
-		resizeBuffers(vertex, vertexCount,index, indexCount );
+		resizeBuffers( vertex, vertexCount, index, indexCount );
 		path_cut = dimple = hole = false;
 
-		//delete mBufCurrent->vertex;
-		//delete mBufCurrent->index;
-
+		mBufCurrent->vertex.clear();
+		mBufCurrent->index.clear();
 		mBufCurrent->vertex			= vertex;
 		mBufCurrent->vertexCount	= vertexCount;
 		mBufCurrent->index			= index;
@@ -1084,8 +1073,8 @@ vvv = NULL;
 	// skew deformation
 	if( skew && (mType == CYLINDER || mType == TORUS || mType == TUBE) )
 	{
-		//delete vertex;	vertex = 0;
-		//delete index;	index = 0;
+		vertex.clear();
+		index.clear();
 
 		// Generate the new modified object3D
 		MeshModifier::genCylinderSkew(
@@ -1100,9 +1089,8 @@ vvv = NULL;
 		resizeBuffers( vertex, vertexCount, index, indexCount );
 		skew = false;
 
-		//delete mBufCurrent->vertex;
-		//delete mBufCurrent->index;
-
+		mBufCurrent->vertex.clear();
+		mBufCurrent->index.clear();
 		mBufCurrent->vertex			= vertex;
 		mBufCurrent->vertexCount	= vertexCount;
 		mBufCurrent->index			= index;
@@ -1112,22 +1100,27 @@ vvv = NULL;
 	// childs
  	if (mChilds)
 	{
-		vector< Object3D* >::iterator itr ;
+		vector< Object3D* >::iterator itr;
 		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
 		{
-			if(command == ROTATE)
+			switch( command )
 			{
-				(*itr)->mCentreSelection = mCentreSelection ;
-				(*itr)->mCentreRotation = mCentreRotation ;
-				(*itr)->mCentreObject = mCentreObject ;
-				(*itr)->findRotationPosition( p1, p2, p2, mCentreSelection, mCentreRotation, mCentreObject);
+			case TRANSLATE: continue;
+			case ROTATE: (*itr)->rotateFromParent( p1, p2, p3 ); break;
 			}
+
 			(*itr)->apply( command, p1, p2, p3 ) ;
 		}
 	}
 
 	mNode->_updateBounds();
 	return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setPosition(Vector3 pos)
+{
+	mNode->setPosition( pos );
 }
 
 //-------------------------------------------------------------------------------------
@@ -1138,6 +1131,13 @@ Vector3 Object3D::getPosition(bool worldPosition )
 
 	return mNode->getPosition();
 }
+
+//-------------------------------------------------------------------------------------
+Vector3 Object3D::getOrientation()
+{
+	return Vector3(mNode->getOrientation().getYaw().valueDegrees(),mNode->getOrientation().getPitch().valueDegrees(),mNode->getOrientation().getRoll().valueDegrees());
+}
+
 //-------------------------------------------------------------------------------------
 bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 {
@@ -1184,11 +1184,6 @@ bool Object3D::isLink(Object3D* pObj)
 			return true;
 	}
 	return false;
-}
-//-------------------------------------------------------------------------------------
-Vector3 Object3D::getOrientation()
-{
-	return Vector3(mNode->getOrientation().getYaw().valueDegrees(),mNode->getOrientation().getPitch().valueDegrees(),mNode->getOrientation().getRoll().valueDegrees());
 }
 
 //-------------------------------------------------------------------------------------
@@ -1360,15 +1355,9 @@ void Object3D::updateBufferVertex()
 
 	HardwareVertexBufferSharedPtr vbuf = mVertexData->vertexBufferBinding->getBuffer(posElem->getSource());
 	Real *vertex = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
-	realvector vertexNew = mBufCurrent->vertex;
 
 	for(unsigned int i=0; i<mVertexCount*mVertexDecl/4; i++)
-	{
-//		Real temp = vertexNew[i];		//vertex[i] = mBufCurrent->vertex[i];
-//		vertex[i] = temp;
-
-		vertex[i] = vertexNew[i];
-	}
+		vertex[i] = mBufCurrent->vertex[i];
 
 	vbuf->unlock();
 }
@@ -1618,52 +1607,26 @@ float Object3D::getShininess()
 {
 	return mModifiedMaterialManager->getModifiedMaterial()->getShininess() ;
 }
+
 //-------------------------------------------------------------------------------------
-void Object3D::move (float pValueX, float pValueY, float pValueZ)
+void Object3D::rotateFromParent( float pValueX, float pValueY, float pValueZ )
 {
-	mNode->translate(pValueX, pValueY, pValueZ, Node::TS_WORLD);
+	Object3D* parent = getParent();
+	Vector3 dec = mNode->getWorldPosition() - parent->mNode->getWorldPosition();
+
+//	if( pValueX )		VectorModifier::rotateX( dec, -pValueX * Math::PI / 180 );
+//	else if( pValueY )	VectorModifier::rotateY( dec, +pValueX * Math::PI / 180 );
+//	else				VectorModifier::rotateZ( dec, +pValueZ * Math::PI / 180 );
+
+	VectorModifier::rotateXYZ( dec, 
+		-pValueX * Math::PI / 180,
+		+pValueY * Math::PI / 180,
+		+pValueZ * Math::PI / 180 );
+
+	dec -= mNode->getPosition();
+	mNode->translate( dec.x, dec.y, dec.z, Node::TransformSpace::TS_PARENT );
 }
-//-------------------------------------------------------------------------------------
-void Object3D::scale (float pValueX, float pValueY, float pValueZ)
-{
-	apply( Object3D::SCALE, pValueX, pValueY, pValueZ);
-	mNode->_updateBounds();
 
-}
-//-------------------------------------------------------------------------------------
-void Object3D::rotate (float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
-					   SceneNode * pCentreRotation, SceneNode* pCentreObject)
-{
-	mCentreSelection = pCentreSelection ;
-	mCentreRotation = pCentreRotation;
-	mCentreObject = pCentreObject ;
-
-	findRotationPosition( pValueX, pValueY, pValueZ, mCentreSelection, mCentreRotation, mCentreObject);
-	apply( Object3D::ROTATE, pValueX, pValueY, pValueZ );
-
-
-}
-//-------------------------------------------------------------------------------------
-void Object3D::findRotationPosition( float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
-									 SceneNode * pCentreRotation, SceneNode* pCentreObject)
-{
-	pCentreRotation->setOrientation( pCentreRotation->getInitialOrientation() );
-	pCentreObject->setOrientation( pCentreObject->getInitialOrientation() );
-	pCentreObject->setPosition( pCentreObject->getInitialPosition() );
-
-	pCentreRotation->setPosition( pCentreSelection ) ;
-	Vector3 ObjectPosition = mNode->getWorldPosition() - pCentreRotation->getWorldPosition() ;
-	pCentreObject->translate( ObjectPosition ) ;
-	//... pCentreRotation and pCentreObject are correctly positionned
-
-	pCentreRotation->pitch(Degree(pValueX));
-	pCentreRotation->yaw(Degree(pValueY));
-	pCentreRotation->roll(Degree(pValueZ));
-
-	//Now we put mNode on pCentreObject ...
-	ObjectPosition = pCentreObject->getWorldPosition() - mNode->getParentSceneNode()->getWorldPosition();
-	mNode->setPosition( ObjectPosition );
-}
 //-------------------------------------------------------------------------------------
 void Object3D::setTextureScroll(float pU, float pV)
 {
@@ -1726,123 +1689,133 @@ float Object3D::getAlpha()
 	return mModifiedMaterialManager->getAlpha() ;
 }
 //-------------------------------------------------------------------------------------
-bool Object3D::addCommand( TCommand &pTCommand, Command &pOldCommand ) 
+bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld ) 
 {
 	bool updateVertex = false;
 	bool updateVertexIndex = false;
+	std::list<TCommand>::iterator cmd;
+	Command temp;
 
-	// test for a new transformation
-	if( pTCommand.first == mCommandLast )
-		// always on the same transformation, no need to update the vertex & index buffers
+	// it' the same command so do nothing for the moment
+	if( mCommandLast == pCommandNew.first ) 
 		return false;
-	else
+	if( mCommandLast == TAPERX && pCommandNew.first == TAPERY ||
+		mCommandLast == TAPERY && pCommandNew.first == TAPERX ||
+		mCommandLast == TOP_SHEARX && pCommandNew.first == TOP_SHEARY ||
+		mCommandLast == TOP_SHEARY && pCommandNew.first == TOP_SHEARX ||
+		mCommandLast == TWIST_BEGIN && pCommandNew.first == TWIST_END ||
+		mCommandLast == TWIST_END && pCommandNew.first == TWIST_BEGIN ||
+		mCommandLast == PATH_CUT_BEGIN && pCommandNew.first == PATH_CUT_END ||
+		mCommandLast == PATH_CUT_END && pCommandNew.first == PATH_CUT_BEGIN ||
+		mCommandLast == DIMPLE_BEGIN && pCommandNew.first == DIMPLE_END ||
+		mCommandLast == DIMPLE_END && pCommandNew.first == DIMPLE_BEGIN ||
+		mCommandLast == HOLE_SIZEX && pCommandNew.first == HOLE_SIZEY || pCommandNew.first == HOLLOW_SHAPE ||
+		mCommandLast == HOLE_SIZEY && pCommandNew.first == HOLE_SIZEX || pCommandNew.first == HOLLOW_SHAPE ||
+		mCommandLast == HOLLOW_SHAPE && pCommandNew.first == HOLE_SIZEX || pCommandNew.first == HOLE_SIZEY ||
+		mCommandLast == SKEW && pCommandNew.first == REVOLUTION || pCommandNew.first == RADIUS_DELTA ||
+		mCommandLast == REVOLUTION && pCommandNew.first == SKEW || pCommandNew.first == RADIUS_DELTA ||
+		mCommandLast == RADIUS_DELTA && pCommandNew.first == SKEW || pCommandNew.first == REVOLUTION )
+		return false;
+
+	// it' not the first new command
+	if( !mCommandList.empty() )
 	{
-		// another transformation has been used
-		// and it can be a neightboor
-		// if it's not the case, push this command
+		// so take the last command added
+		cmd = mCommandList.end();
+		cmd--;
+
+		// and update its parameters
 		if( mCommandLast == TRANSLATE )
 		{
-			pTCommand.second = Vector3( mNode->getPosition().x, mNode->getPosition().y, mNode->getPosition().z );
-			goto UPDATE;
+			(*cmd).second = getTranslate();
+			updateVertex = true;
 		}
 		else if( mCommandLast == ROTATE )
 		{
-			pTCommand.second = Vector3( mRotationX, mRotationY, mRotationZ );
+			(*cmd).second = getRotate();
 			updateVertex = true;
-			goto UPDATE;
 		} 
 		else if( mCommandLast == SCALE )
 		{
-			pTCommand.second = Vector3( mScaleX, mScaleY, mScaleZ );
+			(*cmd).second = getScale();
 			updateVertex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == TAPERX && pTCommand.first != TAPERY
-			||   mCommandLast == TAPERY && pTCommand.first != TAPERX )
+		else if( mCommandLast == TAPERX && pCommandNew.first != TAPERY
+			||   mCommandLast == TAPERY && pCommandNew.first != TAPERX )
 		{
-			pTCommand.second = Vector3( mTaperX, mTaperY, 0 ); 
+			(*cmd).second = Vector3( mTaperX, mTaperY, 0 ); 
 			updateVertex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == TOP_SHEARX && pTCommand.first != TOP_SHEARY 
-			||   mCommandLast == TOP_SHEARY && pTCommand.first != TOP_SHEARX )
+		else if( mCommandLast == TOP_SHEARX && pCommandNew.first != TOP_SHEARY 
+			||   mCommandLast == TOP_SHEARY && pCommandNew.first != TOP_SHEARX )
 		{
-			pTCommand.second = Vector3( mTopShearX, mTopShearY, 0 ); 
+			(*cmd).second = Vector3( mTopShearX, mTopShearY, 0 ); 
 			updateVertex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == TWIST_BEGIN && pTCommand.first != TWIST_END
-			||   mCommandLast == TWIST_END && pTCommand.first != TWIST_BEGIN )
+		else if( mCommandLast == TWIST_BEGIN && pCommandNew.first != TWIST_END
+			||   mCommandLast == TWIST_END && pCommandNew.first != TWIST_BEGIN )
 		{
-			pTCommand.second = Vector3( mTwistBegin, mTwistEnd, 0 ); 
+			(*cmd).second = Vector3( mTwistBegin, mTwistEnd, 0 ); 
 			updateVertex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == PATH_CUT_BEGIN && pTCommand.first != PATH_CUT_END
-			||   mCommandLast == PATH_CUT_END && pTCommand.first != PATH_CUT_BEGIN )
+		else if( mCommandLast == PATH_CUT_BEGIN && pCommandNew.first != PATH_CUT_END
+			||   mCommandLast == PATH_CUT_END && pCommandNew.first != PATH_CUT_BEGIN )
 		{
-			pTCommand.second = Vector3( mPathCutBegin, mPathCutEnd, 0 ); 
+			(*cmd).second = Vector3( mPathCutBegin, mPathCutEnd, 0 ); 
 			updateVertexIndex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == DIMPLE_BEGIN && pTCommand.first != DIMPLE_END
-			||   mCommandLast == DIMPLE_END && pTCommand.first != DIMPLE_BEGIN )
+		else if( mCommandLast == DIMPLE_BEGIN && pCommandNew.first != DIMPLE_END
+			||   mCommandLast == DIMPLE_END && pCommandNew.first != DIMPLE_BEGIN )
 		{
-			pTCommand.second = Vector3( mDimpleBegin, mDimpleEnd, 0 ); 
+			(*cmd).second = Vector3( mDimpleBegin, mDimpleEnd, 0 ); 
 			updateVertexIndex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == HOLE_SIZEX && pTCommand.first != HOLE_SIZEY 
-			||   mCommandLast == HOLE_SIZEX && pTCommand.first != HOLLOW_SHAPE
-			||   mCommandLast == HOLE_SIZEY && pTCommand.first != HOLE_SIZEX 
-			||   mCommandLast == HOLE_SIZEY && pTCommand.first != HOLLOW_SHAPE
-			||   mCommandLast == HOLLOW_SHAPE && pTCommand.first != HOLE_SIZEX
-			||   mCommandLast == HOLLOW_SHAPE && pTCommand.first != HOLE_SIZEY )
+		else if( mCommandLast == HOLE_SIZEX && pCommandNew.first != HOLE_SIZEY && pCommandNew.first != HOLLOW_SHAPE
+			||   mCommandLast == HOLE_SIZEY && pCommandNew.first != HOLE_SIZEX && pCommandNew.first != HOLLOW_SHAPE
+			||   mCommandLast == HOLLOW_SHAPE && pCommandNew.first != HOLE_SIZEX && pCommandNew.first != HOLE_SIZEY )
 		{
-			pTCommand.second = Vector3( mHoleSizeX, mHoleSizeY, mHollowShape ); 
+			(*cmd).second = Vector3( mHoleSizeX, mHoleSizeY, mHollowShape ); 
 			updateVertexIndex = true;
-			goto UPDATE;
 		}
-		else if( mCommandLast == SKEW && pTCommand.first != REVOLUTION
-			||   mCommandLast == SKEW && pTCommand.first != RADIUS_DELTA
-			||   mCommandLast == REVOLUTION && pTCommand.first != SKEW
-			||   mCommandLast == REVOLUTION && pTCommand.first != RADIUS_DELTA
-			||   mCommandLast == RADIUS_DELTA && pTCommand.first != SKEW
-			||   mCommandLast == RADIUS_DELTA && pTCommand.first != REVOLUTION )
+		else if( mCommandLast == SKEW && pCommandNew.first != REVOLUTION&& pCommandNew.first != RADIUS_DELTA
+			||   mCommandLast == REVOLUTION && pCommandNew.first != SKEW&& pCommandNew.first != RADIUS_DELTA
+			||   mCommandLast == RADIUS_DELTA && pCommandNew.first != SKEW && pCommandNew.first != REVOLUTION )
 		{
-			pTCommand.second = Vector3( mSkew, mRadiusDelta, mRevolutions ); 
+			(*cmd).second = Vector3( mSkew, mRadiusDelta, mRevolutions ); 
 			updateVertexIndex = true;
-			goto UPDATE;
 		}
 		else
 		{
-			// the new command is a neightboor of the last one ( TAPERX & TAPERY for example )
-			// so do nothing ...
+			// ...
 		}
 	}
 
-
-UPDATE:
-
+	// the last command has been updated
+	// then update th evertex & index buffers of the object 3D
 	if( updateVertex || updateVertexIndex )
 	{
-		//restoreBuffer( mBufCurrent, mBufBackup );
 		restoreBufferVertex( mBufCurrent, mBufBackup );
 		if( updateVertexIndex ) 
 			restoreBufferIndex( mBufCurrent, mBufBackup );
 
 		resetParameters();
-
-		pOldCommand = mCommandLast;
-		Command temp = pTCommand.first;
-		pTCommand.first = mCommandLast;
-		mCommandList.push_back( pTCommand );
-		mCommandLast = temp;
-
-		return true;
+		mBufCurrent->size		= mSize;
+		mBufCurrent->cornerMax	= mCornerMax;
+		mBufCurrent->cornerMin	= mCornerMin;
 	}
 
-	return false;
+	// add the new command to the command stack
+	mCommandList.push_back( pCommandNew );
+
+	// and do the same thing to the childrens
+	if( mChilds )
+		for( std::vector< Object3D* >::iterator child = mChilds->begin(); child != mChilds->end(); child++ )
+			(*child)->addCommand( pCommandNew, temp );
+
+	// replace the last command by the current one
+	mCommandLast = pCommandNew.first;
+
+	return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1861,11 +1834,6 @@ bool Object3D::restoreBufferVertex( Buffer* pBufNew, Buffer* pBufOld )
 	// Restore / copy the old buffer by the new one
 	pBufOld->vertexCount		= pBufNew->vertexCount;
 	pBufOld->vertex.resize(pBufNew->vertexCount*mVertexDecl/4);
-
-	//Real *vBackup = pBufOld->vertex;
-	//Real *vCurrent = pBufNew->vertex;
-	//for(unsigned int i=0; i<pBufNew->vertexCount*mVertexDecl/4; i++)
-	//	*vBackup++ = *vCurrent++;		//pBufOld->vertex[i]	= pBufNew->vertex[i];
 	pBufOld->vertex = pBufNew->vertex;
 
 	// update the bounding box sizes
@@ -1886,11 +1854,6 @@ bool Object3D::restoreBufferIndex( Buffer* pBufNew, Buffer* pBufOld )
 	// Restore / copy the old buffer by the new one
 	pBufOld->indexCount			= pBufNew->indexCount;
 	pBufOld->index.resize(pBufNew->indexCount);
-
-	//unsigned int *iBackup = pBufOld->index;
-	//unsigned int *iCurrent = pBufNew->index;
-	//for(unsigned int i=0; i<pBufNew->indexCount; i++)
-	//	*iBackup++ = *iCurrent++;		//pBufOld->index[i]	= pBufNew->index[i];
 	pBufOld->index = pBufNew->index;	
 
 	return true;
@@ -1899,27 +1862,36 @@ bool Object3D::restoreBufferIndex( Buffer* pBufNew, Buffer* pBufOld )
 //-------------------------------------------------------------------------------------
 bool Object3D::undo()
 {
+	// there is no more command in the stack
+	// so nothing to do
 	if( mCommandList.empty() ) return false;
 
+	// there are some command in the stack
+	// so remove the last one from the stack
 	mCommandList.pop_back();
-	if( mCommandList.empty() )
-	{
-		restoreBuffer( mBufPrim, mBufCurrent );
-		updateBoundingBox();
-	}
 
+	// and restart from the primitiv shape
 	restoreBuffer( mBufPrim, mBufBackup );
-	resizeBuffers( 
-		mBufCurrent->vertex, mBufCurrent->vertexCount,
-		mBufCurrent->index, mBufCurrent->indexCount );
+	restoreBuffer( mBufPrim, mBufCurrent );
+	if( getParent() == NULL ) 
+		//mNode->setPosition( Vector3::ZERO );
+		mNode->setPosition( mCentreSelection );
 
-	list<TCommand>::iterator cmd;
-	for( cmd = mCommandList.begin(); cmd != mCommandList.end(); cmd++ )
+	// reset the parameters & the bounding box sizes
+	resetParameters();
+	mSize		= mBufCurrent->size			= mBufBackup->size			= mBufPrim->size;
+	mCornerMax	= mBufCurrent->cornerMax	= mBufBackup->cornerMax		= mBufPrim->cornerMax;
+	mCornerMin	= mBufCurrent->cornerMin	= mBufBackup->cornerMin		= mBufPrim->cornerMin;
+
+	// apply the previews commands (transformations)
+	for( list<TCommand>::iterator cmd = mCommandList.begin(); cmd != mCommandList.end(); cmd++ )
 	{
 		Vector3 v = (*cmd).second;
 		switch( (*cmd).first )
 		{
 		case TRANSLATE: 
+			if( getParent() != NULL ) 
+				break;
 			if( v.x || v.y || v.z ) apply( TRANSLATE, v.x, v.y, v.z );
 			break;
 		case ROTATE: 
@@ -1974,11 +1946,34 @@ bool Object3D::undo()
 		}
 		restoreBuffer( mBufCurrent, mBufBackup );
 		resetParameters();
+		updateBoundingBox();
 	}
 
-//	resizeBuffers( 
-//		mBufCurrent->vertex, mBufCurrent->vertexCount,
-//		mBufCurrent->index, mBufCurrent->indexCount );
+	// reset the parameters & the bounding box sizes
+//	resetParameters();
+//	updateBoundingBox();
+	mBufCurrent->size		= mBufBackup->size		= mSize;
+	mBufCurrent->cornerMax	= mBufBackup->cornerMax	= mCornerMax;
+	mBufCurrent->cornerMin	= mBufBackup->cornerMin	= mCornerMin;
+
+	// update the vertex & index hardware buffers
+	resizeBuffers( 
+		mBufCurrent->vertex, mBufCurrent->vertexCount,
+		mBufCurrent->index, mBufCurrent->indexCount );
+
+	// that was the last command in the stack so reinitialize the bounding box
+	if( mCommandList.empty() )
+	{
+		mCommandLast = NONE;
+
+		apply( TRANSLATE, -1 );		// to reinitialize the bounding box ???
+		apply( TRANSLATE, +1 );		// to reinitialize the bounding box ???
+	}
+
+	// do all the same for the childrens
+	if ( mChilds )//&& !childs->empty() )
+		for( vector< Object3D* >::iterator child = mChilds->begin(); child != mChilds->end(); child++ )	
+			(*child)->undo();
 
 	return true;
 }

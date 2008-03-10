@@ -72,14 +72,16 @@ public:
 	///			Plans are attached on the nodes move_Widget_X, ..Y, and ..Z.
 	///			It use for know where user has cliked on the scene
 	void firstClickForTransformation( const OIS::MouseEvent &e);
+	void firstClickForTransformation( RaySceneQueryResult &result);
 
 	///brief Detach plans
-	void releasedClickForTransformation ( const OIS::MouseEvent &e);
+	void releasedClickForTransformation ();
 
 	///brief Calcul the new vector for the selected object
 	///			Next you have to apply this on the selection and test mMode for know
 	///			if we are in MOVE, ROTATE or SCALE
 	Vector3 drapNdrop( const OIS::MouseEvent &e ) ;
+	Vector3 drapNdrop( Vector3 newpos ) ;
 
 	///brief Show or hide Gizmos
 	void showGizmosMove(bool pShow);
@@ -163,16 +165,20 @@ private :
 */
 	void onClickToTransformObject(const OIS::MouseEvent &e, const String pNameAxeX,
 								const String pNameAxeY, const String pNameAxeZ );	
+	void onClickToTransformObject(RaySceneQueryResult &result, const String pNameAxeX,
+								const String pNameAxeY, const String pNameAxeZ );
 
 	///biref Make a ray trace
 	///return the result of the ray trace
 	RaySceneQueryResult& raySceneQuery( const OIS::MouseEvent &e );
+	RaySceneQueryResult& raySceneQuery( Ray mouseRay );
 	///brief The ray scene query pointer
 	RaySceneQuery *mRaySceneQuery;	
 
 	///brief Give the mouse position (relative to the good dummy plane)
 	///return Mouse Position in the scene 
 	Vector3 getMousePosOnDummyPlane (const OIS::MouseEvent &e) ;
+	Vector3 getMousePosOnDummyPlane (Ray mouseRay) ;
 
 
 	///brief For remember the first axe clicked by the user

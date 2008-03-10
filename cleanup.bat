@@ -31,8 +31,10 @@ rmdir Dependencies\csg /S /Q
 rmdir Dependencies\MdlrTools /S /Q
 rmdir Dependencies\expat /S /Q
 rmdir Dependencies\ulxmlrpcpp /S /Q
+rmdir Dependencies\zlib123 /S /Q
 rmdir Dependencies\protocols /S /Q
 rmdir Dependencies\peerModule /S /Q
+
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -78,6 +80,8 @@ rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Debug /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Debug /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
+rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
+rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 

@@ -19,9 +19,9 @@ bool MiiApp::mouseMoved( const OIS::MouseEvent &e )
 		{}
 		else				// transformation : move / rotate / scale
 		{
-			if(! mSelection->empty_selection())
+			if(! mSelection->isEmpty())
 			{
-				///Calculate drag and drop :
+				//Calculate drag and drop :
 				Vector3 dragNdrop = mSelection->mTransformation->drapNdrop(e);
 				if( dragNdrop != Vector3::ZERO)
 				{
@@ -37,12 +37,28 @@ bool MiiApp::mouseMoved( const OIS::MouseEvent &e )
 						}
 						case Transformations::Mode::ROTATE :	//Rotate objects
 						{
+							mTransfo.x += dragNdrop.z /2.0 ;
+							mTransfo.y += dragNdrop.x /2.0 ;
+							mTransfo.z += dragNdrop.y /2.0 ;
 							mSelection->rotate( dragNdrop.z/2, dragNdrop.x/2, -dragNdrop.y/2 ); //rotate objects
+
+							Object3D *obj = mSelection->getFirstSelectedObject();
+							mii->upDateCommand(Object3D::ROTATE, obj);
+							obj->apply(Object3D::ROTATE, dragNdrop.z/2, dragNdrop.x/2, -dragNdrop.y/2 );
 							break;
 						}
 						case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
 						{
-							mSelection->scale(dragNdrop.x , dragNdrop.y , dragNdrop.z);
+							mTransfo += (dragNdrop - Vector3(1,1,1)) ;
+
+							mTransfo += Vector3(1,1,1);
+							mSelection->scale(mTransfo.x, mTransfo.y, mTransfo.z );//dragNdrop.x , dragNdrop.y , dragNdrop.z);
+
+							Object3D *obj = mSelection->getFirstSelectedObject();	
+							mii->upDateCommand(Object3D::SCALE, obj);
+							obj->apply(Object3D::SCALE, mTransfo.x, mTransfo.y, mTransfo.z );
+
+							mTransfo -= Vector3(1,1,1);
 							break;
 						}
 					}
@@ -94,7 +110,8 @@ bool MiiApp::mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id )
 			if (mii->isPropertiesFrameOpened())
 				return true;
 
-			selectObject(e) ;
+			mTransfo = Vector3::ZERO ;
+			selectObject(e);
 			//put the gizmos in the centre of selection
 			mSceneMgr->getSceneNode("NodeSelection")->setPosition( mSelection->getCenterPosition() );
 
@@ -104,7 +121,7 @@ bool MiiApp::mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id )
 			}
 			else
 			{
-				mSelection->mTransformation->eventSelection() ;
+				mSelection->mTransformation->eventSelection();
 			}
 		}
 		break;
@@ -119,7 +136,6 @@ bool MiiApp::mousePressed( const OIS::MouseEvent &e, OIS::MouseButtonID id )
 //-------------------------------------------------------------------------------------
 bool MiiApp::mouseReleased( const OIS::MouseEvent &e, OIS::MouseButtonID id ) 
 { 
-
 	// CEGUI
 	if(mii->mouseReleased(e,id))
 		return true;
@@ -128,9 +144,52 @@ bool MiiApp::mouseReleased( const OIS::MouseEvent &e, OIS::MouseButtonID id )
 	{
 		case OIS::MB_Left:	//Select Object and apply transformations
 		{
+			Object3D::TCommand toAdd;
+			bool callUpdateBackUp = false ;
+			switch( mSelection->mTransformation->getMode() )
+			{
+				case Transformations::Mode::SELECT :
+				{
+					toAdd.first = Object3D::Command::NONE;
+					break;
+				}
+				case Transformations::Mode::MOVE :
+				{
+					toAdd.first = Object3D::Command::NONE;
+					break;
+				}
+				case Transformations::Mode::ROTATE :
+				{
+					callUpdateBackUp = true ;
+					toAdd.first = Object3D::Command::ROTATE ;
+					break;							
+				}
+				case Transformations::Mode::SCALE :
+				{
+					callUpdateBackUp = true ;
+					toAdd.first = Object3D::Command::SCALE ;
+					mTransfo += Vector3(1,1,1) ;
+					break;
+				}
+			}
+			toAdd.second = mTransfo ;
+			//add this transformation for all objects selected :
+			if(callUpdateBackUp)
+			{
+				Object3D * obj = mSelection->getFirstSelectedObject() ;
+				for(int i=0 ; i<mSelection->getNumSelectedObjects() ; i++)
+				{
+					Object3D::Command oldCommand;
+					obj->addCommand( toAdd, oldCommand );
+					obj = mSelection->getNextSelectedObject() ;
+				}
+			}
+
+
+			mTransfo = Vector3::ZERO ;
 			mii->mModeLink = false ;
-			mSelection->updateBackup() ;
-			mSelection->mTransformation->releasedClickForTransformation( e) ;
+			
+			mSelection->mTransformation->releasedClickForTransformation(e);
 			break;
 		}
 		case OIS::MB_Middle :
@@ -155,12 +214,20 @@ bool MiiApp::keyPressed( const OIS::KeyEvent &e )
 	case KC_ESCAPE: 
 		mContinue = false;
 		break;
+
 	case KC_HOME :
 		mCameraManagement->resetCamera() ;
 		break ;
+
 	case KC_UP:
-	case KC_W:
 		mDirection.z -= mMove;
+		break;
+
+	case KC_W:
+		if( mKey_LCTRL )
+			mSelection->getFirstSelectedObject()->undo();
+		else
+			mDirection.z -= mMove;
 		break;
 
 	case KC_DOWN:
@@ -208,7 +275,7 @@ bool MiiApp::keyPressed( const OIS::KeyEvent &e )
 		break;
 	case KC_NUMPAD5 :
 		mCameraManagement->rotateCamera( 0, 10, mSelection->getCenterPosition() );
-		break;
+		break;	
 	}
 
 	return true;
@@ -304,6 +371,7 @@ void MiiApp::selectObject(const OIS::MouseEvent &e)
 				break;
 			}
 		}
+
 		//if we have clicked on a gizmo, we don't modify the selection
 		if( !clickOnGizmo)
 		{
@@ -324,7 +392,16 @@ void MiiApp::selectObject(const OIS::MouseEvent &e)
 						Object3D * obj = mSelection->get3DObject( ent );
 						if (obj != NULL)	//if it is a selectionnable object ...
 							if( obj != mSelection->getFirstSelectedObject()) //if it is not itself ...
+							{
+								if( ! obj->getShowBoundingBox()) //if this object is seleted :
+								{
+									if(obj->getParent() != NULL)
+										obj = obj->getParent();
+								}
+								mSelection->getFirstSelectedObject()->showBoundingBox(false) ;
 								mSelection->getFirstSelectedObject()->linkObject( obj, mSceneMgr);
+								mSelection->getFirstSelectedObject()->showBoundingBox(true) ;
+							}
 					}
 					else				//if mode Selection...
 					{
@@ -342,7 +419,5 @@ void MiiApp::selectObject(const OIS::MouseEvent &e)
 
 	mRaySceneQuery->clearResults();
 }
-
-
 
 //-------------------------------------------------------------------------------------

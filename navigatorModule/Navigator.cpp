@@ -4,7 +4,6 @@
 #include "DebugHelpers.h"
 #include "Navi.h"
 #include "NaviLua.h"
-
 #include "Modeler.h"
 
 #ifdef PHYSICSPLUGINS
@@ -34,13 +33,15 @@ Navigator::Navigator(const String name, IApplication* application) :
     mRaySceneQuery(0),
     mPickedMovable(0),
     mUserAvatar(0),
-	mModeler(0)
+	mModeler(0),
+	isOnLeftCTRL(false)
 {
     ms_singletonPtr = this;
 
     // Lua initialization
     mLuaState = lua_open();
     luaL_openlibs(mLuaState);
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -503,7 +504,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     String movablesList;
     for (RaySceneQueryResult::iterator it = queryResult.begin(); it != queryResult.end(); ++it )
     {
-        if (it->movable && (it->distance > 0))
+		if (it->movable && (it->distance > 0))
         {
             if (movablesList.length() > 0) movablesList += ", ";
             movablesList += it->movable->getName() + ":" + StringConverter::toString(it->distance);
@@ -521,25 +522,97 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                 ((it->movable->getMovableType().compare("Entity") == 0) ||
                 (it->movable->getMovableType().compare("ManualObject") == 0)))
             {
-                // avatar ?
-                if (it->movable->getQueryFlags() == QFAvatar)
-                {
-                    mPickedMovable = it->movable;
-                    break;
-                }
-                // if we found a new closest raycast for this object, update the
-                // mPickedMovable before moving on to the next object.
-                if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
-                                                    closestDistance,
-                                                    closestUV,
-                                                    closestTriUV0, closestTriUV1, closestTriUV2))
-                {
-                    if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
-                        mPickedMovable = it->movable;
-                }
+
+				// avatar ?
+				if (mState != SModeling )
+					if (it->movable->getQueryFlags() == QFAvatar)
+					{
+						mPickedMovable = it->movable;
+						break;
+					}
+
+				// modeler begin
+				if (mState == SModeling )
+				{
+					String name = it->movable->getName();
+
+					if(name.compare("Avatar") == 0) 
+						continue;
+					if (it->movable->getQueryFlags() == QFAvatar)
+						continue;
+
+					if (it->movable->getMovableType().compare("Entity") == 0)
+						if( mModeler != 0 )
+							if( !mModeler->isSelectionLocked() )
+							{
+								// Link mode ?
+								if (mModeler->isInLinkMode())
+								{
+									//String name = it->movable->getName();
+									Entity* ent = mSceneMgr->getEntity(name);
+									Object3D * obj = mModeler->getSelection()->get3DObject( ent );
+									if (obj != NULL)	//if it is a selectionnable object ...
+										if( obj != mModeler->getSelection()->getFirstSelectedObject() ) //if it is not itself ...
+										{
+											if( ! obj->getShowBoundingBox()) //if this object is seleted :
+											{
+												if(obj->getParent() != NULL)
+													obj = obj->getParent();
+											}
+
+											mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(false);
+											mModeler->getSelection()->getFirstSelectedObject()->linkObject( obj, mSceneMgr);
+											mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(true);
+											mModeler->lockLinkMode(false);
+										}
+								}
+
+								// Gizmo ?
+								else if (mModeler->isOnGizmo())
+								{
+									// ...
+									//isOnGizmo = false;
+									//mModeler->deselectNode();
+								}
+
+								// Object3D ?
+								//else //if (it->movable->getQueryFlags() == QFObject3D)
+								else
+								{
+									if (!isOnLeftCTRL)
+										mModeler->deselectNode();
+
+									mModeler->lockGizmo(false);
+
+									if(name.compare("Avatar") != 0)
+									{
+										mPickedMovable = it->movable;
+										Entity* ent = mSceneMgr->getEntity(name);
+										mModeler->selectNode(ent);
+									}
+								}
+
+							}
+				}
+				// modeler end
+
+				// if we found a new closest raycast for this object, update the
+				// mPickedMovable before moving on to the next object.
+				if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
+													closestDistance,
+													closestUV,
+													closestTriUV0, closestTriUV1, closestTriUV2))
+				{
+					if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
+						mPickedMovable = it->movable;
+				}
             }       
         }
     }
+	if (mState == SModeling)
+		mModeler->lockLinkMode(false);
+
+
     OGRE_LOG("Navigator::computeMousePicking() found movables " + movablesList);
     // if 1 entity hit
     if ((closestDistance >= 0.0f) && (mPickedMovable != 0))
@@ -969,10 +1042,12 @@ bool Navigator::OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
 bool Navigator::startModeling()
 {
 	mState = SModeling;
+
 	// Init a new Modeler 
 	if (!mModeler)
 	{
-		mModeler  = new Modeler(mSceneMgr,mCamera);
+		//mModeler = new Modeler(mSceneMgr,mCamera);
+		mModeler = Modeler::getSingletonPtr(mSceneMgr,mCamera);
 		mModeler->init(mUserAvatar);
 	}
     return true;
@@ -984,8 +1059,12 @@ bool Navigator::endModeling()
 	// Go back in world
 	mState = SInWorld;
 
-	delete mModeler;
-	mModeler = NULL;
+	if( mModeler )
+		mModeler->deselectNode();
+
+// TODO : remove those comments
+//	delete mModeler;
+//	mModeler = NULL;
     return true;
 }
 
@@ -993,16 +1072,19 @@ bool Navigator::endModeling()
 bool Navigator::createBox()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	//Quaternion plQuat = mUserAvatar->getSceneNode()->getOrientation();
-	//Degree plangleDegree;
-	//Vector3 plAxis;
-	//plQuat.ToAngleAxis(plangleDegree,plAxis);
-	//Vector3 plDir = /*plangleDegree.valueDegrees() * */ plAxis;
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
 
-	//plDir.normalise();
-	//
-	//Vector3 boxPos = plpos + 10*plDir;
-	return mModeler->createBox(plpos);
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createBox(plpos + dep);
 }
 
 
@@ -1010,78 +1092,363 @@ bool Navigator::createBox()
 bool Navigator::createCorner()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createCorner(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createCorner(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createPyramid()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createPyramid(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createPyramid(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createPrism()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createPrism(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createPrism(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createCylinder()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createCylinder(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createCylinder(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCyl()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createHalfCyl(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createHalfCyl(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createCone()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createCone(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createCone(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCone()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createHalfCone(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createHalfCone(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createSphere()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createSphere(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createSphere(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfSphere()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createHalfSphere(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createHalfSphere(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createTorus()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createTorus(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createTorus(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createTube()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createTube(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createTube(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createRing()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createRing(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createRing(plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	return mModeler->createMesh(plpos);
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createMesh(plpos + dep);
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::onMouseMoved(const MouseEvt& evt)
+{
+	if ( mModeler )
+		if (!mModeler->isSelectionEmpty())
+		{
+			//mModeler->getSelection()->mTransformation->drapNdrop(...);
+		}
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::onMousePressed(const MouseEvt& evt)
+{
+	if ( mModeler )
+		if (!mModeler->isSelectionEmpty())
+		{
+			//mModeler->getSelection()->mTransformation->firstClickForTransformation(...);
+		}
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::onMouseReleased(const MouseEvt& evt)
+{
+	if ( mModeler )
+		if (!mModeler->isSelectionEmpty())
+		{
+			//mModeler->getSelection()->mTransformation->releasedClickForTransformation();
+			//isOnGizmo = false; // a deplacer dans le mousePressed lorsque l'on click sur autre chose qu'un GIZMO
+		}
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::undo()
+{
+	if( mModeler )
+		if( !mModeler->isSelectionEmpty() )
+		{
+			mModeler->getSelected()->undo();
+			// TODO : reinitialize the deformer sliders
+		}
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::suppr()
+{
+	if( mModeler )
+		if( !mModeler->isSelectionEmpty() )
+		{
+			// remove the current selection
+			mModeler->removeSelection();
+
+			// hide the gizmos axes
+			mModeler->getSelection()->mTransformation->showGizmosMove(false);
+			mModeler->getSelection()->mTransformation->showGizmosRotate(false);
+			mModeler->getSelection()->mTransformation->showGizmosScale(false);
+		}
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::modifGizmo(Vector3 dep)
+{
+	SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
+	static Vector3 scale = Vector3(1,1,1);
+
+	switch(mModeler->getSelection()->mTransformation->getMode())
+	{
+	case Transformations::MOVE:
+		mModeler->updateCommand( Object3D::TRANSLATE, mModeler->getSelected() );
+		mModeler->getSelection()->move(dep.x, dep.y, dep.z);
+		node->translate(dep);
+		break;
+	case Transformations::ROTATE:
+		mModeler->updateCommand( Object3D::ROTATE, mModeler->getSelected() );
+		dep *= 10;
+		mModeler->getSelection()->rotate(dep.x, dep.y, dep.z);
+		break;
+	case Transformations::SCALE:
+		mModeler->updateCommand( Object3D::SCALE, mModeler->getSelected() );
+		scale += dep;
+		mModeler->getSelection()->scale(scale.x, scale.y, scale.z);
+		break;
+	case Transformations::SELECT:
+		break;
+	}
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::XMLLoad()
+{
+	if( mModeler )
+	{
+		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+		Radian angle = pldir.getYaw();
+		Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+		Real cosY = Math::Cos(angle);
+		Real sinY = Math::Sin(angle);
+
+		Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+		//y = point.y;							//		y' = y  
+		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+		dep.x = x;
+
+		return mModeler->XMLLoad( mUserAvatar->getSceneNode()->getPosition() + dep );
+	}
+
+	return false;
 }
 //-------------------------------------------------------------------------------------
+bool Navigator::XMLSave(bool all, const char* pathToSave)
+{
+	if( mModeler )
+		if(all || !mModeler->isSelectionEmpty()) 
+			return mModeler->XMLSave(all, pathToSave);
+		else
+#ifdef WIN32
+			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+#else
+			std::cerr << " You have to select an object3D " << std::endl;
+#endif
+
+	return false;
+}
+
+//-------------------------------------------------------------------------------------
+
+
+
+

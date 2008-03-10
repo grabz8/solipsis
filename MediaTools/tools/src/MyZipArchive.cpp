@@ -1,11 +1,14 @@
 #include "MyZipArchive.h"
 
 #include <stdio.h>
-#include "boost/filesystem.hpp"
+#include "SolipsisErrorHandler.h"
 
 #include "../../tools/src/minizip/zip.h"
 #include "../../tools/src/minizip/unzip.h"
 #include "FileBuffer.h"
+
+#include <fstream>
+#include <iostream>
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 MyZipArchive::MyZipArchive(const String& path)
@@ -41,7 +44,8 @@ bool MyZipArchive::isFilePresent(const String& filePath)
 
 	Path path(filePath);
 
-	unzFile archive = unzOpen(mPath->getFormatedPath().c_str());
+	const char * testDebug = mPath->getFormatedPath().c_str() ;
+	unzFile archive = unzOpen(testDebug);
 
 	int resultResearch = unzLocateFile(archive,path.getFormatedPath().c_str(),0);
 	bool fileFound = (resultResearch == UNZ_OK)? true : false;
@@ -81,8 +85,41 @@ FileBuffer MyZipArchive::readFile(const String& filePath)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+String MyZipArchive::getName(const int pNumFile)
+{
+	if (pNumFile >= getNbFile()) return (String (""));
+
+	unzFile uFile = unzOpen(mPath->getFormatedPath().c_str());
+
+	int positionInZip = unzGoToFirstFile(uFile);
+
+	for(int i=0; i<pNumFile ; i++)
+	{
+		positionInZip = unzGoToNextFile(uFile);	//go to next file
+	}
+
+	//getting the current file informations
+	unz_file_info currentFileInfo;
+	char currentFileName[256];
+	unzGetCurrentFileInfo(uFile,
+		&currentFileInfo,
+		currentFileName,
+		sizeof(currentFileName),
+		NULL,
+		0,
+		NULL,
+		0);
+	
+
+	unzClose(uFile);
+		
+	return String (currentFileName) ;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 void MyZipArchive::writeFile(const String& filePath)
 {
+
 	FILE* toAdd = fopen(filePath.c_str(),"rb");
 	fseek(toAdd,0,SEEK_END);
 	size_t toAddFileSize = ftell(toAdd);
@@ -101,12 +138,17 @@ void MyZipArchive::writeFile(const String& filePath, const FileBuffer& fileBuffe
 
 	Path path(filePath);
 
-	zipFile archive = zipOpen(mPath->getFormatedPath().c_str(),APPEND_STATUS_ADDINZIP);
+
+	zipFile archive = zipOpen( mPath->getFormatedPath().c_str() ,APPEND_STATUS_ADDINZIP);
 	if (!archive) // If the file does not exist => Create it 
 		archive = zipOpen(mPath->getFormatedPath().c_str(),0);	
 
+	//Get only name :
+    int nameSizeChar = path.getFormatedPath().find_last_of( '\\' );
+	std::string fileName (path.getFormatedPath(), nameSizeChar+1, path.getFormatedPath().length() );
+
 	zipOpenNewFileInZip(archive,
-		path.getFormatedPath().c_str(),
+		fileName.c_str(),
 		NULL,
 		NULL,
 		0,
@@ -131,14 +173,14 @@ void MyZipArchive::removeFile(const String& filePath)
 
 	Path path(filePath);
 
-	boost::filesystem::copy_file(mPath->getFormatedPath(),mPath->getFormatedPath() + ".__backup__");
+	SOLcopyFile(mPath->getFormatedPath().c_str(),Ogre::String(mPath->getFormatedPath() + ".__backup__").c_str());
 
 	unzFile uFile = unzOpen((mPath->getFormatedPath() + ".__backup__").c_str());
 
 	zipFile zFile = zipOpen((mPath->getFormatedPath()).c_str(),APPEND_STATUS_CREATE);
 	if (zFile == NULL) 
 	{
-		boost::filesystem::remove(boost::filesystem::path(mPath->getFormatedPath() + ".__backup__"));
+		SOLdeleteFile(Ogre::String(mPath->getFormatedPath() + ".__backup__").c_str());
 		return;
 	}
 
@@ -195,8 +237,26 @@ void MyZipArchive::removeFile(const String& filePath)
 	zipClose(zFile,NULL);
 	unzClose(uFile);
 
+	SOLdeleteFile(Ogre::String(mPath->getFormatedPath() + ".__backup__").c_str());
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+int MyZipArchive::getNbFile() 
+{
+	if (!isArchivePresent()) return 0;
 
-	boost::filesystem::remove(boost::filesystem::path(mPath->getFormatedPath() + ".__backup__"));
+	int result = 0 ;
 
+	unzFile uFile = unzOpen(mPath->getFormatedPath().c_str());
+	int positionInZip = unzGoToFirstFile(uFile);
+
+	while(positionInZip == UNZ_OK)
+	{
+		result++; 
+		positionInZip = unzGoToNextFile(uFile);	//go to next file
+	}
+
+	unzClose(uFile);
+
+	return result ;
 }
 

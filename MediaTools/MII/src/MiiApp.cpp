@@ -17,6 +17,8 @@ MiiApp::MiiApp(void)
 
 	mSelection = NULL;
 	mMustDeleteConfigFile = false;
+
+	mTransfo = Vector3::ZERO ;
 }
 
 //-------------------------------------------------------------------------------------
@@ -78,7 +80,6 @@ void MiiApp::init(const char* resName)
 //-------------------------------------------------------------------------------------
 void MiiApp::createScene(void)
 {
-	Entity *ent = NULL;
 	SceneNode *node = NULL;
 
 	mSceneMgr->setAmbientLight( ColourValue( 0.5, 0.5, 0.5 ) );
@@ -112,18 +113,34 @@ void MiiApp::createScene(void)
 	//---------------------------------------------------------------------------------------
 	//		Add a ground plane :
 	//---------------------------------------------------------------------------------------
-	ent = mSceneMgr->createEntity( "Plane", "Prefab_Plane" );
+
+	// draw the grid
+	float size = 400.0; 
+	float step = 10.0; //10.0;
+	size /= 2.0f;
+
+	//Create material for the grid :
+	MaterialPtr material = MaterialManager::getSingleton().create("matGrey","debugger"); 
+	material->setReceiveShadows(false); 
+	material->getTechnique(0)->setLightingEnabled(true); 
+	material->getTechnique(0)->getPass(0)->setDiffuse(0.5,0.5,0.50,0); 
+	material->getTechnique(0)->getPass(0)->setAmbient(0.5,0.5,0.5); 
+	material->getTechnique(0)->getPass(0)->setSelfIllumination(0.5,0.5,0.5); 
+
+	ManualObject * groundPlane = new ManualObject ("GridPlane") ;
+	groundPlane->begin( "matGrey", Ogre::RenderOperation::OT_LINE_LIST); 
+		for (float i = -size; i <= size; i += 2.0*size/step) 
+		{
+			groundPlane->position(-size, 0, i);
+			groundPlane->position( size, 0, i);
+			groundPlane->position(i, 0, -size);
+			groundPlane->position(i, 0, size);
+		}
+	groundPlane->end() ;
 	node = mSceneMgr->getRootSceneNode()->createChildSceneNode( "PlaneNode" );
-	node->attachObject( ent );
+	node->attachObject( groundPlane );
 
-	Object3DOther* obj = new Object3DOther("Plane", node );
-	mSelection->add3DObject(obj,false);
-
-	node->pitch(Degree(-90));
-	node->scale(2,2,2);
-
-	ent->setVisible(true);
-
+	
 	//---------------------------------------------------------------------------------------
 	//		Other
 	//---------------------------------------------------------------------------------------

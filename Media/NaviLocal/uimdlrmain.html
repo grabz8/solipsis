@@ -3,35 +3,6 @@
     <head>
         <title>uimdlrmain</title>
         <script type="text/javascript" src="Navi.js"></script>
-        
-		<!--<script type="text/javascript" src="mootools.js"></script>-->
-		<script type="text/javascript" charset="utf-8">
-			window.addEvent('domready', slide); 
-			function slide() {
-				/* Slider 1 */
-				var mySlide = new Slider($('area'), $('knob'), {
-					steps: 100,
-					onChange: function(step){
-						$('taperX').setHTML(step);
-						new NaviData('UpdateTaperX').send();
-					}
-				}).set(0);
-				
-				$('knob2').setOpacity(0.5);
-				
-				/* Slider 2 */
-				var mySlide2 = new Slider($('area2'), $('knob2'), {
-					steps: 100,	
-					offset: 1,
-					onChange: function(pos){
-						$('taperY').setHTML(pos);
-						new NaviData('UpdateTaperY').send();
-					}
-				}).set(0);
-			}
-		</script>
-		<!-- SLIDER end --> 
-		        
 		<script type="text/javascript" charset="utf-8">
 		    window.addEvent('domready', init);
 		    function init() {
@@ -58,57 +29,10 @@
             {
                 new NaviData(elementName).send();
             }
-            /* SLIDER begin */
-            function sendMessage(message)
-            {
-				alert(message);
-				new NaviData('sendMessage').add({msg:message}).send();
-            } 
-            /* SLIDER end */ 
         </script>
         
         
         <style type="text/css">
-			/* SLIDER begin */
-			#area {
-				height: 5px;
-				width: 200px;
-				background: #ccc;
-			}
-
-			#knob {
-				height: 5px;
-				width: 20px;
-				background: #116600;
-			}
-
-			#area2 {
-				position: relative;
-				height: 10px;
-				width: 200px;
-				background: #003300;
-			}
-
-			#knob2 {
-				position: absolute;
-				height: 10px;
-				width: 20px;
-				background: #33ff00;
-			}
-
-			#area3 {
-				background: #ccc;
-				height: 300px;
-				width: 20px;
-			}
-
-			#knob3 {
-				height: 20px;
-				width: 20px;
-				background: #000;
-			}
-			/* SLIDER end */ 
-			
             .toggler {
 	            color: #000000;
 	            margin: 0;
@@ -138,8 +62,7 @@
 	            padding: 10px 20px;
 	            float: right;
             }
-        </style>
-        <style type="text/css">
+
             body
             {
                 padding-left: 11em;
@@ -172,6 +95,11 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="containerMenu">
+            
+<table>
+	<tr valign="top">
+		<td width="150">
+				
                 <div id="accordion">
                     <h3 class="toggler atStart">File</h3>
                     <div class="element atStart"">
@@ -213,29 +141,24 @@
                         </ul>
                     </div>
                 </div>
+
+		</td>
+
+		<td>
+			<input type="button" value="  Delete  " onclick="elementClicked('ActionDelete')"><br><br>
+			<input type="button" value="   Move   " onclick="elementClicked('ActionMove')"><br>
+			<input type="button" value="  Rotate  " onclick="elementClicked('ActionRotate')"><br>
+			<input type="button" value="   Scale  " onclick="elementClicked('ActionScale')"><br><br>
+			<input type="button" value="   Link   " onclick="elementClicked('ActionLink')"><br><br>
+			<input type="button" value="Properties" onclick="elementClicked('ActionProperties')">
+			<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+			<input type="button" value="[ SAVE ]" onclick="elementClicked('ActionSceneSave')">
+		</td>
+	</tr>
+</table>
                 
-                
-                
-                <!-- SLIDER begin -->
-				<div id="TEST_SLIDER">
-					test or a slider !!!
-					<!--<div id="console"></div>-->
-					<div id="console2"></div>
-					<div id="area">
-						<div id="knob"></div>
-					</div>
-					<p id="taperX">0</p>
-					
-					test or a second slider :O	
-					<div id="area2">		
-						<div style="VISIBILITY: visible; opacity: 0.5" id="knob2" onclick="sendMessage(document.getElementById('upd2').value);return false;"></div>
-					</div>
-					<p id="taperY">0</p>
-				</div>
-				<!-- SLIDER end -->  
-				
-				
             </div>
+            
         </div>
     </body>
 </html>

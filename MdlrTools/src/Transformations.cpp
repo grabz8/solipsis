@@ -1,4 +1,4 @@
-#include ".\transformations.h"
+#include "transformations.h"
 
 namespace Solipsis {
 
@@ -18,6 +18,12 @@ Transformations::~Transformations(void)
 
 //-------------------------------------------------------------------------------------
 void Transformations::firstClickForTransformation( const OIS::MouseEvent &e)
+{
+	RaySceneQueryResult &result = raySceneQuery(e);
+	firstClickForTransformation(result);
+}
+
+void Transformations::firstClickForTransformation( RaySceneQueryResult &result )
 {
 	String NameAxeX ;
 	String NameAxeY ;
@@ -41,12 +47,12 @@ void Transformations::firstClickForTransformation( const OIS::MouseEvent &e)
 			NameAxeZ = "scaleZ" ;
 			break;
 	}
-	onClickToTransformObject(e,NameAxeX, NameAxeY, NameAxeZ);
+	onClickToTransformObject(result,NameAxeX, NameAxeY, NameAxeZ);
 	mOldpos = Vector3::ZERO ;//Update mOldpos
 
 }
 //-------------------------------------------------------------------------------------
-void Transformations::releasedClickForTransformation ( const OIS::MouseEvent &e)
+void Transformations::releasedClickForTransformation ()
 {
 	SceneNode* node;
 	switch( mMode )
@@ -120,8 +126,14 @@ void Transformations::releasedClickForTransformation ( const OIS::MouseEvent &e)
 //-------------------------------------------------------------------------------------
 Vector3 Transformations::drapNdrop( const OIS::MouseEvent &e )
 {
-	//Calculate the mouse mouvement on the scene
 	Vector3 newpos = getMousePosOnDummyPlane (e);
+	return drapNdrop(newpos);
+}
+
+Vector3 Transformations::drapNdrop( Vector3 newpos )
+{
+	//Calculate the mouse mouvement on the scene
+//!!!	Vector3 newpos = getMousePosOnDummyPlane (x, y);
 	Vector3 moving = Vector3::ZERO ; //newpos - mOldpos ;
 	
 	if(mOldpos != Vector3::ZERO)
@@ -425,15 +437,25 @@ void Transformations::attachRotateGizmos(bool pAttach)
 //-------------------------------------------------------------------------------------
 RaySceneQueryResult& Transformations::raySceneQuery( const OIS::MouseEvent &e )
 {
+	Ray mouseRay = mCamera->getCameraToViewportRay( 
+		0.5/float(e.state.width), 
+		0.5/float(e.state.height) );
+	return raySceneQuery(mouseRay);
+}
+
+RaySceneQueryResult& Transformations::raySceneQuery( Ray mouseRay )
+{
 	// Setup the ray scene query, use CEGUI's mouse position
 	//CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
 	// TODO : get Navi coord here !!
 	//Ray mouseRay = mCamera->getCameraToViewportRay( 
 	//	mousePos.d_x/float(e.state.width), 
 	//	mousePos.d_y/float(e.state.height) );
+/*!!!
 	Ray mouseRay = mCamera->getCameraToViewportRay( 
-		0.5/float(e.state.width), 
-		0.5/float(e.state.height) );
+		0.5/float(x), 
+		0.5/float(y) );
+*/
 	mRaySceneQuery->setRay( mouseRay );
 	mRaySceneQuery->setSortByDistance( true, 5 );
 
@@ -443,9 +465,15 @@ RaySceneQueryResult& Transformations::raySceneQuery( const OIS::MouseEvent &e )
 void Transformations::onClickToTransformObject(const OIS::MouseEvent &e, const String pNameAxeX,
 		const String pNameAxeY, const String pNameAxeZ)
 {
+	onClickToTransformObject(raySceneQuery(e), pNameAxeX, pNameAxeY, pNameAxeZ);
+}
+
+void Transformations::onClickToTransformObject(RaySceneQueryResult &result, const String pNameAxeX,
+		const String pNameAxeY, const String pNameAxeZ)
+{
 	bool manuel_objet = false ;		//for search manuel object
 	
-	RaySceneQueryResult &result = raySceneQuery(e);// Execute query
+//!!!	RaySceneQueryResult &result = raySceneQuery(e);// Execute query
 	RaySceneQueryResult::iterator itrRSQR =  result.begin( ); //+1
 
 	if( ! result.empty() )
@@ -552,6 +580,14 @@ void Transformations::onClickToTransformObject(const OIS::MouseEvent &e, const S
 //-------------------------------------------------------------------------------------
 Vector3 Transformations::getMousePosOnDummyPlane (const OIS::MouseEvent &e)
 {
+	Ray mouseRay = mCamera->getCameraToViewportRay( 
+		0.5/float(e.state.width), 
+		0.5/float(e.state.height) );
+	return getMousePosOnDummyPlane(mouseRay);
+}
+
+Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
+{
 	//ray tracing :
 	//CEGUI::Point mousePos = CEGUI::MouseCursor::getSingleton().getPosition();
 	//Ray mouseRay = mCamera->getCameraToViewportRay(
@@ -559,10 +595,11 @@ Vector3 Transformations::getMousePosOnDummyPlane (const OIS::MouseEvent &e)
 	//	mousePos.d_y/float(e.state.height) );
 
 	// TODO !!!!!
+/*!!!
 	Ray mouseRay = mCamera->getCameraToViewportRay( 
-		0.5/float(e.state.width), 
-		0.5/float(e.state.height) );
-
+		0.5/float(x), 
+		0.5/float(y) );
+*/
 	mRaySceneQuery->setRay(mouseRay);
 	mRaySceneQuery->setSortByDistance(true);
 	RaySceneQueryResult &result = mRaySceneQuery->execute();

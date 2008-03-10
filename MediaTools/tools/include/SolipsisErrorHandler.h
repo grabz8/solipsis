@@ -111,5 +111,44 @@ bool from_string( const char* Str, T & Dest )
  */
 bool SOLdeleteFile(const char *filePath);
 
+/**
+ * Copy a file 
+ *
+ *	\brief
+ *
+ *		Copy a file from a path to another
+ *
+ *	\param srcPath = The path to the source file 
+ *	\param destPath = The path to the destination file
+ *	\return true if the file is successfully copied
+ */
+bool SOLcopyFile(const char *srcPath,const char *destPath);
+
+
+/**
+ * Test is the path is a directory
+ *
+ *	\brief
+ *
+ *		Tells if a path is a directory path
+ *
+ *	\param pathName = The path to test
+ *	\return true if the path is a directory 
+ */
+bool SOLisDirectory(const char* pathName);
+
+/**
+ * List all files in a directory
+ *
+ *	\brief
+ *
+ *		Fills a string vector with all fileNames
+ *
+ *	\param path = The directory to scan
+ *	\param toFill = the string vector to fill 
+ *	\return true if no error occured
+ */
+bool SOLlistDirectoryFiles(const char* path,std::vector<std::string> *toFill);
+
 
 #endif

@@ -1,3 +1,13 @@
+/**
+	\file 
+		Transformations.h
+	\brief
+		Solipsis class for manage transformations (MOVE, SCALE, ROTATE) of objects 3D
+	\author
+		ARTEFACTO - Patrice Desfonds
+*/
+
+
 #ifndef __Transformation_h__
 #define __Transformation_h__
 
@@ -12,29 +22,65 @@ using namespace std;
 class Transformations
 {
 public:
+	///brief Constructor
 	Transformations(void);
+
+	///brief Destructor
 	~Transformations(void);
 
-	///Create gizmos for move, rotate and scale
-	///	Call this function before use the others
+/*
+ *
+ *	\brief 
+ *		Create gizmos for move, rotate and scale.
+ *		Call this function before use the others.
+ *
+ *		This class uses this hierarchy :
+ *
+ *								mSceneMgr
+ *									/	
+ *								   /
+ *							NodeSelection (representing by pGizmosParentNode
+ *								  /
+ *							     /
+ *						  GizmosAxesNode )
+ *					   /		  |			  \
+ *					  /			  |			   \
+ *					 /			  |				\
+ *					/			  |				 \
+ *			move_Widget_x	move_Widget_y	  move_Widget_z
+ *
+ *		If user wants to MOVE : attach the entities moveX, moveY and moveZ to the lasts nodes,
+ *			if he wants to SCALE : attach the entities scaleX, scaleY and scaleZ
+ *			if he wants to Rotate : attach the entities rotateX, rotateY and rotateZ
+ *
+ *
+ *	\param pGizmosParentNode = Ogre Node for attach all Gizmos
+ *	\param pSceneMgr = Ogre Scene Manager
+ *	\param pCamera = Ogre current Camaera
+ *
+*/
 	void createGizmos(SceneNode* pGizmosParentNode, SceneManager * pSceneMgr, Camera* pCamera);
 									
-	///Event set mode :
+	///brief Events set mode
 	void eventSelection();
 	void eventMove();
 	void eventRotation();
 	void eventScale();
 
-	///Attach the goods plans and update mOldPos :
+	///brief Attach corrects plans and update mOldPos.
+	///			Plans are attached on the nodes move_Widget_X, ..Y, and ..Z.
+	///			It use for know where user has cliked on the scene
 	void firstClickForTransformation( const OIS::MouseEvent &e);
-	///Detach plans
+
+	///brief Detach plans
 	void releasedClickForTransformation ( const OIS::MouseEvent &e);
-	///Calcul the new vector for the selected object
-	///	Next you have to apply this on the selection and test mMode for know
-	///	if we are in MOVE, ROTATE or SCALE	
+
+	///brief Calcul the new vector for the selected object
+	///			Next you have to apply this on the selection and test mMode for know
+	///			if we are in MOVE, ROTATE or SCALE
 	Vector3 drapNdrop( const OIS::MouseEvent &e ) ;
 
-	///Show Gizmos
+	///brief Show or hide Gizmos
 	void showGizmosMove(bool pShow);
 	void showGizmosScale(bool pShow);
 	void showGizmosRotate(bool pShow);
@@ -44,7 +90,8 @@ public:
 		MOVE,
 		ROTATE,
 		SCALE };
-	///Return the mode choosen by the user :
+	///brief Get the mode choosen by the user
+	///return the mode choosen by the user
 	Mode getMode() ;
 
 	enum AxeClicked {
@@ -55,18 +102,24 @@ public:
 		Z };
 
 private :
-	//Gizmos :
-	//--------------
+	///brief Create Move Gizmos and hide them
 	void createGizmosMove(SceneManager * pSceneMgr);
+	///brief Create Scale Gizmos and hide them
 	void createGizmosScale(SceneManager * pSceneMgr);
+	///brief Create Rotate Gizmos and hide them
 	void createGizmosRotate(SceneManager * pSceneMgr);
 
+	///brief main node for manage gismos. It may be a child of the selection Node
 	SceneNode* m_GizmosAxesNode;
-	//Node for attach Gizmos :
+
+	///brief Node for attach X Gizmos (its name is move_Widget_X)
 	SceneNode * mNode_X;
+	///brief Node for attach Y Gizmos (its name is move_Widget_Y)
 	SceneNode * mNode_Y;
+	///brief Node for attach Z Gizmos (its name is move_Widget_Z)
 	SceneNode * mNode_Z;
-	//Object for gizmos :
+
+	///brief Object for gizmos :
 		//Gizmos move :
 	Entity* m_moveX; 
 	Entity* m_moveY; 
@@ -80,39 +133,60 @@ private :
 	Entity* m_rotateY ;
 	Entity* m_rotateZ ;
 
-	//Attach or dettach Gizmos
-	void attachMoveGizmos(bool pAttach) ;				//if true->attach else->detach
+	///brief Attach or dettach Move Gizmos
+	///param pAttach  = if true->attach else->detach
+	void attachMoveGizmos(bool pAttach) ;
+	///brief Attach or dettach Scale Gizmos
+	///param pAttach  = if true->attach else->detach
 	void attachScaleGizmos(bool pAttach) ;
+	///brief Attach or dettach Rotate Gizmos
+	///param pAttach  = if true->attach else->detach
 	void attachRotateGizmos(bool pAttach) ;
 
-	//Dummy plane :
+	///brief Dummy plane X :
 	Entity * mPlaneX;
+	///brief Dummy plane Y :
 	Entity * mPlaneY;
+	///brief Dummy plane Z :
 	Entity * mPlaneZ;
 
-	///When the user click on an axe (X, Y, Z), this function detect this axe and
-	///	put the result in mAxeClicked :
+/*
+ *
+ *	\brief 
+ *		When the user click on an axe (X, Y or Z), this function detect this axe and
+ *			put result in mAxeClicked
+ *
+ *	\param pNameAxe = Name of axes attach on the move_Widget_
+ *						(moveX, scaleX, RotateX, ...)
+ *
+*/
 	void onClickToTransformObject(const OIS::MouseEvent &e, const String pNameAxeX,
 								const String pNameAxeY, const String pNameAxeZ );	
 
-	///Ray tracing :
+	///biref Make a ray trace
+	///return the result of the ray trace
 	RaySceneQueryResult& raySceneQuery( const OIS::MouseEvent &e );
-	RaySceneQuery *mRaySceneQuery;		// The ray scene query pointer
+	///brief The ray scene query pointer
+	RaySceneQuery *mRaySceneQuery;	
 
-	///Give the mouse position (relative to the good dummy plane)
+	///brief Give the mouse position (relative to the good dummy plane)
+	///return Mouse Position in the scene 
 	Vector3 getMousePosOnDummyPlane (const OIS::MouseEvent &e) ;
 
 
-	///For remember the first axe and the first plane clicked by the user
+	///brief For remember the first axe clicked by the user
 	AxeClicked mAxeClicked ;
+	///brief For remember the first plane clicked by the user
 	AxeClicked mPlaneClicked ;
 
 
-	///Transformations :
-	///-------------------------
-	Mode mMode ;		//SELECT, MOVE, ROTATE, or SCALE
+	///brief Current transformation selected (SELECT, MOVE, ROTATE, or SCALE)
+	Mode mMode ;
+
+	///brief Old mouse position
 	Vector3 mOldpos;
 
+	///brief Current Ogre Camera
 	Camera* mCamera;
 
 };

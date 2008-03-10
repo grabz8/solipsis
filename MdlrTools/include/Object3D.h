@@ -75,10 +75,16 @@ public:
 		Vector3 cornerMin;
 	};
 
+	/// brief The commands history list 
+	typedef std::pair<Command,Vector3> TCommand;
+
+
+public:
 	/// brief Constructor
 	Object3D(String name, SceneNode* node);
 	/// brief Destructor
 	~Object3D();
+
 
 	/// \brief Load a object3D from a file 
 	/// \param fileName = The path to the file to load
@@ -87,13 +93,20 @@ public:
 	/// \param fileName = The path to the file to save
 	int		saveToFile(const char* fileName);
 
-public:
+
 	/// brief ...
 	void setName(String name);
 	/// brief
 	String getName();
 	/// brief Reset all transformation & deformation parameters
 	void resetParameters();
+
+	/// brief set/get the translation parameter values
+	void setTranslate(Real pX, Real pY, Real pZ );
+	Vector3 getTranslate() {return Vector3 (mTranslateX, mTranslateY, mTranslateZ) ;};
+	/// brief set/get the rotation parameter values
+	void setRotate(Real pX, Real pY, Real pZ );
+	Vector3 getRotate() {return Vector3 (mRotateX, mRotateY, mRotateZ) ;};
 	/// brief set/get the scale parameter values
 	void setScale(Real pX, Real pY, Real pZ );
 	Vector3 getScale() {return Vector3 (mScaleX, mScaleY, mScaleZ) ;};
@@ -121,9 +134,6 @@ public:
 	/// brief set/get the Hole Y parameter value
 	virtual void setHoleSizeY(Real value);
 	Real getHoleSizeY() {return mHoleSizeY;};
-	/// brief set/get the Hollow parameter value
-	virtual void setHollow(Real value);
-	Real getHollow() {return mHollow;};
 	/// brief set/get the Hole Shape parameter value
 	virtual void setHollowShape(Shape shape);
 	Real getHollowShape() {return mHollowShape;};
@@ -149,18 +159,16 @@ public:
 	virtual void setRadiusDelta(Real value);
 	Real getRadiusDelta() {return mRadiusDelta;};
 
-	/// brief Apply an action to modifiy the object
-	bool apply( Command command, Real p1 );
-	/// brief Apply an action to modifiy the object
-	bool apply( Command command, Real p1, Real p2, Real p3 );
-
-	/// brief Return the object center position
+	/// brief set/get the object center position
 	/// param worldPosition = if TRUE, return the world position
 	/// return the object center position
+	virtual void setPosition(Vector3 pos);
 	Vector3 getPosition(bool worldPosition = false);
+	/// brief Return the object orientation
+	Vector3 getOrientation();	
 	
 	/// brief Link a child to the object. The node of pObj become the child of the node of this object
-	///		and pObj is added to th the list mChilds. If oObj is already linked, it unlinks it.
+	///		and pObj is added to the list mChilds. If oObj is already linked, it unlinks it.
 	///	 param pObj Object to link with this Object.
 	///	 param pSceneMgr Current SceneManager
 	///	 return TRUE if node is linked correctly and FALSE if pObj is unlinked.
@@ -176,8 +184,6 @@ public:
 	///	 return mParent ;
 	Object3D* getParent() { return mParent; }
 	
-	/// brief Return the object orientation
-	Vector3 getOrientation();	
 	
 
 	/// brief ...
@@ -199,7 +205,6 @@ public:
 	Ogre::String &	getDesc() {return mDesc;}; 
 	/// Set the description 
 	void	setDesc(const char *newDesc) {mDesc = newDesc;}; 
-
 	/// Get the tags 
 	Ogre::String &	getTags() {return mTags;}; 
 	/// Set the tags
@@ -212,8 +217,6 @@ public:
 	bool	getCanBeCopied() {return mCanBeCopied;}; 
 	/// Set the copy bool 
 	void	setCanBeCopied(bool newCanBeCopied) {mCanBeCopied = newCanBeCopied;}; 
-
-
 	/// Get the collision bool 
 	bool	getCollisionnable() {return mEnableCollision;}; 
 	/// Set the collision bool 
@@ -225,15 +228,6 @@ public:
 
 	/// Get the primitive type as int
 	int getTypeAsInt() {return (int)mType;};
-
-	/// Show or Hide the bounding box of this object and for all its child
-	///	 param pValue TRUE for show bounding box, FALSE for hide it.
-	void showBoundingBox(bool pValue);
-	///brief Get if the bounding box is show or not.
-	///return True is bounding box is shown, and false is it is hiden.
-	bool getShowBoundingBox();
-	///brief Update the size of the bounding box.
-	void updateBoundingBox();
 
 	///brief Get a pointer in the Material manager of this object
 	///return mModifiedMaterialManager
@@ -293,21 +287,24 @@ public:
 	//brief Get primitives count
 	int getPrimitivesCount() {return mPrimitivesCount;};
 
-	void move (float pValueX, float pValueY, float pValueZ);
-	void scale (float pValueX, float pValueY, float pValueZ);
-	void rotate (float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,SceneNode * pCentreRotation, SceneNode* pCentreObject);
+	/// Show or Hide the bounding box of this object and for all its child
+	///	 param pValue TRUE for show bounding box, FALSE for hide it.
+	void showBoundingBox(bool pValue);
+	///brief Get if the bounding box is show or not.
+	///return True is bounding box is shown, and false is it is hiden.
+	bool getShowBoundingBox();
+	///brief Update the size of the bounding box.
+	void updateBoundingBox();
 
-
-	///brief The last command used 
-	Command	mCommandLast;
-	///brief The commands history list 
-	//typedef std::pair<Command,Ogre::String> TCommand;
-	typedef std::pair<Command,Vector3> TCommand;
-	std::list<TCommand> mCommandList; 
+	/// brief Apply an action to modifiy the object
+	bool apply( Command command, Real p1 );
+	bool apply( Command command, Real p1, Real p2, Real p3 );
 
 	///brief Add a command to the list of commands and update the list of points
 	///param pCommand : command to add
 	bool addCommand(TCommand &pTCommand, Command &pOldCommand );
+	///brief Remove the last command added and re-apply all the others in the right order
+	bool undo();
 
 	///brief Restore the second buffer by the first one
 	///param pBufNew : the new reference buffer 
@@ -326,14 +323,6 @@ public:
 	///brief Resize the both verex & index hardware buffers
 	void resizeBuffers( realvector &vertexData, size_t vertexCount, uintvector &indexData, size_t indexCount = 0 );
 
-	///brief Remove the last command added and re-apply all the others in the right order
-	bool undo();
-
-
-	Vector3 mCentreSelection;
-	SceneNode *mCentreRotation;
-	SceneNode *mCentreObject;
-
 
 private:
 	///brief Get the global size and the max & min corner sizes of the object
@@ -351,21 +340,36 @@ private:
 	///brief Return the total number of faces
 	size_t getNumFaces(void);
 
-	/// Put mCentreRotation and mCentreObject on their correct position
-	///		mCentreRotation on the centre of selection
-	///		mCentreObject on its position after rotation
-	void findRotationPosition(float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
-							 SceneNode * pCentreRotation, SceneNode* pCentreObject);
+
+	///brief Rotate from another object
+	void rotateFromParent( float pValueX, float pValueY, float pValueZ );
 
 	///brief Call this to update the hardware buffer after making changes.  
 	void update();
 	///brief Update only the hardware vertex buffer from the current vretex buffer
 	void updateBufferVertex();
 
+	/// Add child to the list mChilds
+	///	 param child Object3D to add
+	void addChild(Object3D* child);
+	/// Remove child to the list mChilds. The object is not deleted.
+	///	param child Object3D to remove
+	void removeChild(Object3D* child);
+	/// Set parent : just update mParent
+	void setParent(Object3D* object);
+
+
+/*
+	/// Put mCentreRotation and mCentreObject on their correct position
+	///		mCentreRotation on the centre of selection
+	///		mCentreObject on its position after rotation
+	void findRotationPosition(float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection,
+							 SceneNode * pCentreRotation, SceneNode* pCentreObject);
+*/
+
 protected:
 	Entity* mEntity;							/// brief The associate 3D entity
 	SceneNode* mNode;							/// brief The node where the object / entity is attached
-//	SceneManager* mSceneManager;				/// brief The root scene manager
 	Vector3 mSize;								/// brief The object size
 	Vector3 mCornerMin;							/// brief ...
 	Vector3 mCornerMax;							/// brief ...
@@ -374,17 +378,16 @@ protected:
 	
 	Ogre::String mName;							/// brief ...
 	Type mType;									/// brief ...
-
-	Real mTranslate;							/// brief ...
-	Real Rotate;								/// brief ...
-	Real Scale;									/// brief ...
-
-	Real mRotationX;							/// brief ...
-	Real mRotationY;							/// brief ...
-	Real mRotationZ;							/// brief ...
-	Real mScaleX;								/// brief ...
-	Real mScaleY;								/// brief ...
-	Real mScaleZ;								/// brief ...
+ 
+	Real mTranslateX;							///brief ...
+	Real mTranslateY;							///brief ...
+	Real mTranslateZ;							///brief ...
+	Real mRotateX;								///brief ...
+	Real mRotateY;								///brief ...
+	Real mRotateZ;								///brief ...
+	Real mScaleX;								///brief ...
+	Real mScaleY;								///brief ...
+	Real mScaleZ;								///brief ...
 	Real mTaperX;								/// brief ...
 	Real mTaperY;								/// brief ...
     Real mPathCutBegin;							/// brief ...
@@ -393,7 +396,6 @@ protected:
 	Real mDimpleEnd;							/// brief ...
 	Real mHoleSizeX;							/// brief ...
 	Real mHoleSizeY;							/// brief ...
-	Real mHollow;								/// brief ...
 	Shape mHollowShape;							/// brief ...
 	Real mTwistBegin;							/// brief ...
 	Real mTwistEnd;								/// brief ...
@@ -402,8 +404,6 @@ protected:
 	Real mSkew;									/// brief ...
 	unsigned int mRevolutions;					/// brief ...
 	Real mRadiusDelta;							/// brief ...
-	Real mProfileCuteBegin;						/// brief ...
-	Real mProfileCuteEnd;						/// brief ...
 
 	/// The creator property
 	Ogre::String mCreatorName;							
@@ -431,14 +431,6 @@ protected:
 	/// The manager for all material of this object :
 	ModifiedMaterialManager * mModifiedMaterialManager ;
 
-	/// Add child to the list mChilds
-	///	 param child Object3D to add
-	void addChild(Object3D* child);
-	/// Remove child to the list mChilds. The object is not deleted.
-	///	param child Object3D to remove
-	void removeChild(Object3D* child);
-	/// Set parent : just update mParent
-	void setParent(Object3D* object);
 
 private:
 	VertexData* mVertexData;					/// brief ...
@@ -454,7 +446,14 @@ private:
 public:
 	Buffer *mBufPrim;							/// brief ...
 	Buffer *mBufBackup;							/// brief ...
-	Buffer *mBufCurrent;							/// brief ...
+	Buffer *mBufCurrent;						/// brief ...
+
+	Vector3 mCentreSelection;					/// brief ...
+	SceneNode *mCentreRotation;					/// brief ...
+	SceneNode *mCentreObject;					/// brief ...
+
+	Command	mCommandLast;						/// brief The last command used 
+	std::list<TCommand> mCommandList;			/// brief The commands history list 
 };
 
 static Object3D::Type objectStringToType(Ogre::String &toFind)
@@ -494,6 +493,9 @@ public:
 
 		setTaperX( 0 );
 		setTopShearX( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -512,6 +514,9 @@ public:
 
 		setTaperX( 0 );
 		setTaperY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -530,6 +535,9 @@ public:
 
 		setTaperX( 0 );
 		setTaperY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -558,6 +566,9 @@ public:
 
 		setPathCutBegin( 0 );
 		setPathCutEnd( 1 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -578,6 +589,9 @@ public:
 
 		setTaperX( 0 );
 		setTaperY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -601,6 +615,9 @@ public:
 		setTaperY( 0 );
 		setPathCutBegin( 0 );
 		setPathCutEnd( 1 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -631,6 +648,9 @@ public:
 
 		setPathCutBegin( 0 );
 		setPathCutEnd( 1 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -646,6 +666,9 @@ public:
 
 		setHoleSizeX( 0 );
 		setHoleSizeY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -662,6 +685,9 @@ public:
 
 		setHoleSizeX( 0 );
 		setHoleSizeY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 
@@ -677,6 +703,9 @@ public:
 
 		setHoleSizeX( 0 );
 		setHoleSizeY( 0 );
+
+		// Init the last command 
+		mCommandLast = NONE;
 	}
 };
 

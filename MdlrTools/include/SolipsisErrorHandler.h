@@ -16,6 +16,7 @@
 	#include <sys/time.h>
 	#include <unistd.h>
 #endif
+#include <direct.h>
 
 namespace Solipsis {
 
