@@ -1,9 +1,0 @@
-ChangeLog of Solipsis MII
-
-2007.10.04	
-	- Add Display configuration menu
-	- Fix problems with selection tools
-	
-2007.10.02	
-	- First "stable version"
-	- Fix GUID problems in VC7 vcprojs
