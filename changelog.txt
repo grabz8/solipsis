@@ -317,3 +317,10 @@ MdlrTools updated :
 	- UPDATE : Navi UI properties frame 
 	
 ---------------------------
+12/03/08
+
+Modeler updates :
+ - report vc7->vc8
+ - reports from NavigatorModule into NavigatorModuleOnlyNav
+
+---------------------------
