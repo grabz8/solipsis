@@ -100,3 +100,9 @@ to the mesh' normals direction ! Flip them resolved it.
 - in plugin configs, mouse capture added (first person movement)
 
 - pb with Ageia PhysX character controller (diving into the floor) fixed, it was due to SKIN_WIDTH < 0.1
+
+- Fix post build compilation : tokamakd.dll and OgreOde_Core_d.dll are not copied in the runtime directory
+=> in navigatorModule, only ODE plugin is embedded into VC solution, compiled and copied in post-build
+
+- Fix bug after clean : missing Ogre DirectX renderer plugin in runtime dir
+=> check you ve rebuilt fully the navigatorModule (post-build evts performed)
