@@ -40,3 +40,9 @@ Some rules for developpers
 6- if you generate 1 binary then copy all files this binary needs into Common/bin/<binary name>,
  idea is I can launch this binary from this directory without adding anything else ...
 
+Coding rules
+------------
+
+0- IDE/editor config
+ Tabs are replaced by spaces
+ 1 Tab = 4 spaces
