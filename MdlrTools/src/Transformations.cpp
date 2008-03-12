@@ -554,13 +554,13 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::X ;
+                        mAxeClicked = Solipsis::Transformations::AxeClicked::X ;
 					}
 					else if (name == pNameAxeY)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Y ;
+						mAxeClicked = Solipsis::Transformations::AxeClicked::Y ;
 					}
 					else if( name == pNameAxeZ)
 					{

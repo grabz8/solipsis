@@ -38,19 +38,26 @@ rmdir Dependencies\peerModule /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
+rmdir DevTools\llmozlib\Debug_vc9 /S /Q
 rmdir DevTools\llmozlib\Release_vc7 /S /Q
 rmdir DevTools\llmozlib\Release_vc8 /S /Q
+rmdir DevTools\llmozlib\Release_vc9 /S /Q
 rmdir DevTools\lua\lib /S /Q
 rmdir DevTools\navi\Navi\Objects_vc7 /S /Q
 rmdir DevTools\navi\Navi\Objects_vc8 /S /Q
+rmdir DevTools\navi\Navi\Objects_vc9 /S /Q
 rmdir DevTools\navi\Navi\lib_vc7 /S /Q
 rmdir DevTools\navi\Navi\lib_vc8 /S /Q
+rmdir DevTools\navi\Navi\lib_vc9 /S /Q
 rmdir DevTools\navi\NaviDemo\Objects_vc7 /S /Q
 rmdir DevTools\navi\NaviDemo\Objects_vc8 /S /Q
+rmdir DevTools\navi\NaviDemo\Objects_vc9 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\debug_vc7 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\debug_vc8 /S /Q
+rmdir DevTools\navi\NaviDemo\Bin\debug_vc9 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\release_vc7 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\release_vc8 /S /Q
+rmdir DevTools\navi\NaviDemo\Bin\release_vc9 /S /Q
 rmdir DevTools\OgreOde\lib\debug /S /Q
 rmdir DevTools\OgreOde\lib\release /S /Q
 rmdir DevTools\OgreOde\obj\Debug /S /Q
@@ -59,6 +66,7 @@ rmdir DevTools\OgreOde\ode\lib\debuglib /S /Q
 rmdir DevTools\OgreOde\ode\lib\releaselib /S /Q
 rmdir DevTools\OgreOde\ode\build\vs2003\obj /S /Q
 rmdir DevTools\OgreOde\ode\build\vs2005\obj /S /Q
+rmdir DevTools\OgreOde\ode\build\vs2008\obj /S /Q
 del DevTools\pthreads\pthreadVC* /S /Q
 rmdir DevTools\tinyxml\Debug /S /Q
 rmdir DevTools\tinyxml\Release /S /Q
@@ -79,7 +87,9 @@ rmdir DevTools\expat\win32\tmp /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Debug /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Debug /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Debug /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
+rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
 
@@ -102,21 +112,29 @@ rmdir navigatorPhysics\navigatorTokamak\Release /S /Q
 
 rmdir navigatorPlugin\navigatorActiveX\Debug_vc7 /S /Q
 rmdir navigatorPlugin\navigatorActiveX\Debug_vc8 /S /Q
+rmdir navigatorPlugin\navigatorActiveX\Debug_vc9 /S /Q
 rmdir navigatorPlugin\navigatorActiveX\Release_vc7 /S /Q
 rmdir navigatorPlugin\navigatorActiveX\Release_vc8 /S /Q
+rmdir navigatorPlugin\navigatorActiveX\Release_vc9 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Debug_vc7 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Debug_vc8 /S /Q
+rmdir navigatorPlugin\navigatorPlugin\Debug_vc9 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Release_vc7 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Release_vc8 /S /Q
+rmdir navigatorPlugin\navigatorPlugin\Release_vc9 /S /Q
 
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc8 /S /Q
+rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc9 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc8 /S /Q
+rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc9 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc8 /S /Q
+rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc9 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc8 /S /Q
+rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc9 /S /Q
 
 rmdir node\bin /S /Q
 
