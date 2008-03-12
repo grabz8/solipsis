@@ -31,23 +31,29 @@ private:
     // List of events to send
     EvtsList mEvtsList;
 
-	// Scene manager
-	SceneManager* mSceneMgr;
+    // Scene manager
+    SceneManager* mSceneMgr;
+
+    // Scene object filename
+    std::string xmlObjectFilename;
 
     // Callbacks
     IOgrePeerManagerCallbacks* mCallbacks;
 
 public:
-	OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
-	~OgrePeerManager();
+    OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
+    ~OgrePeerManager();
 
-	// Set my entities
-	void setMyEntities(std::list<EntityUID> myEntities);
+    // Set my entities
+    void setMyEntities(std::list<EntityUID> myEntities);
 
-	// Load
-	bool load(XmlEntity* xmlEntity);
+    // Load
+    bool load(XmlEntity* xmlEntity);
 
-	// Remove 1 peer according to its ID and if it is local or networked
+    // Get the scene object filename
+    String getXmlObjectFilename();
+
+    // Remove 1 peer according to its ID and if it is local or networked
     bool remove(const EntityUID& entity, bool local);
 
     // Remove all peers (locals or networked)
@@ -66,8 +72,9 @@ public:
     EvtsList& getEvtsToSendList() { return mEvtsList; }
 
 protected:
-	virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
-	virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
+    virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
+    virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
+    virtual OgrePeer* createObjectNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
 };
 
 } // namespace Solipsis

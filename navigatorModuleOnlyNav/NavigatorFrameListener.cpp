@@ -52,15 +52,93 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
 
+    if (mNavigator->getState() == Navigator::SModeling)
+    {
+        if (mNavigator->mModeler->isOnGizmo())
+        {
+            switch (evt.mKey)
+            {
+            case KC_F9:
+	            mNavigator->mModeler->lockGizmo(false);
+	            if (navigatorGUI != 0)
+		            //if (!navigatorGUI->isModelerMainVisible())
+		            //	navigatorGUI->modelerMainShow();
+		            //else
+			            navigatorGUI->modelerMainUnload();
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_UP:
+	            if (!mNavigator->isOnLeftCTRL) 
+		            mNavigator->modifGizmo(Vector3(.1,0,0));
+            case KC_W:
+	            if (mNavigator->isOnLeftCTRL)
+		            mNavigator->undo();
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_DOWN:
+            case KC_S:
+	            mNavigator->modifGizmo(Vector3(-.1,0,0));
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_LEFT:
+            case KC_A:
+	            mNavigator->modifGizmo(Vector3(0,0,-.1));
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_RIGHT:
+            case KC_D:
+	            mNavigator->modifGizmo(Vector3(0,0,.1));
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_PGUP:
+            case KC_E:
+	            mNavigator->modifGizmo(Vector3(0,.1,0));
+	            return OgreFrameListener::keyPressed(evt);
+
+            case KC_PGDOWN:
+            case KC_C:
+	            mNavigator->modifGizmo(Vector3(0,-.1,0));
+	            return OgreFrameListener::keyPressed(evt);
+            }
+        }
+
+
+        switch (evt.mKey)
+        {
+        case KC_F9:
+            if (mNavigator->mModeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
+            {
+                //navigatorGUI->modelerPropUnload();
+                navigatorGUI->modelerPropHide();
+                navigatorGUI->modelerMainShow();
+            }
+            else 
+                navigatorGUI->modelerMainUnload();
+            return OgreFrameListener::keyPressed(evt);
+
+        case KC_LCONTROL:
+            mNavigator->mModeler->getSelection()->set_lock( true );
+            mNavigator->isOnLeftCTRL = true;
+            return OgreFrameListener::keyPressed(evt);
+
+        case KC_DELETE:
+            mNavigator->suppr();
+            if (mNavigator->mModeler->isSelectionLocked())
+            {
+                navigatorGUI->modelerPropUnload();
+                navigatorGUI->modelerMainShow();
+            }
+            return OgreFrameListener::keyPressed(evt);
+
+        case KC_W:
+            if (mNavigator->isOnLeftCTRL) 
+                mNavigator->undo();
+            return OgreFrameListener::keyPressed(evt);
+        }
+    }
+
 	// Updating Navi with the key pressed
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
-
-	if (mNavigator->getState() == Navigator::SModeling)
-	{
-		if (evt.mKey == KC_F9)
-			navigatorGUI->modelerMainUnload();
-		return OgreFrameListener::keyPressed(evt);
-	}
 
     // In world ?
     if (mNavigator->getState() != Navigator::SInWorld)
@@ -98,7 +176,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         break;
 
     case KC_F9:
-        if (navigatorGUI != 0)
+        if (navigatorGUI != 0 && mNavigator->getState() == Navigator::SInWorld)
             if (!navigatorGUI->isModelerMainVisible())
                 navigatorGUI->modelerMainShow();
             else
@@ -128,7 +206,10 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 
             case KC_UP:
             case KC_W:
-                userAvatar->movementKeyPressed(KC_UP);
+                if (mNavigator->isOnLeftCTRL)
+                    mNavigator->undo();
+                else
+                    userAvatar->movementKeyPressed(KC_UP);
                 break;
 
             case KC_DOWN:
@@ -169,13 +250,22 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-   // Updating Navi with the key pressed
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
 
-	if (mNavigator->getState() == Navigator::SModeling)
-	{
-		return OgreFrameListener::keyReleased(evt);
-	}
+    // In modeler ?
+    if (mNavigator->getState() == Navigator::SModeling)
+    {
+        switch (evt.mKey) 
+        {
+            case KC_LCONTROL:
+                mNavigator->isOnLeftCTRL = false;
+                mNavigator->mModeler->getSelection()->set_lock( false );
+                //return OgreFrameListener::keyReleased(evt);
+                break;
+        }
+    }
+
+    // Updating Navi with the key released
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
 
     // In world ?
     if (mNavigator->getState() != Navigator::SInWorld) 
@@ -259,6 +349,20 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 
         // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
         NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
+    }
+
+    if (mNavigator->getState() == Navigator::SModeling &&
+	    !NaviManager::Get().isAnyNaviFocused())
+    {
+        if (getCameraMode() == CM1stPerson)
+        {
+            mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
+            mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+        }
+
+        //TODO : move / rotate / scale
+        //if (mNavigator->isOnGizmo) mNavigator->onMouseMoved(evt);
+        return true;
     }
 
     if (mNavigator->getState() != Navigator::SInWorld)
@@ -345,6 +449,25 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 navi->injectMouseDown(naviX, naviY);
             }
         }
+        else if ((mNavigator->getState() == Navigator::SModeling) &&
+                !NaviManager::Get().isAnyNaviFocused())
+        {
+            // the mouse is out of a naviPanel
+
+            //TODO : move / rotate / scale
+            //if (mNavigator->isOnGizmo) mNavigator->onMousePressed(evt);
+            //else
+            {
+                // normalize (x, y) on 0..1 and get the ray emitted from the camera
+                Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+                // compute the picking
+                mNavigator->computeMousePicking(mouseRay);
+            }
+        }
+        else
+        {
+            // the mouse is on a naviPanel
+        }
     }
 
     return OgreFrameListener::mousePressed(evt);
@@ -383,6 +506,12 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                                            naviX, naviY);
             }
             NaviManager::Get().getFocusedNavi()->injectMouseUp(naviX, naviY);
+        }
+        else if ((mNavigator->getState() == Navigator::SModeling) &&
+                !NaviManager::Get().isAnyNaviFocused())
+        {
+            //TODO : move / rotate / scale
+            if (mNavigator->mModeler->isOnGizmo()) mNavigator->onMouseReleased(evt);
         }
         else
             NaviManager::Get().injectMouseUp(buttonsId);
