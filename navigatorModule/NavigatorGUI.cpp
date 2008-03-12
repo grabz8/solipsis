@@ -5,7 +5,6 @@
 #include "Navi.h"
 #include "Modeler.h"
 
-
 using namespace Solipsis;
 
 const std::string NavigatorGUI::mNavisNames[] = {
@@ -14,7 +13,7 @@ const std::string NavigatorGUI::mNavisNames[] = {
     "uichat",
     "uicontext",
     "uimdlrmain",
-	"uimdlrprop",
+    "uimdlrprop",
 #ifdef UIDEBUG
     "uidebug"
 #endif
@@ -181,8 +180,8 @@ void NavigatorGUI::contextHide()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainShow()
 {
-	if (mNavisStates[NAVI_MODELERPROP] == NSCreated)
-		modelerPropHide();
+    if (mNavisStates[NAVI_MODELERPROP] == NSCreated)
+        modelerPropHide();
 
     if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
     {
@@ -223,10 +222,10 @@ void NavigatorGUI::modelerMainShow()
     else
         mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN])->show(true);
 
-	mNavigator->startModeling();
+    mNavigator->startModeling();
 
-	if( mNavigator->mModeler )
-		mNavigator->mModeler->lockSelection(false);
+    if (mNavigator->mModeler)
+        mNavigator->mModeler->lockSelection(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -857,7 +856,7 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
     String sceneName = mNavigator->getSceneMgrPtr()->getName();
     navi->evaluateJS("allTree.get('Scenes').insert({text:'" + sceneName + "', id:'S_" + sceneName + "'})");
     navi->evaluateJS("allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
-    for (std::map<String,OgrePeer*>::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
+    for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
     {
         String ogrePeerName = ogrePeer->second->getPeer()->getLogin();
         navi->evaluateJS("allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
@@ -921,7 +920,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
         // Call connect
         bool connected = mNavigator->connect();
         char txt[128]; sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
-        navi->evaluateJS("$('infosText').innerHTML = ''");
+        navi->evaluateJS(txt);
     }
 }
 
@@ -2132,7 +2131,6 @@ void NavigatorGUI::modelerPropGravity(const NaviData& naviData)
 	std::string value = navi->evaluateJS("document.getElementById('gravity').checked");
 }
 
-//-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugCommand(const NaviData& naviData)
@@ -2174,9 +2172,9 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
     if (mNavisStates[naviPanel] == NSCreated)
         mNaviMgr->getNavi(mNavisNames[naviPanel])->show(true);
 
-	// Update the properties panel from the selected object datas
-	if (naviPanel == NAVI_MODELERPROP)
-		modelerTabberLoad(0);
+    // Update the properties panel from the selected object datas
+    if (naviPanel == NAVI_MODELERPROP)
+        modelerTabberLoad(0);
 }
 
 //-------------------------------------------------------------------------------------

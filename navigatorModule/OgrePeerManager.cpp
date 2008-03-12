@@ -4,7 +4,6 @@
 #include "OgreOSMScene.h"
 #include "Navigator.h"
 #include "OgreHelpers.h"
-
 #include "Modeler.h"
 
 using namespace Solipsis;
@@ -129,14 +128,14 @@ bool OgrePeerManager::load(Peer* peer, const String xmlFile)
         }
         else if (String(elt->Value()).compare("sceneNode") == 0)
         {
-			xmlObjectFilename = xmlFile;
+            xmlObjectFilename = xmlFile;
             newOgrePeer = createSceneNode(peer, elt);
             if (newOgrePeer == 0)
                 OGRE_LOG("OgrePeerManager::load() Unable to load sceneNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
         }
-		else if (String(elt->Value()).compare("objectNode") == 0)
+        else if (String(elt->Value()).compare("objectNode") == 0)
         {
-			//xmlObjectFilename = xmlFile;
+            //xmlObjectFilename = xmlFile;
             newOgrePeer = createObjectNode(peer, elt);
             if (newOgrePeer == 0)
                 OGRE_LOG("OgrePeerManager::load() Unable to load objectNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
@@ -151,14 +150,14 @@ bool OgrePeerManager::load(Peer* peer, const String xmlFile)
 //-------------------------------------------------------------------------------------
 std::string OgrePeerManager::getXmlObjectFilename()
 {
-	return xmlObjectFilename;
+    return xmlObjectFilename;
 }
 
 //-------------------------------------------------------------------------------------
 bool OgrePeerManager::remove(String& peerId, bool local)
 {
     bool peerFound = false;
-    for (std::map<String,OgrePeer*>::iterator ogrePeer=mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
+    for (OgrePeersMap::iterator ogrePeer=mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
     {
         if (ogrePeer->second->getPeer()->isLocal() != local) continue;
         if (ogrePeer->second->getPeer()->getNetworkId().compare(peerId) == 0)
@@ -181,7 +180,7 @@ bool OgrePeerManager::removeAll(bool local)
     while (loopAgain)
     {
         loopAgain = false;
-        for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
+        for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
         {
             if (ogrePeer->second->getPeer()->isLocal() != local) continue;
             delete ogrePeer->second->getPeer();
@@ -198,7 +197,7 @@ bool OgrePeerManager::removeAll(bool local)
 //-------------------------------------------------------------------------------------
 bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 {
-    for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
+    for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin();ogrePeer != mOgrePeersMap.end();ogrePeer++)
     {
         if ((ogrePeer->second->getType().compare("avatar") == 0) && ogrePeer->second->getPeer()->isLocal())
         {
@@ -295,7 +294,7 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 
     // Animate
     // Peers' avatars
-    for (std::map<String,OgrePeer*>::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
+    for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
         it->second->update(evt.timeSinceLastFrame);
 
 #ifdef PHYSX
@@ -584,22 +583,22 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 //-------------------------------------------------------------------------------------
 OgrePeer* OgrePeerManager::createObjectNode(Peer* peer, TiXmlElement* xmlElt)
 {
-	if (mSceneMgr == 0)
-		Exception(Exception::ERR_INTERNAL_ERROR,
-		"No scene manager !",
-		"OgrePeerManager::CreateObjectNode");
+    if (mSceneMgr == 0)
+        Exception(Exception::ERR_INTERNAL_ERROR,
+        "No scene manager !",
+        "OgrePeerManager::CreateObjectNode");
 
-	const char* name = xmlElt->Attribute("name");
-	const char* filename = xmlElt->Attribute("filename");
+    const char* name = xmlElt->Attribute("name");
+    const char* filename = xmlElt->Attribute("filename");
 
-	Modeler* modeler = Modeler::getSingletonPtr( mSceneMgr, NULL );
-	if(modeler)
-	{
-		modeler->init( NULL );
-		modeler->XMLLoad( Vector3::ZERO, filename );
-	}
+    Modeler* modeler = Modeler::getSingletonPtr( mSceneMgr, NULL );
+    if(modeler)
+    {
+        modeler->init( NULL );
+        modeler->XMLLoad( Vector3::ZERO, filename );
+    }
 
-	return NULL;
+    return NULL;
 }
 
 #ifdef PHYSICS

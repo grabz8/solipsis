@@ -33,8 +33,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     mRaySceneQuery(0),
     mPickedMovable(0),
     mUserAvatar(0),
-	mModeler(0),
-	isOnLeftCTRL(false)
+    mModeler(0),
+    isOnLeftCTRL(false)
 {
     ms_singletonPtr = this;
 
@@ -51,7 +51,7 @@ Navigator::~Navigator()
     NodeEventListener::stop();
     NodeEventListener::finalize();
 
-    // Clean up allocated peers datas
+    // Destroy XMLRPC client
     delete mXmlRpcClient;
 
     // Clean up allocated peers datas
@@ -524,7 +524,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             {
 
 				// avatar ?
-				if (mState != SModeling )
+                if (mState != SModeling)
 					if (it->movable->getQueryFlags() == QFAvatar)
 					{
 						mPickedMovable = it->movable;
@@ -609,9 +609,8 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             }       
         }
     }
-	if (mState == SModeling)
-		mModeler->lockLinkMode(false);
-
+    if (mState == SModeling)
+        mModeler->lockLinkMode(false);
 
     OGRE_LOG("Navigator::computeMousePicking() found movables " + movablesList);
     // if 1 entity hit
@@ -671,7 +670,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFAvatar))
     {
         // retrieve avatar instance
-        for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+        for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
         {
             if (ogrePeer->second->getType().compare("avatar") != 0) continue;
 /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
@@ -906,7 +905,7 @@ bool Navigator::sendMessage(const String& message)
     if (mXmlRpcClient == 0)
         Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
     std::list<Peer*> peersList;
-    for (std::map<String,OgrePeer*>::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+    for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
     {
         if (ogrePeer->second->getType().compare("avatar") != 0) continue;
         if (ogrePeer->second->getPeer()->isLocal()) continue;

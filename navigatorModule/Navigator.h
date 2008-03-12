@@ -10,16 +10,13 @@
 #include "NavigatorGUI.h"
 #include "LuaBinding.h"
 #include "NavigatorLua.h"
-
 #include "Selection.h"
 #include "Transformations.h"
-#include <OIS/OIS.h>
-
+#include "Event.h"
 
 namespace Solipsis {
 
 class Modeler;
-
 
 /** The main class of Navigator application.
  */
@@ -146,58 +143,56 @@ public:
     /** See IOgrePeerManagerCallbacks. */
     virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
 
-	// Modeler part
+    // Modeler part
 
-	/** Start modeling mode. */
-	bool startModeling();
-	/** Stop the modeling mode. */
-	bool endModeling();
-	/** Create a box. */
-	bool createBox();
-	/** Create a corner. */
-	bool createCorner();
-	/** Create a pyramid. */
-	bool createPyramid();
-	/** Create a prism. */
-	bool createPrism();
-	/** Create a cylinder. */
-	bool createCylinder();
-	/** Create a half cylinder. */
-	bool createHalfCyl();
-	/** Create a cone. */
-	bool createCone();
-	/** Create a Halfcone. */
-	bool createHalfCone();
-	/** Create a sphere. */
-	bool createSphere();
-	/** Create a half sphere. */
-	bool createHalfSphere();
-	/** Create a torus. */
-	bool createTorus();
-	/** Create a tube. */
-	bool createTube();
-	/** Create a ring. */
-	bool createRing();
-	/** Create a mesh. */
-	bool createMesh();
-	/** Load from a XML file.*/
-	bool XMLLoad();
-	/** Save to a XML file. */
-	bool XMLSave(bool all = false, const char* pathToSave = NULL);
+    /** Start modeling mode. */
+    bool startModeling();
+    /** Stop the modeling mode. */
+    bool endModeling();
+    /** Create a box. */
+    bool createBox();
+    /** Create a corner. */
+    bool createCorner();
+    /** Create a pyramid. */
+    bool createPyramid();
+    /** Create a prism. */
+    bool createPrism();
+    /** Create a cylinder. */
+    bool createCylinder();
+    /** Create a half cylinder. */
+    bool createHalfCyl();
+    /** Create a cone. */
+    bool createCone();
+    /** Create a Halfcone. */
+    bool createHalfCone();
+    /** Create a sphere. */
+    bool createSphere();
+    /** Create a half sphere. */
+    bool createHalfSphere();
+    /** Create a torus. */
+    bool createTorus();
+    /** Create a tube. */
+    bool createTube();
+    /** Create a ring. */
+    bool createRing();
+    /** Create a mesh. */
+    bool createMesh();
+    /** Load from a XML file.*/
+    bool XMLLoad();
+    /** Save to a XML file. */
+    bool XMLSave(bool all = false, const char* pathToSave = NULL);
 
-	/// The modeler object
-	Modeler		*mModeler;
-	bool		isOnLeftCTRL;
+    /// The modeler object
+    Modeler		*mModeler;
+    bool		isOnLeftCTRL;
 
-	void onMouseMoved(const MouseEvt& evt);
-	void onMousePressed(const MouseEvt& evt);
-	void onMouseReleased(const MouseEvt& evt);
+    void onMouseMoved(const MouseEvt& evt);
+    void onMousePressed(const MouseEvt& evt);
+    void onMouseReleased(const MouseEvt& evt);
 
-	void undo();
-	void suppr();
-	void modifGizmo(Vector3 dep);
-	
-
+    void undo();
+    void suppr();
+    void modifGizmo(Vector3 dep);
 
 protected:
     /** These methods implement Instance

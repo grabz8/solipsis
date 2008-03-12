@@ -41,15 +41,18 @@ class OgrePeerManager : public FrameListener
     public OgreOde::CollisionListener
 #endif
 {
+public:
+    typedef std::map<String, OgrePeer*> OgrePeersMap;
+
 private:
     // <Peer's name, OgrePeer> map
-    std::map<String,OgrePeer*> mOgrePeersMap;
+    OgrePeersMap mOgrePeersMap;
 
-	// Scene manager
-	SceneManager* mSceneMgr;
+    // Scene manager
+    SceneManager* mSceneMgr;
 
-	// Scene object filename
-	std::string xmlObjectFilename;
+    // Scene object filename
+    std::string xmlObjectFilename;
 
     // Callbacks
     IOgrePeerManagerCallbacks* mCallbacks;
@@ -74,16 +77,16 @@ private:
 #endif
 
 public:
-	OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
-	~OgrePeerManager();
+    OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
+    ~OgrePeerManager();
 
-	// Load
-	bool load(Peer* peer, const String xmlFile);
+    // Load
+    bool load(Peer* peer, const String xmlFile);
 
-	// Get the scene object filename
-	String getXmlObjectFilename();
+    // Get the scene object filename
+    String getXmlObjectFilename();
 
-	// Remove 1 peer according to its ID and if it is local or networked
+    // Remove 1 peer according to its ID and if it is local or networked
     bool remove(String& peerId, bool local);
 
     // Remove all peers (locals or networked)
@@ -92,10 +95,10 @@ public:
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
 
-	// Get/Set
-	SceneManager* getSceneManager() { return mSceneMgr; }
-    std::map<String,OgrePeer*>::iterator getOgrePeersIteratorBegin() { return mOgrePeersMap.begin(); }
-    std::map<String,OgrePeer*>::iterator getOgrePeersIteratorEnd() { return mOgrePeersMap.end(); }
+    // Get/Set
+    SceneManager* getSceneManager() { return mSceneMgr; }
+    OgrePeersMap::iterator getOgrePeersIteratorBegin() { return mOgrePeersMap.begin(); }
+    OgrePeersMap::iterator getOgrePeersIteratorEnd() { return mOgrePeersMap.end(); }
 #ifdef PHYSICS
     OgreOde::World* getPhysicsWorld();
     OgreOde::StepHandler* getPhysicsStepHandler();
@@ -114,9 +117,9 @@ public:
 #endif
 
 protected:
-	virtual OgrePeer* createAvatarNode(Peer* peer, TiXmlElement* xmlElt);
-	virtual OgrePeer* createSceneNode(Peer* peer, TiXmlElement* xmlElt);
-	virtual OgrePeer* createObjectNode(Peer* peer, TiXmlElement* xmlElt);
+    virtual OgrePeer* createAvatarNode(Peer* peer, TiXmlElement* xmlElt);
+    virtual OgrePeer* createSceneNode(Peer* peer, TiXmlElement* xmlElt);
+    virtual OgrePeer* createObjectNode(Peer* peer, TiXmlElement* xmlElt);
 
 #ifdef PHYSICS
 protected:
