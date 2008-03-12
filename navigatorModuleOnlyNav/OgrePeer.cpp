@@ -9,7 +9,7 @@ OgrePeer::OgrePeer(XmlEntity* xmlEntity, bool isLocal) :
     mIsLocal(isLocal),
     mLod(0)
 {
-    OGRE_LOG("OgrePeer::OgrePeer() mIsLocal=" + isLocal);
+    OGRE_LOG("OgrePeer::OgrePeer() mIsLocal=" + StringConverter::toString((int)isLocal));
 }
 
 //-------------------------------------------------------------------------------------

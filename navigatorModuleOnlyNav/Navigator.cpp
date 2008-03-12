@@ -679,7 +679,7 @@ void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 //-------------------------------------------------------------------------------------
 void Navigator::onPeerNew(XmlEntity* xmlEntity)
 {
-    OGRE_LOG("Navigator::onPeerNew()");
+    OGRE_LOG("Navigator::onPeerNew() uid:" + StringConverter::toString(xmlEntity->getUid()));
 
 #ifdef UIDEBUG
     if (mNavigatorGUI != 0)
@@ -692,7 +692,7 @@ void Navigator::onPeerNew(XmlEntity* xmlEntity)
 //-------------------------------------------------------------------------------------
 void Navigator::onPeerLost(XmlEntity* xmlEntity)
 {
-    OGRE_LOG("Navigator::onPeerLost()");
+    OGRE_LOG("Navigator::onPeerLost() uid:" + StringConverter::toString(xmlEntity->getUid()));
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
         Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");

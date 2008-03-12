@@ -158,7 +158,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     {
         mLastRealPosition = xmlEntity->getPosition();
 #ifdef LOGSNDRCV
-        OGRE_LOG("RCV " + StringConverter::toString(mLastRealPosition));
+        OGRE_LOG("RCV uid:" + StringConverter::toString(xmlEntity->getUid()) + " " + StringConverter::toString(mLastRealPosition));
 #endif
         unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
         if (l == (unsigned long)-1) { l = n; c = 0; }
@@ -278,7 +278,7 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             mUpdatedXmlEntity->setDisplacement(d);
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
+            OGRE_LOG("SND uid:" + StringConverter::toString(mUpdatedXmlEntity->getUid()) + " " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
 #endif
         }
     }
