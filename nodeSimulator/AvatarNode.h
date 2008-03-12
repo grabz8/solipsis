@@ -64,6 +64,8 @@ public:
     virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
     /** See Solipsis::Node. */
     virtual bool freeEvt(XmlEvt* evt);
+    /** See Solipsis::Node. */
+    virtual bool freeze(bool frozen);
 
     /** See Solipsis::TimeListener. */
     virtual bool tick(Real timeSinceLastTick);

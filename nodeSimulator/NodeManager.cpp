@@ -127,7 +127,6 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         NodeId siteNodeId = "00000010";
         SiteNode* siteNode = new SiteNode(siteNodeId, siteEntityDesc);
         mNodes[siteNodeId] = siteNode;
-//        avatarNode->addAwareEntity(&siteNode->getEntity());
     }
 
     // Add other avatars to aware of
@@ -154,12 +153,43 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
 bool NodeManager::logout(const NodeId& nodeId)
 {
     AvatarNode* avatarNode = (AvatarNode*)mNodes[nodeId];
-    delete avatarNode;
-    mNodes.erase(nodeId);
+    avatarNode->freeze(true);
+    mDestroyedNodeIds.insert(nodeId);
 
+    // Remove this avatar from avatars aware of
     for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
-        delete node->second;
-    mNodes.clear();
+        if (node->first != avatarNode->getNodeId())
+        {
+            if (node->second->getType().compare("avatar") == 0)
+            {
+                AvatarNode* an = (AvatarNode*)node->second;
+                an->removeAwareEntity(&avatarNode->getEntity());
+            }
+        }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool NodeManager::update()
+{
+    NodeIdSet::iterator i;
+    for (i = mDestroyedNodeIds.begin(); i != mDestroyedNodeIds.end(); i++)
+    {
+        AvatarNode* avatarNode = (AvatarNode*)mNodes[*i];
+        mNodes.erase(*i);
+        delete avatarNode;
+        /////////////////////////////////////
+        if (Peer::getSingleton().mConnectionsCount == 0)
+        {
+            NodeId siteNodeId = "00000010";
+            delete mNodes[siteNodeId];
+            mNodes.erase(siteNodeId);
+            mNodes.clear();
+        }
+        /////////////////////////////////////
+    }
+    mDestroyedNodeIds.clear();
 
     return true;
 }

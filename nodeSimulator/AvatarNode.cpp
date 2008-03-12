@@ -30,7 +30,8 @@ AvatarNode::~AvatarNode()
 {
     pthread_mutex_lock(&mMutex);
 
-    Peer::getSingleton().removeTimeListener(this);
+    if (!mFrozen)
+        Peer::getSingleton().removeTimeListener(this);
 
 #ifdef PHYSICSPLUGINS
     if (mPhysicsScene != 0)
@@ -73,9 +74,13 @@ bool AvatarNode::addAwareEntity(Entity* entity)
         entity->addEntityListener(this);
 
 #ifdef PHYSICSPLUGINS
-    entity->createPhysics(mPhysicsScene);
-    if (entity->getXmlEntity()->getType() == ETSite)
-        mAvatar.setGravity(true);
+    // for instance we create physics of scenes + my own avatar
+    if (!((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner().compare(mNodeId) != 0)))
+    {
+        entity->createPhysics(mPhysicsScene);
+        if (entity->getXmlEntity()->getType() == ETSite)
+            mAvatar.setGravity(true);
+    }
 #endif
 
     pthread_mutex_unlock(&mMutex);
@@ -145,7 +150,7 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
             {
                 avatar->getXmlEntity()->setDisplacement(xmlEntity->getDisplacement());
 #ifdef LOGSNDRCV
-                LogManager::getSingleton().logMessage("RCV " + StringConverter::toString(xmlEntity->getDisplacement()));
+                LogManager::getSingleton().logMessage("RCV uid:" + StringConverter::toString(xmlEntity->getUid()) + " " + StringConverter::toString(xmlEntity->getDisplacement()));
 #endif
                 unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
                 if (l == (unsigned long)-1) { l = n; c = 0; }
@@ -181,6 +186,23 @@ bool AvatarNode::freeEvt(XmlEvt* evt)
 }
 
 //-------------------------------------------------------------------------------------
+bool AvatarNode::freeze(bool frozen)
+{
+    pthread_mutex_lock(&mMutex);
+    if (frozen != mFrozen)
+    {
+        if (frozen)
+            Peer::getSingleton().removeTimeListener(this);
+        else
+            Peer::getSingleton().addTimeListener(this);
+        mFrozen = frozen;
+    }
+    pthread_mutex_unlock(&mMutex);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool AvatarNode::tick(Real timeSinceLastTick)
 {
     pthread_mutex_lock(&mMutex);
@@ -192,7 +214,7 @@ bool AvatarNode::tick(Real timeSinceLastTick)
 #endif
 
     // Update entities
-    for (Entity::EntityMap::iterator obj = mAwareEntities.begin();obj != mAwareEntities.end();++obj)
+    for (Entity::EntityMap::iterator obj = mOwnedEntities.begin();obj != mOwnedEntities.end();++obj)
         obj->second->update(timeSinceLastTick);
 
 #ifdef PHYSICSPLUGINS
@@ -215,7 +237,7 @@ c++;
             mAvatar.mUpdatedXmlEntity.setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity.setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            LogManager::getSingleton().logMessage("SND " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
+            LogManager::getSingleton().logMessage("SND uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
             evt->setDatas(&mAvatar.mUpdatedXmlEntity);
             mEvtsToHandleList.push_back(evt);

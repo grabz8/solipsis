@@ -19,10 +19,14 @@ class NodeManager
 public:
     /// <NodeId, Node*> map
     typedef std::map<NodeId, Node*> NodeMap;
+    /// <NodeId> set
+    typedef std::set<NodeId> NodeIdSet;
 
 private:
     /// Map of nodes
     NodeMap mNodes;
+    /// Set of destroyed nodes Ids
+    NodeIdSet mDestroyedNodeIds;
 
 public:
 	NodeManager();
@@ -33,6 +37,9 @@ public:
 
     /** logout. */
     bool logout(const NodeId& nodeId);
+
+    /** update. */
+    bool update();
 
     /** Process an event. */
     bool processEvt(const NodeId& nodeId, XmlEvt& xmlEvt, std::string& xmlRespStr);

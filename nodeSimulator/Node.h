@@ -27,6 +27,8 @@ protected:
     pthread_mutex_t mEvtsMutex;
     /// List of events to handle
     XmlEvtToHandleList mEvtsToHandleList;
+    /// Frozen state
+    bool mFrozen;
 
 public:
     /** Constructor. */
@@ -45,6 +47,8 @@ public:
     virtual XmlEvt* getNextEvtToHandle();
     /** Free event (handled event). */
     virtual bool freeEvt(XmlEvt* evt);
+    /** Freeze. */
+    virtual bool freeze(bool frozen) { mFrozen = frozen; return true; }
 };
 
 } // namespace Solipsis

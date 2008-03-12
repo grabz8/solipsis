@@ -138,6 +138,9 @@ void Peer::run()
     {
         Platform::sleep(tickDuration*1000.0f);
 
+        if (mNodeManager != 0)
+            mNodeManager->update();
+
         if (!_fireTick())
         {
             break;
@@ -312,7 +315,6 @@ bool Peer::_fireTick(Real timeSinceLastTick)
     }
 
     return true;
-
 }
 
 //-----------------------------------------------------------------------
