@@ -6,6 +6,10 @@ pause
 
 echo ========== Cleaning up... ==========
 
+del /s *.ncb
+del /s vc*.idb
+del /s vc*.pdb
+
 rmdir Common\bin\navigator\debug /S /Q
 rmdir Common\bin\navigator\release /S /Q
 
