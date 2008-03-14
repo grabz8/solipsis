@@ -1,0 +1,18 @@
+<oe_scene>
+    <sceneManager type="0" />
+    <bkgcolor r="0" g="0" b="0" />
+    <lightColor r="0.5" g="0.5" b="0.5" />
+    <shadowTechnique type="0" tex_size="512" tex_count="1">
+        <color r="0" g="0" b="0" />
+    </shadowTechnique>
+    <entities>
+      <entity name="fourmigues001" hidden="false" filename="Plane.mesh" CastShadows="yes" ReceiveShadows="yes">
+<!--        <position x="0" y="0" z="0" />-->
+<!--        <rotation x="0" y="0" z="0" w="-1" />-->
+<!--        <scale x="1" y="1" z="1" />-->
+        <position x="0" y="-150" z="-600" />
+        <rotation x="0.7071067811865476" y="0" z="0" w="-0.7071067811865476" />
+        <scale x="400" y="400" z="400" />
+      </entity>
+    </entities>
+</oe_scene>
