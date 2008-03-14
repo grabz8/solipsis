@@ -145,3 +145,7 @@ TOKAMAK        Set/Unset Physics management by Tokamak
 About Navi/LLMozLib Debug assertion, to avoid them:
 Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
  XPCOM_DEBUG_BREAK = warn
+
+LLMozLib was originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll, msvcr71.dll, msvcr71d.dll
+are necessary when Solipsis is compiled/linked on VC > 7.1, unfortunately those DLLs were not packaged in
+a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist

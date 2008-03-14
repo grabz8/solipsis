@@ -324,3 +324,10 @@ Modeler updates :
  - reports from NavigatorModule into NavigatorModuleOnlyNav
 
 ---------------------------
+14/03/08
+
+LLMozLib was originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll, msvcr71.dll, msvcr71d.dll
+are necessary when Solipsis is compiled/linked on VC > 7.1, unfortunately those DLLs were not packaged in
+a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist
+
+---------------------------
