@@ -81,10 +81,16 @@ bool Instance::_setWindow()
     if (mWindow == 0)
         return false;
 
-    // Initialize resources
-    mOgreApplication->initResources();
+    try {
+        // Initialize resources
+        mOgreApplication->initResources();
 
-    initialize();
+        initialize();
+    }
+    catch (Ogre::Exception& e)
+    {
+        throw "Instance::_setWindow() Unable to initialize instance, OGRE exception: " + e.getDescription();
+    }
 
     return true;
 }
