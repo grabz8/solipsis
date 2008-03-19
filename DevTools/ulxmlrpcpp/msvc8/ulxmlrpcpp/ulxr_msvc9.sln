@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base64", "base64.vcproj", "{58C0C7B3-66C3-41C8-86E1-1FCB452BD90A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D1B5E526-900B-4C9F-9F42-8A15862B9A3C} = {D1B5E526-900B-4C9F-9F42-8A15862B9A3C}
