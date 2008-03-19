@@ -10,4 +10,4 @@ void sleep(unsigned long durationMs)
 
 //-------------------------------------------------------------------------------------
 
-} // namespace Platform
+}
