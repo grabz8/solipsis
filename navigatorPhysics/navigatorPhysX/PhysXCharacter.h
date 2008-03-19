@@ -22,8 +22,6 @@ protected:
     PhysXScene* mScene;
     /// Description
     Desc mDesc;
-    /// Controller manager
-    ::ControllerManager* mNxControllerManager;
     /// Capsule controller
     NxCapsuleController* mNxCapsuleController;
 
