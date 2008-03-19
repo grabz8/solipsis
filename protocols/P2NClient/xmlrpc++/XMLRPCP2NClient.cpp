@@ -50,7 +50,7 @@ void XMLRPCP2NClient::shareCnx(IP2NClient* P2NClient)
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::RetCode XMLRPCP2NClient::login(const std::string& xmlParams, std::string& xmlResp)
+IP2NClient::RetCode XMLRPCP2NClient::login(const std::string& xmlParams, std::string& xmlResp)
 {
     IP2NClient::RetCode retCode = IP2NClient::RCError;
 
@@ -88,7 +88,7 @@ XMLRPCP2NClient::RetCode XMLRPCP2NClient::login(const std::string& xmlParams, st
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::RetCode XMLRPCP2NClient::logout()
+IP2NClient::RetCode XMLRPCP2NClient::logout()
 {
     IP2NClient::RetCode retCode = IP2NClient::RCError;
 
@@ -129,7 +129,7 @@ const NodeId& XMLRPCP2NClient::getNodeId()
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::RetCode XMLRPCP2NClient::handleEvt(std::string& xmlResp)
+IP2NClient::RetCode XMLRPCP2NClient::handleEvt(std::string& xmlResp)
 {
     IP2NClient::RetCode retCode = IP2NClient::RCError;
 
@@ -156,7 +156,7 @@ XMLRPCP2NClient::RetCode XMLRPCP2NClient::handleEvt(std::string& xmlResp)
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::RetCode XMLRPCP2NClient::sendEvt(const std::string& xmlEvt, std::string& xmlResp)
+IP2NClient::RetCode XMLRPCP2NClient::sendEvt(const std::string& xmlEvt, std::string& xmlResp)
 {
     IP2NClient::RetCode retCode = IP2NClient::RCError;
 
