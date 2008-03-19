@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -141,10 +141,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib zlib.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
