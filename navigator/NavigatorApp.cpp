@@ -50,12 +50,21 @@ int main(int argc, char *argv[])
         // Destroy application
         application->destroy();
     }
+    catch (std::string exceptionStr)
+    {
+        std::string msg = "Unable to run the Navigator ...\n" + exceptionStr;
+#ifdef WIN32
+        MessageBox(0, msg.c_str(), "An exception has occured !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+#else
+        std::cerr << "An exception has occured !\n" << msg.c_str() << std::endl;
+#endif
+    }
     catch (...)
     {
 #ifdef WIN32
-        MessageBox(0, "Unable to launch the Navigator ...", "An exception has occured !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+        MessageBox(0, "Unable to run the Navigator ...", "An exception has occured !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 #else
-        std::cerr << "Unable to launch the Navigator ... An exception has occured !" << std::endl;
+        std::cerr << "Unable to run the Navigator ... An exception has occured !" << std::endl;
 #endif
     }
 
