@@ -80,7 +80,7 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
 		position.y = StringConverter::parseReal(posElem->Attribute("y"));
 		position.z = StringConverter::parseReal(posElem->Attribute("z"));
     }
-	// Position
+	// Rotation
 	TiXmlElement* rotElem = entity->FirstChildElement("rotation");
     if (rotElem)
     {

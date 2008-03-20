@@ -19,12 +19,12 @@ if exist "%dst%\OgreMain.dll" goto OgreMain_exist
  if exist "%OGRE_HOME%\bin\release\OgreMain.dll" xcopy "%OGRE_HOME%\bin\release\OgreMain.dll" "%dst%" /s /y
 :OgreMain_exist
 if not exist "%dst%\pthreadVC.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC.dll" "%dst%" /s /y
-if not exist "%dst%\XMLRPCP2NServer.dll" xcopy "..\Dependencies\protocols\P2NServer\xmlrpc++\ReleaseDLL\XMLRPCP2NServer.dll" "%dst%" /s /y
-if not exist "%dst%\ULXMLRPCPPP2NServer.dll" xcopy "..\Dependencies\protocols\P2NServer\ulxmlrpcpp\ReleaseDLL\ULXMLRPCPPP2NServer.dll" "%dst%" /s /y
+xcopy "..\Dependencies\protocols\P2NServer\xmlrpc++\ReleaseDLL\XMLRPCP2NServer.dll" "%dst%" /s /y
+xcopy "..\Dependencies\protocols\P2NServer\ulxmlrpcpp\ReleaseDLL\ULXMLRPCPPP2NServer.dll" "%dst%" /s /y
 if exist "..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\ulxmlrpcpp_23.dll" xcopy "..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\ulxmlrpcpp_23.dll" "%dst%" /s /y
 if exist "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" xcopy "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" "%dst%" /s /y
-if not exist "%dst%\XmlDatas.dll" xcopy "..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL\XmlDatas.dll" "%dst%" /s /y
-if not exist "%dst%\XMLRPCP2NClient.dll" xcopy "..\Dependencies\protocols\P2NClient\xmlrpc++\ReleaseDLL\XMLRPCP2NClient.dll" "%dst%" /s /y
+xcopy "..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL\XmlDatas.dll" "%dst%" /s /y
+xcopy "..\Dependencies\protocols\P2NClient\xmlrpc++\ReleaseDLL\XMLRPCP2NClient.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  xcopy "Plugins.cfg" "%dst%" /s /y

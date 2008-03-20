@@ -211,12 +211,21 @@ IP2NClient::RetCode Peer::handleEvt(const NodeId& nodeId, std::string& xmlRespSt
     time_t now;
 
     time(&now);
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> evt = mNodeManager->getNextEvtToHandle(nodeId);
+    if (!evt.isNull())
+#else
     XmlEvt* evt = mNodeManager->getNextEvtToHandle(nodeId);
     if (evt != 0)
+#endif
     {
         std::stringstream s;
         s << "<solipsis>" << evt->toXmlString() << "</solipsis>";
+#ifdef POOL
         mNodeManager->freeEvt(nodeId, evt);
+#else
+        mNodeManager->freeEvt(nodeId, evt);
+#endif
         xmlRespStr = s.str();
     }
 
@@ -266,7 +275,7 @@ bool Peer::_initialize()
 #endif
 
     // create and start the Node server
-    mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=4");
+    mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=8");
 	mP2NServer->init();
 	if (!mP2NServer->start())
         return false;
