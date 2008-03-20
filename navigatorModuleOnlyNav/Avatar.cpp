@@ -21,8 +21,15 @@ String Avatar::mDefaultStateAnimName[SCount] = {
 #define XMLUPDATE_ROTATION_THRESHOLD Radian(Math::PI*0.001f)
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+#else
 Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+#endif
     OgrePeer(xmlEntity, isLocal),
+#ifdef POOL
+    mUpdatedXmlEntity((XmlEntity*)0),
+#endif
     mState(SNone),
     mMvtType(MT3rdPerson),
     mSceneNode(sceneNode),
@@ -35,9 +42,18 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 {
+#ifdef POOL
+    if (isLocal)
+    {
+        mUpdatedXmlEntity.allocate();
+        mUpdatedXmlEntity->setDefinedAttributes(XmlEntity::DANone);
+        mUpdatedXmlEntity->setUid(mXmlEntity->getUid());
+    }
+#else
     mUpdatedXmlEntity = 0;
     if (isLocal)
         mUpdatedXmlEntity = new XmlEntity(mXmlEntity->getUid());
+#endif
 
     for (int a = 0;a < SCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
@@ -73,7 +89,10 @@ Avatar::~Avatar()
     }
     mSceneNode->getCreator()->destroySceneNode(mSceneNode->getName());
 
+#ifdef POOL
+#else
     delete mUpdatedXmlEntity;
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -148,7 +167,11 @@ void Avatar::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool Avatar::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 bool Avatar::update(XmlEntity* xmlEntity)
+#endif
 {
     static int c;
     static unsigned long l = (unsigned long)-1;

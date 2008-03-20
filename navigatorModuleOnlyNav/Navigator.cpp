@@ -665,9 +665,19 @@ bool Navigator::connect()
     mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, "");
 
     //Try connection
+#ifdef POOL
+    RefCntPoolPtr<XmlLogin> xmlLogin;
+    xmlLogin->setUsername("user");
+    xmlLogin->setPwd("demo");
+#else
     XmlLogin xmlLogin("user", "demo");
+#endif
     std::list<EntityUID> myEntities;
+#ifdef POOL
+    bool nodeResponse = mXmlRpcClient->login(*xmlLogin, myEntities);
+#else
     bool nodeResponse = mXmlRpcClient->login(xmlLogin, myEntities);
+#endif
 
     if (!nodeResponse)
     {
@@ -706,9 +716,16 @@ bool Navigator::sendMessage(const String& message)
     if (mXmlRpcClient == 0)
         Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+    xmlEvt->setType(ETActionOnEntity);
+    std::string xmlResp;
+    return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
+#else
     XmlEvt xmlEvt(ETActionOnEntity);
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -748,7 +765,11 @@ void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 void Navigator::onPeerNew(XmlEntity* xmlEntity)
+#endif
 {
     OGRE_LOG("Navigator::onPeerNew() uid:" + StringConverter::toString(xmlEntity->getUid()));
 
@@ -761,7 +782,11 @@ void Navigator::onPeerNew(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 void Navigator::onPeerLost(XmlEntity* xmlEntity)
+#endif
 {
     OGRE_LOG("Navigator::onPeerLost() uid:" + StringConverter::toString(xmlEntity->getUid()));
 
@@ -770,7 +795,11 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+void Navigator::onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
+#endif
 {
 //    OGRE_LOG("Navigator::onPeerUpdated()");
 
@@ -784,24 +813,39 @@ void Navigator::processEvents()
 //    OGRE_LOG("Navigator::processEvents()");
 
     // Process each event
-    std::list<XmlEvt*>* nodeEvents = beginProcessEvents();
-    for (std::list<XmlEvt*>::iterator evt = nodeEvents->begin();evt != nodeEvents->end();++evt)
+    NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
+    for (NodeEventListener::EvtsList::iterator evt = nodeEvents->begin();evt != nodeEvents->end();++evt)
     {
         switch ((*evt)->getType())
         {
         case ETNewEntity:
+#ifdef POOL
+            onPeerNew(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+#else
             onPeerNew((XmlEntity*)((*evt)->getDatas()));
+#endif
             break;
         case ETLostEntity:
+#ifdef POOL
+            onPeerLost(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+#else
             onPeerLost((XmlEntity*)((*evt)->getDatas()));
+#endif
             break;
         case ETUpdatedEntity:
+#ifdef POOL
+            onPeerUpdated(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+#else
             onPeerUpdated((XmlEntity*)((*evt)->getDatas()));
+#endif
             break;
         default: // Caller already check type consistency
             break;
         }
+#ifdef POOL
+#else
         delete (*evt);
+#endif
     }
     endProcessEvents();
 }
@@ -819,7 +863,11 @@ void Navigator::sendEvents()
     OgrePeerManager::EvtsList& evtsList = mOgrePeerManager->getEvtsToSendList();
     for (OgrePeerManager::EvtsList::iterator it = evtsList.begin(); it != evtsList.end(); ++it)
     {
-        if (!mXmlRpcClient->sendEvt(*it, xmlResp))
+#ifdef POOL
+        if (!mXmlRpcClient->sendEvt(*(*it), xmlResp))
+#else
+        if (!mXmlRpcClient->sendEvt((*it), xmlResp))
+#endif
             OGRE_LOG("Navigator::sendEvents() Unable to send event !");
     }
     evtsList.clear();

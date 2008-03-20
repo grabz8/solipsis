@@ -217,9 +217,15 @@ protected:
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 
+#ifdef POOL
+    virtual void onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual void onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual void onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity);
+#else
     virtual void onPeerNew(XmlEntity* xmlEntity);
     virtual void onPeerLost(XmlEntity* xmlEntity);
     virtual void onPeerUpdated(XmlEntity* xmlEntity);
+#endif
 };
 
 } // namespace Solipsis

@@ -13,6 +13,9 @@ class NavigatorXMLRPCClient;
 */
 class NodeEventListener : public BasicThread
 {
+public:
+    typedef std::list<NodeEvent*> EvtsList;
+
 protected:
     // XMLRPC client
     NavigatorXMLRPCClient*& mXmlRpcClient;
@@ -21,13 +24,13 @@ private:
     // mutex to secure events lists accesses
     pthread_mutex_t mNodeEventsListsMutex;
     // first events list storage
-    std::list<NodeEvent*> mNodeEventsList1;
+    EvtsList mNodeEventsList1;
     // second events list storage
-    std::list<NodeEvent*> mNodeEventsList2;
+    EvtsList mNodeEventsList2;
     // current list used to receive new events
-    std::list<NodeEvent*>* mNodeEventsListReceiving;
+    EvtsList* mNodeEventsListReceiving;
     // current list containing events to process
-    std::list<NodeEvent*>* mNodeEventsListProcessing;
+    EvtsList* mNodeEventsListProcessing;
 
 public:
     NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient);
@@ -38,7 +41,7 @@ protected:
     virtual void run();
 
     // begin to process events
-    virtual std::list<NodeEvent*>* beginProcessEvents();
+    virtual EvtsList* beginProcessEvents();
     // end of events processing
     virtual void endProcessEvents();
 };

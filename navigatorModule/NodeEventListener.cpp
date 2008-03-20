@@ -56,7 +56,7 @@ void NodeEventListener::run()
 }
 
 //-------------------------------------------------------------------------------------
-std::list<NodeEvent*>* NodeEventListener::beginProcessEvents()
+NodeEventListener::EvtsList* NodeEventListener::beginProcessEvents()
 {
     pthread_mutex_lock(&mNodeEventsListsMutex);
     return mNodeEventsListProcessing;
