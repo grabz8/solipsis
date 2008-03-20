@@ -331,3 +331,17 @@ are necessary when Solipsis is compiled/linked on VC > 7.1, unfortunately those 
 a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist
 
 ---------------------------
+17/03/08
+
+XmlData inherited classes are managed through synchronized references counted pointers + pool,
+to avoid too much heap new/delete operations and to automatically "garbage" no more used instances
+like XmlEntity (eg. Avatar::XmlEntity attribute is used after Avatar instance deletion to send the lost event
+to other peers/nodes)
+
+---------------------------
+20/03/08
+
+bug fix into peerPhysX plugin on controller manager releasing crash when 2 avatars are connected then
+the first connected finally disconnect, legacy ::ControllerManager used instead of NxControllerManager
+
+---------------------------
