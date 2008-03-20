@@ -16,7 +16,11 @@ namespace Solipsis {
 class Node
 {
 public:
+#ifdef POOL
+    typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
+#else
     typedef std::list<XmlEvt*> XmlEvtToHandleList;
+#endif
 
 protected:
     /// Node unique identifier
@@ -43,10 +47,17 @@ public:
 
     /** Process an event. */
     virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
+#ifdef POOL
+    /** Get next event to handle. */
+    virtual RefCntPoolPtr<XmlEvt> getNextEvtToHandle();
+    /** Free event (handled event). */
+    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& evt);
+#else
     /** Get next event to handle. */
     virtual XmlEvt* getNextEvtToHandle();
     /** Free event (handled event). */
     virtual bool freeEvt(XmlEvt* evt);
+#endif
     /** Freeze. */
     virtual bool freeze(bool frozen) { mFrozen = frozen; return true; }
 };

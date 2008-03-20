@@ -37,7 +37,11 @@ public:
 
 protected:
     /// Entity descriptor
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> mXmlEntity;
+#else
     XmlEntity* mXmlEntity;
+#endif
     /// Whether to apply the gravity
     bool mGravity;
 #ifdef PHYSICSPLUGINS
@@ -55,7 +59,11 @@ public:
     virtual ~Entity();
 
     /** Get the entity descriptor. */
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity>& getXmlEntity();
+#else
     XmlEntity* getXmlEntity();
+#endif
     /** Set whether the gravity is applied or not. */
     void setGravity(bool enabled);
     /** Determines whether the gravity is applied or not. */

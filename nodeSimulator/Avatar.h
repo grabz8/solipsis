@@ -24,7 +24,11 @@ protected:
 public: // TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO Entity class should have 1 processEvt() virtual method called by Node
     /// Dirty flag
     bool mDirty;
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> mUpdatedXmlEntity;
+#else
     XmlEntity mUpdatedXmlEntity;
+#endif
 
 public:
     /** Constructor. */

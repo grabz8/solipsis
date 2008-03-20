@@ -33,7 +33,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
     std::string xmlAvatarStr = "\
 <entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
  <flags bitmask=\"1\" />\
- <position x=\"17.0\" y=\"-57.0\" z=\"115.0\" />\
+ <position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\
   <min x=\"-0.82447118\" y=\"-0.013709042\" z=\"-0.64538133\" />\
@@ -156,17 +156,6 @@ bool NodeManager::logout(const NodeId& nodeId)
     avatarNode->freeze(true);
     mDestroyedNodeIds.insert(nodeId);
 
-    // Remove this avatar from avatars aware of
-    for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
-        if (node->first != avatarNode->getNodeId())
-        {
-            if (node->second->getType().compare("avatar") == 0)
-            {
-                AvatarNode* an = (AvatarNode*)node->second;
-                an->removeAwareEntity(&avatarNode->getEntity());
-            }
-        }
-
     return true;
 }
 
@@ -177,6 +166,22 @@ bool NodeManager::update()
     for (i = mDestroyedNodeIds.begin(); i != mDestroyedNodeIds.end(); i++)
     {
         AvatarNode* avatarNode = (AvatarNode*)mNodes[*i];
+        // Remove this avatar from avatars aware of
+        for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+            if (node->first != avatarNode->getNodeId())
+            {
+                if (node->second->getType().compare("avatar") == 0)
+                {
+                    AvatarNode* an = (AvatarNode*)node->second;
+                    avatarNode->removeAwareEntity(&an->getEntity());
+                    an->removeAwareEntity(&avatarNode->getEntity());
+                }
+                else if (node->second->getType().compare("site") == 0)
+                {
+                    SiteNode* sn = (SiteNode*)node->second;
+                    avatarNode->removeAwareEntity(&sn->getEntity());
+                }
+            }
         mNodes.erase(*i);
         delete avatarNode;
         /////////////////////////////////////
@@ -205,17 +210,29 @@ bool NodeManager::processEvt(const NodeId& nodeId, XmlEvt& xmlEvt, std::string& 
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+RefCntPoolPtr<XmlEvt> NodeManager::getNextEvtToHandle(const NodeId& nodeId)
+#else
 XmlEvt* NodeManager::getNextEvtToHandle(const NodeId& nodeId)
+#endif
 {
     Node* node = mNodes[nodeId];
     if (node == 0)
+#ifdef POOL
+        return RefCntPoolPtr<XmlEvt>::nullPtr;
+#else
         return 0;
+#endif
 
     return node->getNextEvtToHandle();
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool NodeManager::freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& evt)
+#else
 bool NodeManager::freeEvt(const NodeId& nodeId, XmlEvt* evt)
+#endif
 {
     Node* node = mNodes[nodeId];
     if (node == 0)

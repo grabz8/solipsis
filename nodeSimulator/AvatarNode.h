@@ -20,8 +20,13 @@ namespace Solipsis {
 class AvatarNode : public Node, public TimeListener, public EntityListener
 {
 public:
+#ifdef POOL
+    /// <EntityUID, RefCntPoolPtr<XmlEntity>> map
+    typedef std::map<EntityUID, RefCntPoolPtr<XmlEntity>> XmlEntityMap;
+#else
     /// <EntityUID, XmlEntity*> map
     typedef std::map<EntityUID, XmlEntity*> XmlEntityMap;
+#endif
 
 protected:
     /// Mutex
@@ -63,7 +68,11 @@ public:
     /** See Solipsis::Node. */
     virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
     /** See Solipsis::Node. */
+#ifdef POOL
+    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& evt);
+#else
     virtual bool freeEvt(XmlEvt* evt);
+#endif
     /** See Solipsis::Node. */
     virtual bool freeze(bool frozen);
 

@@ -43,10 +43,17 @@ public:
 
     /** Process an event. */
     bool processEvt(const NodeId& nodeId, XmlEvt& xmlEvt, std::string& xmlRespStr);
+#ifdef POOL
+    /** Get next event to handle. */
+    RefCntPoolPtr<XmlEvt> getNextEvtToHandle(const NodeId& nodeId);
+    /** Free event (handled event). */
+    bool freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& evt);
+#else
     /** Get next event to handle. */
     XmlEvt* getNextEvtToHandle(const NodeId& nodeId);
     /** Free event (handled event). */
     bool freeEvt(const NodeId& nodeId, XmlEvt* evt);
+#endif
 };
 
 } // namespace Solipsis

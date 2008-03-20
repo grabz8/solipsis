@@ -19,11 +19,18 @@ Entity::~Entity()
     destroyPhysics();
 #endif
 
+#ifdef POOL
+#else
     delete mXmlEntity;
+#endif
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+RefCntPoolPtr<XmlEntity>& Entity::getXmlEntity()
+#else
 XmlEntity* Entity::getXmlEntity()
+#endif
 {
     return mXmlEntity;
 }
