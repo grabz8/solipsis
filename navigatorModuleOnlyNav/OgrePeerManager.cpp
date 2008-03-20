@@ -43,7 +43,11 @@ void OgrePeerManager::setMyEntities(std::list<EntityUID> myEntities)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool OgrePeerManager::load(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 bool OgrePeerManager::load(XmlEntity* xmlEntity)
+#endif
 {
     class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
     public:
@@ -139,7 +143,10 @@ bool OgrePeerManager::remove(const EntityUID& entity, bool local)
         if (ogrePeer->second->isLocal() != local) continue;
         if (ogrePeer->second->getXmlEntity()->getUid() == entity)
         {
+#ifdef POOL
+#else
             delete ogrePeer->second->getXmlEntity();
+#endif
             delete ogrePeer->second;
             mOgrePeersMap.erase(ogrePeer);
             return true;
@@ -160,7 +167,10 @@ bool OgrePeerManager::removeAll(bool local)
         for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
         {
             if (ogrePeer->second->isLocal() != local) continue;
+#ifdef POOL
+#else
             delete ogrePeer->second->getXmlEntity();
+#endif
             delete ogrePeer->second;
             mOgrePeersMap.erase(ogrePeer);
             loopAgain = true;
@@ -172,7 +182,11 @@ bool OgrePeerManager::removeAll(bool local)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool OgrePeerManager::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 bool OgrePeerManager::update(XmlEntity* xmlEntity)
+#endif
 {
     OgrePeersMap::iterator it = mOgrePeersMap.find(xmlEntity->getUid());
     if ((it == mOgrePeersMap.end()) || (it->second == 0))
@@ -181,7 +195,10 @@ bool OgrePeerManager::update(XmlEntity* xmlEntity)
     OgrePeer* ogrePeer = it->second;
     bool result = ogrePeer->update(xmlEntity);
 
+#ifdef POOL
+#else
     delete xmlEntity;
+#endif
 
     return result;
 }
@@ -194,12 +211,23 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         it->second->update(evt.timeSinceLastFrame);
 
     // Send updated entities events to node
+#ifdef POOL
+#else
     XmlEvt xmlEvt(ETUpdatedEntity);
+#endif
     for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
     {
+#ifdef POOL
+        RefCntPoolPtr<XmlEntity>& updatedXmlEntity = it->second->getUpdatedXmlEntity();
+        if (updatedXmlEntity.isNull()) continue;
+        RefCntPoolPtr<XmlEvt> xmlEvt;
+        xmlEvt->setType(ETUpdatedEntity);
+        xmlEvt->setDatas(RefCntPoolPtr<XmlData>(updatedXmlEntity));
+#else
         XmlEntity* updatedXmlEntity = it->second->getUpdatedXmlEntity();
         if (updatedXmlEntity == 0) continue;
         xmlEvt.setDatas(updatedXmlEntity);
+#endif
         mEvtsList.push_back(xmlEvt);
     }
 
@@ -207,7 +235,11 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+#else
 OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+#endif
 {
     if (mSceneMgr == 0)
         Exception(Exception::ERR_INTERNAL_ERROR,
@@ -260,7 +292,11 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+#else
 OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+#endif
 {
     if (mSceneMgr == 0)
         Exception(Exception::ERR_INTERNAL_ERROR,
@@ -306,7 +342,11 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+#else
 OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+#endif
 {
     if (mSceneMgr == 0)
         Exception(Exception::ERR_INTERNAL_ERROR,

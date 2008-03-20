@@ -4,7 +4,11 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+OgrePeer::OgrePeer(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
+#else
 OgrePeer::OgrePeer(XmlEntity* xmlEntity, bool isLocal) :
+#endif
     mXmlEntity(xmlEntity),
     mIsLocal(isLocal),
     mLod(0)
@@ -18,7 +22,11 @@ OgrePeer::~OgrePeer()
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+RefCntPoolPtr<XmlEntity>& OgrePeer::getXmlEntity()
+#else
 XmlEntity* OgrePeer::getXmlEntity()
+#endif
 {
     return mXmlEntity;
 }

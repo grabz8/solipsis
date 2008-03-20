@@ -4,7 +4,11 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+Scene::Scene(RefCntPoolPtr<XmlEntity>& entity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
+#else
 Scene::Scene(XmlEntity* entity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
+#endif
     OgrePeer(entity, isLocal),
     mSceneNode(sceneNode),
     mStaticGeometry(0),
@@ -33,7 +37,11 @@ void Scene::update(Ogre::Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool Scene::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+#else
 bool Scene::update(XmlEntity* xmlEntity)
+#endif
 {
     if (xmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
     {

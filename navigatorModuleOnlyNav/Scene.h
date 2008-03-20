@@ -17,7 +17,11 @@ protected:
     RaySceneQuery* mRaySceneQuery;
 
 public:
+#ifdef POOL
+    Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
+#else
     Scene(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
+#endif
     virtual ~Scene();
 
     // Set and get
@@ -26,7 +30,11 @@ public:
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
+#ifdef POOL
+    virtual bool update(RefCntPoolPtr<XmlEntity>& xmlEntity);
+#else
     virtual bool update(XmlEntity* xmlEntity);
+#endif
 
 protected:
     void destroy();

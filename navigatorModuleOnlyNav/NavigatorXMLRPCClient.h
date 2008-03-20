@@ -42,7 +42,11 @@ public:
     @param xmlEvt If exists, the allocated event to handle
     @returns True if handle operation succeded (even if no event returned)
     */
+#ifdef POOL
+    bool handleEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
+#else
     bool handleEvt(XmlEvt** xmlEvt);
+#endif
     /** send an event.
     @param xmlEvt The event to send
     @param xmlResp The response
