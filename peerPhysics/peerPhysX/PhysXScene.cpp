@@ -22,7 +22,7 @@ PhysXScene::~PhysXScene()
     if (PhysXHelpers::getNxPhysicsSDK() == 0)
         return;
 
-    delete mNxControllerManager;
+    NxReleaseControllerManager(mNxControllerManager);
 
     if (mNxScene != 0)
     {
@@ -57,7 +57,9 @@ bool PhysXScene::create()
     mTimeSinceLastFrame = 0.0f;
 
     // Create the controller manager
-    mNxControllerManager = new ::ControllerManager();
+    mNxControllerManager = NxCreateControllerManager(PhysXHelpers::getNxUserAllocatorDefault());
+    if (mNxControllerManager == 0)
+        return false;
 
     return true;
 }

@@ -16,7 +16,7 @@ PhysXCharacter::~PhysXCharacter()
 {
     if (mNxCapsuleController != 0)
     {
-        ::ControllerManager* nxControllerManager = mScene->getNxControllerManager();
+        NxControllerManager* nxControllerManager = mScene->getNxControllerManager();
         assert(nxControllerManager != 0);
         nxControllerManager->releaseController(*mNxCapsuleController);
     }

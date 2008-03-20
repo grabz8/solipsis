@@ -5,6 +5,7 @@
 
 #include "NxPhysics.h"
 #include "NxStream.h"
+#include "NxUserAllocatorDefault.h"
 
 class UserStream : public NxStream
 	{
@@ -88,6 +89,7 @@ class PhysXHelpers
 {
 protected:
     static NxPhysicsSDK* mNxPhysicsSDK;
+    static NxUserAllocatorDefault mNxUserAllocatorDefault;
 
 private:
     /// No instanciation constructor
@@ -101,6 +103,7 @@ public:
 
     /// Get/Set
     static NxPhysicsSDK* getNxPhysicsSDK() { return mNxPhysicsSDK; }
+    static NxUserAllocatorDefault* getNxUserAllocatorDefault() { return &mNxUserAllocatorDefault; }
 
     /// Conversions
     static inline Vector3 NxVec32Vector3(NxVec3 v) { return Vector3(v.x, v.y, v.z); }

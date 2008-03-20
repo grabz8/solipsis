@@ -23,7 +23,7 @@ protected:
     /// Actor
     NxActor* mNxActor;
     /// Controller manager
-    ::ControllerManager* mNxControllerManager;
+    NxControllerManager* mNxControllerManager;
 
     /// Time since last frame in seconds
     Real mTimeSinceLastFrame;
@@ -78,7 +78,7 @@ public:
     /// Get actor
     NxActor* getNxActor() { return mNxActor; }
     /// Get character controller
-    ::ControllerManager* getNxControllerManager() { return mNxControllerManager; }
+    NxControllerManager* getNxControllerManager() { return mNxControllerManager; }
 };
 
 } // namespace Solipsis

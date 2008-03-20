@@ -227,6 +227,7 @@ void MemoryReadBuffer::readBuffer(void* dest, NxU32 size) const
 using namespace Solipsis;
 
 NxPhysicsSDK* PhysXHelpers::mNxPhysicsSDK = 0;
+NxUserAllocatorDefault PhysXHelpers::mNxUserAllocatorDefault;
 
 //-------------------------------------------------------------------------------------
 bool PhysXHelpers::init()
