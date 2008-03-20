@@ -991,8 +991,8 @@ void Navigator::processEvents()
 //    OGRE_LOG("Navigator::processEvents()");
 
     // Process each event
-    std::list<NodeEvent*>* nodeEvents = beginProcessEvents();
-    for (std::list<NodeEvent*>::iterator evt = nodeEvents->begin();evt != nodeEvents->end();++evt)
+    NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
+    for (NodeEventListener::EvtsList::iterator evt = nodeEvents->begin();evt != nodeEvents->end();++evt)
     {
         switch ((*evt)->getType())
         {
