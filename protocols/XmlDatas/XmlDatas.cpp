@@ -2,6 +2,21 @@
 
 namespace Solipsis {
 
+#ifdef POOL
+Pool XmlLogin::mPool;
+Pool XmlContent::mPool;
+Pool XmlEntity::mPool;
+Pool XmlEvt::mPool;
+Pool& XmlLogin::getStaticPool() { return mPool; }
+Pool& XmlLogin::getPool() const { return mPool; }
+Pool& XmlContent::getStaticPool() { return mPool; }
+Pool& XmlContent::getPool() const { return mPool; }
+Pool& XmlEntity::getStaticPool() { return mPool; }
+Pool& XmlEntity::getPool() const { return mPool; }
+Pool& XmlEvt::getStaticPool() { return mPool; }
+Pool& XmlEvt::getPool() const { return mPool; }
+#endif
+
 //-------------------------------------------------------------------------------------
 bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr)
 {
@@ -260,7 +275,11 @@ std::string XmlEvt::toXmlString() const
 {
     std::stringstream s;
     s << "<evt type=\"" << mType << "\">";
+#ifdef POOL
+    if (!mDatas.isNull()) s << mDatas->toXmlString();
+#else
     if (mDatas != 0) s << mDatas->toXmlString();
+#endif
     s << "</evt>";
     return s.str();
 }
@@ -268,8 +287,11 @@ std::string XmlEvt::toXmlString() const
 //-------------------------------------------------------------------------------------
 bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
 {
+#ifdef POOL
+#else
     delete mDatas;
     mDatas = 0;
+#endif
 
     TiXmlElement* elt;
     const char* attr = 0;
@@ -282,9 +304,15 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
 
     if ((elt = elt->FirstChildElement("entity")) != 0)
     {
+#ifdef POOL
+        RefCntPoolPtr<XmlEntity> xmlEntity;
+        xmlEntity->fromXmlElt(elt);
+        mDatas = RefCntPoolPtr<XmlData>(xmlEntity);
+#else
         XmlEntity* entity = new XmlEntity();
         entity->fromXmlElt(elt);
         mDatas = entity;
+#endif
     }
 
     return true;
