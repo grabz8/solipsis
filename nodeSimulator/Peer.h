@@ -54,6 +54,8 @@ public:
     /** See IPeer. */
     static IPeer* createPeer(const char* appPath, int argc, char** argv);
     /** See IPeer. */
+    virtual bool initialize();
+    /** See IPeer. */
     virtual bool destroy();
 
     /** See BasicThread. */

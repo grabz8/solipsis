@@ -9,9 +9,18 @@ OgreHelpers* OgreHelpers::mSingleton = 0;
 //-------------------------------------------------------------------------------------
 bool OgreHelpers::_initialize()
 {
+    mRoot = Ogre::Root::getSingletonPtr();
+    mRootAllocated = false;
+    if (mRoot != 0)
+    {
+        mMeshSerializer = new MeshSerializer();
+        return true;
+    }
+
     mRoot = new Root();
     if (mRoot == 0)
         return false;
+    mRootAllocated = true;
     mMeshSerializer = new MeshSerializer();
     mHWBufferManager = new DefaultHardwareBufferManager(); // needed because we don't have a rendersystem
 /*    mLogManager = new LogManager();
@@ -35,9 +44,10 @@ bool OgreHelpers::_initialize()
 //-------------------------------------------------------------------------------------
 void OgreHelpers::_shutdown()
 {
-    delete mRoot;
-    delete mHWBufferManager;
     delete mMeshSerializer;
+    if (mRootAllocated)
+        delete mRoot;
+    delete mHWBufferManager;
 /*    delete mTimer;
     delete mMeshManager;
     delete mHWBufferManager;

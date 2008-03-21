@@ -26,16 +26,7 @@ Peer* Peer::ms_Singleton = 0;
 IPeer* IPeer::createPeer(const char* appPath, int argc, char** argv)
 {
     if (Peer::ms_Singleton == 0)
-    {
         Peer::ms_Singleton = new Peer(appPath, argc, argv);
-        assert(Peer::ms_Singleton);
-        if (!Peer::ms_Singleton->_initialize())
-        {
-            delete Peer::ms_Singleton;
-            Peer::ms_Singleton = 0;
-            return false;
-        }
-    }
 
     assert(Peer::ms_Singleton != 0);
 
@@ -117,6 +108,12 @@ void Peer::removeTimeListener(TimeListener* oldListener)
 {
     // Remove, 1 only (set)
     mRemovedTimeListeners.insert(oldListener);
+}
+
+//-------------------------------------------------------------------------------------
+bool Peer::initialize()
+{
+    return _initialize();
 }
 
 //-------------------------------------------------------------------------------------

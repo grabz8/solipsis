@@ -345,3 +345,15 @@ bug fix into peerPhysX plugin on controller manager releasing crash when 2 avata
 the first connected finally disconnect, legacy ::ControllerManager used instead of NxControllerManager
 
 ---------------------------
+21/03/08
+
+some MTSafe bugs fixed into class RefCntPoolPtr
+
+New Peer vs Navigator config called NCS (Null Client Server) added in order to link Peer lib
+and Navigator lib together into the same Navigator executable application
+(for instance it is NodeSimulator which is linked but future work will permit to link with the final Peer lib)
+ - P2NNullClientServer project added into protocols
+ - New visual configs NCS added into NodeSimulator, NavigatorModuleOnlyNav and PeerPhysics
+ - some updates to let sharing Ogre between Peer and Navigator libs
+
+---------------------------

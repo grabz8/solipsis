@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C++ Express 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlDatas", "XmlDatas\XmlDatas_vc8.vcproj", "{DD2704DC-41CA-4FBB-99FC-204FA6942500}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XMLRPCP2NClient", "P2NClient\xmlrpc++\XMLRPCP2NClient_vc8.vcproj", "{DF452F0F-5CA2-44A6-BFB9-2E0520BF718A}"
@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ULXMLRPCPPP2NServer", "P2NS
 	ProjectSection(ProjectDependencies) = postProject
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P2NNullClientServer", "P2NNullClientServer\P2NNullClientServer_vc8.vcproj", "{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Debug|Win32.Build.0 = Debug|Win32
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Release|Win32.ActiveCfg = Release|Win32
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Release|Win32.Build.0 = Release|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Debug|Win32.Build.0 = Debug|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Release|Win32.ActiveCfg = Release|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

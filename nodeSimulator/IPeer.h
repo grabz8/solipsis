@@ -25,6 +25,12 @@ public:
     */
     static IPeer* getPeer();
 
+    /** Initialize the peer application object
+    @remarks
+	    Returns false if application cannot be initialized
+    */
+    virtual bool initialize() = 0;
+
     /** A client should call this last
     @remarks
 	    Returns false if application cannot be destroyed

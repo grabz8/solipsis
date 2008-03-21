@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
         // Create the Peer application
         IPeer* peer = IPeer::createPeer("", argc, argv);
         assert(peer != 0);
+        bool initialized = peer->initialize();
+        assert(initialized);
 
         // Client part
         bool client = ((argc > 5) && (strstr(argv[5], "-c") != 0));

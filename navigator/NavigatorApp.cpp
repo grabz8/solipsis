@@ -3,6 +3,10 @@
 #include "IApplication.h"
 #include "IInstance.h"
 #include "IWindow.h"
+#ifdef NULLCLIENTSERVER
+#include "PeerModule.h"
+#include "IPeer.h"
+#endif
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -24,9 +28,23 @@ int main(int argc, char *argv[])
     setlocale(LC_NUMERIC, "English");
     try
     {
+#ifdef NULLCLIENTSERVER
+        // Create the Peer application
+        int argc = 1;
+        static char* argv[] = {"Navigator.exe"};
+        IPeer* peer = IPeer::createPeer("", argc, argv);
+        assert(peer != 0);
+#endif
+
         // Create application
         IApplication* application = IApplication::createApplication("", true, "Solipsis - StandAlone Navigator");
         assert(application != 0);
+
+#ifdef NULLCLIENTSERVER
+        // Initialize the Peer application
+        bool initialized = peer->initialize();
+        assert(initialized);
+#endif
 
         std::string envVar;
         envVar = CONTAINER_NAME_ENV"=standalone";
@@ -46,6 +64,11 @@ int main(int argc, char *argv[])
 
         // Destroy instance
         application->destroyInstance(instance);
+
+#ifdef NULLCLIENTSERVER
+        // Destroy the Peer application
+        peer->destroy();
+#endif
 
         // Destroy application
         application->destroy();

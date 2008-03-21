@@ -23,6 +23,7 @@ private:
 
 protected:
     Ogre::Root* mRoot;
+    bool mRootAllocated;
     Ogre::MeshSerializer* mMeshSerializer;
     Ogre::DefaultHardwareBufferManager *mHWBufferManager;
 /*    Ogre::LogManager* mLogManager;
