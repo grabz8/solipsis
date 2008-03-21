@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ULXMLRPCPPP2NServer", "P2NS
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P2NNullClientServer", "P2NNullClientServer\P2NNullClientServer_vc9.vcproj", "{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +41,10 @@ Global
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Debug|Win32.Build.0 = Debug|Win32
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Release|Win32.ActiveCfg = Release|Win32
 		{D2327232-EF4E-4CE5-A9CA-568D2BC9690B}.Release|Win32.Build.0 = Release|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Debug|Win32.Build.0 = Debug|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Release|Win32.ActiveCfg = Release|Win32
+		{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
