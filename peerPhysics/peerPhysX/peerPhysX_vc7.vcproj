@@ -46,8 +46,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\debug&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\debug\plugins.cfg&quot;
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -100,8 +100,118 @@ $(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(Proj
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\release&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\release\plugins.cfg&quot;
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)\plugins.cfg&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="DebugNCS|Win32"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\..\Dependencies\peerModule\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PEERPHYSX_EXPORTS;OGRE_PEERPHYSXPLUGIN_EXPORTS;VRD"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="4"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="PhysXLoader.lib NxCooking.lib NxCharacter.lib OgreMain_d.lib Peer.lib"
+				OutputFile="$(OutDir)\PeerPlugin_PhysX_d.dll"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;&quot;..\..\Dependencies\peerModule\lib\Debug&quot;"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/peerPhysX.pdb"
+				SubSystem="2"
+				ImportLibrary="$(OutDir)/peerPhysX.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Debug&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Debug\plugins.cfg&quot;
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseNCS|Win32"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\..\Dependencies\peerModule\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PEERPHYSX_EXPORTS;OGRE_PEERPHYSXPLUGIN_EXPORTS;NVRD"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="PhysXLoader.lib NxCooking.lib NxCharacter.lib OgreMain.lib Peer.lib"
+				OutputFile="$(OutDir)\PeerPlugin_PhysX.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;&quot;..\..\Dependencies\peerModule\lib\Release&quot;"
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/peerPhysX.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Release&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Release\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

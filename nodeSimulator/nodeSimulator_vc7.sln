@@ -10,17 +10,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
+		DebugNCS = DebugNCS
 		Release = Release
+		ReleaseNCS = ReleaseNCS
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.Debug.ActiveCfg = Debug|Win32
 		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.Debug.Build.0 = Debug|Win32
+		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.DebugNCS.ActiveCfg = DebugNCS|Win32
+		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.DebugNCS.Build.0 = DebugNCS|Win32
 		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.Release.ActiveCfg = Release|Win32
 		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.Release.Build.0 = Release|Win32
+		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.ReleaseNCS.ActiveCfg = ReleaseNCS|Win32
+		{8EC2BEE3-E628-4CF0-917B-50418F19123D}.ReleaseNCS.Build.0 = ReleaseNCS|Win32
 		{058DA683-2FA5-4481-A09A-8960D4278AA6}.Debug.ActiveCfg = Debug|Win32
 		{058DA683-2FA5-4481-A09A-8960D4278AA6}.Debug.Build.0 = Debug|Win32
+		{058DA683-2FA5-4481-A09A-8960D4278AA6}.DebugNCS.ActiveCfg = DebugNCS|Win32
 		{058DA683-2FA5-4481-A09A-8960D4278AA6}.Release.ActiveCfg = Release|Win32
 		{058DA683-2FA5-4481-A09A-8960D4278AA6}.Release.Build.0 = Release|Win32
+		{058DA683-2FA5-4481-A09A-8960D4278AA6}.ReleaseNCS.ActiveCfg = ReleaseNCS|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
