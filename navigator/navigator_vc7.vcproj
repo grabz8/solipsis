@@ -34,7 +34,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib MdlrTools_d.lib"
+				AdditionalDependencies="Navigator.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames=""
@@ -83,7 +83,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib MdlrTools.lib"
+				AdditionalDependencies="Navigator.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="TRUE"
