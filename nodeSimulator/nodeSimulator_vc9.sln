@@ -10,17 +10,25 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		DebugNCS|Win32 = DebugNCS|Win32
 		Release|Win32 = Release|Win32
+		ReleaseNCS|Win32 = ReleaseNCS|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.Debug|Win32.ActiveCfg = Debug|Win32
 		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.Debug|Win32.Build.0 = Debug|Win32
+		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.DebugNCS|Win32.ActiveCfg = DebugNCS|Win32
+		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.DebugNCS|Win32.Build.0 = DebugNCS|Win32
 		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.Release|Win32.ActiveCfg = Release|Win32
 		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.Release|Win32.Build.0 = Release|Win32
+		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.ReleaseNCS|Win32.ActiveCfg = ReleaseNCS|Win32
+		{82D75D89-1234-4CEF-9768-5CF09E2CEA04}.ReleaseNCS|Win32.Build.0 = ReleaseNCS|Win32
 		{A206BD57-63BC-4848-9764-62799F867772}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A206BD57-63BC-4848-9764-62799F867772}.Debug|Win32.Build.0 = Debug|Win32
+		{A206BD57-63BC-4848-9764-62799F867772}.DebugNCS|Win32.ActiveCfg = DebugNCS|Win32
 		{A206BD57-63BC-4848-9764-62799F867772}.Release|Win32.ActiveCfg = Release|Win32
 		{A206BD57-63BC-4848-9764-62799F867772}.Release|Win32.Build.0 = Release|Win32
+		{A206BD57-63BC-4848-9764-62799F867772}.ReleaseNCS|Win32.ActiveCfg = ReleaseNCS|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
