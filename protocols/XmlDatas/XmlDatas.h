@@ -89,15 +89,22 @@ public:
 
 protected:
     inline void addRef() {
-        if (mRep == 0)
-            return;
         pthread_mutex_lock(&mMutex);
+        if (mRep == 0)
+        {
+            pthread_mutex_unlock(&mMutex);
+            return;
+        }
         ++(mRep->mRefCount);
         pthread_mutex_unlock(&mMutex);
     }
     inline void delRef() {
-        if (mRep == 0) return;
         pthread_mutex_lock(&mMutex);
+        if (mRep == 0)
+        {
+            pthread_mutex_unlock(&mMutex);
+            return;
+        }
         if (--(mRep->mRefCount) == 0)
         {
             mRep->clear();
@@ -159,9 +166,27 @@ public:
         pthread_mutex_unlock(&mMutex);
         mRep->mRefCount = 1;
     }
-    inline void bind(T* rep) { assert(mRep == 0); mRep = rep; mRep->mRefCount = 1; }
-    inline bool unique() const { return mRep->mRefCount == 1; }
-    inline unsigned int refCount() const { assert(mRep != 0); return mRep->mRefCount; }
+    inline void bind(T* rep) {
+        assert(mRep == 0);
+        pthread_mutex_lock(&mMutex);
+        mRep = rep;
+        mRep->mRefCount = 1;
+        pthread_mutex_unlock(&mMutex);
+    }
+    inline bool unique() const {
+        assert(mRep != 0);
+        pthread_mutex_lock(&mMutex);
+        bool unique = (mRep->mRefCount == 1);
+        pthread_mutex_unlock(&mMutex);
+        return unique;
+    }
+    inline unsigned int refCount() const {
+        assert(mRep != 0);
+        pthread_mutex_lock(&mMutex);
+        unsigned int refCount = mRep->mRefCount;
+        pthread_mutex_unlock(&mMutex);
+        return refCount;
+    }
     inline T* getPointer() const { return mRep; }
     inline bool isNull(void) const { return mRep == 0; }
     inline void setNull(void) { delRef(); mRep->mRefCount = 0; mRep = 0; }
