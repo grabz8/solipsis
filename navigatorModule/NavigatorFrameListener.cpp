@@ -469,7 +469,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (getCameraMode() == CM1stPerson)
     {
         mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
-        mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
+        mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
     }
 // GILLES begin
     else if (getCameraMode() == CMAroundPerson)
