@@ -98,6 +98,48 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
         debugCommands.erase(dbgCmd);
     }
 
+// GILLES begin
+    // Test for a debug command
+    dbgCmd = debugCommands.find("load");
+    if (dbgCmd != debugCommands.end())
+    {
+        Navigator* navigator = Navigator::getSingletonPtr();
+        String currentLevel (navigator->getOgrePeerManager()->getXmlObjectFilename());
+        String param (dbgCmd->second);
+        if (param.find(".xml") == String::npos)
+            param += ".xml";
+        
+        // the new world is not the same as the current, so unload the current before
+        if (param != currentLevel)
+        {
+            Peer* peer;
+
+            //std::list<Peer*> peersList;
+            for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = navigator->getOgrePeerManager()->getOgrePeersIteratorBegin();
+                ogrePeer != navigator->getOgrePeerManager()->getOgrePeersIteratorEnd();
+                ogrePeer++)
+            {
+                if (ogrePeer->second->getType().compare("avatar") == 0) 
+                    continue;
+
+                // if it's a scene peer
+                if (!ogrePeer->second->getPeer()->isLocal()) 
+                {
+                    peer = ogrePeer->second->getPeer();
+                    //peersList.push_back(peer);
+                }
+            }
+
+            // unload the current world
+            navigator->getSceneMgrPtr()->destroySceneNode(peer->getNetworkId() + "Scene");
+
+            // load the new world
+            //navigator->getOgrePeerManager()->load( peer, param );
+        }
+        debugCommands.erase(dbgCmd);
+    }
+// GILLES end
+
     return true;
 }
 
