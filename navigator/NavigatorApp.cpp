@@ -33,17 +33,20 @@ int main(int argc, char *argv[])
         int argc = 1;
         static char* argv[] = {"Navigator.exe"};
         IPeer* peer = IPeer::createPeer("", argc, argv);
-        assert(peer != 0);
+        if (peer == 0)
+            throw std::string("Unable to create the peer !");
 #endif
 
         // Create application
         IApplication* application = IApplication::createApplication("", true, "Solipsis - StandAlone Navigator");
-        assert(application != 0);
+        if (application == 0)
+            throw std::string("Unable to create the navigator application !");
 
 #ifdef NULLCLIENTSERVER
         // Initialize the Peer application
         bool initialized = peer->initialize();
-        assert(initialized);
+        if (!initialized)
+            throw std::string("Unable to initialize the peer !");
 #endif
 
         std::string envVar;
