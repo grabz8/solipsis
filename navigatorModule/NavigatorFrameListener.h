@@ -15,7 +15,8 @@ public:
         CMDetached,
         CM1stPerson,
         CM1stPersonWithMouse,
-        CM3rdPerson
+        CM3rdPerson,
+        CMAroundPerson
     };
 
 protected:

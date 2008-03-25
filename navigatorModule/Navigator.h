@@ -40,7 +40,9 @@ public:
     enum QueryFlags
     {
         QFNaviPanel = 1<<0,
-        QFAvatar = QFNaviPanel<<1
+        QFAvatar = QFNaviPanel<<1,
+        QFObject = QFAvatar<<1,
+        QFGizmo = QFObject<<1
 	};
 
 private:
@@ -60,6 +62,7 @@ protected:
 
     NavigatorGUI* mNavigatorGUI;
 
+    Real mMaxObjectPickingDistance;
     Real mMaxAvatarPickingDistance;
     Real mMaxNaviPickingDistance;
     RaySceneQuery* mRaySceneQuery;
@@ -190,9 +193,7 @@ public:
     void onMousePressed(const MouseEvt& evt);
     void onMouseReleased(const MouseEvt& evt);
 
-    void undo();
-    void suppr();
-    void modifGizmo(Vector3 dep);
+    void MdlrModifGizmo(Vector3 dep);
 
 protected:
     /** These methods implement Instance

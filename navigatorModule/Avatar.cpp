@@ -371,6 +371,18 @@ void Avatar::animate(Real timeSinceLastFrame)
         if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
             nextState = SWalk;
     }
+// GILLES begin
+    else if (mMvtType == MTArountPerson)
+    {
+        // TurnAround person rotation
+        //MovableObject* movable = mSceneNode->getAttachedObject(2);
+        //mSceneNode->detachObject (movable);
+        mSceneNode->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+        //mSceneNode->attachObject (movable);
+        if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+            nextState = SWalk;
+    }
+// GILLES end
     else
     {
         // Third person rotation

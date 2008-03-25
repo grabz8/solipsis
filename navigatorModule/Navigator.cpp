@@ -30,6 +30,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mNavigatorGUI(0),
     mMaxNaviPickingDistance(10),
     mMaxAvatarPickingDistance(10),
+    mMaxObjectPickingDistance(20),
     mRaySceneQuery(0),
     mPickedMovable(0),
     mUserAvatar(0),
@@ -502,124 +503,142 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     closestDistance = -1.0f;
     mPickedMovable = 0;
     String movablesList;
+
     for (RaySceneQueryResult::iterator it = queryResult.begin(); it != queryResult.end(); ++it )
     {
 		if (it->movable && (it->distance > 0))
         {
             if (movablesList.length() > 0) movablesList += ", ";
             movablesList += it->movable->getName() + ":" + StringConverter::toString(it->distance);
+
             // stop checking if we have found a raycast hit that is closer
             // than all remaining entities
             if ((closestDistance >= 0.0f) && (closestDistance < it->distance))
                 break;
-            // ... or if we are too far
-            if (it->distance >= std::max(mMaxNaviPickingDistance, mMaxAvatarPickingDistance))
-                break;
-            // only check this result if its a hit against an entity
-/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
-//            if ((it->movable != 0) && (it->movable->getMovableType().compare("Entity") == 0))
-            if ((it->movable != 0) &&
-                ((it->movable->getMovableType().compare("Entity") == 0) ||
-                (it->movable->getMovableType().compare("ManualObject") == 0)))
+
+            if (mState == SModeling)
             {
+                // stop checking if we are too far
+                if (it->distance >= mMaxObjectPickingDistance)
+                    break;
+                // only check this result if its a hit against an entity
+                /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+                //          if ((it->movable != 0) && (it->movable->getMovableType().compare("Entity") == 0))
+                if ((it->movable != 0) &&
+                    ((it->movable->getMovableType().compare("Entity") == 0) ||
+                    (it->movable->getMovableType().compare("ManualObject") == 0)))
+                {
+                    if (it->movable->getQueryFlags() == QFAvatar)
+                        continue;
 
-				// avatar ?
-                if (mState != SModeling)
-					if (it->movable->getQueryFlags() == QFAvatar)
-					{
-						mPickedMovable = it->movable;
-						break;
-					}
+                    //if (it->movable->getMovableType().compare("Entity") == 0)
+                    if (it->movable->getQueryFlags() == QFObject)
+                    {
+                        if( mModeler && !mModeler->isSelectionLocked() )
+                        {
+                            String name = it->movable->getName();
 
-				// modeler begin
-				if (mState == SModeling )
-				{
-					String name = it->movable->getName();
+                            // Link mode ?
+                            if (mModeler->isInLinkMode())
+                            {
+                                Entity* ent = mSceneMgr->getEntity(name);
+                                Object3D * obj = mModeler->getSelection()->get3DObject( ent );
+                                //if it is a selectionnable object ...
+                                if( obj && obj != mModeler->getSelection()->getFirstSelectedObject() ) //if it is not itself ...
+                                {
+                                    if( ! obj->getShowBoundingBox()) //if this object is seleted :
+                                        if(obj->getParent())
+                                            obj = obj->getParent();
 
-					if(name.compare("Avatar") == 0) 
-						continue;
-					if (it->movable->getQueryFlags() == QFAvatar)
-						continue;
+                                    mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(false);
+                                    mModeler->getSelection()->getFirstSelectedObject()->linkObject( obj, mSceneMgr);
+                                    mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(true);
+                                    mModeler->lockLinkMode(false);
+                                }
+                            }
 
-					if (it->movable->getMovableType().compare("Entity") == 0)
-						if( mModeler != 0 )
-							if( !mModeler->isSelectionLocked() )
-							{
-								// Link mode ?
-								if (mModeler->isInLinkMode())
-								{
-									//String name = it->movable->getName();
-									Entity* ent = mSceneMgr->getEntity(name);
-									Object3D * obj = mModeler->getSelection()->get3DObject( ent );
-									if (obj != NULL)	//if it is a selectionnable object ...
-										if( obj != mModeler->getSelection()->getFirstSelectedObject() ) //if it is not itself ...
-										{
-											if( ! obj->getShowBoundingBox()) //if this object is seleted :
-											{
-												if(obj->getParent() != NULL)
-													obj = obj->getParent();
-											}
+                            // Gizmo ?
+                            else if (mModeler->isOnGizmo())
+                            {
+                                // ...
+                                //isOnGizmo = false;
+                                //mModeler->deselectNode();
+                            }
 
-											mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(false);
-											mModeler->getSelection()->getFirstSelectedObject()->linkObject( obj, mSceneMgr);
-											mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(true);
-											mModeler->lockLinkMode(false);
-										}
-								}
+                            // Object3D ?
+                            else
+                            {
+                                if (!isOnLeftCTRL)
+                                    mModeler->deselectNode();
 
-								// Gizmo ?
-								else if (mModeler->isOnGizmo())
-								{
-									// ...
-									//isOnGizmo = false;
-									//mModeler->deselectNode();
-								}
+                                mModeler->lockGizmo(false);
+                                if (it->movable->getQueryFlags() == QFObject)
+                                {
+                                    mPickedMovable = it->movable;
+                                    Entity* ent = mSceneMgr->getEntity(name);
+                                    mModeler->selectNode(ent);
+                                }
+                            }
+                        }
 
-								// Object3D ?
-								//else //if (it->movable->getQueryFlags() == QFObject3D)
-								else
-								{
-									if (!isOnLeftCTRL)
-										mModeler->deselectNode();
+                        // if we found a new closest raycast for this object, update the
+                        // mPickedMovable before moving on to the next object.
+                        if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
+                            closestDistance,
+                            closestUV,
+                            closestTriUV0, closestTriUV1, closestTriUV2))
+                        {
+                            if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
+                                mPickedMovable = it->movable;
+                        }
+                    }
+                    else
+                        mModeler->deselectNode();
+                }
+                mModeler->lockLinkMode(false);            
+            }
 
-									mModeler->lockGizmo(false);
+            else // SInWorld
+            {
+                // stop checking if we are too far
+                if (it->distance >= std::max(mMaxNaviPickingDistance, mMaxAvatarPickingDistance))
+                    break;
+                // only check this result if its a hit against an entity
+                /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+                //if ((it->movable != 0) && (it->movable->getMovableType().compare("Entity") == 0))
+                if ((it->movable != 0) &&
+                    ((it->movable->getMovableType().compare("Entity") == 0) ||
+                    (it->movable->getMovableType().compare("ManualObject") == 0)))
+                {
+                    if (it->movable->getQueryFlags() == QFAvatar)
+                    {
+                        mPickedMovable = it->movable;
+                        break;
+                    }
 
-									if(name.compare("Avatar") != 0)
-									{
-										mPickedMovable = it->movable;
-										Entity* ent = mSceneMgr->getEntity(name);
-										mModeler->selectNode(ent);
-									}
-								}
-
-							}
-				}
-				// modeler end
-
-				// if we found a new closest raycast for this object, update the
-				// mPickedMovable before moving on to the next object.
-				if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
-													closestDistance,
-													closestUV,
-													closestTriUV0, closestTriUV1, closestTriUV2))
-				{
-					if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
-						mPickedMovable = it->movable;
-				}
-            }       
+                    // if we found a new closest raycast for this object, update the
+                    // mPickedMovable before moving on to the next object.
+                    if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
+                        closestDistance,
+                        closestUV,
+                        closestTriUV0, closestTriUV1, closestTriUV2))
+                    {
+                        if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
+                            mPickedMovable = it->movable;
+                    }
+                }
+            }
         }
     }
-    if (mState == SModeling)
-        mModeler->lockLinkMode(false);
 
-    OGRE_LOG("Navigator::computeMousePicking() found movables " + movablesList);
-    // if 1 entity hit
-    if ((closestDistance >= 0.0f) && (mPickedMovable != 0))
-    {
-        closestHitPoint = mouseRay.getPoint(closestDistance);
-        OGRE_LOG("Navigator::computeMousePicking() found movable=" + mPickedMovable->getName() + ", closestDistance=" + StringConverter::toString(closestDistance) + ", closestHitPoint=" + StringConverter::toString(closestHitPoint));
-        return true;
-    }
+   OGRE_LOG("Navigator::computeMousePicking() found movables " + movablesList);
+   // if 1 entity hit
+   if ((closestDistance >= 0.0f) && (mPickedMovable != 0))
+   {
+       closestHitPoint = mouseRay.getPoint(closestDistance);
+       OGRE_LOG("Navigator::computeMousePicking() found movable=" + mPickedMovable->getName() + ", closestDistance=" + StringConverter::toString(closestDistance) + ", closestHitPoint=" + StringConverter::toString(closestHitPoint));
+       return true;
+   }
 
     return false;
 }
@@ -766,6 +785,7 @@ void Navigator::createScene()
     Light *sunLight = mSceneMgr->createLight("SunLight");
     sunLight->setType(Light::LT_DIRECTIONAL);
     Vector3 sunLightDir = Vector3(0.5f, -1.0f, 0.25f);
+
     sunLightDir.normalise();
     sunLight->setDirection(sunLightDir);
     sunLight->setDiffuseColour(ColourValue::White);
@@ -795,6 +815,16 @@ void Navigator::createScene()
 #endif
     camNode->yaw(Radian(-Math::HALF_PI));
     pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
+
+// GILLES begin
+    camNode = mUserAvatar->getSceneNode()->createChildSceneNode("TurnAroundPersonCamNode", Vector3(0, 1.1, 0)*avatarSize);
+#ifdef LEXI
+    if (entity->getMesh()->getName().find("salamandra") != String::npos)
+        camNode->setPosition(Vector3(0, -0.67, 0) + Vector3(0, 1.1, 0)*avatarSize);
+#endif
+    pitchCamNode = camNode->createChildSceneNode("TurnAroundPersonCamPitchNode", Vector3(-4, 1.1, 0)*avatarSize);
+    //pitchCamNode->yaw(Radian(Math::PI));
+// GILLES end
 
     // attach camera on Third person
     pitchCamNode->attachObject(mCamera);
@@ -904,6 +934,22 @@ bool Navigator::sendMessage(const String& message)
 {
     if (mXmlRpcClient == 0)
         Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
+
+// GILLES begin
+    // Push debug command
+    String cmd (message);
+    String param (message);
+
+    size_t separator = message.find_first_of("::");
+    if (separator > 0) 
+    {
+        cmd = String (message, 0, separator);
+        param = String (message, separator+2, message.length());
+        DebugHelpers::debugCommands[cmd] = param;
+        return true;
+    }
+// GILLES end
+
     std::list<Peer*> peersList;
     for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
     {
@@ -1019,12 +1065,14 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
     if (ogrePeer->getPeer()->isLocal())
     {
         mUserAvatar = (Avatar*)ogrePeer;
+        Real depUp = mUserAvatar->getEntity()->getBoundingBox().getMinimum().y;
 #ifdef LEXI
         if (mUserAvatar->getEntity()->getMesh()->getName().find("salamandra") != String::npos)
             mUserAvatar->getSceneNode()->setPosition(0, 0.67f, 0);
 #else
-        mUserAvatar->getSceneNode()->setPosition(17, -57, 115);
+        mUserAvatar->getSceneNode()->setPosition(17, -56.9f, 115);
 #endif
+        //mUserAvatar->getSceneNode()->translate(0, -depUp, 0);
     }
 
     return true;
@@ -1354,34 +1402,7 @@ void Navigator::onMouseReleased(const MouseEvt& evt)
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::undo()
-{
-	if( mModeler )
-		if( !mModeler->isSelectionEmpty() )
-		{
-			mModeler->getSelected()->undo();
-			// TODO : reinitialize the deformer sliders
-		}
-}
-
-//-------------------------------------------------------------------------------------
-void Navigator::suppr()
-{
-	if( mModeler )
-		if( !mModeler->isSelectionEmpty() )
-		{
-			// remove the current selection
-			mModeler->removeSelection();
-
-			// hide the gizmos axes
-			mModeler->getSelection()->mTransformation->showGizmosMove(false);
-			mModeler->getSelection()->mTransformation->showGizmosRotate(false);
-			mModeler->getSelection()->mTransformation->showGizmosScale(false);
-		}
-}
-
-//-------------------------------------------------------------------------------------
-void Navigator::modifGizmo(Vector3 dep)
+void Navigator::MdlrModifGizmo(Vector3 dep)
 {
 	SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
 	static Vector3 scale = Vector3(1,1,1);

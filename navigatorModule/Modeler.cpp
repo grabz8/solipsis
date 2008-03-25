@@ -10,6 +10,7 @@
 #include "Modeler.h"
 #include "Selection.h"
 #include "Transformations.h"
+#include "Navigator.h"
 
 
 namespace Solipsis {
@@ -154,6 +155,7 @@ bool Modeler::createBox(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DBox* obj = new Object3DBox( String(name), node );
@@ -181,6 +183,7 @@ bool Modeler::createCorner(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DCorner* obj = new Object3DCorner( String(name), node );
@@ -205,6 +208,7 @@ bool Modeler::createPyramid(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DPyramid* obj = new Object3DPyramid( String(name), node );
@@ -229,6 +233,7 @@ bool Modeler::createPrism(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DPrism* obj = new Object3DPrism( String(name), node );
@@ -252,6 +257,7 @@ bool Modeler::createCylinder(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DCylinder* obj = new Object3DCylinder( String(name), node );
@@ -275,6 +281,7 @@ bool Modeler::createHalfCyl(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DHalfCylinder* obj = new Object3DHalfCylinder( String(name), node );
@@ -298,6 +305,7 @@ bool Modeler::createCone(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DCone* obj = new Object3DCone( String(name), node );
@@ -321,6 +329,7 @@ bool Modeler::createHalfCone(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DHalfCone* obj = new Object3DHalfCone( String(name), node );
@@ -344,6 +353,7 @@ bool Modeler::createSphere(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DSphere* obj = new Object3DSphere( String(name), node );
@@ -367,6 +377,7 @@ bool Modeler::createHalfSphere(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DHalfSphere* obj = new Object3DHalfSphere( String(name), node );
@@ -390,6 +401,7 @@ bool Modeler::createTorus(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DTorus* obj = new Object3DTorus( String(name), node );
@@ -413,6 +425,7 @@ bool Modeler::createTube(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DTube* obj = new Object3DTube( String(name), node );
@@ -436,6 +449,7 @@ bool Modeler::createRing(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DRing* obj = new Object3DRing( String(name), node );
@@ -459,6 +473,7 @@ bool Modeler::createMesh(Vector3	&player_pos)
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
+    entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
 	Object3DOther* obj = new Object3DOther( String(name), node );
