@@ -3,13 +3,22 @@ root directory contains
 
 Common         all generated binaries which can be launched standalone
 Dependencies   all 3rd-party dependencies (libraries, include files, binaries, ...)
+Docs           all specifications, documents, tips&tricks, user guides, ...
 DevTools       all 3rd-party sources
+MdlrTools      modeler tools source files
 Media          all media files
 MediaTools     all external standalone tools we can use to manage/create/... media files
-navigator             the navigator application (standalone)
-navigatorModule       the navigator main module
-navigatorPlugin       the navigator plugins (IE ActiveX and Mozilla plugin)
-navigatorRunnerPlugin the navigator plugins (IE ActiveX and Mozilla plugin) launching the application (standalone)
+navigator              the navigator application (standalone)
+navigatorModule        the navigator main module (demo only)
+navigatorModuleOnlyNav the navigator main module alone (without the peer part)
+navigatorPhysics       the navigator physics plugins (loaded by navigatorModule)
+navigatorPlugin        the navigator plugins (IE ActiveX and Mozilla plugin)
+navigatorRunnerPlugin  the navigator plugins (IE ActiveX and Mozilla plugin) launching the application (standalone)
+node                   the peer module (node)
+nodeSimulator          the peer module simulator
+peerPhysics            the peer module physics plugins (loaded by nodeSimulator)
+protocols              the protocols clients & servers modules (XMLRPC++, ULXMLRPCPP, NullClientServer)
+setup                  the setup project (to build installers)
 
 Some rules for developpers
 --------------------------
