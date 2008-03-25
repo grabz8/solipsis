@@ -343,6 +343,8 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
     char csaXmlNew[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5500_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>Deltastation1</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
     // FAKE example to simulate new peer (DigitalOcean1)
     char csaXmlDO1[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5501_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>DigitalOcean1</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
+    // FAKE example to simulate new peer (IslandZoo)
+    char csaXmlIsland[] = "<value><array><data><value><struct><member><name>timestamp</name><value>12341234</value></member><member><name>type</name><value>NEW</value></member><member><name>datas</name><value><struct><member><name>address</name><value><struct><member><name>host</name><value>192.33.178.29</value></member><member><name>port</name><value><i4>5541</i4></value></member></struct></value></member><member><name>awareness_radius</name><value><double>41529791677676826000000000000000000000.000000</double></value></member><member><name>id_</name><value>5500_14_3f1bf4a1408a5e4462c51053a14d5b5cf1e28c7b</value></member><member><name>languages</name><value><array><data><value>fr</value><value>en</value></data></array></value></member><member><name>position</name><value><array><data><value>173822792765251003703866450027445485568</value><value>152993429928224644246366999440628121600</value><value>0</value></data></array></value></member><member><name>pseudo</name><value>Ile</value></member><member><name>services</name><value><struct></struct></value></member></struct></value></member></struct></value></data></array></value>";
     std::map<String,String>::iterator dbgCmd = DebugHelpers::debugCommands.find("testEvt");
     if (dbgCmd != DebugHelpers::debugCommands.end())
     {
@@ -353,6 +355,10 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
         else if (dbgCmd->second.compare("peerDO1") == 0)
         {
             csaXml = csaXmlDO1;
+        }
+        else if (dbgCmd->second.compare("peerIsland") == 0)
+        {
+            csaXml = csaXmlIsland;
         }
         DebugHelpers::debugCommands.erase(dbgCmd);
     }
@@ -549,7 +555,6 @@ bool NavigatorXMLRPCClient::sendMessage(const String& message, std::list<Peer*> 
         if (noError)
             OGRE_LOG("Send message Result : " + result.toXml());
     }
-
     return true;
 }
 
