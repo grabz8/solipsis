@@ -267,7 +267,10 @@ bool Peer::_initialize()
 //    PhysicsEngineManager::getSingleton().selectEngine("ODE engine");
 //    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
     if (PhysicsEngineManager::getSingleton().getSelectedEngine() == 0)
+    {
+        OGRE_LOG("No physics engine selected !");
         return false;
+    }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
 #endif
 
@@ -275,7 +278,10 @@ bool Peer::_initialize()
     mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=8");
 	mP2NServer->init();
 	if (!mP2NServer->start())
+    {
+        OGRE_LOG("Unable to start the Peer/Navigator server !");
         return false;
+    }
 
     mInitialized = true;
 
