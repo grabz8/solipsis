@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlDatas", "XmlDatas\XmlDatas_vc9.vcproj", "{DD2704DC-41CA-4FBB-99FC-204FA6942500}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XMLRPCP2NClient", "P2NClient\xmlrpc++\XMLRPCP2NClient_vc9.vcproj", "{DF452F0F-5CA2-44A6-BFB9-2E0520BF718A}"
@@ -18,6 +18,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ULXMLRPCPPP2NServer", "P2NS
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P2NNullClientServer", "P2NNullClientServer\P2NNullClientServer_vc9.vcproj", "{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
