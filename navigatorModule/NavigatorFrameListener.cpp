@@ -488,8 +488,8 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         camPitchNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
 
         //apply the rotation around the avatar
-        static yaw = 0.;
-        static pitch = 0.;
+        static Real yaw = 0;
+        static Real pitch = 0;
         yaw = -mRotate*evt.mState.mXrel;
         pitch += -mRotate*evt.mState.mYrel;
 
