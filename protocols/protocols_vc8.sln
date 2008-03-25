@@ -18,6 +18,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ULXMLRPCPPP2NServer", "P2NS
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "P2NNullClientServer", "P2NNullClientServer\P2NNullClientServer_vc8.vcproj", "{2FE1F5C9-BCD8-43AA-9C15-FE7FCB3819BF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
