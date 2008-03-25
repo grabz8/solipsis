@@ -416,12 +416,13 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
 #endif
 
     //TODO : need to set correct position         
+    Real depUp = entityBbox.getMinimum().y;
     node->setPosition(peer->getFakeX(),peer->getFakeZ(),peer->getFakeY()); //careful to switch y and z !
 #ifdef LEXI
     if (peer->getLogin().find("salamandra") != String::npos)
-        node->setPosition(0, 0.67f, 7.14f);
+        node->setPosition(0, 0.67f - depUp, 7.14f);
 #else
-        node->setPosition(17, -56.9f, 120);
+        node->setPosition(17, -56.9f - depUp, 120);
 #endif
 
     Avatar* peerAvatar = new Avatar(peer, node, entity);
@@ -452,6 +453,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 
     const char* name = xmlElt->Attribute("name");
     const char* filename = xmlElt->Attribute("filename");
+    const char* collision = xmlElt->Attribute("collision");
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(peer->getNetworkId() + "Scene");
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
@@ -488,11 +490,14 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     mPhysicsStepHandler = new OgreOde::ForwardFixedStepHandler(mPhysicsWorld, OgreOde::StepHandler::QuickStep, Real(1.0/60.0), Real(1000.0), Real(1.0));
     mPhysicsStepHandler->setAutomatic(OgreOde::StepHandler::AutoMode_NotAutomatic, Root::getSingletonPtr());
     // Create the world collision mesh
-    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
-    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
-    OgreOde::EntityInformer entityInformer(worldCollisionEntity, worldCollisionSceneNode->_getFullTransform());
-    mPhysicsWorldGeometry = entityInformer.createStaticTriangleMesh(mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
-    worldCollisionSceneNode->setVisible(false);
+    Entity* worldCollisionEntity = mSceneMgr->getEntity(collision);
+    if (worldCollisionEntity != 0)
+    {
+        SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode(collision);
+        OgreOde::EntityInformer entityInformer(worldCollisionEntity, worldCollisionSceneNode->_getFullTransform());
+        mPhysicsWorldGeometry = entityInformer.createStaticTriangleMesh(mPhysicsWorld, mPhysicsWorld->getDefaultSpace());
+        worldCollisionSceneNode->setVisible(false);
+    }
 #elif PHYSX
     // Init the SDK
     PhysXHelpers::init();
@@ -513,20 +518,23 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 	defaultMaterial->setStaticFriction(0.5f);
 	defaultMaterial->setDynamicFriction(0.5f);
     // Create the world collision mesh
-    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
-    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
-    mPhysicsWorldGeometry = PhysXHelpers::cookMesh(worldCollisionEntity->getMesh(),
-                                                   worldCollisionEntity->getParentNode()->getWorldPosition(),
-                                                   worldCollisionEntity->getParentNode()->getWorldOrientation(),
-                                                   worldCollisionEntity->getParentNode()->getScale());
-    NxTriangleMeshShapeDesc triangleMeshShapeDesc;
-    NxActorDesc actorDesc;
-    triangleMeshShapeDesc.meshData = mPhysicsWorldGeometry;
-    triangleMeshShapeDesc.group = PhysXHelpers::CG_COLLIDABLE_NON_PUSHABLE;
-    actorDesc.shapes.pushBack(&triangleMeshShapeDesc);
-    mPhysicsWorldActor = mPhysicsScene->createActor(actorDesc);
-    mPhysicsWorldActor->userData = (void*)0;
-    worldCollisionSceneNode->setVisible(false);
+    Entity* worldCollisionEntity = mSceneMgr->getEntity(collision);
+    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode(collision);
+    if (worldCollisionEntity != 0)
+    {
+        mPhysicsWorldGeometry = PhysXHelpers::cookMesh(worldCollisionEntity->getMesh(),
+                                                    worldCollisionEntity->getParentNode()->getWorldPosition(),
+                                                    worldCollisionEntity->getParentNode()->getWorldOrientation(),
+                                                    worldCollisionEntity->getParentNode()->getScale());
+        NxTriangleMeshShapeDesc triangleMeshShapeDesc;
+        NxActorDesc actorDesc;
+        triangleMeshShapeDesc.meshData = mPhysicsWorldGeometry;
+        triangleMeshShapeDesc.group = PhysXHelpers::CG_COLLIDABLE_NON_PUSHABLE;
+        actorDesc.shapes.pushBack(&triangleMeshShapeDesc);
+        mPhysicsWorldActor = mPhysicsScene->createActor(actorDesc);
+        mPhysicsWorldActor->userData = (void*)0;
+        worldCollisionSceneNode->setVisible(false);
+    }
     mControllerManager = new ::ControllerManager();
 #elif TOKAMAK
     // Create the physical world
@@ -543,15 +551,19 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     // Set the default material 0
     mPhysicsSim->SetMaterial(0, 0.5f, 0.1f);
     // Create the world collision mesh
-    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
-    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode("MC_station");
-    mPhysicsWorldGeometry = TokamakHelpers::convertMesh(worldCollisionEntity->getMesh(),
-                                                        worldCollisionEntity->getParentNode()->getWorldPosition(),
-                                                        worldCollisionEntity->getParentNode()->getWorldOrientation(),
-                                                        worldCollisionEntity->getParentNode()->getScale());
-    mPhysicsSim->SetTerrainMesh(&mPhysicsWorldGeometry);
-    worldCollisionSceneNode->setVisible(false);
+    Entity* worldCollisionEntity = mSceneMgr->getEntity(collision);
+    SceneNode* worldCollisionSceneNode = mSceneMgr->getSceneNode(collision);
+    if (worldCollisionEntity != 0)
+    {
+        mPhysicsWorldGeometry = TokamakHelpers::convertMesh(worldCollisionEntity->getMesh(),
+                                                            worldCollisionEntity->getParentNode()->getWorldPosition(),
+                                                            worldCollisionEntity->getParentNode()->getWorldOrientation(),
+                                                            worldCollisionEntity->getParentNode()->getScale());
+        mPhysicsSim->SetTerrainMesh(&mPhysicsWorldGeometry);
+        worldCollisionSceneNode->setVisible(false);
+    }
 #elif PHYSICSPLUGINS
+
     IPhysicsEngine* engine = PhysicsEngineManager::getSingleton().getSelectedEngine();
     // Create the physical scene
     mPhysicsScene = engine->createScene();
@@ -560,12 +572,15 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
         "Unable to create the PhysX scene !",
         "PhysXScene::PhysXScene");
     // Create the scene collision mesh
-    Entity* worldCollisionEntity = mSceneMgr->getEntity("MC_station");
-    mPhysicsScene->setTerrainMesh(*worldCollisionEntity);
-    worldCollisionEntity->getParentSceneNode()->setVisible(false);
+    Entity* worldCollisionEntity = mSceneMgr->getEntity(collision);
+    if (worldCollisionEntity != 0)
+    {
+        mPhysicsScene->setTerrainMesh(*worldCollisionEntity);
+        worldCollisionEntity->getParentSceneNode()->setVisible(false);
+    }
 #else
     // Destroy collision mesh
-    mSceneMgr->destroySceneNode("MC_station");
+    mSceneMgr->destroySceneNode(collision);
 #endif
 
     Scene* peerScene = new Scene(peer, node);
