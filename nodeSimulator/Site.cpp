@@ -23,25 +23,24 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
     Entity::createPhysics(physicsScene);
 
     // Set the scene collision mesh
-    std::string osmFilename;
+    std::string xmlFilename;
     XmlContent* content = mXmlEntity->getContent();
     XmlContent::ContentFileList& contentFileListLod0 = content->getContentLodMap()[0];
     static const std::basic_string <char>::size_type npos = -1;
     for (XmlContent::ContentFileList::iterator f = contentFileListLod0.begin(); f != contentFileListLod0.end(); ++f)
-        if ((*f).rfind(".osm") != std::string::npos)
+        if ((*f).rfind(".xml") != std::string::npos)
         {
-            osmFilename = *f;
+            xmlFilename = *f;
             break;
         }
-    if (osmFilename.empty())
+    if (xmlFilename.empty())
         return;
 
-    std::string mcFilename;
-    Vector3 position;
-    Quaternion rotation;
-    Vector3 scale;
-    TiXmlDocument osmFileDoc;
-	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(osmFilename);
+    std::string osmFilename;
+    std::string collisionMeshFilename;
+
+    TiXmlDocument xmlFileDoc;
+	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlFilename);
 	if (!pStream->size())
         return;
 	size_t iSize = pStream->size();
@@ -49,30 +48,54 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
 	memset(pBuf, 0, iSize+1);
 	pStream->read(pBuf, iSize);
 	pStream.setNull();
+	xmlFileDoc.Parse(pBuf);
+	delete[] pBuf;
+	// check for errors
+    if (xmlFileDoc.Error())
+        return;
+    TiXmlElement* sceneNodeElt = xmlFileDoc.RootElement()->FirstChildElement("sceneNode");
+    if (sceneNodeElt == 0)
+        return;
+    osmFilename = sceneNodeElt->Attribute("filename");
+    if (osmFilename.empty())
+        return;
+    collisionMeshFilename = sceneNodeElt->Attribute("collision");
+    if (collisionMeshFilename.empty())
+        return;
+
+    TiXmlDocument osmFileDoc;
+	pStream = ResourceGroupManager::getSingleton().openResource(osmFilename);
+	if (!pStream->size())
+        return;
+	iSize = pStream->size();
+	pBuf = new char[iSize+1];
+	memset(pBuf, 0, iSize+1);
+	pStream->read(pBuf, iSize);
+	pStream.setNull();
 	osmFileDoc.Parse(pBuf);
 	delete[] pBuf;
 
-	// check for errors
-    if (osmFileDoc.Error())
-        return;
-	TiXmlElement* entities = osmFileDoc.RootElement()->FirstChildElement("entities");
+    TiXmlElement* entities = osmFileDoc.RootElement()->FirstChildElement("entities");
     TiXmlElement* entity = entities->FirstChildElement("entity");
     while (entity != 0)
     {
         const char* attr = 0;
-        attr = entity->Attribute("filename");
+        attr = entity->Attribute("name");
         if ((attr == 0) || (attr[0] == '\0'))
             continue;
-        if (strstr(attr, "MC_") == attr)
-        {
-            mcFilename = attr;;
+        if (strcmp(attr, collisionMeshFilename.c_str()) == 0)
             break;
-        }
         entity = entity->NextSiblingElement("entity");
     }
-    if (mcFilename.empty())
+    if (entity == 0)
         return;
-	// Position
+    collisionMeshFilename = entity->Attribute("filename");
+
+    Vector3 position;
+    Quaternion rotation;
+    Vector3 scale;
+
+    // Position
 	TiXmlElement* posElem = entity->FirstChildElement("position");
     if (posElem)
     {
@@ -98,7 +121,7 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
 		scale.z = StringConverter::parseReal(scaleElem->Attribute("z"));
     }
 
-    Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(mcFilename);
+    Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(collisionMeshFilename);
     MeshPtr collisionMeshPtr(collisionMesh);
     mPhysicsScene->setTerrainMesh(collisionMeshPtr, getXmlEntity()->getPosition() + position, getXmlEntity()->getOrientation()*rotation, scale);
 }
