@@ -51,53 +51,55 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    Modeler* modeler = mNavigator->mModeler;
 
-    if (mNavigator->getState() == Navigator::SModeling)
+    if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
     {
-        if (mNavigator->mModeler->isOnGizmo())
+        if (modeler->isOnGizmo())
         {
             switch (evt.mKey)
             {
             case KC_F9:
-	            mNavigator->mModeler->lockGizmo(false);
+	            modeler->lockGizmo(false);
 	            if (navigatorGUI != 0)
-		            //if (!navigatorGUI->isModelerMainVisible())
-		            //	navigatorGUI->modelerMainShow();
-		            //else
-			            navigatorGUI->modelerMainUnload();
+                    navigatorGUI->modelerMainUnload();
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_UP:
-	            if (!mNavigator->isOnLeftCTRL) 
-		            mNavigator->modifGizmo(Vector3(.1,0,0));
             case KC_W:
 	            if (mNavigator->isOnLeftCTRL)
-		            mNavigator->undo();
+                {
+                    //mNavigator->undo();
+                    if( !modeler->isSelectionEmpty() )
+                        modeler->getSelected()->undo();
+                }
+                else
+                    mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_DOWN:
             case KC_S:
-	            mNavigator->modifGizmo(Vector3(-.1,0,0));
+	            mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_LEFT:
             case KC_A:
-	            mNavigator->modifGizmo(Vector3(0,0,-.1));
+	            mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_RIGHT:
             case KC_D:
-	            mNavigator->modifGizmo(Vector3(0,0,.1));
+	            mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_PGUP:
             case KC_E:
-	            mNavigator->modifGizmo(Vector3(0,.1,0));
+	            mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
 	            return OgreFrameListener::keyPressed(evt);
 
             case KC_PGDOWN:
             case KC_C:
-	            mNavigator->modifGizmo(Vector3(0,-.1,0));
+	            mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
 	            return OgreFrameListener::keyPressed(evt);
             }
         }
@@ -106,9 +108,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F9:
-            if (mNavigator->mModeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
+            if (modeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
             {
-                //navigatorGUI->modelerPropUnload();
                 navigatorGUI->modelerPropHide();
                 navigatorGUI->modelerMainShow();
             }
@@ -117,32 +118,43 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             return OgreFrameListener::keyPressed(evt);
 
         case KC_LCONTROL:
-            mNavigator->mModeler->getSelection()->set_lock( true );
+            modeler->getSelection()->set_lock( true );
             mNavigator->isOnLeftCTRL = true;
             return OgreFrameListener::keyPressed(evt);
 
         case KC_DELETE:
-            mNavigator->suppr();
-            if (mNavigator->mModeler->isSelectionLocked())
+            //mNavigator->suppr();
+            if( !modeler->isSelectionEmpty() )
+            {
+                // remove the current selection
+                modeler->removeSelection();
+
+                // hide the gizmos axes
+                modeler->getSelection()->mTransformation->showGizmosMove(false);
+                modeler->getSelection()->mTransformation->showGizmosRotate(false);
+                modeler->getSelection()->mTransformation->showGizmosScale(false);
+            }
+            if (modeler->isSelectionLocked())
             {
                 navigatorGUI->modelerPropUnload();
                 navigatorGUI->modelerMainShow();
-            }
+            }    
+
             return OgreFrameListener::keyPressed(evt);
 
         case KC_W:
             if (mNavigator->isOnLeftCTRL) 
-                mNavigator->undo();
+            {
+                //mNavigator->undo();
+                if( !modeler->isSelectionEmpty() )
+                    modeler->getSelected()->undo();
+            }
             return OgreFrameListener::keyPressed(evt);
         }
     }
 
-	// Updating Navi with the key pressed
+    // Updating Navi with the key pressed
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
-
-    // In world ?
-    if (mNavigator->getState() != Navigator::SInWorld)
-		return OgreFrameListener::keyPressed(evt);
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
@@ -203,13 +215,23 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             case KC_3: // Switch to 3rd person camera
                 setCameraMode(CM3rdPerson);
                 break;
+// GILLES begin
+            case KC_4: // Switch to TrunAround person camera
+                setCameraMode(CMAroundPerson);
+                break;
+// GILLES end
 
             case KC_UP:
             case KC_W:
                 if (mNavigator->isOnLeftCTRL)
-                    mNavigator->undo();
-                else
-                    userAvatar->movementKeyPressed(KC_UP);
+                {
+                    //mNavigator->undo();
+                    if( modeler )
+                        if( !modeler->isSelectionEmpty() )
+                            modeler->getSelected()->undo();
+                }
+		        else
+			        mNavigator->getUserAvatar()->movementKeyPressed(KC_UP);
                 break;
 
             case KC_DOWN:
@@ -266,10 +288,6 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 
     // Updating Navi with the key released
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
-
-    // In world ?
-    if (mNavigator->getState() != Navigator::SInWorld) 
-		return OgreFrameListener::keyReleased(evt);
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar != 0)
@@ -357,7 +375,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         if (getCameraMode() == CM1stPerson)
         {
             mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
-            mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+            mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
         }
 
         //TODO : move / rotate / scale
@@ -376,12 +394,49 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 
     if (!Ogre::Math::RealEqual(mouseWheel, 0))
     {
+// GILLES begin
         if (getCameraMode() != CM3rdPerson)
         {
-            setCameraMode(CM3rdPerson);
+            if (getCameraMode() != CMAroundPerson)
+                setCameraMode(CM3rdPerson);
             mouseWheel *= 6; //To be sure to go away from the avatar
         }
+// GILLES end
+        if (getCameraMode() != CMAroundPerson)
+        {
+            Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
+            Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
+            Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
+            size.x /=2;
+            size.y *=-1;
+            size.z = 0;
+            //move 3rd person camera toward avatar
+            mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)); 
+            mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+
+            //Switch to 1st person camera if close to avatar
+            Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size);
+            //Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+            Vector3 camAbs = mCamera->getPosition();
+            //Vector3 camAbs = mCamera->getWorldPosition();
+            if (posAbs.squaredDistance(camAbs)<(size.x)*(size.x))
+            {
+                if (getCameraMode() == CM3rdPerson)
+                    setCameraMode(CM1stPerson);
+            }
+        }
+    }
+
+    if (getCameraMode() == CM1stPerson)
+    {
+        mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
+        mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+    }
+// GILLES begin
+    else if (getCameraMode() == CMAroundPerson)
+    {
+        SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
         Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
         Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
         Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
@@ -390,26 +445,20 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         size.y *=-1;
         size.z = 0;
         //move 3rd person camera toward avatar
-        mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)); 
-        mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+        mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)*Vector3(0,1.1,0)); 
+        //take care to not go behin the avatar with the wheel up
+        camPitchNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
 
-        //Switch to 1st person camera if close to avatar
-        Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size);
-        //Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
-        Vector3 camAbs = mCamera->getPosition();
-        //Vector3 camAbs = mCamera->getWorldPosition();
-        if (posAbs.squaredDistance(camAbs)<(size.x)*(size.x))
-        {
-            if (getCameraMode() == CM3rdPerson)
-                setCameraMode(CM1stPerson);
-        }
-    }
+        //apply the rotation around the avatar
+        static Real yaw = 0;
+        static Real pitch = 0;
+        yaw = -mRotate*evt.mState.mXrel;
+        pitch += -mRotate*evt.mState.mYrel;
 
-    if (getCameraMode() == CM1stPerson)
-    {
-        mNavigator->getUserAvatar()->yaw(Degree(-mRotate*evt.mState.mXrel));
-        mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+        mCamNode->yaw(Degree(yaw));
+        mCamNode->getChild(0)->roll(Degree(pitch));
     }
+// GILLES end
 
     return true;
 }
@@ -511,7 +560,7 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                 !NaviManager::Get().isAnyNaviFocused())
         {
             //TODO : move / rotate / scale
-            if (mNavigator->mModeler->isOnGizmo()) mNavigator->onMouseReleased(evt);
+            //if (mNavigator->mModeler->isOnGizmo()) mNavigator->onMouseReleased(evt);
         }
         else
             NaviManager::Get().injectMouseUp(buttonsId);
@@ -545,12 +594,25 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
         mNavigator->getUserAvatar()->setMvtType(Avatar::MT3rdPerson);
         break;
+// GILLES begin
+    case CMAroundPerson:
+        mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
+        //mCamera->yaw(Radian(Ogre::Math::HALF_PI));
+        mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode")->attachObject(mCamera);
+        mNavigator->getUserAvatar()->setMvtType(Avatar::MTArountPerson);
+        break;
+// GILLES end
     }
-    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson, false);
-    mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson);
+// GILLES begin
+    //mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson, false);
+    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson, false);
+    //mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson);
+    mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
-        navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
+        //navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
+        navigatorGUI->SetMouseVisibility(mode != CM1stPerson && mode != CMAroundPerson);
+// GILLES end
     mCameraMode = mode;
 }
 

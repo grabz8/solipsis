@@ -305,6 +305,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
 
     const char* name = xmlElt->Attribute("name");
     const char* filename = xmlElt->Attribute("filename");
+    const char* collision = xmlElt->Attribute("collision");
     String uidString = StringConverter::toString(xmlEntity->getUid());
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Scene");
     OSMScene osmScene(mSceneMgr);
@@ -326,7 +327,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
     node->setPosition(18,-58,133);
 
     // Destroy the scene collision mesh
-    mSceneMgr->destroyEntity("MC_station");
+    mSceneMgr->destroySceneNode(collision);
 
     bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
     Scene* peerScene = new Scene(xmlEntity, isLocal, node);

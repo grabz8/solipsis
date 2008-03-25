@@ -412,7 +412,7 @@ void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pO
 	{
 		modelerUpdateDeformationSliders();
 
-		// TODO verifier pour les autres occurences de cette fonction ...
+		// TODO 
 		//modelerAddNewDeformation( cmdOld );	// add new button to the deformation stack
 		// OR ??
 		//modelerAddNewDeformation( cmdNew );	// add new button to the deformation stack
@@ -1288,7 +1288,17 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 
 	if( mNavigator->mModeler )
 		if( !mNavigator->mModeler->isSelectionEmpty() )
-			mNavigator->suppr();
+        {
+            //mNavigator->suppr();
+
+            // remove the current selection
+            mNavigator->mModeler->removeSelection();
+
+            // hide the gizmos axes
+            mNavigator->mModeler->getSelection()->mTransformation->showGizmosMove(false);
+            mNavigator->mModeler->getSelection()->mTransformation->showGizmosRotate(false);
+            mNavigator->mModeler->getSelection()->mTransformation->showGizmosScale(false);
+        }
 		else
 #ifdef WIN32
 			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
@@ -1423,7 +1433,10 @@ void NavigatorGUI::modelerActionUndo(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::modelerActionUndo()");
 
-	mNavigator->undo();
+	//mNavigator->undo();
+    if( !mNavigator->mModeler->isSelectionEmpty() )
+        mNavigator->mModeler->getSelected()->undo();
+
 	modelerUpdateDeformationSliders();
 }
 
@@ -1432,7 +1445,6 @@ void NavigatorGUI::modelerActionSave(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::modelerActionSave()");
 
-//	std::string path = "../../../../Media/cache/";
 	std::string path = "..\\..\\..\\..\\Media\\cache\\";
 	path += mNavigator->getOgrePeerManager()->getXmlObjectFilename();
 	mNavigator->XMLSave(true, path.c_str() );
@@ -1865,7 +1877,6 @@ void NavigatorGUI::modelerPropScrollU(const NaviData& naviData)
 	if( obj != 0 )
 	{
 		Ogre::Vector2 UV = obj->getMaterialManager()->getTextureScroll();
-		//obj->getMaterialManager()->setTextureScroll(atoi(value.c_str())/100. - .5, UV.y);
 		obj->setTextureScroll(atoi(value.c_str())/100. - .5, UV.y);
 	}
 }
@@ -1961,7 +1972,6 @@ void NavigatorGUI::modelerPropTextureRemove(const NaviData& naviData)
 		//get selected texture :
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
 		{
-			//obj->getMaterialManager()->setPreviousTextureAsCurrent();
 			TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
 			obj->deleteTexture( tPtr );
 		}

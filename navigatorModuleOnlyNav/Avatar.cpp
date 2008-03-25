@@ -224,6 +224,7 @@ void Avatar::animate(Real timeSinceLastFrame)
 {
     State nextState = mState;
     Real animOffset = 0;
+    Real nbFrames = 0.;
 
     if (isLocal())
     {
@@ -256,6 +257,18 @@ void Avatar::animate(Real timeSinceLastFrame)
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
                 nextState = SWalk;
         }
+// GILLES begin
+        else if (mMvtType == MTArountPerson)
+        {
+            // TurnAround person rotation
+            //MovableObject* movable = mSceneNode->getAttachedObject(2);
+            //mSceneNode->detachObject (movable);
+            mSceneNode->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+            //mSceneNode->attachObject (movable);
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
+                nextState = SWalk;
+        }
+// GILLES end
         else
         {
             // Third person rotation
@@ -277,14 +290,22 @@ void Avatar::animate(Real timeSinceLastFrame)
     //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
     //        nextState = SFly;
 
+        // Get number frames on Idle animation
+        //setState(SIdle);
+        //Real nbFramesIdle = mAnimationState->getLength();
+        //setState(mState);
+
+        nbFrames = mAnimationState->getLength();
         if ((mState == SWalk) || (mState == SRun))
             if (Math::Abs(frontBackMvt) > EPSILON_SPEED)
-                animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
-            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)
-                animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+                //animOffset = (frontBackMvt/(MAX_SPEED/5))*timeSinceLastFrame;
+                animOffset = (frontBackMvt/(MAX_SPEED)) / nbFrames*nbFrames*nbFrames * timeSinceLastFrame;
+            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)   // walk animation
+                //animOffset = (leftRightMvt/(MAX_SPEED))*timeSinceLastFrame;
+                animOffset = (leftRightMvt/(MAX_SPEED)) * nbFrames * timeSinceLastFrame;
             else
                 nextState = SIdle;
-        else
+        else // mState = SIdle / SFly / SSwim
             animOffset = timeSinceLastFrame;
         if (mAnimationState != 0)
             mAnimationState->addTime(animOffset);

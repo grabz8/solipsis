@@ -251,7 +251,7 @@
 				RelativePath="..\navigatorModule\LuaBinding.cpp">
 			</File>
 			<File
-				RelativePath="..\navigatorModule\Modeler.cpp">
+				RelativePath=".\Modeler.cpp">
 			</File>
 			<File
 				RelativePath="..\navigatorModule\MovableText.cpp">

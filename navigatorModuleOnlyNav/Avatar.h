@@ -28,7 +28,8 @@ public:
     /** Enumeration denoting the type of movement (rotate, straff, ...) */
     enum MvtType {
         MT1stPerson,
-        MT3rdPerson
+        MT3rdPerson,
+        MTArountPerson
     };
 
 protected:
