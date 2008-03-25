@@ -357,3 +357,9 @@ and Navigator lib together into the same Navigator executable application
  - some updates to let sharing Ogre between Peer and Navigator libs
 
 ---------------------------
+25/03/08
+
+reports modeler updates + island scene
+1st person camera Y-mode rotation restored
+
+---------------------------
