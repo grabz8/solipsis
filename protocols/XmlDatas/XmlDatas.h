@@ -64,18 +64,30 @@ class PoolEntry
 
 protected:
     unsigned int mRefCount;
+    pthread_mutex_t mMutex;
 
 public:
+    PoolEntry() : mMutex(PTHREAD_MUTEX_INITIALIZER) {}
+    void lock() { pthread_mutex_lock(&mMutex); }
+    void unlock() { pthread_mutex_unlock(&mMutex); }
     virtual Pool& getPool() const = 0;
     virtual void clear() {}
 };
 class Pool : public std::list<PoolEntry*>
 {
+protected:
+    pthread_mutex_t mMutex;
+
 public:
+    Pool() : mMutex(PTHREAD_MUTEX_INITIALIZER) {}
     ~Pool() {
+        lock();
         for(iterator it=begin();it!=end();++it)
             delete (*it);
+        unlock();
     }
+    void lock() { pthread_mutex_lock(&mMutex); }
+    void unlock() { pthread_mutex_unlock(&mMutex); }
 };
 template<class T>
 class RefCntPoolPtr
@@ -85,33 +97,36 @@ protected:
 
 public:
     static RefCntPoolPtr<T> nullPtr;
-    static pthread_mutex_t mMutex;
 
 protected:
     inline void addRef() {
-        pthread_mutex_lock(&mMutex);
         if (mRep == 0)
-        {
-            pthread_mutex_unlock(&mMutex);
             return;
-        }
+        mRep->lock();
         ++(mRep->mRefCount);
-        pthread_mutex_unlock(&mMutex);
+        mRep->unlock();
     }
     inline void delRef() {
-        pthread_mutex_lock(&mMutex);
         if (mRep == 0)
-        {
-            pthread_mutex_unlock(&mMutex);
             return;
-        }
+        Pool* pool = 0;
+        T* entryToPushBack = 0;
+        mRep->lock();
         if (--(mRep->mRefCount) == 0)
         {
             mRep->clear();
-            mRep->getPool().push_back(mRep);
+            pool = &(mRep->getPool());
+            entryToPushBack = mRep;
+            mRep->unlock();
             mRep = 0;
         }
-        pthread_mutex_unlock(&mMutex);
+        else mRep->unlock();
+        if (entryToPushBack != 0)
+        {
+            pool->lock();
+            pool->push_back(entryToPushBack);
+            pool->unlock();
+        }
     }
     virtual void swap(RefCntPoolPtr<T> &other) {
         std::swap(mRep, other.mRep);
@@ -155,36 +170,35 @@ public:
     inline T* get() const { return mRep; }
     inline void allocate() {
         delRef();
-        pthread_mutex_lock(&mMutex);
-        if (T::getStaticPool().empty())
+        Pool& pool = T::getStaticPool();
+        pool.lock();
+        if (pool.empty())
             mRep = new T();
         else
         {
-            mRep = static_cast<T*>(T::getStaticPool().front());
-            T::getStaticPool().pop_front();
+            mRep = static_cast<T*>(pool.front());
+            pool.pop_front();
         }
-        pthread_mutex_unlock(&mMutex);
+        pool.unlock();
         mRep->mRefCount = 1;
     }
     inline void bind(T* rep) {
         assert(mRep == 0);
-        pthread_mutex_lock(&mMutex);
         mRep = rep;
         mRep->mRefCount = 1;
-        pthread_mutex_unlock(&mMutex);
     }
     inline bool unique() const {
         assert(mRep != 0);
-        pthread_mutex_lock(&mMutex);
+        mRep->lock();
         bool unique = (mRep->mRefCount == 1);
-        pthread_mutex_unlock(&mMutex);
+        mRep->unlock();
         return unique;
     }
     inline unsigned int refCount() const {
         assert(mRep != 0);
-        pthread_mutex_lock(&mMutex);
+        mRep->lock();
         unsigned int refCount = mRep->mRefCount;
-        pthread_mutex_unlock(&mMutex);
+        mRep->unlock();
         return refCount;
     }
     inline T* getPointer() const { return mRep; }
@@ -476,11 +490,6 @@ RefCntPoolPtr<XmlLogin> RefCntPoolPtr<XmlLogin>::nullPtr((XmlLogin*)0);
 RefCntPoolPtr<XmlContent> RefCntPoolPtr<XmlContent>::nullPtr((XmlContent*)0);
 RefCntPoolPtr<XmlEntity> RefCntPoolPtr<XmlEntity>::nullPtr((XmlEntity*)0);
 RefCntPoolPtr<XmlEvt> RefCntPoolPtr<XmlEvt>::nullPtr((XmlEvt*)0);
-pthread_mutex_t RefCntPoolPtr<XmlData>::mMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-pthread_mutex_t RefCntPoolPtr<XmlLogin>::mMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-pthread_mutex_t RefCntPoolPtr<XmlContent>::mMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-pthread_mutex_t RefCntPoolPtr<XmlEntity>::mMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-pthread_mutex_t RefCntPoolPtr<XmlEvt>::mMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #endif
 
 } // namespace Solipsis
