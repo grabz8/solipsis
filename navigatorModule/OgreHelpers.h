@@ -21,7 +21,9 @@ private:
 
 public:
     // Retrieve recursively from 1 scene node all movable objects of 1 type
-    static void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
+    static void getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList);
+    // Remove and destroy 1 scene node and recursively all of its movable objects
+    static void removeAndDestroySceneNode(SceneNode* node);
 
     // Convert 1 string representation of Real into 1 Real
     static bool convertString2Real(const String& real, Real& r);

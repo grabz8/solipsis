@@ -1,5 +1,6 @@
 #include "Avatar.h"
 #include "OgreHelpers.h"
+#include "Navigator.h"
 
 using namespace Solipsis;
 
@@ -40,7 +41,7 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     mSceneNode->attachObject(entity);
 
     // Set Name Label
-    mNameLabel = new MovableText("Label" + peer->getLogin(), peer->getLogin(), false);
+    mNameLabel = new MovableText(peer->getNetworkId() + "Label" + peer->getLogin(), peer->getLogin(), false);
     mNameLabel->setScale(0.1f);
     mNameLabel->setCharacterHeight(1);
     mNameLabel->setColor(ColourValue::White);
@@ -48,6 +49,22 @@ Avatar::Avatar(Peer* peer, SceneNode* sceneNode, Entity* entity) :
     Real aabbHeight = entity->getBoundingBox().getSize().y;
     mNameLabel->setAdditionalHeight(aabbHeight);
     mSceneNode->attachObject(mNameLabel);
+
+/* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
+   picking is expected, switch material of pickable entities, render into 1 picking texture, switch
+   back materials and finally get the entity according to the picked color value */
+/*    entity->setMaterialName("Solipsis/ColorPicking");
+    SubEntity* subEntity = entity->getSubEntity(0);
+    subEntity->setCustomParameter(1, Vector4(0.0f, 1.0f, 0.0f, 0.0f));*/
+/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//    entity->setQueryFlags(Navigator::QFAvatar);
+    mSelectionObject = new ManualObject(peer->getNetworkId() + "Sel");
+    AxisAlignedBox entityBbox = entity->getBoundingBox();
+    AxisAlignedBox selectionBbox;
+    selectionBbox.setExtents(entityBbox.getCenter() - entityBbox.getHalfSize()*0.5f, entityBbox.getCenter() + entityBbox.getHalfSize()*0.5f);
+    mSelectionObject->setBoundingBox(selectionBbox);
+    mSelectionObject->setQueryFlags(Navigator::QFAvatar);
+    mSceneNode->attachObject(mSelectionObject);
 
     mGravity = false;
 #ifdef PHYSICS
@@ -88,6 +105,16 @@ Avatar::~Avatar()
     if (mRaySceneQuery != 0)
         mSceneNode->getCreator()->destroyQuery(mRaySceneQuery);
 #endif
+    if (mSelectionObject != 0)
+    {
+        mSceneNode->detachObject(mSelectionObject);
+        delete mSelectionObject;
+    }
+    if (mNameLabel != 0)
+    {
+        mSceneNode->detachObject(mNameLabel);
+        delete mNameLabel;
+    }
     if (mEntity != 0) {
         mSceneNode->detachObject(mEntity);
         mSceneNode->getCreator()->destroyEntity(mEntity);

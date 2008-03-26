@@ -47,6 +47,7 @@ protected:
     State mState;
     /// Current movement type
     MvtType mMvtType;
+    /// Last real position received
     Vector3 mLastRealPosition;
 
     /// Scene node
@@ -57,6 +58,8 @@ protected:
     AnimationState* mAnimationState;
     /// Name label
     MovableText* mNameLabel;
+    /// Selection object
+    ManualObject* mSelectionObject;
     /// Whether to apply the gravity
     bool mGravity;
     /// Radius

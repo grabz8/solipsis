@@ -3,13 +3,13 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList)
+void OgreHelpers::getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList)
 {
     SceneNode::ObjectIterator objectIterator = node->getAttachedObjectIterator();
     while (objectIterator.hasMoreElements())
     {
         MovableObject* movableObject = objectIterator.getNext();
-        if (movableObject->getMovableType().compare(movableType) == 0)
+        if (movableType.empty() || (movableObject->getMovableType().compare(movableType) == 0))
             movableObjectsList.push_back(movableObject);
     }
     Node::ChildNodeIterator childNodeIterator = node->getChildIterator();
@@ -18,6 +18,19 @@ void OgreHelpers::getMovableObjectsList(SceneNode* node, const String movableTyp
         Node* childNode = childNodeIterator.getNext();
         getMovableObjectsList((SceneNode*)childNode, movableType, movableObjectsList);
     }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
+{
+    std::list<MovableObject*> movableObjectsList;
+    OgreHelpers::getMovableObjectsList(node, "", movableObjectsList);
+    for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
+    {
+        node->detachObject(*movableObject);
+        node->getCreator()->destroyMovableObject(*movableObject);
+    }
+    node->getCreator()->destroySceneNode(node->getName());
 }
 
 //-------------------------------------------------------------------------------------

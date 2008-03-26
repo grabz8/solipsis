@@ -71,6 +71,8 @@ protected:
     AnimationState* mAnimationState;
     /// Name label
     MovableText* mNameLabel;
+    /// Selection object
+    ManualObject* mSelectionObject;
     /// Whether to apply the gravity
     bool mGravity;
     /// Radius

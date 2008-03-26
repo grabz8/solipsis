@@ -370,4 +370,7 @@ boot.lua is now calling setConnectionParams() to define default values, usefull 
 avatar displacement improved by specifying new defines TRANSLATION_ANIM_LOOP and ROTATION_ANIM_LOOP giving
 distance/rotation reached during 1 animation loop
 
+avatar's selectionObject moved into Avatar class + avatar full deletion of Ogre nodes + movables
+distant avatar backward movement correctly reproduced
+
 ---------------------------
