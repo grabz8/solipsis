@@ -8,12 +8,6 @@
 
 - To fix : pref.js causes crash at first loading after a full clean
 
-- when using graphics cards with TEXTURE_POW2 caps, Navi can use textures non-POW2 but is unable to
-  work with mask image non-POW2, texture is created on 1st POW2 size but not mask image
-  exception : 
-   Mask dimensions must be greater than or equal to the dimensions of the Navi's internal texture.
-   Mask Dimensions: 400x300, Texture Dimensions: 512x512
-
 - strange behaviour with the HTML tag <select/>, Navi author suggests to use the ComboBox class of Navi.js
   + get last Navi SVN commit
 

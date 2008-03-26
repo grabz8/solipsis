@@ -106,3 +106,10 @@ to the mesh' normals direction ! Flip them resolved it.
 
 - Fix bug after clean : missing Ogre DirectX renderer plugin in runtime dir
 => check you ve rebuilt fully the navigatorModule (post-build evts performed)
+
+[Navigator]
+- when using graphics cards with TEXTURE_POW2 caps, Navi can use textures non-POW2 but is unable to
+  work with mask image non-POW2, texture is created on 1st POW2 size but not mask image
+  exception : 
+   Mask dimensions must be greater than or equal to the dimensions of the Navi's internal texture.
+   Mask Dimensions: 400x300, Texture Dimensions: 512x512
