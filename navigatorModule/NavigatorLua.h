@@ -34,15 +34,22 @@ public:
     // returns boolean
     int bind(lua_State* luaState);
 
+    // set connection parameters
+    // params (connectionHost:string, connectionPort:int)
+    // returns boolean
+    int setConnectionParams(lua_State* luaState);
+
     // get render window metrics
     // returns (width, height, colourDepth, left, top)
     int getRenderWinMetrics(lua_State* luaState);
 
     // send 1 message on chat
+    // params (msg:string)
     // returns boolean
     int sendMessage(lua_State* luaState);
 
     // perform action associated to item selected
+    // params (item:string)
     // returns boolean
     int contextItemSelected(lua_State* luaState);
 

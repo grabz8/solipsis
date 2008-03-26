@@ -363,3 +363,8 @@ reports modeler updates + island scene
 1st person camera Y-mode rotation restored
 
 ---------------------------
+26/03/08
+
+boot.lua is now calling setConnectionParams() to define default values, usefull on network tests
+
+---------------------------

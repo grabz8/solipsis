@@ -870,12 +870,17 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 {
+    char txt[256];
+
     OGRE_LOG("NavigatorGUI::loginPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
+    // Set current values
+    sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getConnectionLogin().c_str());
+    navi->evaluateJS(txt);
+
     // Set network config into informations text
-    char txt[128];
     std::string infosText;
     switch (mNavigator->getConnectionMode())
     {
@@ -898,6 +903,8 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)
 {
+    char txt[256];
+
     OGRE_LOG("NavigatorGUI::connect()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
@@ -913,11 +920,12 @@ void NavigatorGUI::connect(const NaviData& naviData)
         navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid login ...'");
     else
     {
+        mNavigator->setConnectionLogin(login);
         // Valid login
         navi->evaluateJS("$('infosText').innerHTML = 'Connecting ...'");
         // Call connect
         bool connected = mNavigator->connect();
-        char txt[128]; sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
+        sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
         navi->evaluateJS(txt);
     }
 }

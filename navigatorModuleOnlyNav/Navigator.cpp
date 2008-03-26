@@ -22,6 +22,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mUdpPort(6010),
     mHost("localhost"),
     mPort(8550),
+    mLogin("me"),
     mXmlRpcClient(0),
     mOgrePeerManager(0),
     mNavigatorGUI(0),
@@ -115,13 +116,13 @@ void Navigator::setConnectionUdpPort(int udpPort)
 }
 
 //-------------------------------------------------------------------------------------
-String Navigator::getConnectionHost()
+String& Navigator::getConnectionHost()
 {
     return mHost;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionHost(String host)
+void Navigator::setConnectionHost(String& host)
 {
     mHost = host;
 }
@@ -136,6 +137,18 @@ int Navigator::getConnectionPort()
 void Navigator::setConnectionPort(int port)
 {
     mPort = port;
+}
+
+//-------------------------------------------------------------------------------------
+String& Navigator::getConnectionLogin()
+{
+    return mLogin;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setConnectionLogin(String& login)
+{
+    mLogin = login;
 }
 
 //-------------------------------------------------------------------------------------

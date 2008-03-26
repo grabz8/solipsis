@@ -13,6 +13,7 @@ end
 -- Create the NavigatorLua instance
 navigator = NavigatorLua()
 navigator:bind()
+navigator:setConnectionParams("localhost", 8550, "me")
 
 -- some usefull URLs
 -- http://mdeverdelhan.developpez.com/tutoriel/lua

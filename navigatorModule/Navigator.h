@@ -55,6 +55,7 @@ protected:
     int mUdpPort;
     String mHost;
     int mPort;
+    String mLogin;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
@@ -94,10 +95,12 @@ public:
     NodeStatus getNodeStatus();
     int getConnectionUdpPort();
     void setConnectionUdpPort(int udpPort);
-    String getConnectionHost();
-    void setConnectionHost(String host);
+    String& getConnectionHost();
+    void setConnectionHost(String& host);
     int getConnectionPort();
     void setConnectionPort(int port);
+    String& getConnectionLogin();
+    void setConnectionLogin(String& login);
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
