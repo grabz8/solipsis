@@ -744,12 +744,20 @@ Navi* Navi::setMask(std::string maskFileName, std::string groupName)
 		naviName + "MaskTexture", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 		maskImage, TEX_TYPE_2D, 0, 1, false, PF_BYTE_BGRA);
 
+// BEGIN GREG
 	if(maskTexture->getWidth() < texWidth || maskTexture->getHeight() < texHeight)
-		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
+    {
+/*		OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
 			"Mask dimensions must be greater than or equal to the dimensions of the Navi's internal texture. " +
 				templateString("Mask Dimensions: ?x?, Texture Dimensions: ?x?", 
 				Args(maskTexture->getWidth())(maskTexture->getHeight())(texWidth)(texHeight)),
-			"Navi::setMask");
+			"Navi::setMask");*/
+        maskTexture->unload();
+        maskTexture->setWidth(texWidth);
+        maskTexture->setHeight(texHeight);
+        maskTexture->loadImage(maskImage);
+    }
+// END GREG
 
 	needsUpdate = true;
 	usingMask = true;
