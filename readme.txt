@@ -27,6 +27,7 @@ Camera:
 1        First-Person view mode
 2        First-Person view mode with mouse to interact
 3        Third-Person view mode
+4        Third-Person view mode with camera orbit
 MOUSE    Cursor mode (3rd person) / View mode (1st person)
 DBLCLICK In plugins mode, you have to double-click left mouse to enter/leave FirstPerson mouse mode
 
@@ -43,10 +44,9 @@ END      Activate gravity
 
 Debug commands:
 F1 .. F4 SkyDome choice
-F5       FakeTerrain
 F9       Toggle MODELER main panel
-F10      Toggle physics contacts display
-F11      Toggle physics geometries display
+F10      Toggle physics contacts display (if supported by the physics plugin)
+F11      Toggle physics geometries display (if supported by the physics plugin)
 F12      Toggle bounding-boxes display
 [PAUSE]  Toggle DEBUG panel
  Helpers
@@ -64,6 +64,17 @@ About HTTP proxy, you can now define it into the options panel, the resulting co
 file will be updated : navigator\bin\release\NaviProfile\prefs.js like this (FT proxy example)
 user_pref("network.proxy.type", 2);
 user_pref("network.proxy.autoconfig_url", "http://proxyconf.rd.francetelecom.fr");
+
+
+You can build:
+- the Peer and Navigator applications separately (Debug/Release configs)
+- the Navigator application with the Peer embedded (DebugNCS/ReleaseNCS configs, NCS stands for NullClientServer)
+
+
+To run the Peer application you currently have to specify host, port and verbosity of the Peer/Navigator XMLRPC server:
+-h <IPaddr:str>    : IP address (default: localhost)
+-p <port:int>      : port (default: 8550)
+-v <verbosity:int> : verbosity level (0..2)
 
 
 --------------------------------------------------------------------------------
@@ -137,10 +148,7 @@ DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.tx
 DEMO_NAVI2     Set/Unset Navi demo2 (spatialStation official demo with 1 panel on YouTube video)
 DEMO_PHYSICS1  Set/Unset Physics demo (1 cube will drop into the spatialStation)
 NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
-LEXI           User avatar exported with LEXI plugin
-PHYSICS        Set/Unset Physics management by Ode and OgreODE
-PHYSX          Set/Unset Physics management by Ageia PhysX
-TOKAMAK        Set/Unset Physics management by Tokamak
+LOGSNDRCV      Set/Unset traces on sent/received XML msgs
 
 About Navi/LLMozLib Debug assertion, to avoid them:
 Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.

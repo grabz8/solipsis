@@ -95,7 +95,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

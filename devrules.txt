@@ -11,11 +11,12 @@ MediaTools     all external standalone tools we can use to manage/create/... med
 navigator              the navigator application (standalone)
 navigatorModule        the navigator main module (demo only)
 navigatorModuleOnlyNav the navigator main module alone (without the peer part)
-navigatorPhysics       the navigator physics plugins (loaded by navigatorModule)
+navigatorPhysics       the navigator physics plugins (loaded by navigatorModule - demo only)
 navigatorPlugin        the navigator plugins (IE ActiveX and Mozilla plugin)
 navigatorRunnerPlugin  the navigator plugins (IE ActiveX and Mozilla plugin) launching the application (standalone)
-node                   the peer module (node)
-nodeSimulator          the peer module simulator
+peer                   the peer application (standalone)
+peerModule             the peer module
+peerModuleSimulator    the peer module simulator
 peerPhysics            the peer module physics plugins (loaded by nodeSimulator)
 protocols              the protocols clients & servers modules (XMLRPC++, ULXMLRPCPP, NullClientServer)
 setup                  the setup project (to build installers)

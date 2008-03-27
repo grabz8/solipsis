@@ -376,3 +376,15 @@ distant avatar backward movement correctly reproduced
 bug when using graphics cards with TEXTURE_POW2 caps (like ATI) fixed, in this case texture is unloaded, resized then image is reloaded
 
 ---------------------------
+27/03/08
+
+new vc8 & vc9 Solipsis solutions delivered to build Peer, Navigator libraries and Navigator application
+ - old Solipsis solutions renamed solipsisNavDemo_vcX.sln
+ - expat and ulxmlrpcpp libs added
+ - protocols projects added (XmlDatas, P2NClient, P2NServers, P2NNullClientServer)
+ - navigatorModule replaced by navigatorModuleOnlyNav
+ - nodeSimulator renamed peerModuleSimulator
+ - peerModuleSimulator, peer and peerPhysX added
+ - NCS visual configs added to build 1 Navigator application with Peer embedded
+
+---------------------------

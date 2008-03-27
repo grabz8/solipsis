@@ -46,8 +46,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)\plugins.cfg&quot;
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -100,8 +100,8 @@ $(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(Proj
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\nodeSimulator\$(ConfigurationName)\plugins.cfg&quot;
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)&quot; /y
+$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

@@ -16,8 +16,8 @@ rmdir Common\bin\navigator\release /S /Q
 rmdir Common\bin\node\debug /S /Q
 rmdir Common\bin\node\release /S /Q
 
-rmdir Common\bin\nodeSimulator\debug /S /Q
-rmdir Common\bin\nodeSimulator\release /S /Q
+rmdir Common\bin\peerSimulator\debug /S /Q
+rmdir Common\bin\peerSimulator\release /S /Q
 
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
@@ -102,6 +102,8 @@ rmdir MdlrTools\obj /S /Q
 
 rmdir navigator\Debug /S /Q
 rmdir navigator\Release /S /Q
+rmdir navigator\DebugNCS /S /Q
+rmdir navigator\ReleaseNCS /S /Q
 
 rmdir navigatorModule\Debug /S /Q
 rmdir navigatorModule\Release /S /Q
@@ -152,10 +154,10 @@ rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
 rmdir protocols\P2NNullClientServer\Debug /S /Q
 rmdir protocols\P2NNullClientServer\Release /S /Q
 
-rmdir nodeSimulator\Debug /S /Q
-rmdir nodeSimulator\Release /S /Q
-rmdir nodeSimulator\DebugNCS /S /Q
-rmdir nodeSimulator\ReleaseNCS /S /Q
+rmdir peerModuleSimulator\Debug /S /Q
+rmdir peerModuleSimulator\Release /S /Q
+rmdir peerModuleSimulator\DebugNCS /S /Q
+rmdir peerModuleSimulator\ReleaseNCS /S /Q
 
 rmdir peerPhysics\peerPhysX\Debug /S /Q
 rmdir peerPhysics\peerPhysX\Release /S /Q
@@ -166,6 +168,9 @@ rmdir navigatorModuleOnlyNav\Debug /S /Q
 rmdir navigatorModuleOnlyNav\Release /S /Q
 rmdir navigatorModuleOnlyNav\DebugNCS /S /Q
 rmdir navigatorModuleOnlyNav\ReleaseNCS /S /Q
+
+rmdir peer\Debug /S /Q
+rmdir peer\Release /S /Q
 
 echo ============== Done! ===============
 pause
