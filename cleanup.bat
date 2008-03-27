@@ -150,6 +150,8 @@ rmdir protocols\P2NServer\xmlrpc++\Debug /S /Q
 rmdir protocols\P2NServer\xmlrpc++\Release /S /Q
 rmdir protocols\P2NServer\ulxmlrpcpp\Debug /S /Q
 rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
+rmdir protocols\P2NNullClientServer\Debug /S /Q
+rmdir protocols\P2NNullClientServer\Release /S /Q
 
 rmdir nodeSimulator\Debug /S /Q
 rmdir nodeSimulator\Release /S /Q
