@@ -39,7 +39,6 @@ rmdir Dependencies\zlib123 /S /Q
 rmdir Dependencies\protocols /S /Q
 rmdir Dependencies\peerModule /S /Q
 
-
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
 rmdir DevTools\llmozlib\Debug_vc9 /S /Q
@@ -155,12 +154,18 @@ rmdir protocols\P2NNullClientServer\Release /S /Q
 
 rmdir nodeSimulator\Debug /S /Q
 rmdir nodeSimulator\Release /S /Q
+rmdir nodeSimulator\DebugNCS /S /Q
+rmdir nodeSimulator\ReleaseNCS /S /Q
 
 rmdir peerPhysics\peerPhysX\Debug /S /Q
 rmdir peerPhysics\peerPhysX\Release /S /Q
+rmdir peerPhysics\peerPhysX\DebugNCS /S /Q
+rmdir peerPhysics\peerPhysX\ReleaseNCS /S /Q
 
 rmdir navigatorModuleOnlyNav\Debug /S /Q
 rmdir navigatorModuleOnlyNav\Release /S /Q
+rmdir navigatorModuleOnlyNav\DebugNCS /S /Q
+rmdir navigatorModuleOnlyNav\ReleaseNCS /S /Q
 
 echo ============== Done! ===============
 pause
