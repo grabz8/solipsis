@@ -133,10 +133,6 @@ If you are using Ageia PhysX:
  Define your PHYSX_DIR env. var.
  Run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
 
-If you are using Tokamak:
- Compile project Tokamak under DevTools (config TokamakDLL)
- Run CopyTokamakFiles.bat to copy dedicated DLLs into your Common\bin
-
 To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
  Define your DOXYGEN_PATH env. var.
@@ -157,3 +153,11 @@ Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced /
 LLMozLib was originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll, msvcr71.dll, msvcr71d.dll
 are necessary when Solipsis is compiled/linked on VC > 7.1, unfortunately those DLLs were not packaged in
 a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist
+
+In Network configs, before launching, don t forget to run:
+navigatorModuleOnlyNav\copyFirefoxPlugins.bat
+peerModuleSimulator\copyPhysXFiles.bat
+
+In NCS configs, before launching, don t forget to run:
+navigatorModuleOnlyNav\copyNCSPhysXFiles.bat
+
