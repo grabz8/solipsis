@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9.00"
 	Name="ulxmlrpcpp"
 	ProjectGUID="{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}"
 	RootNamespace="ulxmlrpcpp"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -73,6 +74,8 @@
 				AdditionalDependencies="ws2_32.lib uuid.lib libexpat.lib"
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
 				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -91,9 +94,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -161,6 +161,8 @@
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
 				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -179,9 +181,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

@@ -5,6 +5,7 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 #include "Modeler.h"
+#include "AvatarEditor.h"
 
 using namespace Solipsis;
 
@@ -389,9 +390,35 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
             "No scene manager !",
             "OgrePeerManager::CreateAvatarNode");
 
+// GILLES begin
     const char* name = xmlElt->Attribute("name");
+#if 0
     const char* meshFilename = xmlElt->Attribute("meshFilename");
     const char* skeletonFilename = xmlElt->Attribute("skeletonFilename");
+#else
+    const char* filename = xmlElt->Attribute("filename");
+
+    /*
+    static AvatarEditor* avatarEditor = 0;
+    if(!avatarEditor)
+        avatarEditor = new AvatarEditor();
+    if (!avatarEditor->XMLLoad(filename))
+        return false;
+    */
+
+    AvatarEditor* avatarEditor = AvatarEditor::getSingletonPtr();
+    if(!avatarEditor)
+        avatarEditor = new AvatarEditor();
+    if (!avatarEditor->XMLLoad("..\\..\\..\\..\\media\\cache\\models\\", filename))
+        return false;
+
+    std::string meshName = avatarEditor->getMeshFilename();
+    std::string skeletonName = avatarEditor->getSkeletonFilename();
+    const char* meshFilename = meshName.c_str();
+    const char* skeletonFilename = skeletonName.c_str();
+#endif
+// GILLES end
+
     if ((name == 0) || (meshFilename == 0) || (skeletonFilename == 0))
         return false;
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(peer->getNetworkId() + "Avatar");
@@ -405,9 +432,9 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
     node->setPosition(peer->getFakeX(),peer->getFakeZ(),peer->getFakeY()); //careful to switch y and z !
 #ifdef LEXI
     if (peer->getLogin().find("salamandra") != String::npos)
-        node->setPosition(0, 0.67f - depUp, 7.14f);
+        node->setPosition(0, 0.67f, 7.14f);
 #else
-        node->setPosition(17, -56.9f - depUp, 120);
+        node->setPosition(17, -56.9f, 120);
 #endif
 
     Avatar* peerAvatar = new Avatar(peer, node, entity);

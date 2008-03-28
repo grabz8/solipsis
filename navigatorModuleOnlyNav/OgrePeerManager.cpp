@@ -5,6 +5,7 @@
 #include "Navigator.h"
 #include "OgreHelpers.h"
 #include "Modeler.h"
+#include "AvatarEditor.h"
 
 using namespace Solipsis;
 
@@ -246,10 +247,36 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
             "No scene manager !",
             "OgrePeerManager::CreateAvatarNode");
 
+// GILLES begin
     const char* name = xmlElt->Attribute("name");
+#if 0
     const char* meshFilename = xmlElt->Attribute("meshFilename");
     const char* skeletonFilename = xmlElt->Attribute("skeletonFilename");
-    if ((name == 0) || (meshFilename == 0) || (skeletonFilename == 0))
+#else
+    const char* filename = xmlElt->Attribute("filename");
+
+    /*
+    static AvatarEditor* avatarEditor = 0;
+    if(!avatarEditor)
+        avatarEditor = new AvatarEditor();
+    if (!avatarEditor->XMLLoad(filename))
+        return false;
+    */
+
+    AvatarEditor* avatarEditor = AvatarEditor::getSingletonPtr();
+    if(!avatarEditor)
+        avatarEditor = new AvatarEditor();
+    if (!avatarEditor->XMLLoad("..\\..\\..\\..\\media\\cache\\models\\", filename))
+        return false;
+
+    std::string meshName = avatarEditor->getMeshFilename();
+    std::string skeletonName = avatarEditor->getSkeletonFilename();
+    const char* meshFilename = meshName.c_str();
+    const char* skeletonFilename = skeletonName.c_str();
+#endif
+// GILLES end
+	
+	if ((name == 0) || (meshFilename == 0) || (skeletonFilename == 0))
         return false;
     String uidString = StringConverter::toString(xmlEntity->getUid());
     SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Avatar");
