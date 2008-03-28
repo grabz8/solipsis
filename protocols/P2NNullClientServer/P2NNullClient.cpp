@@ -20,10 +20,10 @@ bool IP2NClient::destroyClient(IP2NClient* client)
 }
 
 //-------------------------------------------------------------------------------------
-P2NNullClient::P2NNullClient(const std::string& host, int port, const std::string& uri) :
+P2NNullClient::P2NNullClient(const std::string& host, int port, const std::string& extras) :
     mHost(host),
     mPort(port),
-    mUri(uri),
+    mExtras(extras),
     mNodeId(""),
     mLogger(0)
 {

@@ -20,6 +20,9 @@ private:
     /** Additional informations */
     std::string mExtras;
 
+    /** Logging instance */
+    IP2NServerLogger* mLogger;
+
     /** Server singleton pointer */
     static P2NNullServer* ms_singletonPtr;
 
@@ -30,17 +33,20 @@ public:
     /** Destructor */
     virtual ~P2NNullServer();
 
-    /** Initialisation */
+    /// @copydoc IP2NServer::init
     virtual bool init();
 
-    /** Launch the server in a thread */
+    /// @copydoc IP2NServer::start
     virtual bool start();
 
-    /** Launch the server */
+    /// @copydoc IP2NServer::listen
     virtual bool listen();
 
-    /** Stop the server */
+    /// @copydoc IP2NServer::stop
     virtual bool stop();
+
+    /// @copydoc IP2NServer::setLogger
+    virtual void setLogger(IP2NServerLogger* logger) { mLogger = logger; }
 
     /** Retrieve the requests handler */
     IP2NServerRequestsHandler* getRequestsHandler() { return mRequestsHandler; }

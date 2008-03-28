@@ -13,7 +13,7 @@ const char XMLRPCP2NClient::NODEID_TAG[] = "nodeId";
 //-------------------------------------------------------------------------------------
 IP2NClient* IP2NClient::createClient(const std::string& host, int port, const std::string& extras)
 {
-    return new XMLRPCP2NClient(host, port, "");
+    return new XMLRPCP2NClient(host, port, extras);
 }
 
 //-------------------------------------------------------------------------------------
@@ -25,16 +25,20 @@ bool IP2NClient::destroyClient(IP2NClient* client)
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::XMLRPCP2NClient(const std::string& host, int port, const std::string& uri) :
+XMLRPCP2NClient::XMLRPCP2NClient(const std::string& host, int port, const std::string& extras) :
     mHost(host),
     mPort(port),
-    mUri(uri),
-    XmlRpcClient(host.c_str(), port, uri.empty() ? 0 : uri.c_str()),
+    mExtras(extras),
+    mNbAttempts(1),
+    XmlRpcClient(host.c_str(), port, 0),
     mNodeId(""),
     mConnected(false),
     mCallsMutex(PTHREAD_MUTEX_INITIALIZER),
     mLogger(0)
 {
+    std::string value;
+    if (getExtraInformation(mExtras, "nattempts=", value))
+        mNbAttempts = atoi(value.c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -187,22 +191,31 @@ IP2NClient::RetCode XMLRPCP2NClient::sendEvt(const std::string& xmlEvt, std::str
 //-------------------------------------------------------------------------------------
 bool XMLRPCP2NClient::executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result)
 {
+    bool success = false;
+
     if (pthread_mutex_lock(&mCallsMutex) != 0)
         return false;
-    bool success = this->execute(method, params, result);
+    for(int attempts=mNbAttempts;attempts>0;attempts--)
+    {
+        success = this->execute(method, params, result);
+
+        // Fault ?
+        if (this->isFault())
+        {
+            int offset = 0;
+            XmlRpc::XmlRpcValue faultStruct(result.toXml(), &offset);
+            int faultCode = faultStruct["faultCode"];
+            std::string faultString = faultStruct["faultString"];
+            LOG("XMLRPCP2NClient::executeThreadSafe() Method=" + (std::string)method + ", Fault:" + convert2string(faultCode) + ", " + faultString);
+            success = false;
+            // Timeout ? next attempt ...
+            if (faultCode == 500)
+                continue;
+        }
+        break;
+    }
     if (pthread_mutex_unlock(&mCallsMutex) != 0)
         return false;
-
-    // Fault ?
-    if (this->isFault())
-    {
-        int offset = 0;
-        XmlRpc::XmlRpcValue faultStruct(result.toXml(), &offset);
-        int faultCode = faultStruct["faultCode"];
-        std::string faultString = faultStruct["faultString"];
-        LOG("XMLRPCP2NClient::executeThreadSafe() Method=" + (std::string)method + ", Fault:" + convert2string(faultCode) + ", " + faultString);
-        success = false;
-    }
 
     return success;
 }
@@ -213,6 +226,25 @@ std::string XMLRPCP2NClient::convert2string(int value)
     std::stringstream sstr;
     sstr << value;
     return (std::string)sstr.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XMLRPCP2NClient::getExtraInformation(const std::string& extras, const std::string& information, std::string& value)
+{
+    std::string::size_type idx, spc;
+    idx = extras.find(information);
+    if (idx == std::string::npos)
+        return false;
+    idx += information.length();
+    if (extras.length() < idx)
+        return false;
+    spc = extras.find(' ', idx);
+    if (spc == idx)
+        return false;
+    if (spc == std::string::npos)
+        spc = extras.length();
+    value = extras.substr(idx, spc - idx + 1);
+    return true;
 }
 
 //-------------------------------------------------------------------------------------

@@ -22,8 +22,10 @@ protected:
     std::string mHost;
     /// Port
     int mPort;
-    /// URI
-    std::string mUri;
+    /// Additional informations
+    std::string mExtras;
+    /// Number of attempts
+    unsigned int mNbAttempts;
     /// Node identifier
     NodeId mNodeId;
     /// Connection state
@@ -36,17 +38,17 @@ private:
     IP2NClientLogger* mLogger;
 
 public:
-    XMLRPCP2NClient(const std::string& host, int port, const std::string& uri);
+    XMLRPCP2NClient(const std::string& host, int port, const std::string& extras = "");
     virtual ~XMLRPCP2NClient();
 
     /// @copydoc IP2NClient::getHost
-    const std::string& getHost() { return mHost; }
+    virtual const std::string& getHost() { return mHost; }
     /// @copydoc IP2NClient::getPort
-    int getPort() { return mPort; }
+    virtual int getPort() { return mPort; }
     /// @copydoc IP2NClient::getExtras
-    const std::string& getExtras() { return mUri; }
+    virtual const std::string& getExtras() { return mExtras; }
     /// @copydoc IP2NClient::shareCnx
-    void shareCnx(IP2NClient* P2NClient);
+    virtual void shareCnx(IP2NClient* P2NClient);
 
     /// @copydoc IP2NClient::login
     virtual RetCode login(const std::string& xmlParams, std::string& xmlResp);
@@ -66,8 +68,14 @@ public:
     void setLogger(IP2NClientLogger* logger) { mLogger = logger; }
 
 private:
+    /** Execute (thread-safe) 1 XMLRPC method */
     bool executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result);
+
+    /** Convert 1 integer to 1 string */
     std::string convert2string(int value);
+
+    /** Retrieve 1 extra information */
+    bool getExtraInformation(const std::string& extras, const std::string& information, std::string& value);
 };
 
 } // namespace Solipsis

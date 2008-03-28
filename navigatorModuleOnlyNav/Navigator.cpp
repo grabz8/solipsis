@@ -692,7 +692,7 @@ bool Navigator::quit()
 //-------------------------------------------------------------------------------------
 bool Navigator::connect()
 {
-    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, "");
+    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, "nattempts=2");
 
     //Try connection
 #ifdef POOL

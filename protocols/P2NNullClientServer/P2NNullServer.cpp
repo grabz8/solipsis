@@ -23,7 +23,8 @@ P2NNullServer::P2NNullServer(IP2NServerRequestsHandler* requestsHandler, const s
     mRequestsHandler(requestsHandler),
     mHost(host),
     mPort(port),
-    mExtras(extras)
+    mExtras(extras),
+    mLogger(0)
 {
     ms_singletonPtr = this;
 }

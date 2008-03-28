@@ -24,7 +24,8 @@ P2NServer::P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::stri
     mHost(host),
     mPort(port),
     mExtras(extras),
-    mMTServer(0)
+    mMTServer(0),
+    mLogger(0)
 {
 }
 

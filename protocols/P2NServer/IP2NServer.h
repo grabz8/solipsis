@@ -46,6 +46,16 @@
 
 namespace Solipsis {
 
+/** This class provide logging capacities interface.
+ */
+class IP2NServerLogger
+{
+public:
+    virtual void logMessage(const std::string& message) = 0;
+};
+
+/** This class represents the requests handler interface.
+ */
 class IP2NServerRequestsHandler
 {
 public:
@@ -83,6 +93,12 @@ public:
 	/** Stop the server
 	 */
 	virtual bool stop() = 0;
+
+    /** setLogger.
+    @remarks An implementation must be supplied for this method.
+    @param logger The logger instance
+    */
+    virtual void setLogger(IP2NServerLogger* logger) = 0;
 };
 
 } // namespace Solipsis

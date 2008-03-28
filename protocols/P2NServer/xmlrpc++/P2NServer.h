@@ -28,6 +28,9 @@ private:
     /** Server XMLRPC++ */
     XmlRpc::XmlRpcServer mServer;
 
+    /** Logging instance */
+    IP2NServerLogger* mLogger;
+
     /** List of XMLRPCMethod declared.
      * Note on XMLRPC++ library : 
      * The default XmlRpcServer is not in charge of the destruction of his method objects
@@ -45,17 +48,20 @@ public:
     /** Destructor */
     virtual ~P2NServer();
 
-    /** Initialisation */
+    /// @copydoc IP2NServer::init
     virtual bool init();
 
-    /** Launch the server in a thread */
+    /// @copydoc IP2NServer::start
     virtual bool start();
 
-    /** Launch the server */
+    /// @copydoc IP2NServer::listen
     virtual bool listen();
 
-    /** Stop the server */
+    /// @copydoc IP2NServer::stop
     virtual bool stop();
+
+    /// @copydoc IP2NServer::setLogger
+    virtual void setLogger(IP2NServerLogger* logger) { mLogger = logger; }
 
     /** Retrieve the requests handler */
     IP2NServerRequestsHandler* getRequestsHandler() { return mRequestsHandler; }
@@ -69,6 +75,9 @@ private:
 
     /** Start routine of the thread */
     static void *startThread(void* ptr);
+
+    /** Retrieve 1 extra information */
+    bool getExtraInformation(const std::string& extras, const std::string& information, std::string& value);
 };
 
 } // namespace Solipsis

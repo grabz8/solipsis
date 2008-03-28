@@ -24,7 +24,8 @@ P2NServer::P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::stri
     mHost(host),
     mPort(port),
     mExtras(extras),
-    mServer()
+    mServer(),
+    mLogger(0)
 {
     XmlRpc::setVerbosity(verbosity);
 }
@@ -105,6 +106,25 @@ void *P2NServer::startThread(void* ptr)
 		server->listen();
 
 	return NULL;
+}
+
+//-------------------------------------------------------------------------------------
+bool P2NServer::getExtraInformation(const std::string& extras, const std::string& information, std::string& value)
+{
+    std::string::size_type idx, spc;
+    idx = extras.find(information);
+    if (idx == std::string::npos)
+        return false;
+    idx += information.length();
+    if (extras.length() < idx)
+        return false;
+    spc = extras.find(' ', idx);
+    if (spc == idx)
+        return false;
+    if (spc == std::string::npos)
+        spc = extras.length();
+    value = extras.substr(idx, spc - idx + 1);
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
