@@ -388,3 +388,9 @@ new vc8 & vc9 Solipsis solutions delivered to build Peer, Navigator libraries an
  - NCS visual configs added to build 1 Navigator application with Peer embedded
 
 ---------------------------
+28/03/08
+
+number of attempts added into XMLRPC++ client to avoid the timeout (fault:500) received from ULXMLRPCPP server
+after more than 15sec of inactivity (workaround)
+
+---------------------------
