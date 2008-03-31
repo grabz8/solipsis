@@ -818,6 +818,9 @@ void Navigator::setNodeStatus(String& nodeStatusString)
 //-------------------------------------------------------------------------------------
 void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 {
+    if (mOgrePeerManager == 0)
+        return;
+
     mOgrePeerManager->removeAll(false);
     if (cleanUpLocalPeers)
         mOgrePeerManager->removeAll(true);
