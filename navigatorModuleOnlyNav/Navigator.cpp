@@ -271,11 +271,25 @@ void Navigator::demoNavi1()
 #endif
 #ifdef DEMO_NAVI2
 //-------------------------------------------------------------------------------------
-void Navigator::demoNavi2(const String url)
+void Navigator::demoNavi2(const String params)
 {
     static bool active = false;
-    String url2go(url);
-    if (url.length() == 0)
+    String url2go("");
+    String strPosition("(18, -55, 104.5)");
+    Vector3 position;
+    std::string::size_type strPos;
+    strPos = params.find_first_of(";");
+    if (strPos == std::string::npos)
+        url2go = params;
+    else
+    {
+        url2go = params.substr(0, strPos);
+        if (strPos + 1 < params.length())
+            strPosition = params.substr(strPos + 1, params.length() - (strPos + 1));
+    }
+    if (!OgreHelpers::convertString2Vector3(strPosition, position))
+        position = Vector3(18, -55, 104.5);
+    if (url2go.length() == 0)
         url2go = "http://fr.youtube.com/watch?v=u5WIEep8DJg";
     if (active)
     {
@@ -299,7 +313,7 @@ void Navigator::demoNavi2(const String url)
     vidEnt->setMaterialName(vidNavi->getMaterialName());
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
     videoNode->attachObject(vidEnt);
-    videoNode->setPosition(Vector3(18, -55, 104.5));
+    videoNode->setPosition(position);
     videoNode->yaw(Degree(180), Node::TS_WORLD);
 }
 #endif

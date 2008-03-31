@@ -45,6 +45,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mInitialized(false),
     mHost("localhost"),
     mPort(8550),
+    mSceneDemoLoaded("Deltastation1"),
     mVerbosity(0),
     mP2NServer(0)
 {
@@ -70,6 +71,12 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
         {
             iarg++;
             mVerbosity = atoi(argv[iarg]);
+            continue;
+        }
+        if ((strstr(argv[iarg], "-s") != 0) && (argc > iarg+1))
+        {
+            iarg++;
+            mSceneDemoLoaded = argv[iarg];
             continue;
         }
     }

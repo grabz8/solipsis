@@ -45,8 +45,8 @@ END      Activate gravity
 Debug commands:
 F1 .. F4 SkyDome choice
 F9       Toggle MODELER main panel
-F10      Toggle physics contacts display (if supported by the physics plugin)
-F11      Toggle physics geometries display (if supported by the physics plugin)
+F10      Toggle physics contacts display (if supported by the physics plugin) (NavDemo only)
+F11      Toggle physics geometries display (if supported by the physics plugin) (NavDemo only)
 F12      Toggle bounding-boxes display
 [PAUSE]  Toggle DEBUG panel
  Helpers
@@ -54,10 +54,16 @@ F12      Toggle bounding-boxes display
   rotateSunLight Rotate the directional light to debug normals illumination
  Demos
   demoNavi1      Launch DEMO_NAVI1 (refer below)
-  demoPhysics1   Launch DEMO_PHYSICS1 (refer below)
+  demoPhysics1   Launch DEMO_PHYSICS1 (refer below) (NavDemo only)
  Tests
-  peerLost       Small test on LOST evt from Solipsis node
-  peerNew        Small test on NEW evt (for instance this evt is automatically launched on uichat.html page loaded evt)
+  peerLost       Small test on LOST evt from Solipsis node (NavDemo only)
+  peerNew        Small test on NEW evt (for instance this evt is automatically launched on uichat.html page loaded evt) (NavDemo only)
+
+
+Demos Tips/Tricks:
+into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment 2 lines under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
+into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can the position of the demoNavi2 panel
+into Media\lua\boot.lua, you can tune default connection params into the line navigator:setConnectionParams("localhost", 8550, "me")
 
 
 About HTTP proxy, you can now define it into the options panel, the resulting config
@@ -75,6 +81,7 @@ To run the Peer application you currently have to specify host, port and verbosi
 -h <IPaddr:str>    : IP address (default: localhost)
 -p <port:int>      : port (default: 8550)
 -v <verbosity:int> : verbosity level (0..2)
+-s <sceneName:str> : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...)
 
 
 --------------------------------------------------------------------------------

@@ -45,6 +45,7 @@ public:
     int mConnectionsCount;
     time_t mFirstEvtDate;
     int mState;
+    std::string mSceneDemoLoaded;
 
 protected: 
     Peer(const char* appPath, int argc, char** argv);
