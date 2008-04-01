@@ -35,3 +35,8 @@ Notes about Flash Player plugin:
   either into C:\Program Files\Mozilla Firefox\plugins\NPSWF32.dll
   either into C:\WINDOWS\system32\Macromed\Flash\NPSWF32.dll
 
+Demo Notes:
+ To set 1 url open the Debug panel with key [Pause] then enter url into the Demo tab and hit [Enter]
+ If web page loading seems frozen after you got focus on 1 Navi panel, hit [Escape]
+ To share 1 whiteboard, use www.skrbl.com, click on "start skrbl now" on the host, then use the url displayed above
+ on other navigators to share the created whiteboard (eg. www.skrbl.com/70966862)
