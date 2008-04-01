@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;XMLRPCP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;&quot;$(OGRE_HOME)\include&quot;;$(NOINHERIT)"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;XMLRPCP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
