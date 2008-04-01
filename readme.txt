@@ -143,12 +143,14 @@ If you are using Ageia PhysX:
 
 To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
- Define your DOXYGEN_PATH env. var.
+ Define your DOXYGEN_PATH env. var. on directory containing doxygen.exe
  Run Docs\doxygen\doxygen.bat
 
 To generate setup from NSIS
  Download NSIS on nsis.sourceforge.net
  HM NIS Edit can help you on http://hmne.sourceforge.net
+ Define your NSIS_PATH env. var. on directory containing makensis.exe
+ Run setup\nsis\makensis.bat
 
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel
