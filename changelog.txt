@@ -399,3 +399,8 @@ after more than 15sec of inactivity (workaround)
 argument -s added into peer application to specify demo scene loaded + demoNavi2 position tuning added into uichat.html
 
 ---------------------------
+01/04/08
+
+NSIS setup added (because visual deployment projects are only available on commercial versions)
+
+---------------------------

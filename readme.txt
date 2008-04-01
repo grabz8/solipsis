@@ -91,6 +91,7 @@ HOW TO BUILD
 vcX stands for Visual config (vc7 or vc8)
 
 Install Visual Studio 2005 + SP1 package
+If you are using Visual Studio Express 2005, upgrade it with the SP1 package
 
 Download Ogre source package (branch 1.4)
 Download Ogre Dependencies for VS8.1 (http://www.ogre3d.org/index.php?option=com_content&task=view&id=412&Itemid=132)
@@ -144,6 +145,10 @@ To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
  Define your DOXYGEN_PATH env. var.
  Run Docs\doxygen\doxygen.bat
+
+To generate setup from NSIS
+ Download NSIS on nsis.sourceforge.net
+ HM NIS Edit can help you on http://hmne.sourceforge.net
 
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel

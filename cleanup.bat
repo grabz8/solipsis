@@ -172,5 +172,7 @@ rmdir navigatorModuleOnlyNav\ReleaseNCS /S /Q
 rmdir peer\Debug /S /Q
 rmdir peer\Release /S /Q
 
+del setup\nsis\Setup.exe
+
 echo ============== Done! ===============
 pause
