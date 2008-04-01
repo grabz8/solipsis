@@ -26,3 +26,12 @@
     to setup the proxy parameters
 
 11- Press connect and you should see your avatar dropped into the scene
+
+
+Notes about Flash Player plugin:
+ In Web pages using Flash, maybe your plugin will not be found, so check your local version
+ of Firefox is well displaying the same page and copy the Flash plugin DLL into your navigator\plugins directory,
+ you can find this DLL:
+  either into C:\Program Files\Mozilla Firefox\plugins\NPSWF32.dll
+  either into C:\WINDOWS\system32\Macromed\Flash\NPSWF32.dll
+
