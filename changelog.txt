@@ -404,3 +404,9 @@ argument -s added into peer application to specify demo scene loaded + demoNavi2
 NSIS setup added (because visual deployment projects are only available on commercial versions)
 
 ---------------------------
+02/04/08
+
+user login is now used as name above the avatar
+uidebug panel updated to improve URL features, now you can navigate back, fwd, stop and go
+
+---------------------------
