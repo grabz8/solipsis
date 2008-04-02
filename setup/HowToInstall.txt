@@ -36,6 +36,7 @@ Notes about Flash Player plugin:
   either into C:\WINDOWS\system32\Macromed\Flash\NPSWF32.dll
 
 Demo Notes:
+ You can move the Web navi panel, look into uichat.html
  To set 1 url open the Debug panel with key [Pause] then enter url into the Demo tab and hit [Enter]
  If web page loading seems frozen after you got focus on 1 Navi panel, hit [Escape]
  To share 1 whiteboard, use www.skrbl.com, click on "start skrbl now" on the host, then use the url displayed above

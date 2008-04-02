@@ -305,7 +305,7 @@ void Navigator::demoNavi2(const String params)
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), url2go, 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "", 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
     vidNavi->setForceMaxUpdate(true);
@@ -315,6 +315,9 @@ void Navigator::demoNavi2(const String params)
     videoNode->attachObject(vidEnt);
     videoNode->setPosition(position);
     videoNode->yaw(Degree(180), Node::TS_WORLD);
+    // Add 1 listener to follow URL changes
+    vidNavi->addEventListener(&mDemoNavi2EventListener);
+    vidNavi->navigateTo(url2go);
 }
 #endif
 #ifdef DEMO_PHYSICS1
@@ -711,10 +714,10 @@ bool Navigator::connect()
     //Try connection
 #ifdef POOL
     RefCntPoolPtr<XmlLogin> xmlLogin;
-    xmlLogin->setUsername("user");
+    xmlLogin->setUsername(getConnectionLogin());
     xmlLogin->setPwd("demo");
 #else
-    XmlLogin xmlLogin("user", "demo");
+    XmlLogin xmlLogin(getConnectionLogin(), "demo");
 #endif
     std::list<EntityUID> myEntities;
 #ifdef POOL

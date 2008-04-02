@@ -117,7 +117,18 @@ public:
     void demoNavi1();
 #endif
 #ifdef DEMO_NAVI2
+    class DemoNavi2EventListener : public NaviEventListener
+    {
+	public:
+        std::string mUrl;
+        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
+		virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+        virtual void onLocationChange(Navi *caller, const std::string &url) { mUrl = url; getSingletonPtr()->getNavigatorGUI()->debugRefreshUrl(); }
+		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
+    };
+    DemoNavi2EventListener mDemoNavi2EventListener;
     void demoNavi2(const String params);
+    std::string& demoNavi2GetUrl() { return mDemoNavi2EventListener.mUrl; }
 #endif
 #ifdef DEMO_PHYSICS1
     void demoPhysics1();

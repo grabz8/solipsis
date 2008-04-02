@@ -78,6 +78,7 @@ public:
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
+    void debugRefreshUrl();
 #endif
 
 protected:
@@ -202,6 +203,7 @@ protected:
 #ifdef UIDEBUG
     // Debug callbacks
     void debugCommand(const NaviData& naviData);
+    void navCommand(const NaviData& naviData);
     void debugPageLoaded(const NaviData& naviData);
     void debugRefreshTree(const NaviData& naviData);
 #endif

@@ -813,6 +813,7 @@ void NavigatorGUI::switchDebug()
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
         navi->bind("debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
         navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        navi->bind("navCommand", NaviDelegate(this, &NavigatorGUI::navCommand));
         mNavisStates[NAVI_DEBUG] = NSCreated;
         mTreeDirty = true;
     }
@@ -829,9 +830,36 @@ void NavigatorGUI::switchDebug()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::debugRefreshUrl()
+{
+    char txt[256];
+
+    OGRE_LOG("NavigatorGUI::debugRefreshUrl()");
+
+    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
+
+#ifdef DEMO_NAVI2
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("demoNavi2Video");
+    if (naviDemoNavi2 == 0) return;
+    // Set current url
+    sprintf(txt, "$('inputUrl').value = '%s'", mNavigator->demoNavi2GetUrl().c_str());
+    navi->evaluateJS(txt);
+    // Activate/Deactivate Back/Forward buttons
+    sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
+    navi->evaluateJS(txt);
+    sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
+    navi->evaluateJS(txt);
+#endif
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::debugPageLoaded()");
+
+    // Refresh url
+    debugRefreshUrl();
 
     // Refresh tree datas
     debugRefreshTree(naviData);
@@ -846,6 +874,7 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::debugRefreshTree()");
 
+    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
     if (!mTreeDirty) return;
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
@@ -915,7 +944,18 @@ void NavigatorGUI::connect(const NaviData& naviData)
     OGRE_LOG("login=" + login);
 
     // Check
-    if ((login.length() < 2) || (login.compare("null") == 0) || (login.compare("me") == 0))
+    static std::string validLoginExtrasChars = "$-_.@+!*'(),";
+    bool validLogin = ((login.length() > 2) && (login.compare("null") != 0));
+    for(int i=0;i<login.length();i++)
+    {
+        if (!validLogin)
+            break;
+        validLogin = ((login[i] >= '0') && (login[i] <= '9') ||
+            (login[i] >= 'a') && (login[i] <= 'z') ||
+            (login[i] >= 'A') && (login[i] <= 'Z') ||
+            (validLoginExtrasChars.find_first_of(login[i]) != std::string::npos));
+    }
+    if (!validLogin)
         // Malformed login
         navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid login ...'");
     else
@@ -2139,6 +2179,34 @@ void NavigatorGUI::debugCommand(const NaviData& naviData)
 
     // Push debug command
     DebugHelpers::debugCommands[String(cmd)] = String(params);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::navCommand(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::navCommand()");
+
+    // Get command
+    std::string cmd;
+    cmd = naviData["cmd"].str();
+    OGRE_LOG("cmd=" + cmd);
+
+#ifdef DEMO_NAVI2
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("demoNavi2Video");
+    if (naviDemoNavi2 == 0) return;
+    if (cmd.compare("back") == 0)
+        naviDemoNavi2->navigateBack();
+    else if (cmd.compare("forward") == 0)
+        naviDemoNavi2->navigateForward();
+    else if (cmd.compare("stop") == 0)
+        naviDemoNavi2->navigateStop();
+    else if (cmd.compare("go") == 0)
+    {
+    	std::string url = navi->evaluateJS("document.getElementById('inputUrl').value");
+        naviDemoNavi2->navigateTo(url);
+    }
+#endif
 }
 #endif
 

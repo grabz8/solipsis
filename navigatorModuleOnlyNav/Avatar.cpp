@@ -66,7 +66,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
     String uidString = StringConverter::toString(xmlEntity->getUid());
 
     // Set Name Label
-    mNameLabel = new MovableText(uidString + "Label", mXmlEntity->getName(), false);
+    mNameLabel = new MovableText(uidString + "Label", mXmlEntity->getName().substr(0, 16), false);
     mNameLabel->setScale(0.1f);
     mNameLabel->setCharacterHeight(1);
     mNameLabel->setColor(ColourValue::White);

@@ -22,6 +22,10 @@
             {
                 new NaviData('debugCommand').add({cmd:command}).add({params:parameters}).send();
             }
+            function navCommand(command)
+            {
+                new NaviData('navCommand').add({cmd:command}).send();
+            }
         </script>
         <style type="text/css">
             .mootabs_title {
@@ -97,6 +101,17 @@
                 background-color: #FFFFFF;
                 color: #000000;
             }
+            .buttonNavLine
+            {
+	            position: absolute;
+	            left: 0px;
+                top: 84px;
+            }
+            .buttonNav
+            {
+	            position: relative;
+                width: 56px;
+            }
             #helpersToggleAxisButton { top: 10px; width: 100px; }
             #helpersPosAxisInput
             {
@@ -146,10 +161,16 @@
                         <form id="urlForm" action="" visible="false" onsubmit="debugCommand('demoNavi2', document.getElementById('inputUrl').value);return false;">
                             <div id="urlText">URL</div>
                             <div id="urlInput">
-                                <input id="inputUrl" class="inputText" name="inputUrl" value="" type="text" size="20" />
+                                <input id="inputUrl" class="inputText" name="inputUrl" value="" type="text" size="30" />
                             </div>
                         </form>
-				    </div>
+                        <div id="navButtons" class="buttonNavLine">
+                            <button id="navBackButton" class="buttonNav" name="buttonNavBack" value="buttonNavBack" type="button" onclick="navCommand('back', '')">&lt;</button>
+                            <button id="navForwardButton" class="buttonNav" name="buttonNavForward" value="buttonNavForward" type="button" onclick="navCommand('forward', '')">&gt;</button>
+                            <button id="navStopButton" class="buttonNav" name="buttonNavStop" value="buttonNavStop" type="button" onclick="navCommand('stop', '')">X</button>
+                            <button id="navGoButton" class="buttonNav" name="buttonNavGo" value="buttonNavStop" type="button" onclick="navCommand('go', '')">Go</button>
+                        </div>
+                    </div>
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
                         <button id="peerDO1Button" class="buttonRow1" name="buttonPeerDO1" value="buttonPeerDO1" type="button" onclick="debugCommand('testEvt', 'peerDO1')">peerDO1</button>
