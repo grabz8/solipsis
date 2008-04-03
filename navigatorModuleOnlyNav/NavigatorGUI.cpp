@@ -832,8 +832,6 @@ void NavigatorGUI::switchDebug()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugRefreshUrl()
 {
-    char txt[256];
-
     OGRE_LOG("NavigatorGUI::debugRefreshUrl()");
 
     if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
@@ -843,6 +841,7 @@ void NavigatorGUI::debugRefreshUrl()
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
     // Set current url
+    char txt[256];
     sprintf(txt, "$('inputUrl').value = '%s'", mNavigator->demoNavi2GetUrl().c_str());
     navi->evaluateJS(txt);
     // Activate/Deactivate Back/Forward buttons
