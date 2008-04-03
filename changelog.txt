@@ -410,3 +410,10 @@ user login is now used as name above the avatar
 uidebug panel updated to improve URL features, now you can navigate back, fwd, stop and go
 
 ---------------------------
+03/04/08
+
+Peer simulator connections/IDs management bug fixed
+logger added into IPhysicsEngine to track 1 bug about multiple scenes into PhysX plugin
+logger into OgreHelpers is now thread safe
+
+---------------------------
