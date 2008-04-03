@@ -115,9 +115,7 @@ bool DebugHelpers::initLua(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int DebugHelpers::luaLogMessage(lua_State *L)
 {
-    LogManager* logMgr = LogManager::getSingletonPtr();
-    if (logMgr)
-        logMgr->logMessage("luaLog> " + String(luaL_checkstring(L, 1)));
+    OGRE_LOG("luaLog> " + String(luaL_checkstring(L, 1)));
 	return 0;
 }
 

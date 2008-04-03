@@ -27,7 +27,7 @@ bool PhysXEngine::shutdown()
 //-------------------------------------------------------------------------------------
 IPhysicsScene* PhysXEngine::createScene()
 {
-   return new PhysXScene();
+   return new PhysXScene(this);
 }
 
 //-------------------------------------------------------------------------------------

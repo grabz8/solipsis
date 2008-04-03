@@ -1,4 +1,5 @@
 #include "PhysXScene.h"
+#include "PhysXEngine.h"
 #include "PhysXBody.h"
 #include "PhysXCharacter.h"
 #include "PhysXHelpers.h"
@@ -6,7 +7,8 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-PhysXScene::PhysXScene() :
+PhysXScene::PhysXScene(PhysXEngine* engine) :
+    mEngine(engine),
     mNxScene(0),
     mNxControllerManager(0),
     mNxGeometry(0),
@@ -45,6 +47,9 @@ bool PhysXScene::create()
     mNxScene = PhysXHelpers::getNxPhysicsSDK()->createScene(sceneDesc);
     if (mNxScene == 0)
         return false;
+    char logMsg[256];
+    sprintf(logMsg, "PhysXScene::create() mNxScene=0x%08x", mNxScene);
+    mEngine->logMessage(logMsg);
 
     // Set the default material 0
 	NxMaterial* defaultMaterial = mNxScene->getMaterialFromIndex(0); 
@@ -60,6 +65,8 @@ bool PhysXScene::create()
     mNxControllerManager = NxCreateControllerManager(PhysXHelpers::getNxUserAllocatorDefault());
     if (mNxControllerManager == 0)
         return false;
+    sprintf(logMsg, "PhysXScene::create() mNxControllerManager=0x%08x", mNxControllerManager);
+    mEngine->logMessage(logMsg);
 
     return true;
 }

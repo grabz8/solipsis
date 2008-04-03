@@ -21,10 +21,13 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
     NodeId nodeId;
     if (xmlLogin->getPwd().compare("demo") == 0)
     {
+        int connection = Peer::getSingleton().allocConnection();
+        if (connection == -1)
+            return 0;
         char nidhex[16];
-        sprintf(nidhex, "%08X", Peer::getSingleton().mConnectionsCount + 1);
+        sprintf(nidhex, "%08X", connection + 1);
         nodeId = nidhex;
-        AvatarEntityId = 0x10000 + Peer::getSingleton().mConnectionsCount + 1;
+        AvatarEntityId = 0x10000 + connection + 1;
     }
     else
         return 0;
@@ -357,6 +360,13 @@ bool NodeManager::logout(const NodeId& nodeId)
     avatarNode->freeze(true);
     mDestroyedNodeIds.insert(nodeId);
 
+    int connection;
+    sscanf(nodeId.c_str(), "%x", &connection);
+    if (connection < 1)
+        return false;
+    if (!Peer::getSingleton().releaseConnection(connection - 1))
+        return false;
+
     return true;
 }
 
@@ -386,7 +396,7 @@ bool NodeManager::update()
         mNodes.erase(*i);
         delete avatarNode;
         /////////////////////////////////////
-        if (Peer::getSingleton().mConnectionsCount == 0)
+        if (Peer::getSingleton().getConnectionsCount() == 0)
         {
             NodeId siteNodeId = "00000010";
             delete mNodes[siteNodeId];

@@ -8,11 +8,12 @@
 #include "OgreSkeletonSerializer.h"
 #include "OgreDefaultHardwareBufferManager.h"
 #include "OgreHardwareVertexBuffer.h"*/
+#include <pthread.h>
 
 namespace Solipsis {
 
 // secure logMessage macro
-#define OGRE_LOG(message) if (Ogre::LogManager::getSingletonPtr()) Ogre::LogManager::getSingletonPtr()->logMessage(message);
+#define OGRE_LOG(message) if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
 
 /** This static class contains several helper methods above Ogre.
  */
@@ -20,6 +21,7 @@ class PEERMODULE_EXPORT OgreHelpers
 {
 private:
     static OgreHelpers* mSingleton;
+    pthread_mutex_t mLogsMutex;
 
 protected:
     Ogre::Root* mRoot;
@@ -40,6 +42,7 @@ protected:
 private:
     // No instanciation
     OgreHelpers() :
+        mLogsMutex(PTHREAD_MUTEX_INITIALIZER),
         mRoot(0),
         mMeshSerializer(0),
         mHWBufferManager(0)
@@ -66,6 +69,15 @@ private:
 public:
     static bool initialize();
     static void shutdown();
+
+    void logMessage(const std::string& message)
+    {
+        pthread_mutex_lock(&mLogsMutex);
+        Ogre::LogManager* logManager = Ogre::LogManager::getSingletonPtr();
+        if (logManager != 0)
+            logManager->logMessage(message);
+        pthread_mutex_unlock(&mLogsMutex);
+    }
 
     static OgreHelpers* getSingletonPtr() { return mSingleton; }
     static OgreHelpers& getSingleton() { return *mSingleton; }

@@ -85,6 +85,8 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mNodeManager = new NodeManager();
 
     mConnectionsCount = 0;
+    for(int c=0;c<MAX_CONNECTIONS;c++)
+        mConnections[c] = false;
 }
 
 //-------------------------------------------------------------------------------------
@@ -95,6 +97,41 @@ Peer::~Peer()
 
     delete mNodeManager;
     delete mPhysicsEngineManager;
+}
+
+//-----------------------------------------------------------------------
+void Peer::getConnectionsString(std::string& str)
+{
+    bool comma = false;
+    str.clear();
+    for(int c=0;c<MAX_CONNECTIONS;c++)
+        if (mConnections[c])
+        {
+            if (comma) str += ", ";
+            comma = true;
+            str += Ogre::StringConverter::toString(c);
+        }
+}
+
+//-----------------------------------------------------------------------
+int Peer::allocConnection()
+{
+    for(int c=0;c<MAX_CONNECTIONS;c++)
+        if (!mConnections[c])
+        {
+            mConnections[c] = true;
+            return c;
+        }
+    return -1;
+}
+
+//-----------------------------------------------------------------------
+bool Peer::releaseConnection(int connection)
+{
+    if (!mConnections[connection])
+        return false;
+    mConnections[connection] = false;
+    return true;
 }
 
 //-----------------------------------------------------------------------
@@ -153,6 +190,12 @@ void Peer::run()
 }
 
 //-------------------------------------------------------------------------------------
+void Peer::P2NServerLogger::logMessage(const std::string& message)
+{
+    OGRE_LOG(message);
+}
+
+//-------------------------------------------------------------------------------------
 IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId, std::string& xmlRespStr)
 {
     nodeId.clear();
@@ -187,10 +230,9 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
 
     /////////////////////////////////////
     mConnectionsCount++;
-    if (mConnectionsCount == 1)
-    {
-        mState = -1;
-    }
+    std::string connections;
+    getConnectionsString(connections);
+    OGRE_LOG("Peer::login() mConnectionsCount=" + Ogre::StringConverter::toString(mConnectionsCount) + " (" + connections + ")");
     /////////////////////////////////////
 
     return IP2NClient::RCOk;
@@ -202,6 +244,9 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
     mNodeManager->logout(nodeId);
     /////////////////////////////////////
     mConnectionsCount--;
+    std::string connections;
+    getConnectionsString(connections);
+    OGRE_LOG("Peer::logout() mConnectionsCount=" + Ogre::StringConverter::toString(mConnectionsCount) + " (" + connections + ")");
     /////////////////////////////////////
 
     return IP2NClient::RCOk;
@@ -265,6 +310,12 @@ IP2NClient::RetCode Peer::sendEvt(const NodeId& nodeId, const std::string& xmlEv
 }
 
 //-------------------------------------------------------------------------------------
+void Peer::PhysicsEngineLogger::logMessage(const std::string& message)
+{
+    OGRE_LOG(message);
+}
+
+//-------------------------------------------------------------------------------------
 bool Peer::_initialize()
 {
     OgreHelpers::initialize();
@@ -279,10 +330,12 @@ bool Peer::_initialize()
         return false;
     }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
+    PhysicsEngineManager::getSingleton().getSelectedEngine()->setLogger(&mPhysicsEngineLogger);
 #endif
 
     // create and start the Node server
     mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=8");
+    mP2NServer->setLogger(&mP2NServerLogger);
 	mP2NServer->init();
 	if (!mP2NServer->start())
     {

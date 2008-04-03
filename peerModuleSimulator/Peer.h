@@ -31,6 +31,10 @@ protected:
     PhysicsEngineManager* mPhysicsEngineManager;
     NodeManager* mNodeManager;
 
+    #define MAX_CONNECTIONS 256
+    int mConnectionsCount;
+    bool mConnections[MAX_CONNECTIONS];
+
     /** Set of registered frame listeners */
     std::set<TimeListener*> mTimeListeners;
 
@@ -42,9 +46,7 @@ protected:
     bool mResetTime;
 
 public:
-    int mConnectionsCount;
     time_t mFirstEvtDate;
-    int mState;
     std::string mSceneDemoLoaded;
 
 protected: 
@@ -74,6 +76,11 @@ public:
 
     NodeManager* getNodeManager() { return mNodeManager; }
 
+    int getConnectionsCount() { return mConnectionsCount; }
+    void getConnectionsString(std::string& str);
+    int allocConnection();
+    bool releaseConnection(int connection);
+
     /** Registers a TimeListener which will be called back every tick.
         @remarks
             A TimeListener is a class which implements methods which
@@ -98,6 +105,12 @@ protected:
     /** See BasicThread. */
     virtual void BasicThread::run();
 
+    class P2NServerLogger : public IP2NServerLogger {
+        /** See IP2NServerLogger. */
+        virtual void logMessage(const std::string& message);
+    };
+    P2NServerLogger mP2NServerLogger;
+
     /** See IP2NServerRequestsHandler. */
     virtual IP2NClient::RetCode login(const std::string& xmlParamsStr, NodeId& nodeId, std::string& xmlRespStr);
     /** See IP2NServerRequestsHandler. */
@@ -106,6 +119,12 @@ protected:
     virtual IP2NClient::RetCode handleEvt(const NodeId& nodeId, std::string& xmlRespStr);
     /** See IP2NServerRequestsHandler. */
     virtual IP2NClient::RetCode sendEvt(const NodeId& nodeId, const std::string& xmlEvtStr, std::string& xmlRespStr);
+
+    class PhysicsEngineLogger : public IPhysicsEngineLogger {
+        /** See IPhysicsEngineLogger. */
+        virtual void logMessage(const std::string& message);
+    };
+    PhysicsEngineLogger mPhysicsEngineLogger;
 
 protected:
     bool _initialize();

@@ -9,7 +9,8 @@ namespace Solipsis {
 AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
     Node(nodeId, "avatar"),
     mMutex(PTHREAD_MUTEX_INITIALIZER),
-    mAvatar(xmlEntity)
+    mAvatar(xmlEntity),
+    mPhysicsScene(0)
 {
     OGRE_LOG("AvatarNode::AvatarNode() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()));
 
@@ -26,6 +27,9 @@ AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
         Exception(Exception::ERR_INTERNAL_ERROR,
         "Unable to create the PhysX scene !",
         "AvatarNode::AvatarNode");
+    char logMsg[256];
+    sprintf(logMsg, "AvatarNode::AvatarNode() mPhysicsScene=0x%08x", mPhysicsScene);
+    OGRE_LOG(logMsg);
 #endif
 
     addAwareEntity(&mAvatar);

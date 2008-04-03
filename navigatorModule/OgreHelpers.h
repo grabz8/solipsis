@@ -3,23 +3,44 @@
 
 #include "NavigatorModule.h"
 #include "Ogre.h"
+#include <pthread.h>
 
 using namespace Ogre;
 
 namespace Solipsis {
 
 // secure logMessage macro
-#define OGRE_LOG(message) if (LogManager::getSingletonPtr()) LogManager::getSingletonPtr()->logMessage(message);
+#define OGRE_LOG(message) if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
 
 /** This static class contains several helper methods above Ogre.
  */
 class NAVIGATORMODULE_EXPORT OgreHelpers
 {
 private:
+    static OgreHelpers* mSingleton;
+    pthread_mutex_t mLogsMutex;
+
+private:
     // No instanciation
-    OgreHelpers() {};
+    OgreHelpers() :
+        mLogsMutex(PTHREAD_MUTEX_INITIALIZER)
+    {
+        mSingleton = this;
+    }
 
 public:
+    void logMessage(const std::string& message)
+    {
+        pthread_mutex_lock(&mLogsMutex);
+        Ogre::LogManager* logManager = Ogre::LogManager::getSingletonPtr();
+        if (logManager != 0)
+            logManager->logMessage(message);
+        pthread_mutex_unlock(&mLogsMutex);
+    }
+
+    static OgreHelpers* getSingletonPtr() { return mSingleton; }
+    static OgreHelpers& getSingleton() { return *mSingleton; }
+
     // Retrieve recursively from 1 scene node all movable objects of 1 type
     static void getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList);
     // Remove and destroy 1 scene node and recursively all of its movable objects

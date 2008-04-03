@@ -7,6 +7,14 @@
 
 namespace Solipsis {
 
+/** This class provide logging capacities interface.
+ */
+class IPhysicsEngineLogger
+{
+public:
+    virtual void logMessage(const std::string& message) = 0;
+};
+
 /** This class represents a generic Physics engine.
 */
 class PEERMODULE_EXPORT IPhysicsEngine
@@ -39,6 +47,12 @@ public:
     @remarks An implementation must be supplied for this method.
     */
     virtual void destroyScene(IPhysicsScene* scene) = 0;
+
+    /** setLogger.
+    @remarks An implementation must be supplied for this method.
+    @param logger The logger instance
+    */
+    virtual void setLogger(IPhysicsEngineLogger* logger) = 0;
 };
 
 } // end namespace

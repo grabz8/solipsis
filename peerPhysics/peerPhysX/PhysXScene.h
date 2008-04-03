@@ -16,6 +16,8 @@ namespace Solipsis {
 class PhysXScene : public IPhysicsScene
 {
 protected:
+    /// Engine
+    PhysXEngine* mEngine;
     /// Scene
     NxScene* mNxScene;
     /// Geometry
@@ -31,7 +33,7 @@ protected:
     Real mMaxStepInSeconds;
 
 public:
-    PhysXScene();
+    PhysXScene(PhysXEngine* engine);
     virtual ~PhysXScene();
 
     /// @copydoc IPhysicsScene::create

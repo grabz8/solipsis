@@ -11,6 +11,10 @@ namespace Solipsis {
 */
 class PhysXEngine : public IPhysicsEngine
 {
+private:
+    /// Logging instance
+    IPhysicsEngineLogger* mLogger;
+
 public:
     PhysXEngine() {}
 
@@ -28,6 +32,12 @@ public:
 
     /// @copydoc IPhysicsEngine::destroyScene
     virtual void destroyScene(IPhysicsScene* scene);
+
+    /// @copydoc IPhysicsEngine::setLogger
+    virtual void setLogger(IPhysicsEngineLogger* logger) { mLogger = logger; }
+
+    /// log a message
+    inline void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
 };
 
 } // namespace Solipsis
