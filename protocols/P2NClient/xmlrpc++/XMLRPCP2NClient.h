@@ -65,7 +65,7 @@ public:
     virtual RetCode sendEvt(const std::string& xmlEvt, std::string& xmlResp);
 
     /// @copydoc IP2NClient::setLogger
-    void setLogger(IP2NClientLogger* logger) { mLogger = logger; }
+    virtual void setLogger(IP2NClientLogger* logger) { mLogger = logger; }
 
 private:
     /** Execute (thread-safe) 1 XMLRPC method */
