@@ -62,6 +62,8 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
 
     // Open XML file and parse it
     String xmlFile = xmlEntity->getName() + ".xml";
+    if (xmlEntity->getType() == ETAvatar)
+        xmlFile = "User.xml";
     DataStreamPtr stream;
     try
     {
