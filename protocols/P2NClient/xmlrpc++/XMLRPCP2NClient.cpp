@@ -112,7 +112,7 @@ IP2NClient::RetCode XMLRPCP2NClient::logout()
         // Parse response
         int offset = 0;
         XmlRpc::XmlRpcValue resultStruct(result.toXml(), &offset);
-        retCode = (XMLRPCP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
+        retCode = (IP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
         if (retCode == IP2NClient::RCError)
         {
             LOG("XMLRPCP2NClient::logout() retCode=" + convert2string(retCode) + ", Error:" + (std::string)resultStruct[RESPONSE_TAG]);
@@ -151,7 +151,7 @@ IP2NClient::RetCode XMLRPCP2NClient::handleEvt(std::string& xmlResp)
         // Parse response
         int offset = 0;
         XmlRpc::XmlRpcValue resultStruct(result.toXml(), &offset);
-        retCode = (XMLRPCP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
+        retCode = (IP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
         if (retCode == IP2NClient::RCError)
         {
             LOG("XMLRPCP2NClient::handleEvt() retCode=" + convert2string(retCode) + ", Error:" + (std::string)resultStruct[RESPONSE_TAG]);
@@ -180,7 +180,7 @@ IP2NClient::RetCode XMLRPCP2NClient::sendEvt(const std::string& xmlEvt, std::str
         // Parse response
         int offset = 0;
         XmlRpc::XmlRpcValue resultStruct(result.toXml(), &offset);
-        retCode = (XMLRPCP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
+        retCode = (IP2NClient::RetCode)(int)resultStruct[RETCODE_TAG];
         if (retCode == IP2NClient::RCError)
         {
             LOG("XMLRPCP2NClient::sendEvt() retCode=" + convert2string(retCode) + ", Error:" + (std::string)resultStruct[RESPONSE_TAG]);
