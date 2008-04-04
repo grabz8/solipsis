@@ -792,7 +792,7 @@ void Navigator::createScene()
     // Create user avatar
     Peer* userLocalPeer = new Peer(String("User"), 0, 0, 0);
     if (!generateFromPeer(userLocalPeer))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load User avatar", "Navigator::createScene");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load User avatar", "Navigator::createScene");
 
     // create the sun light
     Light *sunLight = mSceneMgr->createLight("SunLight");
@@ -946,7 +946,7 @@ bool Navigator::connect()
 bool Navigator::sendMessage(const String& message)
 {
     if (mXmlRpcClient == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
 // GILLES begin
     // Push debug command
@@ -998,7 +998,7 @@ void Navigator::setNodeStatus(String& nodeStatusString)
     else if (nodeStatusString.compare("UNAVAILABLE") == 0)
         mNodeStatus = NSUnavailable;
     else
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unknown node status : " + nodeStatusString, "Navigator::setNodeStatus");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unknown node status : " + nodeStatusString, "Navigator::setNodeStatus");
 }
 
 //-------------------------------------------------------------------------------------
@@ -1036,7 +1036,7 @@ void Navigator::onPeerLost(NodeEvent::DatasPeerLost& evtDatas)
     OGRE_LOG("Navigator::onPeerLost()");
 
     if (!mOgrePeerManager->remove(evtDatas.mNetworkId, false))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Lost peer not found", "Navigator::onPeerLost");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Lost peer not found", "Navigator::onPeerLost");
 }
 
 //-------------------------------------------------------------------------------------
