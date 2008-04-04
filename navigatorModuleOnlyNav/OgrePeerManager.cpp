@@ -245,7 +245,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
 #endif
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No scene manager !",
             "OgrePeerManager::CreateAvatarNode");
 
@@ -313,7 +313,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
 #endif
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No scene manager !",
             "OgrePeerManager::CreateSceneNode");
 
@@ -325,10 +325,10 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
     if (!osmScene.initialise(filename, &osmSceneCallbacks))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
     osmScene.declareResources();
     if (!osmScene.createScene(node))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
 
 #ifdef SHADOWS
     mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
@@ -364,7 +364,7 @@ OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity, TiXmlElement* 
 #endif
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
         "No scene manager !",
         "OgrePeerManager::CreateObjectNode");
 
