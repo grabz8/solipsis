@@ -417,3 +417,13 @@ logger added into IPhysicsEngine to track 1 bug about multiple scenes into PhysX
 logger into OgreHelpers is now thread safe
 
 ---------------------------
+04/04/08
+
+exceptions management improved (ideally like Ogre errors should be returned through exceptions instead of bool results)
+verbosity added into server interface
+XmlRpcLogHandler and XmlRpcErrorHandler defined and messages forwarded to caller logger
+PhysXSDK NxUserOutputStream logger added to get warnings/errors from SDK
+PhysXSDK warning about first call to fetchResults() before first call to simulate() fixed
+Now login fails if avatarNode cannot be created on the Peer
+
+---------------------------
