@@ -242,7 +242,7 @@ bool PhysXHelpers::init()
     mPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, 0, desc, &errorCode);
     if (mPhysicsSDK == 0)
     {
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to initialize the PhysX SDK ! errorCode=" + StringConverter::toString((int)errorCode),
             "OgrePeerManager::CreateSceneNode");
     }
