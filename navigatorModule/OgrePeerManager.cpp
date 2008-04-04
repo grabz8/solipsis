@@ -386,7 +386,7 @@ IPhysicsScene* OgrePeerManager::getPhysicsScene()
 OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No scene manager !",
             "OgrePeerManager::CreateAvatarNode");
 
@@ -459,7 +459,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(Peer* peer, TiXmlElement* xmlElt)
 OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No scene manager !",
             "OgrePeerManager::CreateSceneNode");
 
@@ -470,10 +470,10 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
     if (!osmScene.initialise(filename, &osmSceneCallbacks))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
     osmScene.declareResources();
     if (!osmScene.createScene(node))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(filename), "OgrePeerManager::createSceneNode");
 
 #ifdef SHADOWS
     mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
@@ -519,7 +519,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     mPhysicsScene = PhysXHelpers::getPhysicsSDK()->createScene(sceneDesc);
     if (mPhysicsScene == 0)
     {
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to create the PhysX scene !",
             "OgrePeerManager::CreateSceneNode");
     }
@@ -556,7 +556,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     mPhysicsSim = neSimulator::CreateSimulator(simSizeInfo, NULL, &gravity);
     if (mPhysicsSim == 0)
     {
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to create the Tokamak simulation !",
             "OgrePeerManager::CreateSceneNode");
     }
@@ -580,7 +580,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
     // Create the physical scene
     mPhysicsScene = engine->createScene();
     if (!mPhysicsScene->create(mSceneMgr))
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
         "Unable to create the PhysX scene !",
         "PhysXScene::PhysXScene");
     // Create the scene collision mesh
@@ -611,7 +611,7 @@ OgrePeer* OgrePeerManager::createSceneNode(Peer* peer, TiXmlElement* xmlElt)
 OgrePeer* OgrePeerManager::createObjectNode(Peer* peer, TiXmlElement* xmlElt)
 {
     if (mSceneMgr == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
         "No scene manager !",
         "OgrePeerManager::CreateObjectNode");
 
