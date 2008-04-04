@@ -388,7 +388,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
                 // Decode timestamp
                 String timestampString = removeFirstLevelOfXmlAnchor(nodeEventStruct["timestamp"].toXml());
                 if (!StringConverter::isNumber(timestampString))
-                    Exception(Exception::ERR_INTERNAL_ERROR, "Timestamp bad format : " + timestampString, "NavigatorXMLRPCClient::getEvents");
+                    throw Exception(Exception::ERR_INTERNAL_ERROR, "Timestamp bad format : " + timestampString, "NavigatorXMLRPCClient::getEvents");
                 time_t timestamp = StringConverter::parseLong(timestampString);
                 // Decode event type
                 String typeString = removeFirstLevelOfXmlAnchor(nodeEventStruct["type"].toXml());
@@ -422,7 +422,7 @@ bool NavigatorXMLRPCClient::getEvents(std::list<NodeEvent*> &nodeEventsList)
                     ((NodeEvent::DatasStatusChanged*)datas)->mStatus = removeFirstLevelOfXmlAnchor(nodeEventDatasStruct["status"].toXml());
                 }
                 else
-                    Exception(Exception::ERR_INTERNAL_ERROR, "Unknown event type : " + typeString, "NavigatorXMLRPCClient::getEvents");
+                    throw Exception(Exception::ERR_INTERNAL_ERROR, "Unknown event type : " + typeString, "NavigatorXMLRPCClient::getEvents");
 
                 // Feed nodeEventsList
                 nodeEventsList.push_back(new NodeEvent(timestamp, type, datas));
@@ -604,10 +604,10 @@ String NavigatorXMLRPCClient::removeFirstLevelOfXmlAnchor(String& xml)
 bool NavigatorXMLRPCClient::executeThreadSafe(const char* method, XmlRpc::XmlRpcValue const& params, XmlRpc::XmlRpcValue& result)
 {
     if (pthread_mutex_lock(&mCallsMutex) != 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to lock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to lock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
     bool succeeded = this->execute(method, params, result);
     if (pthread_mutex_unlock(&mCallsMutex) != 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to unlock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to unlock the XMLRPC calls mutex", "NavigatorXMLRPCClient::executeThreadSafe");
 
     return succeeded;
 }
