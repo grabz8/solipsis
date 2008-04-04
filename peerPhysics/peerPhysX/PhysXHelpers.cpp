@@ -241,7 +241,7 @@ bool PhysXHelpers::init(NxUserOutputStream* outputStream)
     mNxPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, outputStream, desc, &errorCode);
     if (mNxPhysicsSDK == 0)
     {
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to initialize the PhysX SDK ! errorCode=" + StringConverter::toString((int)errorCode),
             "PhysXHelpers::init");
     }
