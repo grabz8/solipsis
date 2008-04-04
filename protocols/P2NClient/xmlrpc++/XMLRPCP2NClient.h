@@ -10,7 +10,7 @@ namespace Solipsis {
 
 /** This class manages XMLRPC++ Peer-to-Navigator client interface.
  */
-class XMLRPCP2NClient : public IP2NClient, public XmlRpc::XmlRpcClient
+class XMLRPCP2NClient : public IP2NClient, public XmlRpc::XmlRpcClient, public XmlRpc::XmlRpcErrorHandler, public XmlRpc::XmlRpcLogHandler
 {
 protected:
     static const char RETCODE_TAG[];
@@ -22,6 +22,8 @@ protected:
     std::string mHost;
     /// Port
     int mPort;
+    /// Verbosity
+    int mVerbosity;
     /// Additional informations
     std::string mExtras;
     /// Number of attempts
@@ -38,13 +40,15 @@ private:
     IP2NClientLogger* mLogger;
 
 public:
-    XMLRPCP2NClient(const std::string& host, int port, const std::string& extras = "");
+    XMLRPCP2NClient(const std::string& host, int port, int verbosity, const std::string& extras = "");
     virtual ~XMLRPCP2NClient();
 
     /// @copydoc IP2NClient::getHost
     virtual const std::string& getHost() { return mHost; }
     /// @copydoc IP2NClient::getPort
     virtual int getPort() { return mPort; }
+    /// @copydoc IP2NClient::getVerbosity
+    virtual int getVerbosity() { return mVerbosity; }
     /// @copydoc IP2NClient::getExtras
     virtual const std::string& getExtras() { return mExtras; }
     /// @copydoc IP2NClient::shareCnx
@@ -66,6 +70,11 @@ public:
 
     /// @copydoc IP2NClient::setLogger
     virtual void setLogger(IP2NClientLogger* logger) { mLogger = logger; }
+
+    /// See XmlRpc::XmlRpcErrorHandler
+    virtual void error(const char* msg) { if (mLogger != 0) mLogger->logMessage("XMLRPCP2NClient::error() " + std::string(msg)); }
+    /// See XmlRpc::XmlRpcLogHandler
+    virtual void log(int level, const char* msg) { if (mLogger != 0) mLogger->logMessage("XMLRPCP2NClient::log() " + std::string(msg)); }
 
 private:
     /** Execute (thread-safe) 1 XMLRPC method */

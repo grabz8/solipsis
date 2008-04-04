@@ -14,7 +14,8 @@ PhysXScene::PhysXScene(PhysXEngine* engine) :
     mNxGeometry(0),
     mNxActor(0),
     mTimeSinceLastFrame(0.0f),
-    mMaxStepInSeconds(1.0f/60.0f)
+    mMaxStepInSeconds(1.0f/60.0f),
+    mFirstStep(true)
 {
 }
 
@@ -47,9 +48,6 @@ bool PhysXScene::create()
     mNxScene = PhysXHelpers::getNxPhysicsSDK()->createScene(sceneDesc);
     if (mNxScene == 0)
         return false;
-    char logMsg[256];
-    sprintf(logMsg, "PhysXScene::create() mNxScene=0x%08x", mNxScene);
-    mEngine->logMessage(logMsg);
 
     // Set the default material 0
 	NxMaterial* defaultMaterial = mNxScene->getMaterialFromIndex(0); 
@@ -65,8 +63,6 @@ bool PhysXScene::create()
     mNxControllerManager = NxCreateControllerManager(PhysXHelpers::getNxUserAllocatorDefault());
     if (mNxControllerManager == 0)
         return false;
-    sprintf(logMsg, "PhysXScene::create() mNxControllerManager=0x%08x", mNxControllerManager);
-    mEngine->logMessage(logMsg);
 
     return true;
 }
@@ -99,7 +95,8 @@ void PhysXScene::preStep(Real timeSinceLastFrame)
 //        mNxScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
         // To avoid blocking on fetchResults(), we will shift actions
         // in order to let simulation threading during the rendering
-        mNxScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
+        if (!mFirstStep)
+            mNxScene->fetchResults(NX_RIGID_BODY_FINISHED, true);
 
         // Update controllers
         NxReal maxTimestep;
@@ -131,6 +128,7 @@ void PhysXScene::postStep()
     {
         mNxScene->simulate(mTimeSinceLastFrame);
         mNxScene->flushStream();
+        mFirstStep = false;
     }
 }
 

@@ -6,6 +6,7 @@
 #include "NxPhysics.h"
 #include "NxStream.h"
 #include "NxUserAllocatorDefault.h"
+#include "NxUserOutputStream.h"
 
 class UserStream : public NxStream
 	{
@@ -97,7 +98,7 @@ private:
 
 public:
     /// Init
-    static bool init();
+    static bool init(NxUserOutputStream* outputStream = NULL);
     /// Shutdown
     static bool shutdown();
 

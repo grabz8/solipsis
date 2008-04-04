@@ -230,7 +230,7 @@ NxPhysicsSDK* PhysXHelpers::mNxPhysicsSDK = 0;
 NxUserAllocatorDefault PhysXHelpers::mNxUserAllocatorDefault;
 
 //-------------------------------------------------------------------------------------
-bool PhysXHelpers::init()
+bool PhysXHelpers::init(NxUserOutputStream* outputStream)
 {
     if (mNxPhysicsSDK != 0)
         return true;
@@ -238,7 +238,7 @@ bool PhysXHelpers::init()
     // Init the SDK
     NxPhysicsSDKDesc desc;
     NxSDKCreateError errorCode = NXCE_NO_ERROR;
-    mNxPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, 0, desc, &errorCode);
+    mNxPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, outputStream, desc, &errorCode);
     if (mNxPhysicsSDK == 0)
     {
         Exception(Exception::ERR_INTERNAL_ERROR,

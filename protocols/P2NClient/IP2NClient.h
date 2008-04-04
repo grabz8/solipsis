@@ -68,7 +68,7 @@ public:
 public:
     /** Creates a client.
     */
-    static IP2NClient* createClient(const std::string& host, int port, const std::string& extras);
+    static IP2NClient* createClient(const std::string& host, int port, int verbosity, const std::string& extras);
 
     /** Destroys a client.
     */
@@ -82,6 +82,10 @@ public:
     @remarks An implementation must be supplied for this method.
     */
     virtual int getPort() = 0;
+    /** Return verbosity used.
+    @remarks An implementation must be supplied for this method.
+    */
+    virtual int getVerbosity() = 0;
     /** Return extras used.
     @remarks An implementation must be supplied for this method.
     */

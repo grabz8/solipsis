@@ -17,19 +17,18 @@ AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
 #ifdef PHYSICSPLUGINS
     IPhysicsEngine* engine = PhysicsEngineManager::getSingleton().getSelectedEngine();
     if (engine == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR,
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
         "No physics engine selected !",
         "AvatarNode::AvatarNode");
     OGRE_LOG("AvatarNode::AvatarNode() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " creating physics scene with engine:" + engine->getName());
     // Create the physical scene
     mPhysicsScene = engine->createScene();
     if (!mPhysicsScene->create())
-        Exception(Exception::ERR_INTERNAL_ERROR,
+    {
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
         "Unable to create the PhysX scene !",
         "AvatarNode::AvatarNode");
-    char logMsg[256];
-    sprintf(logMsg, "AvatarNode::AvatarNode() mPhysicsScene=0x%08x", mPhysicsScene);
-    OGRE_LOG(logMsg);
+    }
 #endif
 
     addAwareEntity(&mAvatar);

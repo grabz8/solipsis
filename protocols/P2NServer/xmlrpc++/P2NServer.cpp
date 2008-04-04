@@ -27,6 +27,8 @@ P2NServer::P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::stri
     mServer(),
     mLogger(0)
 {
+    XmlRpc::XmlRpcErrorHandler::setErrorHandler(this);
+    XmlRpc::XmlRpcLogHandler::setLogHandler(this);
     XmlRpc::setVerbosity(verbosity);
 }
 

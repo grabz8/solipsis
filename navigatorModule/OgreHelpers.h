@@ -17,7 +17,7 @@ namespace Solipsis {
 class NAVIGATORMODULE_EXPORT OgreHelpers
 {
 private:
-    static OgreHelpers* mSingleton;
+    static OgreHelpers mSingleton;
     pthread_mutex_t mLogsMutex;
 
 private:
@@ -25,7 +25,7 @@ private:
     OgreHelpers() :
         mLogsMutex(PTHREAD_MUTEX_INITIALIZER)
     {
-        mSingleton = this;
+//        mSingleton = this;
     }
 
 public:
@@ -38,8 +38,8 @@ public:
         pthread_mutex_unlock(&mLogsMutex);
     }
 
-    static OgreHelpers* getSingletonPtr() { return mSingleton; }
-    static OgreHelpers& getSingleton() { return *mSingleton; }
+    static OgreHelpers* getSingletonPtr() { return &mSingleton; }
+    static OgreHelpers& getSingleton() { return mSingleton; }
 
     // Retrieve recursively from 1 scene node all movable objects of 1 type
     static void getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList);

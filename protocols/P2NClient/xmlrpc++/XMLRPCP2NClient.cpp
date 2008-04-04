@@ -11,9 +11,9 @@ const char XMLRPCP2NClient::RESPONSE_TAG[] = "response";
 const char XMLRPCP2NClient::NODEID_TAG[] = "nodeId";
 
 //-------------------------------------------------------------------------------------
-IP2NClient* IP2NClient::createClient(const std::string& host, int port, const std::string& extras)
+IP2NClient* IP2NClient::createClient(const std::string& host, int port, int verbosity, const std::string& extras)
 {
-    return new XMLRPCP2NClient(host, port, extras);
+    return new XMLRPCP2NClient(host, port, verbosity, extras);
 }
 
 //-------------------------------------------------------------------------------------
@@ -25,9 +25,10 @@ bool IP2NClient::destroyClient(IP2NClient* client)
 }
 
 //-------------------------------------------------------------------------------------
-XMLRPCP2NClient::XMLRPCP2NClient(const std::string& host, int port, const std::string& extras) :
+XMLRPCP2NClient::XMLRPCP2NClient(const std::string& host, int port, int verbosity, const std::string& extras) :
     mHost(host),
     mPort(port),
+    mVerbosity(verbosity),
     mExtras(extras),
     mNbAttempts(1),
     XmlRpcClient(host.c_str(), port, 0),
@@ -36,6 +37,10 @@ XMLRPCP2NClient::XMLRPCP2NClient(const std::string& host, int port, const std::s
     mCallsMutex(PTHREAD_MUTEX_INITIALIZER),
     mLogger(0)
 {
+    XmlRpc::XmlRpcErrorHandler::setErrorHandler(this);
+    XmlRpc::XmlRpcLogHandler::setLogHandler(this);
+    XmlRpc::setVerbosity(mVerbosity);
+
     std::string value;
     if (getExtraInformation(mExtras, "nattempts=", value))
         mNbAttempts = atoi(value.c_str());

@@ -2,6 +2,9 @@
 #define __PhysXEngine_h__
 
 #include "IPhysicsEngine.h"
+#include "NxUserOutputStream.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace Ogre;
 
@@ -9,7 +12,7 @@ namespace Solipsis {
 
 /** This class manages the PhysX engine.
 */
-class PhysXEngine : public IPhysicsEngine
+class PhysXEngine : public IPhysicsEngine, public NxUserOutputStream
 {
 private:
     /// Logging instance
@@ -38,6 +41,39 @@ public:
 
     /// log a message
     inline void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
+
+    /// See NxUserOutputStream
+    void reportError(NxErrorCode code, const char *message, const char* file, int line)
+    {
+        // this should be routed to the application specific error handling. If this gets hit
+        // then you are in most cases using the SDK wrong and you need to debug your code!
+        // however, code may  just be a warning or information.
+        #define MAX_REPORTLOG_SIZE 255
+        char reportLog[MAX_REPORTLOG_SIZE + 1];
+        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::reportError() error %d, %s", code, message);
+        logMessage(reportLog);
+//        exit(1);
+    }
+    /// See NxUserOutputStream
+    NxAssertResponse reportAssertViolation(const char *message, const char *file, int line)
+    {
+        // this should not get hit by a properly debugged SDK!
+        #define MAX_REPORTLOG_SIZE 255
+        char reportLog[MAX_REPORTLOG_SIZE + 1];
+        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::reportAssertViolation() %s", message);
+        logMessage(reportLog),
+        assert(0);
+        return NX_AR_CONTINUE;
+    }
+    /// See NxUserOutputStream
+    void print(const char *message)
+    {
+        // just a information message
+        #define MAX_REPORTLOG_SIZE 255
+        char reportLog[MAX_REPORTLOG_SIZE + 1];
+        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::print() %s", message);
+        logMessage(reportLog);
+    }
 };
 
 } // namespace Solipsis

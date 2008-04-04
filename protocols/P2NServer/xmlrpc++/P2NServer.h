@@ -12,7 +12,7 @@ class AbstractP2NMethod;
 
 /** XMLRPC++ Peer-to-Navigator server for a Solipsis host
  */
-class P2NServer : public IP2NServer
+class P2NServer : public IP2NServer, public XmlRpc::XmlRpcErrorHandler, public XmlRpc::XmlRpcLogHandler
 {
 private:
     /** Requests handler */
@@ -62,6 +62,11 @@ public:
 
     /// @copydoc IP2NServer::setLogger
     virtual void setLogger(IP2NServerLogger* logger) { mLogger = logger; }
+
+    /// See XmlRpc::XmlRpcErrorHandler
+    virtual void error(const char* msg) { if (mLogger != 0) mLogger->logMessage("P2NServer::error() " + std::string(msg)); }
+    /// See XmlRpc::XmlRpcLogHandler
+    virtual void log(int level, const char* msg) { if (mLogger != 0) mLogger->logMessage("P2NServer::log() " + std::string(msg)); }
 
     /** Retrieve the requests handler */
     IP2NServerRequestsHandler* getRequestsHandler() { return mRequestsHandler; }

@@ -15,7 +15,7 @@ const String& PhysXEngine::getName() const
 //-------------------------------------------------------------------------------------
 bool PhysXEngine::init()
 {
-    return PhysXHelpers::init();
+    return PhysXHelpers::init(this);
 }
 
 //-------------------------------------------------------------------------------------

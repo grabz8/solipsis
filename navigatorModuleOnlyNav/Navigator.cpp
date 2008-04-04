@@ -709,7 +709,7 @@ bool Navigator::quit()
 //-------------------------------------------------------------------------------------
 bool Navigator::connect()
 {
-    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, "nattempts=2");
+    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, 0, "nattempts=2");
 
     //Try connection
 #ifdef POOL
@@ -761,7 +761,7 @@ bool Navigator::connect()
 bool Navigator::sendMessage(const String& message)
 {
     if (mXmlRpcClient == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
 // GILLES begin
     // Push debug command
@@ -815,7 +815,7 @@ void Navigator::setNodeStatus(String& nodeStatusString)
     else if (nodeStatusString.compare("UNAVAILABLE") == 0)
         mNodeStatus = NSUnavailable;
     else
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unknown node status : " + nodeStatusString, "Navigator::setNodeStatus");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unknown node status : " + nodeStatusString, "Navigator::setNodeStatus");
 }
 
 //-------------------------------------------------------------------------------------
@@ -856,7 +856,7 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
     OGRE_LOG("Navigator::onPeerLost() uid:" + StringConverter::toString(xmlEntity->getUid()));
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
 }
 
 //-------------------------------------------------------------------------------------
@@ -869,7 +869,7 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 //    OGRE_LOG("Navigator::onPeerUpdated()");
 
     if (!mOgrePeerManager->update(xmlEntity))
-        Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer !", "Navigator::onPeerUpdated");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer !", "Navigator::onPeerUpdated");
 }
 
 //-------------------------------------------------------------------------------------
@@ -921,7 +921,7 @@ void Navigator::sendEvents()
 //    OGRE_LOG("Navigator::sendEvents()");
 
     if (mXmlRpcClient == 0)
-        Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send events without XMLRPC client", "Navigator::sendEvents");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send events without XMLRPC client", "Navigator::sendEvents");
 
     // Send each event
     std::string xmlResp;

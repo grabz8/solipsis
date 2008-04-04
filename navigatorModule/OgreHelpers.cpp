@@ -2,7 +2,7 @@
 
 using namespace Solipsis;
 
-OgreHelpers* OgreHelpers::mSingleton = 0;
+OgreHelpers OgreHelpers::mSingleton;
 
 //-------------------------------------------------------------------------------------
 void OgreHelpers::getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList)

@@ -219,6 +219,11 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
     }
 
     AvatarNode* avatarNode = mNodeManager->login(&xmlLogin);
+    if (avatarNode == 0)
+    {
+        xmlRespStr = "Unable to create avatarNode !";
+        return IP2NClient::RCError;
+    }
     nodeId = avatarNode->getNodeId();
     Entity::EntityMap& ownedEntities = avatarNode->getOwnedEntities();
     std::stringstream s;

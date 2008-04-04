@@ -31,6 +31,8 @@ protected:
     Real mTimeSinceLastFrame;
     /// Max duration of each step in seconds
     Real mMaxStepInSeconds;
+    /// First step of simulation
+    bool mFirstStep;
 
 public:
     PhysXScene(PhysXEngine* engine);

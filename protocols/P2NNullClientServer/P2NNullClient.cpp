@@ -6,9 +6,9 @@
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-IP2NClient* IP2NClient::createClient(const std::string& host, int port, const std::string& extras)
+IP2NClient* IP2NClient::createClient(const std::string& host, int port, int verbosity, const std::string& extras)
 {
-    return new P2NNullClient(host, port, "");
+    return new P2NNullClient(host, port, verbosity, "");
 }
 
 //-------------------------------------------------------------------------------------
@@ -20,9 +20,10 @@ bool IP2NClient::destroyClient(IP2NClient* client)
 }
 
 //-------------------------------------------------------------------------------------
-P2NNullClient::P2NNullClient(const std::string& host, int port, const std::string& extras) :
+P2NNullClient::P2NNullClient(const std::string& host, int port, int verbosity, const std::string& extras) :
     mHost(host),
     mPort(port),
+    mVerbosity(verbosity),
     mExtras(extras),
     mNodeId(""),
     mLogger(0)

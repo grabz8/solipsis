@@ -7,9 +7,9 @@
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
-NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, const std::string& extras)
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, int verbosity, const std::string& extras)
 {
-    mP2NClient = IP2NClient::createClient(host, port, extras);
+    mP2NClient = IP2NClient::createClient(host, port, verbosity, extras);
     mP2NClient->setLogger(this);
     mSharedCnx = 0;
 }
@@ -17,7 +17,7 @@ NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, 
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx)
 {
-    mP2NClient = IP2NClient::createClient(sharedCnx.mP2NClient->getHost(), sharedCnx.mP2NClient->getPort(), sharedCnx.mP2NClient->getExtras());
+    mP2NClient = IP2NClient::createClient(sharedCnx.mP2NClient->getHost(), sharedCnx.mP2NClient->getPort(), sharedCnx.mP2NClient->getVerbosity(), sharedCnx.mP2NClient->getExtras());
     mP2NClient->setLogger(this);
     mSharedCnx = sharedCnx.mP2NClient;
     mP2NClient->shareCnx(mSharedCnx);

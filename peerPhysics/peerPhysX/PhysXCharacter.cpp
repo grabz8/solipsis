@@ -30,6 +30,7 @@ void PhysXCharacter::create(Desc& desc)
 
     mDesc = desc;
     NxScene* nxScene = mScene->getNxScene();
+    assert(nxScene != 0);
 
     NxCapsuleControllerDesc capsuleControllerDesc;
     capsuleControllerDesc.interactionFlag = NXIF_INTERACTION_INCLUDE;
@@ -42,7 +43,9 @@ void PhysXCharacter::create(Desc& desc)
     capsuleControllerDesc.stepOffset = mDesc.radius;
     capsuleControllerDesc.callback = (NxUserControllerHitReport*)0;
 //    capsuleControllerDesc.userData = (void*)listener;
-    mNxCapsuleController = (NxCapsuleController*)mScene->getNxControllerManager()->createController(nxScene, capsuleControllerDesc);
+    NxControllerManager* nxControllerManager = mScene->getNxControllerManager();
+    assert(nxControllerManager != 0);
+    mNxCapsuleController = (NxCapsuleController*)nxControllerManager->createController(nxScene, capsuleControllerDesc);
 }
 
 //-------------------------------------------------------------------------------------
