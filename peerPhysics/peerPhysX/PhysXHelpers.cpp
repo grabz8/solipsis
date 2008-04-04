@@ -238,7 +238,11 @@ bool PhysXHelpers::init(NxUserOutputStream* outputStream)
     // Init the SDK
     NxPhysicsSDKDesc desc;
     NxSDKCreateError errorCode = NXCE_NO_ERROR;
+#ifdef _DEBUG
     mNxPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, outputStream, desc, &errorCode);
+#else
+    mNxPhysicsSDK = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION, 0, 0, desc, &errorCode);
+#endif
     if (mNxPhysicsSDK == 0)
     {
         throw Exception(Exception::ERR_INTERNAL_ERROR,

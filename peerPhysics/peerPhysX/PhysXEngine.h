@@ -48,9 +48,8 @@ public:
         // this should be routed to the application specific error handling. If this gets hit
         // then you are in most cases using the SDK wrong and you need to debug your code!
         // however, code may  just be a warning or information.
-        #define MAX_REPORTLOG_SIZE 255
-        char reportLog[MAX_REPORTLOG_SIZE + 1];
-        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::reportError() error %d, %s", code, message);
+        char reportLog[256];
+        _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::reportError() error %d, %s", code, message);
         logMessage(reportLog);
 //        exit(1);
     }
@@ -58,9 +57,8 @@ public:
     NxAssertResponse reportAssertViolation(const char *message, const char *file, int line)
     {
         // this should not get hit by a properly debugged SDK!
-        #define MAX_REPORTLOG_SIZE 255
-        char reportLog[MAX_REPORTLOG_SIZE + 1];
-        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::reportAssertViolation() %s", message);
+        char reportLog[256];
+        _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::reportAssertViolation() %s", message);
         logMessage(reportLog),
         assert(0);
         return NX_AR_CONTINUE;
@@ -69,9 +67,8 @@ public:
     void print(const char *message)
     {
         // just a information message
-        #define MAX_REPORTLOG_SIZE 255
-        char reportLog[MAX_REPORTLOG_SIZE + 1];
-        _snprintf(reportLog, MAX_REPORTLOG_SIZE, "PhysXEngine::OutputStream::print() %s", message);
+        char reportLog[256];
+        _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::print() %s", message);
         logMessage(reportLog);
     }
 };
