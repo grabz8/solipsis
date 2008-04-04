@@ -55,6 +55,9 @@ if not exist "%dst%\pthreadVC.dll" xcopy "..\Dependencies\pthreads\lib\pthreadVC
 if not exist "%dst%\xul.dll" xcopy "..\Dependencies\llmozlib\win32_%vc%\runtime\Release\*.*" "%dst%" /s /y
 xcopy "..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL\XmlDatas.dll" "%dst%" /s /y
 xcopy "..\Dependencies\protocols\P2NClient\xmlrpc++\ReleaseDLL\XMLRPCP2NClient.dll" "%dst%" /s /y
+xcopy "..\Dependencies\protocols\P2NClient\ulxmlrpcpp\ReleaseDLL\ULXMLRPCPPP2NClient.dll" "%dst%" /s /y
+if exist "..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\ulxmlrpcpp_23.dll" xcopy "..\Dependencies\ulxmlrpcpp\lib\ReleaseDLL\ulxmlrpcpp_23.dll" "%dst%" /s /y
+if exist "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" xcopy "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" "%dst%" /s /y
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
 if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
