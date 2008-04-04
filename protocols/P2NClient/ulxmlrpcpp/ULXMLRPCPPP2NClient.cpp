@@ -280,8 +280,9 @@ bool ULXMLRPCPPP2NClient::executeThreadSafe(ulxr::MethodCall const& method, ulxr
         // Fault ?
         if (!result.isOK())
         {
-            int faultCode = ((ulxr::Integer)result.getResult()).getInteger();
-            std::string faultString = result.getXml(0);
+            ulxr::Struct faultStruct = result.getResult();
+            int faultCode = ((ulxr::Integer)faultStruct.getMember(ULXR_PCHAR("faultCode"))).getInteger();
+            std::string faultString = ((ulxr::RpcString)faultStruct.getMember(ULXR_PCHAR("faultString"))).getString();
             LOG("ULXMLRPCPPP2NClient::executeThreadSafe() Method=" + method.getMethodName() + ", Fault:" + convert2string(faultCode) + ", " + faultString);
             success = false;
             // Timeout ? next attempt ...
