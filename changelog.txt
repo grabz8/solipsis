@@ -425,5 +425,6 @@ XmlRpcLogHandler and XmlRpcErrorHandler defined and messages forwarded to caller
 PhysXSDK NxUserOutputStream logger added to get warnings/errors from SDK
 PhysXSDK warning about first call to fetchResults() before first call to simulate() fixed
 Now login fails if avatarNode cannot be created on the Peer
+ULXMLRPCPP client implementation added
 
 ---------------------------

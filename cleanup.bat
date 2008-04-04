@@ -147,6 +147,8 @@ rmdir protocols\XmlDatas\Debug /S /Q
 rmdir protocols\XmlDatas\Release /S /Q
 rmdir protocols\P2NClient\xmlrpc++\Debug /S /Q
 rmdir protocols\P2NClient\xmlrpc++\Release /S /Q
+rmdir protocols\P2NClient\ulxmlrpcpp\Debug /S /Q
+rmdir protocols\P2NClient\ulxmlrpcpp\Release /S /Q
 rmdir protocols\P2NServer\xmlrpc++\Debug /S /Q
 rmdir protocols\P2NServer\xmlrpc++\Release /S /Q
 rmdir protocols\P2NServer\ulxmlrpcpp\Debug /S /Q
