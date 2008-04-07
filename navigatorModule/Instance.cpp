@@ -2,6 +2,7 @@
 #include "AutoCreatedWindow.h"
 #include "NaviManager.h"
 #include "Platform.h"
+#include "OgreHelpers.h"
 
 using namespace Solipsis;
 
@@ -287,7 +288,9 @@ void Instance::destroyScene()
 bool Instance::createGUI() {
     // Navi supported ?
     char* naviSupport = ::getenv(NAVI_SUPPORT_ENV);
-    if ((naviSupport != 0) && (_stricmp(naviSupport, "no") == 0))
+    OGRE_LOG(std::string(NAVI_SUPPORT_ENV": ") + ((naviSupport != 0) ? std::string(naviSupport) : std::string("not defined")))
+    if ((naviSupport == 0) ||
+        ((naviSupport != 0) && (_stricmp(naviSupport, "no") == 0)))
         mNaviSupported = false;
 
     if (!mNaviSupported)
