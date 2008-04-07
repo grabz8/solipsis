@@ -62,6 +62,7 @@
 				Description="Copying debug runtime files and Performing registration"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
 copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
+copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\testIE.html&quot; /y
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;
 "/>
 			<Tool
@@ -135,6 +136,7 @@ regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileN
 				Description="Copying release runtime files and Performing registration"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
 copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
+copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\testIE.html&quot; /y
 regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;
 "/>
 			<Tool

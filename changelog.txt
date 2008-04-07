@@ -431,5 +431,6 @@ ULXMLRPCPP client implementation added
 07/04/08
 
 NAVI_SUPPORT env. var. seems not defined when navigator is running as Mozilla plugin => assumed false if not defined
+readmePlugin.txt + testMozilla.html added into NSIS setup
 
 ---------------------------

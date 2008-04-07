@@ -54,6 +54,7 @@
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
 copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
 copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y
+copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\testMozilla.html&quot; /y
 copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 "/>
 			<Tool
@@ -115,6 +116,7 @@ copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
 copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
 copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y
+copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release\testMozilla.html&quot; /y
 copyIntoMozillaPlugins.bat $(ConfigurationName)_vc7
 "/>
 			<Tool

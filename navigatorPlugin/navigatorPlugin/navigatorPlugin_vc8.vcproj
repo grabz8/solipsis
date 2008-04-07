@@ -99,7 +99,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\testMozilla.html&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -185,7 +185,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(Projectdir)SolipsisNavigator.xpt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release\testMozilla.html&quot; /y&#x0D;&#x0A;copyIntoMozillaPlugins.bat $(ConfigurationName)_vc8&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

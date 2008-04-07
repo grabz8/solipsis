@@ -112,7 +112,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Performing registration"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\testIE.html&quot; /y&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\debug\$(TargetFileName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -212,7 +212,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Performing registration"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\readmePlugin.txt&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)test.html&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\release\testIE.html&quot; /y&#x0D;&#x0A;regsvr32 /s /c &quot;$(ProjectDir)..\..\Common\bin\navigator\release\$(TargetFileName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
