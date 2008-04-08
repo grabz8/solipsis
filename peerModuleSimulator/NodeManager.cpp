@@ -38,7 +38,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         // Create the avatar node
         std::string xmlAvatarStr = "\
 <entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
- <flags bitmask=\"1\" />\
+ <flags bitmask=\"" + Ogre::StringConverter::toString(XmlEntity::DAPosition | XmlEntity::DAOrientation) + "\" />\
  <position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\

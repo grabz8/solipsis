@@ -96,6 +96,12 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
     else
         sceneNode->setPosition(Vector3::ZERO);
     mLastRealPosition = sceneNode->getPosition();
+
+    if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
+        sceneNode->setOrientation(xmlEntity->getOrientation());
+    else
+        sceneNode->setOrientation(Quaternion::IDENTITY);
+
     mGravity = mXmlEntity->getFlags() & EFGravity;
 }
 
