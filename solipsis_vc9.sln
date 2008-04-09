@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc9", "DevTools\llmozlib\llmozlib_vc9.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc9", "DevTools\navi\Navi\Navi_vc9.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"
@@ -53,7 +53,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorModule", "navigato
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulxmlrpcpp", "DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\ulxmlrpcpp.vcproj", "{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulxmlrpcpp", "DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\ulxmlrpcpp.vcproj", "{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{50FC458E-425A-487F-83E5-E77F18C25C5C} = {50FC458E-425A-487F-83E5-E77F18C25C5C}
 	EndProjectSection
