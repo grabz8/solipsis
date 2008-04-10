@@ -30,9 +30,13 @@ int main(int argc, char *argv[])
     {
 #ifdef NULLCLIENTSERVER
         // Create the Peer application
+#ifdef WIN32
+        IPeer* peer = IPeer::createPeer("", __argc, __argv);
+#else
         int argc = 1;
         static char* argv[] = {"Navigator.exe"};
         IPeer* peer = IPeer::createPeer("", argc, argv);
+#endif 
         if (peer == 0)
             throw std::string("Unable to create the peer !");
 #endif
