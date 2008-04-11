@@ -130,6 +130,9 @@ public:
     void demoNavi2(const String params);
     std::string& demoNavi2GetUrl() { return mDemoNavi2EventListener.mUrl; }
 #endif
+#ifdef DEMO_VNC
+    void demoVNC(const String params);
+#endif
 #ifdef DEMO_PHYSICS1
     void demoPhysics1();
 #endif

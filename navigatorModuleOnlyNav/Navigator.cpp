@@ -320,6 +320,36 @@ void Navigator::demoNavi2(const String params)
     vidNavi->navigateTo(url2go);
 }
 #endif
+#ifdef DEMO_VNC
+#include "OgreExternalTextureSourceManager.h"
+//-------------------------------------------------------------------------------------
+void Navigator::demoVNC(const String params)
+{
+    static bool active = false;
+    if (active) return;
+    active = true;
+
+    String url2go("");
+    if (url2go.length() == 0)
+        url2go = "localhost:5900";
+
+    // Create a plane
+    Plane plane(Vector3::NEGATIVE_UNIT_Z, 0);
+    MeshManager::getSingleton().createPlane("demoVNCPlane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 4, 3, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
+
+    // Creates the VNC Plane and subsequent NaviMaterial
+    Entity* vncEnt = mSceneMgr->createEntity("demoVNC", "demoVNCPlane");
+    ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+    ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
+    vncExtTextSrc->setParameter("address", "vnc://" + url2go);
+    MaterialManager::getSingleton().create("demoVNCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    vncExtTextSrc->createDefinedTexture("demoVNCMaterial");
+    vncEnt->setMaterialName("demoVNCMaterial");
+    SceneNode* vncNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVNCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
+    vncNode->attachObject(vncEnt);
+    vncNode->yaw(Degree(90), Node::TS_WORLD);
+}
+#endif
 #ifdef DEMO_PHYSICS1
 //-------------------------------------------------------------------------------------
 void Navigator::demoPhysics1()

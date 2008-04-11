@@ -33,6 +33,16 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     }
 #endif
 
+#ifdef DEMO_VNC
+    // Launch demoVNC ?
+    dbgCmd = debugCommands.find("demoVNC");
+    if (dbgCmd != debugCommands.end())
+    {
+        navigator->demoVNC(dbgCmd->second);
+        debugCommands.erase(dbgCmd);
+    }
+#endif
+
 #ifdef DEMO_PHYSICS1
     // Launch demoPhysics1 ?
     dbgCmd = debugCommands.find("demoPhysics1");

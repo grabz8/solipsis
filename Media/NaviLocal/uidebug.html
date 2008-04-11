@@ -105,7 +105,7 @@
             {
 	            position: absolute;
 	            left: 0px;
-                top: 84px;
+                top: 64px;
             }
             .buttonNav
             {
@@ -127,9 +127,11 @@
             }
             #rotateSunLightButton { top: 35px; width: 100px; }
             #demoNavi1Button { top: 10px; width: 100px; }
-            #demoPhysics1Button { top: 35px; width: 100px; }
-            #urlText { position: absolute; left: 0px; top: 60px; }
-            #urlInput { position: absolute; left: 30px; top: 60px; }
+            #urlText { position: absolute; left: 0px; top: 40px; }
+            #urlInput { position: absolute; left: 30px; top: 40px; }
+            #demoPhysics1Button { top: 90px; width: 100px; }
+            #urlVNCText { position: absolute; left: 0px; top: 120px; }
+            #urlVNCInput { position: absolute; left: 30px; top: 120px; }
             #peerNewButton { top: 10px; width: 100px; }
             #peerDO1Button { top: 35px; width: 100px; }
         </style>
@@ -157,8 +159,7 @@
 				    </div>
 				    <div id="Demos" class="mootabs_panel">
                         <button id="demoNavi1Button" class="buttonRow1" name="buttonDemoNavi1" value="buttonDemoNavi1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
-                        <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
-                        <form id="urlForm" action="" visible="false" onsubmit="debugCommand('demoNavi2', document.getElementById('inputUrl').value);return false;">
+                        <form id="urlForm" action="" onsubmit="debugCommand('demoNavi2', document.getElementById('inputUrl').value);return false;">
                             <div id="urlText">URL</div>
                             <div id="urlInput">
                                 <input id="inputUrl" class="inputText" name="inputUrl" value="" type="text" size="30" />
@@ -170,6 +171,13 @@
                             <button id="navStopButton" class="buttonNav" name="buttonNavStop" value="buttonNavStop" type="button" onclick="navCommand('stop', '')">X</button>
                             <button id="navGoButton" class="buttonNav" name="buttonNavGo" value="buttonNavStop" type="button" onclick="navCommand('go', '')">Go</button>
                         </div>
+                        <form id="urlVNCForm" action="" onsubmit="debugCommand('demoVNC', document.getElementById('inputUrl').value);return false;">
+                            <div id="urlVNCText">VNC</div>
+                            <div id="urlVNCInput">
+                                <input id="inputUrlVNC" class="inputText" name="inputUrlVNC" value="localhost:5900" type="text" size="30" />
+                            </div>
+                        </form>
+                        <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
                     </div>
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>

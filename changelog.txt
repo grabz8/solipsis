@@ -440,3 +440,10 @@ orientation now applied when new avatar appears
 HANDLEEVTSYNC define added to block the handle evt RPC when using ULXMLRPCPP
 
 ---------------------------
+11/04/08
+
+first step of VNC viewer-textureSource OGRE plugin integration (thanks to realXtend)
+Original plugin changed to be dynamically loaded by Ogre
+Still some stuff to remove all WIN32 windows/dialogs (eg. on connection, password dialog should be replaced by navi)
+
+---------------------------
