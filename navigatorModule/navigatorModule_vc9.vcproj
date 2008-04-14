@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include;..\Dependencies\AvatarTools\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;NPHYSICS;NPHYSX;NTOKAMAK;PHYSICSPLUGINS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,10 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib"
+				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib tinyxmld.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib AvatarTools_d.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\debugdll;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\debugdll;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\AvatarTools\lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;&quot;..\Dependencies\xmlrpc++\include&quot;;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\ode\include;..\Dependencies\OgreOde\include;&quot;$(PHYSX_DIR)\SDKs\Foundation\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Physics\include&quot;;&quot;$(PHYSX_DIR)\SDKs\PhysXLoader\include&quot;;&quot;$(PHYSX_DIR)\SDKs\Cooking\include&quot;;&quot;$(PHYSX_DIR)\SDKs\NxCharacter\include&quot;;..\Dependencies\tokamak\include;..\Dependencies\MdlrTools\include;.\oSceneLoader\include;..\Dependencies\AvatarTools\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS;NLEXI;NPHYSICS;NPHYSX;NTOKAMAK;PHYSICSPLUGINS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -141,10 +141,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib zlib.lib"
+				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib tinyxml.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\releasedll;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\xmlrpc++\lib&quot;;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\OgreOde\lib;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\Dependencies\tokamak\lib\releasedll;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\AvatarTools\lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -537,6 +537,14 @@
 			</File>
 			<File
 				RelativePath="..\todo.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uiavatarmain.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uiavatarprop.html"
 				>
 			</File>
 			<File

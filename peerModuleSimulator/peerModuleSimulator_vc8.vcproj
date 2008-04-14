@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NLOGSNDRCV"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib XmlDatas.lib ULXMLRPCPPP2NServer.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib XmlDatas.lib XMLRPCP2NServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
