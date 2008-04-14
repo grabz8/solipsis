@@ -103,6 +103,8 @@ rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
+rmdir DevTools\vnc_winsrc\winvnc\Debug /S /Q
+rmdir DevTools\vnc_winsrc\winvnc\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
@@ -182,6 +184,17 @@ rmdir navigatorModuleOnlyNav\ReleaseNCS /S /Q
 
 rmdir peer\Debug /S /Q
 rmdir peer\Release /S /Q
+
+rmdir VNCPlugin\Debug /S /Q
+rmdir VNCPlugin\Release /S /Q
+rmdir VNCPlugin\vncviewer\omnithread\Debug /S /Q
+rmdir VNCPlugin\vncviewer\omnithread\Release /S /Q
+rmdir VNCPlugin\vncviewer\libjpeg\Debug /S /Q
+rmdir VNCPlugin\vncviewer\libjpeg\Release /S /Q
+rmdir VNCPlugin\vncviewer\zlib\Debug /S /Q
+rmdir VNCPlugin\vncviewer\zlib\Release /S /Q
+rmdir VNCPlugin\vncviewer\Debug /S /Q
+rmdir VNCPlugin\vncviewer\Release /S /Q
 
 del setup\nsis\Setup.exe
 
