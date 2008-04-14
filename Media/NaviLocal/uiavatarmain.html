@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>uiavatarmain</title>
+		<script type="text/javascript" src="Navi.js"></script>
+		<script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageLoaded').add({naviName:'uiavatarmain'}).send();
+            }
+            function elementClicked(elementName)
+            {
+                new NaviData(elementName).send();
+            }
+		</script>
+		<style type="text/css"> 
+			.toggler { 
+				color: #000000; 
+				margin: 0; 
+				padding: 2px 5px; 
+				background: #FFFFFF; 
+				border-bottom: 1px solid #507426; 
+				border-right: 1px solid #507426; 
+				border-top: 1px solid #FFFFFF; 
+				border-left: 1px solid #FFFFFF; 
+				font-size: 11px; 
+				font-weight: normal; 
+				font-family: 'Andale Mono', sans-serif; 
+				width: 127px; 
+			}
+			p {
+				color:#000000;
+			}
+			body { 
+				padding-left: 11em; 
+				background-color: #000000; 
+				overflow: hidden; 
+				font-family: Verdana; 
+				font-size: small; 
+				color: #FFFFFF; 
+			}
+			#container { 
+				background-image: url('uiavatarmain.png'); 
+				position: absolute; 
+				left: 0px; top: 0px; 
+				width: 256px; 
+				height: 512px; 
+			}
+			#containerMenu { 
+				position: absolute; 
+				left: 8px; 
+				top: 20px; 
+				width: 240px; 
+				height: 472px; 
+			}
+			input { 
+				width: 100px; 
+			}
+			#thumbnailButton {
+				width: 160px;
+			}
+		</style>
+	</head>
+	<body onload="pageLoaded()">
+		<div id="container">
+            <div id="containerMenu">
+			<table align="center" width="220">
+				<tr>
+					<td align="center">
+						<br>
+						<p id="avatarName">Name : <b>???</b></p>
+						<input type="button" value="Open" size="10" onclick="elementClicked('FileOpen')"><br>
+						<input type="button" value="Edit" size="10" onclick="elementClicked('FileEdit')"><br>
+						<input type="button" value="Save" size="10" onclick="elementClicked('FileSave')"><br>
+						<input type="button" value="Save as" size="10" onclick="elementClicked('FileSaveAs')"><br>
+						<input type="button" value="Exit" size="10" onclick="elementClicked('FileExit')"><br>
+						<br>
+						<br>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<p>Thumbnail</p>
+						<div style='OVERFLOW: auto; HEIGHT: 132px' id="divTexture"></div>
+						<br>
+						<input type="button" value="Take a new thumbnail" onclick="elementClicked('TakeThumbnail')" style="{ width:160px; }" id="thumbnailButton"><br>
+					</td>
+				</tr>
+			</table>
+			
+			
+			<!--
+				<table>
+					<tr valign="top">
+						<td width="150">
+							
+							<div id="accordion">
+								<h3 class="toggler atStart">File</h3>
+								<div class="element atStart"">
+									<ul>
+										<li onclick="elementClicked('FileOpen')">Open ...</li>
+										<li onclick="elementClicked('FileSave')">Save</li>
+										<li onclick="elementClicked('FileExit')">Exit</li>
+									</ul>
+								</div>
+								<h3 class="toggler atStart">Tools</h3>
+								<div class="element atStart">
+									<ul>
+										<li onclick="elementClicked('ToolsDisplayConfig')">Display configuration</li>
+									</ul>
+								</div>
+								<h3 class="toggler atStart">Help</h3>
+								<div class="element atStart">
+									<ul>
+										<li onclick="elementClicked('HelpContents')">Contents ...</li>
+										<li onclick="elementClicked('HelpAbout')">About ...</li>
+									</ul>
+								</div>
+							</div>
+
+						</td>
+
+						<td>
+							<input type="button" value="  Delete  " onclick="elementClicked('ActionDelete')"><br><br>
+							<input type="button" value="   Move   " onclick="elementClicked('ActionMove')"><br>
+							<input type="button" value="  Rotate  " onclick="elementClicked('ActionRotate')"><br>
+							<input type="button" value="   Scale  " onclick="elementClicked('ActionScale')"><br><br>
+							<input type="button" value="   Link   " onclick="elementClicked('ActionLink')"><br><br>
+							<input type="button" value="Properties" onclick="elementClicked('ActionProperties')">
+							<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+							<input type="button" value="[ SAVE ]" onclick="elementClicked('ActionSceneSave')">
+						</td>
+					</tr>
+				</table>
+        -->
+                
+            </div>
+        </div>
+	</body>
+</html>
