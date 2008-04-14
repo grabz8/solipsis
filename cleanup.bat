@@ -1,7 +1,14 @@
 @echo off
 
+echo,
 echo This will clean up all dependencies, binaries, objects and libraries.
+echo,
+echo *********************************************************
 echo ** You must close Visual C++ before running this file! **
+echo *********************************************************
+echo,
+echo You will see some deletion warnings but don t worry about them ...
+echo,
 pause
 
 echo ========== Cleaning up... ==========
@@ -33,6 +40,7 @@ rmdir Dependencies\xmlrpc++ /S /Q
 rmdir Dependencies\brep /S /Q
 rmdir Dependencies\csg /S /Q
 rmdir Dependencies\MdlrTools /S /Q
+rmdir Dependencies\AvatarTools /S /Q
 rmdir Dependencies\expat /S /Q
 rmdir Dependencies\ulxmlrpcpp /S /Q
 rmdir Dependencies\zlib123 /S /Q
@@ -99,6 +107,7 @@ rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
 rmdir Docs\doxygen\html /S /Q
 
 rmdir MdlrTools\obj /S /Q
+rmdir AvatarTools\obj /S /Q
 
 rmdir navigator\Debug /S /Q
 rmdir navigator\Release /S /Q
