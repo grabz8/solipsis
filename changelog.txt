@@ -447,3 +447,8 @@ Original plugin changed to be dynamically loaded by Ogre
 Still some stuff to remove all WIN32 windows/dialogs (eg. on connection, password dialog should be replaced by navi)
 
 ---------------------------
+14/04/08
+
+AvatarTools reports + some dependencies fixed
+
+---------------------------
