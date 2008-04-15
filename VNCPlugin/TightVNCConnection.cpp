@@ -18,13 +18,20 @@ int TightVNCConnection::mTexIDCounter = 0;
 
 // ----------------------------------------------------------------------------
 
+// GREG BEGIN
+/*TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
+                                       const std::string& host, int port)*/
 TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
-                                       const std::string& host, int port)
+                                       const std::string& host, int port, const std::string& pwd)
+// GREG END
     : mUpdateTimer(VNC_TEXTURE_UPDATE_DELAY)
     , mScreenDirty(false)
     , mScreen(0)
     , mHost(host)
     , mPort(port)
+// GREG BEGIN
+    , mPwd(pwd)
+// GREG END
     , mConn(0)
     , mTextureSystem(textureSystem)
     , mID(id)
@@ -53,8 +60,10 @@ TightVNCConnection::~TightVNCConnection()
 
 bool TightVNCConnection::connect(VNCviewerApp* app)
 {
-    mConn = app->NewConnection((TCHAR*)mHost.c_str(), mPort);
-
+// GREG BEGIN
+//    mConn = app->NewConnection((TCHAR*)mHost.c_str(), mPort);
+    mConn = app->NewConnection((TCHAR*)mHost.c_str(), mPort, mPwd.empty() ? NULL : (TCHAR*)mPwd.c_str());
+// GREG END
     if (mConn)
     {
         mConn->AddUpdateListener(this);
@@ -129,6 +138,8 @@ std::string TightVNCConnection::getURL() const
 // ----------------------------------------------------------------------------
 // VNC ScreenUpdateListener callback
 
+// GREG BEGIN
+/*
 void TightVNCConnection::screenUpdated(HDC dc, HBITMAP bitmap)
 {
     omni_mutex_lock lock(mUpdateMutex);
@@ -151,6 +162,40 @@ void TightVNCConnection::screenUpdated(HDC dc, HBITMAP bitmap)
 
     mScreenDirty = true;
 }
+*/
+void TightVNCConnection::screenUpdated(ClientConnection* clientConnection)
+{
+    omni_mutex_lock lock(mUpdateMutex);
+
+    mClientConnection = clientConnection;
+    mScreenDirty = true;
+}
+
+void TightVNCConnection::screenGrab()
+{
+    HDC dc;
+    HBITMAP bitmap;
+    mClientConnection->acquireGrabbedScreen(&dc, &bitmap);
+
+    PBITMAPINFO info = CreateBitmapInfo(bitmap);
+    if (!info)
+        return;
+
+    delete mScreen;
+    mScreen = new BYTE[info->bmiHeader.biSizeImage];
+    if (!GetDIBits(dc, bitmap, 0, info->bmiHeader.biHeight, mScreen, info, DIB_RGB_COLORS))
+    {
+        delete mScreen;
+        mScreen = 0;
+        return;
+    }
+
+    mWidth = info->bmiHeader.biWidth;
+    mHeight = info->bmiHeader.biHeight;
+
+    mClientConnection->releaseGrabbedScreen();
+}
+// GREG END
 
 // ----------------------------------------------------------------------------
 // Ogre FrameListener callbacks
@@ -162,7 +207,8 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
     if (!mAlive)
         return true;
 
-    // Allocate new texture if data is available and texture hasn't been created
+// GREG BEGIN
+/*    // Allocate new texture if data is available and texture hasn't been created
     if (mScreen && mTexture.isNull())
         textureReceived();
 
@@ -173,6 +219,8 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
     // Check for resize
     if ((mWidth != mTexture->getWidth()) || (mHeight != mTexture->getHeight()))
         textureResized();
+*/
+// GREG END
 
     mUpdateTimer -= e.timeSinceLastFrame;
     if (mUpdateTimer > 0)
@@ -184,6 +232,21 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
 
     if (mScreenDirty)
     {
+// GREG BEGIN
+        screenGrab();
+
+        // Allocate new texture if data is available and texture hasn't been created
+        if (mScreen && mTexture.isNull())
+            textureReceived();
+
+        // If no VNC data has been received yet
+        if (!mScreen || mTexture.isNull())
+            return true;
+
+        // Check for resize
+        if ((mWidth != mTexture->getWidth()) || (mHeight != mTexture->getHeight()))
+            textureResized();
+// GREG END
         Ogre::HardwarePixelBufferSharedPtr pbuf = mTexture->getBuffer();
         pbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD);
         const Ogre::PixelBox& pixelBox = pbuf->getCurrentLock();

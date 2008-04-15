@@ -33,7 +33,10 @@ public:
 	VNCviewerApp32(HINSTANCE hInstance, PSTR szCmdLine);
 	void ListenMode();
 	ClientConnection* NewConnection();
-	ClientConnection* NewConnection(TCHAR *host, int port);
+// GREG BEGIN
+//	ClientConnection* NewConnection(TCHAR *host, int port);
+	ClientConnection* NewConnection(TCHAR *host, int port, TCHAR *pwd);
+// GREG END
 	ClientConnection* NewConnection(SOCKET sock);
 	Daemon  *m_pdaemon;
 	~VNCviewerApp32();

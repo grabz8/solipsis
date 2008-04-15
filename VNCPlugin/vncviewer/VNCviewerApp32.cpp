@@ -91,12 +91,18 @@ ClientConnection* VNCviewerApp32::NewConnection() {
     return 0;
 }
 
-ClientConnection* VNCviewerApp32::NewConnection(TCHAR *host, int port) {
+// GREG BEGIN
+//ClientConnection* VNCviewerApp32::NewConnection(TCHAR *host, int port) {
+ClientConnection* VNCviewerApp32::NewConnection(TCHAR *host, int port, TCHAR *pwd = NULL) {
+// GREG END
 	int retries = 0;
 	ClientConnection *pcc;
 	ClientConnection *old_pcc;
 
-	pcc = new ClientConnection(this, host, port);
+// GREG BEGIN
+//	pcc = new ClientConnection(this, host, port);
+	pcc = new ClientConnection(this, host, port, pwd);
+// GREG BEGIN
 	while (retries < MAX_AUTH_RETRIES) {
 		try {
 			pcc->Run();
@@ -105,7 +111,10 @@ ClientConnection* VNCviewerApp32::NewConnection(TCHAR *host, int port) {
 			e.Report();
 			// If the connection count drops to zero, the app exits.
 			old_pcc = pcc;
-			pcc = new ClientConnection(this, host, port);
+// GREG BEGIN
+//			pcc = new ClientConnection(this, host, port);
+			pcc = new ClientConnection(this, host, port, pwd);
+// GREG BEGIN
 			// Get the previous options for the next try.
 			pcc->CopyOptions(old_pcc);
 			delete old_pcc;

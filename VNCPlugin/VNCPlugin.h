@@ -35,13 +35,23 @@ public:
     /// @copydoc Plugin::uninstall
     void uninstall();
 
+// GREG BEGIN
     /**
     *  Creates a new VNC connection asynchronously
     *  @param host VNC server host name
     *  @param port VNC server port
     *  @return Connection id
     */
-    int newConnection(const Ogre::String& host, int port);
+//    int newConnection(const Ogre::String& host, int port);
+    /**
+    *  Creates a new VNC connection asynchronously
+    *  @param host VNC server host name
+    *  @param port VNC server port
+    *  @param pwd VNC server password
+    *  @return Connection id
+    */
+    int newConnection(const Ogre::String& host, int port, const Ogre::String& pwd);
+// GREG END
 
     /**
      *	@param id Connection id

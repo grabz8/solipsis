@@ -50,6 +50,9 @@ extern "C" {
 
 #define SETTINGS_KEY_NAME "Software\\ORL\\VNCviewer\\Settings"
 #define MAX_HOST_NAME_LEN 250
+// GREG BEGIN
+#define MAX_PWD_LEN 250
+// GREG END
 
 #define ZLIBHEX_DECOMP_UNINITED (-1)
 
@@ -64,7 +67,10 @@ class TIGHTVNC_EXPORT ClientConnection  : public omni_thread
 public:
 	ClientConnection(VNCviewerApp *pApp);
 	ClientConnection(VNCviewerApp *pApp, SOCKET sock);
-	ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port);
+// GREG BEGIN
+//	ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port);
+	ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port, LPTSTR pwd);
+// GREG END
 	ClientConnection(VNCviewerApp *pApp, LPTSTR configFile);
 	virtual ~ClientConnection();
 	void Run();
@@ -74,11 +80,19 @@ public:
 	void UnloadConnection() { m_opts.m_configSpecified = false; }
 	int m_port;
     TCHAR m_host[MAX_HOST_NAME_LEN];
+// GREG BEGIN
+    TCHAR m_pwd[MAX_PWD_LEN];
+    int m_pwdDefined;
+// GREG END
 	HWND m_hSess;
 
     void AddUpdateListener(VNCScreenUpdateListener* pListener);
     void RemoveUpdateListener(VNCScreenUpdateListener* pListener);
     bool IsRunning() const { return m_running; }
+// GREG BEGIN
+    void acquireGrabbedScreen(HDC* dc, HBITMAP* bitmap);
+    void releaseGrabbedScreen();
+// GREG END
 
 private:
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);

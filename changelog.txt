@@ -452,3 +452,9 @@ Still some stuff to remove all WIN32 windows/dialogs (eg. on connection, passwor
 AvatarTools reports + some dependencies fixed
 
 ---------------------------
+15/04/08
+
+2nd step of VNC viewer-textureSource OGRE plugin integration
+Client window + modal dialogs removed
+
+---------------------------

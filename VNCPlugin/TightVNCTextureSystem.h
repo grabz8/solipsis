@@ -49,6 +49,11 @@ public:
     void setAddress(const Ogre::String& addr);
     const Ogre::String& getAddress() const { return mAddress; }
 
+// GREG BEGIN
+    void setPwd(const Ogre::String& pwd);
+    const Ogre::String& getPwd() const { return mPwd; }
+// GREG END
+
 protected:
     bool initialise();
     void shutDown();
@@ -74,6 +79,20 @@ private:
             ((TightVNCTextureSystem*)target)->setAddress(val);
         }
     };
+// GREG BEGIN
+    struct _OgrePrivate CmdPwd : public Ogre::ParamCommand
+    {
+        Ogre::String doGet(const void* target) const
+        {
+            return ((TightVNCTextureSystem*)target)->getPwd();
+        }
+
+        void doSet(void* target, const Ogre::String& val)
+        {
+            ((TightVNCTextureSystem*)target)->setPwd(val);
+        }
+    };
+// GREG END
 
     // ------------------------------------------------------------------------
 
@@ -81,6 +100,10 @@ private:
 
     CmdAddress mCmdAddr;
     Ogre::String mAddress;
+// GREG BEGIN
+    CmdPwd mCmdPwd;
+    Ogre::String mPwd;
+// GREG END
 
     typedef std::vector<Ogre::MaterialPtr> MaterialList;
     typedef std::map<int, MaterialList> IDMaterialMap;

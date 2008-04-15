@@ -22,8 +22,12 @@ class TightVNCConnection
     , public VNCScreenUpdateListener
 {
 public:
+// GREG BEGIN
+/*    TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
+                       const std::string& host, int port);*/
     TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
-                       const std::string& host, int port);
+                       const std::string& host, int port, const std::string& pwd);
+// GREG END
     ~TightVNCConnection();
 
     const Ogre::String& getHost() const { return mHost; }
@@ -45,7 +49,12 @@ private:
     void release();
 
     // ScreenUpdateListener callback
-    void screenUpdated(HDC dc, HBITMAP bitmap);
+// GREG BEGIN
+//    void screenUpdated(HDC dc, HBITMAP bitmap);
+    void screenUpdated(ClientConnection* clientConnection);
+    ClientConnection* mClientConnection;
+    void screenGrab();
+// GREG END
 
     // FrameListener callbacks
     bool frameStarted(const Ogre::FrameEvent& e);
@@ -67,6 +76,9 @@ private:
 
     std::string mHost;
     int mPort;
+// GREG BEGIN
+    std::string mPwd;
+// GREG END
 
     TightVNCTextureSystem* mTextureSystem;
 

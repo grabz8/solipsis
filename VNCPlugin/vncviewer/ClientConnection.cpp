@@ -118,11 +118,19 @@ ClientConnection::ClientConnection(VNCviewerApp *pApp, SOCKET sock)
 	};
 }
 
-ClientConnection::ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port)
+// GREG BEGIN
+//ClientConnection::ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port)
+ClientConnection::ClientConnection(VNCviewerApp *pApp, LPTSTR host, int port, LPTSTR pwd)
+// GREG END
 {
 	Init(pApp);
 	_tcsncpy(m_host, host, MAX_HOST_NAME_LEN);
 	m_port = port;
+// GREG BEGIN
+    m_pwdDefined = (pwd != NULL);
+    if (m_pwdDefined)
+        _tcsncpy(m_pwd, pwd, MAX_PWD_LEN);
+// GREG END
 }
 
 void ClientConnection::Init(VNCviewerApp *pApp)
@@ -133,6 +141,9 @@ void ClientConnection::Init(VNCviewerApp *pApp)
 	m_hToolbar = NULL;
 	m_desktopName = NULL;
 	m_port = -1;
+// GREG BEGIN
+    m_pwdDefined = 0;
+// GREG END
 	m_serverInitiated = false;
 	m_netbuf = NULL;
 	m_netbufsize = 0;
@@ -260,7 +271,10 @@ void ClientConnection::Run()
 	// Get the host name and port if we haven't got it
 
 	if (m_port == -1) {
-		GetConnectDetails();
+// GREG BEGIN
+//		GetConnectDetails();
+        return;
+// GREG END
 	} else {
 		if (m_pApp->m_options.m_listening) {
 			m_opts.LoadOpt(m_opts.m_display, 
@@ -268,8 +282,10 @@ void ClientConnection::Run()
 		}
 	}
 
+// GREG BEGIN
 	// Show the "Connecting..." dialog box
-	m_connDlg = new ConnectingDialog(m_pApp->m_instance, m_opts.m_display);
+//	m_connDlg = new ConnectingDialog(m_pApp->m_instance, m_opts.m_display);
+// GREG END
 
 	// Connect if we're not already connected
 	if (m_sock == INVALID_SOCKET)
@@ -305,7 +321,9 @@ void ClientConnection::Run()
 		m_connDlg = NULL;
 	}
 
-	EnableFullControlOptions();
+// GREG BEGIN
+//	EnableFullControlOptions();
+// GREG END
 
 	CreateLocalFramebuffer();
 	
@@ -322,6 +340,8 @@ static WNDCLASS wndclass;	// FIXME!
 
 void ClientConnection::CreateDisplay() 
 {
+// GREG BEGIN
+/*
 	// Create the window
 	
 	WNDCLASS wndclass;
@@ -412,8 +432,10 @@ void ClientConnection::CreateDisplay()
 			      NULL);
 	SetWindowLong(m_hwndscroll, GWL_USERDATA, (LONG) this);
 	ShowWindow(m_hwndscroll, SW_HIDE);
-	
-	// Create a memory DC which we'll use for drawing to
+*/	
+// GREG END
+
+    // Create a memory DC which we'll use for drawing to
 	// the local framebuffer
 	m_hBitmapDC = CreateCompatibleDC(NULL);
 
@@ -440,6 +462,8 @@ void ClientConnection::CreateDisplay()
 		m_hPalette = CreatePalette(plp);
 	}
 
+// GREG BEGIN
+/*
 	// Add stuff to System menu
 	HMENU hsysmenu = GetSystemMenu(m_hwnd1, FALSE);
 	if (!m_opts.m_restricted) {
@@ -522,8 +546,12 @@ void ClientConnection::CreateDisplay()
 	m_initialClipboardSeen = false;
 	m_hwndNextViewer = SetClipboardViewer(m_hwnd);
 #endif
+*/
+// GREG END
 }
 
+// GREG BEGIN
+/*
 HWND ClientConnection::CreateToolbar()
 {
 	const int MAX_TOOLBAR_BUTTONS = 20;
@@ -613,6 +641,8 @@ HWND ClientConnection::CreateToolbar()
 
 	return hwndToolbar;
 }
+*/
+// GREG END
 
 void ClientConnection::SaveListConnection()
 {
@@ -667,6 +697,8 @@ void ClientConnection::SaveListConnection()
 	}		
 }
 
+// GREG BEGIN
+/*
 void ClientConnection::EnableFullControlOptions()
 {
 	if (m_opts.m_ViewOnly) {
@@ -747,6 +779,8 @@ void ClientConnection::GetConnectDetails()
 	m_hwndNextViewer = SetClipboardViewer(m_hwnd); 	
 #endif
 }
+*/
+// GREG END
 
 void ClientConnection::Connect()
 {
@@ -1140,6 +1174,12 @@ bool ClientConnection::AuthenticateVNC(char *errBuf, int errBufSize)
 	ReadExact((char *)challenge, CHALLENGESIZE);
 
 	char passwd[MAXPWLEN + 1];
+// GREG BEGIN
+    if (m_pwdDefined)
+        strcpy(passwd, m_pwd);
+    else
+    {
+// GREG END
 	// Was the password already specified in a config file?
 	if (strlen((const char *) m_encPasswd) > 0) {
 		char *pw = vncDecryptPasswd(m_encPasswd);
@@ -1165,6 +1205,9 @@ bool ClientConnection::AuthenticateVNC(char *errBuf, int errBufSize)
 
 		passwd[newlen]= '\0';
 #endif
+// GREG BEGIN
+        }
+// GREG END
 		if (strlen(passwd) == 0) {
 			_snprintf(errBuf, errBufSize, "Empty password");
 			return false;
@@ -1225,14 +1268,18 @@ void ClientConnection::ReadServerInit()
     ReadString(m_desktopName, m_si.nameLength);
 #endif
     
-	SetWindowText(m_hwnd1, m_desktopName);	
+// GREG BEGIN
+//	SetWindowText(m_hwnd1, m_desktopName);	
+// GREG END
 
 	GetVNCLog().Print(0, _T("Desktop name \"%s\"\n"),m_desktopName);
 	GetVNCLog().Print(1, _T("Geometry %d x %d depth %d\n"),
 		m_si.framebufferWidth, m_si.framebufferHeight, m_si.format.depth );
-	SetWindowText(m_hwnd1, m_desktopName);	
+// GREG BEGIN
+//	SetWindowText(m_hwnd1, m_desktopName);	
 
-	SizeWindow(true);
+//	SizeWindow(true);
+// GREG END
 }
 
 //
@@ -1275,6 +1322,8 @@ void ClientConnection::ReadCapabilityList(CapsContainer *caps, int count)
 	}
 }
 
+// GREG BEGIN
+/*
 void ClientConnection::SizeWindow(bool centered)
 {
 	// Find how large the desktop work area is
@@ -1480,6 +1529,8 @@ void ClientConnection::PositionChildWindow()
 	}
 	UpdateWindow(m_hwnd);
 }
+*/
+// GREG END
 
 void ClientConnection::CreateLocalFramebuffer() {
 	omni_mutex_lock l(m_bitmapdcMutex);
@@ -1494,7 +1545,10 @@ void ClientConnection::CreateLocalFramebuffer() {
 	// We create a bitmap which has the same pixel characteristics as
 	// the local display, in the hope that blitting will be faster.
 	
-	TempDC hdc(m_hwnd);
+// GREG BEGIN
+//	TempDC hdc(m_hwnd);
+    TempDC hdc(NULL);
+// GREG END
 	m_hBitmap = ::CreateCompatibleBitmap(hdc, m_si.framebufferWidth,
 										 m_si.framebufferHeight);
 	
@@ -1523,7 +1577,9 @@ void ClientConnection::CreateLocalFramebuffer() {
 		SetTextColor(m_hBitmapDC, oldtxtcol);
 	}
 	
-	InvalidateRect(m_hwnd, NULL, FALSE);
+// GREG BEGIN
+//	InvalidateRect(m_hwnd, NULL, FALSE);
+// GREG END
 }
 
 void ClientConnection::SetupPixelFormat() {
@@ -1704,8 +1760,12 @@ void ClientConnection::CopyOptions(ClientConnection *source)
 
 ClientConnection::~ClientConnection()
 {
-	if (m_hwnd1 != 0)
+// GREG BEGIN
+/*
+    if (m_hwnd1 != 0)
 		DestroyWindow(m_hwnd1);
+*/
+// GREG END
 
 	if (m_connDlg != NULL)
 		delete m_connDlg;
@@ -1732,6 +1792,9 @@ ClientConnection::~ClientConnection()
 // tell you whether it actually scrolled.
 bool ClientConnection::ScrollScreen(int dx, int dy) 
 {
+// GREG BEGIN
+    return true;
+/*
 	dx = max(dx, -m_hScrollPos);
 	//dx = min(dx, m_hScrollMax-(m_cliwidth-1)-m_hScrollPos);
 	dx = min(dx, m_hScrollMax-(m_cliwidth)-m_hScrollPos);
@@ -1750,8 +1813,12 @@ bool ClientConnection::ScrollScreen(int dx, int dy)
 		return true;
 	}
 	return false;
+*/
+// GREG END
 }
 
+// GREG BEGIN
+/*
 // Process windows messages
 LRESULT CALLBACK ClientConnection::ScrollProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {	// This is a static method, so we don't know which instantiation we're 
@@ -2563,6 +2630,8 @@ ClientConnection::SendKeyEvent(CARD32 key, bool down)
     GetVNCLog().Print(6, _T("SendKeyEvent: key = x%04x status = %s\n"), key, 
         down ? _T("down") : _T("up"));
 }
+*/
+// GREG END
 
 #ifndef UNDER_CE
 //
@@ -2581,6 +2650,8 @@ void ClientConnection::SendClientCutText(char *str, int len)
 }
 #endif
 
+// GREG BEGIN
+/*
 // Copy any updated areas from the bitmap onto the screen.
 
 inline void ClientConnection::DoBlit() 
@@ -2687,6 +2758,8 @@ inline void ClientConnection::UpdateScrollbars()
 	if (setInfo) 
 		SetScrollInfo(m_hwndscroll, SB_VERT, &scri, TRUE);
 }
+*/
+// GREG END
 
 
 void ClientConnection::ShowConnInfo()
@@ -2730,10 +2803,14 @@ void* ClientConnection::run_undetached(void* arg) {
 
 		SendFullFramebufferUpdateRequest();
 
-		RealiseFullScreenMode(false);
+// GREG BEGIN
+//		RealiseFullScreenMode(false);
+// GREG END
 
 		m_running = true;
-		UpdateWindow(m_hwnd1);
+// GREG BEGIN
+//		UpdateWindow(m_hwnd1);
+// GREG END
 		
 		while (!m_bKillThread) {
 			
@@ -2762,9 +2839,11 @@ void* ClientConnection::run_undetached(void* arg) {
 		        GetVNCLog().Print(3, _T("rfbSetColourMapEntries read but not supported\n") );
 				throw WarningException("Unhandled SetColormap message type received!\n");
 				break;
-			case rfbBell:
-				ReadBell();
-				break;
+// GREG BEGIN
+//			case rfbBell:
+//				ReadBell();
+//				break;
+// GREG END
 			case rfbServerCutText:
 				ReadServerCutText();
 				break;
@@ -2792,14 +2871,18 @@ void* ClientConnection::run_undetached(void* arg) {
 
 	} catch (WarningException &e) {
 		m_running = false;
-		PostMessage(m_hwnd1, WM_CLOSE, 0, 0);
+// GREG BEGIN
+//		PostMessage(m_hwnd1, WM_CLOSE, 0, 0);
+// GREG END
 		if (!m_bKillThread) {
 			e.Report();
 		}
 	} catch (QuietException &e) {
 		m_running = false;
 		e.Report();
-		PostMessage(m_hwnd1, WM_CLOSE, 0, 0);
+// GREG BEGIN
+//		PostMessage(m_hwnd1, WM_CLOSE, 0, 0);
+// GREG END
 	} 
 	return this;
 }
@@ -2932,20 +3015,46 @@ void ClientConnection::ReadScreenUpdate() {
 			break;
 		}
 
+// GREG BEGIN
 		// Tell the system to update a screen rectangle. Note that
 		// InvalidateScreenRect member function knows about scaling.
-		RECT rect;
-		SetRect(&rect, surh.r.x, surh.r.y,
-				surh.r.x + surh.r.w, surh.r.y + surh.r.h);
-		InvalidateScreenRect(&rect);
+//		RECT rect;
+//		SetRect(&rect, surh.r.x, surh.r.y,
+//				surh.r.x + surh.r.w, surh.r.y + surh.r.h);
+//		InvalidateScreenRect(&rect);
+// GREG END
 
 		// Now we may discard "soft cursor locks".
 		SoftCursorUnlockScreen();
 	}	
 
+// GREG BEGIN
 	// Inform the other thread that an update is needed.
-	PostMessage(m_hwnd, WM_REGIONUPDATED, NULL, NULL);
+//	PostMessage(m_hwnd, WM_REGIONUPDATED, NULL, NULL);
+    omni_mutex_lock sul(m_suMutex);
+    for (ScreenUpdateListenerList::const_iterator i = m_suListeners.begin();
+         i != m_suListeners.end(); ++i)
+    {
+//        (*i)->screenUpdated(m_hBitmapDC, m_hBitmap);
+        (*i)->screenUpdated(this);
+    }
+    SendAppropriateFramebufferUpdateRequest();
+// GREG END
 }	
+
+// GREG BEGIN
+void ClientConnection::acquireGrabbedScreen(HDC* dc, HBITMAP* bitmap)
+{
+    m_bitmapdcMutex.acquire();
+    *dc = m_hBitmapDC;
+    *bitmap = m_hBitmap;
+}
+
+void ClientConnection::releaseGrabbedScreen()
+{
+    m_bitmapdcMutex.release();
+}
+// GREG END
 
 void ClientConnection::SetDormant(bool newstate)
 {
@@ -2974,6 +3083,8 @@ void ClientConnection::ReadServerCutText() {
 }
 
 
+// GREG BEGIN
+/*
 void ClientConnection::ReadBell() {
 	rfbBellMsg bm;
 	ReadExact((char *) &bm, sz_rfbBellMsg);
@@ -2995,6 +3106,8 @@ void ClientConnection::ReadBell() {
 	}
 	GetVNCLog().Print(6, _T("Bell!\n"));
 }
+*/
+// GREG END
 
 
 // General utilities -------------------------------------------------
@@ -3141,6 +3254,9 @@ void ClientConnection::CheckZlibBufferSize(int bufsize)
 //
 
 void ClientConnection::InvalidateScreenRect(const RECT *pRect) {
+// GREG BEGIN
+    return;
+/*
 	RECT rect;
 
 	// If we're scaling, we transform the coordinates of the rectangle
@@ -3168,6 +3284,8 @@ void ClientConnection::InvalidateScreenRect(const RECT *pRect) {
 		rect.bottom = pRect->bottom - m_vScrollPos;
 	}
 	InvalidateRect(m_hwnd, &rect, FALSE);
+*/
+// GREG END
 }
 
 //
@@ -3183,8 +3301,10 @@ void ClientConnection::ReadNewFBSize(rfbFramebufferUpdateRectHeader *pfburh)
 
 	CreateLocalFramebuffer();
 
-	SizeWindow(false);
-	RealiseFullScreenMode(true);
+// GREG BEGIN
+//	SizeWindow(false);
+//	RealiseFullScreenMode(true);
+// GREG END
 }
 
 

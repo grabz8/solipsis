@@ -47,7 +47,10 @@ public:
 	VNCviewerApp(HINSTANCE hInstance, LPTSTR szCmdLine);
 	virtual void ListenMode()=0;
 	virtual ClientConnection* NewConnection() = 0;
-	virtual ClientConnection* NewConnection(TCHAR *host, int port) = 0;
+// GREG BEGIN
+//	virtual ClientConnection* NewConnection(TCHAR *host, int port) = 0;
+	virtual ClientConnection* NewConnection(TCHAR *host, int port, TCHAR *pwd) = 0;
+// GREG END
 	virtual ClientConnection* NewConnection(SOCKET sock) = 0;
 		
 	~VNCviewerApp();

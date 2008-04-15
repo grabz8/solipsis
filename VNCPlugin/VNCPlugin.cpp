@@ -76,18 +76,28 @@ int VNCPlugin::lookupConnection(const Ogre::String& host, int port)
     return -1;
 }
 
-int VNCPlugin::newConnection(const Ogre::String& host, const int port)
+// GREG BEGIN
+//int VNCPlugin::newConnection(const Ogre::String& host, const int port)
+int VNCPlugin::newConnection(const Ogre::String& host, const int port, const Ogre::String& pwd)
+// GREG END
 {
     omni_mutex_lock l(mConnMutex);
 
+// GREG BEGIN
+/*    Ogre::LogManager::getSingleton().logMessage("VNCPlugin - Creating new connection for '" +
+        host + ":" + Ogre::StringConverter::toString(port) + "'");*/
     Ogre::LogManager::getSingleton().logMessage("VNCPlugin - Creating new connection for '" +
-        host + ":" + Ogre::StringConverter::toString(port) + "'");
+        host + ":" + Ogre::StringConverter::toString(port) + ";" + pwd + "'");
+// GREG END
 
     // Set connection host and port and map it by id
     // The connection will be established asynchronously in VNC main thread
     // so it won't block application threads
     int id = mConnIDCounter++;
-    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port));
+// GREG BEGIN
+//    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port));
+    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port, pwd));
+// GREG END
     mConnByID.insert(std::make_pair(id, conn));
 
     return id;

@@ -71,6 +71,9 @@ bool TightVNCTextureSystem::initialise()
     // Add commands to set VNC connection parameters
     Ogre::ParamDictionary* dict = getParamDictionary();
     dict->addParameter(Ogre::ParameterDef("address", "VNC server address (vnc://host:port)", Ogre::PT_STRING), &mCmdAddr);
+// GREG BEGIN
+    dict->addParameter(Ogre::ParameterDef("password", "VNC server password (vncpwd:pwd)", Ogre::PT_STRING), &mCmdPwd);
+// GREG END
 
     return true;
 }
@@ -86,6 +89,14 @@ void TightVNCTextureSystem::setAddress(const Ogre::String& addr)
     Ogre::LogManager::getSingleton().logMessage("TightVNCTextureSystem::setAddress (" + addr + ")");
     mAddress = addr;
 }
+
+// GREG BEGIN
+void TightVNCTextureSystem::setPwd(const Ogre::String& pwd)
+{
+    Ogre::LogManager::getSingleton().logMessage("TightVNCTextureSystem::setPwd (" + pwd + ")");
+    mPwd = pwd;
+}
+// GREG END
 
 void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialName, const Ogre::String& group)
 {
@@ -117,6 +128,11 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
 
     int portNum = Ogre::StringConverter::parseInt(port);
 
+// GREG BEGIN
+    Ogre::String pwdParam = getParameter("password");
+	Ogre::String pwd = pwdParam.substr(pwdParam.find_first_of(':') + 1);
+// GREG END
+
     // Lookup existing connection
     int id = mPlugin->lookupConnection(host, portNum);
 
@@ -124,7 +140,10 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
     {      
         // If no existing connection was found create a new one
 
-        id = mPlugin->newConnection(host, portNum);
+// GREG BEGIN
+//        id = mPlugin->newConnection(host, portNum);
+        id = mPlugin->newConnection(host, portNum, pwd);
+// GREG END
         if (id == -1)
         {
             Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL,
