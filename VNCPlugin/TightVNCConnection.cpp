@@ -30,6 +30,7 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
     , mHost(host)
     , mPort(port)
 // GREG BEGIN
+    , mGrabScreenIfDirty(true)
     , mPwd(pwd)
 // GREG END
     , mConn(0)
@@ -56,6 +57,10 @@ TightVNCConnection::~TightVNCConnection()
 
     mTextureSystem->connectionClosed(mID);
     mTextureSystem = 0;
+
+// GREG BEGIN
+    delete mScreen;
+// GREG END
 }
 
 bool TightVNCConnection::connect(VNCviewerApp* app)
@@ -163,37 +168,34 @@ void TightVNCConnection::screenUpdated(HDC dc, HBITMAP bitmap)
     mScreenDirty = true;
 }
 */
-void TightVNCConnection::screenUpdated(ClientConnection* clientConnection)
+void TightVNCConnection::screenUpdated(HDC dc, HBITMAP bitmap)
 {
     omni_mutex_lock lock(mUpdateMutex);
 
-    mClientConnection = clientConnection;
-    mScreenDirty = true;
-}
-
-void TightVNCConnection::screenGrab()
-{
-    HDC dc;
-    HBITMAP bitmap;
-    mClientConnection->acquireGrabbedScreen(&dc, &bitmap);
+    if (!mGrabScreenIfDirty)
+        return;
 
     PBITMAPINFO info = CreateBitmapInfo(bitmap);
     if (!info)
         return;
 
-    delete mScreen;
-    mScreen = new BYTE[info->bmiHeader.biSizeImage];
-    if (!GetDIBits(dc, bitmap, 0, info->bmiHeader.biHeight, mScreen, info, DIB_RGB_COLORS))
+    if ((mScreen == 0) || (info->bmiHeader.biWidth != mWidth) || (info->bmiHeader.biHeight != mHeight))
+    {
+        mWidth = info->bmiHeader.biWidth;
+        mHeight = info->bmiHeader.biHeight;
+        delete mScreen;
+        mScreen = new BYTE[info->bmiHeader.biSizeImage];
+    }
+    info->bmiHeader.biHeight = -info->bmiHeader.biHeight;
+    if (!GetDIBits(dc, bitmap, 0, -info->bmiHeader.biHeight, mScreen, info, DIB_RGB_COLORS))
     {
         delete mScreen;
         mScreen = 0;
         return;
     }
 
-    mWidth = info->bmiHeader.biWidth;
-    mHeight = info->bmiHeader.biHeight;
-
-    mClientConnection->releaseGrabbedScreen();
+    mScreenDirty = true;
+    mGrabScreenIfDirty = false;
 }
 // GREG END
 
@@ -227,14 +229,15 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
         return true;
 
     mUpdateTimer = VNC_TEXTURE_UPDATE_DELAY;
+// GREG BEGIN
+    mGrabScreenIfDirty = true;
+// GREG END
 
     // Update texture
 
     if (mScreenDirty)
     {
 // GREG BEGIN
-        screenGrab();
-
         // Allocate new texture if data is available and texture hasn't been created
         if (mScreen && mTexture.isNull())
             textureReceived();
@@ -250,29 +253,36 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
         Ogre::HardwarePixelBufferSharedPtr pbuf = mTexture->getBuffer();
         pbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD);
         const Ogre::PixelBox& pixelBox = pbuf->getCurrentLock();
-        // GREG BEGIN
+// GREG BEGIN
 //        memcpy(pixelBox.data, mScreen, pixelBox.getConsecutiveSize());
         long srcPixelSize = 4;
         // if height is negative -> top-down DIB
         // if height is positive -> bottom-up DIB
-        long srcPitch = (mHeight < 0) ? mWidth*srcPixelSize : -mWidth*srcPixelSize;
-        unsigned char* pSrc = (mHeight < 0) ? mScreen : (mScreen + (mHeight - 1)*mWidth*srcPixelSize);
+//        long srcPitch = (mHeight < 0) ? mWidth*srcPixelSize : -mWidth*srcPixelSize;
+//        unsigned char* pSrc = (mHeight < 0) ? mScreen : (mScreen + (mHeight - 1)*mWidth*srcPixelSize);
+        long srcPitch = mWidth*srcPixelSize;
+        unsigned char* pSrc = mScreen;
 	    size_t texPixelSize = Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
 	    size_t texPitch = (pixelBox.rowPitch*texPixelSize);
 	    unsigned char* pDst = static_cast<unsigned char*>(pixelBox.data);
-        #define xy2ofsSrc(x, y) (y*srcPitch + x*srcPixelSize)
-        #define xy2ofsDst(x, y) (y*texPitch + x*texPixelSize)
         for(int y = 0; y < mHeight; y++)
+        {
+            memcpy(pDst, pSrc, mWidth*srcPixelSize);
+/*            unsigned char* pSrcTmp = pSrc;
+            unsigned char* pDstTmp = pDst;
             for(int x = 0; x < mWidth; x++)
             {
-                unsigned char* pSrcTmp = pSrc + xy2ofsSrc(x, y);
-                unsigned char* pDstTmp = pDst + xy2ofsDst(x, y);
-                pDstTmp[0] = pSrcTmp[2];
+                pDstTmp[0] = pSrcTmp[0];
                 pDstTmp[1] = pSrcTmp[1];
-                pDstTmp[2] = pSrcTmp[0];
+                pDstTmp[2] = pSrcTmp[2];
                 pDstTmp[3] = 0;
-            }
-        // GREG END
+                pSrcTmp += srcPixelSize;
+                pDstTmp += texPixelSize;
+            }*/
+            pSrc += srcPitch;
+            pDst += texPitch;
+        }
+// GREG END
         pbuf->unlock();
         mScreenDirty = false;
     }

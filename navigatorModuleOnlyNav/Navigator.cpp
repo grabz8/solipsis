@@ -338,7 +338,6 @@ void Navigator::demoVNC(const String params)
         ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
         vncExtTextSrc->destroyAdvancedTexture("demoVNCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         MaterialManager::getSingleton().remove("demoVNCMaterial");
-        MeshManager::getSingleton().remove("demoVNCPlane");
     }
     else
     {
@@ -355,12 +354,8 @@ void Navigator::demoVNC(const String params)
                 pwd = params.substr(strPos + 1, params.length() - (strPos + 1));
         }
 
-        // Create a plane
-        Plane plane(Vector3::NEGATIVE_UNIT_Z, 0);
-        MeshManager::getSingleton().createPlane("demoVNCPlane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 4, 3, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
-
         // Creates the VNC Plane and subsequent NaviMaterial
-        Entity* vncEnt = mSceneMgr->createEntity("demoVNC", "demoVNCPlane");
+        Entity* vncEnt = mSceneMgr->createEntity("demoVNC", "demoVNCPlane.mesh");
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
         ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
         vncExtTextSrc->setParameter("address", "vnc://" + url2go);

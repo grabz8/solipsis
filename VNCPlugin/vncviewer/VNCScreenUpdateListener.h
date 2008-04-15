@@ -8,10 +8,7 @@ class ClientConnection;
 class VNCScreenUpdateListener
 {
 public:
-// GREG BEGIN
-//    virtual void screenUpdated(HDC dc, HBITMAP bitmap) = 0;
-    virtual void screenUpdated(ClientConnection* clientConnection) = 0;
-// GREG END
+    virtual void screenUpdated(HDC dc, HBITMAP bitmap) = 0;
 
 }; //   class VNCScreenUpdateListener
 

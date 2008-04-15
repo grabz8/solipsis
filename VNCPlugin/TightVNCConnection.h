@@ -49,12 +49,7 @@ private:
     void release();
 
     // ScreenUpdateListener callback
-// GREG BEGIN
-//    void screenUpdated(HDC dc, HBITMAP bitmap);
-    void screenUpdated(ClientConnection* clientConnection);
-    ClientConnection* mClientConnection;
-    void screenGrab();
-// GREG END
+    void screenUpdated(HDC dc, HBITMAP bitmap);
 
     // FrameListener callbacks
     bool frameStarted(const Ogre::FrameEvent& e);
@@ -69,6 +64,9 @@ private:
     Ogre::Real mUpdateTimer;
 
     bool mScreenDirty;
+// GREG BEGIN
+    bool mGrabScreenIfDirty;
+// GREG END
 
     Ogre::TexturePtr mTexture;
     unsigned char* mScreen;

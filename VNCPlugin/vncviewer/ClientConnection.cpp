@@ -3035,8 +3035,7 @@ void ClientConnection::ReadScreenUpdate() {
     for (ScreenUpdateListenerList::const_iterator i = m_suListeners.begin();
          i != m_suListeners.end(); ++i)
     {
-//        (*i)->screenUpdated(m_hBitmapDC, m_hBitmap);
-        (*i)->screenUpdated(this);
+        (*i)->screenUpdated(m_hBitmapDC, m_hBitmap);
     }
     SendAppropriateFramebufferUpdateRequest();
 // GREG END
