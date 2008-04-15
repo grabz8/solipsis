@@ -130,8 +130,8 @@
             #urlText { position: absolute; left: 0px; top: 40px; }
             #urlInput { position: absolute; left: 30px; top: 40px; }
             #demoPhysics1Button { top: 90px; width: 100px; }
-            #urlVNCText { position: absolute; left: 0px; top: 120px; }
-            #urlVNCInput { position: absolute; left: 30px; top: 120px; }
+            #urlpwdVNCText { position: absolute; left: 0px; top: 120px; }
+            #urlpwdVNCInput { position: absolute; left: 30px; top: 120px; }
             #peerNewButton { top: 10px; width: 100px; }
             #peerDO1Button { top: 35px; width: 100px; }
         </style>
@@ -171,13 +171,13 @@
                             <button id="navStopButton" class="buttonNav" name="buttonNavStop" value="buttonNavStop" type="button" onclick="navCommand('stop', '')">X</button>
                             <button id="navGoButton" class="buttonNav" name="buttonNavGo" value="buttonNavStop" type="button" onclick="navCommand('go', '')">Go</button>
                         </div>
-                        <form id="urlVNCForm" action="" onsubmit="debugCommand('demoVNC', document.getElementById('inputUrl').value);return false;">
-                            <div id="urlVNCText">VNC</div>
-                            <div id="urlVNCInput">
-                                <input id="inputUrlVNC" class="inputText" name="inputUrlVNC" value="localhost:5900" type="text" size="30" />
+                        <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
+                        <form id="urlpwdVNCForm" action="" onsubmit="debugCommand('demoVNC', document.getElementById('inputUrlPwdVNC').value);return false;">
+                            <div id="urlpwdVNCText">VNC</div>
+                            <div id="urlpwdVNCInput">
+                                <input id="inputUrlPwdVNC" class="inputText" name="inputUrlPwdVNC" value="localhost:5900;solipsis" type="text" size="30" />
                             </div>
                         </form>
-                        <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
                     </div>
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
