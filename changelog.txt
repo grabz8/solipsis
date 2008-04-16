@@ -458,3 +458,9 @@ AvatarTools reports + some dependencies fixed
 Client window + modal dialogs removed
 
 ---------------------------
+16/04/08
+
+VNC viewer-textureSource OGRE plugin : Mouse events added, FPS param used
+No context Navi panel on 1stPersonWithMouse camera mode
+
+---------------------------
