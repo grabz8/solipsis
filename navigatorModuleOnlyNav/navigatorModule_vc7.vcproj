@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include;..\VNCPlugin"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -71,7 +71,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include;..\VNCPlugin"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -123,7 +123,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include;..\VNCPlugin"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -175,7 +175,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include;..\VNCPlugin"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
