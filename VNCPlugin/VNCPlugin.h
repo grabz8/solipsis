@@ -10,6 +10,9 @@ class ClientConnection;
 class TightVNCConnection;
 class TightVNCTextureSystem;
 class VNCviewerApp32;
+// GREG BEGIN
+#include "OgreExternalTextureSourceEx.h"
+// GREG END
 
 namespace Solipsis
 {
@@ -72,6 +75,10 @@ public:
     *  @return VNC texture or a NULL TexturePtr if the texture is not yet available
     */
     Ogre::TexturePtr getTextureForConnection(const int id) const;
+
+// GREG BEGIN
+    void mouseEvtOnConnection(const int id, int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+// GREG END
 
 private:
     static unsigned long __stdcall vncThreadRun(void* params);

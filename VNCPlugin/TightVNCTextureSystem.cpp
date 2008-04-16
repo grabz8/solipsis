@@ -201,6 +201,32 @@ void TightVNCTextureSystem::destroyAdvancedTexture(const Ogre::String& material,
     }
 }
 
+// GREG BEGIN
+void TightVNCTextureSystem::mouseEvt(const Ogre::String& material, const Ogre::Vector2& xy, eMouseKbdEvent mouseKbdEvent)
+{
+    Ogre::LogManager::getSingleton().logMessage("TightVNCTextureSystem::mouseEvt (" + material + ")");
+
+    for (IDMaterialMap::iterator i = mMaterials.begin(); i != mMaterials.end(); ++i)
+    {
+        MaterialList& materials = i->second;
+        for (MaterialList::iterator j = materials.begin(); j != materials.end(); ++j)
+        {
+            Ogre::MaterialPtr matPtr = *j;
+            if (!matPtr.isNull() && matPtr->getName() == material)
+            {
+                Ogre::TexturePtr& texture = mPlugin->getTextureForConnection(i->first);
+                size_t width = texture->getSrcWidth();
+                size_t height = texture->getSrcHeight();
+                int x = ((int)(xy.x*width))%width;
+                int y = ((int)(xy.y*height))%height;
+                mPlugin->mouseEvtOnConnection(i->first, x, y, mouseKbdEvent);
+                return;
+            }
+        }
+    }
+}
+// GREG END
+
 bool TightVNCTextureSystem::requiresAuthorization() const
 {
     return true;

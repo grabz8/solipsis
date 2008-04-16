@@ -12,6 +12,9 @@
 class ClientConnection;
 class TightVNCTextureSystem;
 class VNCviewerApp;
+// GREG BEGIN
+#include "OgreExternalTextureSourceEx.h"
+// GREG END
 
 /**
  *  A class that updates and creates VNC textures for one VNC connection.
@@ -43,6 +46,10 @@ public:
     bool isAlive() const;
     void destroy();
 
+// GREG BEGIN
+    void mouseEvt(int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+// GREG END
+
 private:
     void textureResized();
     void textureReceived();
@@ -66,6 +73,7 @@ private:
     bool mScreenDirty;
 // GREG BEGIN
     bool mGrabScreenIfDirty;
+    WPARAM wParam;
 // GREG END
 
     Ogre::TexturePtr mTexture;

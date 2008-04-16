@@ -207,6 +207,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
 			<File
+				RelativePath=".\OgreExternalTextureSourceEx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\TightVNCConnection.h"
 				>
 			</File>

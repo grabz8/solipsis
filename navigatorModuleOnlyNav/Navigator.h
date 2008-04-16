@@ -40,7 +40,8 @@ public:
     enum QueryFlags
     {
         QFNaviPanel = 1<<0,
-        QFAvatar = QFNaviPanel<<1,
+        QFVNCPanel = QFNaviPanel<<1,
+        QFAvatar = QFVNCPanel<<1,
         QFObject = QFAvatar<<1,
         QFGizmo = QFObject<<1
     };
@@ -66,6 +67,7 @@ protected:
     Real mMaxObjectPickingDistance;
     Real mMaxAvatarPickingDistance;
     Real mMaxNaviPickingDistance;
+    Real mMaxVNCPickingDistance;
     RaySceneQuery* mRaySceneQuery;
     MovableObject* mPickedMovable;
     Real closestDistance;
@@ -143,11 +145,16 @@ public:
     // Mouse ray picking
     void resetMousePicking();
     bool computeMousePicking(Ray& mouseRay);
+    MovableObject* getPickedMovable() { return mPickedMovable; }
     bool is1NaviHitByMouse(String& naviName, int& naviX, int& naviY);
     void computeNaviHit(const String& naviName,
                         Vector2& closestUV,
                         Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
                         int& naviX, int& naviY);
+    bool is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY);
+    void computeVncHit(Vector2& closestUV,
+                       Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                       Vector2& vncXY);
     bool is1AvatarHitByMouse(Avatar*& avatar);
 
     bool quit();

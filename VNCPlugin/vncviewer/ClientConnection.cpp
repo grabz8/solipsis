@@ -2351,6 +2351,8 @@ LRESULT CALLBACK ClientConnection::WndProc(HWND hwnd, UINT iMsg,
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
+*/
+// GREG END
 
 
 // ProcessPointerEvent handles the delicate case of emulating 3 buttons
@@ -2511,6 +2513,8 @@ ClientConnection::SendPointerEvent(int x, int y, int buttonMask)
 	WriteExact((char *)&pe, sz_rfbPointerEventMsg);
 }
 
+// GREG BEGIN
+/*
 //
 // ProcessKeyEvent
 //

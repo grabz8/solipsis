@@ -4,6 +4,7 @@
 #include "DebugHelpers.h"
 #include "Navi.h"
 #include "NaviLua.h"
+#include "OgreExternalTextureSourceManager.h"
 
 #include "Modeler.h"
 
@@ -27,6 +28,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mOgrePeerManager(0),
     mNavigatorGUI(0),
     mMaxNaviPickingDistance(10),
+    mMaxVNCPickingDistance(5),
     mMaxAvatarPickingDistance(10),
     mMaxObjectPickingDistance(20),
     mRaySceneQuery(0),
@@ -321,7 +323,6 @@ void Navigator::demoNavi2(const String params)
 }
 #endif
 #ifdef DEMO_VNC
-#include "OgreExternalTextureSourceManager.h"
 //-------------------------------------------------------------------------------------
 void Navigator::demoVNC(const String params)
 {
@@ -356,6 +357,7 @@ void Navigator::demoVNC(const String params)
 
         // Creates the VNC Plane and subsequent NaviMaterial
         Entity* vncEnt = mSceneMgr->createEntity("demoVNC", "demoVNCPlane.mesh");
+        vncEnt->setQueryFlags(QFVNCPanel);
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
         ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
         vncExtTextSrc->setParameter("address", "vnc://" + url2go);
@@ -551,7 +553,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             else // SInWorld
             {
                 // stop checking if we are too far
-                if (it->distance >= std::max(mMaxNaviPickingDistance, mMaxAvatarPickingDistance))
+                if (it->distance >= std::max(std::max(mMaxNaviPickingDistance, mMaxVNCPickingDistance), mMaxAvatarPickingDistance))
                     break;
                 // only check this result if its a hit against an entity
                 /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
@@ -573,7 +575,8 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                         closestUV,
                         closestTriUV0, closestTriUV1, closestTriUV2))
                     {
-                        if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
+                        if (((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
+                            ((it->movable->getQueryFlags() == QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)))
                             mPickedMovable = it->movable;
                     }
                 }
@@ -632,6 +635,38 @@ bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
     return false;
 }
 
+
+//-------------------------------------------------------------------------------------
+void Navigator::computeVncHit(Vector2& closestUV,
+                              Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                              Vector2& vncXY)
+{
+    // uv computation found into the "Pick" sample of MS Direct SDK
+    Vector2 dt1 = closestTriUV1 - closestTriUV0;
+    Vector2 dt2 = closestTriUV2 - closestTriUV0;
+    vncXY.x = closestTriUV0.x + closestUV.x*dt1.x + closestUV.y*dt2.x;
+    vncXY.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
+    OGRE_LOG("Navigator::computeVncHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", vncXY=" + StringConverter::toString(vncXY));
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY)
+{
+    // if 1 VNC entity hit
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFVNCPanel))
+    {
+        vncMovableObj = mPickedMovable;
+        // compute texture coordinates of the hit
+        computeVncHit(closestUV,
+                      closestTriUV0, closestTriUV1, closestTriUV2,
+                      vncXY);
+        OGRE_LOG("Navigator::is1VNCHitByMouse() found VNC movable=" + mPickedMovable->getName() + ", vncXY=" + StringConverter::toString(vncXY));
+        return true;
+    }
+
+    return false;
+}
+
 //-------------------------------------------------------------------------------------
 bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
 {
@@ -647,6 +682,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
+            if ((avatar == mUserAvatar) && (((NavigatorFrameListener*)mFrameListener)->getCameraMode() == NavigatorFrameListener::CM1stPersonWithMouse)) continue;
             OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Entity:Uid=" + avatar->getXmlEntity()->getUid() + ", Entity:Name=" + avatar->getEntity()->getName());
             return true;
         }

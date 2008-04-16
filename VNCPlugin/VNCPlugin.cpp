@@ -128,6 +128,17 @@ Ogre::TexturePtr VNCPlugin::getTextureForConnection(const int id) const
     return Ogre::TexturePtr();
 }
 
+// GREG BEGIN
+void VNCPlugin::mouseEvtOnConnection(const int id, int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent)
+{
+    ConnectionById::const_iterator i = mConnByID.find(id);
+    if (i == mConnByID.end())
+        return;
+    ConnectionPtr conn = i->second;
+    conn->mouseEvt(x, y, mouseKbdEvent);
+}
+// GREG END
+
 // ----------------------------------------------------------------------------
 // VNC Thread
 

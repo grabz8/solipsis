@@ -1,7 +1,10 @@
 #ifndef _TIGHTVNCTEXTURESYSTEM_H_
 #define _TIGHTVNCTEXTURESYSTEM_H_
 
-#include <OgreExternalTextureSource.h>
+// GREG BEGIN
+//#include <OgreExternalTextureSource.h>
+#include "OgreExternalTextureSourceEx.h"
+// GREG END
 
 namespace Solipsis
 {
@@ -21,7 +24,10 @@ class VNCPlugin;
     }
  *  \endcode
  */
-class TightVNCTextureSystem : public Ogre::ExternalTextureSource
+// GREG BEGIN
+//class TightVNCTextureSystem : public Ogre::ExternalTextureSource
+class TightVNCTextureSystem : public Ogre::ExternalTextureSourceEx
+// GREG END
 {
 public:
     /**
@@ -60,6 +66,10 @@ protected:
 
     void createDefinedTexture(const Ogre::String& material, const Ogre::String& group);
     void destroyAdvancedTexture(const Ogre::String& material, const Ogre::String& group);
+
+// GREG BEGIN
+    void mouseEvt(const Ogre::String& material, const Ogre::Vector2& xy, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+// GREG END
 
     bool requiresAuthorization() const;
 

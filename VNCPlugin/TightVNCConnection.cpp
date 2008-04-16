@@ -31,6 +31,7 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
     , mPort(port)
 // GREG BEGIN
     , mGrabScreenIfDirty(true)
+    , wParam(0)
     , mPwd(pwd)
 // GREG END
     , mConn(0)
@@ -40,6 +41,9 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
     , mSafeToDelete(true)
 {
     Ogre::Root::getSingleton().addFrameListener(this);
+// GREG BEGIN
+    mUpdateTimer = 1.0/textureSystem->getFPS();
+// GREG END
 }
 
 TightVNCConnection::~TightVNCConnection()
@@ -303,6 +307,48 @@ bool TightVNCConnection::frameEnded(const Ogre::FrameEvent& e)
 
     return true;
 }
+
+// GREG BEGIN
+void TightVNCConnection::mouseEvt(int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent)
+{
+    if (!mConn)
+        return;
+
+    UINT iMsg;
+    static UINT eMouseKbdEventMapping[Ogre::ExternalTextureSourceEx::MKE_COUNT] = {
+        WM_LBUTTONDOWN,
+        WM_LBUTTONUP,
+        WM_MBUTTONDOWN,
+        WM_MBUTTONUP,
+        WM_RBUTTONDOWN,
+        WM_RBUTTONUP,
+        WM_MOUSEMOVE
+    };
+    static UINT eMouseKbdEventMappingBtnStateOr[Ogre::ExternalTextureSourceEx::MKE_COUNT] = {
+        MK_LBUTTON,
+        0,
+        MK_MBUTTON,
+        0,
+        MK_RBUTTON,
+        0,
+        0
+    };
+    static UINT eMouseKbdEventMappingBtnStateAnd[Ogre::ExternalTextureSourceEx::MKE_COUNT] = {
+        0,
+        MK_LBUTTON,
+        0,
+        MK_MBUTTON,
+        0,
+        MK_RBUTTON,
+        0
+    };
+    iMsg = eMouseKbdEventMapping[mouseKbdEvent];
+    wParam |= eMouseKbdEventMappingBtnStateOr[mouseKbdEvent];
+    wParam &= ~eMouseKbdEventMappingBtnStateAnd[mouseKbdEvent];
+
+    mConn->mouseEvt(x, y, iMsg, wParam);
+}
+// GREG END
 
 // ---------------------------------------------------------------------------
 // Taken from MSDN

@@ -1,5 +1,7 @@
 #include "NaviManager.h"
 #include "Navi.h"
+#include "OgreExternalTextureSourceManager.h"
+#include "OgreExternalTextureSourceEx.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
@@ -369,6 +371,34 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
     }
 
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    {
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        // normalize (x, y) on 0..1 and get the ray emitted from the camera
+        Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+        // Compute VNC panel mouse location
+        Real closestDistance = -1.0f;
+        Vector2 closestUV;
+        Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+        Vector2 vncXY;
+        if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+                                            closestDistance,
+                                            closestUV,
+                                            closestTriUV0, closestTriUV1, closestTriUV2))
+        {
+            // compute texture coordinates of the hit
+            mNavigator->computeVncHit(closestUV,
+                                      closestTriUV0, closestTriUV1, closestTriUV2,
+                                      vncXY);
+            String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+            ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+            vncExtTextSrc->mouseEvt(mtlName, vncXY, ExternalTextureSourceEx::MKE_MOUSEMOVED);
+        }
+    }
+
     if (mNavigator->getState() == Navigator::SModeling &&
 	    !NaviManager::Get().isAnyNaviFocused())
     {
@@ -487,6 +517,8 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             String naviName;
             int naviX, naviY;
             Avatar* avatar;
+            MovableObject* vncMovableObj;
+            Vector2 vncXY;
             if (navigatorGUI->isContextVisible())
                 navigatorGUI->contextHide();
             else if (mNavigator->is1AvatarHitByMouse(avatar) && !navigatorGUI->isContextVisible())
@@ -496,6 +528,16 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
                 NaviManager::Get().focusNavi(navi);
                 navi->injectMouseDown(naviX, naviY);
+            }
+            // VNC panel ?
+            else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
+            {
+                Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+                ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+                ExternalTextureSourceEx::eMouseKbdEvent mke = (evt.mState.mButtons & MBLeft) ? ExternalTextureSourceEx::MKE_MOUSELBTNDWN : ((evt.mState.mButtons & MBRight) ? ExternalTextureSourceEx::MKE_MOUSERBTNDWN : ExternalTextureSourceEx::MKE_MOUSEMBTNDWN);
+                vncExtTextSrc->mouseEvt(mtlName, vncXY, mke);
             }
         }
         else if ((mNavigator->getState() == Navigator::SModeling) &&
@@ -555,6 +597,34 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                                            naviX, naviY);
             }
             NaviManager::Get().getFocusedNavi()->injectMouseUp(naviX, naviY);
+        }
+        // VNC panel ?
+        else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+        {
+            MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+            Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute VNC panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            Vector2 vncXY;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+                                                closestDistance,
+                                                closestUV,
+                                                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeVncHit(closestUV,
+                                          closestTriUV0, closestTriUV1, closestTriUV2,
+                                          vncXY);
+                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+                ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+                ExternalTextureSourceEx::eMouseKbdEvent mke = (evt.mState.mButtons & MBLeft) ? ExternalTextureSourceEx::MKE_MOUSELBTNUP : ((evt.mState.mButtons & MBRight) ? ExternalTextureSourceEx::MKE_MOUSERBTNUP : ExternalTextureSourceEx::MKE_MOUSEMBTNUP);
+                vncExtTextSrc->mouseEvt(mtlName, vncXY, mke);
+            }
         }
         else if ((mNavigator->getState() == Navigator::SModeling) &&
                 !NaviManager::Get().isAnyNaviFocused())
