@@ -23,12 +23,9 @@ namespace Solipsis {
 
     // forward class declarations
     // this reduces cross-dependencies a lot
-    class PhysXPlugin;
-    class PhysXEngine;
-    class PhysXScene;
-    class PhysXBody;
-    class PhysXCharacter;
-    class PhysXHelpers;
+    class VNCPlugin;
+    class TightVNCTextureSystem;
+    class TightVNCConnection;
 
 } // namespace Solipsis
 
