@@ -1,17 +1,17 @@
 #include <sstream>
-#include "PeerModule.h"
-#include "IPeer.h"
+#include <PeerModule.h>
+#include <IPeer.h>
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
-#include "windows.h"
+#include <windows.h>
 #endif
 
 using namespace Solipsis;
 
 // Client part
-#include "IP2NClient.h"
-#include "XmlDatas.h"
+#include <IP2NClient.h>
+#include <XmlDatas.h>
 
 class P2NClientLogger : public IP2NClientLogger
 {
