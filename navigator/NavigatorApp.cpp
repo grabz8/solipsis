@@ -1,16 +1,16 @@
 #include <sstream>
-#include "NavigatorModule.h"
-#include "IApplication.h"
-#include "IInstance.h"
-#include "IWindow.h"
+#include <NavigatorModule.h>
+#include <IApplication.h>
+#include <IInstance.h>
+#include <IWindow.h>
 #ifdef NULLCLIENTSERVER
-#include "PeerModule.h"
-#include "IPeer.h"
+#include <PeerModule.h>
+#include <IPeer.h>
 #endif
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
-#include "windows.h"
+#include <windows.h>
 #endif
 
 using namespace Solipsis;
