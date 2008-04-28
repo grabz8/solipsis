@@ -8,6 +8,8 @@ copy ..\navigatorModule\IApplication.h ..\Dependencies\navigatorModule\include\.
 copy ..\navigatorModule\IInstance.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\IWindow.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
+copy .\IVoiceEngine.h ..\Dependencies\navigatorModule\include\. /y
+copy .\VoiceEngineManager.h ..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\Dependencies\navigatorModule\lib\Release mkdir ..\Dependencies\navigatorModule\lib\Release
 copy Release\Navigator.lib ..\Dependencies\navigatorModule\lib\Release\. /y
@@ -61,6 +63,7 @@ if exist "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" xcopy "..\Dependenc
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
 if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
+xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%dst%" /s /y

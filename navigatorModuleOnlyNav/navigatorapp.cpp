@@ -47,7 +47,8 @@ IApplication* IApplication::getApplication()
 NavigatorApp::NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle) :
     mStandAloneAutoCreateWindow(standAloneAutoCreateWindow),
     mInitialized(false),
-    mNumInstances(0)
+    mNumInstances(0),
+    mVoiceEngineManager(0)
 {
     assert(NavigatorApp::ms_Singleton == 0);
     if (appPath != 0)
@@ -135,6 +136,28 @@ bool NavigatorApp::destroyInstance(IInstance* instance)
         delete mStandAloneInstance;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorApp::initialize(bool configManagedByOgre, String windowTitle)
+{
+    // Create the voice engine manager
+    mVoiceEngineManager = new VoiceEngineManager();
+
+    // Call inherited method
+    return OgreApplication::initialize(configManagedByOgre, windowTitle);
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorApp::finalize()
+{
+    // Call inherited method
+    bool result = OgreApplication::finalize();
+
+    // Destroy the voice engine manager
+    delete mVoiceEngineManager;
+
+    return result;
 }
 
 //-------------------------------------------------------------------------------------

@@ -1,14 +1,15 @@
 #ifndef __Peer_h__
 #define __Peer_h__
 
-#include <pthread.h>
-#include "BasicThread.h"
+#include <CTBasicThread.h>
 #include "IPeer.h"
 #include "PhysicsEngineManager.h"
 #include "Ogre.h"
 #include "IP2NServer.h"
 #include "NodeManager.h"
 #include "TimeListener.h"
+
+using CommonTools::BasicThread;
 
 namespace Solipsis {
 

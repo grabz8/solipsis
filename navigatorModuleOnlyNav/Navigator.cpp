@@ -5,8 +5,8 @@
 #include "Navi.h"
 #include "NaviLua.h"
 #include "OgreExternalTextureSourceManager.h"
-
 #include "Modeler.h"
+#include "VoiceEngineManager.h"
 
 using namespace Solipsis;
 
@@ -34,6 +34,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mRaySceneQuery(0),
     mPickedMovable(0),
     mUserAvatar(0),
+    mNavigatorSound(0),
     mModeler(0),
     isOnLeftCTRL(false)
 {
@@ -67,6 +68,13 @@ Navigator::~Navigator()
 
     // Lua finalization
     lua_close(mLuaState);
+
+    if (mNavigatorSound != 0)
+    {
+        // Shutdown sound system
+        mNavigatorSound->shutdown();
+        delete mNavigatorSound;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -371,6 +379,46 @@ void Navigator::demoVNC(const String params)
     }
 
     active = !active;
+}
+#endif
+#ifdef DEMO_VOICE
+//-------------------------------------------------------------------------------------
+void Navigator::demoVoice(const String params)
+{
+    // get voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine == 0)
+        return;
+
+    if (params.compare("speak") == 0)
+    {
+        // start/stop speaking
+        if (voiceEngine->isRecording())
+            voiceEngine->stopRecording();
+        else
+            voiceEngine->startRecording();
+    }
+    else
+    {
+        // connection to the voice server
+        String voiceServerHost("localhost");
+        int voiceServerPort = 30000;
+        std::string::size_type strPos;
+        strPos = params.find_first_of(":");
+        if (strPos == std::string::npos)
+            voiceServerHost = params;
+        else
+        {
+            voiceServerHost = params.substr(0, strPos);
+            if (strPos + 1 < params.length())
+                voiceServerPort = atoi(params.substr(strPos + 1, params.length() - (strPos + 1)).c_str());
+        }
+        // stop recording
+        if (voiceEngine->isRecording())
+            voiceEngine->stopRecording();
+        // connect to voice server
+        voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, mUserAvatar->getXmlEntity()->getUid());
+    }
 }
 #endif
 #ifdef DEMO_PHYSICS1
@@ -726,6 +774,14 @@ bool Navigator::initPostOgreCore()
     if (lua_pcall(mLuaState, 0, LUA_MULTRET, 0))
     {
         OGRE_LOG("Navigator::initPostOgreCore() Unable to run boot.lua, error: " + String(lua_tostring(mLuaState, -1)));
+        return false;
+    }
+
+    // Initialize sound system
+    mNavigatorSound = new NavigatorSound();
+    if (!mNavigatorSound->initialize())
+    {
+        OGRE_LOG("Navigator::initPostOgreCore() Unable to initialize sound");
         return false;
     }
 

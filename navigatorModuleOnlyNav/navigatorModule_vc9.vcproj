@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorModule"
 	ProjectGUID="{B71ED042-7AAC-48D8-9BE9-5946D194A25F}"
 	RootNamespace="navigatorModule"
@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include;..\VNCPlugin"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\VNCPlugin;&quot;$(FMOD_PATH)\inc&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_VNC;DEMO_VNC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -62,10 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib AvatarTools_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib CommonTools.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib AvatarTools_d.lib fmodexL_vc.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\AvatarTools\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -122,8 +122,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\AvatarTools\include;..\VNCPlugin"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\VNCPlugin;&quot;$(FMOD_PATH)\inc&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -141,10 +141,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib XMLRPCP2NClient.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib CommonTools.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib fmodex_vc.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\AvatarTools\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\MdlrTools\lib\$(ConfigurationName)&quot;;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NClient\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -203,8 +203,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include;..\VNCPlugin"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\VNCPlugin;&quot;$(FMOD_PATH)\inc&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;NDEMO_NAVI1;NDEMO_NAVI2;DEMO_VNC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -224,10 +224,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib P2NNullClientServer.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib AvatarTools_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib XmlDatas.lib P2NNullClientServer.lib OgreMain_d.lib OIS_d.lib llmozlib_d.lib Navi_d.lib lua_d.lib CommonTools.lib brep_d.lib csg_d.lib MdlrTools_d.lib zlibd.lib AvatarTools_d.lib fmodexL_vc.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;..\Dependencies\MdlrTools\lib\Debug;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\AvatarTools\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\debuglib;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\MdlrTools\lib\Debug;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -284,8 +284,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\AvatarTools\include;..\VNCPlugin"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_PHYSICS1;NSHADOWS"
+				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\VNCPlugin;&quot;$(FMOD_PATH)\inc&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -303,10 +303,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib P2NNullClientServer.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib P2NNullClientServer.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib CommonTools.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib fmodex_vc.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\MdlrTools\lib\Release;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\AvatarTools\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\CommonTools\lib\Release;..\Dependencies\MdlrTools\lib\Release;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"
@@ -358,10 +358,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\BasicThread.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\BigInt.cpp"
 				>
 			</File>
@@ -410,6 +406,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NavigatorSound.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\NavigatorXMLRPCClient.cpp"
 				>
 			</File>
@@ -446,11 +446,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\PlatformWin.cpp"
+				RelativePath=".\Scene.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Scene.cpp"
+				RelativePath=".\VoiceEngineManager.cpp"
 				>
 			</File>
 		</Filter>
@@ -465,10 +465,6 @@
 			</File>
 			<File
 				RelativePath=".\Avatar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\BasicThread.h"
 				>
 			</File>
 			<File
@@ -501,6 +497,10 @@
 			</File>
 			<File
 				RelativePath="..\navigatorModule\oSceneLoader\include\IOSMSceneCallbacks.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IVoiceEngine.h"
 				>
 			</File>
 			<File
@@ -548,6 +548,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NavigatorSound.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NavigatorXMLRPCClient.h"
 				>
 			</File>
@@ -584,19 +588,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\Platform.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\PlatformWin.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\Queue.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Scene.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VoiceEngineManager.h"
 				>
 			</File>
 		</Filter>

@@ -13,6 +13,7 @@
 #include "Selection.h"
 #include "Transformations.h"
 #include "Event.h"
+#include "NavigatorSound.h"
 
 namespace Solipsis {
 
@@ -82,6 +83,8 @@ protected:
 
     bool mFakeTerrain;
 
+    NavigatorSound* mNavigatorSound;
+
 public:
     Navigator(const String name, IApplication* application);
     ~Navigator();
@@ -111,6 +114,8 @@ public:
     void setNavigatorLua(NavigatorLua* navigatorLua);
     NavigatorLua* getNavigatorLua();
 
+    NavigatorSound* getNavigatorSound() { return mNavigatorSound; }
+
     Avatar* getUserAvatar();
 
     // Demonstrators
@@ -134,6 +139,9 @@ public:
 #endif
 #ifdef DEMO_VNC
     void demoVNC(const String params);
+#endif
+#ifdef DEMO_VOICE
+    void demoVoice(const String params);
 #endif
 #ifdef DEMO_PHYSICS1
     void demoPhysics1();

@@ -46,6 +46,10 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
         mNavigator->sendEvents();
     }
 
+    // Updating sound
+    if (mNavigator->getNavigatorSound() != 0)
+        mNavigator->getNavigatorSound()->update();
+
     return OgreFrameListener::frameStarted(evt);
 }
 

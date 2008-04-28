@@ -1,6 +1,6 @@
 #include "Peer.h"
 #include "OgreHelpers.h"
-#include "Platform.h"
+#include "CTSystem.h"
 
 namespace Solipsis {
 
@@ -177,7 +177,7 @@ void Peer::run()
     mResetTime = true;
     while (!mStopRequested)
     {
-        Platform::sleep(tickDuration*1000.0f);
+        CommonTools::System::sleep(tickDuration*1000.0f);
 
         if (mNodeManager != 0)
             mNodeManager->update();

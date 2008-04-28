@@ -129,9 +129,17 @@
             #demoNavi1Button { top: 10px; width: 100px; }
             #urlText { position: absolute; left: 0px; top: 40px; }
             #urlInput { position: absolute; left: 30px; top: 40px; }
-            #demoPhysics1Button { top: 90px; width: 100px; }
-            #urlpwdVNCText { position: absolute; left: 0px; top: 120px; }
-            #urlpwdVNCInput { position: absolute; left: 30px; top: 120px; }
+            #urlpwdVNCText { position: absolute; left: 0px; top: 90px; }
+            #urlpwdVNCInput { position: absolute; left: 30px; top: 90px; }
+            #voiceText { position: absolute; left: 0px; top: 120px; }
+            #voiceInput { position: absolute; left: 40px; top: 120px; }
+            .buttonSpeak
+            {
+	            position: absolute;
+	            left: 170px;
+                top: 120px;
+            }
+            #demoPhysics1Button { left: 0px; top: 150px; }
             #peerNewButton { top: 10px; width: 100px; }
             #peerDO1Button { top: 35px; width: 100px; }
         </style>
@@ -178,6 +186,13 @@
                                 <input id="inputUrlPwdVNC" class="inputText" name="inputUrlPwdVNC" value="localhost:5900;solipsis" type="text" size="30" />
                             </div>
                         </form>
+                        <form id="voiceForm" action="" onsubmit="debugCommand('demoVoice', document.getElementById('inputVoice').value);return false;">
+                            <div id="voiceText">Voice</div>
+                            <div id="voiceInput">
+                                <input id="inputVoice" class="inputText" name="inputVoice" value="localhost:30000" type="text" size="16" />
+                            </div>
+                        </form>
+                        <button id="demoVoiceSpeakButton" class="buttonSpeak" name="buttonDemoVoiceSpeak" value="buttonDemoVoiceSpeak" type="button" onclick="debugCommand('demoVoice', 'speak')">Speak !</button>
                     </div>
 				    <div id="Tests" class="mootabs_panel">
                         <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>

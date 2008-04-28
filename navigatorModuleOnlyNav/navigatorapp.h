@@ -2,10 +2,12 @@
 #define __NavigatorApp_h__
 
 #include <vector>
-#include <pthread.h>
-#include "BasicThread.h"
+#include <CTBasicThread.h>
 #include "OgreApplication.h"
 #include "Instance.h"
+#include "VoiceEngineManager.h"
+
+using CommonTools::BasicThread;
 
 namespace Solipsis {
 
@@ -29,7 +31,7 @@ private:
           BasicThread(name),
           mInstance(instance) {}
 
-        /** See BasicThread. */
+        /** See CommonTools::BasicThread. */
         virtual void stop(unsigned int stopTimeoutSec = 5)
         {
             // call inherited
@@ -43,7 +45,7 @@ private:
         Instance* getInstance() const { return mInstance; }
 
     protected:
-        /** See BasicThread. */
+        /** See CommonTools::BasicThread. */
         virtual void run()
         {
             // run the render loop
@@ -59,6 +61,7 @@ protected:
     unsigned int mNumInstances;
     std::vector<MainThread*> mThreads;
     Instance* mStandAloneInstance;
+    VoiceEngineManager* mVoiceEngineManager;
 
 protected: 
     NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle);
@@ -75,6 +78,11 @@ public:
     virtual bool destroyInstance(IInstance*);
 
     unsigned int getNumInstances() { return mNumInstances; }
+
+    /** See OgreApplication. */
+    virtual bool initialize(bool configManagedByOgre = false, String windowTitle = "");
+    /** See OgreApplication. */
+    virtual bool finalize();
 
 protected:
     void _initialize();

@@ -46,6 +46,10 @@ rmdir Dependencies\ulxmlrpcpp /S /Q
 rmdir Dependencies\zlib123 /S /Q
 rmdir Dependencies\protocols /S /Q
 rmdir Dependencies\peerModule /S /Q
+rmdir Dependencies\CommonTools /S /Q
+rmdir Dependencies\speex /S /Q
+rmdir Dependencies\VoiceEngineClient /S /Q
+rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -105,8 +109,15 @@ rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
 rmdir DevTools\vnc_winsrc\winvnc\Debug /S /Q
 rmdir DevTools\vnc_winsrc\winvnc\Release /S /Q
+rmdir DevTools\vnc_winsrc\vncviewer\Debug /S /Q
+rmdir DevTools\vnc_winsrc\vncviewer\Release /S /Q
+rmdir DevTools\speex\win32\libspeex\Debug /S /Q
+rmdir DevTools\speex\win32\libspeex\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
+
+rmdir CommonTools\Debug /S /Q
+rmdir CommonTools\Release /S /Q
 
 rmdir MdlrTools\obj /S /Q
 rmdir AvatarTools\obj /S /Q
@@ -195,6 +206,17 @@ rmdir VNCPlugin\vncviewer\zlib\Debug /S /Q
 rmdir VNCPlugin\vncviewer\zlib\Release /S /Q
 rmdir VNCPlugin\vncviewer\Debug /S /Q
 rmdir VNCPlugin\vncviewer\Release /S /Q
+
+rmdir voiceEngine\Client\Debug /S /Q
+rmdir voiceEngine\Client\Release /S /Q
+rmdir voiceEngine\SimpleServer\Debug /S /Q
+rmdir voiceEngine\SimpleServer\Release /S /Q
+rmdir voiceEngine\TestClient\Debug /S /Q
+rmdir voiceEngine\TestClient\Release /S /Q
+rmdir voiceEngine\TestServer\Debug /S /Q
+rmdir voiceEngine\TestServer\Release /S /Q
+rmdir voiceEngine\voiceEngineFModSpeex\Debug /S /Q
+rmdir voiceEngine\voiceEngineFModSpeex\Release /S /Q
 
 del setup\nsis\Setup.exe
 

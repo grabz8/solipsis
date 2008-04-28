@@ -1,11 +1,13 @@
 root directory contains
 -----------------------
 
+AvatarTools    avatar tools library
 Common         all generated binaries which can be launched standalone
+CommonTools    common tools (crossplatform helpers, BasicThread, ...)
 Dependencies   all 3rd-party dependencies (libraries, include files, binaries, ...)
 Docs           all specifications, documents, tips&tricks, user guides, ...
 DevTools       all 3rd-party sources
-MdlrTools      modeler tools source files
+MdlrTools      modeler tools library
 Media          all media files
 MediaTools     all external standalone tools we can use to manage/create/... media files
 navigator              the navigator application (standalone)
@@ -20,6 +22,8 @@ peerModuleSimulator    the peer module simulator
 peerPhysics            the peer module physics plugins (loaded by nodeSimulator)
 protocols              the protocols clients & servers modules (XMLRPC++, ULXMLRPCPP, NullClientServer)
 setup                  the setup project (to build installers)
+VNCPlugin      the VNC external texture plugin
+voiceEngine    all voice chat components (client, simple server, test applications)
 
 Some rules for developpers
 --------------------------
@@ -34,7 +38,7 @@ Some rules for developpers
  3rd-parties into DevTools
  . . .
 
-2- create as many configuration projects as you can (Visual Studio 2003 = vc7, Visual Studio 2005 = vc8, ...)
+2- create as many configuration projects as you can (Visual Studio 2003 = vc7, Visual Studio 2005 = vc8, Visual Studio 2008 = vc9, ...)
 
 3- if you need some third-parties (libraries, ...), check it is not already available into DevTools directory
  tinyxml,
@@ -45,7 +49,7 @@ Some rules for developpers
  then try to choose 1 crossplatform version and add it into DevTools directory
 
 5- if you add something into DevTools directory
- then copy libraries/includes/binaries into Dependencies directory
+ then copy libraries/includes/binaries into Dependencies directory with post-build events (VStudio or batch)
 
 6- if you generate 1 binary then copy all files this binary needs into Common/bin/<binary name>,
  idea is I can launch this binary from this directory without adding anything else ...

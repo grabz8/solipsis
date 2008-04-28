@@ -2,8 +2,10 @@
 #define __NodeEventListener_h__
 
 #include <list>
-#include "BasicThread.h"
+#include <CTBasicThread.h>
 #include "XmlDatas.h"
+
+using CommonTools::BasicThread;
 
 namespace Solipsis {
 
@@ -42,7 +44,7 @@ public:
     ~NodeEventListener();
 
 protected:
-    /** See BasicThread. */
+    /** See CommonTools::BasicThread. */
     virtual void run();
 
     // begin to process events

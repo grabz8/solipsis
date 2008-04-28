@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="peerModuleSimulator"
 	ProjectGUID="{82D75D89-1234-4CEF-9768-5CF09E2CEA04}"
 	RootNamespace="peerModuleSimulator"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,10 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib XmlDatas.lib XMLRPCP2NServer.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -140,10 +140,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib XmlDatas.lib ULXMLRPCPPP2NServer.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib ULXMLRPCPPP2NServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -201,7 +201,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -222,10 +222,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib XmlDatas.lib P2NNullClientServer.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -281,7 +281,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -300,10 +300,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib XmlDatas.lib P2NNullClientServer.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;&quot;..\Dependencies\CommonTools\lib\Release&quot;;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -354,10 +354,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\BasicThread.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Entity.cpp"
 				>
 			</File>
@@ -382,10 +378,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PlatformWin.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Site.cpp"
 				>
 			</File>
@@ -405,10 +397,6 @@
 			</File>
 			<File
 				RelativePath=".\AvatarNode.h"
-				>
-			</File>
-			<File
-				RelativePath=".\BasicThread.h"
 				>
 			</File>
 			<File
@@ -457,14 +445,6 @@
 			</File>
 			<File
 				RelativePath=".\PhysicsEngineManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Platform.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PlatformWin.h"
 				>
 			</File>
 			<File

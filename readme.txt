@@ -92,6 +92,13 @@ vcX stands for Visual config (vc7 or vc8)
 
 Install Visual Studio 2005 + SP1 package
 If you are using Visual Studio Express 2005, upgrade it with the SP1 package
+Update the default Visual Studio COREWIN properties XML file to add system libraries:
+ VSExpress2005 C:\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\corewin_express.vsprops
+ VSExpress2008 C:\Program Files\Microsoft Visual Studio 9.0\VC\VCProjectDefaults\CoreWin.vsprops
+ replace this line
+  AdditionalDependencies="kernel32.lib"/>
+ by this line
+  AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/>
 
 Download Ogre source package (branch 1.4)
 Download Ogre Dependencies for VS8.1 (http://www.ogre3d.org/index.php?option=com_content&task=view&id=412&Itemid=132)
@@ -111,6 +118,10 @@ into ogrenew/Dependencies/lib/<config>
 Check you installed correctly the DirectX SDK August 2007 (at least ;-) )
 - C:\Program Files\Microsoft DirectX SDK (August 2007) present
 - the env. var. DXSDK is defined
+
+VoiceEngine:
+Download the BOOST package release 1.34.1 (because some bugs found into pool in 1.35), unzip it and define your BOOST_ROOT env. var.
+Download the FMOD EX package, install it and define your FMOD_PATH env. var. (eg. C:\Program Files\FMOD SoundSystem\FMOD Programmers API Win32\api)
 
 Get SVN repository for Solipsis
 
@@ -157,6 +168,7 @@ UIDEBUG        Set/Unset the debug user interface panel
 DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google homepage)
 DEMO_NAVI2     Set/Unset Navi demo2 (demo with 1 panel on YouTube video)
 DEMO_VNC       Set/Unset VNC demo (demo with 1 panel on VNC viewer)
+DEMO_VOICE     Set/Unset Voice chat demo
 DEMO_PHYSICS1  Set/Unset Physics demo (1 cube will drop into the spatialStation)
 NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
 LOGSNDRCV      Set/Unset traces on sent/received XML msgs

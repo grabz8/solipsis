@@ -1,7 +1,7 @@
 #include "NodeEventListener.h"
 #include "NavigatorXMLRPCClient.h"
 #include "OgreHelpers.h"
-#include "Platform.h"
+#include "CTSystem.h"
 
 using namespace Solipsis;
 
@@ -49,7 +49,7 @@ void NodeEventListener::run()
         // then we would only receive evt (no more NOEVT response)
         // It is only possible if the XMLRPC server is multi-threaded (XMLRPC++ lib is not)
         else
-            Platform::sleep(10);
+            CommonTools::System::sleep(10);
     }
 }
 
