@@ -1,0 +1,106 @@
+#include "FModSpeexEngine.h"
+
+#include "fmod.hpp"
+
+#include "voiceengine.h"
+
+using namespace Solipsis;
+
+const String sVoiceEngineName = "FMod/Speex engine";
+
+//-------------------------------------------------------------------------------------
+const String& FModSpeexEngine::getName() const
+{
+    return sVoiceEngineName;
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::init()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::shutdown()
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::initSoundSystem(FMOD::System* system, size_t networkChunkSizePCM, unsigned int bufferFrameCount, unsigned int frequency)
+{
+    if (mVoiceEngine != 0)
+    {
+        logMessage("Shutting down previous sound system ...");
+        shutdownSoundSystem();
+    }
+    mVoiceEngine = 0;
+
+    mVoiceEngine = new VoiceEngine(system);
+    if (mVoiceEngine == 0)
+    {
+        logMessage("Could not create the voice engine");
+        return false;
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::shutdownSoundSystem()
+{
+    if (mVoiceEngine == 0)
+        return false;
+
+    mVoiceEngine->disconnect();
+
+    // Shut down
+    delete mVoiceEngine;
+    mVoiceEngine = 0;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::connect(const char* host, int port, unsigned int id)
+{
+    if (mVoiceEngine == 0)
+        return false;
+
+    VoiceUUID voiceUUID;
+    voiceUUID.setID((const char*)&id, sizeof(id));
+
+    return mVoiceEngine->connect(host, port, voiceUUID);
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::disconnect()
+{
+    mVoiceEngine->disconnect();
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::update()
+{
+    mVoiceEngine->update();
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::startRecording()
+{
+    mVoiceEngine->startRecording();
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::stopRecording()
+{
+    mVoiceEngine->stopRecording();
+}
+
+//-------------------------------------------------------------------------------------
+bool FModSpeexEngine::isRecording()
+{
+    return mVoiceEngine->isRecording();
+}
+
+//-------------------------------------------------------------------------------------

@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestClient", "TestClient\TestClient_vc8.vcproj", "{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2} = {E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestServer", "TestServer\TestServer_vc8.vcproj", "{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376} = {FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineClient", "Client\VoiceEngineClient_vc8.vcproj", "{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{40B5BFB6-29B2-455B-8A5F-5331657D4F93} = {40B5BFB6-29B2-455B-8A5F-5331657D4F93}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineSimpleServer", "SimpleServer\VoiceEngineSimpleServer_vc8.vcproj", "{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2} = {E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngineFModSpeex", "voiceEngineFModSpeex\voiceEngineFModSpeex_vc8.vcproj", "{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2} = {E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspeex", "..\DevTools\speex\win32\libspeex\libspeex_vc8.vcproj", "{40B5BFB6-29B2-455B-8A5F-5331657D4F93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}.Debug|Win32.Build.0 = Debug|Win32
+		{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}.Release|Win32.ActiveCfg = Release|Win32
+		{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}.Release|Win32.Build.0 = Release|Win32
+		{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}.Debug|Win32.ActiveCfg = Debug|Win32
+		{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}.Debug|Win32.Build.0 = Debug|Win32
+		{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}.Release|Win32.ActiveCfg = Release|Win32
+		{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}.Release|Win32.Build.0 = Release|Win32
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}.Debug|Win32.Build.0 = Debug|Win32
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}.Release|Win32.ActiveCfg = Release|Win32
+		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}.Release|Win32.Build.0 = Release|Win32
+		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}.Debug|Win32.Build.0 = Debug|Win32
+		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}.Release|Win32.ActiveCfg = Release|Win32
+		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}.Release|Win32.Build.0 = Release|Win32
+		{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}.Debug|Win32.Build.0 = Debug|Win32
+		{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}.Release|Win32.ActiveCfg = Release|Win32
+		{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}.Release|Win32.Build.0 = Release|Win32
+		{40B5BFB6-29B2-455B-8A5F-5331657D4F93}.Debug|Win32.ActiveCfg = Debug|Win32
+		{40B5BFB6-29B2-455B-8A5F-5331657D4F93}.Debug|Win32.Build.0 = Debug|Win32
+		{40B5BFB6-29B2-455B-8A5F-5331657D4F93}.Release|Win32.ActiveCfg = Release|Win32
+		{40B5BFB6-29B2-455B-8A5F-5331657D4F93}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
