@@ -1,12 +1,12 @@
 #ifndef __PhysXHelpers_h__
 #define __PhysXHelpers_h__
 
-#include "Ogre.h"
+#include <Ogre.h>
 
-#include "NxPhysics.h"
-#include "NxStream.h"
-#include "NxUserAllocatorDefault.h"
-#include "NxUserOutputStream.h"
+#include <NxPhysics.h>
+#include <NxStream.h>
+#include <NxUserAllocatorDefault.h>
+#include <NxUserOutputStream.h>
 
 class UserStream : public NxStream
 	{

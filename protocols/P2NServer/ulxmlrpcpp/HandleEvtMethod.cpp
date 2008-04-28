@@ -1,5 +1,5 @@
 #include "HandleEvtMethod.h"
-#include "IP2NClient.h"
+#include <IP2NClient.h>
 #include "P2NServer.h"
 
 namespace Solipsis {

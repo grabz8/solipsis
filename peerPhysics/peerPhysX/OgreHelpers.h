@@ -1,7 +1,7 @@
 #ifndef __OgreHelpers_h__
 #define __OgreHelpers_h__
 
-#include "Ogre.h"
+#include <Ogre.h>
 
 using namespace Ogre;
 

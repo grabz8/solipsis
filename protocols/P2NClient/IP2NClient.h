@@ -41,7 +41,7 @@
 #define P2NCLIENTDIRECT_EXPORT _P2NCLIENT_EXPORT
 
 #include <string>
-#include "XmlDatas.h"
+#include <XmlDatas.h>
 
 namespace Solipsis {
 

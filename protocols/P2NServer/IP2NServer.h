@@ -41,8 +41,8 @@
 #define P2NSERVERDIRECT_EXPORT _P2NSERVER_EXPORT
 
 #include <string>
-#include "IP2NClient.h"
-#include "XmlDatas.h"
+#include <IP2NClient.h>
+#include <XmlDatas.h>
 
 namespace Solipsis {
 

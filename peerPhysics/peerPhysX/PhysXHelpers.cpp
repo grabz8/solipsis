@@ -1,7 +1,7 @@
 #include "PhysXHelpers.h"
 
 #include <stdio.h>
-#include "NxCooking.h"
+#include <NxCooking.h>
 #include "OgreHelpers.h"
 
 UserStream::UserStream(const char* filename, bool load) : fp(NULL)

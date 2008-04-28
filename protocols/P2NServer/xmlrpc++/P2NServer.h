@@ -4,7 +4,7 @@
 #include <vector>
 #include <pthread.h>
 #include <XmlRpc.h>
-#include "IP2NServer.h"
+#include <IP2NServer.h>
 
 namespace Solipsis {
 

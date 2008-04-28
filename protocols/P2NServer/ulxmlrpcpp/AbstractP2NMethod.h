@@ -2,9 +2,9 @@
 #define __AbstractP2NMethod_h__
 
 #include <string>
-#include "ulxmlrpcpp/ulxmlrpcpp.h"
-#include "ulxmlrpcpp/ulxr_call.h"
-#include "ulxmlrpcpp/ulxr_response.h"
+#include <ulxmlrpcpp/ulxmlrpcpp.h>
+#include <ulxmlrpcpp/ulxr_call.h>
+#include <ulxmlrpcpp/ulxr_response.h>
 
 namespace Solipsis {
 

@@ -1,13 +1,13 @@
 #ifndef __PhysXCharacter_h__
 #define __PhysXCharacter_h__
 
-#include "IPhysicsCharacter.h"
+#include <IPhysicsCharacter.h>
 #include "PhysXPluginPrerequisites.h"
 
-#include "NxPhysics.h"
-#include "NxController.h"
-#include "ControllerManager.h"
-#include "NxCapsuleController.h"
+#include <NxPhysics.h>
+#include <NxController.h>
+#include <ControllerManager.h>
+#include <NxCapsuleController.h>
 
 using namespace Ogre;
 

@@ -1,11 +1,11 @@
 #ifndef __PhysXScene_h__
 #define __PhysXScene_h__
 
-#include "IPhysicsScene.h"
+#include <IPhysicsScene.h>
 #include "PhysXPluginPrerequisites.h"
 
-#include "NxPhysics.h"
-#include "ControllerManager.h"
+#include <NxPhysics.h>
+#include <ControllerManager.h>
 
 using namespace Ogre;
 

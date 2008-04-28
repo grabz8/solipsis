@@ -3,14 +3,14 @@
 
 #include <vector>
 #include <pthread.h>
-#include "ulxmlrpcpp/ulxmlrpcpp.h"
-#include "ulxmlrpcpp/ulxr_tcpip_connection.h"
-#include "ulxmlrpcpp/ulxr_ssl_connection.h"
-#include "ulxmlrpcpp/ulxr_http_protocol.h"
-#include "ulxmlrpcpp/ulxr_except.h"
-#include "ulxmlrpcpp/ulxr_signature.h"
-#include "ulxmlrpcpp/ulxr_mtrpc_server.h"
-#include "IP2NServer.h"
+#include <ulxmlrpcpp/ulxmlrpcpp.h>
+#include <ulxmlrpcpp/ulxr_tcpip_connection.h>
+#include <ulxmlrpcpp/ulxr_ssl_connection.h>
+#include <ulxmlrpcpp/ulxr_http_protocol.h>
+#include <ulxmlrpcpp/ulxr_except.h>
+#include <ulxmlrpcpp/ulxr_signature.h>
+#include <ulxmlrpcpp/ulxr_mtrpc_server.h>
+#include <IP2NServer.h>
 
 namespace Solipsis {
 

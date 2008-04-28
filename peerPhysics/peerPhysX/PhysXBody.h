@@ -1,10 +1,10 @@
 #ifndef __PhysXBody_h__
 #define __PhysXBody_h__
 
-#include "IPhysicsBody.h"
+#include <IPhysicsBody.h>
 #include "PhysXPluginPrerequisites.h"
 
-#include "NxPhysics.h"
+#include <NxPhysics.h>
 
 using namespace Ogre;
 

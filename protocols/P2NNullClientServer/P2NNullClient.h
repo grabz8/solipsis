@@ -1,7 +1,7 @@
 #ifndef __P2NNullClient_h__
 #define __P2NNullClient_h__
 
-#include "IP2NClient.h"
+#include <IP2NClient.h>
 #include <string>
 
 namespace Solipsis {

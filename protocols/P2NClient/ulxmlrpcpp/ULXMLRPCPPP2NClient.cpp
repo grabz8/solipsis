@@ -1,5 +1,5 @@
 #include "ULXMLRPCPPP2NClient.h"
-#include "tinyxml.h"
+#include <tinyxml.h>
 #include <sstream>
 
 #define LOG(message) if (mLogger != 0) mLogger->logMessage(message);

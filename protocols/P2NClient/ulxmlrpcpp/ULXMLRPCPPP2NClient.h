@@ -1,7 +1,7 @@
 #ifndef __ULXMLRPCPPP2NClient_h__
 #define __ULXMLRPCPPP2NClient_h__
 
-#include "IP2NClient.h"
+#include <IP2NClient.h>
 #include <ulxmlrpcpp/ulxr_tcpip_connection.h> 
 #include <ulxmlrpcpp/ulxr_http_protocol.h>
 #include <ulxmlrpcpp/ulxr_except.h>

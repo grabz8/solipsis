@@ -1,7 +1,7 @@
 #ifndef __P2NNullServer_h__
 #define __P2NNullServer_h__
 
-#include "IP2NServer.h"
+#include <IP2NServer.h>
 
 namespace Solipsis {
 

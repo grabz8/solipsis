@@ -1,8 +1,8 @@
 #ifndef __PhysXEngine_h__
 #define __PhysXEngine_h__
 
-#include "IPhysicsEngine.h"
-#include "NxUserOutputStream.h"
+#include <IPhysicsEngine.h>
+#include <NxUserOutputStream.h>
 #include <stdio.h>
 #include <stdlib.h>
 

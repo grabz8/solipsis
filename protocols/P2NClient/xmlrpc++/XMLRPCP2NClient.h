@@ -1,8 +1,8 @@
 #ifndef __XMLRPCP2NClient_h__
 #define __XMLRPCP2NClient_h__
 
-#include "IP2NClient.h"
-#include "XmlRpc.h"
+#include <IP2NClient.h>
+#include <XmlRpc.h>
 #include <string>
 #include <pthread.h>
 
