@@ -5,8 +5,14 @@
 #include <map>
 #include <ostream>
 #include "XmlDatasPrerequisites.h"
-#include "Ogre.h"
-#include "tinyxml.h"
+#include <Ogre.h>
+#include <tinyxml.h>
+
+#define POOL
+#ifdef POOL
+#include <list>
+#include <pthread.h>
+#endif
 
 namespace Solipsis {
 
@@ -49,11 +55,7 @@ inline void convertStringToShapeType(const char* str, ShapeType& shapeType) { sh
 inline void convertStringToEntityUID(const char* str, EntityUID& uid) { uid = (EntityUID)atoi(str); }
 inline void convertStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
 
-#define POOL
 #ifdef POOL
-#include <list>
-#include <pthread.h>
-
 template<class T>
 class RefCntPoolPtr;
 class Pool;
