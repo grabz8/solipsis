@@ -18,6 +18,7 @@
 namespace Solipsis {
 
 class Modeler;
+class AvatarEditor;
 
 /** The main class of Navigator application.
  */
@@ -27,7 +28,8 @@ public:
     enum State {
         SLogin,         // User is choosing options, ... and finally log on world
         SInWorld,       // GUI displayed when user is in the world
-		SModeling       // GUI displayed when user is modeling an object
+		SModeling,      // GUI displayed when user is modeling an object
+		SAvatarEdit     // GUI displayed when user is editing his avatar
     };
     enum ConnectionMode {
         CMExistingNode, // Use an existing node
@@ -215,13 +217,26 @@ public:
     /** Create a mesh. */
     bool createMesh();
     /** Load from a XML file.*/
-    bool XMLLoad();
+    bool mdlrXMLLoad();
     /** Save to a XML file. */
-    bool XMLSave(bool all = false, const char* pathToSave = NULL);
-
+    bool mdlrXMLSave(bool all = false, const char* pathToSave = NULL);
     /// The modeler object
-    Modeler		*mModeler;
-    bool		isOnLeftCTRL;
+    Modeler* mModeler;
+
+    /** Start editing avatar mode. */
+    bool startAvatarEdit();
+    /** Stop editing avatar mode. */
+    bool endAvatarEdit();
+    /** Load from a XML file.*/
+    bool avatarXMLLoad();
+    /** Save to the current XML file. */
+    bool avatarXMLSave();
+    /** Save to another XML file. */
+    bool avatarXMLSaveAs();
+    /** The avatar editor. */
+    AvatarEditor* mAvatarEditor;
+
+    bool isOnLeftCTRL;
 
     void onMouseMoved(const MouseEvt& evt);
     void onMousePressed(const MouseEvt& evt);

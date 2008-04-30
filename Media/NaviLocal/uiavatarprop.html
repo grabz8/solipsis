@@ -1,53 +1,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
-		<title>uimdlrprop</title>
+		<title>uiavatarprop</title>
 		<script type="text/javascript" src="Navi.js"></script>
 		<!-- <script type="text/javascript" src="mootools.js"></script> -->
 		<!-- TABBERS BEGIN -->
 		<link rel="stylesheet" href="tabber/tabber.css" TYPE="text/css" MEDIA="screen">
-			<script type="text/javascript">
-			/* Optional: Temporarily hide the "tabber" class so it does not "flash"
-			on the page as plain HTML. After tabber runs, the class is changed
-			to "tabberlive" and it will appear. */
-			document.write('<style type="text/css">.tabber{display:block;}<\/style>');
-			</script>
-			<script type="text/javascript" src="tabber/tabber.js"></script>
-			<!-- TABBERS END -->
-			<!-- SLIDERS BEGIN -->
-			<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
-				<script type="text/javascript" src="slider/range.js"></script>
-				<script type="text/javascript" src="slider/timer.js"></script>
-				<script type="text/javascript" src="slider/slider.js"></script>
-				<!-- SLIDERS END -->
-				<!-- COLOR PICKING BEGIN -->
-				<link rel="stylesheet" href="color/color.css" TYPE="text/css">
-					<script type="text/javascript" src="color/color.js"></script>
-					<!-- COLOR PICKING END -->
-					<script type="text/javascript">
+		<script type="text/javascript">
+		    /* Optional: Temporarily hide the "tabber" class so it does not "flash"
+		    on the page as plain HTML. After tabber runs, the class is changed
+		    to "tabberlive" and it will appear. */
+		    document.write('<style type="text/css">.tabber{display:block;}<\/style>');
+		</script>
+		<script type="text/javascript" src="tabber/tabber.js"></script>
+		<!-- TABBERS END -->
+		<!-- SLIDERS BEGIN -->
+		<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
+		<script type="text/javascript" src="slider/range.js"></script>
+		<script type="text/javascript" src="slider/timer.js"></script>
+		<script type="text/javascript" src="slider/slider.js"></script>
+		<!-- SLIDERS END -->
+		<!-- COLOR PICKING BEGIN -->
+		<link rel="stylesheet" href="color/color.css" TYPE="text/css">
+		<script type="text/javascript" src="color/color.js"></script>
+		<!-- COLOR PICKING END -->
+		<script type="text/javascript">
             function pageLoaded()
             {	
 				/* TABBERS */
-                //tabberAutomaticOnLoad();
                 tabberAutomatic(); 
                 
                	/* COLOR */
 				loadSV();
 				$S('plugin').display='none';
 				$S('SVslide').top=(80/100*170-7)+'px';
-				//HSVupdate([255,0,0]);
-				//HSVupdate();
-				//$S('pAmbient').background='#FFFFFF';
-				//$S('pDiffuse').background='#FFFFFF';
-				//$S('pSpecular').background='#FFFFFF';
-				
-				// textures
-				//document.getElementById('texture').src="color/blank.bmp";
-				//document.images['textureName'].src='file:///D:/5.png';
-				//document.images['textureName'].src='./color/blank.jpg';
-				//document.getElementById('divTexture').innerHTML="<div style='height: 132px; overflow: auto'><img src='./color/blank.jpg' width=128 height=128/></div>";
-				
-				new NaviData('pageLoaded').add({naviName:'uimdlrprop'}).send();
+	
+				new NaviData('pageLoaded').add({naviName:'uiavatarprop'}).send();
 			}
             
             function elementClicked(elementName)
@@ -76,7 +64,7 @@
 
             #container
             {
-	            background-image: url('uimdlrprop.png');
+	            background-image: url('uiavatarprop.png');
 	            position: absolute;
 	            left: 0px;
 	            top: 0px;
@@ -93,18 +81,6 @@
             }
             
             /* SLIDERS BEGIN */
-            /*
-            body {
-				font:		MessageBox;	
-				font:		Message-Box;
-			}
-			*/
-			/*
-			input, select, button {
-				vertical-align:		middle;
-			}
-			*/
-
 			#slider-1 {
 				margin:	10px;
 				width:	auto;
@@ -120,355 +96,182 @@
 		<div id="container">
 			<div id="containerMenu">
 				<div class="tabber">
+				    <!-- ANIMATIONS -->
 					<div class="tabbertab">
-						<!-- PROPERTIES -->
+						<h2>Animations</h2>
+						<p><table align="center">
+						    <tr>
+								<td align="center">
+								    <input type="button" value="Open edition panel" size="20" onclick=""/>
+								</td>
+							</tr>
+							<tr>
+								<td align="center">
+								    <input type="button" value="Play animation" size="20" onclick=""/>
+								</td>
+							</tr>
+							
+							
+							<tr>
+								<td align="center">
+								    <input type="button" value="Play animation" size="20" onclick=""/>
+								</td>
+							</tr>
+							
+							
+					    </table></p>
+					</div>
+					
+					<!-- PROPERTIES -->
+					<div class="tabbertab">
 						<h2>Properties</h2>
 						<p><table>
-								<tr>
-									<td width="130">Object name</td>
-									<td width="150"><input type="text" value="?" id="objectName" size="30" onchange="elementClicked('MdlrObjectName')"></td>
-									<td width="150"></td>
-								</tr>
-								<tr>
-									<td>Creator</td>
-									<td><input type="text" value="?" id="creator" size="30" onchange="elementClicked('MdlrCreator')"></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>Owner</td>
-									<td><input type="text" value="?" id="owner" size="30" onchange="elementClicked('MdlrOwner')"></td>
-									<td></td>
-								</tr>
-								<tr>
-									<td>Group</td>
-									<td><input type="text" value="?" id="group" size="30" onchange="elementClicked('MdlrGroup')"></td>
-									<td></td>
-								</tr>
-								<tr valign="top">
-									<td>Description</td>
-									<td colspan="2"><textarea id="description" rows="6" cols="40" onblur="elementClicked('MdlrDescription')">...</textarea></td>
-								</tr>
-								<tr valign="top">
-									<td>Tags</td>
-									<td colspan="2"><textarea id="tags" rows="6" cols="40" onblur="elementClicked('MdlrTags')">...</textarea></td>
-								</tr>
-								<tr>
-									<td>Rights</td>
-									<td><input type="checkbox" id="modification" onclick="elementClicked('MdlrModification')">Modification</td>
-									<td><input type="checkbox" id="copy" onclick="elementClicked('MdlrCopy')">Copy</td>
-								</tr>
-							</table>
-						</p>
+							<tr>
+								<td width="200"></td>
+								<td width="32"></td>
+								<td width="200"></td>
+								<td width="32"></td>
+							</tr>
+							
+							<tr>
+								<td>Height :</td>
+								<td colspan="3">
+								    <input type="text" value="1.50" size="10"/>
+								</td>
+							</tr>
+						</table></p>
 					</div>
-					<!-- MODEL -->
-					<div class="tabbertab">
-						<h2>Model</h2>
-						<p><table>
-								<tr valign="top">
-									<td width="248">
-										<b>Taper</b> (X/Y)
-										<div class="slider" id="taperX">
-											<input class="slider-input" id="taperXInput" />
-										</div>
-										<div class="slider" id="taperY">
-											<input class="slider-input" id="taperYInput" />
-										</div>
-										<br>
-										<br>
-										<b>Top Shear</b> (X/Y)
-										<div class="slider" id="topShearX">
-											<input class="slider-input" id="topShearXInput" />
-										</div>
-										<div class="slider" id="topShearY">
-											<input class="slider-input" id="topShearYInput" />
-										</div>
-										<br>
-										<br>
-										<b>Twist</b> (begin/end)
-										<div class="slider" id="twistBegin">
-											<input class="slider-input" id="twistBeginInput" />
-										</div>
-										<div class="slider" id="twistEnd">
-											<input class="slider-input" id="twistEndInput" />
-										</div>
-										<br>
-										<br>
-										<b>Dimple</b> (begin/end)
-										<div class="slider" id="dimpleBegin">
-											<input class="slider-input" id="dimpleBeginInput" />
-										</div>
-										<div class="slider" id="dimpleEnd">
-											<input class="slider-input" id="dimpleEndInput" />
-										</div>
-									</td>
-									<td>
-										<b>Path cut</b> (begin/end)
-										<div class="slider" id="pathCutBegin">
-											<input class="slider-input" id="pathCutBeginInput" />
-										</div>
-										<div class="slider" id="pathCutEnd">
-											<input class="slider-input" id="pathCutEndInput" />
-										</div>
-										<br>
-										<br>
-										<b>Hollow Shape</b> (size X/Y)
-										<div class="slider" id="holeSizeX">
-											<input class="slider-input" id="holeSizeXInput" />
-										</div>
-										<div class="slider" id="holeSizeY">
-											<input class="slider-input" id="holeSizeYInput" />
-										</div>
-										<!--							Shape : <select id="hollowShape" name="hollowShape">
-									<option value="shapeSquare" selected>square
-									<option value="shapeTriangle">triangle
-									<option value="shapeCircle">circle
-								</select>
-								&nbsp;&nbsp;
-								<input type="button" value=" OK " onclick="elementClicked('MdlrHollowShape')">
-								<br><br><br>
--->
-										<table>
-											<tr valign="top">
-												<td>Shape :
-												</td>
-												<td>
-													<input type="radio" name="hollowShape" id="shapeSquare" onclick="new NaviData('MdlrHollowShape').add({shape:1}).send()"
-														checked="true">square<br>
-													<input type="radio" name="hollowShape" id="shapeTriangle" onclick="new NaviData('MdlrHollowShape').add({shape:2}).send()">triangle<br>
-													<input type="radio" name="hollowShape" id="shapeCircle" onclick="new NaviData('MdlrHollowShape').add({shape:0}).send()">circle
-												</td>
-											</tr>
-										</table>
-										<br>
-										<b>Skew</b>
-										<div class="slider" id="skew">
-											<input class="slider-input" id="skewInput" />
-										</div>
-										<div class="slider" id="revolution">
-											<input class="slider-input" id="revolutionInput" />
-										</div>
-										<div class="slider" id="radiusDelta">
-											<input class="slider-input" id="radiusDeltaInput" />
-										</div>
-										<br>
-										<!--
-								<input type="button" value="undo" onclick="elementClicked('ActionUndo')"><br>
-								stack : <div id="stack">0</div>
-								-->
-									</td>
-								</tr>
-							</table>
-						</p>
-					</div>
+					
 					<!-- MATERIAL -->
 					<div class="tabbertab">
 						<h2>Material</h2>
 						<p><table>
-								<tr>
-									<td width="80">Ambient</td>
-									<td width="120">
-										<div id="pAmbient" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-											onclick="{panel='pAmbient'; initColor();}"></div>
-									</td>
-									<td>Shininess</td>
-									<td width="200">
-										<div class="slider" id="shininess">
-											<input class="slider-input" id="shininessInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>Diffuse</td>
-									<td>
-										<div id="pDiffuse" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-											onclick="{panel='pDiffuse'; initColor();}"></div>
-									</td>
-									<td>Transparency</td>
-									<td>
-										<div class="slider" id="transparency">
-											<input class="slider-input" id="transparencyInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td>Specular</td>
-									<td>
-										<div id="pSpecular" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-											onclick="{panel='pSpecular'; initColor();}"></div>
-									</td>
-									<td>Scroll U</td>
-									<td>
-										<div class="slider" id="scrollU">
-											<input class="slider-input" id="scrollUInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td colspan="2"><input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('MdlrLockAmbientDiffuse')">
-										Lock Ambient-Diffuse</td>
-									<td>Scroll V</td>
-									<td>
-										<div class="slider" id="scrollV">
-											<input class="slider-input" id="scrollVInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-									<td>Scale U</td>
-									<td>
-										<div class="slider" id="scaleU">
-											<input class="slider-input" id="scaleUInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-									<td>Scale V</td>
-									<td>
-										<div class="slider" id="scaleV">
-											<input class="slider-input" id="scaleVInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td></td>
-									<td>Rotate U</td>
-									<td>
-										<div class="slider" id="rotateU">
-											<input class="slider-input" id="rotateUInput" />
-										</div>
-									</td>
-								</tr>
-								<tr>
-									<td colspan="4">
-										<br>
-										<br>
-										<input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()">
-										<input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()">
-										<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')">
-									<td>
-								</tr>
-								<tr valign="middle">
-									<td colspan="4">
-										<br>
-										<table>
-											<tr>
-												<td>
-													<input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"><br>
-													<input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')">
-												</td>
-												<td>
-													<div style='height: 132px; overflow: auto' id="divTexture"></div>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-							</table>
-						</p>
+							<tr>
+								<td width="80">Ambient</td>
+								<td width="120">
+									<div id="pAmbient" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
+										onclick="{panel='pAmbient'; initColor();}"></div>
+								</td>
+								<td>Shininess</td>
+								<td width="200">
+									<div class="slider" id="shininess">
+										<input class="slider-input" id="shininessInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Diffuse</td>
+								<td>
+									<div id="pDiffuse" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
+										onclick="{panel='pDiffuse'; initColor();}"></div>
+								</td>
+								<td>Transparency</td>
+								<td>
+									<div class="slider" id="transparency">
+										<input class="slider-input" id="transparencyInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Specular</td>
+								<td>
+									<div id="pSpecular" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
+										onclick="{panel='pSpecular'; initColor();}"></div>
+								</td>
+								<td>Scroll U</td>
+								<td>
+									<div class="slider" id="scrollU">
+										<input class="slider-input" id="scrollUInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2"><input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('MdlrLockAmbientDiffuse')">
+									Lock Ambient-Diffuse</td>
+								<td>Scroll V</td>
+								<td>
+									<div class="slider" id="scrollV">
+										<input class="slider-input" id="scrollVInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td>Scale U</td>
+								<td>
+									<div class="slider" id="scaleU">
+										<input class="slider-input" id="scaleUInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td>Scale V</td>
+								<td>
+									<div class="slider" id="scaleV">
+										<input class="slider-input" id="scaleVInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td>Rotate U</td>
+								<td>
+									<div class="slider" id="rotateU">
+										<input class="slider-input" id="rotateUInput" />
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									<br>
+									<br>
+									<input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()">
+									<input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()">
+									<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')">
+								<td>
+							</tr>
+							<tr valign="middle">
+								<td colspan="4">
+									<br>
+									<table>
+										<tr>
+											<td>
+												<input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"><br>
+												<input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')">
+											</td>
+											<td>
+												<div style='height: 132px; overflow: auto' id="divTexture"></div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table></p>
 					</div>
-					<!-- 3D -->
+					
+					<!-- ATTACHEMENT -->
 					<div class="tabbertab">
-						<h2>3D</h2>
-						<p><table>
-								<tr>
-									<td width="196"></td>
-									<td width="100">X</td>
-									<td width="100">Y</td>
-									<td width="100">Z</td>
-								</tr>
-								<tr>
-									<td>Position</td>
-									<td><input type="text" size="10" id="positionX" value="0.0" onchange="elementClicked('MdlrPositionX')"></td>
-									<td><input type="text" size="10" id="positionY" value="0.0" onchange="elementClicked('MdlrPositionY')"></td>
-									<td><input type="text" size="10" id="positionZ" value="0.0" onchange="elementClicked('MdlrPositionZ')"></td>
-								</tr>
-								<tr>
-									<td>Orientation</td>
-									<td><input type="text" size="10" id="orientationX" value="0.0" onchange="elementClicked('MdlrOrientationX')"></td>
-									<td><input type="text" size="10" id="orientationY" value="0.0" onchange="elementClicked('MdlrOrientationY')"></td>
-									<td><input type="text" size="10" id="orientationZ" value="0.0" onchange="elementClicked('MdlrOrientationZ')"></td>
-								</tr>
-								<tr>
-									<td>Scale</td>
-									<td><input type="text" size="10" id="scaleX" value="0.0" onchange="elementClicked('MdlrScaleX')"></td>
-									<td><input type="text" size="10" id="scaleY" value="0.0" onchange="elementClicked('MdlrScaleY')"></td>
-									<td><input type="text" size="10" id="scaleZ" value="0.0" onchange="elementClicked('MdlrScaleZ')"></td>
-								</tr>
-								<tr>
-									<td>Physics</td>
-									<td colspan="3"><input type="checkbox" id="collision" onclick="elementclicked('MdlrCollision')">Enable 
-										collision &nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" id="gravity" onclick="elementClicked('MdlrGravity')">Enable 
-										gravity</td>
-								</tr>
-								<tr>
-									<td>Informations<br>
-										about this<br>
-										current object</td>
-									<td colspan="4"><br>
-										<br>
-										<textarea cols="34" rows="4" id="info">...</textarea></td>
-								</tr>
-							</table>
-						</p>
-					</div>
-					<!-- ANIMATION -->
-					<div class="tabbertab">
-						<h2>Animation</h2>
+						<h2>Attachement</h2>
 						<p><table align="center">
-								<tr>
-									<td><b>INACTIVE</b></td>
-								</tr>
-							</table>
-						</p>
+							<tr>
+								<td><b>INACTIVE</b></td>
+							</tr>
+						</table></p>
 					</div>
-					<!-- EXTRAS -->
-					<div class="tabbertab">
-						<h2>Extras</h2>
-						<p><table align="center">
-								<tr>
-									<td><b>INACTIVE</b></td>
-								</tr>
-							</table>
-						</p>
-					</div>
-					<!-- CONTENT -->
-					<div class="tabbertab">
-						<h2>Content</h2>
-						<p><table align="center">
-								<tr>
-									<td><b>INACTIVE</b></td>
-								</tr>
-							</table>
-						</p>
-					</div>
+					
 				</div>
+				
+				
 				<!-- SLIDERS BEGIN -->
 				<script type="text/javascript">
 					var currentTexture = -1;
 					var textTabTextures = "";
 					var update = false;
 		
-					// definition for the model deformations
-					var taperX = new Slider(document.getElementById("taperX"), document.getElementById("taperXInput"));/*.setValue(10);*/
-					var taperY = new Slider(document.getElementById("taperY"), document.getElementById("taperYInput"));
-					var topShearX = new Slider(document.getElementById("topShearX"), document.getElementById("topShearXInput"));
-					var topShearY = new Slider(document.getElementById("topShearY"), document.getElementById("topShearYInput"));
-					var twistBegin = new Slider(document.getElementById("twistBegin"), document.getElementById("twistBeginInput"));
-					var twistEnd = new Slider(document.getElementById("twistEnd"), document.getElementById("twistEndInput"));
-					var dimpleBegin = new Slider(document.getElementById("dimpleBegin"), document.getElementById("dimpleBeginInput"));
-					var dimpleEnd = new Slider(document.getElementById("dimpleEnd"), document.getElementById("dimpleEndInput"));
-					var pathCutBegin = new Slider(document.getElementById("pathCutBegin"), document.getElementById("pathCutBeginInput"));
-					var pathCutEnd = new Slider(document.getElementById("pathCutEnd"), document.getElementById("pathCutEndInput"));
-					var holeSizeX = new Slider(document.getElementById("holeSizeX"), document.getElementById("holeSizeXInput"));
-					var holeSizeY = new Slider(document.getElementById("holeSizeY"), document.getElementById("holeSizeYInput"));
-					var skew = new Slider(document.getElementById("skew"), document.getElementById("skewInput"));
-					var revolution = new Slider(document.getElementById("revolution"), document.getElementById("revolutionInput"));
-					var radiusDelta = new Slider(document.getElementById("radiusDelta"), document.getElementById("radiusDeltaInput"));					
 					// definition for the material
 					var shininess = new Slider(document.getElementById("shininess"), document.getElementById("shininessInput"));
 					var transparency = new Slider(document.getElementById("transparency"), document.getElementById("transparencyInput"));
@@ -481,11 +284,7 @@
 					// set min & max values
 					revolution.setMinimum(1); revolution.setMaximum(5);
 					
-					// onchange / deformations
-					/*	1.	taperX.onchange = function() {alert('taperX : '+taperX.getValue())};							*/
-					/*	2.	taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};	*/
-					/*	3.	taperX.onchange = function() {elementClicked('MdlrTaperX')};									*/
-					
+					// onchange / deformations				
 					taperX.onchange = function() {elementClicked('MdlrTaperX')};
 					taperY.onchange = function() {elementClicked('MdlrTaperY')};
 					topShearX.onchange = function() {elementClicked('MdlrTopShearX')};
@@ -501,46 +300,10 @@
 					skew.onchange = function() {elementClicked('MdlrSkew')};
 					revolution.onchange = function() {elementClicked('MdlrRevolution')};
 					radiusDelta.onchange = function() {elementClicked('MdlrRadiusDelta')};
-					/*
-					taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
-					taperY.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperY'}).send()};
-					topShearX.onchange = function() {new NaviData('MdlrProperties').add({slider:'topShearX'}).send()};
-					topShearY.onchange = function() {new NaviData('MdlrProperties').add({slider:'topShearY'}).send()};
-					twistBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'twistBegin'}).send()};
-					twistEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'twistEnd'}).send()};
-					dimpleBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'dimpleBegin'}).send()};
-					dimpleEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'dimpleEnd'}).send()};
-					pathCutBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'pathCutBegin'}).send()};
-					pathCutEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'pathCutEnd'}).send()};
-					holeSizeX.onchange = function() {new NaviData('MdlrProperties').add({slider:'holeSizeX'}).send()};
-					holeSizeY.onchange = function() {new NaviData('MdlrProperties').add({slider:'holeSizeY'}).send()};
-					skew.onchange = function() {new NaviData('MdlrProperties').add({slider:'skew'}).send()};
-					revolution.onchange = function() {new NaviData('MdlrProperties').add({slider:'revolution'}).send()};
-					radiusDelta.onchange = function() {new NaviData('MdlrProperties').add({slider:'radiusDelta'}).send()};
-					*/
-					
-					// onchange / material
-					shininess.onchange = function() {elementClicked('MdlrShininess')};
-					transparency.onchange = function() {elementClicked('MdlrTransparency')};
-					scrollU.onchange = function() {elementClicked('MdlrScrollU')};
-					scrollV.onchange = function() {elementClicked('MdlrScrollV')};
-					scaleU.onchange = function() {elementClicked('MdlrScaleU')};
-					scaleV.onchange = function() {elementClicked('MdlrScaleV')};
-					rotateU.onchange = function() {elementClicked('MdlrRotateU')};
-					
-					/* onresize
-					window.onresize = function () {
-						taperX.recalculate();
-						taperY.recalculate();
-					};	*/
-					
             
 function updTexture()
 {
-	//document.getElementById('divTexture').innerHTML="<div style='height: 132px; overflow: auto'><img src='./color/blank.jpg' width=128 height=128/>	<img src='./color/blank.jpg' width=128 height=128/></div>";
 	document.getElementById('divTexture').innerHTML=textTabTextures;
-	//document.getElementById('divTexture').setHTMLBuffered(textTabTextures);
-	//document.getElementById('divTexture').setHTML(textTabTextures);
 }
 
 function updateTexture()

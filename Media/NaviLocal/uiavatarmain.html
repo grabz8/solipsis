@@ -14,23 +14,6 @@
             }
 		</script>
 		<style type="text/css"> 
-			.toggler { 
-				color: #000000; 
-				margin: 0; 
-				padding: 2px 5px; 
-				background: #FFFFFF; 
-				border-bottom: 1px solid #507426; 
-				border-right: 1px solid #507426; 
-				border-top: 1px solid #FFFFFF; 
-				border-left: 1px solid #FFFFFF; 
-				font-size: 11px; 
-				font-weight: normal; 
-				font-family: 'Andale Mono', sans-serif; 
-				width: 127px; 
-			}
-			p {
-				color:#000000;
-			}
 			body { 
 				padding-left: 11em; 
 				background-color: #000000; 
@@ -53,11 +36,11 @@
 				width: 240px; 
 				height: 472px; 
 			}
+			p {
+				color:#000000;
+			}
 			input { 
 				width: 100px; 
-			}
-			#thumbnailButton {
-				width: 160px;
 			}
 		</style>
 	</head>
@@ -65,75 +48,42 @@
 		<div id="container">
             <div id="containerMenu">
 			<table align="center" width="220">
+
 				<tr>
 					<td align="center">
 						<br>
-						<p id="avatarName">Name : <b>???</b></p>
+						<div id="AvatarName">
+						    <p>Name : <b>???</b></p>
+						</div>
+						<br>
+					</td>
+				</tr>
+
+				<tr>
+				    <td align="center">
+				        <div style='height: 128px; width: 128px; overflow: auto' id="AvatarThumbnail"></div>
+				    </td>
+				</tr>
+
+				<tr >
+					<td align="center">
+						<input type="button" value=" < " style='width: 32px' onclick="elementClicked('AvatarPrev')">
+						<input type="button" value=" > " style='width: 32px' onclick="elementClicked('AvatarNext')">
+					</td>		    
+				</tr>
+
+				<tr>
+				    <td align="center">
+				        <br><br>
 						<input type="button" value="Open" size="10" onclick="elementClicked('FileOpen')"><br>
-						<input type="button" value="Edit" size="10" onclick="elementClicked('FileEdit')"><br>
+						<input type="button" value="Edit" size="10" onclick="elementClicked('AvatarEdit')"><br>
 						<input type="button" value="Save" size="10" onclick="elementClicked('FileSave')"><br>
 						<input type="button" value="Save as" size="10" onclick="elementClicked('FileSaveAs')"><br>
 						<input type="button" value="Exit" size="10" onclick="elementClicked('FileExit')"><br>
-						<br>
-						<br>
 					</td>
 				</tr>
-				<tr>
-					<td align="center">
-						<p>Thumbnail</p>
-						<div style='OVERFLOW: auto; HEIGHT: 132px' id="divTexture"></div>
-						<br>
-						<input type="button" value="Take a new thumbnail" onclick="elementClicked('TakeThumbnail')" style="{ width:160px; }" id="thumbnailButton"><br>
-					</td>
-				</tr>
+				
 			</table>
-			
-			
-			<!--
-				<table>
-					<tr valign="top">
-						<td width="150">
-							
-							<div id="accordion">
-								<h3 class="toggler atStart">File</h3>
-								<div class="element atStart"">
-									<ul>
-										<li onclick="elementClicked('FileOpen')">Open ...</li>
-										<li onclick="elementClicked('FileSave')">Save</li>
-										<li onclick="elementClicked('FileExit')">Exit</li>
-									</ul>
-								</div>
-								<h3 class="toggler atStart">Tools</h3>
-								<div class="element atStart">
-									<ul>
-										<li onclick="elementClicked('ToolsDisplayConfig')">Display configuration</li>
-									</ul>
-								</div>
-								<h3 class="toggler atStart">Help</h3>
-								<div class="element atStart">
-									<ul>
-										<li onclick="elementClicked('HelpContents')">Contents ...</li>
-										<li onclick="elementClicked('HelpAbout')">About ...</li>
-									</ul>
-								</div>
-							</div>
-
-						</td>
-
-						<td>
-							<input type="button" value="  Delete  " onclick="elementClicked('ActionDelete')"><br><br>
-							<input type="button" value="   Move   " onclick="elementClicked('ActionMove')"><br>
-							<input type="button" value="  Rotate  " onclick="elementClicked('ActionRotate')"><br>
-							<input type="button" value="   Scale  " onclick="elementClicked('ActionScale')"><br><br>
-							<input type="button" value="   Link   " onclick="elementClicked('ActionLink')"><br><br>
-							<input type="button" value="Properties" onclick="elementClicked('ActionProperties')">
-							<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-							<input type="button" value="[ SAVE ]" onclick="elementClicked('ActionSceneSave')">
-						</td>
-					</tr>
-				</table>
-        -->
-                
             </div>
         </div>
 	</body>

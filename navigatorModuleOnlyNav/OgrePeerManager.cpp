@@ -28,6 +28,14 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     mCallbacks(callbacks)
 {
     mOgrePeersMap.clear();
+
+	static AvatarEditor* avatarEditor = NULL;
+	if(!avatarEditor)
+	{
+		//avatarEditor = new AvatarEditor("..\\..\\..\\..\\media\\cache\\models", mSceneMgr);
+		avatarEditor = new AvatarEditor("../../../../media/cache/models", mSceneMgr);
+		avatarEditor->buildListSAF();
+	}
 }
 
 //-------------------------------------------------------------------------------------
@@ -249,40 +257,19 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
             "No scene manager !",
             "OgrePeerManager::CreateAvatarNode");
 
-// GILLES begin
     const char* name = xmlElt->Attribute("name");
-#if 0
-    const char* meshFilename = xmlElt->Attribute("meshFilename");
-    const char* skeletonFilename = xmlElt->Attribute("skeletonFilename");
-#else
-    const char* filename = xmlElt->Attribute("filename");
 
-    /*
-    static AvatarEditor* avatarEditor = 0;
-    if(!avatarEditor)
-        avatarEditor = new AvatarEditor();
-    if (!avatarEditor->XMLLoad(filename))
-        return false;
-    */
+	String uidString = StringConverter::toString(xmlEntity->getUid());
+	AvatarEditor::getSingletonPtr()->setUid(uidString);
 
-    AvatarEditor* avatarEditor = AvatarEditor::getSingletonPtr();
-    if(!avatarEditor)
-        avatarEditor = new AvatarEditor();
-    if (!avatarEditor->XMLLoad("..\\..\\..\\..\\media\\cache\\models\\", filename))
-        return false;
+	// Get the wanted avatar from his name
+	if (!AvatarEditor::getSingletonPtr()->setCurrentByName(name))
+		return false;
 
-    std::string meshName = avatarEditor->getMeshFilename();
-    std::string skeletonName = avatarEditor->getSkeletonFilename();
-    const char* meshFilename = meshName.c_str();
-    const char* skeletonFilename = skeletonName.c_str();
-#endif
-// GILLES end
+	// Get a reference from this avatar
+	SceneNode* node = AvatarEditor::getSingletonPtr()->getSceneNode();
+	Entity* entity = AvatarEditor::getSingletonPtr()->getEntity();
 	
-	if ((name == 0) || (meshFilename == 0) || (skeletonFilename == 0))
-        return false;
-    String uidString = StringConverter::toString(xmlEntity->getUid());
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Avatar");
-    Entity* entity = mSceneMgr->createEntity(uidString + "Avatar", meshFilename);
 #ifdef SHADOWS
     entity->setCastShadows(true);
 #endif

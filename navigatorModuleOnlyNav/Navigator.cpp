@@ -6,7 +6,9 @@
 #include "NaviLua.h"
 #include "OgreExternalTextureSourceManager.h"
 #include "Modeler.h"
+#include "AvatarEditor.h"
 #include "VoiceEngineManager.h"
+
 
 using namespace Solipsis;
 
@@ -36,6 +38,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mUserAvatar(0),
     mNavigatorSound(0),
     mModeler(0),
+	mAvatarEditor(0),
     isOnLeftCTRL(false)
 {
     ms_singletonPtr = this;
@@ -1116,6 +1119,7 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
         pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
 
 // GILLES begin
+		// Create the Fourth camera node/pitch node
         camNode = mUserAvatar->getSceneNode()->createChildSceneNode("TurnAroundPersonCamNode", Vector3(0, 1.1, 0)*avatarSize);
         pitchCamNode = camNode->createChildSceneNode("TurnAroundPersonCamPitchNode", Vector3(-4, 1.1, 0)*avatarSize);
         //pitchCamNode->yaw(Radian(Math::PI));
@@ -1421,6 +1425,38 @@ bool Navigator::createMesh()
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::startAvatarEdit()
+{
+    mState = SAvatarEdit;
+
+	// Init a new Avatar editor
+	if (!mAvatarEditor)
+	{
+		//mAvatarEditor = new AvatarEditor(...);
+		mAvatarEditor = AvatarEditor::getSingletonPtr();
+	}
+  
+	return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::endAvatarEdit()
+{	
+	// Go back in world
+	mState = SInWorld;
+
+	if( mAvatarEditor )
+	{
+		//mAvatarEditor->...
+	}
+
+// TODO : remove those comments
+//	delete mAvatarEditor;
+//	mAvatarEditor = NULL;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 void Navigator::onMouseMoved(const MouseEvt& evt)
 {
 	if ( mModeler )
@@ -1480,7 +1516,7 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::XMLLoad()
+bool Navigator::mdlrXMLLoad()
 {
 	if( mModeler )
 	{
@@ -1502,7 +1538,7 @@ bool Navigator::XMLLoad()
 	return false;
 }
 //-------------------------------------------------------------------------------------
-bool Navigator::XMLSave(bool all, const char* pathToSave)
+bool Navigator::mdlrXMLSave(bool all, const char* pathToSave)
 {
 	if( mModeler )
 		if(all || !mModeler->isSelectionEmpty()) 
@@ -1518,3 +1554,37 @@ bool Navigator::XMLSave(bool all, const char* pathToSave)
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::avatarXMLLoad()
+{
+    if( mAvatarEditor )
+		//if( mAvatarEditor->XMLLoad() )
+        {
+            // 0. store the old avatar' parameters (camera mode ...)
+            Quaternion dir = mUserAvatar->getSceneNode()->getOrientation();
+            Vector3 pos = mUserAvatar->getSceneNode()->getPosition();
+
+            // 1. remove the current avatar' mesh + skeleton
+			// -> it's not necessary to unload because this avatar can be used by another user in the current scene !
+			// -> so just remove the Entity / Mesh from the SceneNode
+
+            // 2. update the avatar' mesh + skeleton
+
+            // 3. update his position & orientation
+
+            // 4. set the old parameters to the new avatar (camera mode ...)
+
+            return true;
+        }
+
+	return false;
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::avatarXMLSave()
+{
+    return true;
+}
+//-------------------------------------------------------------------------------------
+bool Navigator::avatarXMLSaveAs()
+{
+    return true;
+}

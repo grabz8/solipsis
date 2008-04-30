@@ -126,6 +126,8 @@ public:
     SceneNode* getSceneNode();
     /** Get the entity. */
     Entity* getEntity();
+	/** Set the entity. */
+	void setEntity(Entity* pEntity);
     /** Set whether the name is visible or not. */
     void setNameVisibility(bool visible);
 

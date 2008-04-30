@@ -61,7 +61,8 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
     for (int a = 0;a < SCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
 
-    mSceneNode->attachObject(entity);
+//	if(!entity->isAttached())
+//		mSceneNode->attachObject(entity);
 
     String uidString = StringConverter::toString(xmlEntity->getUid());
 
@@ -142,6 +143,12 @@ SceneNode* Avatar::getSceneNode()
 Entity* Avatar::getEntity()
 {
     return mEntity;
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setEntity(Entity* pEntity)
+{
+    mEntity = pEntity;
 }
 
 //-------------------------------------------------------------------------------------

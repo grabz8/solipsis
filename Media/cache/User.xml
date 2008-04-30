@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <peerDatas>
 <!-- <avatarNode name="salamandra" meshFilename="salamandra.mesh" skeletonFilename="salamandra.mesh.skeleton"/> -->  
-  <avatarNode name="salamandra" filename="salamandra.saf"/>
+	<!--<avatarNode name="salamandra" filename="Salamandra.saf"/>-->
+	<avatarNode name="Sonia" filename="Sonia.saf"/>
 </peerDatas>

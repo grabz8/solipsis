@@ -58,7 +58,9 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     Modeler* modeler = mNavigator->mModeler;
+	AvatarEditor* avatarEditor = mNavigator->mAvatarEditor;
 
+	// is modeling ?
     if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
     {
         if (modeler->isOnGizmo())
@@ -159,6 +161,75 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         }
     }
 
+	// is editing the avatar ?
+	else if (mNavigator->getState() == Navigator::SAvatarEdit && avatarEditor != 0)
+	{
+		/*
+		if (modeler->isOnGizmo())
+		{
+			switch (evt.mKey)
+			{
+			case KC_F9:
+				modeler->lockGizmo(false);
+				if (navigatorGUI != 0)
+					navigatorGUI->modelerMainUnload();
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_UP:
+			case KC_W:
+				if (mNavigator->isOnLeftCTRL)
+				{
+					//mNavigator->undo();
+					if( !modeler->isSelectionEmpty() )
+					modeler->getSelected()->undo();
+				}
+				else
+					mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_DOWN:
+			case KC_S:
+				mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_LEFT:
+			case KC_A:
+				mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_RIGHT:
+			case KC_D:
+				mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_PGUP:
+			case KC_E:
+				mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
+				return OgreFrameListener::keyPressed(evt);
+
+			case KC_PGDOWN:
+			case KC_C:
+				mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
+				return OgreFrameListener::keyPressed(evt);
+			}
+		}
+
+
+		*/
+		switch (evt.mKey)
+		{
+		case KC_F8:
+			if (/*modeler->isSelectionLocked() &&*/ !navigatorGUI->isAvatarMainVisible())
+			{
+				navigatorGUI->avatarPropHide();
+				navigatorGUI->avatarMainShow();
+			}
+			else 
+				navigatorGUI->avatarMainUnload();
+			return OgreFrameListener::keyPressed(evt);
+		}
+	}
+
     // Updating Navi with the key pressed
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
 
@@ -193,11 +264,21 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         mNavigator->fakeSurroundingArea(0);
         break;
 
+    case KC_F8:
+        if (navigatorGUI != 0)
+			if(mNavigator->getState() == Navigator::SInWorld)
+				//if (!navigatorGUI->isAvatarMainVisible())
+				navigatorGUI->avatarMainShow();
+			else if(mNavigator->getState() == Navigator::SAvatarEdit)
+				navigatorGUI->avatarMainUnload();
+        break;
+
     case KC_F9:
-        if (navigatorGUI != 0 && mNavigator->getState() == Navigator::SInWorld)
-            if (!navigatorGUI->isModelerMainVisible())
+        if (navigatorGUI != 0)
+			if(mNavigator->getState() == Navigator::SInWorld)
+				//if (!navigatorGUI->isModelerMainVisible())
                 navigatorGUI->modelerMainShow();
-            else
+            else if(mNavigator->getState() == Navigator::SModeling)
                 navigatorGUI->modelerMainUnload();
         break;
 
@@ -221,11 +302,9 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             case KC_3: // Switch to 3rd person camera
                 setCameraMode(CM3rdPerson);
                 break;
-// GILLES begin
             case KC_4: // Switch to TrunAround person camera
                 setCameraMode(CMAroundPerson);
                 break;
-// GILLES end
 
             case KC_UP:
             case KC_W:

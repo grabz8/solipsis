@@ -1,21 +1,35 @@
 #include "AvatarEditor.h"
+#include "CharacterManager.h"
+#include "Character.h"
+#include <SolipsisErrorHandler.h>
+#include <FileBrowser.h>
 
 using namespace Solipsis;
 
 AvatarEditor* AvatarEditor::ms_singletonPtr = 0;
 
 //-------------------------------------------------------------------------------------
-AvatarEditor::AvatarEditor() :
+AvatarEditor::AvatarEditor(std::string pPath, SceneManager* pSceneMgr) :
+	mPath(pPath),
+	mSceneMgr(pSceneMgr),
     archive(0),
+	mAvatars(0),
+	mUidString(""),
+	mCurrentName(""),
     mMeshFilename(""),
-    mSkeletonFilename("")
+    mSkeletonFilename(""),
+	mNode(0),
+	mEntity(0)
 {
     ms_singletonPtr = this;
+	mAvatars = new CharacterManager(pPath, mSceneMgr);
 }
 //-------------------------------------------------------------------------------------
 AvatarEditor::~AvatarEditor()
 {
-    delete ms_singletonPtr;
+	delete mAvatars; 
+
+	delete ms_singletonPtr;
     ms_singletonPtr = 0;
 }
 //-------------------------------------------------------------------------------------
@@ -24,93 +38,111 @@ AvatarEditor* AvatarEditor::getSingletonPtr()
     return ms_singletonPtr;
 }
 //-------------------------------------------------------------------------------------
-bool AvatarEditor::XMLLoad()
+void AvatarEditor::buildListSAF(std::string pPathDirectory)
 {
-    // open a file browser to select a SAF file and load it !
-    return XMLLoad("", "");
+	if(pPathDirectory == "") 
+		pPathDirectory = mPath;
+
+	Path avatarsFolderPath(pPathDirectory); //Folder where to find the zip archives representing the avatars.
+
+	if (SOLisDirectory(avatarsFolderPath.getFormatedPath().c_str()))
+	{
+		std::vector<std::string> fileList;
+		SOLlistDirectoryFiles(avatarsFolderPath.getFormatedPath().c_str(),&fileList);
+		std::vector<std::string>::iterator itFiles = fileList.begin();
+
+		while (itFiles != fileList.end())
+		{
+			Path avatarPath( String((*itFiles).c_str()));
+			if (avatarPath.getExtension() == "saf")
+			{
+				mAvatars->addCharacter(avatarPath.getLastFileName(true));
+				SOLIPSISINFO("Adding avatar from file :",avatarPath.getUniversalPath().c_str());
+			}
+			itFiles++;
+		}
+	}
+	else
+		FileBrowser::displayMessageWindow("Error","The directory for the .SAF files doesn't existe.");
 }
 //-------------------------------------------------------------------------------------
-bool AvatarEditor::XMLLoad(std::string pPathDirectory, std::string pFilename)
+void AvatarEditor::setUid(String pUid)
 {
-    mMeshFilename = "";
-    mSkeletonFilename = "";
-    std::string resourceGrp = "";
-
-    //try
-    {
-        if (pFilename == "")
-            return false;
-        
-        //std::string fullFilename();
-        Path path(pPathDirectory + pFilename);
-        Path filenameExt(pFilename);
-        std::string filename(filenameExt.getLastFileName(false));
-
-        // verify the SAF extension
-        if (filenameExt.getExtension() != "saf")
-            return false;
-
-        archive = new MyZipArchive(path.getFormatedPath());
-        if (!archive->isArchivePresent())
-            return false;
-        
-        // mesh filename
-        if (!archive->isFilePresent(filename + ".mesh"))
-            return false;
-        mMeshFilename = filename + ".mesh";
-
-        // removing the modified meshes and materials in order that Ogre doesn't load them, we will recreate them after.
-        //	mZipArchive->removeFile(mName + ".mesh");
-        //	mZipArchive->removeFile(mName + ".material");
-
-        // adding the zip to the ressource location and load all the medias in the zip.
-        bool find = false;
-        resourceGrp = filename + "Resources";
-        StringVector lstGroup = Ogre::ResourceGroupManager::getSingleton().getResourceGroups();
-        for( StringVector::iterator r=lstGroup.begin(); r!=lstGroup.end(); r++ )
-        {
-            if((*r) == resourceGrp)
-            {
-                find = true;
-                break;
-            }
-        }
-        if(!find)
-        {
-            Ogre::ResourceGroupManager::getSingleton().createResourceGroup(resourceGrp);
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(path.getUniversalPath(),"Zip",resourceGrp);
-            Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(resourceGrp);
-        }
-        Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().load(mMeshFilename, resourceGrp);
-
-        // skeleton filename
-        if (!archive->isFilePresent(mesh->getSkeletonName()))
-            return false;
-        mSkeletonFilename = mesh->getSkeletonName();
-
-        //Ogre::MeshManager::getSingleton().unload(mMeshFilename);
-        delete archive;
-        archive = 0;
-    }
-
-    return true;
+	mUidString = pUid;
+	mAvatars->setUid( pUid );
 }
 //-------------------------------------------------------------------------------------
-bool AvatarEditor::XMLSave(std::string pPathDirectory, std::string pFilename)
+CharacterManager* AvatarEditor::getManager()
 {
-    return true;
+	return mAvatars;
 }
 //-------------------------------------------------------------------------------------
-std::string AvatarEditor::getMeshFilename()
+void AvatarEditor::updateCurrent(Character* pAvatar)
+{
+	mMeshFilename = pAvatar->getMeshName();
+	mSkeletonFilename = pAvatar->getSkeletonName();
+	mCurrentName = pAvatar->getName(); //pName;
+
+	mNode = mAvatars->getCurrent()->getNode();
+	if(mEntity)
+		mEntity->setVisible(false);
+	mEntity = mAvatars->getCurrent()->getEntity();
+	mEntity->setVisible(true);
+}
+//-------------------------------------------------------------------------------------
+bool AvatarEditor::setCurrentByName(std::string pName)
+{
+	if(mCurrentName != pName)
+	{
+		Character* avatar = mAvatars->getByName(pName);
+		updateCurrent(avatar);
+	}
+
+	return true;
+}
+//-------------------------------------------------------------------------------------
+void AvatarEditor::setNextAsCurrent()
+{
+	Character* avatar = mAvatars->getNextFromName(mCurrentName);
+	if(avatar->getName() == mCurrentName)
+		return;
+
+	updateCurrent(avatar);
+}
+//-------------------------------------------------------------------------------------
+void AvatarEditor::setPrevAsCurrent()
+{
+	Character* avatar = mAvatars->getPrevFromName(mCurrentName);
+	if(avatar->getName() == mCurrentName)
+		return;
+
+	updateCurrent(avatar);
+}
+//-------------------------------------------------------------------------------------
+String AvatarEditor::getName()
+{
+	return mCurrentName;
+}
+//-------------------------------------------------------------------------------------
+String AvatarEditor::getMeshName()
 {
     return mMeshFilename;
 }
 //-------------------------------------------------------------------------------------
-std::string AvatarEditor::getSkeletonFilename()
+String AvatarEditor::getSkeletonName()
 {
     return mSkeletonFilename;
 }
 //-------------------------------------------------------------------------------------
+SceneNode* AvatarEditor::getSceneNode()
+{
+	return mNode;
+}
+//-------------------------------------------------------------------------------------
+Entity* AvatarEditor::getEntity()
+{
+	return mEntity;
+}
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------

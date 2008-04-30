@@ -4,6 +4,9 @@
 #include "DebugHelpers.h"
 #include "Navi.h"
 #include "Modeler.h"
+#include "AvatarEditor.h"
+#include "Character.h"
+#include "CharacterManager.h"
 
 using namespace Solipsis;
 
@@ -14,6 +17,8 @@ const std::string NavigatorGUI::mNavisNames[] = {
     "uicontext",
     "uimdlrmain",
     "uimdlrprop",
+    "uiavatarmain",
+    "uiavatarprop",
 #ifdef UIDEBUG
     "uidebug"
 #endif
@@ -22,7 +27,8 @@ const std::string NavigatorGUI::mNavisNames[] = {
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
-    mCurrentNavi(-1)
+    mCurrentNavi(-1),
+	lastTime(0.)
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
@@ -405,6 +411,289 @@ void NavigatorGUI::modelerPropUnload()
     }
 }
 
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainShow()
+{
+    if (mNavisStates[NAVI_AVATARPROP] == NSCreated)
+        avatarPropHide();
+
+    if (mNavisStates[NAVI_AVATARMAIN] == NSNotCreated)
+    {
+        // Create Navi UI modeler
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARMAIN], "local://uiavatarmain.html", NaviPosition(TopRight), 256, 512);
+        navi->setMovable(true);
+        navi->hide();
+        navi->setMask("uiavatarmain.png");
+        navi->setOpacity(0.75f);
+        
+        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+		navi->bind("AvatarPrev", NaviDelegate(this, &NavigatorGUI::avatarMainSelectPrev));
+		navi->bind("AvatarNext", NaviDelegate(this, &NavigatorGUI::avatarMainSelectNext));
+	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::avatarMainFileOpen));
+		navi->bind("AvatarEdit", NaviDelegate(this, &NavigatorGUI::avatarMainFileEdit));
+		navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::avatarMainFileSave));
+        navi->bind("FileSaveAs", NaviDelegate(this, &NavigatorGUI::avatarMainFileSaveAs));
+	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::avatarMainFileExit));
+
+		mNavisStates[NAVI_AVATARMAIN] = NSCreated;
+    }
+    else
+        mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN])->show(true);
+
+    mNavigator->startAvatarEdit();
+/*
+    if (mNavigator->mModeler)
+        mNavigator->mModeler->lockSelection(false);
+*/
+}
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::isAvatarMainVisible()
+{
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+    return ((navi != 0) && navi->getVisibility());
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainHide()
+{
+    if (!isAvatarMainVisible()) return;
+    mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN])->hide();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainUnload()
+{
+    if (mNavisStates[NAVI_AVATARMAIN] != NSNotCreated)
+    {
+        // Destroy Navi UI modeler
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
+        mNavisStates[NAVI_AVATARMAIN] = NSNotCreated;
+
+		mNavigator->setState(Navigator::SInWorld);	
+		mNavigator->endAvatarEdit();
+		avatarPropUnload();
+		avatarMainUnload();
+
+		// Remove temporary files & folder of the thumbnails
+		std::string path ("NaviLocal\\solTmpTexture\\");
+		std::vector<std::string> fileList;
+
+		SOLlistDirectoryFiles (path.c_str(), &fileList);
+		for (std::vector<std::string>::iterator f=fileList.begin(); f!=fileList.end(); f++)
+			SOLdeleteFile (std::string(path + (*f)).c_str());
+		RemoveDirectory (path.c_str());
+    }
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropShow()
+{
+    if (mNavisStates[NAVI_AVATARPROP] == NSNotCreated)
+	{
+		// Create Navi UI modeler
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARPROP], "local://uiavatarprop.html", NaviPosition(TopRight), 512, 512);
+		navi->setMovable(true);
+		navi->hide();
+		navi->setMask("uiavatarprop.png");
+		navi->setOpacity(0.75f);
+
+		// page loaded
+		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+
+		// detect a changement on the properties tabber
+		navi->bind("MdlrTabbers", NaviDelegate(this, &NavigatorGUI::avatarTabberChange));
+/*
+		// animation
+		navi->bind("MdlrTaperX", NaviDelegate(this, &NavigatorGUI::modelerPropTaperX));
+		navi->bind("MdlrTaperY", NaviDelegate(this, &NavigatorGUI::modelerPropTaperY));
+		navi->bind("MdlrTopShearX", NaviDelegate(this, &NavigatorGUI::modelerPropTopShearX));
+		navi->bind("MdlrTopShearY", NaviDelegate(this, &NavigatorGUI::modelerPropTopShearY));
+		navi->bind("MdlrTwistBegin", NaviDelegate(this, &NavigatorGUI::modelerPropTwistBegin));
+		navi->bind("MdlrTwistEnd", NaviDelegate(this, &NavigatorGUI::modelerPropTwistEnd));
+		navi->bind("MdlrDimpleBegin", NaviDelegate(this, &NavigatorGUI::modelerPropDimpleBegin));
+		navi->bind("MdlrDimpleEnd", NaviDelegate(this, &NavigatorGUI::modelerPropDimpleEnd));
+		navi->bind("MdlrPathBegin", NaviDelegate(this, &NavigatorGUI::modelerPropPathCutBegin));
+		navi->bind("MdlrPathEnd", NaviDelegate(this, &NavigatorGUI::modelerPropPathCutEnd));
+		navi->bind("MdlrHoleX", NaviDelegate(this, &NavigatorGUI::modelerPropHoleSizeX));
+		navi->bind("MdlrHoleY", NaviDelegate(this, &NavigatorGUI::modelerPropHoleSizeY));
+		navi->bind("MdlrHollowShape", NaviDelegate(this, &NavigatorGUI::modelerPropHollowShape));
+		navi->bind("MdlrSkew", NaviDelegate(this, &NavigatorGUI::modelerPropSkew));
+		navi->bind("MdlrRevolution", NaviDelegate(this, &NavigatorGUI::modelerPropRevolution));
+		navi->bind("MdlrRadiusDelta", NaviDelegate(this, &NavigatorGUI::modelerPropRadiusDelta));
+		navi->bind("ActionUndo", NaviDelegate(this, &NavigatorGUI::modelerActionUndo));
+		// properties
+		navi->bind("MdlrObjectName", NaviDelegate(this, &NavigatorGUI::modelerPropObjectName));
+		navi->bind("MdlrCreator", NaviDelegate(this, &NavigatorGUI::modelerPropCreator));
+		navi->bind("MdlrOwner", NaviDelegate(this, &NavigatorGUI::modelerPropOwner));
+		navi->bind("MdlrGroup", NaviDelegate(this, &NavigatorGUI::modelerPropGroup));
+		navi->bind("MdlrDescription", NaviDelegate(this, &NavigatorGUI::modelerPropDescription));
+		navi->bind("MdlrTags", NaviDelegate(this, &NavigatorGUI::modelerPropTags));
+		navi->bind("MdlrModification", NaviDelegate(this, &NavigatorGUI::modelerPropModification));
+		navi->bind("MdlrCopy", NaviDelegate(this, &NavigatorGUI::modelerPropCopy));
+		// material
+		navi->bind("MdlrAmbient", NaviDelegate(this, &NavigatorGUI::modelerColorAmbient));
+		navi->bind("MdlrDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorDiffuse));
+		navi->bind("MdlrSpecular", NaviDelegate(this, &NavigatorGUI::modelerColorSpecular));
+		navi->bind("MdlrLockAmbientDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorLockAmbientDiffuse));
+		navi->bind("MdlrShininess", NaviDelegate(this, &NavigatorGUI::modelerPropShininess));
+		navi->bind("MdlrTransparency", NaviDelegate(this, &NavigatorGUI::modelerPropTransparency));
+		navi->bind("MdlrScrollU", NaviDelegate(this, &NavigatorGUI::modelerPropScrollU));
+		navi->bind("MdlrScrollV", NaviDelegate(this, &NavigatorGUI::modelerPropScrollV));
+		navi->bind("MdlrScaleU", NaviDelegate(this, &NavigatorGUI::modelerPropScaleU));
+		navi->bind("MdlrScaleV", NaviDelegate(this, &NavigatorGUI::modelerPropScaleV));
+		navi->bind("MdlrRotateU", NaviDelegate(this, &NavigatorGUI::modelerPropRotateU));
+		navi->bind("MdlrAddTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureAdd));
+		navi->bind("MdlrRemoveTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureRemove));
+		navi->bind("MdlrApplyTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureApply));
+		navi->bind("MdlrPrevTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTexturePrev));
+		navi->bind("MdlrNextTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureNext));
+		// attachement
+		navi->bind("MdlrPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
+		navi->bind("MdlrPositionY", NaviDelegate(this, &NavigatorGUI::modelerPropPositionY));
+		navi->bind("MdlrPositionZ", NaviDelegate(this, &NavigatorGUI::modelerPropPositionZ));
+		navi->bind("MdlrOrientationX", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationX));
+		navi->bind("MdlrOrientationY", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationY));
+		navi->bind("MdlrOrientationZ", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationZ));
+		navi->bind("MdlrScaleX", NaviDelegate(this, &NavigatorGUI::modelerPropScaleX));
+		navi->bind("MdlrScaleY", NaviDelegate(this, &NavigatorGUI::modelerPropScaleY));
+		navi->bind("MdlrScaleZ", NaviDelegate(this, &NavigatorGUI::modelerPropScaleZ));
+		navi->bind("MdlrCollision", NaviDelegate(this, &NavigatorGUI::modelerPropCollision));
+		navi->bind("MdlrGravity", NaviDelegate(this, &NavigatorGUI::modelerPropGravity));
+*/
+        mNavisStates[NAVI_AVATARPROP] = NSCreated;
+	}
+	else //if(!isAvatarMainVisible())
+	{
+		mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP])->show(true);
+
+		// Update the properties panel from the selected object datas
+		avatarTabberLoad(1);
+	}
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::isAvatarPropVisible()
+{
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+    return ((navi != 0) && navi->getVisibility());
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropHide()
+{
+    if (!isAvatarPropVisible()) return;
+    mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP])->hide();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropUnload()
+{
+    if (mNavisStates[NAVI_AVATARPROP] != NSNotCreated)
+    {
+        // Destroy Navi UI modeler
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
+        mNavisStates[NAVI_AVATARPROP] = NSNotCreated;
+
+		// Update the selected objet dats from the properties panel
+//		modelerTabberSave();
+    }
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarTabberChange(const NaviData& naviData)
+{
+	unsigned tab;
+	tab = atoi(naviData["tab"].str().c_str());
+ 	avatarTabberLoad (tab);
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarTabberLoad(unsigned pTab)
+{
+	std::string str;
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	// get the current avatar
+	Character* avatar = mNavigator->mAvatarEditor->getManager()->getCurrent();
+	if( avatar != 0 )
+	{
+		ColourValue col;
+		Ogre::Vector2 UV;
+		std::string text;
+		unsigned c,e;
+
+		switch( pTab )
+		{
+		case 0:	// animations tab
+/*			sprintf(str, "document.getElementById('tags').value = '%s'",text.c_str());
+			navi->evaluateJS(str);
+			sprintf(str, "document.getElementById('modification').checked = %s",obj->getCanBeModified()?"true":"false");
+			navi->evaluateJS(str);
+*/			break;
+		case 1:	//  properties tab
+			//str = "document.getElementById('tableProp').innerHTML = '";
+			//str += "<tr><td>TEST PROP QUI MARCHE</td></tr>";
+			//str += "'";
+			//navi->evaluateJS(str.data());
+//			avatar->getGoody("Hat")->setPreviousGoodyModelAsCurrent();
+			break;
+		case 2:	// material tab
+/*			navi->evaluateJS("shininess.onchange = function() {}");
+			navi->evaluateJS("transparency.onchange = function() {}");
+			navi->evaluateJS("scrollU.onchange = function() {}");
+			navi->evaluateJS("scrollV.onchange = function() {}");
+			navi->evaluateJS("scaleU.onchange = function() {}");
+			navi->evaluateJS("scaleV.onchange = function() {}");
+			navi->evaluateJS("rotateU.onchange = function() {}");
+
+			sprintf(str, "$S('pAmbient').background='#'+'FFFFFF'");
+			navi->evaluateJS(str);
+			sprintf(str, "$S('pDiffuse').background='#'+'FFFFFF'");
+			navi->evaluateJS(str);
+			sprintf(str, "$S('pSpecular').background='#'+'FFFFFF'");
+			navi->evaluateJS(str);
+			sprintf(str, "shininess.setValue(%f)",obj->getShininess()*100);
+			navi->evaluateJS(str);
+			sprintf(str, "transparency.setValue(%f)",obj->getAlpha()*100);
+			navi->evaluateJS(str);
+			UV = obj->getMaterialManager()->getTextureScroll() ;
+			sprintf(str, "scrollU.setValue(%f)",UV.x*100+50);
+			navi->evaluateJS(str);
+			sprintf(str, "scrollV.setValue(%f)",UV.y*100+50);
+			navi->evaluateJS(str);
+			UV = obj->getMaterialManager()->getTextureScale() ;
+			sprintf(str, "scaleU.setValue(%f)",UV.x*100-50);
+			navi->evaluateJS(str);
+			sprintf(str, "scaleV.setValue(%f)",UV.y*100-50);
+			navi->evaluateJS(str);
+			sprintf(str, "rotateU.setValue(%f)",obj->getMaterialManager()->getTextureRotate()/Math::TWO_PI*100);
+			navi->evaluateJS(str);
+
+			navi->evaluateJS("shininess.onchange = function() {elementClicked('MdlrShininess')}");
+			navi->evaluateJS("transparency.onchange = function() {elementClicked('MdlrTransparency')}");
+			navi->evaluateJS("scrollU.onchange = function() {elementClicked('MdlrScrollU')}");
+			navi->evaluateJS("scrollV.onchange = function() {elementClicked('MdlrScrollV')}");
+			navi->evaluateJS("scaleU.onchange = function() {elementClicked('MdlrScaleU')}");
+			navi->evaluateJS("scaleV.onchange = function() {elementClicked('MdlrScaleV')}");
+			navi->evaluateJS("rotateU.onchange = function() {elementClicked('MdlrRotateU')}");
+
+			modelerUpdateTextures();
+			break;
+		case 3:	// attachements tab
+			sprintf(str, "document.getElementById('positionX').value = %f",obj->getPosition().x);
+			navi->evaluateJS(str);
+
+			sprintf(str, "document.getElementById('info').value = 'Vertex count : '+%i+'\\nTriangle count : '+%i+'\\nPrimitives count : '+%i+'\\nMesh size : '+%f+','+%f+','+%f",
+				obj->getVertexCount(),
+				obj->getMeshSize().z);
+			navi->evaluateJS(str);
+*/			break;
+		}
+		//mNaviMgr->Update();
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarTabberSave()
+{}
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pObject3D)
 {
@@ -1204,7 +1493,7 @@ void NavigatorGUI::modelerMainFileOpen(const NaviData& naviData)
     OGRE_LOG("NavigatorGUI::modelerMainFileOpen()");
 	
     //modelerMainUnload();
-	mNavigator->XMLLoad();
+	mNavigator->mdlrXMLLoad();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1213,7 +1502,7 @@ void NavigatorGUI::modelerMainFileSave(const NaviData& naviData)
     OGRE_LOG("NavigatorGUI::modelerMainFileSave()");
 	
 	//modelerMainUnload();
-	mNavigator->XMLSave();
+	mNavigator->mdlrXMLSave();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1494,7 +1783,7 @@ void NavigatorGUI::modelerActionSave(const NaviData& naviData)
 
 	std::string path = "..\\..\\..\\..\\Media\\cache\\";
 	path += mNavigator->getOgrePeerManager()->getXmlObjectFilename();
-	mNavigator->XMLSave(true, path.c_str() );
+	mNavigator->mdlrXMLSave(true, path.c_str() );
 }
 
 //-------------------------------------------------------------------------------------
@@ -2163,6 +2452,69 @@ void NavigatorGUI::modelerPropGravity(const NaviData& naviData)
 	std::string value = navi->evaluateJS("document.getElementById('gravity').checked");
 }
 
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainFileOpen(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainFileOpen()");
+    mNavigator->avatarXMLLoad();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainFileEdit(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainFileEdit()");
+
+	// Hide the main modeler panel
+	avatarMainHide();
+	// Show the properties modeler panel
+	avatarPropShow();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainFileSave(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarMainFileSave()");
+    mNavigator->avatarXMLSave();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainFileSaveAs(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarMainFileSaveAs()");
+    mNavigator->avatarXMLSaveAs();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainFileExit()");
+    avatarMainUnload();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainSelectPrev()");
+	AvatarEditor::getSingletonPtr()->setPrevAsCurrent();
+	mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
+	mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+	std::string text("document.getElementById('AvatarName').innerHTML = '<p>Name : <b>");
+	text += AvatarEditor::getSingletonPtr()->getName();
+	text += "</b></p>'";
+	navi->evaluateJS(text.data());
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainSelectNext()");
+	AvatarEditor::getSingletonPtr()->setNextAsCurrent();
+	mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
+    mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+	std::string text("document.getElementById('AvatarName').innerHTML = '<p>Name : <b>");
+	text += AvatarEditor::getSingletonPtr()->getName();
+	text += "</b></p>'";
+	navi->evaluateJS(text.data());
+}
+//-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugCommand(const NaviData& naviData)
@@ -2235,6 +2587,16 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
     // Update the properties panel from the selected object datas
     if (naviPanel == NAVI_MODELERPROP)
         modelerTabberLoad(0);
+
+	// ...
+    if (naviPanel == NAVI_AVATARMAIN)
+	{
+		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+		std::string text("document.getElementById('AvatarName').innerHTML = '<p>Name : <b>");
+		text += AvatarEditor::getSingletonPtr()->getName();
+		text += "</b></p>'";
+		navi->evaluateJS(text.data());
+	}
 }
 
 //-------------------------------------------------------------------------------------

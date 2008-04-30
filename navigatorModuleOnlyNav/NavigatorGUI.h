@@ -9,6 +9,7 @@ using namespace NaviLibrary;
 namespace Solipsis {
 
 class Navigator;
+class AvatarEditor;
 
 /** This class manages all Graphical User Interfaces of the Navigator.
  */
@@ -27,6 +28,8 @@ public:
         NAVI_CONTEXT,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
+        NAVI_AVATARMAIN,
+        NAVI_AVATARPROP,
 #ifdef UIDEBUG
         NAVI_DEBUG,
 #endif
@@ -74,6 +77,17 @@ public:
     bool isModelerPropVisible();
     void modelerPropHide();
     void modelerPropUnload();
+
+    // Avatar panel
+    void avatarMainShow();
+    bool isAvatarMainVisible();
+    void avatarMainHide();
+    void avatarMainUnload();
+    // Properties avatar panel
+    void avatarPropShow();
+    bool isAvatarPropVisible();
+    void avatarPropHide();
+    void avatarPropUnload();
 
 #ifdef UIDEBUG
     void switchDebug();
@@ -177,12 +191,30 @@ protected:
     void modelerPropCollision(const NaviData& naviData);
     void modelerPropGravity(const NaviData& naviData);
 
-//    void modelerProperties(const NaviData& naviData);
+//	void modelerProperties(const NaviData& naviData);
     void modelerTabberChange(const NaviData& naviData);
+
+    // Avatar page callbacks
+    void avatarMainFileOpen(const NaviData& naviData);
+    void avatarMainFileEdit(const NaviData& naviData);
+    void avatarMainFileSave(const NaviData& naviData);
+    void avatarMainFileSaveAs(const NaviData& naviData);
+    void avatarMainFileExit(const NaviData& naviData);
+    void avatarMainSelectPrev(const NaviData& naviData);
+	void avatarMainSelectNext(const NaviData& naviData);
+	void avatarTabberChange(const NaviData& naviData);
+
+
+
+
+
 public:
     // Modeler properties updates
     void modelerTabberLoad(unsigned pTab);
-    void modelerTabberSave();	
+    void modelerTabberSave();
+	// Avatar properties updates
+	void avatarTabberLoad(unsigned pTab);
+    void avatarTabberSave();
 protected:
     // Update the command -> backup if the command is different from the last used
     void modelerUpdateCommand(Object3D::Command pCommand, Object3D* pObject);
@@ -193,7 +225,8 @@ protected:
     // Update the list of loaded textures
     void modelerUpdateTextures();
 
-
+	// Time of the last click on a specific action
+	double lastTime;
     // Start mode link when the user click on the Menu PopUp on 'link'
     bool mModeLink;
     bool mLockAmbientDiffuse;

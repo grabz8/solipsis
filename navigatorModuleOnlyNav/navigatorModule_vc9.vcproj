@@ -536,7 +536,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\NavigatorGUI.h"
+				RelativePath=".\NavigatorGUI.h"
 				>
 			</File>
 			<File
@@ -671,6 +671,10 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uimdlrmain.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uimdlrprop.html"
 				>
 			</File>
 			<File
