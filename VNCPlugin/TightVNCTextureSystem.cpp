@@ -175,6 +175,10 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
             Ogre::Pass* pass = tech->getPass(0);
             pass->removeAllTextureUnitStates();
             Ogre::TextureUnitState* state = pass->createTextureUnitState();
+            // GREG BEGIN
+            state->setTextureFiltering(Ogre::FO_ANISOTROPIC, Ogre::FO_ANISOTROPIC, Ogre::FO_NONE);
+            state->setTextureAnisotropy(4);
+            // GREG END
             state->setTextureName(tex->getName());
         }
     }
