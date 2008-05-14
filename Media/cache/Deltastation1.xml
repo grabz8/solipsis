@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <peerDatas>
-  <sceneNode name="Deltastation1" static="true" filename="Deltastation1.osm" collision="MC_station" />
+  <sceneNode name="DeltaStation1" static="true" filename="Deltastation1.osm" collision="Delta_COLLISION" />
   <!-- <sceneNode name="object1" static="false" filename="object1.sof"/> -->
   <!--<objectNode name="Box000" static="false" filename="..\..\..\..\Media\cache\Box000.sof" />-->
 </peerDatas>

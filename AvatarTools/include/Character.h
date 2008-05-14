@@ -135,6 +135,15 @@ public:
 	///brief Method which gives an Ogre::MapIterator on all the BodyParts of the Avatar.
 	///return An Ogre::MapIterator on all the BodyParts of the Avatar.
 	BodyPartsIterator getBodyPartsIterator();
+	///brief Get the current BodyPart name
+	///return The current BodyPart
+	BodyPart* getCurrentBodyPart();
+	///brief Set the next BoyPart as Current
+	///return The newly current BodyPart
+	BodyPart* setNextBodyPartAsCurrent();
+	///brief Set the previous BoyPart as Current
+	///return The newly current BodyPart
+	BodyPart* setPreviousBodyPartAsCurrent();
 	///brief Method which add a BodyPart to the avatar, it could be the noze, the hands, the clothes...
 	///param name Name of the BodyPart, name that will be displayed on the screen
 	///param defaultBodyPartModelSubEntityName Ogre name of the subEntity of the default BodyPartModel representing the BodyPart. For example, if the BodyPart is the noze, this entity could be a clown's noze subEntity. The SubEntity must be a SubEntity of the avatar's Entity.
@@ -182,6 +191,7 @@ private:
 	String mSkeletonName;
 	String mMeshName;
 	MeshPtr mMesh;
+	BodyPart* mBodyPart;
 
 	BodyPartsMap mBodyParts;							///brief Map of all the BodyParts of the Avatar (For example "Head","Arms","Legs",...).
 	GoodiesMap mGoodies;								///brief Map of all the Goodies of the Avatar (For example "Watch","Hat"...).

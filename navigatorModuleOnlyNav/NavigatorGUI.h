@@ -195,6 +195,7 @@ protected:
     void modelerTabberChange(const NaviData& naviData);
 
     // Avatar page callbacks
+	void avatarTabberChange(const NaviData& naviData);
     void avatarMainFileOpen(const NaviData& naviData);
     void avatarMainFileEdit(const NaviData& naviData);
     void avatarMainFileSave(const NaviData& naviData);
@@ -202,7 +203,17 @@ protected:
     void avatarMainFileExit(const NaviData& naviData);
     void avatarMainSelectPrev(const NaviData& naviData);
 	void avatarMainSelectNext(const NaviData& naviData);
-	void avatarTabberChange(const NaviData& naviData);
+	void avatarPropAnimPlayPause(const NaviData& naviData);
+	void avatarPropAnimStop(const NaviData& naviData);
+	void avatarPropAnimNext(const NaviData& naviData);
+	void avatarPropAnimPrev(const NaviData& naviData);
+		
+	void avatarPropBPPrev(const NaviData& naviData);
+	void avatarPropBPNext(const NaviData& naviData);
+	void avatarPropBPMPrev(const NaviData& naviData);
+	void avatarPropBPMNext(const NaviData& naviData);
+	void avatarPropBPMEdit(const NaviData& naviData);
+	void avatarPropBPMRemove(const NaviData& naviData);
 
 
 

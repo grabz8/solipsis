@@ -31,7 +31,8 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 	mCurrentAnimationState(NULL),
 	mCustomizationAnimationState(NULL),
  	mCustomizationKeyFrame(NULL),
-	mLoadingSuccessful(false)
+	mLoadingSuccessful(false),
+	mBodyPart(NULL)
 {
 	/*
 	std::string mMeshFilename = "";
@@ -671,7 +672,7 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 	mLoadingSuccessful = true;
 
 	//re-save the mesh ready to use for the solipsis application.
-	saveModified();
+//	saveModified();
 }
 //---------------------------------------------------------------------------------
 Character::~Character()
@@ -1308,6 +1309,59 @@ size_t Character::getNumBodyParts()
 BodyPartsIterator Character::getBodyPartsIterator()
 {
 	return BodyPartsIterator(mBodyParts.begin(),mBodyParts.end());
+}
+
+//---------------------------------------------------------------------------------
+BodyPart* Character::getCurrentBodyPart()
+{
+	if(!mBodyPart)
+		mBodyPart = (*mBodyParts.begin()).second;
+
+	return mBodyPart;
+}
+
+//---------------------------------------------------------------------------------
+BodyPart* Character::setNextBodyPartAsCurrent()
+{
+	std::map<String,BodyPart*>::iterator iter = mBodyParts.begin();
+	mBodyPart = getCurrentBodyPart();
+	while(iter != mBodyParts.end())
+	{
+		if((*iter).second == mBodyPart)
+		{
+			iter++;
+			if(iter == mBodyParts.end())
+				iter = mBodyParts.begin();
+			break;
+		}
+
+		iter++;
+	}
+	mBodyPart = (*iter).second;
+
+	return mBodyPart;
+}
+
+//---------------------------------------------------------------------------------
+BodyPart* Character::setPreviousBodyPartAsCurrent()
+{
+	std::map<String,BodyPart*>::iterator iter = mBodyParts.begin();
+	mBodyPart = getCurrentBodyPart();
+	while(iter != mBodyParts.end())
+	{
+		if((*iter).second == mBodyPart)
+		{
+			if(iter == mBodyParts.begin())
+				iter = mBodyParts.end();
+			iter--;
+			break;
+		}
+
+		iter++;
+	}
+	mBodyPart = (*iter).second;
+
+	return mBodyPart;
 }
 
 //---------------------------------------------------------------------------------

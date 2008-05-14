@@ -49,6 +49,9 @@ public:
 	///brief Get the previews character after the named one
 	Character* getPrevFromName(String pName);
 
+	///brief Get the name list of the added characters
+	std::vector<std::string>* getNameList();
+
 
 
 
@@ -59,6 +62,7 @@ private:
 	String mPath;
 	String mUidString;
 
+	std::vector<std::string> mNameList;
 	CharactersMap mCharacters;					///brief Map containing our Characters.
 	Character* mCurrent;						///brief Character which is currently being modified.
 	bool mCurrentCharacterJustChanged;			///brief Tells us if the current avatar just changed, it is used by CEGUI and MyApp in order to they know current avatar has changed.

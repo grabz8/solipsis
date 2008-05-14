@@ -5,9 +5,9 @@ material Ile_nelBASSIN
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -30,10 +30,9 @@ material Ile_nelBateauPhare
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 
 			texture_unit
 			{
@@ -53,8 +52,7 @@ material Ile_nelBateauPlage
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0.045 0.045 0.045 1 10
 			cull_hardware none
 			cull_software none
@@ -77,9 +75,9 @@ material Ile_nelBat01Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 
 			texture_unit
@@ -100,15 +98,14 @@ material Ile_nelBat02Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
 			texture_unit
 			{
-				texture_alias Texture #236
-				texture o_eco_batecole02.jpg
+				texture_alias ile_batecole02
+				texture o_eco_batecole02occlu.jpg
 				tex_coord_set 2
 			}
 		}
@@ -123,9 +120,9 @@ material Ile_nelBat03Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -148,9 +145,9 @@ material Ile_nelBat04Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -167,22 +164,21 @@ material Ile_nelBat04Ecole
 
 }
 
-material Ile_nelBATHAUT
+material verrierethaut
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
 			texture_unit
 			{
-				texture_alias Texture #214
+				texture_alias Texture #504
 				texture O_ail_02_bathaut.jpg
 				tex_coord_set 2
 			}
@@ -192,22 +188,20 @@ material Ile_nelBATHAUT
 
 }
 
-material Ile_CABANE
+material orig_ile
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			cull_hardware none
-			cull_software none
+			emissive 0.588235 0.588235 0.588235 1
 
 			texture_unit
 			{
-				texture_alias Texture #201
-				texture O_ail_02_cabanebathaut.jpg
+				texture_alias Texture #214
+				texture ile.jpg
 				tex_coord_set 2
 			}
 		}
@@ -222,9 +216,9 @@ material Ile_CAGETIGRE
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -247,8 +241,7 @@ material Ile_nelCARTONGRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -270,8 +263,7 @@ material Ile_nelCHAISE01GRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -293,8 +285,7 @@ material Ile_nelCHAISE02GRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -316,8 +307,7 @@ material Ile_nelBARBEUC
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -341,8 +331,7 @@ material Ile_nelCHAUFFEAUGRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -358,24 +347,20 @@ material Ile_nelCHAUFFEAUGRENIER
 
 }
 
-material Ile_nelCollinesFonds
+material orig_orig_orig_orig_orig_collinefond
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 
 			texture_unit
 			{
-				texture_alias Texture #253
-				texture O_ail_03_collinefond.jpg
-				tex_coord_set 2
+				texture_alias Texture #581
+				texture colline.jpg
 			}
 		}
 
@@ -389,9 +374,9 @@ material Ile_CAGERHINO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -414,9 +399,9 @@ material Ile_nelContourEcole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 
 			texture_unit
@@ -437,9 +422,9 @@ material Ile_DISTRIBUTEUR
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -462,8 +447,7 @@ material Ile_nelECHELLE
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -487,8 +471,7 @@ material Ile_nelElements01Plage
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -512,10 +495,9 @@ material Ile_nelElements02Plage
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
@@ -523,7 +505,6 @@ material Ile_nelElements02Plage
 			{
 				texture_alias Texture #250
 				texture O_ail_03_ElementsPlage02.jpg
-				tex_coord_set 2
 			}
 		}
 
@@ -537,10 +518,9 @@ material Ile_nelElements03Plage
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
@@ -548,32 +528,6 @@ material Ile_nelElements03Plage
 			{
 				texture_alias Texture #251
 				texture O_ail_03_ElementsPlage03.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelElements04Plage
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0 0 0 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #252
-				texture O_ail_03_ElementsPlage04.jpg
-				tex_coord_set 2
 			}
 		}
 
@@ -587,8 +541,7 @@ material Ile_ESCALIERRHINO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -612,8 +565,7 @@ material Ile_nelETAGEREGRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -635,8 +587,7 @@ material Ile_FLEURSBATHAUT
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -660,8 +611,7 @@ material Ile_GLACE
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -685,8 +635,7 @@ material Ile_DECOGLACIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -710,9 +659,9 @@ material Ile_nelGRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -735,9 +684,9 @@ material Ile_GrilleDOME
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -760,8 +709,7 @@ material Ile_GRILLELOUP
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -779,22 +727,19 @@ material Ile_GRILLELOUP
 
 }
 
-material Ile_nelIle
+material orig_orig_Matériau_#1003
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
 
 			texture_unit
 			{
-				texture_alias Texture #243
-				texture O_ail_03_Ile.jpg
+				texture_alias Texture #579
+				texture ileombree1.jpg
 				tex_coord_set 2
 			}
 		}
@@ -809,8 +754,7 @@ material Ile_LanceCaramels
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -834,8 +778,7 @@ material Ile_LIANES
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -859,8 +802,7 @@ material Ile_nelMarche01Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -884,8 +826,7 @@ material Ile_nelMarche02Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			cull_hardware none
 			cull_software none
@@ -908,9 +849,9 @@ material Ile_nelMer
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -933,7 +874,6 @@ material Ile_MerFonce
 	{
 		pass
 		{
-			lighting off
 			ambient 0.396078 0.576471 0.615686 1
 			diffuse 0.396078 0.576471 0.615686 1
 			specular 0.0870588 0.0870588 0.0870588 1 20
@@ -943,243 +883,22 @@ material Ile_MerFonce
 
 }
 
-material Ile_nelPalmiers01Ile
+material orig_orig_Matériau_#943_[Ile_palmierIle01]
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_palmierIle01.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers02Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_palmierIle02.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers03Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_palmierIle03.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers04Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_ail_03_palmierIle04.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers05Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_ail_03_palmierIle05.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers06Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_ail_03_palmierIle06.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers07Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_ail_03_palmierIle07.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers08Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_palmierIle08.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers09Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_ail_03_palmierIle09.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiers01Plage
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.294118 0.294118 0.294118 1
 			cull_hardware none
 			cull_software none
 
 			texture_unit
 			{
-				texture_alias Texture #244
-				texture O_ail_03_palmierPlage01.jpg
-				tex_coord_set 2
+				texture_alias Texture #563
+				texture ile_palmierile01_MOYEN_OK.jpg
 			}
 		}
 
@@ -1187,24 +906,22 @@ material Ile_nelPalmiers01Plage
 
 }
 
-material Ile_nelPalmiers02Plage
+material orig_orig_orig_orig_palmier8_[Ile_palmierIle02]
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
 			texture_unit
 			{
-				texture_alias Texture #245
-				texture O_ail_03_palmierPlage02.jpg
-				tex_coord_set 2
+				texture_alias Texture #561
+				texture ile_palmierile02.jpg
 			}
 		}
 
@@ -1212,22 +929,45 @@ material Ile_nelPalmiers02Plage
 
 }
 
-material Ile_nelPalmiers03Plage_[O_ail_03_palmierPlage03]
+material palmier8_[Ile_palmierIle08]
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
+			cull_hardware none
+			cull_software none
 
 			texture_unit
 			{
-				texture_alias baked_nelPalmiers03Plage_CompleteMap
-				texture O_ail_03_palmierPlage03TextureComplete.jpg
-				tex_coord_set 2
+				texture_alias Texture #550
+				texture ile_palmierile08.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_orig_orig_orig_orig_orig_orig_orig_P9
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #584
+				texture palmierile09.jpg
 			}
 		}
 
@@ -1241,9 +981,9 @@ material Ile_PALMIERSZOO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
@@ -1259,49 +999,22 @@ material Ile_PALMIERSZOO
 
 }
 
-material Ile_PALMIERSBATHAUT
+material orig_orig_orig_orig_orig_P9_[Ile_palmiersecole]
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
 			texture_unit
 			{
-				texture_alias Texture #203
-				texture O_ail_02_palmiersbathaut.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPalmiersEcole
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0 0 0 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #241
-				texture O_ail_03_palmiersecole.jpg
-				tex_coord_set 2
+				texture_alias Texture #580
+				texture ile_palmiersecole.jpg
 			}
 		}
 
@@ -1315,8 +1028,7 @@ material Ile_PALMIERSTOIT
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			cull_hardware none
 			cull_software none
@@ -1339,8 +1051,7 @@ material Ile_nelPANNEAURHINO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -1362,9 +1073,9 @@ material Ile_PAVILLON
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -1381,68 +1092,20 @@ material Ile_PAVILLON
 
 }
 
-material Ile_nelPhare
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0 0 0 1 10
-			alpha_rejection greater 128
-
-			texture_unit
-			{
-				texture_alias Texture #230
-				texture O_sou_04_Phare.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelPlage
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #248
-				texture O_ail_03_Plage.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
 material Ile_nelPonton01Phare
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 
 			texture_unit
 			{
 				texture_alias Texture #232
 				texture O_sou_04_pontonPhare01.jpg
-				tex_coord_set 2
 			}
 		}
 
@@ -1456,16 +1119,14 @@ material Ile_nelPonton02Phare
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 
 			texture_unit
 			{
 				texture_alias Texture #233
 				texture O_sou_04_pontonPhare02.jpg
-				tex_coord_set 2
 			}
 		}
 
@@ -1479,8 +1140,7 @@ material Ile_ENTREEZOO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 			cull_hardware none
@@ -1504,9 +1164,9 @@ material Ile_POUBELLE
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -1529,9 +1189,9 @@ material Ile_nelCONTOURZOO
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -1548,437 +1208,19 @@ material Ile_nelCONTOURZOO
 
 }
 
-material Ile_nelRochers03mer
+material orig_Matériau_#826
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer03.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers01mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer01.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers02mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer02.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers04mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer04.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers05mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer05.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers06mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer06.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers07mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer07.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers08mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer08.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers09mer
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #243
-				texture O_sou_04_rochersmer09.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochersPhare
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
 
 			texture_unit
 			{
-				texture_alias Texture #229
-				texture O_sou_04_rochersPhare.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochersPlage
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0 0 0 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #247
-				texture O_ail_03_RochersPLage.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers01Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine01.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers02Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine02.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers03Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine03.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers04Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine04.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers05Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine05.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers06Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine06.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
-material Ile_nelRochers07Ile
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0.045 0.045 0.045 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #253
-				texture O_ail_03_rochersplaine07.jpg
+				texture_alias Texture #392
+				texture rochersplage01.jpg
 				tex_coord_set 2
 			}
 		}
@@ -1993,8 +1235,7 @@ material Ile_sol
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 
 			texture_unit
@@ -2014,8 +1255,7 @@ material Ile_nelSolBat01Ecole
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -2037,8 +1277,7 @@ material Ile_nelLUNETTEGRENIER
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 
 			texture_unit
@@ -2053,39 +1292,13 @@ material Ile_nelLUNETTEGRENIER
 
 }
 
-material Ile_nelTERRAIN
-{
-	technique
-	{
-		pass
-		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
-			specular 0 0 0 1 10
-			alpha_rejection greater 128
-			cull_hardware none
-			cull_software none
-
-			texture_unit
-			{
-				texture_alias Texture #212
-				texture O_ail_02_terrain.jpg
-				tex_coord_set 2
-			}
-		}
-
-	}
-
-}
-
 material Ile_TUYAUEAUX
 {
 	technique
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
 			alpha_rejection greater 128
 
@@ -2107,10 +1320,9 @@ material Ile_VERRIERE
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
-			alpha_rejection greater 128
+			emissive 0.588235 0.588235 0.588235 1
 			cull_hardware none
 			cull_software none
 
@@ -2132,9 +1344,9 @@ material Ile_nelTOILETTES
 	{
 		pass
 		{
-			lighting off
-			ambient 0.5 0.5 0.5 1
+			ambient 0 0 0 1
 			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
 			alpha_rejection greater 128
 			cull_hardware none
 			cull_software none
@@ -2151,18 +1363,581 @@ material Ile_nelTOILETTES
 
 }
 
-material Standard_1
+material Matériau_#793/Standard_1
 {
 	technique
 	{
 		pass
 		{
-			lighting off
 			ambient 0.952941 0.694118 0 1
 			diffuse 0.952941 0.694118 0 1
 			specular 0 0 0 1 10
 			cull_hardware none
 			cull_software none
+		}
+
+	}
+
+}
+
+material Matériau_#793/orig_Ile_nelTERRAIN
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #523
+				texture terrain_zoo.jpg
+				tex_coord_set 2
+			}
+		}
+
+	}
+
+}
+
+material Matériau_#793/orig_kk_[Ile_terrain_zoo]
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #525
+				texture ile_terrain_zoo.jpg
+				tex_coord_set 2
+			}
+		}
+
+	}
+
+}
+
+material P9_[Ile_palmierIle10]
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #571
+				texture palmier10.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_orig_orig_orig_Matériau_#943
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.294118 0.294118 0.294118 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #564
+				texture ile_palmierile05b.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_P9_[Ile_palmierIle12]
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #574
+				texture palmier12.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_orig_Matériau_#794
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+
+			texture_unit
+			{
+				texture_alias Texture #583
+				texture plage_ombree2.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_Matériau_#867
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #510
+				texture rochers_tunel.jpg
+				tex_coord_set 2
+			}
+		}
+
+	}
+
+}
+
+material Ile_nelPhare
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+
+			texture_unit
+			{
+				texture_alias Texture #230
+				texture O_sou_04_Phare.jpg
+				tex_coord_set 2
+			}
+		}
+
+	}
+
+}
+
+material orig_kk_[Ile_terrain_zoo]
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #525
+				texture ile_terrain_zoo.jpg
+				tex_coord_set 2
+			}
+		}
+
+	}
+
+}
+
+material mer1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #536
+				texture rochersmer01.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #535
+				texture rochersmer02.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer4
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #534
+				texture rochersmer04.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer5
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #533
+				texture O_sou_04_rochersmer05occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer6
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #530
+				texture O_sou_04_rochersmer06occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer7
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias mer7
+				texture O_sou_04_rochersmer07occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer8
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #538
+				texture O_sou_04_rochersmer08occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material mer9
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #531
+				texture O_sou_04_rochersmer09occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine7
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #539
+				texture Rochersplaine07.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine1
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #544
+				texture O_ail_03_rochersplaine01occlu.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine2
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #571
+				texture rochersplaine02.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine3
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #570
+				texture rochersplaine03.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine4
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #542
+				texture rochersplaine04.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine5
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			alpha_rejection greater 128
+
+			texture_unit
+			{
+				texture_alias Texture #541
+				texture rochersplaine05.jpg
+			}
+		}
+
+	}
+
+}
+
+material plaine6
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+
+			texture_unit
+			{
+				texture_alias Texture #540
+				texture rochersplaine06.jpg
+			}
+		}
+
+	}
+
+}
+
+material Ile_nelElements04Plage
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.588235 0.588235 0.588235 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #252
+				texture O_ail_03_ElementsPlage04.jpg
+			}
+		}
+
+	}
+
+}
+
+material orig_Matériau_#1005_[Ile_palmierIle07]
+{
+	technique
+	{
+		pass
+		{
+			ambient 0 0 0 1
+			specular 0 0 0 1 10
+			emissive 0.294118 0.294118 0.294118 1
+			cull_hardware none
+			cull_software none
+
+			texture_unit
+			{
+				texture_alias Texture #589
+				texture ile_palmierile07.jpg
+			}
 		}
 
 	}

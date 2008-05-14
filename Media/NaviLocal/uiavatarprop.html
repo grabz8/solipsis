@@ -48,6 +48,10 @@
 				//alert(message);
 				new NaviData('sendMessage').add({msg:message}).send();
             }  
+            function sendMessageParam(message, param)
+            {
+				new NaviData(message).add({msg:param}).send();
+            }  
         </script>
 		
 		
@@ -99,45 +103,80 @@
 				    <!-- ANIMATIONS -->
 					<div class="tabbertab">
 						<h2>Animations</h2>
-						<p><table align="center">
+						<p><table align="center" width="240">
+						<!--
 						    <tr>
+						        <td align="center">
+						            <input type="button" value=" < " style="width: 30px" onclick="elementClicked('AnimPrev')">
+						        </td>
+								<td align="center" width="176">
+								    <br>
+						            <div id="AnimName">
+						                <p>Animation ?/?<br><b>???</b></p>
+						            </div>
+						            <br>
+								</td>
 								<td align="center">
-								    <input type="button" value="Open edition panel" size="20" onclick=""/>
+								    <input type="button" value=" > " style="width: 30px" onclick="elementClicked('AnimNext')">
 								</td>
 							</tr>
-							<tr>
-								<td align="center">
-								    <input type="button" value="Play animation" size="20" onclick=""/>
-								</td>
-							</tr>
 							
-							
-							<tr>
-								<td align="center">
-								    <input type="button" value="Play animation" size="20" onclick=""/>
-								</td>
-							</tr>
-							
-							
+				            <tr>
+				                <td align="center" colspan="3">
+						            <input type="button" value="Pause"  style="width: 100px" onclick="elementClicked('AnimPlayPause')" id="AnimPlayPause">
+						            <input type="button" value="Stop"  style="width: 100px" onclick="elementClicked('AnimStop')"><br>
+						            <br>
+						            <div class="slider" id="AnimTime" style="display: block">
+										<input class="slider-input" id="AnimeTimeInput" style="width: 200px"/>
+									</div>
+					            </td>
+				            </tr>
+						-->	
 					    </table></p>
 					</div>
 					
 					<!-- PROPERTIES -->
 					<div class="tabbertab">
 						<h2>Properties</h2>
-						<p><table>
+						<p><table width="496">
 							<tr>
-								<td width="200"></td>
-								<td width="32"></td>
-								<td width="200"></td>
-								<td width="32"></td>
+								<td width="150" colspan="2"><b>Height</b></td>
+								<td width="160"colspan="3">
+								    <div class="slider" id="Height" style="display: block">
+										<input class="slider-input" id="HeightInput" style="width: 190px"/>
+									</div>
+								</td>
+								<td width="156">
+								    <input type="text" id="HeightValue" value="1.50" style="width: 40px"/>
+								</td>
 							</tr>
+							<tr><td></td></tr>
 							
 							<tr>
-								<td>Height :</td>
-								<td colspan="3">
-								    <input type="text" value="1.50" size="10"/>
-								</td>
+							    <td width="150" colspan="2"><b>Body Parts</b></td>
+							    <td width="30"><input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartPrev','body1')" /></td>
+							    <td width="130" align="center" id="BodyPartName">BodyPartName</td>
+							    <td width="30"><input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartNext','body1')" /></td>
+							    <td width="156"><input type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled/></td>
+							</tr>
+						</table>
+							
+						<table id="BodyParts" width="496">
+							<!-- example -->
+							<tr>
+							    <td width="20"></td>
+							    <td width="98" id="BodyPartName2">BodyPartName</td>
+							    <td width="30">
+							        <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartModelPrev','body1')"/>
+							    </td>
+							    <td width="130" align="center" id="BodyPartModelName">BodyPartModelName</td>
+							    <td width="30">
+							        <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartModelNext','body1')"/>
+							    </td>
+							    <td width="156">
+							        <input type="button" value="Edit" onclick="sendMessageParam('BodyPartModelEdit','body1')" />
+							        <input type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','body1')" disabled/>
+							    </td>
 							</tr>
 						</table></p>
 					</div>
@@ -273,33 +312,24 @@
 					var update = false;
 		
 					// definition for the material
-					var shininess = new Slider(document.getElementById("shininess"), document.getElementById("shininessInput"));
-					var transparency = new Slider(document.getElementById("transparency"), document.getElementById("transparencyInput"));
-					var scrollU = new Slider(document.getElementById("scrollU"), document.getElementById("scrollUInput"));
-					var scrollV = new Slider(document.getElementById("scrollV"), document.getElementById("scrollVInput"));
-					var scaleU = new Slider(document.getElementById("scaleU"), document.getElementById("scaleUInput"));
-					var scaleV = new Slider(document.getElementById("scaleV"), document.getElementById("scaleVInput"));
-					var rotateU = new Slider(document.getElementById("rotateU"), document.getElementById("rotateUInput"));
+					var height = new Slider(document.getElementById("Height"), document.getElementById("HeightInput"));
+					var animTime = new Slider(document.getElementById("AnimTime"), document.getElementById("AnimTimeInput"));
 					
 					// set min & max values
-					revolution.setMinimum(1); revolution.setMaximum(5);
+					height.setMinimum(0); height.setMaximum(40);
 					
-					// onchange / deformations				
-					taperX.onchange = function() {elementClicked('MdlrTaperX')};
-					taperY.onchange = function() {elementClicked('MdlrTaperY')};
-					topShearX.onchange = function() {elementClicked('MdlrTopShearX')};
-					topShearY.onchange = function() {elementClicked('MdlrTopShearY')};
-					twistBegin.onchange = function() {elementClicked('MdlrTwistBegin')};
-					twistEnd.onchange = function() {elementClicked('MdlrTwistEnd')};
-					dimpleBegin.onchange = function() {elementClicked('MdlrDimpleBegin')};
-					dimpleEnd.onchange = function() {elementClicked('MdlrDimpleEnd')};
-					pathCutBegin.onchange = function() {elementClicked('MdlrPathBegin')};
-					pathCutEnd.onchange = function() {elementClicked('MdlrPathEnd')};
-					holeSizeX.onchange = function() {elementClicked('MdlrHoleX')};
-					holeSizeY.onchange = function() {elementClicked('MdlrHoleY')};
-					skew.onchange = function() {elementClicked('MdlrSkew')};
-					revolution.onchange = function() {elementClicked('MdlrRevolution')};
-					radiusDelta.onchange = function() {elementClicked('MdlrRadiusDelta')};
+					// onchange / deformations
+					height.onchange = function() {elementClicked('Height'); $('HeightValue').value=height.getValue()/20.+0.5+'m'}
+					//taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
+
+					// onchange / material
+					shininess.onchange = function() {elementClicked('MdlrShininess')};
+					transparency.onchange = function() {elementClicked('MdlrTransparency')};
+					scrollU.onchange = function() {elementClicked('MdlrScrollU')};
+					scrollV.onchange = function() {elementClicked('MdlrScrollV')};
+					scaleU.onchange = function() {elementClicked('MdlrScaleU')};
+					scaleV.onchange = function() {elementClicked('MdlrScaleV')};
+					rotateU.onchange = function() {elementClicked('MdlrRotateU')};
             
 function updTexture()
 {

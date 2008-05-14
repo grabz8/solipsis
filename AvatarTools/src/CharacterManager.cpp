@@ -37,6 +37,8 @@ bool CharacterManager::addCharacter(String pName)
 	mCharacters[characterName] = NULL;
 	//setCurrentCharacter(character->getName());
 
+	mNameList.push_back(characterName);
+
 	return true;
 }
 //-------------------------------------------------------------------------------------
@@ -99,6 +101,10 @@ Character* CharacterManager::getPrevFromName(String pName)
 	return loadCharacter((*iterator).first);
 }
 //-------------------------------------------------------------------------------------
+std::vector<std::string>* CharacterManager::getNameList()
+{
+	return &mNameList;
+}
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
