@@ -11,22 +11,22 @@
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.033" y="0.033" z="0.033" />
         </entity>
-        <entity name="Delta_mur_droit_flip&#xE9;" hidden="false" filename="Delta_mur_droit_flip&#xE9;.mesh" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_mur_droit_flip" hidden="false" filename="Delta_mur_droit_flip.mesh" CastShadows="yes" ReceiveShadows="yes">
             <position x="-1.2765723" y="-42.985992" z="8.7633972" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.033" y="0.033" z="0.033" />
         </entity>
-        <entity name="Delta_mur_gauche_flip&#xE9;" hidden="false" filename="Delta_mur_gauche_flip&#xE9;.mesh" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_mur_gauche_flip" hidden="false" filename="Delta_mur_gauche_flip.mesh" CastShadows="yes" ReceiveShadows="yes">
             <position x="-1.127884" y="-42.985992" z="8.7633972" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.033" y="0.033" z="0.033" />
         </entity>
-        <entity name="Delta_skydome_flipe" hidden="false" filename="Delta_skydome_flipe.mesh" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_skydome_flip" hidden="false" filename="Delta_skydome_flip.mesh" CastShadows="yes" ReceiveShadows="yes">
             <position x="-1.1277355" y="-23.27256" z="42.897415" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.032669999" y="0.032669999" z="0.032669999" />
         </entity>
-        <entity name="Delta_tour_flipp&#xE9;e" hidden="false" filename="Delta_tour_flipp&#xE9;e.mesh" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_tour_flip" hidden="false" filename="Delta_tour_flip.mesh" CastShadows="yes" ReceiveShadows="yes">
             <position x="-1.127884" y="-42.985992" z="8.7633972" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.033" y="0.033" z="0.033" />
@@ -36,7 +36,7 @@
             <rotation x="-1.942616e-007" y="1" z="2.3841864e-007" w="-4.0133929e-007" />
             <scale x="0.011343176" y="0.011343176" z="0.017769447" />
         </entity>
-        <entity name="Delta_roof_fliped" hidden="false" filename="Delta_roof_fliped.mesh" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_roof_flip" hidden="false" filename="Delta_roof_flip.mesh" CastShadows="yes" ReceiveShadows="yes">
             <position x="-1.1278839" y="-45.538513" z="17.31546" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.046329115" y="0.033000018" z="0.033000018" />
@@ -181,622 +181,622 @@
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="1" y="1" z="1" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re01" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re01.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock01" hidden="false" filename="Delta_rock01.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-57.14502" y="22.867645" z="-462.17621" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re02" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re02.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock02" hidden="false" filename="Delta_rock02.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="253.07901" y="22.867645" z="-381.51709" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re03" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re03.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock03" hidden="false" filename="Delta_rock03.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="351.30807" y="83.421509" z="67.050232" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.056535315" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re04" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re04.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock04" hidden="false" filename="Delta_rock04.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-178.30029" y="83.421509" z="425.30896" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488326" z="0.056535315" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re05" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re05.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock05" hidden="false" filename="Delta_rock05.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-112.82458" y="82.85025" z="425.30896" />
             <rotation x="-0.13243066" y="0.39841342" z="-0.28627902" w="-0.86126256" />
             <scale x="0.023928575" y="0.0085279457" z="0.038606472" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re06" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re06.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock06" hidden="false" filename="Delta_rock06.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-254.70544" y="82.85025" z="452.79187" />
             <rotation x="-0.20339975" y="0.15655755" z="-0.24108534" w="-0.93594664" />
             <scale x="0.023928568" y="0.0085279439" z="0.038606469" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re07" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re07.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock07" hidden="false" filename="Delta_rock07.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-493.71268" y="22.867645" z="-341.13879" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re08" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re08.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock08" hidden="false" filename="Delta_rock08.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-220.80814" y="22.867645" z="-419.79968" />
             <rotation x="0" y="0.92116219" z="-0" w="-0.38917887" />
             <scale x="0.031395938" y="0.011189255" z="0.031395938" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re09" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re09.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock09" hidden="false" filename="Delta_rock09.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="355.21164" y="62.052734" z="-313.5412" />
             <rotation x="0" y="0.92116219" z="-0" w="-0.38917887" />
             <scale x="0.031395938" y="0.011189255" z="0.031395938" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re10" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re10.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock10" hidden="false" filename="Delta_rock10.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-355.88638" y="6.3049316" z="116.11237" />
             <rotation x="-0.2348401" y="0.73455292" z="0.55585229" w="-0.31033909" />
             <scale x="0.031395946" y="0.011189255" z="0.031395935" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re11" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re11.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock11" hidden="false" filename="Delta_rock11.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-573.90723" y="6.3049622" z="-1.8277893" />
             <rotation x="-0.023274479" y="0.57750404" z="0.6029759" w="-0.54987955" />
             <scale x="0.031395946" y="0.011189256" z="0.031395953" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re12" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re12.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock12" hidden="false" filename="Delta_rock12.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-620.9137" y="6.3049622" z="-31.688232" />
             <rotation x="-0.023274479" y="0.57750404" z="0.6029759" w="-0.54987955" />
             <scale x="0.031395946" y="0.011189256" z="0.031395953" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re13" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re13.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock13" hidden="false" filename="Delta_rock13.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="101.17188" y="25.539856" z="-159.68744" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.0028294695" y="0.0010083996" z="0.0032077788" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re14" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re14.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock14" hidden="false" filename="Delta_rock14.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="152.35571" y="23.784912" z="-285.00702" />
             <rotation x="0" y="-0.38713712" z="-0" w="-0.92202216" />
             <scale x="0.0028294697" y="0.0010083996" z="0.003207779" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re15" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re15.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock15" hidden="false" filename="Delta_rock15.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="159.57629" y="25.520569" z="-270.56049" />
             <rotation x="0" y="0.20671564" z="-0" w="-0.97840106" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re16" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re16.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock16" hidden="false" filename="Delta_rock16.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="163.42755" y="23.740753" z="-281.61816" />
             <rotation x="0" y="0.92606378" z="-0" w="0.37736708" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980328" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re17" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re17.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock17" hidden="false" filename="Delta_rock17.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="127.83778" y="21.28894" z="-297.95276" />
             <rotation x="0" y="0.57854104" z="-0" w="-0.81565326" />
             <scale x="0.0013213624" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re18" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re18.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock18" hidden="false" filename="Delta_rock18.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="5.185791" y="23.678101" z="-224.94489" />
             <rotation x="0" y="0.20671564" z="-0" w="-0.97840106" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re19" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re19.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock19" hidden="false" filename="Delta_rock19.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-10.799316" y="21.868011" z="-249.95483" />
             <rotation x="0" y="0.57854104" z="-0" w="-0.81565326" />
             <scale x="0.0013213624" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re20" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re20.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock20" hidden="false" filename="Delta_rock20.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-414.83316" y="29.343079" z="-83.188416" />
             <rotation x="0" y="0.57854104" z="-0" w="-0.81565326" />
             <scale x="0.0013213624" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re21" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re21.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock21" hidden="false" filename="Delta_rock21.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-398.84811" y="29.343079" z="-58.178528" />
             <rotation x="0" y="0.20671564" z="-0" w="-0.97840106" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re22" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re22.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock22" hidden="false" filename="Delta_rock22.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-302.86191" y="27.296906" z="7.0789795" />
             <rotation x="-0.21226101" y="0" z="-0" w="-0.97721303" />
             <scale x="0.0028294693" y="0.0010083999" z="0.0032077795" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re23" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re23.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock23" hidden="false" filename="Delta_rock23.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="136.65894" y="21.484436" z="135.23334" />
             <rotation x="0" y="0.57854104" z="-0" w="-0.81565326" />
             <scale x="0.0013213624" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re24" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re24.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock24" hidden="false" filename="Delta_rock24.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="152.64392" y="26.195679" z="160.24335" />
             <rotation x="0" y="0.20671564" z="-0" w="-0.97840106" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re25" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re25.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock25" hidden="false" filename="Delta_rock25.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="248.63004" y="63.328644" z="225.50073" />
             <rotation x="0.21739754" y="0" z="-0" w="-0.97608316" />
             <scale x="0.0028294695" y="0.0010083996" z="0.0032077795" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re26" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re26.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock26" hidden="false" filename="Delta_rock26.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="83.263672" y="-7.8950806" z="-237.35388" />
             <rotation x="-0.10464061" y="-0.73204571" z="0.095256612" w="-0.66639739" />
             <scale x="0.00282947" y="0.0010084" z="0.003207779" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re27" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re27.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock27" hidden="false" filename="Delta_rock27.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="46.065308" y="-13.124084" z="-221.48621" />
             <rotation x="0.18980764" y="-0.71471232" z="-0.17278607" w="-0.65061837" />
             <scale x="0.0028294688" y="0.0010083995" z="0.0032077788" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re28" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re28.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock28" hidden="false" filename="Delta_rock28.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-472.21146" y="75.63237" z="-274.13696" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.0028294695" y="0.0010083996" z="0.0032077788" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re29" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re29.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock29" hidden="false" filename="Delta_rock29.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="287.55429" y="63.328644" z="-186.73297" />
             <rotation x="0.011102881" y="0.013231832" z="-0.15198489" w="-0.9882319" />
             <scale x="0.0028294704" y="0.0010083995" z="0.0032077795" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re30" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re30.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock30" hidden="false" filename="Delta_rock30.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-86.027222" y="25.602661" z="118.01642" />
             <rotation x="0.17503737" y="0.20729062" z="-0.79382199" w="-0.54427856" />
             <scale x="0.0029705218" y="0.0010586696" z="0.0033676904" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re31" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re31.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock31" hidden="false" filename="Delta_rock31.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-57.954346" y="27.41272" z="108.37622" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re32" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re32.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock32" hidden="false" filename="Delta_rock32.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="371.29391" y="83.421509" z="494.82019" />
             <rotation x="0.78625685" y="-0.26314867" z="-0.36285257" w="0.42531285" />
             <scale x="0.035041008" y="0.012488326" z="0.056535311" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re33" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re33.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock33" hidden="false" filename="Delta_rock33.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="451.30966" y="83.421509" z="411.00537" />
             <rotation x="-0.090000696" y="0.52252257" z="-0.59088427" w="-0.60805094" />
             <scale x="0.035041008" y="0.012488322" z="0.056535311" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re34" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re34.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock34" hidden="false" filename="Delta_rock34.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-398.6459" y="22.867645" z="-51.836212" />
             <rotation x="-0.12069342" y="0.34774008" z="0.41336563" w="-0.8328498" />
             <scale x="0.035041012" y="0.012488332" z="0.035041016" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re35" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re35.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock35" hidden="false" filename="Delta_rock35.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="158.24561" y="-3.722229" z="-425.84711" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re36" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re36.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock36" hidden="false" filename="Delta_rock36.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-180.32657" y="-3.722229" z="-476.85034" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re37" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re37.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock37" hidden="false" filename="Delta_rock37.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-380.67825" y="0.17987061" z="-376.18378" />
             <rotation x="0" y="0.98162723" z="-0" w="0.19080895" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re38" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re38.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock38" hidden="false" filename="Delta_rock38.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-259.33997" y="55.649017" z="-637.62476" />
             <rotation x="0" y="0.98162723" z="-0" w="0.19080895" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re39" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re39.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock39" hidden="false" filename="Delta_rock39.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-288.72293" y="55.649017" z="-622.39233" />
             <rotation x="0.34914348" y="-0.63728994" z="0.040395737" w="-0.68580502" />
             <scale x="0.035041004" y="0.012488324" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re40" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re40.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock40" hidden="false" filename="Delta_rock40.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="65.463379" y="28.688812" z="-656.63196" />
             <rotation x="0" y="0.98162723" z="-0" w="0.19080895" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re41" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re41.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock41" hidden="false" filename="Delta_rock41.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-612.927" y="47.25766" z="-220.97339" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re42" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re42.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock42" hidden="false" filename="Delta_rock42.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-671.14124" y="51.73201" z="-270.08704" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.035041008" y="0.012488327" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re43" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re43.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock43" hidden="false" filename="Delta_rock43.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-435.34525" y="64.5103" z="-604.55188" />
             <rotation x="0.052741136" y="-9.4206696e-009" z="-0.14106278" w="-0.98859483" />
             <scale x="0.035040997" y="0.012488326" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re44" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re44.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock44" hidden="false" filename="Delta_rock44.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-599.82617" y="96.095917" z="-335.11987" />
             <rotation x="-0.13285676" y="-0.05461764" z="-0.051586885" w="-0.98828375" />
             <scale x="0.0052561504" y="0.0018732488" z="0.0052561527" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re45" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re45.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock45" hidden="false" filename="Delta_rock45.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-596.24268" y="96.194748" z="-321.45825" />
             <rotation x="-0.17543815" y="0.59572321" z="-0.045461129" w="-0.78247595" />
             <scale x="0.0052561518" y="0.0018732491" z="0.0052561527" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re46" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re46.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock46" hidden="false" filename="Delta_rock46.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-634.08484" y="85.59433" z="-292.17529" />
             <rotation x="-0.043826554" y="0.96789622" z="0.024306785" w="-0.24630339" />
             <scale x="0.0088667329" y="0.0031600299" z="0.0088667329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re47" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re47.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock47" hidden="false" filename="Delta_rock47.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-261.09143" y="30.819107" z="-207.77032" />
             <rotation x="0.13654274" y="-0.74716753" z="-0.65833777" w="0.2772406" />
             <scale x="0.0077171852" y="0.0035733106" z="0.011303464" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re48" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re48.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock48" hidden="false" filename="Delta_rock48.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-289.11606" y="27.848358" z="-190.68176" />
             <rotation x="-0.41043833" y="-0.27995238" z="-0.70453012" w="0.53115416" />
             <scale x="0.004522827" y="0.002094218" z="0.0066246456" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re49" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re49.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock49" hidden="false" filename="Delta_rock49.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-79.966858" y="23.658142" z="-16.868042" />
             <rotation x="-0.21859324" y="-0.49127632" z="-0.62895757" w="0.68799806" />
             <scale x="0.0023643707" y="0.0010947812" z="0.0034631253" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re50" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re50.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock50" hidden="false" filename="Delta_rock50.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-76.806091" y="22.747955" z="-7.3211975" />
             <rotation x="0.79296297" y="-0.16485718" z="0.23195587" w="-0.54685056" />
             <scale x="0.001385691" y="0.00064162066" z="0.0020296401" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re51" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re51.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock51" hidden="false" filename="Delta_rock51.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="233.98492" y="5.0834656" z="-510.35547" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.0028294695" y="0.0010083996" z="0.0032077788" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re52" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re52.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock52" hidden="false" filename="Delta_rock52.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="332.86142" y="-16.755035" z="-537.59912" />
             <rotation x="0" y="0" z="-0.22791508" w="-0.97368103" />
             <scale x="0.0069904868" y="0.0024913519" z="0.0079251379" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re53" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re53.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock53" hidden="false" filename="Delta_rock53.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="332.86142" y="8.3925171" z="-552.32629" />
             <rotation x="0.12905502" y="0.55133885" z="-0.18785655" w="-0.80254608" />
             <scale x="0.0069904849" y="0.0024913521" z="0.007925136" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re54" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re54.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock54" hidden="false" filename="Delta_rock54.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="332.86142" y="8.3925171" z="-510.85986" />
             <rotation x="0.10001239" y="-0.74701691" z="0.2848857" w="-0.59228659" />
             <scale x="0.0069904868" y="0.0024913517" z="0.0079251351" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re55" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re55.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock55" hidden="false" filename="Delta_rock55.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="390.51108" y="8.3925171" z="-532.60547" />
             <rotation x="0.11257786" y="0.7452268" z="-0.43895316" w="0.48916602" />
             <scale x="0.0069904858" y="0.0024913517" z="0.0079251351" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re56" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re56.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock56" hidden="false" filename="Delta_rock56.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="382.42368" y="-15.600586" z="-541.52954" />
             <rotation x="-0.087200835" y="0.88448876" z="-0.21768002" w="0.40334979" />
             <scale x="0.0069904868" y="0.0024913526" z="0.0079251397" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re57" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re57.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock57" hidden="false" filename="Delta_rock57.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="48.719971" y="25.040009" z="-8.8490906" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re58" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re58.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock58" hidden="false" filename="Delta_rock58.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="164.36432" y="22.634216" z="-66.361328" />
             <rotation x="0" y="0.70171648" z="-0" w="-0.71245629" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re59" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re59.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock59" hidden="false" filename="Delta_rock59.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="153.73547" y="22.207306" z="-55.049927" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re60" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re60.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock60" hidden="false" filename="Delta_rock60.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-281.53799" y="25.72345" z="-109.27029" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re61" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re61.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock61" hidden="false" filename="Delta_rock61.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-380.19839" y="25.72345" z="52.693295" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213623" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re62" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re62.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock62" hidden="false" filename="Delta_rock62.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-309.50815" y="25.72345" z="10.060486" />
             <rotation x="0" y="-0.44235024" z="-0" w="-0.89684242" />
             <scale x="0.0013213624" y="0.00047092259" z="0.0014980327" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re63" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re63.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock63" hidden="false" filename="Delta_rock63.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-298.121" y="25.72345" z="11.318085" />
             <rotation x="0" y="0.95738244" z="-0" w="0.28882319" />
             <scale x="0.001321362" y="0.00047092259" z="0.0014980326" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re64" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re64.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock64" hidden="false" filename="Delta_rock64.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-301.08987" y="25.72345" z="5.634491" />
             <rotation x="0" y="0.95738244" z="-0" w="0.28882319" />
             <scale x="0.001321362" y="0.00047092259" z="0.0014980326" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re65" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re65.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock65" hidden="false" filename="Delta_rock65.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-295.22641" y="25.406433" z="5.1594543" />
             <rotation x="0" y="0.95738244" z="-0" w="0.28882319" />
             <scale x="0.00028313938" y="0.00010090856" z="0.00032099604" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re66" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re66.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock66" hidden="false" filename="Delta_rock66.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-295.76913" y="25.406433" z="6.9835815" />
             <rotation x="0" y="-0.56706244" z="-0" w="-0.8236748" />
             <scale x="0.00028313947" y="0.00010090857" z="0.00032099613" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re67" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re67.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock67" hidden="false" filename="Delta_rock67.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-304.95859" y="25.222687" z="2.1595764" />
             <rotation x="0" y="-0.56706244" z="-0" w="-0.8236748" />
             <scale x="0.00028313947" y="0.00010090857" z="0.00032099613" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re68" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re68.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock68" hidden="false" filename="Delta_rock68.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-301.98727" y="30.849701" z="3.1419373" />
             <rotation x="0" y="-0.56706244" z="-0" w="-0.8236748" />
             <scale x="0.00028313947" y="0.00010090857" z="0.00032099613" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re69" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re69.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock69" hidden="false" filename="Delta_rock69.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-298.43668" y="26.993469" z="11.062897" />
             <rotation x="-0.22164382" y="-0.22330831" z="0.061274063" w="-0.94723433" />
             <scale x="0.00028313944" y="0.00010090857" z="0.00032099613" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re70" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re70.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock70" hidden="false" filename="Delta_rock70.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="103.12805" y="25.406433" z="-136.48807" />
             <rotation x="0" y="-0.58963442" z="-0" w="-0.8076703" />
             <scale x="0.00028313952" y="0.00010090857" z="0.0003209961" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re71" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re71.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock71" hidden="false" filename="Delta_rock71.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="99.197632" y="27.296906" z="-143.30994" />
             <rotation x="-0.16933745" y="0.58920979" z="-0.12798257" w="-0.77960062" />
             <scale x="0.0028294697" y="0.0010083996" z="0.0032077793" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re72" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re72.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock72" hidden="false" filename="Delta_rock72.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="94.515503" y="25.72345" z="-148.89017" />
             <rotation x="0" y="0.18785258" z="-0" w="-0.98219723" />
             <scale x="0.001321362" y="0.00047092259" z="0.0014980326" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re73" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re73.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock73" hidden="false" filename="Delta_rock73.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="96.413208" y="25.72345" z="-137.5921" />
             <rotation x="0" y="-0.58963436" z="-0" w="-0.8076703" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re74" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re74.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock74" hidden="false" filename="Delta_rock74.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="101.07092" y="25.72345" z="-141.99933" />
             <rotation x="0" y="-0.58963436" z="-0" w="-0.8076703" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re75" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re75.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock75" hidden="false" filename="Delta_rock75.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="101.2251" y="25.406433" z="-136.51239" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re76" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re76.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock76" hidden="false" filename="Delta_rock76.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="103.35809" y="25.222687" z="-146.66949" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re77" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re77.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock77" hidden="false" filename="Delta_rock77.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="103.22394" y="30.849701" z="-143.54291" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re78" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re78.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock78" hidden="false" filename="Delta_rock78.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="96.572632" y="26.993469" z="-137.96545" />
             <rotation x="-0.21376805" y="0.39298353" z="-0.084756814" w="-0.89032775" />
             <scale x="0.00028313944" y="0.00010090855" z="0.00032099607" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re79" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re79.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock79" hidden="false" filename="Delta_rock79.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-116.46838" y="21.550873" z="-217.39539" />
             <rotation x="0" y="-0.58963442" z="-0" w="-0.8076703" />
             <scale x="0.00028313952" y="0.00010090857" z="0.0003209961" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re80" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re80.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock80" hidden="false" filename="Delta_rock80.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-120.3988" y="23.441345" z="-224.21722" />
             <rotation x="-0.16933745" y="0.58920979" z="-0.12798257" w="-0.77960062" />
             <scale x="0.0028294697" y="0.0010083996" z="0.0032077793" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re81" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re81.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock81" hidden="false" filename="Delta_rock81.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-125.08093" y="21.867889" z="-229.79749" />
             <rotation x="0" y="0.18785258" z="-0" w="-0.98219723" />
             <scale x="0.001321362" y="0.00047092259" z="0.0014980326" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re82" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re82.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock82" hidden="false" filename="Delta_rock82.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-123.18323" y="21.867889" z="-218.49939" />
             <rotation x="0" y="-0.58963436" z="-0" w="-0.8076703" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re83" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re83.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock83" hidden="false" filename="Delta_rock83.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-118.52551" y="21.867889" z="-222.90662" />
             <rotation x="0" y="-0.58963436" z="-0" w="-0.8076703" />
             <scale x="0.0013213622" y="0.00047092259" z="0.0014980329" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re84" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re84.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock84" hidden="false" filename="Delta_rock84.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-118.37134" y="21.550873" z="-217.41968" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re85" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re85.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock85" hidden="false" filename="Delta_rock85.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-116.23828" y="21.367126" z="-227.57678" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re86" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re86.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock86" hidden="false" filename="Delta_rock86.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-116.3725" y="26.994141" z="-224.4502" />
             <rotation x="0" y="0.044243436" z="-0" w="-0.99902076" />
             <scale x="0.00028313941" y="0.00010090857" z="0.00032099616" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re87" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re87.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock87" hidden="false" filename="Delta_rock87.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-123.0238" y="23.137878" z="-218.87274" />
             <rotation x="-0.21376805" y="0.39298353" z="-0.084756814" w="-0.89032775" />
             <scale x="0.00028313944" y="0.00010090855" z="0.00032099607" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re88" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re88.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock88" hidden="false" filename="Delta_rock88.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="10.035583" y="63.328644" z="288.74731" />
             <rotation x="0.16997579" y="0.60853529" z="0.13553567" w="-0.76316649" />
             <scale x="0.00282947" y="0.0010083996" z="0.003207779" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re89" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re89.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock89" hidden="false" filename="Delta_rock89.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="40.276489" y="63.328644" z="275.44385" />
             <rotation x="0.21739754" y="0" z="-0" w="-0.97608316" />
             <scale x="0.0055669816" y="0.0019840267" z="0.0063113067" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re90" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re90.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock90" hidden="false" filename="Delta_rock90.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="31.246094" y="67.516098" z="291.75916" />
             <rotation x="0.16997579" y="0.60853529" z="0.13553567" w="-0.76316649" />
             <scale x="0.00282947" y="0.0010083996" z="0.003207779" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re91" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re91.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock91" hidden="false" filename="Delta_rock91.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-52.602905" y="-20.549652" z="-493.08838" />
             <rotation x="0" y="0.60846466" z="-0" w="-0.79358095" />
             <scale x="0.031395938" y="0.011189255" z="0.031395938" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re92" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re92.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock92" hidden="false" filename="Delta_rock92.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-566.85547" y="82.85025" z="306.60718" />
             <rotation x="0.11479986" y="0.89721179" z="-0.29379341" w="-0.3090589" />
             <scale x="0.023928571" y="0.0085279467" z="0.038606476" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re93" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re93.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock93" hidden="false" filename="Delta_rock93.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-585.41089" y="83.421509" z="385.65625" />
             <rotation x="0" y="0.87879092" z="-0" w="-0.47720703" />
             <scale x="0.035041008" y="0.012488326" z="0.056535311" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re94" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re94.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock94" hidden="false" filename="Delta_rock94.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-621.06567" y="82.85025" z="440.57275" />
             <rotation x="0.18838257" y="0.94699538" z="-0.25299326" w="-0.060878426" />
             <scale x="0.023928577" y="0.0085279476" z="0.03860648" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re95" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re95.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock95" hidden="false" filename="Delta_rock95.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-436.31802" y="43.552917" z="396.86133" />
             <rotation x="-0.18047199" y="0.44849491" z="-0.52538478" w="-0.70018065" />
             <scale x="0.023928577" y="0.0085279467" z="0.038606465" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re96" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re96.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock96" hidden="false" filename="Delta_rock96.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-374.34256" y="84.26236" z="429.95483" />
             <rotation x="-0.052368343" y="0.37350264" z="-0.25995943" w="-0.88891757" />
             <scale x="0.035041004" y="0.012488325" z="0.056535304" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re97" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re97.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock97" hidden="false" filename="Delta_rock97.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-335.69827" y="111.47064" z="475.27277" />
             <rotation x="-0.15946832" y="0.65640599" z="-0.50697058" w="-0.5354268" />
             <scale x="0.023928571" y="0.0085279485" z="0.038606476" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re98" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re98.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock98" hidden="false" filename="Delta_rock98.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="47.50708" y="83.421509" z="484.61688" />
             <rotation x="-0.21267328" y="0.36990741" z="-0.83942366" w="0.33661041" />
             <scale x="0.035041012" y="0.012488328" z="0.056535311" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re99" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re99.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock99" hidden="false" filename="Delta_rock99.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-435.57217" y="19.536865" z="63.569515" />
             <rotation x="0" y="-0.26133865" z="-0" w="-0.96524715" />
             <scale x="0.01815124" y="0.0064689526" z="0.029285293" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re100" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re100.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock100" hidden="false" filename="Delta_rock100.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-451.35196" y="42.781952" z="64.264343" />
             <rotation x="-0.39886704" y="0.40614307" z="-0.3795003" w="-0.72933692" />
             <scale x="0.036302488" y="0.012937907" z="0.058570586" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re101" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re101.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock101" hidden="false" filename="Delta_rock101.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-402.0676" y="42.781952" z="126.17279" />
             <rotation x="-0.51921725" y="0.072223023" z="-0.18310949" w="-0.83166593" />
             <scale x="0.021275871" y="0.0075825462" z="0.034326591" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re102" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re102.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock102" hidden="false" filename="Delta_rock102.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-470.35818" y="42.781952" z="-8.9578857" />
             <rotation x="0.28939208" y="0.62718016" z="0.53734744" w="0.4838956" />
             <scale x="0.02127588" y="0.0075825443" z="0.034326583" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re103" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re103.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock103" hidden="false" filename="Delta_rock103.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-484.28165" y="26.983307" z="111.02429" />
             <rotation x="0" y="0" z="-0.11059622" w="-0.99386543" />
             <scale x="0.03504099" y="0.012488325" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re104" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re104.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock104" hidden="false" filename="Delta_rock104.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-503.31375" y="40.321228" z="50.08099" />
             <rotation x="0.10287155" y="0.23310798" z="-0.34367108" w="-0.90386301" />
             <scale x="0.014238957" y="0.0050746459" z="0.014238958" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re105" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re105.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock105" hidden="false" filename="Delta_rock105.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-474.93375" y="40.321228" z="257.26563" />
             <rotation x="-0.11380923" y="-0.11081357" z="0.14099206" w="-0.97718424" />
             <scale x="0.014238966" y="0.0050746491" z="0.014238963" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re106" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re106.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock106" hidden="false" filename="Delta_rock106.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="469.23166" y="94.875824" z="-545.5061" />
             <rotation x="-0.50987005" y="-0.49806228" z="0.20772122" w="-0.6699391" />
             <scale x="0.021275874" y="0.0075825462" z="0.034326591" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re107" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re107.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock107" hidden="false" filename="Delta_rock107.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="464.72324" y="58.398834" z="-592.55505" />
             <rotation x="0.19335115" y="0.3433567" z="0.57160902" w="-0.71971148" />
             <scale x="0.031395938" y="0.011189252" z="0.031395938" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re108" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re108.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock108" hidden="false" filename="Delta_rock108.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="403.09445" y="71.630737" z="-519.66846" />
             <rotation x="0" y="-0.83620417" z="-0" w="-0.54841822" />
             <scale x="0.018151244" y="0.0064689526" z="0.029285301" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re109" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re109.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock109" hidden="false" filename="Delta_rock109.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="326.95102" y="94.875824" z="-493.73608" />
             <rotation x="0.57313639" y="0.79028279" z="0.20977326" w="-0.054433756" />
             <scale x="0.021275878" y="0.007582543" z="0.034326583" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re110" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re110.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock110" hidden="false" filename="Delta_rock110.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="292.88693" y="74.961533" z="-570.03052" />
             <rotation x="0.18413527" y="-0.29279125" z="0.38927159" w="-0.8537184" />
             <scale x="0.035040997" y="0.012488329" z="0.035041016" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re111" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re111.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock111" hidden="false" filename="Delta_rock111.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="401.91147" y="94.875824" z="-503.91748" />
             <rotation x="-0.085176602" y="-0.5727489" z="-0.73726159" w="-0.34806469" />
             <scale x="0.036302477" y="0.012937903" z="0.058570586" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re112" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re112.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock112" hidden="false" filename="Delta_rock112.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="444.43271" y="79.077194" z="-465.6709" />
             <rotation x="-0.073416077" y="-0.65974861" z="-0.082713977" w="-0.7433036" />
             <scale x="0.035040993" y="0.012488325" z="0.035041012" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re113" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re113.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock113" hidden="false" filename="Delta_rock113.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="47.50708" y="83.421509" z="-696.27136" />
             <rotation x="-0.21267328" y="0.36990741" z="-0.83942366" w="0.33661041" />
             <scale x="0.035041012" y="0.012488328" z="0.056535311" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re114" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re114.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock114" hidden="false" filename="Delta_rock114.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-148.12256" y="83.421509" z="-706.92688" />
             <rotation x="-0.42544869" y="0.37035495" z="0.40690362" w="-0.71851242" />
             <scale x="0.035041001" y="0.012488323" z="0.056535322" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re115" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re115.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock115" hidden="false" filename="Delta_rock115.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-346.09744" y="83.421509" z="-651.23645" />
             <rotation x="0.4089233" y="0.50221711" z="-0.66450107" w="0.37282437" />
             <scale x="0.035041012" y="0.012488331" z="0.056535326" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re116" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re116.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock116" hidden="false" filename="Delta_rock116.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="389.41367" y="-14.082367" z="-240.63501" />
             <rotation x="0" y="0" z="-0" w="-1" />
             <scale x="0.06178369" y="0.17197627" z="0.11403307" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re117" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re117.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock117" hidden="false" filename="Delta_rock117.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="448.16537" y="-0.4621582" z="-20.246124" />
             <rotation x="0" y="-0.61105192" z="-0" w="-0.79159051" />
             <scale x="0.06178369" y="0.17197627" z="0.11403304" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re118" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re118.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock118" hidden="false" filename="Delta_rock118.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="445.06503" y="108.71761" z="-127.23773" />
             <rotation x="-0.19280072" y="-0.61827862" z="0.47816861" w="-0.59322363" />
             <scale x="0.035041008" y="0.012488328" z="0.056535315" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re119" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re119.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock119" hidden="false" filename="Delta_rock119.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="375.45676" y="243.19275" z="-132.8848" />
             <rotation x="0" y="0" z="0.0061191381" w="-0.99998128" />
             <scale x="0.035041012" y="0.012488329" z="0.035041008" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re121" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re121.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock121" hidden="false" filename="Delta_rock121.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="312.15915" y="73.391663" z="-101.09302" />
             <rotation x="0" y="0" z="-0.25273323" w="-0.96753597" />
             <scale x="0.0091117313" y="0.0032473463" z="0.014700907" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re122" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re122.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock122" hidden="false" filename="Delta_rock122.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="328.43405" y="87.421906" z="-135.03278" />
             <rotation x="-0.073627539" y="-0.28186756" z="-0.24177068" w="-0.92556822" />
             <scale x="0.0091117322" y="0.0032473463" z="0.014700909" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re123" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re123.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock123" hidden="false" filename="Delta_rock123.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="287.58115" y="73.152039" z="-134.26468" />
             <rotation x="-0.22588217" y="0.92813575" z="-0.059494164" w="0.28983054" />
             <scale x="0.0091117313" y="0.0032473446" z="0.014700907" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re124" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re124.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock124" hidden="false" filename="Delta_rock124.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-303.8309" y="49.43306" z="-132.58624" />
             <rotation x="0" y="0" z="0.0061191395" w="-0.99998128" />
             <scale x="0.0067525832" y="0.0024065652" z="0.0067525832" />
         </entity>
-        <entity name="Delta_G&#xE9;osph&#xE8;re125" hidden="false" filename="Delta_G&#xE9;osph&#xE8;re125.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
+        <entity name="Delta_rock125" hidden="false" filename="Delta_rock125.mesh" parent="Delta_Socle" CastShadows="yes" ReceiveShadows="yes">
             <position x="-305.89627" y="23.519012" z="-131.49802" />
             <rotation x="0.37214762" y="0.53004396" z="-0.63628542" w="0.41916639" />
             <scale x="0.0067525813" y="0.0024065648" z="0.010894646" />
