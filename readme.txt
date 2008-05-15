@@ -120,8 +120,10 @@ Check you installed correctly the DirectX SDK August 2007 (at least ;-) )
 - the env. var. DXSDK is defined
 
 VoiceEngine:
-Download the BOOST package release 1.34.1 (because some bugs found into pool in 1.35), unzip it and define your BOOST_ROOT env. var.
-Download the FMOD EX package, install it and define your FMOD_PATH env. var. (eg. C:\Program Files\FMOD SoundSystem\FMOD Programmers API Win32\api)
+Download the BOOST package release 1.34.1 (http://sourceforge.net, search boost c++ libraries, download 1.34.1)
+ (because some bugs found into pool<> in 1.35), unzip it and define your BOOST_ROOT env. var.
+Download the FMOD EX package (http://www.fmod.org/index.php/download),
+ install it and define your FMOD_PATH env. var. (eg. C:\Program Files\FMOD SoundSystem\FMOD Programmers API Win32\api)
 
 Get SVN repository for Solipsis
 
