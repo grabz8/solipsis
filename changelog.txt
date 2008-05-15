@@ -474,3 +474,8 @@ vc8 & vc9 configs for VNCplugin added
 AvatarTools vc8 config added
 
 ---------------------------
+15/05/08
+
+VNC viewer-textureSource OGRE plugin : FPS param correctly used
+
+---------------------------
