@@ -20,6 +20,7 @@ class VNCPlugin;
         texture_source vnc
         {
             address vnc://192.168.0.1:5900
+            password secret
         }
     }
  *  \endcode

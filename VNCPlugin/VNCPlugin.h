@@ -51,9 +51,10 @@ public:
     *  @param host VNC server host name
     *  @param port VNC server port
     *  @param pwd VNC server password
+    *  @param fps VNC update rate in frames per second
     *  @return Connection id
     */
-    int newConnection(const Ogre::String& host, int port, const Ogre::String& pwd);
+    int newConnection(const Ogre::String& host, int port, const Ogre::String& pwd, int fps);
 // GREG END
 
     /**

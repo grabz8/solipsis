@@ -20,12 +20,13 @@ int TightVNCConnection::mTexIDCounter = 0;
 
 // GREG BEGIN
 /*TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
-                                       const std::string& host, int port)*/
-TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
-                                       const std::string& host, int port, const std::string& pwd)
-// GREG END
+                                       const std::string& host, int port)
     : mUpdateTimer(VNC_TEXTURE_UPDATE_DELAY)
-    , mScreenDirty(false)
+    , mScreenDirty(false)*/
+TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
+                                       const std::string& host, int port, const std::string& pwd, int fps)
+    : mScreenDirty(false)
+// GREG END
     , mScreen(0)
     , mHost(host)
     , mPort(port)
@@ -33,6 +34,7 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
     , mGrabScreenIfDirty(true)
     , wParam(0)
     , mPwd(pwd)
+    , mFps(fps)
 // GREG END
     , mConn(0)
     , mTextureSystem(textureSystem)
@@ -42,7 +44,7 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
 {
     Ogre::Root::getSingleton().addFrameListener(this);
 // GREG BEGIN
-    mUpdateTimer = 1.0/textureSystem->getFPS();
+    mUpdateTimer = 1.0/mFps;
 // GREG END
 }
 
@@ -232,8 +234,9 @@ bool TightVNCConnection::frameStarted(const Ogre::FrameEvent& e)
     if (mUpdateTimer > 0)
         return true;
 
-    mUpdateTimer = VNC_TEXTURE_UPDATE_DELAY;
 // GREG BEGIN
+//    mUpdateTimer = VNC_TEXTURE_UPDATE_DELAY;
+    mUpdateTimer = 1.0/mFps;
     mGrabScreenIfDirty = true;
 // GREG END
 

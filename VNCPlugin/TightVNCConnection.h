@@ -29,7 +29,7 @@ public:
 /*    TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
                        const std::string& host, int port);*/
     TightVNCConnection(int id, TightVNCTextureSystem* textureSystem,
-                       const std::string& host, int port, const std::string& pwd);
+                       const std::string& host, int port, const std::string& pwd, int fps);
 // GREG END
     ~TightVNCConnection();
 
@@ -84,6 +84,7 @@ private:
     int mPort;
 // GREG BEGIN
     std::string mPwd;
+    int mFps;
 // GREG END
 
     TightVNCTextureSystem* mTextureSystem;

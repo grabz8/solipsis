@@ -115,6 +115,8 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
     }
 
     // Parse VNC material parameters
+    // GREG comment: normally parameters are already set we do not have to call getParameter because
+    // setParameter set our variables for us
     Ogre::String addr = getParameter("address");
     addr = addr.substr(addr.find_first_of("://") + 3);
     if (addr.empty() || (addr.find(':') == std::string::npos))
@@ -142,7 +144,7 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
 
 // GREG BEGIN
 //        id = mPlugin->newConnection(host, portNum);
-        id = mPlugin->newConnection(host, portNum, pwd);
+        id = mPlugin->newConnection(host, portNum, pwd, mFramesPerSecond);
 // GREG END
         if (id == -1)
         {

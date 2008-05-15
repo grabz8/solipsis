@@ -78,7 +78,7 @@ int VNCPlugin::lookupConnection(const Ogre::String& host, int port)
 
 // GREG BEGIN
 //int VNCPlugin::newConnection(const Ogre::String& host, const int port)
-int VNCPlugin::newConnection(const Ogre::String& host, const int port, const Ogre::String& pwd)
+int VNCPlugin::newConnection(const Ogre::String& host, const int port, const Ogre::String& pwd, int fps)
 // GREG END
 {
     omni_mutex_lock l(mConnMutex);
@@ -96,7 +96,7 @@ int VNCPlugin::newConnection(const Ogre::String& host, const int port, const Ogr
     int id = mConnIDCounter++;
 // GREG BEGIN
 //    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port));
-    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port, pwd));
+    ConnectionPtr conn(new TightVNCConnection(id, mTextureSystem, host, port, pwd, fps));
 // GREG END
     mConnByID.insert(std::make_pair(id, conn));
 
