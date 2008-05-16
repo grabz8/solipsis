@@ -239,10 +239,6 @@
 				RelativePath=".\include\ModifiableMaterialObject.h"
 				>
 			</File>
-			<File
-				RelativePath=".\include\TextureIterator.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
