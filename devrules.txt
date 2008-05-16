@@ -22,6 +22,7 @@ peerModuleSimulator    the peer module simulator
 peerPhysics            the peer module physics plugins (loaded by nodeSimulator)
 protocols              the protocols clients & servers modules (XMLRPC++, ULXMLRPCPP, NullClientServer)
 setup                  the setup project (to build installers)
+VLCPlugin      the VLC external texture plugin
 VNCPlugin      the VNC external texture plugin
 voiceEngine    all voice chat components (client, simple server, test applications)
 
