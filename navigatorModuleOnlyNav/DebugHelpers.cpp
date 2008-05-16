@@ -43,6 +43,16 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     }
 #endif
 
+#ifdef DEMO_VLC
+    // Launch demoVLC ?
+    dbgCmd = debugCommands.find("demoVLC");
+    if (dbgCmd != debugCommands.end())
+    {
+        navigator->demoVLC(dbgCmd->second);
+        debugCommands.erase(dbgCmd);
+    }
+#endif
+
 #ifdef DEMO_VOICE
     // Launch demoVoice ?
     dbgCmd = debugCommands.find("demoVoice");

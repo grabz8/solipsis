@@ -384,6 +384,49 @@ void Navigator::demoVNC(const String params)
     active = !active;
 }
 #endif
+#ifdef DEMO_VLC
+//-------------------------------------------------------------------------------------
+void Navigator::demoVLC(const String params)
+{
+    static bool active = false;
+
+    if (active)
+    {
+        SceneNode* vlcNode = mSceneMgr->getSceneNode("demoVLCNode");
+        MovableObject* vlcEnt = vlcNode->getAttachedObject("demoVLC");
+        vlcNode->detachObject(vlcEnt);
+        vlcNode->getCreator()->destroyMovableObject(vlcEnt);
+        vlcNode->getCreator()->destroySceneNode(vlcNode->getName());
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+        vlcExtTextSrc->destroyAdvancedTexture("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        MaterialManager::getSingleton().remove("demoVLCMaterial");
+    }
+    else
+    {
+        String mrl(params);
+        if (mrl.empty()) return;
+
+        // Creates the VLC Plane and subsequent NaviMaterial
+        Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+        vlcExtTextSrc->setParameter("mrl", mrl);
+        vlcExtTextSrc->setParameter("width", "256");
+        vlcExtTextSrc->setParameter("height", "256");
+        vlcExtTextSrc->setParameter("frames_per_second", "25");
+        vlcExtTextSrc->setParameter("play_mode", "loop");
+        MaterialManager::getSingleton().create("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        vlcExtTextSrc->createDefinedTexture("demoVLCMaterial");
+        vlcEnt->setMaterialName("demoVLCMaterial");
+        SceneNode* vlcNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVLCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
+        vlcNode->attachObject(vlcEnt);
+        vlcNode->yaw(Degree(90), Node::TS_WORLD);
+    }
+
+    active = !active;
+}
+#endif
 #ifdef DEMO_VOICE
 //-------------------------------------------------------------------------------------
 void Navigator::demoVoice(const String params)

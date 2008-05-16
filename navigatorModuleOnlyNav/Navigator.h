@@ -142,6 +142,9 @@ public:
 #ifdef DEMO_VNC
     void demoVNC(const String params);
 #endif
+#ifdef DEMO_VLC
+    void demoVLC(const String params);
+#endif
 #ifdef DEMO_VOICE
     void demoVoice(const String params);
 #endif
