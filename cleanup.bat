@@ -50,6 +50,7 @@ rmdir Dependencies\CommonTools /S /Q
 rmdir Dependencies\speex /S /Q
 rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
+rmdir Dependencies\vlc /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -217,6 +218,9 @@ rmdir voiceEngine\TestServer\Debug /S /Q
 rmdir voiceEngine\TestServer\Release /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Debug /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Release /S /Q
+
+rmdir VLCPlugin\Debug /S /Q
+rmdir VLCPlugin\Release /S /Q
 
 del setup\nsis\Setup.exe
 
