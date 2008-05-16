@@ -170,6 +170,7 @@ UIDEBUG        Set/Unset the debug user interface panel
 DEMO_NAVI1     Set/Unset Navi demo1 (1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google homepage)
 DEMO_NAVI2     Set/Unset Navi demo2 (demo with 1 panel on YouTube video)
 DEMO_VNC       Set/Unset VNC demo (demo with 1 panel on VNC viewer)
+DEMO_VLC       Set/Unset VLC demo (demo with 1 panel on VLC player)
 DEMO_VOICE     Set/Unset Voice chat demo
 DEMO_PHYSICS1  Set/Unset Physics demo (1 cube will drop into the spatialStation)
 NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
