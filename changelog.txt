@@ -479,3 +479,9 @@ AvatarTools vc8 config added
 VNC viewer-textureSource OGRE plugin : FPS param correctly used
 
 ---------------------------
+16/05/08
+
+VLC 3rd party added (include, libs, runtime + build instructions)
+VLC-textureSource OGRE plugin added
+
+---------------------------
