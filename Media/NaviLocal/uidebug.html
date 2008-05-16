@@ -131,15 +131,17 @@
             #urlInput { position: absolute; left: 30px; top: 40px; }
             #urlpwdVNCText { position: absolute; left: 0px; top: 90px; }
             #urlpwdVNCInput { position: absolute; left: 30px; top: 90px; }
-            #voiceText { position: absolute; left: 0px; top: 120px; }
-            #voiceInput { position: absolute; left: 40px; top: 120px; }
+            #mrlVLCText { position: absolute; left: 0px; top: 120px; }
+            #mrlVLCInput { position: absolute; left: 30px; top: 120px; }
+            #voiceText { position: absolute; left: 0px; top: 150px; }
+            #voiceInput { position: absolute; left: 40px; top: 150px; }
             .buttonSpeak
             {
 	            position: absolute;
 	            left: 170px;
-                top: 120px;
+                top: 150px;
             }
-            #demoPhysics1Button { left: 0px; top: 150px; }
+            #demoPhysics1Button { left: 0px; top: 180px; }
             #peerNewButton { top: 10px; width: 100px; }
             #peerDO1Button { top: 35px; width: 100px; }
         </style>
@@ -184,6 +186,12 @@
                             <div id="urlpwdVNCText">VNC</div>
                             <div id="urlpwdVNCInput">
                                 <input id="inputUrlPwdVNC" class="inputText" name="inputUrlPwdVNC" value="localhost:5900;solipsis" type="text" size="30" />
+                            </div>
+                        </form>
+                        <form id="mrlVLCForm" action="" onsubmit="debugCommand('demoVLC', document.getElementById('inputMrlVLC').value);return false;">
+                            <div id="mrlVLCText">VLC</div>
+                            <div id="mrlVLCInput">
+                                <input id="inputMrlVLC" class="inputText" name="inputMrlVLC" value="" type="text" size="30" />
                             </div>
                         </form>
                         <form id="voiceForm" action="" onsubmit="debugCommand('demoVoice', document.getElementById('inputVoice').value);return false;">
