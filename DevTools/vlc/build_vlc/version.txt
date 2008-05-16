@@ -1,0 +1,1 @@
+Version of code in ..\libraries is built using a downloaded source package 0.8.6e of VLC (vlc-0.8.6e.tar.gz) and its contrib package for gcc3.4.5 (contrib-0.8.6e-gcc-3.4.5-only.tar.bz2)
