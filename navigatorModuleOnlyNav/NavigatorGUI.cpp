@@ -8,6 +8,7 @@
 #include "Character.h"
 #include "CharacterManager.h"
 #include "Avatar.h"
+#include "NavigatorApp.h"
 
 using namespace Solipsis;
 
@@ -266,13 +267,17 @@ void NavigatorGUI::modelerMainUnload()
 		modelerMainUnload();
 
 		// Remove temporary files & folder of the thumbnails
-		std::string path ("NaviLocal\\solTmpTexture\\");
+		std::string path ( "NaviLocal\\solTmpTexture" );
 		std::vector<std::string> fileList;
 
-		SOLlistDirectoryFiles (path.c_str(), &fileList);
-		for (std::vector<std::string>::iterator f=fileList.begin(); f!=fileList.end(); f++)
-			SOLdeleteFile (std::string(path + (*f)).c_str());
-		RemoveDirectory (path.c_str());
+		if( SOLisDirectory( String( Modeler::getSingletonPtr()->mExecPath + "\\" + path ).c_str() ) )
+		{
+			SOLlistDirectoryFiles (path.c_str(), &fileList);
+			path += "\\";
+			for (std::vector<std::string>::iterator f=fileList.begin(); f!=fileList.end(); f++)
+				SOLdeleteFile (std::string(path + (*f)).c_str());
+			RemoveDirectory (path.c_str());
+		}
     }
 }
 
@@ -295,7 +300,7 @@ void NavigatorGUI::modelerPropShow()
 		//navi->bind("MdlrProperties", NaviDelegate(this, &NavigatorGUI::modelerProperties));
 
 		// detect a changement on the properties tabber
-		navi->bind("MdlrTabbers", NaviDelegate(this, &NavigatorGUI::modelerTabberChange));
+		navi->bind("ClickOnTabber", NaviDelegate(this, &NavigatorGUI::modelerTabberChange));
 
 		// properties
 		navi->bind("MdlrObjectName", NaviDelegate(this, &NavigatorGUI::modelerPropObjectName));
@@ -476,13 +481,17 @@ void NavigatorGUI::avatarMainUnload()
 		avatarMainUnload();
 
 		// Remove temporary files & folder of the thumbnails
-		std::string path ("NaviLocal\\solTmpTexture\\");
+		std::string path ( "NaviLocal\\solTmpTexture" );
 		std::vector<std::string> fileList;
 
-		SOLlistDirectoryFiles (path.c_str(), &fileList);
-		for (std::vector<std::string>::iterator f=fileList.begin(); f!=fileList.end(); f++)
-			SOLdeleteFile (std::string(path + (*f)).c_str());
-		RemoveDirectory (path.c_str());
+		if( SOLisDirectory( String( AvatarEditor::getSingletonPtr()->mExecPath + "\\" + path ).c_str() ) )
+		{
+			SOLlistDirectoryFiles (path.c_str(), &fileList);
+			path += "\\";
+			for (std::vector<std::string>::iterator f=fileList.begin(); f!=fileList.end(); f++)
+				SOLdeleteFile (std::string(path + (*f)).c_str());
+			RemoveDirectory (path.c_str());
+		}
     }
 }
 //-------------------------------------------------------------------------------------
@@ -501,7 +510,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
 
 		// detect a changement on the properties tabber
-		navi->bind("MdlrTabbers", NaviDelegate(this, &NavigatorGUI::avatarTabberChange));
+		navi->bind("ClickOnTabber", NaviDelegate(this, &NavigatorGUI::avatarTabberChange));
 
 		// animation
 		navi->bind("AnimPlayPause", NaviDelegate(this, &NavigatorGUI::avatarPropAnimPlayPause));
@@ -509,6 +518,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("AnimNext", NaviDelegate(this, &NavigatorGUI::avatarPropAnimNext));
 		navi->bind("AnimPrev", NaviDelegate(this, &NavigatorGUI::avatarPropAnimPrev));
 		// properties
+		navi->bind("AvatarHeight", NaviDelegate(this, &NavigatorGUI::avatarPropHeight));
 		navi->bind("BodyPartPrev", NaviDelegate(this, &NavigatorGUI::avatarPropBPPrev));
 		navi->bind("BodyPartNext", NaviDelegate(this, &NavigatorGUI::avatarPropBPNext));
 		navi->bind("BodyPartModelPrev", NaviDelegate(this, &NavigatorGUI::avatarPropBPMPrev));
@@ -516,43 +526,51 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("BodyPartModelEdit", NaviDelegate(this, &NavigatorGUI::avatarPropBPMEdit));
 		navi->bind("BodyPartModelRemove", NaviDelegate(this, &NavigatorGUI::avatarPropBPMRemove));
 		// material
-/*		navi->bind("MdlrAmbient", NaviDelegate(this, &NavigatorGUI::modelerColorAmbient));
-		navi->bind("MdlrDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorDiffuse));
-		navi->bind("MdlrSpecular", NaviDelegate(this, &NavigatorGUI::modelerColorSpecular));
-		navi->bind("MdlrLockAmbientDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorLockAmbientDiffuse));
-		navi->bind("MdlrShininess", NaviDelegate(this, &NavigatorGUI::modelerPropShininess));
-		navi->bind("MdlrTransparency", NaviDelegate(this, &NavigatorGUI::modelerPropTransparency));
-		navi->bind("MdlrScrollU", NaviDelegate(this, &NavigatorGUI::modelerPropScrollU));
-		navi->bind("MdlrScrollV", NaviDelegate(this, &NavigatorGUI::modelerPropScrollV));
-		navi->bind("MdlrScaleU", NaviDelegate(this, &NavigatorGUI::modelerPropScaleU));
-		navi->bind("MdlrScaleV", NaviDelegate(this, &NavigatorGUI::modelerPropScaleV));
-		navi->bind("MdlrRotateU", NaviDelegate(this, &NavigatorGUI::modelerPropRotateU));
-		navi->bind("MdlrAddTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureAdd));
-		navi->bind("MdlrRemoveTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureRemove));
-		navi->bind("MdlrApplyTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureApply));
-		navi->bind("MdlrPrevTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTexturePrev));
-		navi->bind("MdlrNextTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureNext));
+		navi->bind("AvatarAmbient", NaviDelegate(this, &NavigatorGUI::avatarColorAmbient));
+		navi->bind("AvatarDiffuse", NaviDelegate(this, &NavigatorGUI::avatarColorDiffuse));
+		navi->bind("AvatarSpecular", NaviDelegate(this, &NavigatorGUI::avatarColorSpecular));
+		navi->bind("AvatarLockAmbientDiffuse", NaviDelegate(this, &NavigatorGUI::avatarColorLockAmbientDiffuse));
+		navi->bind("AvatarShininess", NaviDelegate(this, &NavigatorGUI::avatarPropShininess));
+		navi->bind("AvatarTransparency", NaviDelegate(this, &NavigatorGUI::avatarPropTransparency));
+		navi->bind("AvatarScrollU", NaviDelegate(this, &NavigatorGUI::avatarPropScrollU));
+		navi->bind("AvatarScrollV", NaviDelegate(this, &NavigatorGUI::avatarPropScrollV));
+		navi->bind("AvatarScaleU", NaviDelegate(this, &NavigatorGUI::avatarPropScaleU));
+		navi->bind("AvatarScaleV", NaviDelegate(this, &NavigatorGUI::avatarPropScaleV));
+		navi->bind("AvatarRotateU", NaviDelegate(this, &NavigatorGUI::avatarPropRotateU));
+		navi->bind("AvatarAddTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureAdd));
+		navi->bind("AvatarRemoveTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureRemove));
+		navi->bind("AvatarApplyTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureApply));
+		navi->bind("AvatarPrevTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTexturePrev));
+		navi->bind("AvatarNextTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureNext));
 		// attachement
-		navi->bind("MdlrPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
-		navi->bind("MdlrPositionY", NaviDelegate(this, &NavigatorGUI::modelerPropPositionY));
-		navi->bind("MdlrPositionZ", NaviDelegate(this, &NavigatorGUI::modelerPropPositionZ));
-		navi->bind("MdlrOrientationX", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationX));
-		navi->bind("MdlrOrientationY", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationY));
-		navi->bind("MdlrOrientationZ", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationZ));
-		navi->bind("MdlrScaleX", NaviDelegate(this, &NavigatorGUI::modelerPropScaleX));
-		navi->bind("MdlrScaleY", NaviDelegate(this, &NavigatorGUI::modelerPropScaleY));
-		navi->bind("MdlrScaleZ", NaviDelegate(this, &NavigatorGUI::modelerPropScaleZ));
-		navi->bind("MdlrCollision", NaviDelegate(this, &NavigatorGUI::modelerPropCollision));
-		navi->bind("MdlrGravity", NaviDelegate(this, &NavigatorGUI::modelerPropGravity));
+		navi->bind("AttachPrev", NaviDelegate(this, &NavigatorGUI::avatarPropAttPrev));
+		navi->bind("AttachNext", NaviDelegate(this, &NavigatorGUI::avatarPropAttNext));
+		navi->bind("AttachModelPrev", NaviDelegate(this, &NavigatorGUI::avatarPropAttMPrev));
+		navi->bind("AttachModelNext", NaviDelegate(this, &NavigatorGUI::avatarPropAttMNext));
+		navi->bind("AttachModelEdit", NaviDelegate(this, &NavigatorGUI::avatarPropAttMEdit));
+		navi->bind("AttachModelRemove", NaviDelegate(this, &NavigatorGUI::avatarPropAttMRemove));
+/*		navi->bind("AvatarPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
+		navi->bind("AvatarPositionY", NaviDelegate(this, &NavigatorGUI::modelerPropPositionY));
+		navi->bind("AvatarPositionZ", NaviDelegate(this, &NavigatorGUI::modelerPropPositionZ));
+		navi->bind("AvatarOrientationX", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationX));
+		navi->bind("AvatarOrientationY", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationY));
+		navi->bind("AvatarOrientationZ", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationZ));
+		navi->bind("AvatarScaleX", NaviDelegate(this, &NavigatorGUI::modelerPropScaleX));
+		navi->bind("AvatarScaleY", NaviDelegate(this, &NavigatorGUI::modelerPropScaleY));
+		navi->bind("AvatarScaleZ", NaviDelegate(this, &NavigatorGUI::modelerPropScaleZ));
+		navi->bind("AvatarCollision", NaviDelegate(this, &NavigatorGUI::modelerPropCollision));
+		navi->bind("AvatarGravity", NaviDelegate(this, &NavigatorGUI::modelerPropGravity));
 */
         mNavisStates[NAVI_AVATARPROP] = NSCreated;
 	}
 	else //if(!isAvatarMainVisible())
 	{
-		mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP])->show(true);
-
+		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+				
 		// Update the properties panel from the selected object datas
 		avatarTabberLoad(1);
+		navi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
+		navi->show(true);
 	}
 }
 
@@ -595,7 +613,8 @@ void NavigatorGUI::avatarTabberChange(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 {
-	std::string str;
+	//std::string str;
+	char str[256];
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	// get the current avatar
@@ -606,13 +625,20 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 		Ogre::Vector2 UV;
 		std::string text;
 		unsigned c,e;
-
+		
 		switch( pTab )
 		{
 		case 0:	// animations tab
+			if(avatar->getNumAnimations() > 0)
+			{
+				// ...
+			}
 			break;
 		case 1:	//  properties tab
 			{
+				std::string str;
+				std::string name("None");
+				char txt[32];
 				/*
 				str = "$('BodyParts').innerHTML='";
 				for(unsigned int bp=0; bp<avatar->getNumBodyParts(); bp++)
@@ -641,19 +667,101 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS(str);
 				*/
 
-				std::string bpName = avatar->getCurrentBodyPart()->getName();
+				// height
+				/*
+				navi->evaluateJS("height.onchange = function() {}");
+				Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
+				sprintf(txt, "height.setValue(%f)", int((size.y - 0.5) * 20));
+				str = txt;
+				navi->evaluateJS(str);
+				sprintf(txt, "$('HeightValue').value='%1.2fm'", size.y);
+				str = txt;
+				navi->evaluateJS(str);
+				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight'); $('HeightValue').value=height.getValue()/20.+0.5+'m'}");
+				*/
+
+				// body parts
+				if(avatar->getNumBodyParts() > 0)
+					 name = avatar->getCurrentBodyPart()->getName();
 
 				str = "$('BodyPartName').innerHTML = '";
-				str += bpName;
+				str += name;
 				navi->evaluateJS(str + "'");
 
 				str = "$('BodyPartName2').innerHTML = '";
-				str += bpName;
+				str += name;
 				navi->evaluateJS(str + "'");
-				
+
 				str = "$('BodyPartModelName').innerHTML = '";
-				str += avatar->getCurrentBodyPart()->getCurrentBodyPartModelName();
+				if(avatar->getNumBodyParts() > 0)
+					name = avatar->getCurrentBodyPart()->getCurrentBodyPartModelName();
+				str += name;
 				navi->evaluateJS(str + "'");
+
+				// attachements / goodies
+				if(avatar->getNumGoodies() > 0)
+					name = avatar->getCurrentGoody()->getName();
+
+				str = "$('AttachName').innerHTML = '";
+				str += name;
+				navi->evaluateJS(str + "'");
+
+				str = "$('AttachName2').innerHTML = '";
+				str += name;
+				navi->evaluateJS(str + "'");
+
+				str = "$('AttachModelName').innerHTML = '";
+				if(avatar->getNumGoodies() > 0)
+					name = avatar->getCurrentBodyPart()->getCurrentBodyPartModelName();
+				str += name;					
+				navi->evaluateJS(str + "'");
+			}
+			break;
+		case 2: // material
+			{
+				BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+				ModifiedMaterial* mm = bpm->getModifiedMaterial();
+
+				navi->evaluateJS("shininess.onchange = function() {}");
+				navi->evaluateJS("transparency.onchange = function() {}");
+				navi->evaluateJS("scrollU.onchange = function() {}");
+				navi->evaluateJS("scrollV.onchange = function() {}");
+				navi->evaluateJS("scaleU.onchange = function() {}");
+				navi->evaluateJS("scaleV.onchange = function() {}");
+				navi->evaluateJS("rotateU.onchange = function() {}");
+
+				sprintf(str, "$S('pAmbient').background='#'+'FFFFFF'");
+				navi->evaluateJS(str);
+				sprintf(str, "$S('pDiffuse').background='#'+'FFFFFF'");
+				navi->evaluateJS(str);
+				sprintf(str, "$S('pSpecular').background='#'+'FFFFFF'");
+				navi->evaluateJS(str);
+				sprintf(str, "shininess.setValue(%f)",mm->getShininess()*100);
+				navi->evaluateJS(str);
+				sprintf(str, "transparency.setValue(%f)",mm->getAlpha()*100);
+				navi->evaluateJS(str);
+				UV = mm->getTextureScroll() ;
+				sprintf(str, "scrollU.setValue(%f)",UV.x*100+50);
+				navi->evaluateJS(str);
+				sprintf(str, "scrollV.setValue(%f)",UV.y*100+50);
+				navi->evaluateJS(str);
+				UV = mm->getTextureScale() ;
+				sprintf(str, "scaleU.setValue(%f)",UV.x*100-50);
+				navi->evaluateJS(str);
+				sprintf(str, "scaleV.setValue(%f)",UV.y*100-50);
+				navi->evaluateJS(str);
+				sprintf(str, "rotateU.setValue(%f)",mm->getTextureRotate()/Math::TWO_PI*100);
+				navi->evaluateJS(str);
+
+				navi->evaluateJS("shininess.onchange = function() {elementClicked('AvatarShininess')}");
+				navi->evaluateJS("transparency.onchange = function() {elementClicked('AvatarTransparency')}");
+				navi->evaluateJS("scrollU.onchange = function() {elementClicked('AvatarScrollU')}");
+				navi->evaluateJS("scrollV.onchange = function() {elementClicked('AvatarScrollV')}");
+				navi->evaluateJS("scaleU.onchange = function() {elementClicked('AvatarScaleU')}");
+				navi->evaluateJS("scaleV.onchange = function() {elementClicked('AvatarScaleV')}");
+				navi->evaluateJS("rotateU.onchange = function() {elementClicked('AvatarRotateU')}");
+
+				avatarUpdateTextures();
 			}
 			break;
 		}
@@ -1152,7 +1260,6 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
     mTreeDirty = false;
 }
 #endif
-
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 {
@@ -2165,7 +2272,7 @@ void NavigatorGUI::modelerColorSpecular(const NaviData& naviData)
 void NavigatorGUI::modelerColorLockAmbientDiffuse(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
-	std::string value = navi->evaluateJS("document.getElementById('lockAmbientdiffuse').checked");
+	std::string value = navi->evaluateJS("$('lockAmbientdiffuse').checked");
 	mLockAmbientDiffuse = (value == "true")?true:false;
 }
 
@@ -2317,7 +2424,6 @@ void NavigatorGUI::modelerPropTextureApply(const NaviData& naviData)
 			TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
 			obj->setCurrentTexture( tPtr );
 		}
-
 	}
 }
 
@@ -2586,6 +2692,22 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 	user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(current)->getName());
 }
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAnimPrev()");
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	float height = atoi(navi->evaluateJS("height.getValue()").data()) / 20. + 0.5;
+	float scale = height / avatar->getEntity()->getBoundingBox().getSize().y;
+	SceneNode* node = avatar->getNode();
+	//SceneNode::ObjectIterator oIter = node->getAttachedObjectIterator();
+	//node->detachAllObjects();
+	//node->detachObject("UserCam");
+	node->setScale( scale, scale, scale );
+	//node->attachObject("UserCam");
+}
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPPrev()");
@@ -2651,13 +2773,426 @@ void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 	OGRE_LOG("NavigatorGUI::avatarPropBPMEdit()");
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	// ...
+
+	navi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPMRemove(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPMRemove()");
+	//Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarColorAmbient(const NaviData& naviData)
+{
+	unsigned idRGB = 0;
+	std::string str, color;
+	int rgb[3]; 
+	str = naviData["rgb"].str();
+
+    for (unsigned id = 0; id < str.length(); id++)
+	{
+		if(str[id] != ',')
+			color.insert(color.end(),str[id]);
+		else
+		{
+			rgb[idRGB++] = atoi(color.c_str());
+			color = "";
+		}
+	}
+	rgb[idRGB] = atoi(color.c_str());
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		mm->useAddedColour(true);
+		//mm->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		mm->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+
+		if(mLockAmbientDiffuse)
+			mm->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
+{
+	unsigned idRGB = 0;
+	std::string str, color;
+	int rgb[3]; 
+	str = naviData["rgb"].str();
+
+    for (unsigned id = 0; id < str.length(); id++)
+	{
+		if(str[id] != ',')
+			color.insert(color.end(),str[id]);
+		else
+		{
+			rgb[idRGB++] = atoi(color.c_str());
+			color = "";
+		}
+	}
+	rgb[idRGB] = atoi(color.c_str());
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		mm->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		if(mLockAmbientDiffuse)
+		{
+			mm->useAddedColour(true);
+			//mm->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			mm->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		}
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarColorSpecular(const NaviData& naviData)
+{
+	unsigned idRGB = 0;
+	std::string str, color;
+	int rgb[3]; 
+	str = naviData["rgb"].str();
+
+    for (unsigned id = 0; id < str.length(); id++)
+	{
+		if(str[id] != ',')
+			color.insert(color.end(),str[id]);
+		else
+		{
+			rgb[idRGB++] = atoi(color.c_str());
+			color = "";
+		}
+	}
+	rgb[idRGB] = atoi(color.c_str());
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+		mm->setSpecular( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarColorLockAmbientDiffuse(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("$('lockAmbientdiffuse').checked");
+	mLockAmbientDiffuse = (value == "true")?true:false;
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("shininess.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+		mm->setShininess( atoi(value.c_str())/100. );
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("transparency.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+		mm->setAlpha( atoi(value.c_str())/100. );
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("scrollU.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		Ogre::Vector2 UV = mm->getTextureScroll();
+		mm->setTextureScroll(atoi(value.c_str())/100. - .5, UV.y);
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropScrollV(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("scrollV.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		Ogre::Vector2 UV = mm->getTextureScroll();
+		mm->setTextureScroll(UV.x, atoi(value.c_str())/100. - .5);
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropScaleU(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("scaleU.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		Ogre::Vector2 UV = mm->getTextureScale();
+		mm->setTextureScale( atoi(value.c_str())/100. + .5, UV.y );
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropScaleV(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("scaleV.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+	{
+		Ogre::Vector2 UV = mm->getTextureScale();
+		mm->setTextureScale( UV.x, atoi(value.c_str())/100. + .5 );
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropRotateU(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("rotateU.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiedMaterial* mm = bpm->getModifiedMaterial();
+	if( mm != 0 )
+		mm->setTextureRotate( Ogre::Radian(atoi(value.c_str())/100.*Math::TWO_PI) );
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTextureAdd(const NaviData& naviData)
+{
+	char * PathTexture = FileBrowser::displayWindowForLoading( 
+			"Image Files (*.png;*.bmp;*.jpg)\0*.png;*.bmp;*.jpg\0", string("") ); 
+	
+	if (PathTexture != NULL )
+	{
+		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+		BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		String TextureFilePath (PathTexture);
+
+		//Create the new OGRE texture with the file selected :
+		TexturePtr PtrTexture = TextureManager::getSingleton().load( TextureFilePath, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+		//Add texture for the object (with obj->mModifiedMaterialManager)
+		bpm->addTexture(PtrTexture);
+
+		avatarUpdateTextures();
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
+{
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+/*
+	//get selected texture :
+	if( obj->getMaterialManager()->getNbTexture() > 1 )
+	{
+		TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
+		obj->deleteTexture( tPtr );
+	}
+
+	avatarUpdateTextures();
+*/
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTextureApply(const NaviData& naviData)
+{
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	//get selected texture :
+	//if( bpm->isTextureModifiable() )
+	//if( obj->getMaterialManager()->getNbTexture() > 1 )
+	{
+		//TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
+		//obj->setCurrentTexture( tPtr );
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTexturePrev(const NaviData& naviData)
+{
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	bpm->setNextTextureAsCurrent();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropTextureNext(const NaviData& naviData)
+{
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	bpm->setPreviousTextureAsCurrent();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarUpdateTextures()
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	
+	std::string texturePath, text;
+	String str;
+	TexturePtr texture; 
+	Ogre::Image image;
+
+	// Go back to the main directory
+	_chdir(mNavigator->mAvatarEditor->mExecPath.c_str());
+	
+	// create a temporary forlder for the thumbnail textures
+#ifdef WIN32
+	CreateDirectory( "NaviLocal\\solTmpTexture", NULL );
+#else
+	system( "md NaviLocal\\solTmpTexture" );
+#endif
+
+	// update Navi interface
+	text = "textTabTextures = \"";
+	//if( bpm->isTextureModifiable() )
+	{
+		TextureVectorIterator tvIter = bpm->getTextureIterator();
+		do
+		{
+			texture = tvIter.getNext();
+			texturePath = texture->getName();
+			Path path(texturePath);
+			size_t begin = path.getFormatedPath().find_last_of( '\\' );
+			size_t end = path.getFormatedPath().find_last_of( '.' );
+			std::string fileName( path.getFormatedPath(), begin+1, end-begin-1 );
+			fileName += ".jpg";
+
+			str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
+
+			//text += "<img src='file:///d:\\test.jpg";
+			text += "<img src='./solTmpTexture/";
+			text += fileName;
+			text +=	"' width=128 height=128/>	";
+
+			image.load( texturePath, str);
+			image.resize( 128, 128 );
+			image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+		}
+		while(tvIter.hasMoreElements());
+	}
+		
+	text += "\"";
+	navi->evaluateJS(text);
+
+	// Go back to the main directory
+	_chdir(mNavigator->mAvatarEditor->mExecPath.c_str());
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttPrev()");
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	if(avatar->getNumGoodies() > 0)
+	{
+		std::string gName = avatar->setPreviousGoodyAsCurrent()->getName();
+
+		std::string str = "$('AttachName').innerHTML = '";
+		str += gName;
+		navi->evaluateJS(str + "'");
+
+		str = "$('AttachName2').innerHTML = '";
+		str += gName;
+		navi->evaluateJS(str + "'");
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttNext()");
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	if(avatar->getNumGoodies() > 0)
+	{
+		std::string gName = avatar->setNextGoodyAsCurrent()->getName();
+
+		std::string str = "$('AttachName').innerHTML = '";
+		str += gName;
+		navi->evaluateJS(str + "'");
+
+		str = "$('AttachName2').innerHTML = '";
+		str += gName;
+		navi->evaluateJS(str + "'");
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttMPrev()");
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	if(avatar->getNumGoodies() > 0)
+	{
+		std::string str = "$('AttachModelName').innerHTML = '";
+		Goody* g = avatar->getCurrentGoody();
+		g->setPreviousGoodyModelAsCurrent();
+		str += g->getCurrentGoodyModelName();
+		navi->evaluateJS(str + "'");
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttMNext()");
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	if(avatar->getNumGoodies() > 0)
+	{
+		std::string str = "$('AttachModelName').innerHTML = '";
+		Goody* g = avatar->getCurrentGoody();
+		g->setNextGoodyModelAsCurrent();
+		str += g->getCurrentGoodyModelName();
+		navi->evaluateJS(str + "'");
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttMEdit()");
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+	// ...
+
+	navi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropAttMRemove(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropAttMRemove()");
+	//Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
@@ -2705,7 +3240,6 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
 #endif
 }
 #endif
-
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
 {
