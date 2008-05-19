@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="VLCPlugin"
+	ProjectGUID="{C477314D-972B-4524-95C3-25DA9471A3C3}"
 	RootNamespace="VLCPlugin"
 	Keyword="Win32Proj"
 	>
