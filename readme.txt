@@ -62,7 +62,7 @@ F12      Toggle bounding-boxes display
 
 Demos Tips/Tricks:
 into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment 2 lines under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
-into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can the position of the demoNavi2 panel
+into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update the position of the demoNavi2 panel
 into Media\lua\boot.lua, you can tune default connection params into the line navigator:setConnectionParams("localhost", 8550, "me")
 
 
