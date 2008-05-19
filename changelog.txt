@@ -485,3 +485,8 @@ VLC 3rd party added (include, libs, runtime + build instructions)
 VLC-textureSource OGRE plugin added
 
 ---------------------------
+19/05/08
+
+NavPlugin_FModSpeex.dll renamed Plugin_FModSpeex.dll
+
+---------------------------

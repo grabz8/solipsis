@@ -60,7 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib fmodexL_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain_d.lib Navigator.lib"
-				OutputFile="$(OutDir)\NavPlugin_FModSpeex_d.dll"
+				OutputFile="$(OutDir)\Plugin_FModSpeex_d.dll"
 				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -138,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC.lib CommonTools.lib fmodex_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain.lib Navigator.lib"
-				OutputFile="$(OutDir)\NavPlugin_FModSpeex.dll"
+				OutputFile="$(OutDir)\Plugin_FModSpeex.dll"
 				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
