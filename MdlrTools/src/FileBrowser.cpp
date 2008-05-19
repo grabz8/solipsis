@@ -1,4 +1,3 @@
-
 #ifdef WIN32
 	#include "windows.h"
 	#include <String>
@@ -9,6 +8,8 @@
 #endif
 
 #include <OgreNoMemoryMacros.h>
+
+#include <CTSystem.h>
 
 namespace Solipsis {
 
@@ -37,6 +38,7 @@ namespace FileBrowser
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	char* displayWindowForSaving(const char * pFilter , std::string pExtension)
 	{
+        CommonTools::System::setMouseCursorVisibility(true);
 #ifdef WIN32
 
 
@@ -70,13 +72,16 @@ namespace FileBrowser
 			if (lpMsgBuf)
 				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
 			*/
+            CommonTools::System::setMouseCursorVisibility(false);
 			return NULL ;
 		}
 	
 		char* path = new char[strlen(buffer)];
 		strcpy(path,buffer);
+        CommonTools::System::setMouseCursorVisibility(false);
 		return path;
 #else
+    CommonTools::System::setMouseCursorVisibility(false);
 	return NULL;
 #endif 
 	}
@@ -84,6 +89,7 @@ namespace FileBrowser
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	char* displayWindowForLoading(const char * pFilter , std::string pExtension)
 	{
+        CommonTools::System::setMouseCursorVisibility(true);
 #ifdef WIN32
 
 		// Filename buffer
@@ -115,13 +121,16 @@ namespace FileBrowser
 			if (lpMsgBuf)
 				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
 			*/
+            CommonTools::System::setMouseCursorVisibility(false);
 			return NULL ;
 		}
 	
 		char* path = new char[strlen(buffer)];
 		strcpy(path,buffer);
+        CommonTools::System::setMouseCursorVisibility(false);
 		return path;
 #else
+    CommonTools::System::setMouseCursorVisibility(false);
 	return NULL;
 #endif 
 	}
@@ -129,6 +138,7 @@ namespace FileBrowser
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	char* browseImageToSave()
 	{
+        CommonTools::System::setMouseCursorVisibility(true);
 #ifdef WIN32
 		// Filename buffer
 		char buffer[65535];
@@ -153,6 +163,7 @@ namespace FileBrowser
 			if (!FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &lpMsgBuf,0,NULL ))
 			{
 				MessageBox(NULL,"Unknown Error","Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::setMouseCursorVisibility(false);
 				return NULL;
 			}
 			if (lpMsgBuf)
@@ -161,8 +172,10 @@ namespace FileBrowser
 	
 		char* path = new char[strlen(buffer)];
 		strcpy(path,buffer);
+        CommonTools::System::setMouseCursorVisibility(false);
 		return path;
 #else
+    CommonTools::System::setMouseCursorVisibility(false);
 	return NULL;
 #endif 
 	}
@@ -170,8 +183,10 @@ namespace FileBrowser
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	void displayMessageWindow(const char* title, const char* message)
 	{
+        CommonTools::System::setMouseCursorVisibility(true);
 #ifdef WIN32
 		MessageBox(NULL,message,title,MB_OK|MB_ICONEXCLAMATION);
+        CommonTools::System::setMouseCursorVisibility(false);
 #else
 	return NULL;
 #endif 

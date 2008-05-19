@@ -10,6 +10,9 @@ class System
 public:
     /// Sleeping function
     static void sleep(unsigned long durationMs);
+
+    /// Set mouse cursor visibility
+    static void setMouseCursorVisibility(bool visible);
 };
 
 } // namespace CommonTools

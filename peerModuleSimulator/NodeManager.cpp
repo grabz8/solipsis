@@ -35,37 +35,6 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         else
             return 0;
 
-        // Create the avatar node
-        std::string xmlAvatarStr = "\
-<entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
- <flags bitmask=\"" + Ogre::StringConverter::toString(EFGravity) + "\" />\
- <position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"-0.82447118\" y=\"-0.013709042\" z=\"-0.64538133\" />\
-  <max x=\"0.82353306\" y=\"1.4500649\" z=\"0.69156337\" />\
- </aabb>\
- <content>\
-  <lod level=\"0\">\
-   <files>\
-    <file name=\"User.xml\" />\
-    <file name=\"models/salamandra.mesh\" />\
-    <file name=\"models/salamandra.mesh.skeleton\" />\
-    <file name=\"materials/scripts/salamandra.material\" />\
-    <file name=\"materials/textures/LightMapSalamandra2.tga\" />\
-   </files>\
-  </lod>\
- </content>\
-</entity>\
-";
-        TiXmlDocument xmlAvatarDoc;
-        xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
-        XmlEntity* avatarXmlEntity = new XmlEntity();
-        avatarXmlEntity->fromXmlElt(xmlAvatarDoc.RootElement());
-        avatarXmlEntity->setDisplacement(Vector3::ZERO);
-        AvatarNode* avatarNode = new AvatarNode(nodeId, avatarXmlEntity);
-        mNodes[nodeId] = avatarNode;
-
         // Simulate the scene around the avatar
         if (nodeId.compare("00000001") == 0)
         {
@@ -335,6 +304,42 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             SiteNode* siteNode = new SiteNode(siteNodeId, siteEntityDesc);
             mNodes[siteNodeId] = siteNode;
         }
+
+        // Create the avatar node
+        NodeId siteNodeId = "00000010";
+        SiteNode* siteNode = (SiteNode*)mNodes[siteNodeId];
+        Vector3 avatarPos = siteNode->getEntity().getGatePosition();
+        std::stringstream avatarPosStrStrm;
+        XmlHelpers::ostreamVector3(avatarPosStrStrm << "<position ", avatarPos) << " />";
+        std::string xmlAvatarStr = "\
+<entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
+ <flags bitmask=\"" + Ogre::StringConverter::toString(EFGravity) + "\" />\
+ " + avatarPosStrStrm.str() + "\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"-0.82447118\" y=\"-0.013709042\" z=\"-0.64538133\" />\
+  <max x=\"0.82353306\" y=\"1.4500649\" z=\"0.69156337\" />\
+ </aabb>\
+ <content>\
+  <lod level=\"0\">\
+   <files>\
+    <file name=\"User.xml\" />\
+    <file name=\"models/salamandra.mesh\" />\
+    <file name=\"models/salamandra.mesh.skeleton\" />\
+    <file name=\"materials/scripts/salamandra.material\" />\
+    <file name=\"materials/textures/LightMapSalamandra2.tga\" />\
+   </files>\
+  </lod>\
+ </content>\
+</entity>\
+";
+        TiXmlDocument xmlAvatarDoc;
+        xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
+        XmlEntity* avatarXmlEntity = new XmlEntity();
+        avatarXmlEntity->fromXmlElt(xmlAvatarDoc.RootElement());
+        avatarXmlEntity->setDisplacement(Vector3::ZERO);
+        AvatarNode* avatarNode = new AvatarNode(nodeId, avatarXmlEntity);
+        mNodes[nodeId] = avatarNode;
 
         // Add other avatars to aware of
         for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)

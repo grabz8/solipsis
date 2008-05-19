@@ -18,7 +18,7 @@ Pool& XmlEvt::getPool() const { return mPool; }
 #endif
 
 //-------------------------------------------------------------------------------------
-bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr)
+bool XmlHelpers::getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr)
 {
     if (elt == 0)
         return false;
@@ -29,21 +29,21 @@ bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr)
 }
 
 //-------------------------------------------------------------------------------------
-std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v)
+std::ostream& XmlHelpers::ostreamVector3(std::ostream& o, const Ogre::Vector3& v)
 {
     o << "x=\"" << v.x << "\" y=\"" << v.y << "\" z=\"" << v.z << "\"";
     return o;
 }
 
 //-------------------------------------------------------------------------------------
-std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q)
+std::ostream& XmlHelpers::ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q)
 {
     o << "x=\"" << q.x << "\" y=\"" << q.y << "\" z=\"" << q.z << "\" w=\"" << q.w << "\"";
     return o;
 }
 
 //-------------------------------------------------------------------------------------
-bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
+bool XmlHelpers::fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
 {
     const char* attr = 0;
     if (!getAttribute(xmlElt, "x", attr)) return false;
@@ -56,7 +56,7 @@ bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
 }
 
 //-------------------------------------------------------------------------------------
-bool fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q)
+bool XmlHelpers::fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q)
 {
     const char* attr = 0;
     if (!getAttribute(xmlElt, "x", attr)) return false;
@@ -132,7 +132,7 @@ bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
 
     for (TiXmlElement* lodElt = xmlElt->FirstChildElement("lod"); lodElt != 0; lodElt = lodElt->NextSiblingElement("lod"))
     {
-        if (!getAttribute(lodElt, "level", attr)) return false;
+        if (!XmlHelpers::getAttribute(lodElt, "level", attr)) return false;
         Lod lod;
         convertStringToLod(attr, lod);
 
@@ -142,7 +142,7 @@ bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
         contentFileList.clear();
         for (TiXmlElement* fileElt = elt->FirstChildElement("file"); fileElt != 0; fileElt = fileElt->NextSiblingElement("file"))
         {
-            if (!getAttribute(fileElt, "name", attr)) return false;
+            if (!XmlHelpers::getAttribute(fileElt, "name", attr)) return false;
             contentFileList.push_back(std::string(attr));
         }
 
@@ -171,14 +171,14 @@ std::string XmlEntity::toXmlString() const
     if (mDefinedAttributes & DAName) s << " name=\"" << mName << "\"";
     s << ">";
     if (mDefinedAttributes & DAFlags) s << "<flags bitmask=\"" << mFlags << "\" />";
-    if (mDefinedAttributes & DADisplacement) ostreamVector3(s << "<displacement ", mDisplacement) << " />";
-    if (mDefinedAttributes & DAPosition) ostreamVector3(s << "<position ", mPosition) << " />";
-    if (mDefinedAttributes & DAOrientation) ostreamQuaternion(s << "<orientation ", mOrientation) << " />";
+    if (mDefinedAttributes & DADisplacement) XmlHelpers::ostreamVector3(s << "<displacement ", mDisplacement) << " />";
+    if (mDefinedAttributes & DAPosition) XmlHelpers::ostreamVector3(s << "<position ", mPosition) << " />";
+    if (mDefinedAttributes & DAOrientation) XmlHelpers::ostreamQuaternion(s << "<orientation ", mOrientation) << " />";
     if (mDefinedAttributes & DAAABoundingBox)
     {
         s << "<aabb>";
-        ostreamVector3(s << "<min ", mAABoundingBox.getMinimum()) << " />";
-        ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
+        XmlHelpers::ostreamVector3(s << "<min ", mAABoundingBox.getMinimum()) << " />";
+        XmlHelpers::ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
         s << "</aabb>";
     }
     if (mAnimation != 0) s << mAnimation->toXmlString();
@@ -201,20 +201,20 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     TiXmlElement* elt;
     const char* attr = 0;
 
-    if (!getAttribute(xmlElt, "uid", attr)) return false;
+    if (!XmlHelpers::getAttribute(xmlElt, "uid", attr)) return false;
     convertStringToEntityUID(attr, mUid);
     mDefinedAttributes |= DAUid;
-    if (getAttribute(xmlElt, "owner", attr))
+    if (XmlHelpers::getAttribute(xmlElt, "owner", attr))
     {
         mOwner = attr;
         mDefinedAttributes |= DAOwner;
     }
-    if (getAttribute(xmlElt, "type", attr))
+    if (XmlHelpers::getAttribute(xmlElt, "type", attr))
     {
         convertStringToEntityType(attr, mType);
         mDefinedAttributes |= DAType;
     }
-    if (getAttribute(xmlElt, "name", attr))
+    if (XmlHelpers::getAttribute(xmlElt, "name", attr))
     {
         mName = attr;
         mDefinedAttributes |= DAName;
@@ -222,23 +222,23 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
 
     if ((elt = xmlElt->FirstChildElement("flags")) != 0)
     {
-        if (!getAttribute(elt, "bitmask", attr)) return false;
+        if (!XmlHelpers::getAttribute(elt, "bitmask", attr)) return false;
         convertStringToEntityFlags(attr, mFlags);
         mDefinedAttributes |= DAFlags;
     }
     if ((elt = xmlElt->FirstChildElement("displacement")) != 0)
     {
-        fromXmlEltVector3(elt, mDisplacement);
+        XmlHelpers::fromXmlEltVector3(elt, mDisplacement);
         mDefinedAttributes |= DADisplacement;
     }
     if ((elt = xmlElt->FirstChildElement("position")) != 0)
     {
-        fromXmlEltVector3(elt, mPosition);
+        XmlHelpers::fromXmlEltVector3(elt, mPosition);
         mDefinedAttributes |= DAPosition;
     }
     if ((elt = xmlElt->FirstChildElement("orientation")) != 0)
     {
-        fromXmlEltQuaternion(elt, mOrientation);
+        XmlHelpers::fromXmlEltQuaternion(elt, mOrientation);
         mDefinedAttributes |= DAOrientation;
     }
     if ((elt = xmlElt->FirstChildElement("aabb")) != 0)
@@ -246,9 +246,9 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         Ogre::Vector3 min, max;
         TiXmlElement* subElt;
         if ((subElt = elt->FirstChildElement("min")) != 0)
-            fromXmlEltVector3(subElt, min);
+            XmlHelpers::fromXmlEltVector3(subElt, min);
         if ((subElt = elt->FirstChildElement("max")) != 0)
-            fromXmlEltVector3(subElt, max);
+            XmlHelpers::fromXmlEltVector3(subElt, max);
         mAABoundingBox.setExtents(min, max);
         mDefinedAttributes |= DAAABoundingBox;
     }
@@ -299,7 +299,7 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
     if ((elt = xmlElt->FirstChildElement("evt")) == 0)
         return false;
 
-    if (!getAttribute(elt, "type", attr)) return false;
+    if (!XmlHelpers::getAttribute(elt, "type", attr)) return false;
     convertStringToEventType(attr, mType);
 
     if ((elt = elt->FirstChildElement("entity")) != 0)

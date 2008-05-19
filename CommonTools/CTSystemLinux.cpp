@@ -17,5 +17,11 @@ void sleep(unsigned long durationMs)
 }
 
 //-------------------------------------------------------------------------------------
+void System::setMouseCursorVisibility(bool visible)
+{
+//	ShowCursor(visible); ?linux?
+}
+
+//-------------------------------------------------------------------------------------
 
 }

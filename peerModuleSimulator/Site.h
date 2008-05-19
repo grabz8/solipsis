@@ -9,11 +9,22 @@ namespace Solipsis {
 */
 class Site : public Entity
 {
+protected:
+    /// OSM filename
+    std::string mOSMFilename;
+    /// Collision mesh filename
+    std::string mCollisionMeshFilename;
+    /// Position of the entry gate
+    Ogre::Vector3 mGatePosition;
+
 public:
     /** Constructor. */
     Site(XmlEntity* xmlEntity);
     /** Destructor. */
     virtual ~Site();
+
+    /// Get the position of the entry gate
+    const Ogre::Vector3& getGatePosition() { return mGatePosition; }
 
 #ifdef PHYSICSPLUGINS
     /** See Entity. */

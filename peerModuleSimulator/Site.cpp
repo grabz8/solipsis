@@ -7,21 +7,11 @@ namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 Site::Site(XmlEntity* xmlEntity) :
-    Entity(xmlEntity)
+    Entity(xmlEntity),
+    mOSMFilename(""),
+    mCollisionMeshFilename(""),
+    mGatePosition(Vector3::ZERO)
 {
-}
-
-//-------------------------------------------------------------------------------------
-Site::~Site()
-{
-}
-
-#ifdef PHYSICSPLUGINS
-//-------------------------------------------------------------------------------------
-void Site::createPhysics(IPhysicsScene* physicsScene)
-{
-    Entity::createPhysics(physicsScene);
-
     // Set the scene collision mesh
     std::string xmlFilename;
     XmlContent* content = mXmlEntity->getContent();
@@ -35,9 +25,6 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
         }
     if (xmlFilename.empty())
         return;
-
-    std::string osmFilename;
-    std::string collisionMeshFilename;
 
     TiXmlDocument xmlFileDoc;
 	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlFilename);
@@ -54,21 +41,36 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
     if (xmlFileDoc.Error())
         return;
     TiXmlElement* sceneNodeElt = xmlFileDoc.RootElement()->FirstChildElement("sceneNode");
-    if (sceneNodeElt == 0)
-        return;
-    osmFilename = sceneNodeElt->Attribute("filename");
-    if (osmFilename.empty())
-        return;
-    collisionMeshFilename = sceneNodeElt->Attribute("collision");
-    if (collisionMeshFilename.empty())
+    if (sceneNodeElt != 0)
+    {
+        mOSMFilename = sceneNodeElt->Attribute("filename");
+        mCollisionMeshFilename = sceneNodeElt->Attribute("collision");
+        TiXmlElement* gatePosElt;
+        if ((gatePosElt = sceneNodeElt->FirstChildElement("gatePos")) != 0)
+            XmlHelpers::fromXmlEltVector3(gatePosElt, mGatePosition);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+Site::~Site()
+{
+}
+
+#ifdef PHYSICSPLUGINS
+//-------------------------------------------------------------------------------------
+void Site::createPhysics(IPhysicsScene* physicsScene)
+{
+    Entity::createPhysics(physicsScene);
+
+    if (mOSMFilename.empty() || mCollisionMeshFilename.empty())
         return;
 
     TiXmlDocument osmFileDoc;
-	pStream = ResourceGroupManager::getSingleton().openResource(osmFilename);
+	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(mOSMFilename);
 	if (!pStream->size())
         return;
-	iSize = pStream->size();
-	pBuf = new char[iSize+1];
+	size_t iSize = pStream->size();
+	char *pBuf = new char[iSize+1];
 	memset(pBuf, 0, iSize+1);
 	pStream->read(pBuf, iSize);
 	pStream.setNull();
@@ -83,13 +85,13 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
         attr = entity->Attribute("name");
         if ((attr == 0) || (attr[0] == '\0'))
             continue;
-        if (strcmp(attr, collisionMeshFilename.c_str()) == 0)
+        if (strcmp(attr, mCollisionMeshFilename.c_str()) == 0)
             break;
         entity = entity->NextSiblingElement("entity");
     }
     if (entity == 0)
         return;
-    collisionMeshFilename = entity->Attribute("filename");
+    mCollisionMeshFilename = entity->Attribute("filename");
 
     Vector3 position;
     Quaternion rotation;
@@ -98,30 +100,17 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
     // Position
 	TiXmlElement* posElem = entity->FirstChildElement("position");
     if (posElem)
-    {
-		position.x = StringConverter::parseReal(posElem->Attribute("x"));
-		position.y = StringConverter::parseReal(posElem->Attribute("y"));
-		position.z = StringConverter::parseReal(posElem->Attribute("z"));
-    }
+        XmlHelpers::fromXmlEltVector3(posElem, position);
 	// Rotation
 	TiXmlElement* rotElem = entity->FirstChildElement("rotation");
     if (rotElem)
-    {
-		rotation.w = StringConverter::parseReal(rotElem->Attribute("w"));
-		rotation.x = StringConverter::parseReal(rotElem->Attribute("x"));
-		rotation.y = StringConverter::parseReal(rotElem->Attribute("y"));
-		rotation.z = StringConverter::parseReal(rotElem->Attribute("z"));
-    }
+        XmlHelpers::fromXmlEltQuaternion(rotElem, rotation);
 	// Scale
 	TiXmlElement* scaleElem = entity->FirstChildElement("scale");
     if (scaleElem)
-    {
-		scale.x = StringConverter::parseReal(scaleElem->Attribute("x"));
-		scale.y = StringConverter::parseReal(scaleElem->Attribute("y"));
-		scale.z = StringConverter::parseReal(scaleElem->Attribute("z"));
-    }
+        XmlHelpers::fromXmlEltVector3(scaleElem, scale);
 
-    Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(collisionMeshFilename);
+    Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(mCollisionMeshFilename);
     MeshPtr collisionMeshPtr(collisionMesh);
     mPhysicsScene->setTerrainMesh(collisionMeshPtr, getXmlEntity()->getPosition() + position, getXmlEntity()->getOrientation()*rotation, scale);
 }

@@ -61,3 +61,7 @@ Coding rules
 0- IDE/editor config
  Tabs are replaced by spaces
  1 Tab = 4 spaces
+
+1- include <> if header file is outside of the project, include "" if header file is in the same project
+
+2- add/use doxygen comments

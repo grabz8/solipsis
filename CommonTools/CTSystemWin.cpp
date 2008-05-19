@@ -14,5 +14,11 @@ void System::sleep(unsigned long durationMs)
 }
 
 //-------------------------------------------------------------------------------------
+void System::setMouseCursorVisibility(bool visible)
+{
+	ShowCursor((BOOL)visible);
+}
+
+//-------------------------------------------------------------------------------------
 
 } // namespace CommonTools

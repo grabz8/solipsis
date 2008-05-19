@@ -16,6 +16,16 @@
 
 namespace Solipsis {
 
+class XMLDATAS_EXPORT XmlHelpers
+{
+public:
+    static bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr);
+    static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
+    static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
+    static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
+    static bool fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q);
+};
+
 typedef std::string NodeId;
 
 enum EventType {

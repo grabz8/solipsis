@@ -490,3 +490,9 @@ VLC-textureSource OGRE plugin added
 NavPlugin_FModSpeex.dll renamed Plugin_FModSpeex.dll
 
 ---------------------------
+20/05/08
+
+gatePos XML elt added into the scene .xml file to set the intial gate position for avatars entry
+System mouse cursor visibility added into CommonTools
+
+---------------------------
