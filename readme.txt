@@ -81,7 +81,7 @@ To run the Peer application you currently have to specify host, port and verbosi
 -h <IPaddr:str>    : IP address (default: localhost)
 -p <port:int>      : port (default: 8550)
 -v <verbosity:int> : verbosity level (0..2)
--s <sceneName:str> : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...)
+-s <sceneName:str> : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
 
 
 --------------------------------------------------------------------------------
