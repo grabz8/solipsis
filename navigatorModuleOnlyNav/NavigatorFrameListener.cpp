@@ -604,7 +604,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             Vector2 vncXY;
             if (navigatorGUI->isContextVisible())
                 navigatorGUI->contextHide();
-            else if (mNavigator->is1AvatarHitByMouse(avatar) && !navigatorGUI->isContextVisible())
+            else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible() && mNavigator->is1AvatarHitByMouse(avatar))
                 navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, "look#talk#cancel");
             else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
             {

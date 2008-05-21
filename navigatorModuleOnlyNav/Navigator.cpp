@@ -388,43 +388,58 @@ void Navigator::demoVNC(const String params)
 //-------------------------------------------------------------------------------------
 void Navigator::demoVLC(const String params)
 {
-    static bool active = false;
+    static bool activeVLCMtl = false;
+    static bool activeVLCStreaming = false;
 
-    if (active)
+    if (params.find_first_of("cmd:") == 0)
     {
-        SceneNode* vlcNode = mSceneMgr->getSceneNode("demoVLCNode");
-        MovableObject* vlcEnt = vlcNode->getAttachedObject("demoVLC");
-        vlcNode->detachObject(vlcEnt);
-        vlcNode->getCreator()->destroyMovableObject(vlcEnt);
-        vlcNode->getCreator()->destroySceneNode(vlcNode->getName());
-        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
-        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
-        vlcExtTextSrc->destroyAdvancedTexture("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        MaterialManager::getSingleton().remove("demoVLCMaterial");
+        if (activeVLCStreaming)
+        {
+            // Stop command
+        }
+        else
+        {
+            // Launch command
+        }
+        activeVLCStreaming = !activeVLCStreaming;
     }
     else
     {
-        String mrl(params);
-        if (mrl.empty()) return;
+        if (activeVLCMtl)
+        {
+            SceneNode* vlcNode = mSceneMgr->getSceneNode("demoVLCNode");
+            MovableObject* vlcEnt = vlcNode->getAttachedObject("demoVLC");
+            vlcNode->detachObject(vlcEnt);
+            vlcNode->getCreator()->destroyMovableObject(vlcEnt);
+            vlcNode->getCreator()->destroySceneNode(vlcNode->getName());
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+            vlcExtTextSrc->destroyAdvancedTexture("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+            MaterialManager::getSingleton().remove("demoVLCMaterial");
+        }
+        else
+        {
+            String mrl(params);
+            if (mrl.empty()) return;
 
-        // Creates the VLC Plane and subsequent NaviMaterial
-        Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
-        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
-        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
-        vlcExtTextSrc->setParameter("mrl", mrl);
-        vlcExtTextSrc->setParameter("width", "256");
-        vlcExtTextSrc->setParameter("height", "256");
-        vlcExtTextSrc->setParameter("frames_per_second", "25");
-        vlcExtTextSrc->setParameter("play_mode", "loop");
-        MaterialManager::getSingleton().create("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        vlcExtTextSrc->createDefinedTexture("demoVLCMaterial");
-        vlcEnt->setMaterialName("demoVLCMaterial");
-        SceneNode* vlcNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVLCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
-        vlcNode->attachObject(vlcEnt);
-        vlcNode->yaw(Degree(90), Node::TS_WORLD);
+            // Creates the VLC Plane and subsequent NaviMaterial
+            Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+            vlcExtTextSrc->setParameter("mrl", mrl);
+            vlcExtTextSrc->setParameter("width", "256");
+            vlcExtTextSrc->setParameter("height", "256");
+            vlcExtTextSrc->setParameter("frames_per_second", "25");
+            vlcExtTextSrc->setParameter("play_mode", "loop");
+            MaterialManager::getSingleton().create("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+            vlcExtTextSrc->createDefinedTexture("demoVLCMaterial");
+            vlcEnt->setMaterialName("demoVLCMaterial");
+            SceneNode* vlcNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVLCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
+            vlcNode->attachObject(vlcEnt);
+            vlcNode->yaw(Degree(90), Node::TS_WORLD);
+        }
+        activeVLCMtl = !activeVLCMtl;
     }
-
-    active = !active;
 }
 #endif
 #ifdef DEMO_VOICE
@@ -791,6 +806,30 @@ bool Navigator::initialize()
     // call inherited
     if (!Instance::initialize())
         return false;
+
+// COLOR PICKING
+/*
+    mColorPickingRT = TextureManager::getSingleton().createManual("ColorPickingRT", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TextureType::TEX_TYPE_2D, 256, 256, 0, PixelFormat::PF_B8G8R8, TU_RENDERTARGET, NULL);
+    /// Set up viewport over entire texture
+    RenderTexture *rtt = mColorPickingRT->getBuffer()->getRenderTarget();
+    rtt->setAutoUpdated(false);
+//    rtt->addListener(&mColorPickingRTListener);
+    Camera* camera = mWindow->getViewport(0)->getCamera();
+    // Save last viewport and current aspect ratio
+    Viewport* oldViewport = camera->getViewport();
+    Real aspectRatio = camera->getAspectRatio();
+    Viewport* v = rtt->addViewport(camera);
+    v->setClearEveryFrame(false);
+    v->setOverlaysEnabled(false);
+    v->setBackgroundColour(ColourValue(0, 0, 0, 0));
+    // Should restore aspect ratio, in case of auto aspect ratio
+    // enabled, it'll changed when add new viewport.
+    camera->setAspectRatio(aspectRatio);
+    // Should restore last viewport, i.e. never disturb user code
+    // which might based on that.
+    camera->_notifyViewport(oldViewport);
+*/
+// COLOR PICKING
 
     if (!mNaviSupported)
     {
@@ -1580,6 +1619,30 @@ bool Navigator::mdlrXMLLoad()
 
 	return false;
 }
+
+//-------------------------------------------------------------------------------------
+bool Navigator::mdlrXMLImport()
+{
+	if( mModeler )
+	{
+		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+		Radian angle = pldir.getYaw();
+		Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+		Real cosY = Math::Cos(angle);
+		Real sinY = Math::Sin(angle);
+
+		Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+		//y = point.y;							//		y' = y  
+		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+		dep.x = x;
+
+		return mModeler->XMLImport( mUserAvatar->getSceneNode()->getPosition() + dep );
+	}
+
+	return false;
+}
+
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLSave(bool all, const char* pathToSave)
 {

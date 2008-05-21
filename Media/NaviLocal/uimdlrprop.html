@@ -126,22 +126,22 @@
 						<p><table>
 								<tr>
 									<td width="130">Object name</td>
-									<td width="150"><input type="text" value="?" id="objectName" size="30" onchange="elementClicked('MdlrObjectName')"></td>
+									<td width="150"><input type="text" value="?" id="objectName" size="30" onchange="elementClicked('MdlrObjectName')"/></td>
 									<td width="150"></td>
 								</tr>
 								<tr>
 									<td>Creator</td>
-									<td><input type="text" value="?" id="creator" size="30" onchange="elementClicked('MdlrCreator')"></td>
+									<td><input type="text" value="?" id="creator" size="30" onchange="elementClicked('MdlrCreator')"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Owner</td>
-									<td><input type="text" value="?" id="owner" size="30" onchange="elementClicked('MdlrOwner')"></td>
+									<td><input type="text" value="?" id="owner" size="30" onchange="elementClicked('MdlrOwner')"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Group</td>
-									<td><input type="text" value="?" id="group" size="30" onchange="elementClicked('MdlrGroup')"></td>
+									<td><input type="text" value="?" id="group" size="30" onchange="elementClicked('MdlrGroup')"/></td>
 									<td></td>
 								</tr>
 								<tr valign="top">
@@ -343,33 +343,69 @@
 										</div>
 									</td>
 								</tr>
-								<tr>
-									<td colspan="4">
-										<br>
-										<br>
-										<input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()">
-										<input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()">
-										<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')">
-									<td>
-								</tr>
-								<tr valign="middle">
-									<td colspan="4">
-										<br>
-										<table>
-											<tr>
-												<td>
-													<input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"><br>
-													<input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')">
-												</td>
-												<td>
-													<div style='height: 132px; overflow: auto' id="divTexture"></div>
-												</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
 							</table>
 						</p>
+                        <div class="tabber">
+	                        <div class="tabbertab">
+		                        <!-- Texture -->
+		                        <h2>Texture</h2>
+						        <table>
+								        <tr>
+									        <td colspan="4">
+										        <input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()"/>
+										        <input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()"/>
+										        <input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')"/>
+									        <td>
+								        </tr>
+								        <tr valign="middle">
+									        <td colspan="4">
+										        <br>
+										        <table>
+											        <tr>
+												        <td>
+													        <input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"/><br>
+													        <input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')"/>
+												        </td>
+												        <td>
+													        <div style='height: 132px; overflow: auto' id="divTexture"></div>
+												        </td>
+											        </tr>
+										        </table>
+									        </td>
+								        </tr>
+							        </table>
+	                        </div>
+	                        <div class="tabbertab">
+		                        <!-- WWW -->
+		                        <h2>WWW</h2>
+						        <table>
+                                    <tr><td>URL</td><td><input type="text" size="50" id="MaterialWWWUrl" value="http://www.solipsis.org"/></td></tr>
+                                    <tr><td>Width</td><td><input type="text" size="10" id="MaterialWWWWidth" value="256"/></td></tr>
+                                    <tr><td>Height</td><td><input type="text" size="10" id="MaterialWWWHeight" value="256"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyWWWTexture')"/></td></tr>
+						        </table>
+ 	                        </div>
+	                        <div class="tabbertab">
+		                        <!-- VLC -->
+		                        <h2>VLC</h2>
+						        <table>
+                                    <tr><td>MRL</td><td><input type="text" size="50" id="MaterialVLCMrl" value="udp://@"/></td></tr>
+                                    <tr><td>Width</td><td><input type="text" size="10" id="MaterialVLCWidth" value="256"/></td></tr>
+                                    <tr><td>Height</td><td><input type="text" size="10" id="MaterialVLCHeight" value="256"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVLCTexture')"/></td></tr>
+						        </table>
+ 	                        </div>
+	                        <div class="tabbertab">
+		                        <!-- VNC -->
+		                        <h2>VNC</h2>
+						        <table>
+                                    <tr><td>Host</td><td><input type="text" size="20" id="MaterialVNCHost" value="localhost"/></td></tr>
+                                    <tr><td>Port</td><td><input type="text" size="10" id="MaterialVNCPort" value="5900"/></td></tr>
+                                    <tr><td>Password</td><td><input type="text" size="20" id="MaterialVNCPwd" value="secret"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVNCTexture')"/></td></tr>
+						        </table>
+ 	                        </div>
+                       </div>
 					</div>
 					<!-- 3D -->
 					<div class="tabbertab">
@@ -383,26 +419,26 @@
 								</tr>
 								<tr>
 									<td>Position</td>
-									<td><input type="text" size="10" id="positionX" value="0.0" onchange="elementClicked('MdlrPositionX')"></td>
-									<td><input type="text" size="10" id="positionY" value="0.0" onchange="elementClicked('MdlrPositionY')"></td>
-									<td><input type="text" size="10" id="positionZ" value="0.0" onchange="elementClicked('MdlrPositionZ')"></td>
+									<td><input type="text" size="10" id="positionX" value="0.0" onchange="elementClicked('MdlrPositionX')"/></td>
+									<td><input type="text" size="10" id="positionY" value="0.0" onchange="elementClicked('MdlrPositionY')"/></td>
+									<td><input type="text" size="10" id="positionZ" value="0.0" onchange="elementClicked('MdlrPositionZ')"/></td>
 								</tr>
 								<tr>
 									<td>Orientation</td>
-									<td><input type="text" size="10" id="orientationX" value="0.0" onchange="elementClicked('MdlrOrientationX')"></td>
-									<td><input type="text" size="10" id="orientationY" value="0.0" onchange="elementClicked('MdlrOrientationY')"></td>
-									<td><input type="text" size="10" id="orientationZ" value="0.0" onchange="elementClicked('MdlrOrientationZ')"></td>
+									<td><input type="text" size="10" id="orientationX" value="0.0" onchange="elementClicked('MdlrOrientationX')"/></td>
+									<td><input type="text" size="10" id="orientationY" value="0.0" onchange="elementClicked('MdlrOrientationY')"/></td>
+									<td><input type="text" size="10" id="orientationZ" value="0.0" onchange="elementClicked('MdlrOrientationZ')"/></td>
 								</tr>
 								<tr>
 									<td>Scale</td>
-									<td><input type="text" size="10" id="scaleX" value="0.0" onchange="elementClicked('MdlrScaleX')"></td>
-									<td><input type="text" size="10" id="scaleY" value="0.0" onchange="elementClicked('MdlrScaleY')"></td>
-									<td><input type="text" size="10" id="scaleZ" value="0.0" onchange="elementClicked('MdlrScaleZ')"></td>
+									<td><input type="text" size="10" id="scaleX" value="0.0" onchange="elementClicked('MdlrScaleX')"/></td>
+									<td><input type="text" size="10" id="scaleY" value="0.0" onchange="elementClicked('MdlrScaleY')"/></td>
+									<td><input type="text" size="10" id="scaleZ" value="0.0" onchange="elementClicked('MdlrScaleZ')"/></td>
 								</tr>
 								<tr>
 									<td>Physics</td>
-									<td colspan="3"><input type="checkbox" id="collision" onclick="elementclicked('MdlrCollision')">Enable 
-										collision &nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" id="gravity" onclick="elementClicked('MdlrGravity')">Enable 
+									<td colspan="3"><input type="checkbox" id="collision" onclick="elementclicked('MdlrCollision')"/>Enable 
+										collision &nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" id="gravity" onclick="elementClicked('MdlrGravity')"/>Enable 
 										gravity</td>
 								</tr>
 								<tr>

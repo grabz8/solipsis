@@ -123,6 +123,7 @@ public:
 
 	/// Load from / Save to a XML SOLIPSIS file
 	bool XMLLoad(Vector3 pos = Vector3::ZERO, const char* pathToLoad = NULL);
+	bool XMLImport(Vector3 pos = Vector3::ZERO, const char* pathToLoad = NULL);
 	bool XMLSave(bool all = false, const char* pathToSave = NULL);
 
 	/// Update the command list of the stored deformations

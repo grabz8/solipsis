@@ -110,6 +110,7 @@ protected:
 
     // Modeler page callbacks
     void modelerMainFileOpen(const NaviData& naviData);
+    void modelerMainFileImport(const NaviData& naviData);
     void modelerMainFileSave(const NaviData& naviData);
     void modelerMainFileExit(const NaviData& naviData);
     // Modeler object creation callbacks
@@ -179,6 +180,9 @@ protected:
     void modelerPropTextureApply(const NaviData& naviData);
     void modelerPropTexturePrev(const NaviData& naviData);
     void modelerPropTextureNext(const NaviData& naviData);
+    void modelerPropWWWTextureApply(const NaviData& naviData);
+    void modelerPropVLCTextureApply(const NaviData& naviData);
+    void modelerPropVNCTextureApply(const NaviData& naviData);
     // Modeler 3D callbacks
     void modelerPropPositionX(const NaviData& naviData);
     void modelerPropPositionY(const NaviData& naviData);

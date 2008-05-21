@@ -804,6 +804,49 @@ bool Modeler::XMLLoad(Vector3 pos, const char* pathToLoad)
 	return true;
 }
 
+/// Import a mesh file to a XML SOLIPSIS file (.sof)
+bool Modeler::XMLImport(Vector3 pos, const char* pathToLoad)
+{
+	if( pathToLoad == NULL )
+		pathToLoad = FileBrowser::displayWindowForLoading( 
+			"Ogre Mesh File,(*.mesh)\0*.mesh\0", string("") ); 
+
+    // Go back to the main directory
+	_chdir(mExecPath.c_str());
+
+	if (pathToLoad != NULL)
+	{
+        Ogre::String path = pathToLoad;
+		Path FilePath (	path ) ;
+
+		//Get current path
+		size_t nameSizeChar = path.find_last_of( '\\' );
+		//size_t nameSizeChar = path.find_last_of( '/' );
+		std::string texturepath (path, 0, nameSizeChar+1);
+
+		//get only name of file (without extension)
+		size_t extPos = path.find_last_of( '.' );
+		std::string name (FilePath.getLastFileName(false) , nameSizeChar+1, FilePath.getLastFileName(false).length());
+
+        ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getRootPath(), "FileSystem");//, name + "Resources");
+
+        Entity* entity = mSceneManager->createEntity( String(name), FilePath.getLastFileName(true) );
+	    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+#ifdef SHADOWS
+	    entity->setCastShadows(true);
+#endif
+        entity->setQueryFlags(Navigator::QFObject);
+	    node->attachObject( entity );
+
+        Object3DOther* obj = new Object3DOther( String(name), node );
+        mSelection->add3DObject(obj);
+	    obj->mCentreSelection = pos;
+
+	    node->setPosition(pos);
+    }
+	return true;
+}
+
 /// Save to a XML SOLIPSIS file (.sof)
 bool Modeler::XMLSave(bool all, const char* pathToSave)
 {

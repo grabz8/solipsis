@@ -67,6 +67,9 @@ protected:
 
     NavigatorGUI* mNavigatorGUI;
 
+// COLOR PICKING
+//    TexturePtr mColorPickingRT;
+// COLOR PICKING
     Real mMaxObjectPickingDistance;
     Real mMaxAvatarPickingDistance;
     Real mMaxNaviPickingDistance;
@@ -173,7 +176,7 @@ public:
     bool quit();
     bool connect();
     bool sendMessage(const String& message);
-    bool contextItemSelected(const String& message);
+    bool contextItemSelected(const String& item);
 
     // process events received by node
     void processEvents();
@@ -221,6 +224,8 @@ public:
     bool createMesh();
     /** Load from a XML file.*/
     bool mdlrXMLLoad();
+    /** Import a mesh file.*/
+    bool mdlrXMLImport();
     /** Save to a XML file. */
     bool mdlrXMLSave(bool all = false, const char* pathToSave = NULL);
     /// The modeler object

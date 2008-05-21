@@ -496,3 +496,9 @@ gatePos XML elt added into the scene .xml file to set the intial gate position f
 System mouse cursor visibility added into CommonTools
 
 ---------------------------
+21/05/08
+
+ImportMesh (.mesh) added into uimdlrmain
+Material tabs for Texture/WWW/VLC/VNC added into uimdlrprop
+
+---------------------------

@@ -8,7 +8,7 @@
 #include "Character.h"
 #include "CharacterManager.h"
 #include "Avatar.h"
-#include "NavigatorApp.h"
+#include "OgreExternalTextureSourceManager.h"
 
 using namespace Solipsis;
 
@@ -202,6 +202,7 @@ void NavigatorGUI::modelerMainShow()
         navi->setOpacity(0.75f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
 	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::modelerMainFileOpen));
+	    navi->bind("FileImport", NaviDelegate(this, &NavigatorGUI::modelerMainFileImport));
 	    navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
 	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
 		navi->bind("CreateBox", NaviDelegate(this, &NavigatorGUI::modelerMainCreateBox)); 
@@ -347,6 +348,9 @@ void NavigatorGUI::modelerPropShow()
 		navi->bind("MdlrApplyTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureApply));
 		navi->bind("MdlrPrevTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTexturePrev));
 		navi->bind("MdlrNextTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureNext));
+		navi->bind("MdlrApplyWWWTexture", NaviDelegate(this, &NavigatorGUI::modelerPropWWWTextureApply));
+		navi->bind("MdlrApplyVLCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVLCTextureApply));
+		navi->bind("MdlrApplyVNCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVNCTextureApply));
 		// 3D
 		navi->bind("MdlrPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
 		navi->bind("MdlrPositionY", NaviDelegate(this, &NavigatorGUI::modelerPropPositionY));
@@ -1318,7 +1322,6 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
     };
     navi->evaluateJS("$('infosText').innerHTML = '" + infosText + "'");
 
-
 	// Setup the avatar name list
 	std::string text("");
 	vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
@@ -1650,6 +1653,14 @@ void NavigatorGUI::modelerMainFileOpen(const NaviData& naviData)
 	
     //modelerMainUnload();
 	mNavigator->mdlrXMLLoad();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainFileImport(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::modelerMainFileImport()");
+	
+	mNavigator->mdlrXMLImport();
 }
 
 //-------------------------------------------------------------------------------------
@@ -2486,6 +2497,87 @@ void NavigatorGUI::modelerPropTextureApply(const NaviData& naviData)
 			obj->setCurrentTexture( tPtr );
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
+{
+	if( mNavigator->mModeler != 0 )
+	{
+		Object3D * obj = mNavigator->mModeler->getSelected();
+
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    std::string urlStr = navi->evaluateJS("document.getElementById('MaterialWWWUrl').value");
+	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialWWWWidth').value");
+	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialWWWHeight').value");
+        int width = atoi(widthStr.c_str());
+        int height = atoi(heightStr.c_str());
+
+        Entity* objEntity = obj->getEntity();
+        String mtlName = "WWW_" + objEntity->getName();
+        NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(mtlName, urlStr, width, height);
+        naviWWWTexture->show(true);
+        naviWWWTexture->setMaxUPS(15);
+        naviWWWTexture->setForceMaxUpdate(false);
+        naviWWWTexture->setOpacity(1.0f);
+        objEntity->setMaterialName(naviWWWTexture->getMaterialName());
+        objEntity->setQueryFlags(Navigator::QFNaviPanel);
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
+{
+	if( mNavigator->mModeler != 0 )
+	{
+		Object3D * obj = mNavigator->mModeler->getSelected();
+
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    std::string mrlStr = navi->evaluateJS("document.getElementById('MaterialVLCMrl').value");
+	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialVLCWidth').value");
+	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialVLCHeight').value");
+        int width = atoi(widthStr.c_str());
+        int height = atoi(heightStr.c_str());
+
+        Entity* objEntity = obj->getEntity();
+        String mtlName = "VLC_" + objEntity->getName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+        vlcExtTextSrc->setParameter("mrl", mrlStr);
+        vlcExtTextSrc->setParameter("width", StringConverter::toString(width));
+        vlcExtTextSrc->setParameter("height", StringConverter::toString(height));
+        vlcExtTextSrc->setParameter("frames_per_second", "25");
+        vlcExtTextSrc->setParameter("play_mode", "loop");
+        MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        vlcExtTextSrc->createDefinedTexture(mtlName);
+        objEntity->setMaterialName(mtlName);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
+{
+	if( mNavigator->mModeler != 0 )
+	{
+		Object3D * obj = mNavigator->mModeler->getSelected();
+
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    std::string hostStr = navi->evaluateJS("document.getElementById('MaterialVNCHost').value");
+	    std::string portStr = navi->evaluateJS("document.getElementById('MaterialVNCPort').value");
+	    std::string pwdStr = navi->evaluateJS("document.getElementById('MaterialVNCPwd').value");
+        int port = atoi(portStr.c_str());
+
+        Entity* objEntity = obj->getEntity();
+        String mtlName = "VNC_" + objEntity->getName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+        ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
+        vncExtTextSrc->setParameter("address", "vnc://" + hostStr + ":" + StringConverter::toString(port));
+        vncExtTextSrc->setParameter("password", "vncpwd:" + pwdStr);
+        MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        vncExtTextSrc->createDefinedTexture(mtlName);
+        objEntity->setMaterialName(mtlName);
+        objEntity->setQueryFlags(Navigator::QFVNCPanel);
+    }
 }
 
 //-------------------------------------------------------------------------------------
