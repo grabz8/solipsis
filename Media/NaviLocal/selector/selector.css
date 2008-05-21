@@ -1,0 +1,66 @@
+/******** Feuille de styles du menu ************/
+.conteneurMenu
+{
+ float: left;
+ width: 150px; /** Tenir compte du width de titreMenu ;) **/
+ border: none;
+ padding: 0px;
+ margin: 0px;
+}
+ 
+.menu{
+ float: left;
+ margin: 1px;
+ padding: 2px;
+ clear: both;
+}
+ 
+.titreMenu, .contenuMenu, .lienMenu{
+ color: #000000;
+}
+ 
+.titreMenu, .contenuMenu{
+ border: 1px inset #AAAAAA;
+ width: 150px;
+ text-align: left;
+ margin: 0px;
+ padding: 2px;
+ float: left;
+}
+ 
+.titreMenu{
+ z-index: 5;
+}
+ 
+.contenuMenu{
+ display: none;
+ background-color: #FFFFFF;
+ /*position: absolute;*/
+ z-index: 6;
+}
+ 
+.menuOverflow{
+ overflow: auto;
+ height: 112px;
+}
+ 
+.itemOver{
+ background-color: #B0E84D;
+ color: #FFFFFF;
+ font-weight: bold;
+}
+ 
+.itemOut{
+ background-color: #FFFFFF;
+}
+ 
+.lienMenu{
+ text-decoration: none;
+}
+ 
+.crlf{
+ clear: both;
+ visibility: hidden;
+}
+ 
+/******** Fin de la feuille de styles du menu ************/

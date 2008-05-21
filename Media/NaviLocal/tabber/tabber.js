@@ -494,7 +494,7 @@ tabberObj.prototype.navClick = function(event)
   self.tabShow(tabberIndex);
   
   //alert('tabber : '+tabberIndex);
-  new NaviData('MdlrTabbers').add({tab:tabberIndex}).send(); 
+  new NaviData('ClickOnTabber').add({tab:tabberIndex}).send(); 
   if( tabberIndex == 2 ) updTexture();
 
   return false;

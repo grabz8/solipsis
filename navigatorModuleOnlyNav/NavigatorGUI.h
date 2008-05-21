@@ -106,6 +106,7 @@ protected:
     void optionsOk(const NaviData& naviData);
     void optionsBack(const NaviData& naviData);
     void chatPageLoaded(const NaviData& naviData);
+	void selectAvatar(const NaviData& naviData);
 
     // Modeler page callbacks
     void modelerMainFileOpen(const NaviData& naviData);
@@ -203,17 +204,47 @@ protected:
     void avatarMainFileExit(const NaviData& naviData);
     void avatarMainSelectPrev(const NaviData& naviData);
 	void avatarMainSelectNext(const NaviData& naviData);
+	void avatarMainSelected(const NaviData& naviData);
+	// Avatar animation page callbaks
 	void avatarPropAnimPlayPause(const NaviData& naviData);
 	void avatarPropAnimStop(const NaviData& naviData);
 	void avatarPropAnimNext(const NaviData& naviData);
 	void avatarPropAnimPrev(const NaviData& naviData);
-		
+	// Avatar bodyParts page callbacks
+	void avatarPropHeight(const NaviData& naviData);
+	void avatarPropBonePrev(const NaviData& naviData);
+	void avatarPropBoneNext(const NaviData& naviData);
 	void avatarPropBPPrev(const NaviData& naviData);
 	void avatarPropBPNext(const NaviData& naviData);
 	void avatarPropBPMPrev(const NaviData& naviData);
 	void avatarPropBPMNext(const NaviData& naviData);
 	void avatarPropBPMEdit(const NaviData& naviData);
 	void avatarPropBPMRemove(const NaviData& naviData);
+	void avatarPropAttPrev(const NaviData& naviData);
+	void avatarPropAttNext(const NaviData& naviData);
+	void avatarPropAttMPrev(const NaviData& naviData);
+	void avatarPropAttMNext(const NaviData& naviData);
+	void avatarPropAttMEdit(const NaviData& naviData);
+	void avatarPropAttMRemove(const NaviData& naviData);
+	void avatarPropSliders(const NaviData& naviData);		// multi callback !
+	// Avatar material page callbacks
+	void avatarColorAmbient(const NaviData& naviData);
+	void avatarColorDiffuse(const NaviData& naviData);
+	void avatarColorSpecular(const NaviData& naviData);
+	void avatarColorLockAmbientDiffuse(const NaviData& naviData);
+	void avatarPropShininess(const NaviData& naviData);
+	void avatarPropTransparency(const NaviData& naviData);
+	void avatarPropScrollU(const NaviData& naviData);
+	void avatarPropScrollV(const NaviData& naviData);
+	void avatarPropScaleU(const NaviData& naviData);
+	void avatarPropScaleV(const NaviData& naviData);
+	void avatarPropRotateU(const NaviData& naviData);
+	void avatarPropTextureAdd(const NaviData& naviData);
+	void avatarPropTextureRemove(const NaviData& naviData);
+	void avatarPropTextureApply(const NaviData& naviData);
+	void avatarPropTexturePrev(const NaviData& naviData);
+	void avatarPropTextureNext(const NaviData& naviData);
+
 
 
 
@@ -235,6 +266,10 @@ protected:
     void modelerAddNewDeformation(Object3D::Command pCommand);
     // Update the list of loaded textures
     void modelerUpdateTextures();
+	// Update the list of loaded textures
+    void avatarUpdateTextures();
+	// Update the sliders modifiers
+	void avatarUpdateSliders(int posX, int posY, int posZ, int oriX, int oriY, int oriZ, int scaleX, int scaleY, int scaleZ);
 
 	// Time of the last click on a specific action
 	double lastTime;

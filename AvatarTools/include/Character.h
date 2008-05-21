@@ -150,6 +150,16 @@ public:
 	///param defaultBodyPartModelName Complete name of default BodyPartModel of the BodyPart, name which is displayed on the screen. It can be "None" and then by default the Bodypart has no BodyPartModel (it means it is not present).
 	void addBodyPart(String name, String defaultBodyPartModelSubEntityName, String defaultBodyPartModelName);
 
+	///brief Get the current Bone name
+	///return The current Bone
+	Bone* getCurrentBone();
+	///brief Set the next Bone as Current
+	///return The newly current Bone
+	Bone* setNextBoneAsCurrent();
+	///brief Set the previous Bone as Current
+	///return The newly current Bone
+	Bone* setPreviousBoneAsCurrent();
+
 	///brief Method which return a Goody with a given name of the avatar.
 	///param goodyName Name of the Goody.
 	///return The Goody with the given name of NULL if this one doesn't exist. 
@@ -160,6 +170,15 @@ public:
 	///brief Method which gives an Ogre::MapIterator on all the Goodies of the Avatar.
 	///return An Ogre::MapIterator on all the Goodies of the Avatar.
 	GoodiesIterator getGoodiesIterator();
+	///brief Get the current Goody name
+	///return The current Goody
+	Goody* getCurrentGoody();
+	///brief Set the next Goody as Current
+	///return The newly current Goody
+	Goody* setNextGoodyAsCurrent();
+	///brief Set the previous Goody as Current
+	///return The newly current Goody
+	Goody* setPreviousGoodyAsCurrent();
 	///brief Method which add a Goody to the Avatar (Hat, Watch,...)
 	///param name Name of the Goody, "Hat", "Watch" for example.
 	///param boneName Name of the bone of the mesh of the avatar to which the Goody must be attached.
@@ -192,6 +211,8 @@ private:
 	String mMeshName;
 	MeshPtr mMesh;
 	BodyPart* mBodyPart;
+	Goody* mGoody;
+	unsigned int mBone;
 
 	BodyPartsMap mBodyParts;							///brief Map of all the BodyParts of the Avatar (For example "Head","Arms","Legs",...).
 	GoodiesMap mGoodies;								///brief Map of all the Goodies of the Avatar (For example "Watch","Hat"...).

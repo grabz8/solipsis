@@ -32,7 +32,9 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 	mCustomizationAnimationState(NULL),
  	mCustomizationKeyFrame(NULL),
 	mLoadingSuccessful(false),
-	mBodyPart(NULL)
+	mBodyPart(NULL),
+	mGoody(NULL),
+	mBone(0)
 {
 	/*
 	std::string mMeshFilename = "";
@@ -144,7 +146,7 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 		return;
 	}
 	mSkeletonName = mesh->getSkeletonName();
-
+	
 	// generate the NATURE file if does not exist
 	if (!mZipArchive->isFilePresent(mName + "_edition.nature"))
 	{
@@ -1365,6 +1367,29 @@ BodyPart* Character::setPreviousBodyPartAsCurrent()
 }
 
 //---------------------------------------------------------------------------------
+Bone* Character::getCurrentBone()
+{
+	return getEntity()->getSkeleton()->getBone( mBone );;
+}
+//---------------------------------------------------------------------------------
+Bone* Character::setNextBoneAsCurrent()
+{
+	mBone++;
+	if( mBone >= getEntity()->getSkeleton()->getNumBones() )
+		mBone = 0;
+
+	return getCurrentBone();
+}
+//---------------------------------------------------------------------------------
+Bone* Character::setPreviousBoneAsCurrent()
+{
+	if( mBone <= 0 )
+		mBone = getEntity()->getSkeleton()->getNumBones();
+	mBone--;
+
+	return getCurrentBone();
+}
+//---------------------------------------------------------------------------------
 void Character::addBodyPart(String name, String defaultBodyPartModelSubEntityName, String defaultBodyPartModelName)
 {
 	assert( (getBodyPart(name) == NULL) && "BodyPart already present in Avatar!" );
@@ -1389,6 +1414,58 @@ GoodiesIterator Character::getGoodiesIterator()
 {
 	return GoodiesIterator(mGoodies.begin(),mGoodies.end());
 }
+//---------------------------------------------------------------------------------
+Goody* Character::getCurrentGoody()
+{
+	if(!this->mGoody)
+		mGoody = (*mGoodies.begin()).second;
+
+	return mGoody;
+}
+//---------------------------------------------------------------------------------
+Goody* Character::setNextGoodyAsCurrent()
+{
+	std::map<String,Goody*>::iterator iter = mGoodies.begin();
+	mGoody = getCurrentGoody();
+	while(iter != mGoodies.end())
+	{
+		if((*iter).second == mGoody)
+		{
+			iter++;
+			if(iter == mGoodies.end())
+				iter = mGoodies.begin();
+			break;
+		}
+
+		iter++;
+	}
+	mGoody = (*iter).second;
+
+	return mGoody;
+}
+
+//---------------------------------------------------------------------------------
+Goody* Character::setPreviousGoodyAsCurrent()
+{
+	std::map<String,Goody*>::iterator iter = mGoodies.begin();
+	mGoody = getCurrentGoody();
+	while(iter != mGoodies.end())
+	{
+		if((*iter).second == mGoody)
+		{
+			if(iter == mGoodies.begin())
+				iter = mGoodies.end();
+			iter--;
+			break;
+		}
+
+		iter++;
+	}
+	mGoody = (*iter).second;
+
+	return mGoody;
+}
+
 //---------------------------------------------------------------------------------
 void Character::addGoody(String name,
 		const String& boneName,

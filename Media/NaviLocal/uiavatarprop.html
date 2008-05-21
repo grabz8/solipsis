@@ -1,110 +1,124 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-	<head>
-		<title>uiavatarprop</title>
-		<script type="text/javascript" src="Navi.js"></script>
-		<!-- <script type="text/javascript" src="mootools.js"></script> -->
-		<!-- TABBERS BEGIN -->
-		<link rel="stylesheet" href="tabber/tabber.css" TYPE="text/css" MEDIA="screen">
-		<script type="text/javascript">
-		    /* Optional: Temporarily hide the "tabber" class so it does not "flash"
-		    on the page as plain HTML. After tabber runs, the class is changed
-		    to "tabberlive" and it will appear. */
-		    document.write('<style type="text/css">.tabber{display:block;}<\/style>');
-		</script>
-		<script type="text/javascript" src="tabber/tabber.js"></script>
-		<!-- TABBERS END -->
-		<!-- SLIDERS BEGIN -->
-		<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
-		<script type="text/javascript" src="slider/range.js"></script>
-		<script type="text/javascript" src="slider/timer.js"></script>
-		<script type="text/javascript" src="slider/slider.js"></script>
-		<!-- SLIDERS END -->
-		<!-- COLOR PICKING BEGIN -->
-		<link rel="stylesheet" href="color/color.css" TYPE="text/css">
-		<script type="text/javascript" src="color/color.js"></script>
-		<!-- COLOR PICKING END -->
-		<script type="text/javascript">
-            function pageLoaded()
-            {	
-				/* TABBERS */
-                tabberAutomatic(); 
-                
-               	/* COLOR */
-				loadSV();
-				$S('plugin').display='none';
-				$S('SVslide').top=(80/100*170-7)+'px';
-	
-				new NaviData('pageLoaded').add({naviName:'uiavatarprop'}).send();
-			}
-            
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
-            }
-            
-            function sendMessage(message)
-            {
-				//alert(message);
-				new NaviData('sendMessage').add({msg:message}).send();
-            }  
-            function sendMessageParam(message, param)
-            {
-				new NaviData(message).add({msg:param}).send();
-            }  
-        </script>
-		
-		
-		<style type="text/css">
-            body
-            {
-                padding-left: 11em;
-	            background-color: #000000;
-	            overflow: hidden;
-	            font-family: Verdana;
-	            font-size: small;
-	            color: #224422;
-            }
+<head>
+    <title>uiavatarprop</title>
 
-            #container
-            {
-	            background-image: url('uiavatarprop.png');
-	            position: absolute;
-	            left: 0px;
-	            top: 0px;
-	            width: 512px;
-	            height: 512px;
-            }
-            #containerMenu
-            {
-	            position: absolute;
-	            left: 8px;
-	            top: 00px;
-	            width: 496px;
-	            height: 512px;
-            }
-            
-            /* SLIDERS BEGIN */
-			#slider-1 {
-				margin:	10px;
-				width:	auto;
-			}
+    <script type="text/javascript" src="Navi.js"></script>
+    <!-- <script type="text/javascript" src="mootools.js"></script> -->
+    <!-- TABBERS BEGIN -->
+    <link rel="stylesheet" href="tabber/tabber.css" type="text/css" media="screen">
+    <script type="text/javascript">
+	    /* Optional: Temporarily hide the "tabber" class so it does not "flash"
+	    on the page as plain HTML. After tabber runs, the class is changed
+	    to "tabberlive" and it will appear. */
+	    document.write('<style type="text/css">.tabber{display:block;}<\/style>');
+    </script>
+    <script type="text/javascript" src="tabber/tabber.js"></script>
+    <!-- TABBERS END -->
+    <!-- SLIDERS BEGIN -->
+    <link rel="stylesheet" href="slider/bluecurve/bluecurve.css" type="text/css">
+    <script type="text/javascript" src="slider/range.js"></script>
+    <script type="text/javascript" src="slider/timer.js"></script>
+    <script type="text/javascript" src="slider/slider.js"></script>
+    <!-- SLIDERS END -->
+    <!-- COLOR PICKING BEGIN -->
+    <link rel="stylesheet" href="color/color.css" type="text/css">
+    <script type="text/javascript" src="color/color.js"></script>
+    <!-- COLOR PICKING END -->
+    <!-- SELECTOR BEGIN -->
+    <link rel="stylesheet" href="selector/selector.css" type="text/css">
+    <script type="text/javascript" src="selector/selector.js"></script>
+    <!-- SELECTOR END -->
 
-			#slider-2 {
-				margin:	10px;
-			}
-			/* SLIDERS END */
-        </style>
-	</head>
-	<body onload="pageLoaded()">
-		<div id="container">
-			<div id="containerMenu">
-				<div class="tabber">
-				    <!-- ANIMATIONS -->
-					<div class="tabbertab">
-						<h2>Animations</h2>
-						<p><table align="center" width="240">
-						<!--
+    <script type="text/javascript">
+        function pageLoaded()
+        {	
+			/* TABBERS */
+            tabberAutomatic(); 
+
+           	/* COLOR */
+			loadSV();
+			$S('plugin').display='none';
+			$S('SVslide').top=(80/100*170-7)+'px';
+
+			new NaviData('pageLoaded').add({naviName:'uiavatarprop'}).send();
+		}
+        
+        function elementClicked(elementName)
+        {
+            new NaviData(elementName).send();
+        }
+        
+        function sendMessage(message)
+        {
+			//alert(message);
+			new NaviData('sendMessage').add({msg:message}).send();
+        }  
+        function sendMessageParam(message, sub, param)
+        {
+			new NaviData(message).add({sub:param}).send();
+        }  
+    </script>
+
+    <style type="text/css">
+        body
+        {
+            padding-left: 11em;
+            background-color: #000000;
+            overflow: hidden;
+            font-family: Verdana;
+            font-size: small;
+            color: #224422;
+        }
+        #container
+        {
+            background-image: url( 'uiavatarprop.png' );
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 512px;
+            height: 512px;
+        }
+        #containerMenu
+        {
+            position: absolute;
+            left: 8px;
+            top: 00px;
+            width: 496px;
+            height: 512px;
+        }
+        /* SLIDERS BEGIN */
+        #slider-1
+        {
+            margin: 10px;
+            width: auto;
+        }
+        #slider-2
+        {
+            margin: 10px;
+        }
+        .horizontal 
+        {
+            width:	150px;
+            height:	25px;
+        }
+        hr 
+        {
+        	background-color: #ccc;
+        	color: #ccc;
+        }
+        /* SLIDERS END */
+    </style>
+</head>
+<body onload="pageLoaded()">
+    <div id="container">
+        <div id="containerMenu">
+            <div class="tabber" id="avatarTabbers">
+                <!-- ANIMATIONS -->
+                <div class="tabbertab">
+                    <h2>Animations</h2>
+                    <p>
+                        <table align="center" width="240">
 						    <tr>
 						        <td align="center">
 						            <input type="button" value=" < " style="width: 30px" onclick="elementClicked('AnimPrev')">
@@ -126,211 +140,386 @@
 						            <input type="button" value="Pause"  style="width: 100px" onclick="elementClicked('AnimPlayPause')" id="AnimPlayPause">
 						            <input type="button" value="Stop"  style="width: 100px" onclick="elementClicked('AnimStop')"><br>
 						            <br>
-						            <div class="slider" id="AnimTime" style="display: block">
-										<input class="slider-input" id="AnimeTimeInput" style="width: 200px"/>
+						            <div class="slider" id="animTime" style="display: block; width: 220px">
+										<input class="slider-input" id="animeTimeInput" />
 									</div>
 					            </td>
 				            </tr>
-						-->	
-					    </table></p>
-					</div>
-					
-					<!-- PROPERTIES -->
-					<div class="tabbertab">
-						<h2>Properties</h2>
-						<p><table width="496">
-							<tr>
-								<td width="150" colspan="2"><b>Height</b></td>
-								<td width="160"colspan="3">
-								    <div class="slider" id="Height" style="display: block">
-										<input class="slider-input" id="HeightInput" style="width: 190px"/>
-									</div>
-								</td>
-								<td width="156">
-								    <input type="text" id="HeightValue" value="1.50" style="width: 40px"/>
-								</td>
-							</tr>
-							<tr><td></td></tr>
-							
-							<tr>
-							    <td width="150" colspan="2"><b>Body Parts</b></td>
-							    <td width="30"><input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartPrev','body1')" /></td>
-							    <td width="130" align="center" id="BodyPartName">BodyPartName</td>
-							    <td width="30"><input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartNext','body1')" /></td>
-							    <td width="156"><input type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled/></td>
-							</tr>
-						</table>
-							
-						<table id="BodyParts" width="496">
-							<!-- example -->
-							<tr>
-							    <td width="20"></td>
-							    <td width="98" id="BodyPartName2">BodyPartName</td>
-							    <td width="30">
-							        <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartModelPrev','body1')"/>
-							    </td>
-							    <td width="130" align="center" id="BodyPartModelName">BodyPartModelName</td>
-							    <td width="30">
-							        <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartModelNext','body1')"/>
-							    </td>
-							    <td width="156">
-							        <input type="button" value="Edit" onclick="sendMessageParam('BodyPartModelEdit','body1')" />
-							        <input type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','body1')" disabled/>
-							    </td>
-							</tr>
-						</table></p>
-					</div>
-					
-					<!-- MATERIAL -->
-					<div class="tabbertab">
-						<h2>Material</h2>
-						<p><table>
-							<tr>
-								<td width="80">Ambient</td>
-								<td width="120">
-									<div id="pAmbient" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-										onclick="{panel='pAmbient'; initColor();}"></div>
-								</td>
-								<td>Shininess</td>
-								<td width="200">
-									<div class="slider" id="shininess">
-										<input class="slider-input" id="shininessInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td>Diffuse</td>
-								<td>
-									<div id="pDiffuse" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-										onclick="{panel='pDiffuse'; initColor();}"></div>
-								</td>
-								<td>Transparency</td>
-								<td>
-									<div class="slider" id="transparency">
-										<input class="slider-input" id="transparencyInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td>Specular</td>
-								<td>
-									<div id="pSpecular" style="HEIGHT: 20px; WIDTH: 64px; COLOR: #FF0; BORDER: 2px solid #ACA;"
-										onclick="{panel='pSpecular'; initColor();}"></div>
-								</td>
-								<td>Scroll U</td>
-								<td>
-									<div class="slider" id="scrollU">
-										<input class="slider-input" id="scrollUInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2"><input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('MdlrLockAmbientDiffuse')">
-									Lock Ambient-Diffuse</td>
-								<td>Scroll V</td>
-								<td>
-									<div class="slider" id="scrollV">
-										<input class="slider-input" id="scrollVInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td>Scale U</td>
-								<td>
-									<div class="slider" id="scaleU">
-										<input class="slider-input" id="scaleUInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td>Scale V</td>
-								<td>
-									<div class="slider" id="scaleV">
-										<input class="slider-input" id="scaleVInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td>Rotate U</td>
-								<td>
-									<div class="slider" id="rotateU">
-										<input class="slider-input" id="rotateUInput" />
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="4">
-									<br>
-									<br>
-									<input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()">
-									<input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()">
-									<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')">
-								<td>
-							</tr>
-							<tr valign="middle">
-								<td colspan="4">
-									<br>
-									<table>
-										<tr>
-											<td>
-												<input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"><br>
-												<input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')">
-											</td>
-											<td>
-												<div style='height: 132px; overflow: auto' id="divTexture"></div>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>
-						</table></p>
-					</div>
-					
-					<!-- ATTACHEMENT -->
-					<div class="tabbertab">
-						<h2>Attachement</h2>
-						<p><table align="center">
-							<tr>
-								<td><b>INACTIVE</b></td>
-							</tr>
-						</table></p>
-					</div>
-					
-				</div>
-				
-				
-				<!-- SLIDERS BEGIN -->
-				<script type="text/javascript">
+                        </table>
+                    </p>
+                </div>
+                <!-- PROPERTIES -->
+                <div class="tabbertab">
+                    <h2>Properties</h2>
+                    <p>
+                        <table width="496">
+                            <tr>
+                                <td width="20"></td>
+                                <td width="120"></td>
+                                <td width="30"></td>
+                                <td width="130"></td>
+                                <td width="30"></td>
+                                <td width="40"></td>
+                                <td ></td>
+                            </tr>
+                            <!-- HEIGHT -->
+                            <tr>
+                                <td colspan="2"><b>Height</b></td>
+                                <td colspan="4">
+                                    <div class="slider" id="height" style="width: 230px" >
+                                        <input class="slider-input" id="heightInput" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" id="HeightValue" value="1.50m" style="width: 40px" />
+                                </td>
+                            </tr>
+                            <tr><td colspan="7"><hr width="75%"/></td></tr>
+                        
+                            <!-- BONES -->
+                            <tr>
+                                <td colspan="2"><b>Bones</b></td>
+                                <td>
+                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BonePrev','','bone1')" />
+                                </td>
+                                <td align="center" id="BoneName">BoneName</td>
+                                <td>
+                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BoneNext','','bone1')" />
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                            <tr><td colspan="7"><hr width="75%"/></td></tr>
+                            
+                            <!-- BODY PARTS -->
+                            <tr>
+                                <td colspan="2"><b>Body Parts</b></td>
+                                <td>
+                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartPrev','','body1')" />
+                                </td>
+                                <td align="center" id="BodyPartName">BodyPartName</td>
+                                <td>
+                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartNext','','body1')" />
+                                </td>
+                                <td colspan="2">
+                                    <input type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td id="BodyPartName2">BodyPartName</td>
+                                <td>
+                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartModelPrev','','body1')" />
+                                </td>
+                                <td align="center" id="BodyPartModelName">BodyPartModelName</td>
+                                <td>
+                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartModelNext','','body1')" />
+                                </td>
+                                <td colspan="2">
+                                    <input type="button" value="Edit" onclick="$('avatarTabbers').tabber.tabShow(2); sendMessageParam('BodyPartModelEdit','','body1')" />
+                                    <input type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','','body1')" disabled />
+                                </td>
+                            </tr>
+                        
+                            <tr><td colspan="7"><hr width="75%"/></td></tr>
+
+                            <!-- ATTACHEMENTS -->
+                            <tr>
+                                <td colspan="2"><b>Attachements</b></td>
+                                <td>
+                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachPrev','','attach1')" />
+                                </td>
+                                <td align="center" id="AttachName">AttachName</td>
+                                <td>
+                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachNext','','attach1')" />
+                                </td>
+                                <td colspan="2">
+                                    <input type="button" value="Add new" onclick="elementClicked('AttachAdd')" disabled />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td id="AttachName2">AttachName</td>
+                                <td>
+                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachModelPrev','','attach1')" />
+                                </td>
+                                <td align="center" id="AttachModelName">AttachModelName</td>
+                                <td>
+                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachModelNext','','attach1')" />
+                                </td>
+                                <td colspan="2">
+                                    <input type="button" value="Edit" onclick="sendMessageParam('AttachModelEdit','','attach1')" />
+                                    <input type="button" value="Remove" onclick="sendMessageParam('AttachModelRemove','','attach1')" disabled />
+                                </td>
+                            </tr>
+                            <tr><td colspan="7"><hr width="75%"/></td></tr>
+                        </table>
+                        <br /><br />
+                        
+                        <!-- MODIFIER SLIDERS -->
+                        <p id="selection"><b>Selection : </b>Bone / BodyPart / Goody ???</p>
+                        <table width="496">
+                            <tr>
+                                <td width="30"></td>
+                                <td width="155" align="center">Position</td>
+                                <td width="155" align="center">Orientation</td>
+                                <td width="155" align="center">Scale</td>
+                            </tr>
+                            <tr>
+                                <td width="30" align="center">X</td>
+                                <td width="155">
+                                    <div class="slider" id="posX">
+                                        <input class="slider-input" id="posXInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="oriX">
+                                        <input class="slider-input" id="oriXInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="scaleX">
+                                        <input class="slider-input" id="scaleXInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="30" align="center">Y</td>
+                                <td width="155">
+                                    <div class="slider" id="posY">
+                                        <input class="slider-input" id="posYInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="oriY">
+                                        <input class="slider-input" id="oriYInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="scaleY">
+                                        <input class="slider-input" id="scaleYInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="30" align="center">Z</td>
+                                <td width="155">
+                                    <div class="slider" id="posZ">
+                                        <input class="slider-input" id="posZInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="oriZ">
+                                        <input class="slider-input" id="oriZInput" />
+                                    </div>
+                                </td>
+                                <td width="155">
+                                    <div class="slider" id="scaleZ">
+                                        <input class="slider-input" id="scaleZInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </p>
+                </div>
+                <!-- MATERIAL -->
+                <div class="tabbertab">
+                    <h2>
+                        Material</h2>
+                    <p>
+                        <table>
+                            <tr>
+                                <td width="80">
+                                    Ambient
+                                </td>
+                                <td width="120">
+                                    <div id="pAmbient" style="height: 20px; width: 64px; color: #FF0; border: 2px solid #ACA;"
+                                        onclick="{panel='pAmbient'; initColor();}">
+                                    </div>
+                                </td>
+                                <td>
+                                    Shininess
+                                </td>
+                                <td width="200">
+                                    <div class="slider" id="shininess">
+                                        <input class="slider-input" id="shininessInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Diffuse
+                                </td>
+                                <td>
+                                    <div id="pDiffuse" style="height: 20px; width: 64px; color: #FF0; border: 2px solid #ACA;"
+                                        onclick="{panel='pDiffuse'; initColor();}">
+                                    </div>
+                                </td>
+                                <td>
+                                    Transparency
+                                </td>
+                                <td>
+                                    <div class="slider" id="transparency">
+                                        <input class="slider-input" id="transparencyInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Specular
+                                </td>
+                                <td>
+                                    <div id="pSpecular" style="height: 20px; width: 64px; color: #FF0; border: 2px solid #ACA;"
+                                        onclick="{panel='pSpecular'; initColor();}">
+                                    </div>
+                                </td>
+                                <td>
+                                    Scroll U
+                                </td>
+                                <td>
+                                    <div class="slider" id="scrollU">
+                                        <input class="slider-input" id="scrollUInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('AvatarLockAmbientDiffuse')">
+                                    Lock Ambient-Diffuse
+                                </td>
+                                <td>
+                                    Scroll V
+                                </td>
+                                <td>
+                                    <div class="slider" id="scrollV">
+                                        <input class="slider-input" id="scrollVInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    Scale U
+                                </td>
+                                <td>
+                                    <div class="slider" id="scaleU">
+                                        <input class="slider-input" id="scaleUInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    Scale V
+                                </td>
+                                <td>
+                                    <div class="slider" id="scaleV">
+                                        <input class="slider-input" id="scaleVInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    Rotate U
+                                </td>
+                                <td>
+                                    <div class="slider" id="rotateU">
+                                        <input class="slider-input" id="rotateUInput" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <br>
+                                    <br>
+                                    <input type="button" value="Add texture" onclick="elementClicked('AvatarAddTexture');updTexture()">
+                                    <input type="button" value="Remove texture" onclick="elementClicked('AvatarRemoveTexture');updTexture()">
+                                    <input type="button" value="Apply" onclick="elementClicked('AvatarApplyTexture')">
+                                    <td>
+                            </tr>
+                            <tr valign="middle">
+                                <td colspan="4">
+                                    <br>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <input type="button" value=" < " onclick="elementClicked('AvatarPrevTexture')"><br>
+                                                <input type="button" value=" > " onclick="elementClicked('AvatarNextTexture')">
+                                            </td>
+                                            <td>
+                                                <div style='height: 132px; overflow: auto' id="divTexture">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </p>
+                </div>
+            </div>
+            <!-- SLIDERS BEGIN -->
+
+            <script type="text/javascript">
 					var currentTexture = -1;
 					var textTabTextures = "";
 					var update = false;
 		
+					// definition for the animations
+					var animTime = new Slider($("animTime"), $("animTimeInput"));
+					// definition for the properties
+					var height = new Slider($("height"), $("heightInput"));
+					var posX = new Slider($("posX"), $("posXInput"));
+					var posY = new Slider($("posY"), $("posYInput"));
+					var posZ = new Slider($("posZ"), $("posZInput"));
+					var oriX = new Slider($("oriX"), $("oriXInput"));
+					var oriY = new Slider($("oriY"), $("oriYInput"));
+					var oriZ = new Slider($("oriZ"), $("oriZInput"));
+					var scaleX = new Slider($("scaleX"), $("scaleXInput"));
+					var scaleY = new Slider($("scaleY"), $("scaleYInput"));
+					var scaleZ = new Slider($("scaleZ"), $("scaleZInput"));
 					// definition for the material
-					var height = new Slider(document.getElementById("Height"), document.getElementById("HeightInput"));
-					var animTime = new Slider(document.getElementById("AnimTime"), document.getElementById("AnimTimeInput"));
+					var shininess = new Slider($("shininess"), $("shininessInput"));
+					var transparency = new Slider($("transparency"), $("transparencyInput"));
+					var scrollU = new Slider($("scrollU"), $("scrollUInput"));
+					var scrollV = new Slider($("scrollV"), $("scrollVInput"));
+					var scaleU = new Slider($("scaleU"), $("scaleUInput"));
+					var scaleV = new Slider($("scaleV"), $("scaleVInput"));
+					var rotateU = new Slider($("rotateU"), $("rotateUInput"));
 					
 					// set min & max values
-					height.setMinimum(0); height.setMaximum(40);
+					height.setMinimum(0); height.setMaximum(200);
 					
 					// onchange / deformations
-					height.onchange = function() {elementClicked('Height'); $('HeightValue').value=height.getValue()/20.+0.5+'m'}
 					//taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
-
+					height.onchange = function() {elementClicked('AvatarHeight'); $('HeightValue').value=height.getValue()/100.+0.5+'m'}
+                    posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()}
+                    posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()}
+                    posZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posZ'}).send()}
+                    oriX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriX'}).send()}
+                    oriY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriY'}).send()}
+                    oriZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriZ'}).send()}
+                    scaleX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleX'}).send()}
+                    scaleY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleY'}).send()}
+                    scaleZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleZ'}).send()}
 					// onchange / material
-					shininess.onchange = function() {elementClicked('MdlrShininess')};
-					transparency.onchange = function() {elementClicked('MdlrTransparency')};
-					scrollU.onchange = function() {elementClicked('MdlrScrollU')};
-					scrollV.onchange = function() {elementClicked('MdlrScrollV')};
-					scaleU.onchange = function() {elementClicked('MdlrScaleU')};
-					scaleV.onchange = function() {elementClicked('MdlrScaleV')};
-					rotateU.onchange = function() {elementClicked('MdlrRotateU')};
-            
+					shininess.onchange = function() {elementClicked('AvatarShininess')};
+					transparency.onchange = function() {elementClicked('AvatarTransparency')};
+					scrollU.onchange = function() {elementClicked('AvatarScrollU')};
+					scrollV.onchange = function() {elementClicked('AvatarScrollV')};
+					scaleU.onchange = function() {elementClicked('AvatarScaleU')};
+					scaleV.onchange = function() {elementClicked('AvatarScaleV')};
+					rotateU.onchange = function() {elementClicked('AvatarRotateU')};
+
 function updTexture()
 {
 	document.getElementById('divTexture').innerHTML=textTabTextures;
@@ -341,26 +530,32 @@ function updateTexture()
 	updTexture();
 }
 					
-				</script>
-				<!-- SLIDERS END -->
-			</div>
-		</div>
-		<div id="everything">
-			<fieldset id="colorspy">
-				<div id="plugin" onmousedown="HSVslide('drag','plugin',event)" style="Z-INDEX: 20;">
-					<!-- <div id="plugCUR"></div> -->
-					<div id="plugHEX" onmousedown="stop=0; setTimeout('stop=1',1);">???</div>
-					<div id="plugCLOSE" onmousedown="toggle('plugin')"><b>X</b></div>
-					<br>
-					<div id="SV" onmousedown="HSVslide('SVslide','plugin',event)">
-						<div id="SVslide" style="TOP: -4px; LEFT: -4px;"></div>
-					</div>
-					<form id="H" onmousedown="HSVslide('Hslide','plugin',event)">
-						<div id="Hslide" style="TOP: -7px; LEFT: -8px;"></div>
-						<div id="Hmodel"></div>
-					</form>
-				</div>
-			</fieldset>
-		</div>
-	</body>
+            </script>
+
+            <!-- SLIDERS END -->
+        </div>
+    </div>
+    <div id="everything">
+        <fieldset id="colorspy">
+            <div id="plugin" onmousedown="HSVslide('drag','plugin',event)" style="z-index: 20;">
+                <!-- <div id="plugCUR"></div> -->
+                <div id="plugHEX" onmousedown="stop=0; setTimeout('stop=1',1);">
+                    ???</div>
+                <div id="plugCLOSE" onmousedown="toggle('plugin')">
+                    <b>X</b></div>
+                <br>
+                <div id="SV" onmousedown="HSVslide('SVslide','plugin',event)">
+                    <div id="SVslide" style="top: -4px; left: -4px;">
+                    </div>
+                </div>
+                <form id="H" onmousedown="HSVslide('Hslide','plugin',event)">
+                <div id="Hslide" style="top: -7px; left: -8px;">
+                </div>
+                <div id="Hmodel">
+                </div>
+                </form>
+            </div>
+        </fieldset>
+    </div>
+</body>
 </html>

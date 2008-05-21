@@ -5,7 +5,8 @@
 #include <OgreMemoryMacros.h>
 #include <Ogre.h>
 
-#include "TextureIterator.h"
+//#include "TextureIterator.h"
+#include "ModifiedMaterialManager.h"
 #include "ModifiedMaterial.h"
 
 

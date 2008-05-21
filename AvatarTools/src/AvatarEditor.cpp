@@ -23,6 +23,7 @@ AvatarEditor::AvatarEditor(std::string pPath, SceneManager* pSceneMgr) :
 {
     ms_singletonPtr = this;
 	mAvatars = new CharacterManager(pPath, mSceneMgr);
+	mExecPath = _getcwd(NULL, 0);
 }
 //-------------------------------------------------------------------------------------
 AvatarEditor::~AvatarEditor()

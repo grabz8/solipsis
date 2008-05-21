@@ -182,9 +182,20 @@ function HSVslide(d,o,e) {
 				//alert(panel);
 				//new NaviData(panel).send();
 				//if(panel == 'pAmbient') new NaviData('MdlrAmbient').add({rgb:$S(panel).background}).send();
-				if(panel == 'pAmbient') new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-				else if(panel == 'pDiffuse') new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-				else if(panel == 'pSpecular') new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
+				if(panel == 'pAmbient') {
+				    new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
+				    new NaviData('AvatarAmbient').add({rgb:hsv2rgb(HSV)}).send();
+				}
+				else if(panel == 'pDiffuse') 
+				{   
+				    new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
+				    new NaviData('AvatarDiffuse').add({rgb:hsv2rgb(HSV)}).send();
+				}
+				else if(panel == 'pSpecular') 
+				{
+				    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
+				    new NaviData('AvatarSpecular').add({rgb:hsv2rgb(HSV)}).send();
+				}
 			}
 			else if(d=='Hslide') { 
 				var ck=ckHSV(tY-oo,hH), j, r='hsv', z={};
