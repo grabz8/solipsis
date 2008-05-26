@@ -4,6 +4,10 @@
 		<title>uimdlrprop</title>
 		<script type="text/javascript" src="Navi.js"></script>
 		<!-- <script type="text/javascript" src="mootools.js"></script> -->
+<!--
+        <link rel="stylesheet" href="selector/selector.css" type="text/css">
+        <script type="text/javascript" src="selector/selector.js"></script>
+-->
 		<!-- TABBERS BEGIN -->
 		<link rel="stylesheet" href="tabber/tabber.css" TYPE="text/css" MEDIA="screen">
 			<script type="text/javascript">
@@ -380,8 +384,15 @@
 		                        <h2>WWW</h2>
 						        <table>
                                     <tr><td>URL</td><td><input type="text" size="50" id="MaterialWWWUrl" value="http://www.solipsis.org"/></td></tr>
-                                    <tr><td>Width</td><td><input type="text" size="10" id="MaterialWWWWidth" value="256"/></td></tr>
-                                    <tr><td>Height</td><td><input type="text" size="10" id="MaterialWWWHeight" value="256"/></td></tr>
+						        </table>
+						        <table>
+                                    <tr>
+                                        <td>Width</td><td><input type="text" size="10" id="MaterialWWWWidth" value="512"/></td>
+                                        <td>Height</td><td><input type="text" size="10" id="MaterialWWWHeight" value="512"/></td>
+                                        <td>Fps</td><td><input type="text" size="10" id="MaterialWWWFps" value="0"/></td>
+                                    </tr>
+						        </table>
+						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyWWWTexture')"/></td></tr>
 						        </table>
  	                        </div>
@@ -389,9 +400,58 @@
 		                        <!-- VLC -->
 		                        <h2>VLC</h2>
 						        <table>
-                                    <tr><td>MRL</td><td><input type="text" size="50" id="MaterialVLCMrl" value="udp://@"/></td></tr>
-                                    <tr><td>Width</td><td><input type="text" size="10" id="MaterialVLCWidth" value="256"/></td></tr>
-                                    <tr><td>Height</td><td><input type="text" size="10" id="MaterialVLCHeight" value="256"/></td></tr>
+                                    <tr>
+                                        <td>MRL</td>
+                                        <td><input type="text" size="50" id="MaterialVLCMrl" value=""/></td>
+                                        <td>
+                                            <select onchange="document.getElementById('MaterialVLCMrl').value=this.options[this.selectedIndex].value" id="MaterialVLCMrlHelpers">
+                                                <option selected="selected" value="">file</option>
+                                                <option value='dvd://D:@0:0  :sub-track=0  :audio-track=0'>DVD(menus)</option>
+                                                <option value='dvdsimple://D:@0:0  :sub-track=0  :audio-track=0'>DVD</option>
+                                                <option value='vcd://D:'>VCD</option>
+                                                <option value='cdda://D:'>CD audio</option>
+                                                <option value='udp://@'>udp</option>
+                                                <option value='http://'>http</option>
+                                                <option value='rtsp://'>rtp</option>
+                                                <option value='dshow:// :dshow-vdev="" :dshow-adev="" :dshow-size=""'>webcam</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+						        </table>
+                                <table>
+                                    <tr>
+                                        <td>Width</td><td><input type="text" size="10" id="MaterialVLCWidth" value="256"/></td>
+                                        <td>Height</td><td><input type="text" size="10" id="MaterialVLCHeight" value="256"/></td>
+                                        <td>Fps</td><td><input type="text" size="10" id="MaterialVLCFps" value="25"/></td>
+                                    </tr>
+                                </table>
+						        <table>
+                                    <tr>
+                                        <td>Params</td>
+                                        <td><input type="text" size="51" id="MaterialVLCParams" value=""/></td>
+                                        <td>
+<!--
+                <div class="menu" id="MaterialVLCParamsHelpers" onmouseout="fout(this)" onmouseover="fover(this)">
+                    <div class="titreMenu itemOut" id="MaterialVLCParamsHelpersTitre">???</div>
+                    <div class="contenuMenu menuOverflow" id="MaterialVLCParamsHelpersItem">
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>S udp</a></div>
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>S http</a></div>
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>T+S udp</a></div>
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>T+S http</a></div>
+                    </div>
+                </div>
+-->
+                                            <select onchange="document.getElementById('MaterialVLCParams').value=this.options[this.selectedIndex].value" id="MaterialVLCParamsHelpers">
+                                                <option selected="selected" value="">none</option>
+                                                <option value='--sout #duplicate{dst=display{vmem},dst=std{access=udp,mux=ts,dst=127.0.0.1:1234}}'>S udp</option>
+                                                <option value='--sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}'>S http</option>
+                                                <option value='--sout #transcode{vcodec=mp2v,acodec=mpga}:duplicate{dst=display{vmem},dst=std{access=udp,mux=ts,dst=127.0.0.1:1234}}'>T+S udp</option>
+                                                <option value='--sout #transcode{vcodec=mp2v,acodec=mpga}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}'>T+S http</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVLCTexture')"/></td></tr>
 						        </table>
  	                        </div>

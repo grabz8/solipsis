@@ -18,6 +18,7 @@ namespace Solipsis {
 VLCTextureSource::CmdMrl VLCTextureSource::msCmdMrl;
 VLCTextureSource::CmdWidth VLCTextureSource::msCmdWidth;
 VLCTextureSource::CmdHeight VLCTextureSource::msCmdHeight;
+VLCTextureSource::CmdVlcParams VLCTextureSource::msCmdVlcParams;
 
 //-------------------------------------------------------------------------------------
 VLCTextureSource::VLCTextureSource(VLCPlugin *plugin)
@@ -83,6 +84,18 @@ void VLCTextureSource::CmdHeight::doSet(void* target, const Ogre::String& val)
 }
 
 //-------------------------------------------------------------------------------------
+Ogre::String VLCTextureSource::CmdVlcParams::doGet(const void* target) const
+{
+	return static_cast<const VLCTextureSource*>(target)->getVlcParams();
+}
+
+//-------------------------------------------------------------------------------------
+void VLCTextureSource::CmdVlcParams::doSet(void* target, const Ogre::String& val)
+{
+	static_cast<VLCTextureSource*>(target)->setVlcParams(val);
+}
+
+//-------------------------------------------------------------------------------------
 bool VLCTextureSource::initialise()
 {
     addBaseParams();
@@ -92,6 +105,7 @@ bool VLCTextureSource::initialise()
     dict->addParameter(Ogre::ParameterDef("mrl", "VLC Media Resource Link", Ogre::PT_STRING), &msCmdMrl);
     dict->addParameter(Ogre::ParameterDef("width", "Video width", Ogre::PT_INT), &msCmdWidth);
     dict->addParameter(Ogre::ParameterDef("height", "Video height", Ogre::PT_INT), &msCmdHeight);
+    dict->addParameter(Ogre::ParameterDef("vlc_params", "Additional VLC parameters", Ogre::PT_STRING), &msCmdVlcParams);
 
     return true;
 }
@@ -130,7 +144,7 @@ void VLCTextureSource::createDefinedTexture(const Ogre::String& materialName, co
     if (id == -1)
     {
         // If no existing instance was found create a new one
-        id = mPlugin->newInstance(mMrl, mWidth, mHeight, mFramesPerSecond);
+        id = mPlugin->newInstance(mMrl, mWidth, mHeight, mFramesPerSecond, mVlcParams);
         if (id == -1)
         {
             Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL,

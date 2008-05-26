@@ -38,9 +38,10 @@ public:
     @param[in] width The video width
     @param[in] height The video height
     @param[in] fps The update rate in frames per second
+    @param[in] vlcParams The additional VLC parameters
     @return Connection id
     */
-    int newInstance(const Ogre::String& mrl, int width, int height, int fps);
+    int newInstance(const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& vlcParams);
 
     /** Destroy a VLC instance (notifying it should no more listen frames)
     @param[in] id VLC Instance id

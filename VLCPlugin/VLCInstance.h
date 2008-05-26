@@ -25,9 +25,10 @@ public:
     @param[in] width The video width
     @param[in] height The video height
     @param[in] fps The update rate in frames per second
+    @param[in] vlcParams The additional VLC parameters
     */
     VLCInstance(int id, VLCTextureSource* textureSource,
-                const Ogre::String& mrl, int width, int height, int fps);
+                const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& vlcParams);
     /// Destructor
     ~VLCInstance();
 
@@ -72,6 +73,8 @@ private:
     int mHeight;
     /// Video frames per second
     int mFps;
+    /// Additional VLC parameters
+    Ogre::String mVlcParams;
 
     /// VLC texture source
     VLCTextureSource* mTextureSource;

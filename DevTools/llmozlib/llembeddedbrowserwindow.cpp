@@ -1251,7 +1251,10 @@ NS_METHOD LLEmbeddedBrowserWindow::NotifyInvalidated( nsIWidget *aWidget, PRInt3
 	mBaseWindow->GetMainWidget( &mainWidget );
 
 	HWND nativeWidget = (HWND)aWidget->GetNativeData( NS_NATIVE_WIDGET );
-	HWND nativeWidgetChild;
+// BEGIN GREG
+//	HWND nativeWidgetChild;
+	HWND nativeWidgetChild = (HWND)0; // to avoid rtc error check
+// END GREG
 	while ( ::GetParent( nativeWidget ) )
 	{
 		nativeWidgetChild = nativeWidget;

@@ -29,6 +29,11 @@ public:
 	///param path Path of the file or folder, the same format for all OS, with "/".
 	Path(const String& path) : mUniversalPath(path), mFormatedPath(path)
 	{
+        // to be sure path is in universal format
+		for(size_t indexChar = 0 ; indexChar < mUniversalPath.length() ; indexChar++)
+		{
+			if (mUniversalPath[indexChar] == '\\') mUniversalPath[indexChar] = '/';
+		}
 #ifdef WIN32
 		for(size_t indexChar = 0 ; indexChar < mFormatedPath.length() ; indexChar++)
 		{
@@ -83,9 +88,9 @@ public:
 		return path.substr(indexChar+1,path.length() - (indexChar+1));
 	}
 
-	///Method which return the path of the folder where is placed the last file, in means the universal path less the last file (and without the last "/").
+	///Method which return the universal path of the folder where is placed the last file, in means the universal path less the last file (and without the last "/").
 	///return The path of the folder where is placed the last file, in means the universal path less the last file.
-	String getRootPath()
+	String getUniversalRootPath()
 	{
 		long indexChar = (long)mUniversalPath.length()-1;
 		while((indexChar >= 0) && (mUniversalPath[indexChar] != '/'))
@@ -96,6 +101,18 @@ public:
 		return mUniversalPath.substr(0,indexChar);
 	}
 
+	///Method which return the formated path of the folder where is placed the last file, in means the universal path less the last file (and without the last "/").
+	///return The path of the folder where is placed the last file, in means the universal path less the last file.
+	String getFormatedRootPath()
+	{
+		long indexChar = (long)mFormatedPath.length()-1;
+		while((indexChar >= 0) && (mFormatedPath[indexChar] != '\\'))
+		{
+			indexChar--;
+		}
+
+		return mFormatedPath.substr(0,indexChar);
+	}
 
 	Path operator/(const Path& path)
 	{

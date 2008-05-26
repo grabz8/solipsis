@@ -11,7 +11,7 @@
 #include "Selection.h"
 #include "Transformations.h"
 #include "Navigator.h"
-
+#include "OgreExternalTextureSourceManager.h"
 
 namespace Solipsis {
 
@@ -529,6 +529,14 @@ void Modeler::removeSelection()
 	do
 	{
 		// delete 3D entity
+        // TO DEBUG ??? Here entity is not really destroyed by removeAndDestroyChild() !!!
+        String mtlName = obj->getEntity()->getSubEntity(0)->getMaterialName();
+        if ((mtlName.find("VLC_") == 0) || (mtlName.find("VNC_") == 0))
+        {
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+            ExternalTextureSourceManager::getSingleton().destroyAdvancedTexture(mtlName);
+        }
 		mSceneManager->getRootSceneNode()->removeAndDestroyChild(obj->getEntity()->getParentSceneNode()->getName());
 		mSelection->remove3DObject( obj );
 		obj = mSelection->getFirstSelectedObject();
@@ -818,19 +826,18 @@ bool Modeler::XMLImport(Vector3 pos, const char* pathToLoad)
 	{
         Ogre::String path = pathToLoad;
 		Path FilePath (	path ) ;
+		String entityName = FilePath.getLastFileName(false);
 
-		//Get current path
-		size_t nameSizeChar = path.find_last_of( '\\' );
-		//size_t nameSizeChar = path.find_last_of( '/' );
-		std::string texturepath (path, 0, nameSizeChar+1);
+        ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
 
-		//get only name of file (without extension)
-		size_t extPos = path.find_last_of( '.' );
-		std::string name (FilePath.getLastFileName(false) , nameSizeChar+1, FilePath.getLastFileName(false).length());
+	    static int num = -1;
+	    char name[31];
+	    sprintf(name, "Imported%.3u",++num);
 
-        ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getRootPath(), "FileSystem");//, name + "Resources");
-
-        Entity* entity = mSceneManager->createEntity( String(name), FilePath.getLastFileName(true) );
+        Entity* entity = 0;
+        if (!mSceneManager->hasEntity(entityName))
+            entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
+        entity = mSceneManager->getEntity(entityName)->clone(name);
 	    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
 #ifdef SHADOWS
 	    entity->setCastShadows(true);

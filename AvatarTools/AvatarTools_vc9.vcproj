@@ -82,7 +82,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\debug&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -149,7 +149,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\release&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\AvatarTools\lib\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

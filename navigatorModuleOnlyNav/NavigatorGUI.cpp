@@ -2510,15 +2510,17 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 	    std::string urlStr = navi->evaluateJS("document.getElementById('MaterialWWWUrl').value");
 	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialWWWWidth').value");
 	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialWWWHeight').value");
+	    std::string fpsStr = navi->evaluateJS("document.getElementById('MaterialWWWFps').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
+        int fps = atoi(fpsStr.c_str());
 
         Entity* objEntity = obj->getEntity();
         String mtlName = "WWW_" + objEntity->getName();
         NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(mtlName, urlStr, width, height);
         naviWWWTexture->show(true);
-        naviWWWTexture->setMaxUPS(15);
-        naviWWWTexture->setForceMaxUpdate(false);
+        naviWWWTexture->setMaxUPS(fps);
+        naviWWWTexture->setForceMaxUpdate(fps != 0);
         naviWWWTexture->setOpacity(1.0f);
         objEntity->setMaterialName(naviWWWTexture->getMaterialName());
         objEntity->setQueryFlags(Navigator::QFNaviPanel);
@@ -2536,8 +2538,11 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 	    std::string mrlStr = navi->evaluateJS("document.getElementById('MaterialVLCMrl').value");
 	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialVLCWidth').value");
 	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialVLCHeight').value");
+	    std::string fpsStr = navi->evaluateJS("document.getElementById('MaterialVLCFps').value");
+        std::string paramsStr = navi->evaluateJS("document.getElementById('MaterialVLCParams').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
+        int fps = atoi(fpsStr.c_str());
 
         Entity* objEntity = obj->getEntity();
         String mtlName = "VLC_" + objEntity->getName();
@@ -2546,8 +2551,8 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         vlcExtTextSrc->setParameter("mrl", mrlStr);
         vlcExtTextSrc->setParameter("width", StringConverter::toString(width));
         vlcExtTextSrc->setParameter("height", StringConverter::toString(height));
-        vlcExtTextSrc->setParameter("frames_per_second", "25");
-        vlcExtTextSrc->setParameter("play_mode", "loop");
+        vlcExtTextSrc->setParameter("frames_per_second", StringConverter::toString(fps));
+        vlcExtTextSrc->setParameter("vlc_params", paramsStr);
         MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         vlcExtTextSrc->createDefinedTexture(mtlName);
         objEntity->setMaterialName(mtlName);

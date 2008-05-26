@@ -7,9 +7,11 @@
 #include <OgreRoot.h>
 #include <OgreStringConverter.h>
 
+using namespace Ogre;
+
 namespace Solipsis {
 
-const Ogre::String sPluginName = "VLC Texture Source";
+const String sPluginName = "VLC Texture Source";
 
 //-------------------------------------------------------------------------------------
 VLCPlugin::VLCPlugin() :
@@ -20,7 +22,7 @@ VLCPlugin::VLCPlugin() :
 }
 
 //-------------------------------------------------------------------------------------
-const Ogre::String& VLCPlugin::getName() const
+const String& VLCPlugin::getName() const
 {
     return sPluginName;
 }
@@ -49,15 +51,15 @@ void VLCPlugin::uninstall()
 }
 
 //-------------------------------------------------------------------------------------
-int VLCPlugin::newInstance(const Ogre::String& mrl, int width, int height, int fps)
+int VLCPlugin::newInstance(const String& mrl, int width, int height, int fps, const String& vlcParams)
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCPlugin - Creating new instance for '" + mrl + "'");
+    LogManager::getSingleton().logMessage("VLCPlugin - Creating new instance mrl='" + mrl + "', " + StringConverter::toString(width) + "x" + StringConverter::toString(height) + "x" + StringConverter::toString(fps) + ", vlcParams=" + vlcParams);
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
 
     // Set mrl and map it by id
     int id = mVLCInstanceMapCounter++;
-    VLCInstancePtr instance(new VLCInstance(id, mVLCTextureSource, mrl, width, height, fps));
+    VLCInstancePtr instance(new VLCInstance(id, mVLCTextureSource, mrl, width, height, fps, vlcParams));
     mVLCInstanceMap.insert(std::make_pair(id, instance));
 
     pthread_mutex_unlock(&mVLCInstanceMapMutex);
@@ -68,7 +70,7 @@ int VLCPlugin::newInstance(const Ogre::String& mrl, int width, int height, int f
 //-------------------------------------------------------------------------------------
 void VLCPlugin::destroyInstance(int id)
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance");
+    LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance");
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
@@ -80,7 +82,7 @@ void VLCPlugin::destroyInstance(int id)
 //-------------------------------------------------------------------------------------
 void VLCPlugin::deleteInstance(int id)
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCPlugin::deleteInstance");
+    LogManager::getSingleton().logMessage("VLCPlugin::deleteInstance");
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
@@ -90,9 +92,9 @@ void VLCPlugin::deleteInstance(int id)
 }
 
 //-------------------------------------------------------------------------------------
-int VLCPlugin::lookupInstance(const Ogre::String& mrl)
+int VLCPlugin::lookupInstance(const String& mrl)
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCPlugin::lookupInstance");
+    LogManager::getSingleton().logMessage("VLCPlugin::lookupInstance");
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     for (VLCInstanceMap::const_iterator i = mVLCInstanceMap.begin(); i != mVLCInstanceMap.end(); ++i)
@@ -109,9 +111,9 @@ int VLCPlugin::lookupInstance(const Ogre::String& mrl)
 }
 
 //-------------------------------------------------------------------------------------
-Ogre::TexturePtr VLCPlugin::getTextureForInstance(const int id)
+TexturePtr VLCPlugin::getTextureForInstance(const int id)
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCPlugin::getTextureForInstance");
+    LogManager::getSingleton().logMessage("VLCPlugin::getTextureForInstance");
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
@@ -124,7 +126,7 @@ Ogre::TexturePtr VLCPlugin::getTextureForInstance(const int id)
     pthread_mutex_unlock(&mVLCInstanceMapMutex);
 
     // Not found
-    return Ogre::TexturePtr();
+    return TexturePtr();
 }
 
 //-------------------------------------------------------------------------------------

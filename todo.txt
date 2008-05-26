@@ -6,6 +6,11 @@
 
 [Navigator]
 
+- VNCPlugin : try to use our zlib123 instead of zlib114, to use pthread instead of omnithread, then add plugins
+  solutions into the global navigator solution (VNCPlugin, VLCPlugin, voiceEngine)
+
+- VLCPlugin : add support of 24bpp render, add libamem_plugin to play audio with FMod in 3D
+
 - To fix : pref.js causes crash at first loading after a full clean
 
 - strange behaviour with the HTML tag <select/>, Navi author suggests to use the ComboBox class of Navi.js

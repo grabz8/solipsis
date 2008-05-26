@@ -9,7 +9,6 @@
 #include "AvatarEditor.h"
 #include "VoiceEngineManager.h"
 
-
 using namespace Solipsis;
 
 Navigator* Navigator::ms_singletonPtr = 0;
@@ -244,7 +243,7 @@ void Navigator::demoNavi1()
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi1Video", "demoNavi1Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
     vidNavi->setForceMaxUpdate(true);
@@ -259,7 +258,7 @@ void Navigator::demoNavi1()
     // Creates the Text Plane and subsequent NaviMaterial
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512);
+    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512);
     txtNavi->show(true);
     txtNavi->setMaxUPS(8);
     txtEnt->setMaterialName(txtNavi->getMaterialName());
@@ -270,7 +269,7 @@ void Navigator::demoNavi1()
     // web knot
     Entity* knotEnt = mSceneMgr->createEntity("demoNavi1WebKnot", "knot.mesh");
     knotEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(knotEnt->getName(), "http://www.google.com", 512, 512);
+    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + knotEnt->getName(), "http://www.google.com", 512, 512);
     knotNavi->show(true);
     knotNavi->setMaxUPS(8);
     std::string googleMtlName = knotNavi->getMaterialName();
@@ -288,7 +287,7 @@ void Navigator::demoNavi2(const String params)
 {
     static bool active = false;
     String url2go("");
-    String strPosition("(18, -55, 104.5)");
+    String strPosition("(17, -108, 96.5)");
     Vector3 position;
     std::string::size_type strPos;
     strPos = params.find_first_of(";");
@@ -301,7 +300,7 @@ void Navigator::demoNavi2(const String params)
             strPosition = params.substr(strPos + 1, params.length() - (strPos + 1));
     }
     if (!OgreHelpers::convertString2Vector3(strPosition, position))
-        position = Vector3(18, -55, 104.5);
+        position = Vector3(17, -108, 96.5);
     if (url2go.length() == 0)
         url2go = "http://fr.youtube.com/watch?v=u5WIEep8DJg";
     if (active)
@@ -318,7 +317,7 @@ void Navigator::demoNavi2(const String params)
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(vidEnt->getName(), "", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + vidEnt->getName(), "", 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
     vidNavi->setForceMaxUpdate(true);
@@ -388,58 +387,41 @@ void Navigator::demoVNC(const String params)
 //-------------------------------------------------------------------------------------
 void Navigator::demoVLC(const String params)
 {
-    static bool activeVLCMtl = false;
-    static bool activeVLCStreaming = false;
+    static bool active = false;
 
-    if (params.find_first_of("cmd:") == 0)
+    if (active)
     {
-        if (activeVLCStreaming)
-        {
-            // Stop command
-        }
-        else
-        {
-            // Launch command
-        }
-        activeVLCStreaming = !activeVLCStreaming;
+        SceneNode* vlcNode = mSceneMgr->getSceneNode("demoVLCNode");
+        MovableObject* vlcEnt = vlcNode->getAttachedObject("demoVLC");
+        vlcNode->detachObject(vlcEnt);
+        vlcNode->getCreator()->destroyMovableObject(vlcEnt);
+        vlcNode->getCreator()->destroySceneNode(vlcNode->getName());
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+        vlcExtTextSrc->destroyAdvancedTexture("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        MaterialManager::getSingleton().remove("demoVLCMaterial");
     }
     else
     {
-        if (activeVLCMtl)
-        {
-            SceneNode* vlcNode = mSceneMgr->getSceneNode("demoVLCNode");
-            MovableObject* vlcEnt = vlcNode->getAttachedObject("demoVLC");
-            vlcNode->detachObject(vlcEnt);
-            vlcNode->getCreator()->destroyMovableObject(vlcEnt);
-            vlcNode->getCreator()->destroySceneNode(vlcNode->getName());
-            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
-            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
-            vlcExtTextSrc->destroyAdvancedTexture("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-            MaterialManager::getSingleton().remove("demoVLCMaterial");
-        }
-        else
-        {
-            String mrl(params);
-            if (mrl.empty()) return;
+        String mrl(params);
+        if (mrl.empty()) return;
 
-            // Creates the VLC Plane and subsequent NaviMaterial
-            Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
-            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
-            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
-            vlcExtTextSrc->setParameter("mrl", mrl);
-            vlcExtTextSrc->setParameter("width", "256");
-            vlcExtTextSrc->setParameter("height", "256");
-            vlcExtTextSrc->setParameter("frames_per_second", "25");
-            vlcExtTextSrc->setParameter("play_mode", "loop");
-            MaterialManager::getSingleton().create("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-            vlcExtTextSrc->createDefinedTexture("demoVLCMaterial");
-            vlcEnt->setMaterialName("demoVLCMaterial");
-            SceneNode* vlcNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVLCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
-            vlcNode->attachObject(vlcEnt);
-            vlcNode->yaw(Degree(90), Node::TS_WORLD);
-        }
-        activeVLCMtl = !activeVLCMtl;
+        // Creates the VLC Plane and subsequent NaviMaterial
+        Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
+        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+        vlcExtTextSrc->setParameter("mrl", mrl);
+        vlcExtTextSrc->setParameter("width", "256");
+        vlcExtTextSrc->setParameter("height", "256");
+        vlcExtTextSrc->setParameter("frames_per_second", "25");
+        MaterialManager::getSingleton().create("demoVLCMaterial", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        vlcExtTextSrc->createDefinedTexture("demoVLCMaterial");
+        vlcEnt->setMaterialName("demoVLCMaterial");
+        SceneNode* vlcNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoVLCNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(2.5, 1.5, 0));
+        vlcNode->attachObject(vlcEnt);
+        vlcNode->yaw(Degree(90), Node::TS_WORLD);
     }
+    active = !active;
 }
 #endif
 #ifdef DEMO_VOICE
@@ -540,12 +522,12 @@ void Navigator::demoPhysics1()
 //-------------------------------------------------------------------------------------
 Entity* Navigator::getNaviEntity(const String& naviName)
 {
-    try {
-        return mSceneMgr->getEntity(naviName);
-    }
-    catch (...) {
+    if (naviName.find("WWW_") != 0)
         return 0;
-    }
+    String entityName = naviName.substr(4, naviName.length() - 4);
+    if (mSceneMgr->hasEntity(entityName))
+        return mSceneMgr->getEntity(entityName);
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -719,7 +701,13 @@ void Navigator::computeNaviHit(const String& naviName,
     closestResultUV.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
     // Navi textures are repeated not clamped so bound results to [0..1]
     unsigned short naviWidth, naviHeight;
-    NaviLibrary::NaviManager::Get().getNavi(naviName)->getExtents(naviWidth, naviHeight);
+    NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().getNavi(naviName);
+    if (navi == 0)
+    {
+        OGRE_LOG("Navigator::computeNaviHit() naviName=" + naviName + " not found !");
+        return;
+    }
+    navi->getExtents(naviWidth, naviHeight);
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
     OGRE_LOG("Navigator::computeNaviHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", closestResultUV=" + StringConverter::toString(closestResultUV));
@@ -731,7 +719,7 @@ bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
     // if 1 Navi entity hit
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFNaviPanel))
     {
-        naviName = mPickedMovable->getName();
+        naviName = "WWW_" + mPickedMovable->getName();
         // compute texture coordinates of the hit
         computeNaviHit(naviName,
                        closestUV,

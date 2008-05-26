@@ -502,3 +502,14 @@ ImportMesh (.mesh) added into uimdlrmain
 Material tabs for Texture/WWW/VLC/VNC added into uimdlrprop
 
 ---------------------------
+23/05/08
+
+Dependencies MdlrTools on CommonTools, CommonTools on pthread added
+RTC error check on llmozlib fixed for Navi panels in Debug mode
+Params FPS for navis + FPS/params for VLC external textures added
+Navi materials now prefixed by "WWW_"
+DEMO_NAVI positions updated after moved scenes
+Physics input removed from options of navigator
+Entity clone creation into XMLImport
+
+---------------------------

@@ -7,44 +7,45 @@
 #include <OgreStringConverter.h>
 #include <OgreTextureManager.h>
 
+using namespace Ogre;
+
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
-                         const Ogre::String& mrl, int width, int height, int fps) :
+                         const String& mrl, int width, int height, int fps, const String& vlcParams) :
     mUpdateMutex(PTHREAD_MUTEX_INITIALIZER),
     mScreen(0),
     mMrl(mrl),
     mWidth(width),
     mHeight(height),
     mFps(fps),
+    mVlcParams(vlcParams),
     mTextureSource(textureSource),
     mID(id),
     mAlive(true),
     mSafeToDelete(true),
     mLibVLCInstance(0)
 {
-    Ogre::Root::getSingleton().addFrameListener(this);
+    Root::getSingleton().addFrameListener(this);
     mUpdateTimer = 1.0/mFps;
 
-    Ogre::TextureManager& tmgr = Ogre::TextureManager::getSingleton();
-    Ogre::String textureName = "VLCTexture" + Ogre::StringConverter::toString(mID);
+    TextureManager& tmgr = TextureManager::getSingleton();
+    String textureName = "VLCTexture" + StringConverter::toString(mID);
     mTexture = tmgr.createManual(textureName,
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D,
-        mWidth, mHeight, 0, Ogre::PF_BYTE_BGRA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+        ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TEX_TYPE_2D,
+        mWidth, mHeight, 0, PF_BYTE_BGRA, TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
     /*
      *  Initialise libVLC
      */
     char pclock[64], pcunlock[64], pcdata[64];
     char pwidth[32], pheight[32], ppitch[32];
-    int item;
-    char const *vlc_argv[] =
+    char const *vlc_argv_default[] =
     {
         "--no-one-instance",
         "--no-stats",
         "--intf", "dummy",
-//        "--loop",
         "--fast-mutex", "--win9x-cv-method=1",
         "--plugin-path=.\\VLCplugins",
         "--vout", "vmem",
@@ -55,55 +56,75 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         "--vmem-lock", pclock,
         "--vmem-unlock", pcunlock,
         "--vmem-data", pcdata,
+//        "--sout", "#transcode{vcodec=mp2v,vb=1024,scale=1,acodec=mpga,ab=192,channels=2}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}",
     };
-    int vlc_argc = sizeof(vlc_argv)/sizeof(*vlc_argv);
+    // Set vmem plugin arguments lock/unlock functions + this as context pointer
     sprintf(pclock, "%lld", (long long int)(intptr_t)_libvlc_lock);
     sprintf(pcunlock, "%lld", (long long int)(intptr_t)_libvlc_unlock);
     sprintf(pcdata, "%lld", (long long int)(intptr_t)this);
     sprintf(pwidth, "%i", mWidth);
     sprintf(pheight, "%i", mHeight);
     sprintf(ppitch, "%i", mWidth*sizeof(unsigned short));
+    // Add additional parameters
+    std::list<String> args;
+    for(int a=0; a<sizeof(vlc_argv_default)/sizeof(*vlc_argv_default); ++a)
+        args.push_back(vlc_argv_default[a]);
+    for (String::size_type i = mVlcParams.find_first_not_of(" "); i != String::npos; i = mVlcParams.find_first_not_of(" ", i))
+    {
+        String::size_type j = mVlcParams.find_first_of(" ", i);
+        if (j == String::npos) j = mVlcParams.length();
+        args.push_back(mVlcParams.substr(i, j - i));
+        i = j;
+    }
+    int vlc_argc = (int)args.size();
+    const char **vlc_argv = (const char**)malloc(vlc_argc*sizeof(const char*));
+    vlc_argc = 0;
+    for (std::list<String>::const_iterator it = args.begin(); it != args.end(); ++it)
+        vlc_argv[vlc_argc++] = it->c_str();
+    // Allocating screen buffer
     mScreen = (unsigned char*)malloc(mWidth*mHeight*sizeof(unsigned short));
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_exception_init");
+    // libvlc Init/New instance/Add playlist/play
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_exception_init");
     libvlc_exception_init(&mLibVLCException);
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_new");
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_new");
     mLibVLCInstance = libvlc_new(vlc_argc, (char**)vlc_argv, &mLibVLCException);
     _libvlc_exception(&mLibVLCException);
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_add");
-    item = libvlc_playlist_add (mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_add");
+    int item = libvlc_playlist_add (mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
     _libvlc_exception(&mLibVLCException);
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
     libvlc_playlist_play (mLibVLCInstance, item, 0, NULL, &mLibVLCException); 
     _libvlc_exception(&mLibVLCException);
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() END");
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() END");
+    free(vlc_argv);
 }
 
 //-------------------------------------------------------------------------------------
 VLCInstance::~VLCInstance()
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() waiting mSafeToDelete");
+    LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() waiting mSafeToDelete");
     while (!mSafeToDelete) {}
 
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() libvlc_destroy");
+    LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() libvlc_destroy");
     if (mLibVLCInstance != 0)
         libvlc_destroy(mLibVLCInstance);
 
     mTextureSource = 0;
 
     delete mScreen;
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() END");
+    LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() END");
 }
 
 //-------------------------------------------------------------------------------------
 void VLCInstance::destroy()
 {
-    Ogre::LogManager::getSingleton().logMessage("VLCInstance::destroy()");
+    LogManager::getSingleton().logMessage("VLCInstance::destroy()");
     mSafeToDelete = false;
     mAlive = false;
 }
 
 //-------------------------------------------------------------------------------------
-bool VLCInstance::frameStarted(const Ogre::FrameEvent& e)
+bool VLCInstance::frameStarted(const FrameEvent& e)
 {
     pthread_mutex_lock(&mUpdateMutex);
 
@@ -123,13 +144,13 @@ bool VLCInstance::frameStarted(const Ogre::FrameEvent& e)
     mUpdateTimer = 1.0/mFps;
 
     // Update texture
-    Ogre::HardwarePixelBufferSharedPtr pbuf = mTexture->getBuffer();
-    pbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-    const Ogre::PixelBox& pixelBox = pbuf->getCurrentLock();
+    HardwarePixelBufferSharedPtr pbuf = mTexture->getBuffer();
+    pbuf->lock(HardwareBuffer::HBL_DISCARD);
+    const PixelBox& pixelBox = pbuf->getCurrentLock();
     long srcPixelSize = 2;
     long srcPitch = mWidth*srcPixelSize;
     unsigned char* pSrc = mScreen;
-    size_t texPixelSize = Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+    size_t texPixelSize = PixelUtil::getNumElemBytes(pixelBox.format);
     size_t texPitch = (pixelBox.rowPitch*texPixelSize);
     unsigned char* pDst = static_cast<unsigned char*>(pixelBox.data);
     for(int y = 0; y < mHeight; y++)
@@ -157,13 +178,13 @@ bool VLCInstance::frameStarted(const Ogre::FrameEvent& e)
 }
 
 //-------------------------------------------------------------------------------------
-bool VLCInstance::frameEnded(const Ogre::FrameEvent& e)
+bool VLCInstance::frameEnded(const FrameEvent& e)
 {
     pthread_mutex_lock(&mUpdateMutex);
 
     if (!mAlive)
     {
-        Ogre::Root::getSingletonPtr()->removeFrameListener(this);
+        Root::getSingletonPtr()->removeFrameListener(this);
         mSafeToDelete = true;
         pthread_mutex_unlock(&mUpdateMutex);
         mTextureSource->instanceDestroyed(mID);
@@ -179,7 +200,7 @@ void VLCInstance::_libvlc_exception(libvlc_exception_t *ex)
 {
     if(libvlc_exception_raised(ex))
     {
-        Ogre::LogManager::getSingleton().logMessage("VLCInstance::exception() " + Ogre::String(libvlc_exception_get_message(ex)));
+        LogManager::getSingleton().logMessage("VLCInstance::exception() " + String(libvlc_exception_get_message(ex)));
     }
     libvlc_exception_clear(ex);
 }
@@ -187,7 +208,7 @@ void VLCInstance::_libvlc_exception(libvlc_exception_t *ex)
 //-------------------------------------------------------------------------------------
 void * VLCInstance::_libvlc_lock(VLCInstance *ctx)
 {
-//    Ogre::LogManager::getSingleton().logMessage("VLCInstance::_libvlc_lock() ");
+//    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_lock() ");
     pthread_mutex_lock(&ctx->mUpdateMutex);
     return ctx->mScreen;
 }
@@ -195,7 +216,7 @@ void * VLCInstance::_libvlc_lock(VLCInstance *ctx)
 //-------------------------------------------------------------------------------------
 void VLCInstance::_libvlc_unlock(VLCInstance *ctx)
 {
-//    Ogre::LogManager::getSingleton().logMessage("VLCInstance::_libvlc_unlock() ");
+//    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_unlock() ");
     pthread_mutex_unlock(&ctx->mUpdateMutex);
 }
 
