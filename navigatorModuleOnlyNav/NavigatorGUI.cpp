@@ -645,9 +645,8 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 			{
 				// height
 				navi->evaluateJS("height.onchange = function() {}");
-				//Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
-				Vector3 size = avatar->getMesh()->getBounds().getSize();
-				navi->evaluateJS("height.setValue(" + StringConverter::toString(int(size.y*100 - 50)) + ")");
+				Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
+				navi->evaluateJS("height.setValue(" + StringConverter::toString(int((size.y-0.5)*100)) + ")");
 				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
 				navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
 
@@ -767,11 +766,8 @@ void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pO
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerUpdateDeformationSliders()
 {
-	char str[64];
-	Object3D* obj = mNavigator->mModeler->getSelected();
-
-	// reinitalize the sliders value
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	Object3D* obj = mNavigator->mModeler->getSelected();
 
 	// break the callback from the interface sliders
 	navi->evaluateJS("taperX.onchange = function() {}");
@@ -791,37 +787,23 @@ void NavigatorGUI::modelerUpdateDeformationSliders()
 	navi->evaluateJS("radiusDelta.onchange = function() {}");
 
 	// properties tab
-	sprintf(str, "taperX.setValue(%f)", obj->getTaperX()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "taperY.setValue(%f)", obj->getTaperY()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "topShearX.setValue(%f)",obj->getTopShearX()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "topShearY.setValue(%f)",obj->getTopShearY()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "twistBegin.setValue(%f)",obj->getTwistBegin()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "twistEnd.setValue(%f)",obj->getTwistEnd()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "dimpleBegin.setValue(%f)",obj->getDimpleBegin()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "dimpleEnd.setValue(%f)",obj->getDimpleEnd()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "pathCutBegin.setValue(%f)",obj->getPathCutBegin()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "pathCutEnd.setValue(%f)",obj->getPathCutEnd()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "holeSizeX.setValue(%f)",obj->getHoleSizeX()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "holeSizeY.setValue(%f)",obj->getHoleSizeY()*100);
-	navi->evaluateJS(str);
+	navi->evaluateJS("taperX.setValue(" + StringConverter::toString(obj->getTaperX()*100) + ")");
+	navi->evaluateJS("taperY.setValue(" + StringConverter::toString(obj->getTaperY()*100) + ")");
+	navi->evaluateJS("topShearX.setValue(" + StringConverter::toString(obj->getTopShearX()*100) + ")");
+	navi->evaluateJS("topShearY.setValue(" + StringConverter::toString(obj->getTopShearY()*100) + ")");
+	navi->evaluateJS("twistBegin.setValue(" + StringConverter::toString(obj->getTwistBegin()*100) + ")");
+	navi->evaluateJS("twistEnd.setValue(" + StringConverter::toString(obj->getTwistEnd()*100) + ")");
+	navi->evaluateJS("dimpleBegin.setValue(" + StringConverter::toString(obj->getDimpleBegin()*100) + ")");
+	navi->evaluateJS("dimpleEnd.setValue(" + StringConverter::toString(obj->getDimpleEnd()*100) + ")");
+	navi->evaluateJS("pathCutBegin.setValue(" + StringConverter::toString(obj->getPathCutBegin()*100) + ")");
+	navi->evaluateJS("pathCutEnd.setValue(" + StringConverter::toString(obj->getPathCutEnd()*100) + ")");
+	navi->evaluateJS("holeSizeX.setValue(" + StringConverter::toString(obj->getHoleSizeX()*100) + ")");
+	navi->evaluateJS("holeSizeY.setValue(" + StringConverter::toString(obj->getHoleSizeY()*100) + ")");
+
 // TODO : uncomment this ->		navi->evaluateJS("document.getElementById('hollowShape').value = '1');"
-	sprintf(str, "skew.setValue(%f)",obj->getSkew()*100);
-	navi->evaluateJS(str);
-	sprintf(str, "revolution.setValue(%f)",obj->getRevolutions()*1.);
-	navi->evaluateJS(str);
-	sprintf(str, "radiusDelta.setValue(%f)",obj->getRadiusDelta()*100);
-	navi->evaluateJS(str);
+	navi->evaluateJS("skew.setValue(" + StringConverter::toString(obj->getSkew()*100) + ")");
+	navi->evaluateJS("revolution.setValue(" + StringConverter::toString(obj->getRevolutions()*1) + ")");
+	navi->evaluateJS("radiusDelta.setValue(" + StringConverter::toString(obj->getRadiusDelta()*100) + ")");
 
 	// link the callback from the interface sliders
 	navi->evaluateJS("taperX.onchange = function() {elementClicked('MdlrTaperX')}");
@@ -889,9 +871,26 @@ void NavigatorGUI::modelerUpdateTextures()
 		text += fileName;
 		text +=	"' width=128 height=128/>	";
 
-		image.load( texturePath, str);
-		image.resize( 128, 128 );
-		image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+		vector<std::string> files;
+		SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
+		vector<std::string>::iterator iter = files.begin();
+		bool found = false;
+		while( iter != files.end() )
+		{
+			if( (*iter) ==  fileName )
+			{
+				found = true;
+				break;
+			}
+			iter++;
+		}
+		files.clear();
+		if( !found )
+		{
+			image.load( texturePath, str);
+			image.resize( 128, 128 );
+			image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+		}
 	}
 	text += "\"";
 	navi->evaluateJS(text);
@@ -2729,14 +2728,14 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 		user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation()+1)->getName());
 	}
 	
-
-	char text[64];
-	sprintf(text, "'<p>Animation %i//%i<br/><b>%s</b></p>'",
-		avatar->getCurrentAnimation()+1,
-		avatar->getNumAnimations(),
-		user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation())->getName()
-		);
-	navi->evaluateJS(String("$('AnimName').innerHTML = ")+ text);
+	std::string text("$('AnimName').innerHTML = '<p>Animation ");
+	text += StringConverter::toString(avatar->getCurrentAnimation()+1);
+	text += "//";
+	text += StringConverter::toString(avatar->getNumAnimations());
+	text += "<br/><b>";
+	text += user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation())->getName();
+	text += "</b></p>'";
+	navi->evaluateJS(text);
 	
 	// ...
 }
@@ -3812,7 +3811,6 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
-	char str[48];
 
 	navi->evaluateJS("posX.onchange = function() {}");
 	navi->evaluateJS("posY.onchange = function() {}");
@@ -3826,30 +3824,21 @@ void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)
 
 	// position
 	pos = pos * 100;
-	sprintf(str, "posX.setValue(%i)", (int)pos.x);
-	navi->evaluateJS(str);
-	sprintf(str, "posY.setValue(%i)", (int)pos.y);
-	navi->evaluateJS(str);
-	sprintf(str, "posZ.setValue(%i)", (int)pos.z);
-	navi->evaluateJS(str);
+	navi->evaluateJS("posX.setValue(" + StringConverter::toString(int(pos.x)) + ")");
+	navi->evaluateJS("posY.setValue(" + StringConverter::toString(int(pos.y)) + ")");
+	navi->evaluateJS("posZ.setValue(" + StringConverter::toString(int(pos.z)) + ")");
 
 	// orientation
 	ori = ori * 100;
-	sprintf(str, "oriX.setValue(%i)", (int)ori.x);
-	navi->evaluateJS(str);					   
-	sprintf(str, "oriY.setValue(%i)", (int)ori.y);
-	navi->evaluateJS(str);					   
-	sprintf(str, "oriZ.setValue(%i)", (int)ori.z);
-	navi->evaluateJS(str);
+	navi->evaluateJS("oriX.setValue(" + StringConverter::toString(int(ori.x)) + ")");
+	navi->evaluateJS("oriY.setValue(" + StringConverter::toString(int(ori.y)) + ")");
+	navi->evaluateJS("oriZ.setValue(" + StringConverter::toString(int(ori.z)) + ")");
 
 	// scale
 	scale = scale * 100;
-	sprintf(str, "scaleX.setValue(%i)", (int)scale.x);
-	navi->evaluateJS(str);					   
-	sprintf(str, "scaleY.setValue(%i)", (int)scale.y);
-	navi->evaluateJS(str);					   
-	sprintf(str, "scaleZ.setValue(%i)", (int)scale.z);
-	navi->evaluateJS(str);
+	navi->evaluateJS("scaleX.setValue(" + StringConverter::toString(int(scale.x)) + ")");
+	navi->evaluateJS("scaleY.setValue(" + StringConverter::toString(int(scale.y)) + ")");
+	navi->evaluateJS("scaleZ.setValue(" + StringConverter::toString(int(scale.z)) + ")");
 
 	navi->evaluateJS("posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()}");
 	navi->evaluateJS("posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()}");
@@ -3961,14 +3950,9 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 		navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
 
 		// Select the avatar from the user.xml // avatarName
-		char txt[6];
 		int nbItem = list->size();
 		if( nbItem < 7 )
-		{
-			sprintf(txt, "%ipx'", nbItem*16);
-			text = txt;
-			navi->evaluateJS("$('avatarSelectItem').style.height = '" + text);
-		}
+			navi->evaluateJS("$('avatarSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
 		list->clear();
 	}
 	else if (naviPanel == NAVI_AVATARPROP)
@@ -4000,14 +3984,9 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 		avatarTabberLoad(1);
 		navi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
 
-		char txt[6];
 		int nbItem = list.size();
 		if( nbItem < 7 )
-		{
-			sprintf(txt, "%ipx'", nbItem*16);
-			text = txt;
-			navi->evaluateJS("$('animationSelectItem').style.height = '" + text);
-		}
+			navi->evaluateJS("$('animationSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
 		list.clear();
 	}
     else if (naviPanel == NAVI_MODELERPROP)
