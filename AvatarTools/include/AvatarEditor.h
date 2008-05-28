@@ -64,6 +64,8 @@ public:
 	/// The execution path (to go back home each time)
 	Ogre::String		mExecPath;
 
+	int selectType;
+	
 private:
 	/** Update the current avatar' datas */
 	void updateCurrent(Character* pAvatar);

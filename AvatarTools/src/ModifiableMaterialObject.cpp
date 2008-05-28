@@ -60,6 +60,66 @@ void ModifiableMaterialObject::setColour(const ColourValue& colour)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+const ColourValue& ModifiableMaterialObject::getColourAmbient()
+{
+	return mModifiedMaterial->getAmbient();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setColourAmbient(const ColourValue& colour)
+{
+	mModifiedMaterial->setAmbient(colour);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const ColourValue& ModifiableMaterialObject::getColourDiffuse()
+{
+	return mModifiedMaterial->getDiffus();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setColourDiffuse(const ColourValue& colour)
+{
+	mModifiedMaterial->setDiffus(colour);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const ColourValue& ModifiableMaterialObject::getColourSpecular()
+{
+	return mModifiedMaterial->getSpecular();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setColourSpecular(const ColourValue& colour)
+{
+	mModifiedMaterial->setSpecular(colour);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const float ModifiableMaterialObject::getTransparency()
+{
+	return mModifiedMaterial->getAlpha();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setTransparency(const float opacity)
+{
+	mModifiedMaterial->setAlpha(opacity);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const float ModifiableMaterialObject::getShininess()
+{
+	return mModifiedMaterial->getShininess();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setShininess(const float shininess)
+{
+	mModifiedMaterial->setShininess(shininess);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::resetColour()
 {
 	setColour(ColourValue(0.5,0.5,0.5,1));

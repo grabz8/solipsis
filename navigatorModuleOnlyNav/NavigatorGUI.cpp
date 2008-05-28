@@ -113,7 +113,7 @@ void NavigatorGUI::login()
 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
 	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
 	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
-		navi->bind("selectAvatar", NaviDelegate(this, &NavigatorGUI::selectAvatar));
+		navi->bind("selectAvatar", NaviDelegate(this, &NavigatorGUI::loginSelectAvatar));
 #ifdef UIDEBUG
         navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
@@ -540,6 +540,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("AttachModelEdit", NaviDelegate(this, &NavigatorGUI::avatarPropAttMEdit));
 		navi->bind("AttachModelRemove", NaviDelegate(this, &NavigatorGUI::avatarPropAttMRemove));
 		navi->bind("AvatarPropSliders", NaviDelegate(this, &NavigatorGUI::avatarPropSliders));
+		navi->bind("SelectionReset", NaviDelegate(this, &NavigatorGUI::avatarPropReset));
 		// material
 		navi->bind("AvatarAmbient", NaviDelegate(this, &NavigatorGUI::avatarColorAmbient));
 		navi->bind("AvatarDiffuse", NaviDelegate(this, &NavigatorGUI::avatarColorDiffuse));
@@ -621,8 +622,6 @@ void NavigatorGUI::avatarTabberChange(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 {
-	//std::string str;
-	char str[256];
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	// get the current avatar
@@ -644,117 +643,73 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 			break;
 		case 1:	//  properties tab
 			{
-				std::string str;
-				std::string name("None");
-				char txt[64];
-				/*
-				str = "$('BodyParts').innerHTML='";
-				for(unsigned int bp=0; bp<avatar->getNumBodyParts(); bp++)
-				{
-					bpName = bpItr.getNext()->getCurrentBodyPartModelName();
-					str += "<tr><td width='20'></td><td width='98'>";
-					str += bpName;
-					str += "</td>";
-					str += "<td width='30'>";
-					str += "<input type='button' value=' < ' style='width: 30px' onclick='sendMessageParam('PartPrev','";
-					str += bpName;
-					str += "')'/></td><td width='130' align='center'>";
-					str += bpName;
-					str += "</td><td width='30'>";
-					str += "<input type='button' value=' > ' style='width: 30px' onclick='sendMessageParam('PartNext','";
-					str += bpName;
-					str += "')'/></td><td width='156'>";
-					str += "<input type='button' value='Edit' onclick='sendMessageParam('PartEdit','";
-					str += bpName;
-					str += "')'/><input type='button' value='Remove' onclick='sendMessageParam('PartRemove','";
-					str += bpName;
-					str += "')'/></td>";
-					str += "</tr>";
-				}
-				str += "'";
-				navi->evaluateJS(str);
-				*/
-
 				// height
 				navi->evaluateJS("height.onchange = function() {}");
-				Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
-				sprintf(txt, "height.setValue(%f)", (size.y - 0.5) * 100);
-				str = txt;
-				navi->evaluateJS(str);
-				sprintf(txt, "$('HeightValue').value='%1.2fm'", size.y);
-				str = txt;
-				navi->evaluateJS(str);
-				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight'); $('HeightValue').value=height.getValue()/100.+0.5+'m'}");
+				//Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
+				Vector3 size = avatar->getMesh()->getBounds().getSize();
+				navi->evaluateJS("height.setValue(" + StringConverter::toString((size.y - 0.5) * 100) + ")");
+				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
+				navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
 
 				// bones
-				str = "$('BoneName').innerHTML = '";
-				std::string temp;
-				str = avatar->getCurrentBone()->getName();
-				char c;
-				for(int i=0; i<str.length(); i++)
+				Bone* bone = avatar->getCurrentBone();
+				std::string name(bone->getName());
+				std::string temp("");
+				for(int i=0; i<name.length(); i++)
 				{
-					c = str[i];
+					char c = name[i];
 					if (! ((c < 48 && c != 32) || c == 255 ||
-						c == 208 || c == 209 ||
-						c == 215 || c == 216 ||
-						(c < 192 && c > 122) ||
-						(c < 65 && c > 57))) 
+						c == 208 || c == 209 ||	c == 215 || c == 216 ||
+						(c < 192 && c > 122) || (c < 65 && c > 57)) ) 
 					{
 						temp += c;
 					}
 				}
-				str = "$('BoneName').innerHTML = '" + temp;
-				navi->evaluateJS(str + "'");
-				str = "$('selection').innerHTML = '<b>Selection : </b>" + temp;
-				navi->evaluateJS(str + "'");
+				navi->evaluateJS("$('BoneName').innerHTML = '" + temp + "'");
 
 				// body parts
 				name = "None";
 				if(avatar->getNumBodyParts() > 0)
 					 name = avatar->getCurrentBodyPart()->getName();
+				navi->evaluateJS("$('BodyPartName').innerHTML = '" + name + "'");
 
-				str = "$('BodyPartName').innerHTML = '";
-				str += name;
-				navi->evaluateJS(str + "'");
-
-				str = "$('BodyPartName2').innerHTML = '";
-				str += name;
-				navi->evaluateJS(str + "'");
-
-				str = "$('BodyPartModelName').innerHTML = '";
 				name = "None";
 				if(avatar->getNumBodyParts() > 0)
 					name = avatar->getCurrentBodyPart()->getCurrentBodyPartModelName();
-				str += name;
-				navi->evaluateJS(str + "'");
+				navi->evaluateJS("$('BodyPartModelName').innerHTML = '" + name + "'");
+				if( name == "None" )
+					navi->evaluateJS("$('BodyPartEdit').disabled = 1");
 
 				// attachements / goodies
 				name = "None";
 				if(avatar->getNumGoodies() > 0)
 					name = avatar->getCurrentGoody()->getName();
+				navi->evaluateJS("$('AttachName').innerHTML = '" + name + "'");
 
-				str = "$('AttachName').innerHTML = '";
-				str += name;
-				navi->evaluateJS(str + "'");
-
-				str = "$('AttachName2').innerHTML = '";
-				str += name;
-				navi->evaluateJS(str + "'");
-
-				str = "$('AttachModelName').innerHTML = '";
 				name = "None";
 				if(avatar->getNumGoodies() > 0)
 					name = avatar->getCurrentGoody()->getCurrentGoodyModelName();
-				str += name;					
-				navi->evaluateJS(str + "'");
+				navi->evaluateJS("$('AttachModelName').innerHTML = '" + name + "'");
+				if( name == "None" )
+					navi->evaluateJS("$('AttachEdit').disabled = 1");
 
-				avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+				AvatarEditor::getSingletonPtr()->selectType = 0;
+				Quaternion q = bone->getOrientation();
+				Vector3 orientation(q.getYaw().valueRadians(), q.getPitch().valueRadians(), q.getRoll().valueRadians());
+				avatarUpdateSliders( bone->getPosition()+0.5, orientation/Math::TWO_PI+0.5, bone->getScale()/2 );
 			}
 			break;
 		case 2: // material
 			{
-				BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-				ModifiedMaterial* mm = bpm->getModifiedMaterial();
+				int type = AvatarEditor::getSingletonPtr()->selectType;
+				ModifiableMaterialObject* object;
+				
+				if( type == 2 ) // Goody
+					object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+				else //if( type <= 1 ) // BodyPart
+					object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+				ModifiedMaterial* material = object->getModifiedMaterial();
 
 				navi->evaluateJS("shininess.onchange = function() {}");
 				navi->evaluateJS("transparency.onchange = function() {}");
@@ -764,28 +719,18 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("scaleV.onchange = function() {}");
 				navi->evaluateJS("rotateU.onchange = function() {}");
 
-				sprintf(str, "$S('pAmbient').background='#'+'FFFFFF'");
-				navi->evaluateJS(str);
-				sprintf(str, "$S('pDiffuse').background='#'+'FFFFFF'");
-				navi->evaluateJS(str);
-				sprintf(str, "$S('pSpecular').background='#'+'FFFFFF'");
-				navi->evaluateJS(str);
-				sprintf(str, "shininess.setValue(%f)",mm->getShininess()*100);
-				navi->evaluateJS(str);
-				sprintf(str, "transparency.setValue(%f)",mm->getAlpha()*100);
-				navi->evaluateJS(str);
-				UV = mm->getTextureScroll() ;
-				sprintf(str, "scrollU.setValue(%f)",UV.x*100+50);
-				navi->evaluateJS(str);
-				sprintf(str, "scrollV.setValue(%f)",UV.y*100+50);
-				navi->evaluateJS(str);
-				UV = mm->getTextureScale() ;
-				sprintf(str, "scaleU.setValue(%f)",UV.x*100-50);
-				navi->evaluateJS(str);
-				sprintf(str, "scaleV.setValue(%f)",UV.y*100-50);
-				navi->evaluateJS(str);
-				sprintf(str, "rotateU.setValue(%f)",mm->getTextureRotate()/Math::TWO_PI*100);
-				navi->evaluateJS(str);
+				navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
+				navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
+				navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
+				navi->evaluateJS("shininess.setValue(" + StringConverter::toString(material->getShininess()*100) + ")");
+				navi->evaluateJS("transparency.setValue("+ StringConverter::toString(material->getAlpha()*100) + ")");
+				UV = material->getTextureScroll() ;
+				navi->evaluateJS("scrollU.setValue(" + StringConverter::toString(UV.x*100+50) + ")");
+				navi->evaluateJS("scrollV.setValue(" + StringConverter::toString(UV.y*100+50) + ")");
+				UV = material->getTextureScale() ;
+				navi->evaluateJS("scaleU.setValue(" + StringConverter::toString(UV.x*100-50) + ")");
+				navi->evaluateJS("scaleU.setValue(" + StringConverter::toString(UV.y*100-50) + ")");
+				navi->evaluateJS("rotateU.setValue(" + StringConverter::toString(material->getTextureRotate()/Math::TWO_PI*100) + ")");
 
 				navi->evaluateJS("shininess.onchange = function() {elementClicked('AvatarShininess')}");
 				navi->evaluateJS("transparency.onchange = function() {elementClicked('AvatarTransparency')}");
@@ -795,7 +740,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("scaleV.onchange = function() {elementClicked('AvatarScaleV')}");
 				navi->evaluateJS("rotateU.onchange = function() {elementClicked('AvatarRotateU')}");
 
-				avatarUpdateTextures();
+				avatarUpdateTextures( object );
 			}
 			break;
 		}
@@ -1018,7 +963,6 @@ void NavigatorGUI::modelerTabberChange(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 {
-	char str[256];
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 
 	// get the current object3D
@@ -1033,14 +977,10 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 		switch( pTab )
 		{
 		case 0:	// properties tab
-			sprintf(str, "document.getElementById('objectName').value = '%s'",obj->getName().c_str());
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('creator').value = '%s'",obj->getCreator().c_str());
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('owner').value = '%s'",obj->getOwner().c_str());
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('group').value = '%s'",obj->getGroup().c_str());
-			navi->evaluateJS(str);
+			navi->evaluateJS("document.getElementById('objectName').value = '" + obj->getName() + "'");
+			navi->evaluateJS("document.getElementById('creator').value = '" + obj->getCreator() + "'");
+			navi->evaluateJS("document.getElementById('owner').value = '" + obj->getOwner() + "'");
+			navi->evaluateJS("document.getElementById('group').value = '" + obj->getGroup() + "'");
 			// TODO : remplacer tous les retours chariot par \\n
 			text = obj->getDesc();
 			for(c=0, e=0; e<text.length(); c++,e++)
@@ -1052,8 +992,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 					c+=1;
 				}
 			}
-			sprintf(str, "document.getElementById('description').value = '%s'",text.c_str());
-			navi->evaluateJS(str);
+			navi->evaluateJS("document.getElementById('description').value = '" + text + "'");
 			// TODO : remplacer tous les retours chariot par \\n
 			text = obj->getTags();
 			for(c=0, e=0; e<text.length(); c++,e++)
@@ -1065,12 +1004,9 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 					c+=1;
 				}
 			}
-			sprintf(str, "document.getElementById('tags').value = '%s'",text.c_str());
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('modification').checked = %s",obj->getCanBeModified()?"true":"false");
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('copy').checked = %s",obj->getCanBeCopied()?"true":"false");
-			navi->evaluateJS(str);
+			navi->evaluateJS("document.getElementById('tags').value = '" + text + "'");
+			navi->evaluateJS("document.getElementById('modification').checked = " + obj->getCanBeModified()?"true":"false");
+			navi->evaluateJS("document.getElementById('copy').checked = " + obj->getCanBeCopied()?"true":"false");
 			break;
 		case 1:	// model
 			modelerUpdateDeformationSliders();
@@ -1084,28 +1020,18 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("scaleV.onchange = function() {}");
 			navi->evaluateJS("rotateU.onchange = function() {}");
 
-			sprintf(str, "$S('pAmbient').background='#'+'FFFFFF'");
-			navi->evaluateJS(str);
-			sprintf(str, "$S('pDiffuse').background='#'+'FFFFFF'");
-			navi->evaluateJS(str);
-			sprintf(str, "$S('pSpecular').background='#'+'FFFFFF'");
-			navi->evaluateJS(str);
-			sprintf(str, "shininess.setValue(%f)",obj->getShininess()*100);
-			navi->evaluateJS(str);
-			sprintf(str, "transparency.setValue(%f)",obj->getAlpha()*100);
-			navi->evaluateJS(str);
-			UV = obj->getMaterialManager()->getTextureScroll() ;
-			sprintf(str, "scrollU.setValue(%f)",UV.x*100+50);
-			navi->evaluateJS(str);
-			sprintf(str, "scrollV.setValue(%f)",UV.y*100+50);
-			navi->evaluateJS(str);
-			UV = obj->getMaterialManager()->getTextureScale() ;
-			sprintf(str, "scaleU.setValue(%f)",UV.x*100-50);
-			navi->evaluateJS(str);
-			sprintf(str, "scaleV.setValue(%f)",UV.y*100-50);
-			navi->evaluateJS(str);
-			sprintf(str, "rotateU.setValue(%f)",obj->getMaterialManager()->getTextureRotate()/Math::TWO_PI*100);
-			navi->evaluateJS(str);
+			navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
+			navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
+			navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
+			navi->evaluateJS("shininess.setValue(" + StringConverter::toString(obj->getShininess()*100) + ")");
+			navi->evaluateJS("transparency.setValue(" + StringConverter::toString(obj->getAlpha()*100) + ")");
+			UV = obj->getMaterialManager()->getTextureScroll();
+			navi->evaluateJS("scrollU.setValue(" + StringConverter::toString(UV.x*100+50) + ")");
+			navi->evaluateJS("scrollV.setValue(" + StringConverter::toString(UV.y*100+50) + ")");
+			UV = obj->getMaterialManager()->getTextureScale();
+			navi->evaluateJS("scaleU.setValue(" + StringConverter::toString(UV.x*100-50) + ")");
+			navi->evaluateJS("scaleV.setValue(" + StringConverter::toString(UV.y*100-50) + ")");
+			navi->evaluateJS("rotateU.setValue(" + StringConverter::toString(obj->getMaterialManager()->getTextureRotate()/Math::TWO_PI*100) + ")");
 
 			navi->evaluateJS("shininess.onchange = function() {elementClicked('MdlrShininess')}");
 			navi->evaluateJS("transparency.onchange = function() {elementClicked('MdlrTransparency')}");
@@ -1118,37 +1044,31 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			modelerUpdateTextures();
 			break;
 		case 3:	// 3D tab
-			sprintf(str, "document.getElementById('positionX').value = %f",obj->getPosition().x);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('positionY').value = %f",obj->getPosition().y);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('positionZ').value = %f",obj->getPosition().z);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('orientationX').value = %f",obj->getOrientation().x);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('orientationY').value = %f",obj->getOrientation().y);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('orientationZ').value = %f",obj->getOrientation().z);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('scaleX').value = %f",obj->getScale().x);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('scaleY').value = %f",obj->getScale().y);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('scaleZ').value = %f",obj->getScale().z);
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('gravity').checked = %s",obj->getEnableGravity()?"true":"false");
-			navi->evaluateJS(str);
-			sprintf(str, "document.getElementById('collision').checked = %s",obj->getCollisionnable()?"true":"false");
-			navi->evaluateJS(str);
+			navi->evaluateJS("document.getElementById('positionX').value = " + StringConverter::toString(obj->getPosition().x));
+			navi->evaluateJS("document.getElementById('positionY').value = " + StringConverter::toString(obj->getPosition().y));
+			navi->evaluateJS("document.getElementById('positionZ').value = " + StringConverter::toString(obj->getPosition().z));
+			navi->evaluateJS("document.getElementById('orientationX').value = " + StringConverter::toString(obj->getOrientation().x));
+			navi->evaluateJS("document.getElementById('orientationY').value = " + StringConverter::toString(obj->getOrientation().y));
+			navi->evaluateJS("document.getElementById('orientationZ').value = " + StringConverter::toString(obj->getOrientation().z));
+			navi->evaluateJS("document.getElementById('scaleX').value = " + StringConverter::toString(obj->getScale().x));
+			navi->evaluateJS("document.getElementById('scaleY').value = " + StringConverter::toString(obj->getScale().y));
+			navi->evaluateJS("document.getElementById('scaleZ').value = " + StringConverter::toString(obj->getScale().z));
+			navi->evaluateJS("document.getElementById('gravity').checked = " + obj->getEnableGravity()?"true":"false");
+			navi->evaluateJS("document.getElementById('collision').checked = %s" + obj->getCollisionnable()?"true":"false");
 
-			sprintf(str, "document.getElementById('info').value = 'Vertex count : '+%i+'\\nTriangle count : '+%i+'\\nPrimitives count : '+%i+'\\nMesh size : '+%f+','+%f+','+%f",
-				obj->getVertexCount(),
-				obj->getTriCount(),
-				obj->getPrimitivesCount(),
-				obj->getMeshSize().x,
-				obj->getMeshSize().y,
-				obj->getMeshSize().z);
-			navi->evaluateJS(str);
+			text = "document.getElementById('info').value = 'Vertex count : '+";
+			text += StringConverter::toString(obj->getVertexCount());
+			text += "+'\\nTriangle count : '+";
+			text += StringConverter::toString(obj->getTriCount());
+			text += "+'\\nPrimitives count : '+";
+			text += StringConverter::toString(obj->getPrimitivesCount());
+			text += "+'\\nMesh size : '+";
+			text += StringConverter::toString(obj->getMeshSize().x);
+			text += "+','+";
+			text += StringConverter::toString(obj->getMeshSize().y);
+			text += "+','+";
+			text += StringConverter::toString(obj->getMeshSize().z);
+			navi->evaluateJS(text);
 			break;
 		case 4:	// ...
 			break;
@@ -1366,6 +1286,15 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 	// Show Navi UI login
     if (mNavisStates[NAVI_LOGIN] == NSCreated)
         navi->show(true);
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::loginSelectAvatar(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::selectAvatar()");
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+	std::string item( naviData["item"].str() );
+	
+	//AvatarEditor::getSingletonPtr()->setCurrentByName( item );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)
@@ -1637,15 +1566,6 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
         navi->show(true);
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::selectAvatar(const NaviData& naviData)
-{
-	OGRE_LOG("NavigatorGUI::selectAvatar()");
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
-	std::string item( naviData["item"].str() );
-	
-	//AvatarEditor::getSingletonPtr()->setCurrentByName( item );
-}
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileOpen(const NaviData& naviData)
 {
@@ -2747,10 +2667,9 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 	mNavigator->getUserAvatar()->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
-	std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-	text += AvatarEditor::getSingletonPtr()->getName();
-	text += "</b></p>'";
-	navi->evaluateJS(text.data());
+	std::string text( AvatarEditor::getSingletonPtr()->getName() );
+	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
+	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
@@ -2761,10 +2680,9 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
     mNavigator->getUserAvatar()->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
-	std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-	text += AvatarEditor::getSingletonPtr()->getName();
-	text += "</b></p>'";
-	navi->evaluateJS(text.data());
+	std::string text( AvatarEditor::getSingletonPtr()->getName() );
+	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
+	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
@@ -2773,11 +2691,18 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string item( naviData["item"].str() );
 	
-	AvatarEditor::getSingletonPtr()->setCurrentByName( item );
-	//std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-	//text += AvatarEditor::getSingletonPtr()->getName();
-	//text += "</b></p>'";
-	//navi->evaluateJS(text.data());
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	if( avatar->getName() != item )
+	{
+		AvatarEditor::getSingletonPtr()->setCurrentByName( item );
+
+		mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
+		mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+
+		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+		std::string text( AvatarEditor::getSingletonPtr()->getName() );
+		navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
+	}
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
@@ -2841,9 +2766,12 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 	if(++current >= numAnim) current = 0;
 	//avatar->setCurrentAnimation(current);
 	
+	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
 	//user->stopAnimation();
-	user->setState(Avatar::State(current+1));
-	user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(current)->getName());
+	//user->setState(Avatar::State(current+1));
+	//user->startAnimation( text );
+
+	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
@@ -2858,9 +2786,12 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 	if(--current < 0) current = numAnim-1;
 	//avatar->setCurrentAnimation(current);
 
+	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
 	//user->stopAnimation();
-	user->setState(Avatar::State(current+1));
-	user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(current)->getName());
+	//user->setState(Avatar::State(current+1));
+	//user->startAnimation( text );
+
+	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
@@ -2872,11 +2803,12 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 	float height = atoi(navi->evaluateJS("height.getValue()").data()) / 100. + 0.5;
 	float scale = height / avatar->getEntity()->getBoundingBox().getSize().y;
 	SceneNode* node = avatar->getNode();
-	//SceneNode::ObjectIterator oIter = node->getAttachedObjectIterator();
-	//node->detachAllObjects();
-	//node->detachObject("UserCam");
+
+//	static Node* child = node->removeChild( (unsigned short) 2 );
 	node->setScale( scale, scale, scale );
-	//node->attachObject("UserCam");
+	//node->addChild( child );
+	
+	navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
@@ -2904,14 +2836,14 @@ void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 	str = "$('BoneName').innerHTML = '" + temp;
 	navi->evaluateJS(str + "'");
 
-	Vector3 pos( bone->getPosition() );
-	//Vector3 orientation( bone->getOrientation() );
-	Vector3 scale( bone->getScale() );
-	avatarUpdateSliders(pos.x, pos.y, pos.z, -1, -1, -1, scale.x, scale.y, scale.z);
+	AvatarEditor::getSingletonPtr()->selectType = 0;
+	Quaternion q = bone->getOrientation();
+	Vector3 orientation(q.getYaw().valueRadians(), q.getPitch().valueRadians(), q.getRoll().valueRadians());
+	avatarUpdateSliders( bone->getPosition()+0.5, orientation/Math::TWO_PI+0.5, bone->getScale()/2 );
 
-	navi->evaluateJS("$('oriX').style.display='none'");
-	navi->evaluateJS("$('oriY').style.display='none'");
-	navi->evaluateJS("$('oriZ').style.display='none'");
+	//navi->evaluateJS("$('oriX').style.display='none'");
+	//navi->evaluateJS("$('oriY').style.display='none'");
+	//navi->evaluateJS("$('oriZ').style.display='none'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
@@ -2938,17 +2870,15 @@ void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 	}
 	str = "$('BoneName').innerHTML = '" + temp;
 	navi->evaluateJS(str + "'");
-	str = "$('Selection').innerHTML = '<b>Selection : </b>" + temp;
-	navi->evaluateJS(str + "'");
 
-	Vector3 pos( bone->getPosition() );
-	//Vector3 orientation( bone->getOrientation() );
-	Vector3 scale( bone->getScale() );
-	avatarUpdateSliders(pos.x, pos.y, pos.z, -1, -1, -1, scale.x, scale.y, scale.z);
+	AvatarEditor::getSingletonPtr()->selectType = 0;
+	Quaternion q = bone->getOrientation();
+	Vector3 orientation(q.getYaw().valueRadians(), q.getPitch().valueRadians(), q.getRoll().valueRadians());
+	avatarUpdateSliders( bone->getPosition()+0.5, orientation/Math::TWO_PI+0.5, bone->getScale()/2 );
 
-	navi->evaluateJS("$('oriX').style.display='none'");
-	navi->evaluateJS("$('oriY').style.display='none'");
-	navi->evaluateJS("$('oriZ').style.display='none'");
+	//navi->evaluateJS("$('oriX').style.display='none'");
+	//navi->evaluateJS("$('oriY').style.display='none'");
+	//navi->evaluateJS("$('oriZ').style.display='none'");
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
@@ -2965,30 +2895,25 @@ void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 	str += bpName;
 	navi->evaluateJS(str + "'");
 
-	str = "$('BodyPartName2').innerHTML = '";
-	str += bpName;
-	navi->evaluateJS(str + "'");
-
 	str = "$('BodyPartModelName').innerHTML = '";
 	if (bpm != NULL)
 	{
 		str += bpm->getName();
 		navi->evaluateJS(str + "'");
-
-		str = "$('Selection').innerHTML = '<b>Selection : </b>";
-		str += bpm->getName();
-		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 0");
 
 		// Update sliders ...
+		AvatarEditor::getSingletonPtr()->selectType = 1;
 		//Vector3 pos( bpm->getPosition() );
 		//Vector3 ori( bpm->getOrientatio() );
 		//Vector3 scale( bpm->getScale() );
-		avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+		avatarUpdateSliders( Vector3::ZERO, Vector3::ZERO, Vector3::ZERO );
 	}
 	else 
 	{
 		str += "None";
 		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 1");
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3006,30 +2931,25 @@ void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 	str += bpName;
 	navi->evaluateJS(str + "'");
 
-	str = "$('BodyPartName2').innerHTML = '";
-	str += bpName;
-	navi->evaluateJS(str + "'");
-
 	str = "$('BodyPartModelName').innerHTML = '";
 	if (bpm != NULL)
 	{
 		str += bpm->getName();
 		navi->evaluateJS(str + "'");
-
-		str = "$('Selection').innerHTML = '<b>Selection : </b>";
-		str += bpm->getName();
-		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 0");
 
 		// Update sliders ...
+		AvatarEditor::getSingletonPtr()->selectType = 1;
 		//Vector3 pos( bpm->getPosition() );
 		//Vector3 ori( bpm->getOrientatio() );
 		//Vector3 scale( bpm->getScale() );
-		avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+		avatarUpdateSliders( Vector3::ZERO, Vector3::ZERO, Vector3::ZERO );
 	}
 	else 
 	{
 		str += "None";
 		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 1");
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3048,21 +2968,21 @@ void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 	{
 		str += bpm->getName();
 		navi->evaluateJS(str + "'");
-
-		str = "$('Selection').innerHTML = '<b>Selection : </b>";
-		str += bpm->getName();
-		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 0");
 
 		// Update sliders ...
+		AvatarEditor::getSingletonPtr()->selectType = 1;
 		//Vector3 pos( bpm->getPosition() );
 		//Vector3 ori( bpm->getOrientatio() );
 		//Vector3 scale( bpm->getScale() );
-		avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+		//avatarUpdateSliders( Vector3::ZERO, Vector3::ZERO, Vector3::ZERO );
+		navi->evaluateJS("$('sliders').style = 'display:none'");
 	}
 	else 
 	{
 		str += "None";
 		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 1");
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3081,21 +3001,21 @@ void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 	{
 		str += bpm->getName();
 		navi->evaluateJS(str + "'");
-
-		str = "$('Selection').innerHTML = '<b>Selection : </b>";
-		str += bpm->getName();
-		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 0");
 
 		// Update sliders ...
+		AvatarEditor::getSingletonPtr()->selectType = 1;
 		//Vector3 pos( bpm->getPosition() );
 		//Vector3 ori( bpm->getOrientatio() );
 		//Vector3 scale( bpm->getScale() );
-		avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+		//avatarUpdateSliders( Vector3::ZERO, Vector3::ZERO, Vector3::ZERO );
+		navi->evaluateJS("$('sliders').style = 'display:none'");
 	}
 	else 
 	{
 		str += "None";
 		navi->evaluateJS(str + "'");
+		navi->evaluateJS("$('BodyPartEdit').disabled = 1");
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3105,8 +3025,8 @@ void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	// ...
-
+	AvatarEditor::getSingletonPtr()->selectType = 1;
+	avatarTabberLoad(2);
 	navi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
 }
 //-------------------------------------------------------------------------------------
@@ -3133,30 +3053,23 @@ void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 		str += gName;
 		navi->evaluateJS(str + "'");
 
-		str = "$('AttachName2').innerHTML = '";
-		str += gName;
-		navi->evaluateJS(str + "'");
-
 		str = "$('AttachModelName').innerHTML = '";
 		if (gm != NULL)
 		{
 			str += gm->getName();
 			navi->evaluateJS(str + "'");
-
-			str = "$('Selection').innerHTML = '<b>Selection : </b>";
-			str += gm->getName();
-			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 0");
 
 			// Update sliders ...
-			//Vector3 pos( bpm->getPosition() );
-			//Vector3 ori( bpm->getOrientatio() );
-			//Vector3 scale( bpm->getScale() );
-			avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+			AvatarEditor::getSingletonPtr()->selectType = 2;
+			avatarUpdateSliders( g->getCurrentPosition()/2+0.5, g->getCurrentRotationsAngles()/180 + 0.5, Vector3::ZERO );
+			navi->evaluateJS("$('sliders').style = 'display:block'");
 		}
 		else 
 		{
 			str += "None";
 			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 1");
 		}
 	}
 }
@@ -3177,30 +3090,23 @@ void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 		str += gName;
 		navi->evaluateJS(str + "'");
 
-		str = "$('AttachName2').innerHTML = '";
-		str += gName;
-		navi->evaluateJS(str + "'");
-
 		str = "$('AttachModelName').innerHTML = '";
 		if (gm != NULL)
 		{
 			str += gm->getName();
 			navi->evaluateJS(str + "'");
-
-			str = "$('Selection').innerHTML = '<b>Selection : </b>";
-			str += gm->getName();
-			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 0");
 
 			// Update sliders ...
-			//Vector3 pos( bpm->getPosition() );
-			//Vector3 ori( bpm->getOrientatio() );
-			//Vector3 scale( bpm->getScale() );
-			avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+			AvatarEditor::getSingletonPtr()->selectType = 2;
+			avatarUpdateSliders( g->getCurrentPosition()/2+0.5, g->getCurrentRotationsAngles()/180 + 0.5, Vector3::ZERO );
+			navi->evaluateJS("$('sliders').style = 'display:block'");
 		}
 		else 
 		{
 			str += "None";
 			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 1");
 		}
 	}
 }
@@ -3222,21 +3128,17 @@ void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 		{
 			str += gm->getName();
 			navi->evaluateJS(str + "'");
-
-			str = "$('Selection').innerHTML = '<b>Selection : </b>";
-			str += gm->getName();
-			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 0");
 
 			// Update sliders ...
-			//Vector3 pos( bpm->getPosition() );
-			//Vector3 ori( bpm->getOrientatio() );
-			//Vector3 scale( bpm->getScale() );
-			avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+			//AvatarEditor::getSingletonPtr()->selectType = 2;
+			//avatarUpdateSliders( g->getCurrentPosition(), g->getCurrentRotationsAngles(), Vector3::ZERO );
 		}
 		else 
 		{
 			str += "None";
 			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 1");
 		}
 	}
 }
@@ -3258,21 +3160,17 @@ void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 		{
 			str += gm->getName();
 			navi->evaluateJS(str + "'");
-
-			str = "$('Selection').innerHTML = '<b>Selection : </b>";
-			str += gm->getName();
-			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 0");
 
 			// Update sliders ...
-			//Vector3 pos( bpm->getPosition() );
-			//Vector3 ori( bpm->getOrientatio() );
-			//Vector3 scale( bpm->getScale() );
-			avatarUpdateSliders(50, 50, 50, 50, 50, 50, 50, 50, 50);
+			//AvatarEditor::getSingletonPtr()->selectType = 2;
+			//avatarUpdateSliders( g->getCurrentPosition(), g->getCurrentRotationsAngles(), Vector3::ZERO );
 		}
 		else 
 		{
 			str += "None";
 			navi->evaluateJS(str + "'");
+			navi->evaluateJS("$('AttachEdit').disabled = 1");
 		}
 	}
 }
@@ -3283,8 +3181,8 @@ void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	// ...
-
+	AvatarEditor::getSingletonPtr()->selectType = 2;
+	avatarTabberLoad(2);
 	navi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
 }
 //-------------------------------------------------------------------------------------
@@ -3299,31 +3197,186 @@ void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	Avatar* user = mNavigator->getUserAvatar();
 
-	std::string slider( naviData["slider"].str() );
-	std::string temp("$('");
-	temp += slider;
-	temp += "').getValue()";
-	std::string value( navi->evaluateJS(temp) );
+	std::string slider( naviData["slider"].str().c_str() );
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type < 0) return;
 
-    if( slider == "posX" )
-	{}
-	else if( slider == "posY" ) 
-	{}
-	else if( slider == "posZ" )
-	{}
-	else if( slider == "oriX" ) 
-	{}
-	else if( slider == "oriY" ) 
-	{}
-	else if( slider == "oriZ" ) 
-	{}
-	else if( slider == "scaleX" ) 
-	{}
-	else if( slider == "scaleY" ) 
-	{}
-	else if( slider == "scaleZ" ) 
-	{}
+	// get the value from the slidebar position
+	std::string temp = slider + ".getValue()";
+	float value = atoi( navi->evaluateJS(temp).c_str() ) / 100.;
+
+	Bone* bone = avatar->getCurrentBone();
+	BodyPart* body = NULL;
+	Goody* goody = NULL;
+
+	// get the selected object ( BodyPart / Goody )
+	if( avatar->getNumBodyParts() > 0 )
+		body = avatar->getCurrentBodyPart();
+	if( avatar->getNumGoodies() > 0 )
+		goody = avatar->getCurrentGoody();
+
+	// enable modification on the bone properties
+	if( !bone->isManuallyControlled() ) 
+	{
+		bone->setManuallyControlled( true );
+		for(int i=0; i<user->getEntity()->getSkeleton()->getNumAnimations(); i++ )
+			user->getEntity()->getSkeleton()->getAnimation( i )->destroyNodeTrack( bone->getHandle() );
+	}
+
+	Vector3 vec;
+	Quaternion q;
+	Radian angle;
+
+	// apply the modification on the selection ( bone / bodyPart / goody )
+	if( slider == "posX")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			bone->translate( value - 0.5 - bone->getPosition().x, 0, 0 );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentXScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "posY")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			bone->translate( 0, value - 0.5 - bone->getPosition().y, 0 );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentYScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "posZ")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			bone->translate( 0, 0, value - 0.5 - bone->getPosition().z );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentZScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "oriX")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			q = bone->getOrientation();
+			angle = Radian( (value - 0.5)*Math::TWO_PI );
+			bone->yaw( angle - q.getYaw() );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentYawAngleScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "oriY")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			q = bone->getOrientation();
+			angle = Radian( (value - 0.5)*Math::TWO_PI );
+			bone->pitch( angle - q.getPitch() );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentPitchAngleScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "oriZ")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			q = bone->getOrientation();
+			angle = Radian( (value - 0.5)*Math::TWO_PI );
+			bone->roll( angle - q.getRoll() );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			goody->setCurrentRollAngleScrollPosition( value );
+			break;
+		}
+	}
+	else if( slider == "scaleX")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			vec = bone->getScale();
+			vec.x = value * 2;
+			bone->setScale( vec );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			break;
+		}
+	}
+	else if( slider == "scaleY")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			vec = bone->getScale();
+			vec.y = value * 2;
+			bone->setScale( vec );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			break;
+		}
+	}
+	else if( slider == "scaleZ")
+	{
+		switch( type )
+		{
+		case 0: // bone
+			vec = bone->getScale();
+			vec.z = value * 2;
+			bone->setScale( vec );
+			break;
+		case 1: // bodyPart
+			break;
+		case 2: // goody
+			break;
+		}
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropReset(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+
+	std::string slider( naviData["slider"].str().c_str() );
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type < 0) return;
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarColorAmbient(const NaviData& naviData)
@@ -3346,16 +3399,23 @@ void NavigatorGUI::avatarColorAmbient(const NaviData& naviData)
 	rgb[idRGB] = atoi(color.c_str());
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		mm->useAddedColour(true);
-		//mm->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
-		mm->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		material->useAddedColour(true);
+		material->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		//material->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 
 		if(mLockAmbientDiffuse)
-			mm->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			material->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3379,16 +3439,23 @@ void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
 	rgb[idRGB] = atoi(color.c_str());
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		mm->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		material->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
 		{
-			mm->useAddedColour(true);
-			//mm->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
-			mm->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			material->useAddedColour(true);
+			material->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			//material->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		}
 	}
 }
@@ -3413,10 +3480,17 @@ void NavigatorGUI::avatarColorSpecular(const NaviData& naviData)
 	rgb[idRGB] = atoi(color.c_str());
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
-		mm->setSpecular( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
+		material->setSpecular( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarColorLockAmbientDiffuse(const NaviData& naviData)
@@ -3432,10 +3506,17 @@ void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 	std::string value = navi->evaluateJS("shininess.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
-		mm->setShininess( atoi(value.c_str())/100. );
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
+		material->setShininess( atoi(value.c_str())/100. );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
@@ -3444,10 +3525,17 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
-		mm->setAlpha( atoi(value.c_str())/100. );
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
+		material->setAlpha( atoi(value.c_str())/100. );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
@@ -3456,12 +3544,19 @@ void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
 	std::string value = navi->evaluateJS("scrollU.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		Ogre::Vector2 UV = mm->getTextureScroll();
-		mm->setTextureScroll(atoi(value.c_str())/100. - .5, UV.y);
+		Ogre::Vector2 UV = material->getTextureScroll();
+		material->setTextureScroll(atoi(value.c_str())/100. - .5, UV.y);
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3471,12 +3566,19 @@ void NavigatorGUI::avatarPropScrollV(const NaviData& naviData)
 	std::string value = navi->evaluateJS("scrollV.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		Ogre::Vector2 UV = mm->getTextureScroll();
-		mm->setTextureScroll(UV.x, atoi(value.c_str())/100. - .5);
+		Ogre::Vector2 UV = material->getTextureScroll();
+		material->setTextureScroll(UV.x, atoi(value.c_str())/100. - .5);
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3486,12 +3588,19 @@ void NavigatorGUI::avatarPropScaleU(const NaviData& naviData)
 	std::string value = navi->evaluateJS("scaleU.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		Ogre::Vector2 UV = mm->getTextureScale();
-		mm->setTextureScale( atoi(value.c_str())/100. + .5, UV.y );
+		Ogre::Vector2 UV = material->getTextureScale();
+		material->setTextureScale( atoi(value.c_str())/100. + .5, UV.y );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3501,12 +3610,19 @@ void NavigatorGUI::avatarPropScaleV(const NaviData& naviData)
 	std::string value = navi->evaluateJS("scaleV.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+	if( material != 0 )
 	{
-		Ogre::Vector2 UV = mm->getTextureScale();
-		mm->setTextureScale( UV.x, atoi(value.c_str())/100. + .5 );
+		Ogre::Vector2 UV = material->getTextureScale();
+		material->setTextureScale( UV.x, atoi(value.c_str())/100. + .5 );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -3516,10 +3632,18 @@ void NavigatorGUI::avatarPropRotateU(const NaviData& naviData)
 	std::string value = navi->evaluateJS("rotateU.getValue()");
 
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	ModifiedMaterial* mm = bpm->getModifiedMaterial();
-	if( mm != 0 )
-		mm->setTextureRotate( Ogre::Radian(atoi(value.c_str())/100.*Math::TWO_PI) );
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	ModifiedMaterial* material = object->getModifiedMaterial();
+
+	if( material != 0 )
+		material->setTextureRotate( Ogre::Radian(atoi(value.c_str())/100.*Math::TWO_PI) );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTextureAdd(const NaviData& naviData)
@@ -3530,23 +3654,36 @@ void NavigatorGUI::avatarPropTextureAdd(const NaviData& naviData)
 	if (PathTexture != NULL )
 	{
 		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-		BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		ModifiableMaterialObject* object;
+
+		int type = AvatarEditor::getSingletonPtr()->selectType;
+		if( type == 2 ) // Goody
+			object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		else //if( type <= 1 ) // BodyPart
+			object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
 		String TextureFilePath (PathTexture);
 
 		//Create the new OGRE texture with the file selected :
 		TexturePtr PtrTexture = TextureManager::getSingleton().load( TextureFilePath, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
 		//Add texture for the object (with obj->mModifiedMaterialManager)
-		bpm->addTexture(PtrTexture);
+		object->addTexture(PtrTexture);
 
-		avatarUpdateTextures();
+		avatarUpdateTextures( object );
 	}
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
 {
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+	ModifiableMaterialObject* object;
+	
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
 /*
 	//get selected texture :
 	if( obj->getMaterialManager()->getNbTexture() > 1 )
@@ -3555,7 +3692,7 @@ void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
 		obj->deleteTexture( tPtr );
 	}
 
-	avatarUpdateTextures();
+	avatarUpdateTextures( object );
 */
 }
 //-------------------------------------------------------------------------------------
@@ -3576,24 +3713,35 @@ void NavigatorGUI::avatarPropTextureApply(const NaviData& naviData)
 void NavigatorGUI::avatarPropTexturePrev(const NaviData& naviData)
 {
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	bpm->setNextTextureAsCurrent();
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	object->setNextTextureAsCurrent();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTextureNext(const NaviData& naviData)
 {
 	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	bpm->setPreviousTextureAsCurrent();
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	object->setPreviousTextureAsCurrent();
 }
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::avatarUpdateTextures()
+void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-	
 	std::string texturePath, text;
 	String str;
 	TexturePtr texture; 
@@ -3611,10 +3759,10 @@ void NavigatorGUI::avatarUpdateTextures()
 
 	// update Navi interface
 	text = "textTabTextures = \"";
-	//if( bpm->isTextureModifiable() )
+	//if( pObject->isTextureModifiable() )
 	{
-		TextureVectorIterator tvIter = bpm->getTextureIterator();
-		do
+		TextureVectorIterator tvIter = pObject->getTextureIterator();
+		while( tvIter.hasMoreElements() )
 		{
 			texture = tvIter.getNext();
 			texturePath = texture->getName();
@@ -3630,12 +3778,28 @@ void NavigatorGUI::avatarUpdateTextures()
 			text += "<img src='./solTmpTexture/";
 			text += fileName;
 			text +=	"' width=128 height=128/>	";
-
-			image.load( texturePath, str);
-			image.resize( 128, 128 );
-			image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+	
+			vector<std::string> files;
+			SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
+			vector<std::string>::iterator iter = files.begin();
+			bool found = false;
+			while( iter != files.end() )
+			{
+				if( (*iter) ==  fileName )
+				{
+					found = true;
+					break;
+				}
+				iter++;
+			}
+			files.clear();
+			if( !found )
+			{
+				image.load( texturePath, str);
+				image.resize( 128, 128 );
+				image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+			}
 		}
-		while(tvIter.hasMoreElements());
 	}
 		
 	text += "\"";
@@ -3645,44 +3809,62 @@ void NavigatorGUI::avatarUpdateTextures()
 	_chdir(mNavigator->mAvatarEditor->mExecPath.c_str());
 }
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::avatarUpdateSliders(int posX, int posY, int posZ, int oriX, int oriY, int oriZ, int scaleX, int scaleY, int scaleZ)
+void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
-	//Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	
-	//std::string value;
 	char str[48];
-/*
+
+	navi->evaluateJS("posX.onchange = function() {}");
+	navi->evaluateJS("posY.onchange = function() {}");
+	navi->evaluateJS("posZ.onchange = function() {}");
+	navi->evaluateJS("oriX.onchange = function() {}");
+	navi->evaluateJS("oriY.onchange = function() {}");
+	navi->evaluateJS("oriZ.onchange = function() {}");
+	navi->evaluateJS("scaleX.onchange = function() {}");
+	navi->evaluateJS("scaleY.onchange = function() {}");
+	navi->evaluateJS("scaleZ.onchange = function() {}");
+
 	// position
-	sprintf(str, "posX.setValue(%f)", posX*1);
+	pos = pos * 100;
+	sprintf(str, "posX.setValue(%i)", (int)pos.x);
 	navi->evaluateJS(str);
-	sprintf(str, "posY.setValue(%f)", posY*1);
+	sprintf(str, "posY.setValue(%i)", (int)pos.y);
 	navi->evaluateJS(str);
-	sprintf(str, "posZ.setValue(%f)", posZ*1);
+	sprintf(str, "posZ.setValue(%i)", (int)pos.z);
 	navi->evaluateJS(str);
-/*
+
 	// orientation
-	if( oriX >= 0 && oriY >= 0 && oriZ >= 0 )
-	{
-		sprintf(str, "oriX.setValue(%f)", oriX);
-		navi->evaluateJS(str);
-		sprintf(str, "oriY.setValue(%f)", oriY);
-		navi->evaluateJS(str);
-		sprintf(str, "oriZ.setValue(%f)", oriZ);
-		navi->evaluateJS(str);
-	}
+	ori = ori * 100;
+	sprintf(str, "oriX.setValue(%i)", (int)ori.x);
+	navi->evaluateJS(str);					   
+	sprintf(str, "oriY.setValue(%i)", (int)ori.y);
+	navi->evaluateJS(str);					   
+	sprintf(str, "oriZ.setValue(%i)", (int)ori.z);
+	navi->evaluateJS(str);
 
 	// scale
-	sprintf(str, "scaleX.setValue(%f)", scaleX);
+	scale = scale * 100;
+	sprintf(str, "scaleX.setValue(%i)", (int)scale.x);
+	navi->evaluateJS(str);					   
+	sprintf(str, "scaleY.setValue(%i)", (int)scale.y);
+	navi->evaluateJS(str);					   
+	sprintf(str, "scaleZ.setValue(%i)", (int)scale.z);
 	navi->evaluateJS(str);
-	sprintf(str, "scaleY.setValue(%f)", scaleY);
-	navi->evaluateJS(str);
-	sprintf(str, "scaleZ.setValue(%f)", scaleZ);
-	navi->evaluateJS(str);
-*/
-	navi->evaluateJS("$('oriX').style.display='block'");
-	navi->evaluateJS("$('oriY').style.display='block'");
-	navi->evaluateJS("$('oriZ').style.display='block'");
+
+	navi->evaluateJS("posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()}");
+	navi->evaluateJS("posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()}");
+	navi->evaluateJS("posZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posZ'}).send()}");
+	navi->evaluateJS("oriX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriX'}).send()}");
+	navi->evaluateJS("oriY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriY'}).send()}");
+	navi->evaluateJS("oriZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriZ'}).send()}");
+	navi->evaluateJS("scaleX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleX'}).send()}");
+	navi->evaluateJS("scaleY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleY'}).send()}");
+	navi->evaluateJS("scaleZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleZ'}).send()}");
+
+	// display the orientation sliders
+	//navi->evaluateJS("$('oriX').style.display='block'");
+	//navi->evaluateJS("$('oriY').style.display='block'");
+	//navi->evaluateJS("$('oriZ').style.display='block'");
 }
 //-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
@@ -3753,16 +3935,80 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 	if (naviPanel == NAVI_AVATARMAIN)
 	{
 		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+		Avatar* user = mNavigator->getUserAvatar();
+
 		std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-		text += AvatarEditor::getSingletonPtr()->getName();
+		text += avatar->getName();
 		text += "</b></p>'";
 		navi->evaluateJS(text.data());
+
+		// Setup the avatar name list
+		navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + AvatarEditor::getSingletonPtr()->getName() + "'");
+		text = "";
+		vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
+		vector<std::string>::iterator iter = list->begin();
+		int id = 0;
+		while(iter!=list->end())
+		{
+			text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
+			text += (*iter).data();
+			text += "')>";
+			text += (*iter).data();
+			text += "</a></div>";
+			iter++;
+		}
+		navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
+
+		// Select the avatar from the user.xml // avatarName
+		char txt[6];
+		int nbItem = list->size();
+		if( nbItem < 7 )
+		{
+			sprintf(txt, "%ipx'", nbItem*16);
+			text = txt;
+			navi->evaluateJS("$('avatarSelectItem').style.height = '" + text);
+		}
+		list->clear();
 	}
 	else if (naviPanel == NAVI_AVATARPROP)
 	{
 		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+		Avatar* user = mNavigator->getUserAvatar();
+
+		// Setup the animation list
+		vector<std::string> list;
+		for(int i=0; i<avatar->getNumAnimations(); i++)
+			list.push_back( avatar->getEntity()->getSkeleton()->getAnimation( i )->getName() );
+		std::string text = avatar->getEntity()->getSkeleton()->getAnimation( avatar->getCurrentAnimation() )->getName();
+		navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
+		text = "";
+		vector<std::string>::iterator iter = list.begin();
+		int id = 0;
+		while(iter!=list.end())
+		{
+			text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
+			text += (*iter).data();
+			text += "')>";
+			text += (*iter).data();
+			text += "</a></div>";
+			iter++;
+		}
+		navi->evaluateJS("$('animationSelectItem').innerHTML = \"" + text + "\"");
+
 		avatarTabberLoad(1);
 		navi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
+
+		char txt[6];
+		int nbItem = list.size();
+		if( nbItem < 7 )
+		{
+			sprintf(txt, "%ipx'", nbItem*16);
+			text = txt;
+			navi->evaluateJS("$('animationSelectItem').style.height = '" + text);
+		}
+		list.clear();
 	}
     else if (naviPanel == NAVI_MODELERPROP)
         modelerTabberLoad(0);

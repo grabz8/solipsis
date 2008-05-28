@@ -57,7 +57,46 @@
         function sendMessageParam(message, sub, param)
         {
 			new NaviData(message).add({sub:param}).send();
-        }  
+        }
+        
+        // selector menus
+        function selectAnimation(value)
+        {
+            $('animationSelectItem').style.display='none';
+            $('animationSelectTitre').className = "titreMenu itemOut";
+            $('animationSelectTitre').innerHTML = ""+value;
+            new NaviData('AnimationSelected').add({item:value}).send();
+        }
+        function selectBone(value)
+        {
+            $('boneSelectItem').style.display='none';
+            $('boneSelectTitre').innerHTML = ""+value;
+            new NaviData('BoneSelected').add({item:value}).send();
+        }
+        function selectBodyPart(value)
+        {
+            $('bodyPartSelectItem').style.display='none';
+            $('bodyPartSelectTitre').innerHTML = ""+value;
+            new NaviData('BodyPartSelected').add({item:value}).send();
+        }
+        function selectBodyPartModel(value)
+        {
+            $('bodyPartModelSelectItem').style.display='none';
+            $('bodyPartModelSelectTitre').innerHTML = ""+value;
+            new NaviData('BodyPartModelSelected').add({item:value}).send();
+        }
+        function selectGoody(value)
+        {
+            $('goodySelectItem').style.display='none';
+            $('goodySelectTitre').innerHTML = ""+value;
+            new NaviData('GoodySelected').add({item:value}).send();
+        }
+        function selectGoodyModel(value)
+        {
+            $('goodyModelSelectItem').style.display='none';
+            $('goodyModelSelectTitre').innerHTML = ""+value;
+            new NaviData('GoodyModelSelected').add({item:value}).send();
+        }
     </script>
 
     <style type="text/css">
@@ -107,6 +146,42 @@
         	background-color: #ccc;
         	color: #ccc;
         }
+        #animationSelect 
+        {
+            position: absolute;
+        	left: 152px;
+        	top: 114px;
+        }
+        #boneSelect
+        {
+        	position: absolute;
+        	left: 170px;
+        	top: 105px;
+        }
+        #bodyPartSelect
+        {
+        	position: absolute;
+        	left: 170px;
+        	top: 151px;
+        }
+        #bodyPartModelSelect
+        {
+            position: absolute;
+            left: 170px;
+            top: 177px;	
+        }
+        #attachSelect
+        {
+        	position: absolute;
+        	left: 170px;
+        	top: 223px;
+        }
+        #attachModelSelect
+        {
+        	position: absolute;
+        	left: 170px;
+        	top: 249px;
+        }
         /* SLIDERS END */
     </style>
 </head>
@@ -118,18 +193,32 @@
                 <div class="tabbertab">
                     <h2>Animations</h2>
                     <p>
-                        <table align="center" width="240">
+                        <table align="center" width="260">
+                            <tr>
+                                <td></td>                            
+                                <td align="center" width="200">
+                                    <div id="AnimName">
+						                <p>Animation ?/?<br><b>???</b></p>
+						            </div>
+                                </td>
+                                <td></td>
+                            </tr>
 						    <tr>
 						        <td align="center">
 						            <input type="button" value=" < " style="width: 30px" onclick="elementClicked('AnimPrev')">
 						        </td>
-								<td align="center" width="176">
-								    <br>
-						            <div id="AnimName">
-						                <p>Animation ?/?<br><b>???</b></p>
-						            </div>
-						            <br>
-								</td>
+						        <td>
+<div class="menu" id="animationSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:180px">
+    <div class="titreMenu itemOut" id="animationSelectTitre" style="width:180px">Animation</div>
+    <div class="contenuMenu menuOverflow" id="animationSelectItem" style="width:180px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="selectAnimation('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>						        
+						        </td>
 								<td align="center">
 								    <input type="button" value=" > " style="width: 30px" onclick="elementClicked('AnimNext')">
 								</td>
@@ -137,27 +226,29 @@
 							
 				            <tr>
 				                <td align="center" colspan="3">
-						            <input type="button" value="Pause"  style="width: 100px" onclick="elementClicked('AnimPlayPause')" id="AnimPlayPause">
-						            <input type="button" value="Stop"  style="width: 100px" onclick="elementClicked('AnimStop')"><br>
+				                    <br /><br />
+						            <input type="button" value="Pause"  style="width: 125px" onclick="elementClicked('AnimPlayPause')" id="AnimPlayPause">
+						            <input type="button" value="Stop"  style="width: 125px" onclick="elementClicked('AnimStop')"><br>
 						            <br>
-						            <div class="slider" id="animTime" style="display: block; width: 220px">
+						            <div class="slider" id="animTime" style="display: block; width: 260px">
 										<input class="slider-input" id="animeTimeInput" />
 									</div>
 					            </td>
 				            </tr>
-                        </table>
+                        </table>                        
                     </p>
                 </div>
+                
                 <!-- PROPERTIES -->
                 <div class="tabbertab">
                     <h2>Properties</h2>
                     <p>
                         <table width="496">
                             <tr>
-                                <td width="20"></td>
-                                <td width="120"></td>
                                 <td width="30"></td>
-                                <td width="130"></td>
+                                <td width="90"></td>
+                                <td width="30"></td>
+                                <td width="150"></td>
                                 <td width="30"></td>
                                 <td width="40"></td>
                                 <td ></td>
@@ -166,7 +257,7 @@
                             <tr>
                                 <td colspan="2"><b>Height</b></td>
                                 <td colspan="4">
-                                    <div class="slider" id="height" style="width: 230px" >
+                                    <div class="slider" id="height" style="width: 260px" >
                                         <input class="slider-input" id="heightInput" />
                                     </div>
                                 </td>
@@ -182,7 +273,18 @@
                                 <td>
                                     <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BonePrev','','bone1')" />
                                 </td>
-                                <td align="center" id="BoneName">BoneName</td>
+                                <td align="center" id="BoneName">BoneName
+<div class="menu" id="boneSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
+    <div class="titreMenu itemOut" id="boneSelectTitre" style="width:140px">Bone</div>
+    <div class="contenuMenu menuOverflow" id="boneSelectItem" style="width:140px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>
+                                </td>
                                 <td>
                                     <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BoneNext','','bone1')" />
                                 </td>
@@ -196,27 +298,49 @@
                                 <td>
                                     <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartPrev','','body1')" />
                                 </td>
-                                <td align="center" id="BodyPartName">BodyPartName</td>
+                                <td align="center" id="BodyPartName">BodyPartName
+<div class="menu" id="bodyPartSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
+    <div class="titreMenu itemOut" id="bodyPartSelectTitre" style="width:140px">BodyPart</div>
+    <div class="contenuMenu menuOverflow" id="bodyPartSelectItem" style="width:140px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>
+                                </td>
                                 <td>
                                     <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartNext','','body1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled />
+                                    <input id="BodyPartAdd" type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled />
                                 </td>
                             </tr>
                             <tr>
                                 <td></td>
-                                <td id="BodyPartName2">BodyPartName</td>
+                                <td>Model</td>
                                 <td>
                                     <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartModelPrev','','body1')" />
                                 </td>
-                                <td align="center" id="BodyPartModelName">BodyPartModelName</td>
+                                <td align="center" id="BodyPartModelName">BodyPartModelName
+<div class="menu" id="bodyPartModelSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
+    <div class="titreMenu itemOut" id="bodyPartModelSelectTitre" style="width:140px">BodyPartModel</div>
+    <div class="contenuMenu menuOverflow" id="bodyPartModelSelectItem" style="width:140px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>
+                                </td>
                                 <td>
                                     <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartModelNext','','body1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input type="button" value="Edit" onclick="$('avatarTabbers').tabber.tabShow(2); sendMessageParam('BodyPartModelEdit','','body1')" />
-                                    <input type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','','body1')" disabled />
+                                    <input id="BodyPartEdit" type="button" value="Edit" onclick="sendMessageParam('BodyPartModelEdit','','body1'); updateTexture()" />
+                                    <input id="BodyPartRemove" type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','','body1')" disabled />
                                 </td>
                             </tr>
                         
@@ -228,27 +352,49 @@
                                 <td>
                                     <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachPrev','','attach1')" />
                                 </td>
-                                <td align="center" id="AttachName">AttachName</td>
+                                <td align="center" id="AttachName">AttachName
+<div class="menu" id="attachSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
+    <div class="titreMenu itemOut" id="attachSelectTitre" style="width:140px">Attachement</div>
+    <div class="contenuMenu menuOverflow" id="attachSelectItem" style="width:140px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>
+                                </td>
                                 <td>
                                     <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachNext','','attach1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input type="button" value="Add new" onclick="elementClicked('AttachAdd')" disabled />
+                                    <input id="AttachAdd" type="button" value="Add new" onclick="elementClicked('AttachAdd')" disabled />
                                 </td>
                             </tr>
                             <tr>
                                 <td></td>
-                                <td id="AttachName2">AttachName</td>
+                                <td>Model</td>
                                 <td>
                                     <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachModelPrev','','attach1')" />
                                 </td>
-                                <td align="center" id="AttachModelName">AttachModelName</td>
+                                <td align="center" id="AttachModelName">AttachModelName
+<div class="menu" id="attachModelSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
+    <div class="titreMenu itemOut" id="attachModelSelectTitre" style="width:140px">AttachementModel</div>
+    <div class="contenuMenu menuOverflow" id="attachModelSelectItem" style="width:140px">
+        <!--
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+        -->
+    </div>
+</div>
+                                </td>
                                 <td>
                                     <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachModelNext','','attach1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input type="button" value="Edit" onclick="sendMessageParam('AttachModelEdit','','attach1')" />
-                                    <input type="button" value="Remove" onclick="sendMessageParam('AttachModelRemove','','attach1')" disabled />
+                                    <input id="AttachEdit" type="button" value="Edit" onclick="sendMessageParam('AttachModelEdit','','attach1'); updateTexture()" />
+                                    <input id="AttachRemove" type="button" value="Remove" onclick="sendMessageParam('AttachModelRemove','','attach1')" disabled />
                                 </td>
                             </tr>
                             <tr><td colspan="7"><hr width="75%"/></td></tr>
@@ -256,8 +402,7 @@
                         <br /><br />
                         
                         <!-- MODIFIER SLIDERS -->
-                        <p id="selection"><b>Selection : </b>Bone / BodyPart / Goody ???</p>
-                        <table width="496">
+                        <table width="496" id="sliders">
                             <tr>
                                 <td width="30"></td>
                                 <td width="155" align="center">Position</td>
@@ -316,6 +461,12 @@
                                     <div class="slider" id="scaleZ">
                                         <input class="slider-input" id="scaleZInput" />
                                     </div>
+                                </td>
+                            </tr>
+                            <tr align="center">
+                                <td></td>
+                                <td colspan="3">
+                                    <input id="selectionReset" type="button" value="Reset" onclick="sendMessageParam('SelectionReset','','attach1')" style="width:160px" disabled />
                                 </td>
                             </tr>
                         </table>
@@ -444,7 +595,7 @@
                                     <input type="button" value="Add texture" onclick="elementClicked('AvatarAddTexture');updTexture()">
                                     <input type="button" value="Remove texture" onclick="elementClicked('AvatarRemoveTexture');updTexture()">
                                     <input type="button" value="Apply" onclick="elementClicked('AvatarApplyTexture')">
-                                    <td>
+                                </td>
                             </tr>
                             <tr valign="middle">
                                 <td colspan="4">
@@ -501,16 +652,16 @@
 					
 					// onchange / deformations
 					//taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
-					height.onchange = function() {elementClicked('AvatarHeight'); $('HeightValue').value=height.getValue()/100.+0.5+'m'}
-                    posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()}
-                    posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()}
-                    posZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posZ'}).send()}
-                    oriX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriX'}).send()}
-                    oriY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriY'}).send()}
-                    oriZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriZ'}).send()}
-                    scaleX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleX'}).send()}
-                    scaleY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleY'}).send()}
-                    scaleZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleZ'}).send()}
+					height.onchange = function() {elementClicked('AvatarHeight')};
+                    posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()};
+                    posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()};
+                    posZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posZ'}).send()};
+                    oriX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriX'}).send()};
+                    oriY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriY'}).send()};
+                    oriZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriZ'}).send()};
+                    scaleX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleX'}).send()};
+                    scaleY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleY'}).send()};
+                    scaleZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleZ'}).send()};
 					// onchange / material
 					shininess.onchange = function() {elementClicked('AvatarShininess')};
 					transparency.onchange = function() {elementClicked('AvatarTransparency')};

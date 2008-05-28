@@ -164,58 +164,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 	// is editing the avatar ?
 	else if (mNavigator->getState() == Navigator::SAvatarEdit && avatarEditor != 0)
 	{
-		/*
-		if (modeler->isOnGizmo())
-		{
-			switch (evt.mKey)
-			{
-			case KC_F9:
-				modeler->lockGizmo(false);
-				if (navigatorGUI != 0)
-					navigatorGUI->modelerMainUnload();
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_UP:
-			case KC_W:
-				if (mNavigator->isOnLeftCTRL)
-				{
-					//mNavigator->undo();
-					if( !modeler->isSelectionEmpty() )
-					modeler->getSelected()->undo();
-				}
-				else
-					mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_DOWN:
-			case KC_S:
-				mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_LEFT:
-			case KC_A:
-				mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_RIGHT:
-			case KC_D:
-				mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_PGUP:
-			case KC_E:
-				mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
-				return OgreFrameListener::keyPressed(evt);
-
-			case KC_PGDOWN:
-			case KC_C:
-				mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
-				return OgreFrameListener::keyPressed(evt);
-			}
-		}
-
-
-		*/
 		switch (evt.mKey)
 		{
 		case KC_F8:
@@ -230,8 +178,71 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 		}
 	}
 
+	Avatar* userAvatar = mNavigator->getUserAvatar();
+	if (userAvatar != 0)
+	{
+		switch (evt.mKey)
+		{
+		case KC_1: // Switch to 1st person camera
+			setCameraMode(CM1stPerson);
+			break;
+		case KC_2: // Switch to 1st person camera with mouse
+			setCameraMode(CM1stPersonWithMouse);
+			break;
+		case KC_3: // Switch to 3rd person camera
+			setCameraMode(CM3rdPerson);
+			break;
+		case KC_4: // Switch to TrunAround person camera
+			setCameraMode(CMAroundPerson);
+			break;
+
+		case KC_UP:
+		case KC_W:
+			if (mNavigator->isOnLeftCTRL)
+			{
+				//mNavigator->undo();
+				if( modeler )
+					if( !modeler->isSelectionEmpty() )
+						modeler->getSelected()->undo();
+			}
+			else
+				userAvatar->movementKeyPressed(KC_UP);
+			break;
+
+		case KC_DOWN:
+		case KC_S:
+			userAvatar->movementKeyPressed(KC_DOWN);
+			break;
+
+		case KC_LEFT:
+		case KC_A:
+			userAvatar->movementKeyPressed(KC_LEFT);
+			break;
+
+		case KC_RIGHT:
+		case KC_D:
+			userAvatar->movementKeyPressed(KC_RIGHT);
+			break;
+
+		case KC_PGUP:
+		case KC_E:
+			userAvatar->movementKeyPressed(KC_PGUP);
+			break;
+
+		case KC_PGDOWN:
+		case KC_C:
+			userAvatar->movementKeyPressed(KC_PGDOWN);
+			break;
+
+		case KC_END:
+			userAvatar->movementKeyPressed(KC_END);
+			break;
+		}
+	}
+
     // Updating Navi with the key pressed
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) 
+		return true;
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
@@ -288,68 +299,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         break;
     }
 
-    Avatar* userAvatar = mNavigator->getUserAvatar();
-    if (userAvatar != 0)
-    {
-        switch (evt.mKey)
-        {
-            case KC_1: // Switch to 1st person camera
-                setCameraMode(CM1stPerson);
-                break;
-            case KC_2: // Switch to 1st person camera with mouse
-                setCameraMode(CM1stPersonWithMouse);
-                break;
-            case KC_3: // Switch to 3rd person camera
-                setCameraMode(CM3rdPerson);
-                break;
-            case KC_4: // Switch to TrunAround person camera
-                setCameraMode(CMAroundPerson);
-                break;
-
-            case KC_UP:
-            case KC_W:
-                if (mNavigator->isOnLeftCTRL)
-                {
-                    //mNavigator->undo();
-                    if( modeler )
-                        if( !modeler->isSelectionEmpty() )
-                            modeler->getSelected()->undo();
-                }
-		        else
-			        mNavigator->getUserAvatar()->movementKeyPressed(KC_UP);
-                break;
-
-            case KC_DOWN:
-            case KC_S:
-                userAvatar->movementKeyPressed(KC_DOWN);
-                break;
-
-            case KC_LEFT:
-            case KC_A:
-                userAvatar->movementKeyPressed(KC_LEFT);
-                break;
-
-            case KC_RIGHT:
-            case KC_D:
-                userAvatar->movementKeyPressed(KC_RIGHT);
-                break;
-
-            case KC_PGUP:
-            case KC_E:
-                userAvatar->movementKeyPressed(KC_PGUP);
-                break;
-
-            case KC_PGDOWN:
-            case KC_C:
-                userAvatar->movementKeyPressed(KC_PGDOWN);
-                break;
-
-            case KC_END:
-                userAvatar->movementKeyPressed(KC_END);
-                break;
-        }
-    }
-
     return OgreFrameListener::keyPressed(evt);
 }
 
@@ -372,7 +321,8 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
     }
 
     // Updating Navi with the key released
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) return true;
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
+		return true;
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar != 0)
@@ -496,7 +446,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         return true;
     }
 
-    if (mNavigator->getState() != Navigator::SInWorld)
+	if (mNavigator->getState() != Navigator::SInWorld && mNavigator->getState() != Navigator::SAvatarEdit)
         return true;
 
     // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
@@ -730,6 +680,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     if (mCamera->getParentSceneNode() != 0)
         mCamera->getParentSceneNode()->detachObject(mCamera);
 
+	MouseEvt mouseEvt;
     switch (mode)
     {
     case CMDetached:
@@ -758,7 +709,8 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     }
 // GILLES begin
     //mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson, false);
-    mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson, false);
+    //mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson, false);
+	mNavigator->getUserAvatar()->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
     //mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson);
     mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();

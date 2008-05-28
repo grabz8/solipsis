@@ -150,6 +150,9 @@ public:
 	///param defaultBodyPartModelName Complete name of default BodyPartModel of the BodyPart, name which is displayed on the screen. It can be "None" and then by default the Bodypart has no BodyPartModel (it means it is not present).
 	void addBodyPart(String name, String defaultBodyPartModelSubEntityName, String defaultBodyPartModelName);
 
+	///brief Method which gives an Ogre::MapIterator on all the Bones of the Avatar.
+	///return An Ogre::MapIterator on all the Bones of the Avatar.
+	Skeleton::BoneIterator getBonesIterator();
 	///brief Get the current Bone name
 	///return The current Bone
 	Bone* getCurrentBone();
@@ -192,8 +195,6 @@ public:
 		const String& boneName,
 		const Vector3& minRotations, const Vector3& defaultRotations, const Vector3& maxRotations,
 		const Vector3& minPosition, const Vector3& defaultPosition, const Vector3& maxPosition); 
-
-
 
 private:
 	SceneManager* mSceneMgr;							///brief SceneManger of our scene.

@@ -19,7 +19,8 @@ AvatarEditor::AvatarEditor(std::string pPath, SceneManager* pSceneMgr) :
     mMeshFilename(""),
     mSkeletonFilename(""),
 	mNode(0),
-	mEntity(0)
+	mEntity(0),
+	selectType(-1)
 {
     ms_singletonPtr = this;
 	mAvatars = new CharacterManager(pPath, mSceneMgr);
@@ -94,10 +95,7 @@ void AvatarEditor::updateCurrent(Character* pAvatar)
 bool AvatarEditor::setCurrentByName(std::string pName)
 {
 	if(mCurrentName != pName)
-	{
-		Character* avatar = mAvatars->getByName(pName);
-		updateCurrent(avatar);
-	}
+		updateCurrent( mAvatars->getByName(pName) );
 
 	return true;
 }

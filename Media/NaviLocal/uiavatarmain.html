@@ -3,6 +3,10 @@
 	<head>
 		<title>uiavatarmain</title>
 		<script type="text/javascript" src="Navi.js"></script>
+		<!-- SELECTOR BEGIN -->
+        <link rel="stylesheet" href="selector/selector.css" type="text/css">
+        <script type="text/javascript" src="selector/selector.js"></script>
+        <!-- SELECTOR END -->
 		<script type="text/javascript">
             function pageLoaded()
             {
@@ -11,6 +15,12 @@
             function elementClicked(elementName)
             {
                 new NaviData(elementName).send();
+            }
+            function select(value)
+            {
+                $('avatarSelectItem').style.display='none';
+                $('avatarSelectTitre').innerHTML = ""+value;
+                new NaviData('AvatarSelected').add({item:value}).send();
             }
 		</script>
 		<style type="text/css"> 
@@ -42,13 +52,32 @@
 			input { 
 				width: 100px; 
 			}
+			#avatarSelect 
+			{
+				position:absolute;
+				left: 38px;
+				top: 220px;
+			}
 		</style>
 	</head>
 	<body onload="pageLoaded()">
 		<div id="container">
             <div id="containerMenu">
-			<table align="center" width="220">
 
+            <!--<div class="conteneurMenu">-->
+                <div class="menu" id="avatarSelect" onmouseout="fout(this)" onmouseover="fover(this)">
+                    <div class="titreMenu itemOut" id="avatarSelectTitre">???</div>
+                    <div class="contenuMenu menuOverflow" id="avatarSelectItem">
+                        <!--
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
+                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
+                        -->
+                    </div>
+                </div>
+            <!--</div>-->
+            
+			<table align="center" width="240">
 				<tr>
 					<td align="center">
 						<br>
@@ -61,14 +90,14 @@
 
 				<tr>
 				    <td align="center">
-				        <div style='height: 128px; width: 128px; overflow: auto' id="AvatarThumbnail"></div>
+				        <div style='height: 128px; width: 128px; overflow: auto; border-style: dotted' id="AvatarThumbnail"></div>
 				    </td>
 				</tr>
-
-				<tr >
+				<tr><td><br /><br /></td></tr>
+				<tr>
 					<td align="center">
-						<input type="button" value=" < " style='width: 32px' onclick="elementClicked('AvatarPrev')">
-						<input type="button" value=" > " style='width: 32px' onclick="elementClicked('AvatarNext')">
+						<input type="button" value=" < " style='width: 60px' onclick="elementClicked('AvatarPrev')">
+						<input type="button" value=" > " style='width: 60px' onclick="elementClicked('AvatarNext')">
 					</td>		    
 				</tr>
 

@@ -147,7 +147,7 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 	}
 	mSkeletonName = mesh->getSkeletonName();
 	
-	// generate the NATURE file if does not exist
+	// generate the NATURE file if it doesn't exist
 	if (!mZipArchive->isFilePresent(mName + "_edition.nature"))
 	{
 		if (mZipArchive->isFilePresent(mName + "_edition.conf"))
@@ -706,6 +706,51 @@ void Character::loadModified()
 	if (avatarElement == NULL) 
 		return;
 
+	//Parsing every Bone Element
+	Skeleton* skeleton = getEntity()->getSkeleton();
+	if( skeleton != NULL)
+	{
+		TiXmlElement* boneElement = avatarElement->FirstChildElement("Bone");
+		for(boneElement ; boneElement ; boneElement = boneElement->NextSiblingElement("Bone"))
+		{
+			//Checking Bone
+			const char* name = boneElement->Attribute("name");
+			if (name == NULL) 
+				break; //return;
+			String boneName(name);
+
+			if (skeleton->getBone(boneName) == NULL) 
+				break; //return;
+			Bone* bone = skeleton->getBone(boneName);
+
+			// enable modification on the bone properties
+			if( !bone->isManuallyControlled() ) 
+			{
+				bone->setManuallyControlled( true );
+				for(int i=0; i<skeleton->getNumAnimations(); i++ )
+					skeleton->getAnimation( i )->destroyNodeTrack( bone->getHandle() );
+			}
+
+			//Checking position
+			name = boneElement->Attribute("position");
+			if (name == NULL) 
+				break; //return;
+			bone->setPosition( StringConverter::parseVector3(String(name)) );
+
+			//Checking orientation 
+			name = boneElement->Attribute("orientation");
+			if (name == NULL) 
+				break; //return;
+			bone->setOrientation( StringConverter::parseQuaternion(String(name)) );
+
+			//Checking scale
+			name = boneElement->Attribute("scale");
+			if (name == NULL) 
+				break; //return;
+			bone->setScale( StringConverter::parseVector3(String(name)) );
+		}
+	}
+
 	//Parsing every BodyPart Element
 	TiXmlElement* bodyPartElement = avatarElement->FirstChildElement("BodyPart");
 	for(bodyPartElement ; bodyPartElement ; bodyPartElement = bodyPartElement->NextSiblingElement("BodyPart"))
@@ -717,30 +762,53 @@ void Character::loadModified()
 		String bodyPartName(pName);
 
 		if (getBodyPart(bodyPartName) == NULL) 
-			return;
+			break; //return;
 		BodyPart* bodyPart = getBodyPart(bodyPartName);
 
 		//Checking BodyPartModel
 		pName = bodyPartElement->Attribute("bodyPartModel");
 		if (pName == NULL) 
-			return;
+			break; //return;
 		String bodyPartModelName(pName);
 
 		if (bodyPartModelName != "None")
 		{
 			if (bodyPart->getBodyPartModel(bodyPartModelName) == NULL) 
-				return;
+				break; //return;
 			BodyPartModel* bodyPartModel = bodyPart->getBodyPartModel(bodyPartModelName);
 			bodyPart->setCurrentBodyPartModel(bodyPartModelName);
 
-			//Checking BodyPartModel Colour
-			pName = bodyPartElement->Attribute("colour");
-			if (pName != NULL)
+			if (bodyPartModel->isColourModifiable())
 			{
-				String stringColour(pName);
-				const ColourValue& bodyPartColour = StringConverter::parseColourValue(stringColour);
-				if (bodyPartModel->isColourModifiable())
-					bodyPartModel->setColour(bodyPartColour);
+				//Checking BodyPartModel Colour
+				pName = bodyPartElement->Attribute("colour");
+				if (pName != NULL)
+					bodyPartModel->setColour(StringConverter::parseColourValue(String(pName)));
+
+				//Checking BodyPartModel ColourAmbient
+				pName = bodyPartElement->Attribute("ambient");
+				if (pName != NULL)
+					bodyPartModel->setColourAmbient(StringConverter::parseColourValue(String(pName)));
+
+				//Checking BodyPartModel ColourDiffuse
+				pName = bodyPartElement->Attribute("diffuse");
+				if (pName != NULL)
+					bodyPartModel->setColourDiffuse(StringConverter::parseColourValue(String(pName)));
+
+				//Checking BodyPartModel ColourSpecular
+				pName = bodyPartElement->Attribute("specular");
+				if (pName != NULL)
+					bodyPartModel->setColourSpecular(StringConverter::parseColourValue(String(pName)));
+
+				//Checking BodyPartModel Shininess
+				pName = bodyPartElement->Attribute("shininess");
+				if (pName != NULL)
+					bodyPartModel->setShininess(StringConverter::parseInt(String(pName)));
+
+				//Checking BodyPartModel Transparency
+				pName = bodyPartElement->Attribute("alpha");
+				if (pName != NULL)
+					bodyPartModel->setTransparency(StringConverter::parseReal(String(pName)));
 			}
 
 			//Checking BodyPartModel textures
@@ -760,15 +828,15 @@ void Character::loadModified()
 		{
 			pName = coupleOfPosesElement->Attribute("name");
 			if (pName == NULL) 
-				return;
+				break; //return;
 			String coupleOfPosesName(pName);
 			if (bodyPart->getCoupleOfPoses(coupleOfPosesName) == NULL) 
-				return;
+				break; //return;
 			CoupleOfPoses* coupleOfPoses = bodyPart->getCoupleOfPoses(coupleOfPosesName);
 
 			pName = coupleOfPosesElement->Attribute("position"); 
 			if (pName == NULL) 
-				return;
+				break; //return;
 			float position = StringConverter::parseReal(String(pName));
 
 			coupleOfPoses->setPosition(position);
@@ -784,23 +852,23 @@ void Character::loadModified()
 		//Checking BodyPart
 		const char* name = goodyElement->Attribute("name");
 		if (name == NULL) 
-			return;
+			break; //return;
 		String goodyName(name);
 
 		if (getGoody(goodyName) == NULL) 
-			return;
+			break; //return;
 		Goody* goody = getGoody(goodyName);
 
 		//Checking GoodyModel
 		name = goodyElement->Attribute("goodyModel");
 		if (name == NULL) 
-			return;
+			break; //return;
 		String goodyModelName(name);
 
 		if (goodyModelName != "None")
 		{
 			if (goody->getGoodyModel(goodyModelName) == NULL) 
-				return;
+				break; //return;
 			GoodyModel* goodyModel = goody->getGoodyModel(goodyModelName);
 			goody->setCurrentGoodyModel(goodyModelName);
 
@@ -825,13 +893,37 @@ void Character::loadModified()
 			}
 
 			//Checking GoodyModel Colour
-			name = goodyElement->Attribute("colour");
-			if (name != NULL)
+			if (goodyModel->isColourModifiable())
 			{
-				String stringColour(name);
-				const ColourValue& goodyColour = StringConverter::parseColourValue(stringColour);
-				if (goodyModel->isColourModifiable())
-					goodyModel->setColour(goodyColour);
+				//Checking GoodyModel Colour
+				name = goodyElement->Attribute("colour");
+				if (name != NULL)
+					goodyModel->setColour(StringConverter::parseColourValue(String(name)));
+
+				//Checking GoodyModel ColourAmbient
+				name = goodyElement->Attribute("ambient");
+				if (name != NULL)
+					goodyModel->setColourAmbient(StringConverter::parseColourValue(String(name)));
+
+				//Checking GoodyModel ColourDiffuse
+				name = goodyElement->Attribute("diffuse");
+				if (name != NULL)
+					goodyModel->setColourDiffuse(StringConverter::parseColourValue(String(name)));
+
+				//Checking GoodyModel ColourSpecular
+				name = goodyElement->Attribute("specular");
+				if (name != NULL)
+					goodyModel->setColourSpecular(StringConverter::parseColourValue(String(name)));
+
+				//Checking GoodyModel Shininess
+				name = goodyElement->Attribute("shininess");
+				if (name != NULL)
+					goodyModel->setShininess(StringConverter::parseInt(String(name)));
+
+				//Checking GoodyModel Transparency
+				name = goodyElement->Attribute("alpha");
+				if (name != NULL)
+					goodyModel->setTransparency(StringConverter::parseReal(String(name)));
 			}
 
 			//Checking GoodyModel textures
@@ -853,6 +945,33 @@ void Character::saveModified()
 	TiXmlElement avatarElement("Avatar");
 	avatarElement.SetAttribute("name",mName.c_str());
 
+	//Creating Bones
+	Skeleton* skeleton = getEntity()->getSkeleton();
+	if( skeleton != NULL)
+	{
+		Skeleton::BoneIterator boneIterator = skeleton->getBoneIterator();
+		while(boneIterator.hasMoreElements())
+		{
+			//Updating Bone
+			Bone* bone = boneIterator.getNext();
+
+			// enable modification on the bone properties
+			if( bone->isManuallyControlled() ) 
+			{
+				TiXmlElement boneElement("Bone");
+				boneElement.SetAttribute("name",bone->getName().c_str());
+				// position
+				boneElement.SetAttribute("position",StringConverter::toString(bone->getPosition()).c_str());
+				// orientation
+				boneElement.SetAttribute("orientation",StringConverter::toString(bone->getOrientation()).c_str());
+				// scale
+				boneElement.SetAttribute("scale",StringConverter::toString(bone->getScale()).c_str());
+
+				avatarElement.InsertEndChild(boneElement);
+			}
+		}
+	}
+
 	//Creating BodyParts
 	BodyPartsIterator bodyPartsIterator = getBodyPartsIterator();
 	while(bodyPartsIterator.hasMoreElements())
@@ -866,8 +985,18 @@ void Character::saveModified()
 		{
 			BodyPartModel* bodyPartModel = bodyPart->getCurrentBodyPartModel();
 
-            if (bodyPartModel->isColourModifiable()) bodyPartElement.SetAttribute("colour",StringConverter::toString(bodyPartModel->getColour()).c_str());
-			if (bodyPartModel->isTextureModifiable()) bodyPartElement.SetAttribute("texture",bodyPartModel->getCurrentTexture()->getName().c_str());
+            if (bodyPartModel->isColourModifiable()) 
+			{
+				bodyPartElement.SetAttribute("colour",StringConverter::toString(bodyPartModel->getColour()).c_str());
+				//
+				bodyPartElement.SetAttribute("ambient",StringConverter::toString(bodyPartModel->getColourAmbient()).c_str());
+				bodyPartElement.SetAttribute("diffuse",StringConverter::toString(bodyPartModel->getColourDiffuse()).c_str());
+				bodyPartElement.SetAttribute("specular",StringConverter::toString(bodyPartModel->getColourSpecular()).c_str());
+				bodyPartElement.SetAttribute("shininess",StringConverter::toString(bodyPartModel->getShininess()).c_str());
+				bodyPartElement.SetAttribute("alpha",StringConverter::toString(bodyPartModel->getTransparency()).c_str());
+			}
+			if (bodyPartModel->isTextureModifiable()) 
+				bodyPartElement.SetAttribute("texture",bodyPartModel->getCurrentTexture()->getName().c_str());
 		}
 
 		//Creating couples of poses for the BodyPart
@@ -900,8 +1029,18 @@ void Character::saveModified()
 			goodyElement.SetAttribute("positionScrollPositions",StringConverter::toString(Vector3(goody->getCurrentXScrollPosition(),goody->getCurrentYScrollPosition(),goody->getCurrentZScrollPosition())).c_str());
 			goodyElement.SetAttribute("rotationsScrollPositions",StringConverter::toString(Vector3(goody->getCurrentYawAngleScrollPosition(),goody->getCurrentPitchAngleScrollPosition(),goody->getCurrentRollAngleScrollPosition())).c_str());
 
-			if (goodyModel->isColourModifiable()) goodyElement.SetAttribute("colour",StringConverter::toString(goodyModel->getColour()).c_str());
-			if (goodyModel->isTextureModifiable()) goodyElement.SetAttribute("texture",goodyModel->getCurrentTexture()->getName().c_str());
+			if (goodyModel->isColourModifiable()) 
+			{
+				goodyElement.SetAttribute("colour",StringConverter::toString(goodyModel->getColour()).c_str());
+				//
+				goodyElement.SetAttribute("ambient",StringConverter::toString(goodyModel->getColourAmbient()).c_str());
+				goodyElement.SetAttribute("diffuse",StringConverter::toString(goodyModel->getColourDiffuse()).c_str());
+				goodyElement.SetAttribute("specular",StringConverter::toString(goodyModel->getColourSpecular()).c_str());
+				goodyElement.SetAttribute("shininess",StringConverter::toString(goodyModel->getShininess()).c_str());
+				goodyElement.SetAttribute("alpha",StringConverter::toString(goodyModel->getTransparency()).c_str());
+			}
+			if (goodyModel->isTextureModifiable()) 
+				goodyElement.SetAttribute("texture",goodyModel->getCurrentTexture()->getName().c_str());
 		}
 
 		avatarElement.InsertEndChild(goodyElement);
@@ -951,6 +1090,8 @@ void Character::saveModified()
 	}
 
 	//Adding every Goody
+if(0)
+{
 	goodiesIterator = getGoodiesIterator();
 	while(goodiesIterator.hasMoreElements())
 	{
@@ -959,7 +1100,13 @@ void Character::saveModified()
 		{
 			for(unsigned int idxSubEntity=0 ; idxSubEntity < goody->getCurrentGoodyModel()->getEntity()->getNumSubEntities() ; idxSubEntity++)
 			{
-				addSubMesh(mesh,goody->getBoneName(),goody->getCurrentGoodyModel()->getEntity()->getSubEntity(idxSubEntity)->getSubMesh(),goody->getName()+StringConverter::toString(idxSubEntity),goody->getCurrentPosition(),goody->getCurrentOrientation());
+				addSubMesh(
+					mesh,
+					goody->getBoneName(),
+					goody->getCurrentGoodyModel()->getEntity()->getSubEntity(idxSubEntity)->getSubMesh(),
+					goody->getName()+StringConverter::toString(idxSubEntity),
+					goody->getCurrentPosition(),
+					goody->getCurrentOrientation());
 			}
 		}
 	}
@@ -1034,7 +1181,7 @@ void Character::saveModified()
 			delete[] vertexBufferData;
 		}
 	}
-
+}
 	
 	//Saving mesh and materials to the zip archive.
 	MeshSerializer meshSerializer;
@@ -1367,6 +1514,16 @@ BodyPart* Character::setPreviousBodyPartAsCurrent()
 }
 
 //---------------------------------------------------------------------------------
+Skeleton::BoneIterator Character::getBonesIterator()
+{
+	Skeleton* skeleton = getEntity()->getSkeleton();
+	if( skeleton != NULL )
+		return skeleton->getBoneIterator();
+
+	//Skeleton::BoneIterator( 0 );
+	return skeleton->getBoneIterator();;
+}
+//---------------------------------------------------------------------------------
 Bone* Character::getCurrentBone()
 {
 	return getEntity()->getSkeleton()->getBone( mBone );;
@@ -1480,7 +1637,6 @@ void Character::addGoody(String name,
 		minPosition, defaultPosition, maxPosition,
 		this);
 }
-//---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------

@@ -7,7 +7,10 @@
 #include "OgreExternalTextureSourceManager.h"
 #include "Modeler.h"
 #include "AvatarEditor.h"
+#include "CharacterManager.h"
+#include "Character.h"
 #include "VoiceEngineManager.h"
+
 
 using namespace Solipsis;
 
@@ -1675,10 +1678,16 @@ bool Navigator::avatarXMLLoad()
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSave()
 {
+	if( mAvatarEditor )
+		mAvatarEditor->getManager()->getCurrent()->saveModified();
+
     return true;
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSaveAs()
 {
+	if( mAvatarEditor )
+	{}
+
     return true;
 }

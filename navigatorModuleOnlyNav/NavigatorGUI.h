@@ -3,6 +3,7 @@
 
 #include "NaviManager.h"
 #include "Modeler.h"
+#include "ModifiableMaterialObject.h"
 
 using namespace NaviLibrary;
 
@@ -99,6 +100,7 @@ protected:
     // Handlers
     // Login/Options/InWorld callbacks
     void loginPageLoaded(const NaviData& naviData);
+	void loginSelectAvatar(const NaviData& naviData);
     void connect(const NaviData& naviData);
     void options(const NaviData& naviData);
     void optionsPageLoaded(const NaviData& naviData);
@@ -106,7 +108,6 @@ protected:
     void optionsOk(const NaviData& naviData);
     void optionsBack(const NaviData& naviData);
     void chatPageLoaded(const NaviData& naviData);
-	void selectAvatar(const NaviData& naviData);
 
     // Modeler page callbacks
     void modelerMainFileOpen(const NaviData& naviData);
@@ -231,6 +232,7 @@ protected:
 	void avatarPropAttMEdit(const NaviData& naviData);
 	void avatarPropAttMRemove(const NaviData& naviData);
 	void avatarPropSliders(const NaviData& naviData);		// multi callback !
+	void avatarPropReset(const NaviData& naviData);
 	// Avatar material page callbacks
 	void avatarColorAmbient(const NaviData& naviData);
 	void avatarColorDiffuse(const NaviData& naviData);
@@ -271,9 +273,9 @@ protected:
     // Update the list of loaded textures
     void modelerUpdateTextures();
 	// Update the list of loaded textures
-    void avatarUpdateTextures();
+	void avatarUpdateTextures(ModifiableMaterialObject* pObject);
 	// Update the sliders modifiers
-	void avatarUpdateSliders(int posX, int posY, int posZ, int oriX, int oriY, int oriZ, int scaleX, int scaleY, int scaleZ);
+	void avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale);
 
 	// Time of the last click on a specific action
 	double lastTime;

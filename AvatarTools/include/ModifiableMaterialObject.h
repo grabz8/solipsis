@@ -46,13 +46,48 @@ public:
 	///brief Method which return the colour of the object.
 	///return colour of the object.
 	const ColourValue& getColour();
-
 	///brief Method which set the colour of the object.
 	///param colour Colour to apply to the object.
 	void setColour(const ColourValue& colour);
 
+	///brief Method which return the ambient colour of the object.
+	///return ambient colour of the object.
+	const ColourValue& getColourAmbient();
+	///brief Method which set the ambient colour of the object.
+	///param colour Ambient colour to apply to the object.
+	void setColourAmbient(const ColourValue& colour);
+
+	///brief Method which return the diffuse colour of the object.
+	///return diffuse colour of the object.
+	const ColourValue& getColourDiffuse();
+	///brief Method which set the diffuse colour of the object.
+	///param colour Diffuse colour to apply to the object.
+	void setColourDiffuse(const ColourValue& colour);
+
+	///brief Method which return the specular colour of the object.
+	///return specular colour of the object.
+	const ColourValue& getColourSpecular();
+	///brief Method which set the specular colour of the object.
+	///param colour specular colour to apply to the object.
+	void setColourSpecular(const ColourValue& colour);
+
+	///brief Method which return the shininess of the object.
+	///return shininess of the object.
+	const float getShininess();
+	///brief Method which set the shininess of the object.
+	///param shininess Shininess to apply to the object.
+	void setShininess(const float shininess);
+
+	///brief Method which return the opacity of the object.
+	///return opacity of the object.
+	const float getTransparency();
+	///brief Method which set the opacity of the object.
+	///param opacity Opacity to apply to the object.
+	void setTransparency(const float opacity);
+
 	///brief Method which reset the colour of the object, i. e. the colour is set to RGBA = 0.5 0.5 0.5 1
 	void resetColour();
+
 
 
 
