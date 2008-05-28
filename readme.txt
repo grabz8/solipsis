@@ -44,6 +44,7 @@ END      Activate gravity
 
 Debug commands:
 F1 .. F4 SkyDome choice
+F8       Toggle AVATAR main panel
 F9       Toggle MODELER main panel
 F10      Toggle physics contacts display (if supported by the physics plugin) (NavDemo only)
 F11      Toggle physics geometries display (if supported by the physics plugin) (NavDemo only)
