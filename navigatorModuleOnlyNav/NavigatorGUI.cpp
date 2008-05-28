@@ -647,7 +647,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("height.onchange = function() {}");
 				//Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
 				Vector3 size = avatar->getMesh()->getBounds().getSize();
-				navi->evaluateJS("height.setValue(" + StringConverter::toString((size.y - 0.5) * 100) + ")");
+				navi->evaluateJS("height.setValue(" + StringConverter::toString(int(size.y*100 - 50)) + ")");
 				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
 				navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
 
