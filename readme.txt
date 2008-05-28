@@ -153,6 +153,9 @@ If you are using Ageia PhysX:
  Download SDK : PhysX_2.7.2_SDK_Core.exe
  Define your PHYSX_DIR env. var.
  Run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
+Last compilation performed with:
+ PhysX_7.11.13_SystemSoftware.exe
+ PhysX_2.7.3_SDK_Core.exe
 
 To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
