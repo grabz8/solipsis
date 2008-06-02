@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uictxtwww</title>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            var ctxtNaviNameParam;
+            function pageLoaded()
+            {
+                ctxtNaviNameParam = $PND.get('ctxtNaviName');
+                $ND('pageLoaded').add({naviName:'uictxtwww'}).add({ctxtNaviName:ctxtNaviNameParam}).send();
+            }
+            function navCommand(command)
+            {
+                $ND('navCommand').add({ctxtNaviName:ctxtNaviNameParam}).add({cmd:command}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #000000;
+	            color: #FFFFFF;
+	            overflow: hidden;
+            }
+            #container
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 48px;
+                background-color: #D8DBE0;
+            }
+            .mozFFIcon
+            {
+                position: absolute;
+	            left: 1px;
+	            top: 23px;
+                width: 24px;
+                height: 24px;
+                background-image: url(mozfficon.png);
+            }
+            .mozToolbarIcons
+            {
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(moztoolbar.png);
+                background-repeat: no-repeat;
+                position: relative;
+	            top: 23px;
+                float: left;
+            }
+            .mozToolbarBackInactive { background-position: 0px -48px; }
+            .mozToolbarBackActive { background-position: 0px 0px; }
+            .mozToolbarBackActive:hover { background-position: 0px -96px; }
+            .mozToolbarFwdInactive { background-position: -24px -48px; }
+            .mozToolbarFwdActive { background-position: -24px -0px; }
+            .mozToolbarFwdActive:hover { background-position: -24px -96px; }
+            .mozToolbarStopInactive { background-position: -48px -48px; }
+            .mozToolbarStopActive { background-position: -48px -0px; }
+            .mozToolbarStopActive:hover { background-position: -48px -96px; }
+            .mozToolbarRefreshInactive { background-position: -72px -48px; }
+            .mozToolbarRefreshActive { background-position: -72px -0px; }
+            .mozToolbarRefreshActive:hover { background-position: -72px -96px; }
+            .mozToolbarHomeInactive { background-position: -96px -48px; }
+            .mozToolbarHomeActive { background-position: -96px -0px; }
+            .mozToolbarHomeActive:hover { background-position: -96px -96px; }
+            #urlInput
+            {
+	            position: absolute;
+	            left: 1px;
+	            top: 0px;
+            }
+            .inputText
+            {
+                background-color: #000000;
+                color: #FFFFFF;
+            }
+            .inputText:hover
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <form id="urlForm" action="" onsubmit="navCommand('go');return false;">
+                <div id="urlInput">
+                    <input id="inputUrl" class="inputText" name="inputUrl" value="http://www.solipsis.org" type="text" size="38"/>
+                </div>
+            </form>
+            <span id="mFFIcon" class="mozFFIcon"></span>
+            <span id="mTbIconBack" class="mozToolbarIcons mozToolbarBackInactive" style="left:40px;" onclick="navCommand('back')"></span>
+            <span id="mTbIconFwd" class="mozToolbarIcons mozToolbarFwdInactive" style="left:64px;" onclick="navCommand('fwd')"></span>
+            <span id="mTbIconRefresh" class="mozToolbarIcons mozToolbarRefreshActive" style="left:88px;" onclick="navCommand('refresh')"></span>
+            <span id="mTbIconStop" class="mozToolbarIcons mozToolbarStopActive" style="left:112px;" onclick="navCommand('stop')"></span>
+            <span id="mTbIconHome" class="mozToolbarIcons mozToolbarHomeActive" style="left:136px;" onclick="navCommand('home')"></span>
+        </div>
+    </body>
+</html>

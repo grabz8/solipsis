@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uictxtvlc</title>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            var ctxtVLCNameParam;
+            function pageLoaded()
+            {
+                ctxtVLCNameParam = $PND.get('ctxtVLCName');
+                $ND('pageLoaded').add({naviName:'uictxtvlc'}).add({ctxtVLCName:ctxtVLCNameParam}).send();
+            }
+            function vlcCommand(command)
+            {
+                $ND('vlcCommand').add({ctxtVLCName:ctxtVLCNameParam}).add({cmd:command}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #000000;
+	            color: #FFFFFF;
+	            overflow: hidden;
+            }
+            #container
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 64px;
+                background-color: #D8DBE0;
+            }
+            .VLCIcon
+            {
+                position: absolute;
+	            left: 4px;
+	            top: 25px;
+                width: 30px;
+                height: 34px;
+                background-image: url(vlcicon.png);
+            }
+            .vlcToolbarIcons
+            {
+                background-image: url(vlctoolbar.png);
+                background-repeat: no-repeat;
+                position: relative;
+	            top: 26px;
+                left: 40px;
+                float: left;
+            }
+            .vlcToolbarPlayPause { width: 41px; height: 34px; background-position: 0px 0px; }
+            .vlcToolbarPlayPause:hover { background-position: 0px -34px; }
+            .vlcToolbarStop { width: 41px; height: 34px; background-position: -41px 0px; }
+            .vlcToolbarStop:hover { background-position: -41px -34px; }
+            .vlcToolbarPrev { width: 44px; height: 34px; background-position: -82px 0px; }
+            .vlcToolbarPrev:hover { background-position: -82px -34px; }
+            .vlcToolbarNext { width: 44px; height: 34px; background-position: -126px 0px; }
+            .vlcToolbarNext:hover { background-position: -126px -34px; }
+            .vlcToolbarVolume { width: 40px; height: 34px; background-position: -173px 0px; }
+            .vlcToolbarVolume:hover { background-position: -173px -34px; }
+            .vlcToolbarVolumeOff { width: 40px; height: 34px; background-position: -213px 0px; }
+            #mrlInput
+            {
+	            position: absolute;
+	            left: 1px;
+	            top: 0px;
+            }
+            .inputText
+            {
+                background-color: #000000;
+                color: #FFFFFF;
+            }
+            .inputText:hover
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <form id="mrlForm" action="" onsubmit="vlcCommand('setmrl');return false;">
+                <div id="mrlInput">
+                    <input id="inputMrl" class="inputText" name="inputMrl" value="" type="text" size="38"/>
+                </div>
+            </form>
+            <span id="mVLCIcon" class="VLCIcon"></span>
+            <span id="mTbIconPlayPause" class="vlcToolbarIcons vlcToolbarPlayPause" onclick="vlcCommand('playpause')"></span>
+            <span id="mTbIconStop" class="vlcToolbarIcons vlcToolbarStop" onclick="vlcCommand('stop')"></span>
+            <span id="mTbIconPrev" class="vlcToolbarIcons vlcToolbarPrev" onclick="vlcCommand('prev')"></span>
+            <span id="mTbIconNext" class="vlcToolbarIcons vlcToolbarNext" onclick="vlcCommand('next')"></span>
+            <span id="mTbIconVolume" class="vlcToolbarIcons vlcToolbarVolume" onclick="vlcCommand('mute')"></span>
+        </div>
+    </body>
+</html>
