@@ -6,8 +6,6 @@
 
 [Navigator]
 
-- VNCPlugin : kbd events OK but kbd mapping is strange azerty vs qwerty (virtual keys to debug)
-
 - VNCPlugin : try to use our zlib123 instead of zlib114, to use pthread instead of omnithread, then add plugins
   solutions into the global navigator solution (VNCPlugin, VLCPlugin, voiceEngine)
 

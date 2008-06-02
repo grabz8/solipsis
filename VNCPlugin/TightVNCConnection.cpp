@@ -16,167 +16,6 @@ PBITMAPINFO CreateBitmapInfo(HBITMAP hBmp);
 static const float VNC_TEXTURE_UPDATE_DELAY = 0.5;
 int TightVNCConnection::mTexIDCounter = 0;
 
-// GREG BEGIN
-// ==============================
-// key map Solipsis::KeyCode to PC
-// ==============================
-static int sKeyMapKeyCode2PC[0xFF];
-void initKeyMapKeyCode2PC()
-{
-    int i;
-
-    /* Map the KC keysyms */
-    for ( i=0; i<0xFF; ++i )
-        sKeyMapKeyCode2PC[i] = 0;
-
-    sKeyMapKeyCode2PC[Solipsis::KC_UNASSIGNED]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_ESCAPE]      = VK_ESCAPE;
-    sKeyMapKeyCode2PC[Solipsis::KC_1]           = '1';
-    sKeyMapKeyCode2PC[Solipsis::KC_2]           = '2';
-    sKeyMapKeyCode2PC[Solipsis::KC_3]           = '3';
-    sKeyMapKeyCode2PC[Solipsis::KC_4]           = '4';
-    sKeyMapKeyCode2PC[Solipsis::KC_5]           = '5';
-    sKeyMapKeyCode2PC[Solipsis::KC_6]           = '6';
-    sKeyMapKeyCode2PC[Solipsis::KC_7]           = '7';
-    sKeyMapKeyCode2PC[Solipsis::KC_8]           = '8';
-    sKeyMapKeyCode2PC[Solipsis::KC_9]           = '9';
-    sKeyMapKeyCode2PC[Solipsis::KC_0]           = '0';
-    sKeyMapKeyCode2PC[Solipsis::KC_MINUS]       = VK_OEM_MINUS;
-    sKeyMapKeyCode2PC[Solipsis::KC_EQUALS]      = VK_OEM_NEC_EQUAL;
-    sKeyMapKeyCode2PC[Solipsis::KC_BACK]        = VK_BACK;
-    sKeyMapKeyCode2PC[Solipsis::KC_TAB]         = VK_TAB;
-    sKeyMapKeyCode2PC[Solipsis::KC_Q]           = 'Q';
-    sKeyMapKeyCode2PC[Solipsis::KC_W]           = 'W';
-    sKeyMapKeyCode2PC[Solipsis::KC_E]           = 'E';
-    sKeyMapKeyCode2PC[Solipsis::KC_R]           = 'R';
-    sKeyMapKeyCode2PC[Solipsis::KC_T]           = 'T';
-    sKeyMapKeyCode2PC[Solipsis::KC_Y]           = 'Y';
-    sKeyMapKeyCode2PC[Solipsis::KC_U]           = 'U';
-    sKeyMapKeyCode2PC[Solipsis::KC_I]           = 'I';
-    sKeyMapKeyCode2PC[Solipsis::KC_O]           = 'O';
-    sKeyMapKeyCode2PC[Solipsis::KC_P]           = 'P';
-    sKeyMapKeyCode2PC[Solipsis::KC_LBRACKET]    = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_RBRACKET]    = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_RETURN]      = VK_RETURN;
-    sKeyMapKeyCode2PC[Solipsis::KC_LCONTROL]    = VK_LCONTROL;
-    sKeyMapKeyCode2PC[Solipsis::KC_A]           = 'A';
-    sKeyMapKeyCode2PC[Solipsis::KC_S]           = 'S';
-    sKeyMapKeyCode2PC[Solipsis::KC_D]           = 'D';
-    sKeyMapKeyCode2PC[Solipsis::KC_F]           = 'F';
-    sKeyMapKeyCode2PC[Solipsis::KC_G]           = 'G';
-    sKeyMapKeyCode2PC[Solipsis::KC_H]           = 'H';
-    sKeyMapKeyCode2PC[Solipsis::KC_J]           = 'J';
-    sKeyMapKeyCode2PC[Solipsis::KC_K]           = 'K';
-    sKeyMapKeyCode2PC[Solipsis::KC_L]           = 'L';
-    sKeyMapKeyCode2PC[Solipsis::KC_SEMICOLON]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_APOSTROPHE]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_GRAVE]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_LSHIFT]      = VK_LSHIFT;
-    sKeyMapKeyCode2PC[Solipsis::KC_BACKSLASH]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_Z]           = 'Z';
-    sKeyMapKeyCode2PC[Solipsis::KC_X]           = 'X';
-    sKeyMapKeyCode2PC[Solipsis::KC_C]           = 'C';
-    sKeyMapKeyCode2PC[Solipsis::KC_V]           = 'V';
-    sKeyMapKeyCode2PC[Solipsis::KC_B]           = 'B';
-    sKeyMapKeyCode2PC[Solipsis::KC_N]           = 'N';
-    sKeyMapKeyCode2PC[Solipsis::KC_M]           = 'M';
-    sKeyMapKeyCode2PC[Solipsis::KC_COMMA]       = VK_DECIMAL;
-    sKeyMapKeyCode2PC[Solipsis::KC_PERIOD]      = VK_DIVIDE;
-    sKeyMapKeyCode2PC[Solipsis::KC_SLASH]       = VK_SEPARATOR;
-    sKeyMapKeyCode2PC[Solipsis::KC_RSHIFT]      = VK_RSHIFT;
-    sKeyMapKeyCode2PC[Solipsis::KC_MULTIPLY]    = VK_MULTIPLY;
-    sKeyMapKeyCode2PC[Solipsis::KC_LMENU]       = VK_LMENU;
-    sKeyMapKeyCode2PC[Solipsis::KC_SPACE]       = VK_SPACE;
-    sKeyMapKeyCode2PC[Solipsis::KC_CAPITAL]     = VK_CAPITAL;
-    sKeyMapKeyCode2PC[Solipsis::KC_F1]          = VK_F1;
-    sKeyMapKeyCode2PC[Solipsis::KC_F2]          = VK_F2;
-    sKeyMapKeyCode2PC[Solipsis::KC_F3]          = VK_F3;
-    sKeyMapKeyCode2PC[Solipsis::KC_F4]          = VK_F4;
-    sKeyMapKeyCode2PC[Solipsis::KC_F5]          = VK_F5;
-    sKeyMapKeyCode2PC[Solipsis::KC_F6]          = VK_F6;
-    sKeyMapKeyCode2PC[Solipsis::KC_F7]          = VK_F7;
-    sKeyMapKeyCode2PC[Solipsis::KC_F8]          = VK_F8;
-    sKeyMapKeyCode2PC[Solipsis::KC_F9]          = VK_F9;
-    sKeyMapKeyCode2PC[Solipsis::KC_F10]         = VK_F10;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMLOCK]     = VK_NUMLOCK;
-    sKeyMapKeyCode2PC[Solipsis::KC_SCROLL]      = VK_SCROLL;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD7]     = VK_NUMPAD7;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD8]     = VK_NUMPAD8;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD9]     = VK_NUMPAD9;
-    sKeyMapKeyCode2PC[Solipsis::KC_SUBTRACT]    = VK_SUBTRACT;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD4]     = VK_NUMPAD4;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD5]     = VK_NUMPAD5;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD6]     = VK_NUMPAD6;
-    sKeyMapKeyCode2PC[Solipsis::KC_ADD]         = VK_ADD;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD1]     = VK_NUMPAD1;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD2]     = VK_NUMPAD2;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD3]     = VK_NUMPAD3;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPAD0]     = VK_NUMPAD0;
-    sKeyMapKeyCode2PC[Solipsis::KC_DECIMAL]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_OEM_102]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_F11]         = VK_F11;
-    sKeyMapKeyCode2PC[Solipsis::KC_F12]         = VK_F12;
-    sKeyMapKeyCode2PC[Solipsis::KC_F13]         = VK_F13;
-    sKeyMapKeyCode2PC[Solipsis::KC_F14]         = VK_F14;
-    sKeyMapKeyCode2PC[Solipsis::KC_F15]         = VK_F15;
-    sKeyMapKeyCode2PC[Solipsis::KC_KANA]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_ABNT_C1]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_CONVERT]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_NOCONVERT]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_YEN]         = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_ABNT_C2]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPADEQUALS]= 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_PREVTRACK]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_AT]          = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_COLON]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_UNDERLINE]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_KANJI]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_STOP]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_AX]          = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_UNLABELED]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_NEXTTRACK]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPADENTER] = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_RCONTROL]    = VK_RCONTROL;
-    sKeyMapKeyCode2PC[Solipsis::KC_MUTE]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_CALCULATOR]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_PLAYPAUSE]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_MEDIASTOP]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_VOLUMEDOWN]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_VOLUMEUP]    = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBHOME]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_NUMPADCOMMA] = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_DIVIDE]      = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_SYSRQ]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_RMENU]       = VK_RMENU;
-    sKeyMapKeyCode2PC[Solipsis::KC_PAUSE]       = VK_PAUSE;
-    sKeyMapKeyCode2PC[Solipsis::KC_HOME]        = VK_HOME;
-    sKeyMapKeyCode2PC[Solipsis::KC_UP]          = VK_UP;
-    sKeyMapKeyCode2PC[Solipsis::KC_PGUP]        = VK_PRIOR;
-    sKeyMapKeyCode2PC[Solipsis::KC_LEFT]        = VK_LEFT;
-    sKeyMapKeyCode2PC[Solipsis::KC_RIGHT]       = VK_RIGHT;
-    sKeyMapKeyCode2PC[Solipsis::KC_END]         = VK_END;
-    sKeyMapKeyCode2PC[Solipsis::KC_DOWN]        = VK_DOWN;
-    sKeyMapKeyCode2PC[Solipsis::KC_PGDOWN]      = VK_NEXT;
-    sKeyMapKeyCode2PC[Solipsis::KC_INSERT]      = VK_INSERT;
-    sKeyMapKeyCode2PC[Solipsis::KC_DELETE]      = VK_DELETE;
-    sKeyMapKeyCode2PC[Solipsis::KC_LWIN]        = VK_LWIN;
-    sKeyMapKeyCode2PC[Solipsis::KC_RWIN]        = VK_RWIN;
-    sKeyMapKeyCode2PC[Solipsis::KC_APPS]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_POWER]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_SLEEP]       = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WAKE]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBSEARCH]   = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBFAVORITES]= 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBREFRESH]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBSTOP]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBFORWARD]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_WEBBACK]     = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_MYCOMPUTER]  = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_MAIL]        = 0x00;
-    sKeyMapKeyCode2PC[Solipsis::KC_MEDIASELECT] = 0x00;
-}
-// GREG END
-
 // ----------------------------------------------------------------------------
 
 // GREG BEGIN
@@ -206,7 +45,6 @@ TightVNCConnection::TightVNCConnection(int id, TightVNCTextureSystem* textureSys
     Ogre::Root::getSingleton().addFrameListener(this);
 // GREG BEGIN
     mUpdateTimer = 1.0/mFps;
-    initKeyMapKeyCode2PC();
 // GREG END
 }
 
@@ -527,10 +365,13 @@ void TightVNCConnection::handleEvt(const Solipsis::Event& evt)
     else if ((e.mType == ETKeyPressed) || (e.mType == ETKeyReleased))
     {
         DWORD lParam = 0;
-        if (e.mType == ETKeyPressed) lParam |= 0x80000000l; // down
+        if (e.mType == ETKeyReleased) lParam |= 0x80000000l; // down
         lParam |= 0x1000000; // extended
-        int pcvirtkey = sKeyMapKeyCode2PC[e.mKeyboard.mKey];
-        mConn->kbdEvt(pcvirtkey, lParam);
+	    HKL layout = GetKeyboardLayout(0);
+//	    if (GetKeyboardState(keyState) == 0) return;
+	    unsigned int vk = MapVirtualKeyEx(e.mKeyboard.mKey, 3, layout);
+	    if (vk == 0) return;
+        mConn->kbdEvt(vk, lParam);
     }
 }
 // GREG END

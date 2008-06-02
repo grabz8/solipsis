@@ -183,68 +183,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 		}
 	}
 
-	Avatar* userAvatar = mNavigator->getUserAvatar();
-	if (userAvatar != 0)
-	{
-		switch (evt.mKey)
-		{
-		case KC_1: // Switch to 1st person camera
-			setCameraMode(CM1stPerson);
-			break;
-		case KC_2: // Switch to 1st person camera with mouse
-			setCameraMode(CM1stPersonWithMouse);
-			break;
-		case KC_3: // Switch to 3rd person camera
-			setCameraMode(CM3rdPerson);
-			break;
-		case KC_4: // Switch to TrunAround person camera
-			setCameraMode(CMAroundPerson);
-			break;
-
-		case KC_UP:
-		case KC_W:
-			if (mNavigator->isOnLeftCTRL)
-			{
-				//mNavigator->undo();
-				if( modeler )
-					if( !modeler->isSelectionEmpty() )
-						modeler->getSelected()->undo();
-			}
-			else
-				userAvatar->movementKeyPressed(KC_UP);
-			break;
-
-		case KC_DOWN:
-		case KC_S:
-			userAvatar->movementKeyPressed(KC_DOWN);
-			break;
-
-		case KC_LEFT:
-		case KC_A:
-			userAvatar->movementKeyPressed(KC_LEFT);
-			break;
-
-		case KC_RIGHT:
-		case KC_D:
-			userAvatar->movementKeyPressed(KC_RIGHT);
-			break;
-
-		case KC_PGUP:
-		case KC_E:
-			userAvatar->movementKeyPressed(KC_PGUP);
-			break;
-
-		case KC_PGDOWN:
-		case KC_C:
-			userAvatar->movementKeyPressed(KC_PGDOWN);
-			break;
-
-		case KC_END:
-			userAvatar->movementKeyPressed(KC_END);
-			break;
-		}
-	}
-
     // Escape hits count to cancel focus Navi/VNC/...
     if (evt.mKey == KC_ESCAPE)
     {
@@ -344,6 +282,60 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
         break;
     }
+
+	Avatar* userAvatar = mNavigator->getUserAvatar();
+	if (userAvatar != 0)
+	{
+		switch (evt.mKey)
+		{
+		case KC_1: // Switch to 1st person camera
+			setCameraMode(CM1stPerson);
+			break;
+		case KC_2: // Switch to 1st person camera with mouse
+			setCameraMode(CM1stPersonWithMouse);
+			break;
+		case KC_3: // Switch to 3rd person camera
+			setCameraMode(CM3rdPerson);
+			break;
+		case KC_4: // Switch to TrunAround person camera
+			setCameraMode(CMAroundPerson);
+			break;
+
+		case KC_UP:
+		case KC_W:
+			userAvatar->movementKeyPressed(KC_UP);
+			break;
+
+		case KC_DOWN:
+		case KC_S:
+			userAvatar->movementKeyPressed(KC_DOWN);
+			break;
+
+		case KC_LEFT:
+		case KC_A:
+			userAvatar->movementKeyPressed(KC_LEFT);
+			break;
+
+		case KC_RIGHT:
+		case KC_D:
+			userAvatar->movementKeyPressed(KC_RIGHT);
+			break;
+
+		case KC_PGUP:
+		case KC_E:
+			userAvatar->movementKeyPressed(KC_PGUP);
+			break;
+
+		case KC_PGDOWN:
+		case KC_C:
+			userAvatar->movementKeyPressed(KC_PGDOWN);
+			break;
+
+		case KC_END:
+			userAvatar->movementKeyPressed(KC_END);
+			break;
+		}
+	}
 
     return OgreFrameListener::keyPressed(evt);
 }
