@@ -154,7 +154,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTException.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTLog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CTStringHelpers.cpp"
 				>
 			</File>
 			<File
@@ -192,11 +200,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTException.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CTLog.h"
 				>
 			</File>
 			<File
 				RelativePath=".\CTScopedMutexLock.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTStringHelpers.h"
 				>
 			</File>
 			<File

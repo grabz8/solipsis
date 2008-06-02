@@ -3,7 +3,7 @@
 
 namespace CommonTools {
 
-/** This static class contains several helper methods above system.
+/** This static class contains several helper methods for logging.
  */
 class LogHandler
 {
@@ -25,7 +25,7 @@ public:
     static LogHandler* getLogHandler() { return ms_LogHandler; }
 
     /// Set the log handler
-    static void setLogHandler(LogHandler* logHandler) { ms_LogHandler = logHandler; }
+    static void setLogHandler(LogHandler* logHandler) { if (logHandler != 0) ms_LogHandler = logHandler; }
 
     /// Returns the current verbosity level
     static VerbosityLevel getVerbosityLevel() { return ms_Verbosity; }
