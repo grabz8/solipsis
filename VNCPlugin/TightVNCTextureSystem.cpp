@@ -208,26 +208,16 @@ void TightVNCTextureSystem::destroyAdvancedTexture(const Ogre::String& material,
 }
 
 // GREG BEGIN
-void TightVNCTextureSystem::mouseEvt(const Ogre::String& material, const Ogre::Vector2& xy, eMouseKbdEvent mouseKbdEvent)
+void TightVNCTextureSystem::handleEvt(const Ogre::String& material, const Event& evt)
 {
-    Ogre::LogManager::getSingleton().logMessage("TightVNCTextureSystem::mouseEvt (" + material + ")");
-
-    for (IDMaterialMap::iterator i = mMaterials.begin(); i != mMaterials.end(); ++i)
+    for (IDMaterialMap::iterator materialListIt = mMaterials.begin(); materialListIt != mMaterials.end(); ++materialListIt)
     {
-        MaterialList& materials = i->second;
-        for (MaterialList::iterator j = materials.begin(); j != materials.end(); ++j)
+        MaterialList& materials = materialListIt->second;
+        for (MaterialList::iterator materialIt = materials.begin(); materialIt != materials.end(); ++materialIt)
         {
-            Ogre::MaterialPtr matPtr = *j;
+            Ogre::MaterialPtr matPtr = *materialIt;
             if (!matPtr.isNull() && matPtr->getName() == material)
-            {
-                Ogre::TexturePtr& texture = mPlugin->getTextureForConnection(i->first);
-                size_t width = texture->getSrcWidth();
-                size_t height = texture->getSrcHeight();
-                int x = ((int)(xy.x*width))%width;
-                int y = ((int)(xy.y*height))%height;
-                mPlugin->mouseEvtOnConnection(i->first, x, y, mouseKbdEvent);
-                return;
-            }
+                return mPlugin->handleEvt(materialListIt->first, evt);
         }
     }
 }

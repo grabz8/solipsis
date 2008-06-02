@@ -10,6 +10,7 @@ copy ..\navigatorModule\IWindow.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
 copy .\IVoiceEngine.h ..\Dependencies\navigatorModule\include\. /y
 copy .\VoiceEngineManager.h ..\Dependencies\navigatorModule\include\. /y
+copy .\ExternalTextureSourceEx.h ..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\Dependencies\navigatorModule\lib\Debug mkdir ..\Dependencies\navigatorModule\lib\Debug
 copy DebugNCS\Navigator.lib ..\Dependencies\navigatorModule\lib\Debug\. /y

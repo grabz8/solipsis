@@ -41,6 +41,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 // BEGIN GREG
 	isFocused = false;
     autoUpdatedOnFocus = false;
+    currentLocation = "";
 // END GREG
 	position = naviPosition;
 	movable = true;
@@ -465,6 +466,10 @@ void Navi::onUpdateProgress(const EventType& eventIn) {}
 void Navi::onStatusTextChange(const EventType& eventIn)
 {
 	std::string statusMsg = eventIn.getStringValue();
+#ifdef _DEBUG
+    if (Ogre::LogManager::getSingletonPtr())
+        Ogre::LogManager::getSingletonPtr()->logMessage(statusMsg);
+#endif
 
 	if(isPrefixed(statusMsg, "NAVI_DATA:", false))
 	{
@@ -493,6 +498,9 @@ void Navi::onStatusTextChange(const EventType& eventIn)
 
 void Navi::onLocationChange(const EventType& eventIn) 
 {
+// BEGIN GREG
+    currentLocation = eventIn.getEventUri();
+// END GREG
 	for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
 		(*nel)->onLocationChange(this, eventIn.getEventUri());
 }
@@ -776,6 +784,11 @@ Navi* Navi::setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus)
 {
     autoUpdatedOnFocus = isAutoUpdatedOnFocus;
 	return this;
+}
+
+const std::string& Navi::getCurrentLocation()
+{
+	return currentLocation;
 }
 // END GREG
 

@@ -130,5 +130,21 @@ TexturePtr VLCPlugin::getTextureForInstance(const int id)
 }
 
 //-------------------------------------------------------------------------------------
+Ogre::String VLCPlugin::handleEvt(int id, const Ogre::String& evt)
+{
+    Ogre::String result;
+
+    LogManager::getSingleton().logMessage("VLCPlugin::handleEvt");
+
+    pthread_mutex_lock(&mVLCInstanceMapMutex);
+    VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
+    if (i != mVLCInstanceMap.end())
+        result = i->second->handleEvt(evt);
+    pthread_mutex_unlock(&mVLCInstanceMapMutex);
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
 
 } // namespace Solipsis

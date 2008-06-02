@@ -42,6 +42,10 @@ PGDOWN/C Fly down
 END      Activate gravity
 
 
+Panels:
+ESC      Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...)
+
+
 Debug commands:
 F1 .. F4 SkyDome choice
 F8       Toggle AVATAR main panel

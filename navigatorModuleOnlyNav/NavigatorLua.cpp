@@ -1,6 +1,8 @@
 #include "NavigatorLua.h"
 #include "Navigator.h"
 #include "OgreHelpers.h"
+#include "OgreExternalTextureSourceManager.h"
+#include "ExternalTextureSourceEx.h"
 
 using namespace Solipsis;
 
@@ -12,6 +14,8 @@ Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, getRenderWinMetrics),
     LunarMethod(NavigatorLua, sendMessage),
     LunarMethod(NavigatorLua, contextItemSelected),
+    LunarMethod(NavigatorLua, hideNavi),
+    LunarMethod(NavigatorLua, extTextSrcExHandleEvt),
     {0, 0}
 };
 
@@ -99,6 +103,38 @@ int NavigatorLua::contextItemSelected(lua_State* luaState)
     int rc = mNavigator->contextItemSelected(String(item));
 
     lua_pushboolean(luaState, rc);
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int NavigatorLua::hideNavi(lua_State* luaState)
+{
+    OGRE_LOG("NavigatorLua::hideNavi()");
+
+    // Get navi name
+    std::string naviName = luaL_checkstring(luaState, 1);
+    // Perform action
+    int rc = mNavigator->getNavigatorGUI()->hideNavi(naviName);
+
+    lua_pushboolean(luaState, rc);
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int NavigatorLua::extTextSrcExHandleEvt(lua_State* luaState)
+{
+    OGRE_LOG("NavigatorLua::extTextSrcExHandleEvt()");
+
+    // Get parameters
+    std::string extTextSrcExPlugin = luaL_checkstring(luaState, 1);
+    std::string mtlName = luaL_checkstring(luaState, 2);
+    std::string extTextSrcExEvt = luaL_checkstring(luaState, 3);
+    // Perform action
+    ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(String(extTextSrcExPlugin));
+    ExternalTextureSourceEx* vlcExtTextSrcEx = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(String(extTextSrcExPlugin)));
+    String result = vlcExtTextSrcEx->handleEvt(String(mtlName), String(extTextSrcExEvt));
+
+    lua_pushstring(luaState, result.c_str());
     return 1;
 }
 

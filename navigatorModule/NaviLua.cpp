@@ -5,7 +5,7 @@
 
 using namespace NaviLibrary;
 
-LuaGlue (_createNavi)
+LuaGlue (_naviMgrCreateNavi)
 {
 	int argNum = 1;
 	const std::string pName = luaL_checkstring(L, argNum++);
@@ -89,7 +89,7 @@ LuaGlue (_createNavi)
 }
 
 
-LuaGlue (_setNaviMask)
+LuaGlue (_naviSetMask)
 {
 	const char *pName = luaL_checkstring(L, 1);
 	const char *pMaskName = luaL_checkstring(L, 2);
@@ -179,7 +179,7 @@ void cLuaNaviFunctor::onNavigateComplete(NaviLibrary::Navi *caller, const std::s
 
 static std::map<std::string, cLuaNaviFunctor *> s_mapFunctors;
 
-LuaGlue (_addNaviEventListener)
+LuaGlue (_naviAddEventListener)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -192,12 +192,19 @@ LuaGlue (_addNaviEventListener)
 }
 
 
-LuaGlue (_destroyNavi)
+LuaGlue (_naviMgrDestroyNavi)
 {
 	const char *pName = luaL_checkstring(L, 1);
 	// need to create a way to remove any event listeners associated with this navi
 	NaviLibrary::NaviManager::Get().destroyNavi(pName);
 	return 0;
+}
+
+LuaGlue (_naviMgrIsNaviExists)
+{
+	const char *pName = luaL_checkstring(L, 1);
+	lua_pushboolean(L, NaviLibrary::NaviManager::Get().getNavi(pName) != 0);
+	return 1;
 }
 
 LuaGlue(_removeNaviEventListener)
@@ -219,7 +226,7 @@ LuaGlue(_removeNaviEventListener)
 /////////////////////////////////////////////////////////////
 
 
-LuaGlue (_setNaviColorKey)
+LuaGlue (_naviSetColorKey)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -233,7 +240,7 @@ LuaGlue (_setNaviColorKey)
 	return 0;
 }
 
-LuaGlue(_navigateNaviTo)
+LuaGlue(_naviNavigateTo)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -276,7 +283,7 @@ LuaGlue(_navigateNaviTo)
 	return 0;
 }
 
-LuaGlue(_setNaviOpacity)
+LuaGlue(_naviSetOpacity)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -286,7 +293,58 @@ LuaGlue(_setNaviOpacity)
 	return 0;
 }
 
-LuaGlue(_setNaviIgnoreTransparent)
+LuaGlue(_naviSetPosition)
+{
+	int argNum = 1;
+	const std::string pName = luaL_checkstring(L, argNum++);
+	short x=0,y=0;
+	const char *pPositionCmd = NULL;
+
+	RelativePosition p = Left;
+	if(lua_type(L, argNum) == LUA_TSTRING) // position based on string command
+	{
+		pPositionCmd = luaL_checkstring(L, argNum++);
+		// parse
+		if(strcmp(pPositionCmd, "Left") == 0)
+			p = Left;
+		if(strcmp(pPositionCmd, "TopLeft") == 0)
+			p = TopLeft;
+		if(strcmp(pPositionCmd, "TopCenter") == 0)
+			p = TopCenter;
+		if(strcmp(pPositionCmd, "TopRight") == 0)
+			p = TopRight;
+		if(strcmp(pPositionCmd, "Right") == 0)
+			p = Right;
+		if(strcmp(pPositionCmd, "BottomRight") == 0)
+			p = BottomRight;
+		if(strcmp(pPositionCmd, "BottomCenter") == 0)
+			p = BottomCenter;
+		if(strcmp(pPositionCmd, "BottomLeft") == 0)
+			p = BottomLeft;
+		if(strcmp(pPositionCmd, "Center") == 0)
+			p = Center;
+
+	}
+	// x and y are now required even after a RelativePosition, they will be used as offsets if rel
+	x =  (short) luaL_checkint(L, argNum++);
+	y =  (short) luaL_checkint(L, argNum++);
+
+    NaviLibrary::NaviPosition *naviPos;
+
+	if(pPositionCmd)
+	{
+		naviPos = new NaviLibrary::NaviPosition(p, x, y);
+	}
+	else
+	{
+		naviPos = new NaviLibrary::NaviPosition(x, y);
+	}
+    NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().getNavi(pName)->setPosition(*naviPos);
+
+	return 0;
+}
+
+LuaGlue(_naviSetIgnoreTransparent)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -303,7 +361,7 @@ LuaGlue(_setNaviIgnoreTransparent)
 	return 0;
 }
 
-LuaGlue(_setForceMaxUpdate)
+LuaGlue(_naviSetForceMaxUpdate)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -313,7 +371,7 @@ LuaGlue(_setForceMaxUpdate)
 	return 0;
 }
 
-LuaGlue(_setMaxUpdatesPerSec)
+LuaGlue(_naviSetMaxUpdatesPerSec)
 {
 	int argNum = 1;
 	const char *pName = luaL_checkstring(L, argNum++);
@@ -321,6 +379,32 @@ LuaGlue(_setMaxUpdatesPerSec)
 
 	NaviLibrary::NaviManager::Get().getNavi(pName)->setMaxUPS(iRate);
 	return 0;
+}
+
+LuaGlue(_naviSetAutoUpdateOnFocus)
+{
+	int argNum = 1;
+	const char *pName = luaL_checkstring(L, argNum++);
+	
+	bool isAutoUpdatedOnFocus = false;
+	if(lua_type(L, argNum) == LUA_TBOOLEAN) 
+	{
+		isAutoUpdatedOnFocus = lua_toboolean(L, argNum) != 0;
+	}
+	argNum++;
+
+    NaviLibrary::NaviManager::Get().getNavi(pName)->setAutoUpdateOnFocus(isAutoUpdatedOnFocus);
+	return 0;
+}
+
+LuaGlue(_naviGetCurrentLocation)
+{
+	int argNum = 1;
+	std::string naviName = luaL_checkstring(L, argNum++);
+
+	std::string r = NaviLibrary::NaviManager::Get().getNavi(naviName)->getCurrentLocation();
+	lua_pushstring(L, r.c_str());
+	return 1;
 }
 /////////////////////////////////////////////////////////////
 
@@ -335,7 +419,7 @@ LuaGlue(_naviEvaluateJS)
 	return 1;
 }
 
-LuaGlue(_createNaviMaterial)
+LuaGlue(_naviMgrCreateNaviMaterial)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -374,7 +458,7 @@ LuaGlue(_createNaviMaterial)
 	return 1;
 }
 
-LuaGlue(_canNavigateBack)
+LuaGlue(_naviCanNavigateBack)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -382,7 +466,7 @@ LuaGlue(_canNavigateBack)
 	return 1;
 }
 
-LuaGlue(_navigateNaviBack)
+LuaGlue(_naviNavigateBack)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -390,7 +474,7 @@ LuaGlue(_navigateNaviBack)
 	return 0;
 }
 
-LuaGlue(_canNavigateForward)
+LuaGlue(_naviCanNavigateForward)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -398,7 +482,7 @@ LuaGlue(_canNavigateForward)
 	return 1;
 }
 
-LuaGlue(_navigateNaviForward)
+LuaGlue(_naviNavigateForward)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -406,7 +490,7 @@ LuaGlue(_navigateNaviForward)
 	return 0;
 }
 
-LuaGlue(_navigateNaviStop)
+LuaGlue(_naviNavigateStop)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -414,7 +498,7 @@ LuaGlue(_navigateNaviStop)
 	return 0;
 }
 
-LuaGlue(_setNaviBackgroundColor)
+LuaGlue(_naviSetBackgroundColor)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -427,19 +511,19 @@ LuaGlue(_setNaviBackgroundColor)
 }
 
 
-LuaGlue(_isAnyNaviFocused)
+LuaGlue(_naviMgrIsAnyNaviFocused)
 {
 	lua_pushboolean(L, NaviLibrary::NaviManager::Get().isAnyNaviFocused());
 	return 1;
 }
 
-LuaGlue(_getFocusedNaviName)
+LuaGlue(_naviMgrGetFocusedNaviName)
 {
 	lua_pushstring(L, NaviLibrary::NaviManager::Get().getFocusedNavi()->getName().c_str());
 	return 1;
 }
 
-LuaGlue(_getNaviMaterialName)
+LuaGlue(_naviGetMaterialName)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -448,7 +532,7 @@ LuaGlue(_getNaviMaterialName)
 	return 1;
 }
 
-LuaGlue(_getNaviVisibility)
+LuaGlue(_naviGetVisibility)
 {
 	int argNum = 1;
 	std::string naviName = luaL_checkstring(L, argNum++);
@@ -457,13 +541,13 @@ LuaGlue(_getNaviVisibility)
 	return 1;
 }
 
-LuaGlue(_deFocusAllNavis)
+LuaGlue(_naviMgrDeFocusAllNavis)
 {
 	NaviLibrary::NaviManager::Get().deFocusAllNavis();
 	return 0;
 }
 
-LuaGlue(_showNavi)
+LuaGlue(_naviShow)
 {
 	int argNum = 1;
 	const char *naviName = luaL_checkstring(L, argNum++);
@@ -473,7 +557,7 @@ LuaGlue(_showNavi)
 	return 0;
 }
 
-LuaGlue(_hideNavi)
+LuaGlue(_naviHide)
 {
 	int argNum = 1;
 	const char *naviName = luaL_checkstring(L, argNum++);
@@ -493,31 +577,35 @@ typedef struct
 
 luaDef NaviGlue[] =
 {
-	{"createNavi",					_createNavi},
-	{"destroyNavi",					_destroyNavi},
-	{"setNaviMask",					_setNaviMask},
-	{"addNaviEventListener",		_addNaviEventListener},
-	{"setNaviColorKey",				_setNaviColorKey},
-	{"navigateNaviTo",				_navigateNaviTo},
-	{"setNaviOpacity",				_setNaviOpacity},
-	{"setForceMaxUpdate",			_setForceMaxUpdate},
-	{"setMaxUpdatesPerSec",			_setMaxUpdatesPerSec},
+	{"naviMgrCreateNavi",			_naviMgrCreateNavi},
+	{"naviMgrDestroyNavi",			_naviMgrDestroyNavi},
+	{"naviMgrIsNaviExists",			_naviMgrIsNaviExists},
+	{"naviSetMask",					_naviSetMask},
+	{"naviAddEventListener",		_naviAddEventListener},
+	{"naviSetColorKey",				_naviSetColorKey},
+	{"naviNavigateTo",				_naviNavigateTo},
+	{"naviSetOpacity",				_naviSetOpacity},
+    {"naviSetPosition",				_naviSetPosition},
+	{"naviSetForceMaxUpdate",		_naviSetForceMaxUpdate},
+	{"naviSetMaxUpdatesPerSec",		_naviSetMaxUpdatesPerSec},
+    {"naviSetAutoUpdateOnFocus",	_naviSetAutoUpdateOnFocus},
+    {"naviGetCurrentLocation",		_naviGetCurrentLocation},
 	{"naviEvaluateJS",				_naviEvaluateJS},
-	{"createNaviMaterial",			_createNaviMaterial},
-	{"canNavigateBack",				_canNavigateBack},
-	{"navigateNaviBack",			_navigateNaviBack},
-	{"canNavigateForward",			_canNavigateForward},
-	{"navigateNaviForward",			_navigateNaviForward},
-	{"navigateNaviStop",			_navigateNaviStop},
-	{"setNaviBackgroundColor",		_setNaviBackgroundColor},
-	{"setNaviIgnoreTransparent",	_setNaviIgnoreTransparent},
-	{"isAnyNaviFocused",			_isAnyNaviFocused},
-	{"getFocusedNaviName",			_getFocusedNaviName},
-	{"getNaviMaterialName",			_getNaviMaterialName},
-	{"getNaviVisibility",			_getNaviVisibility},
-	{"deFocusAllNavis",				_deFocusAllNavis},
-	{"showNavi",					_showNavi},
-	{"hideNavi",					_hideNavi},
+	{"naviMgrCreateNaviMaterial",	_naviMgrCreateNaviMaterial},
+	{"naviCanNavigateBack",			_naviCanNavigateBack},
+	{"naviNavigateBack",			_naviNavigateBack},
+	{"naviCanNavigateForward",		_naviCanNavigateForward},
+	{"naviNavigateForward",			_naviNavigateForward},
+	{"naviNavigateStop",			_naviNavigateStop},
+	{"naviSetBackgroundColor",		_naviSetBackgroundColor},
+	{"naviSetIgnoreTransparent",	_naviSetIgnoreTransparent},
+	{"naviMgrIsAnyNaviFocused",		_naviMgrIsAnyNaviFocused},
+	{"naviMgrGetFocusedNaviName",	_naviMgrGetFocusedNaviName},
+	{"naviGetMaterialName",			_naviGetMaterialName},
+	{"naviGetVisibility",			_naviGetVisibility},
+	{"naviMgrDeFocusAllNavis",		_naviMgrDeFocusAllNavis},
+	{"naviShow",					_naviShow},
+	{"naviHide",					_naviHide},
 
 	{NULL,							NULL},
 };

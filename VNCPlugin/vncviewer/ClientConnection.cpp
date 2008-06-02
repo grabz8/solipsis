@@ -2513,8 +2513,6 @@ ClientConnection::SendPointerEvent(int x, int y, int buttonMask)
 	WriteExact((char *)&pe, sz_rfbPointerEventMsg);
 }
 
-// GREG BEGIN
-/*
 //
 // ProcessKeyEvent
 //
@@ -2634,8 +2632,6 @@ ClientConnection::SendKeyEvent(CARD32 key, bool down)
     GetVNCLog().Print(6, _T("SendKeyEvent: key = x%04x status = %s\n"), key, 
         down ? _T("down") : _T("up"));
 }
-*/
-// GREG END
 
 #ifndef UNDER_CE
 //

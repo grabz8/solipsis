@@ -208,5 +208,20 @@ void VLCTextureSource::destroyAdvancedTexture(const Ogre::String& material, cons
 }
 
 //-------------------------------------------------------------------------------------
+Ogre::String VLCTextureSource::handleEvt(const Ogre::String& material, const Ogre::String& evt)
+{
+    for (MaterialListMap::iterator materialListIt = mMaterials.begin(); materialListIt != mMaterials.end(); ++materialListIt)
+    {
+        MaterialList& materials = materialListIt->second;
+        for (MaterialList::iterator materialIt = materials.begin(); materialIt != materials.end(); ++materialIt)
+        {
+            Ogre::MaterialPtr matPtr = *materialIt;
+            if (!matPtr.isNull() && matPtr->getName() == material)
+                return mPlugin->handleEvt(materialListIt->first, evt);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
 
 } // namespace Solipsis

@@ -11,7 +11,8 @@ class TightVNCConnection;
 class TightVNCTextureSystem;
 class VNCviewerApp32;
 // GREG BEGIN
-#include "OgreExternalTextureSourceEx.h"
+#include <ExternalTextureSourceEx.h>
+#include <Event.h>
 // GREG END
 
 namespace Solipsis
@@ -78,7 +79,7 @@ public:
     Ogre::TexturePtr getTextureForConnection(const int id) const;
 
 // GREG BEGIN
-    void mouseEvtOnConnection(const int id, int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+    void handleEvt(const int id, const Event& evt);
 // GREG END
 
 private:

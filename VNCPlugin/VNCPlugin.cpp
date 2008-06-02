@@ -49,10 +49,19 @@ void VNCPlugin::initialise()
 void VNCPlugin::shutdown()
 {
     mRunning = false;
+// GREG BEGIN
+    Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNCPlugin::shutdown() WaitForSingleObject(mVNCThreadHandle)");
+// GREG END
     WaitForSingleObject(mVNCThreadHandle, 5000);
+// GREG BEGIN
+    Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNCPlugin::shutdown() deleting texture system");
+// GREG END
     mConnByID.clear();
     delete mTextureSystem;
     mTextureSystem = 0;
+// GREG BEGIN
+    Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNCPlugin::shutdown() end");
+// GREG END
 }
 
 //-------------------------------------------------------------------------------------
@@ -129,13 +138,13 @@ Ogre::TexturePtr VNCPlugin::getTextureForConnection(const int id) const
 }
 
 // GREG BEGIN
-void VNCPlugin::mouseEvtOnConnection(const int id, int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent)
+void VNCPlugin::handleEvt(const int id, const Event& evt)
 {
     ConnectionById::const_iterator i = mConnByID.find(id);
     if (i == mConnByID.end())
         return;
     ConnectionPtr conn = i->second;
-    conn->mouseEvt(x, y, mouseKbdEvent);
+    conn->handleEvt(evt);
 }
 // GREG END
 
@@ -214,6 +223,10 @@ unsigned long __stdcall VNCPlugin::vncThreadRun(void* params)
     Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "Shutting down VNC main thread...");
 
     delete plugin->mVNCApp;
+
+// GREG BEGIN
+    Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNC main thread end");
+// GREG END
 
     return 0;
 }

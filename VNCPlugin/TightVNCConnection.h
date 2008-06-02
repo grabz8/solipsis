@@ -13,7 +13,8 @@ class ClientConnection;
 class TightVNCTextureSystem;
 class VNCviewerApp;
 // GREG BEGIN
-#include "OgreExternalTextureSourceEx.h"
+#include <ExternalTextureSourceEx.h>
+#include <Event.h>
 // GREG END
 
 /**
@@ -47,7 +48,7 @@ public:
     void destroy();
 
 // GREG BEGIN
-    void mouseEvt(int x, int y, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+    void handleEvt(const Solipsis::Event& evt);
 // GREG END
 
 private:

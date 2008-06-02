@@ -38,6 +38,9 @@ public:
     /// Get Texture
     Ogre::TexturePtr getTexture() const { return mTexture; }
 
+    /// Handle 1 event
+    Ogre::String handleEvt(const Ogre::String& evt);
+
     /// Destroy
     void destroy();
 
@@ -75,6 +78,15 @@ private:
     int mFps;
     /// Additional VLC parameters
     Ogre::String mVlcParams;
+
+    typedef struct { int item; Ogre::String mrl; } PlayListEntry;
+    typedef std::vector<PlayListEntry> PlayList;
+    /// Playlist
+    PlayList mPlayList;
+    /// Current playlist item
+    int mCurrentPlayListItem;
+    /// Play stopped
+    bool mStopped;
 
     /// VLC texture source
     VLCTextureSource* mTextureSource;

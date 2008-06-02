@@ -93,6 +93,7 @@ public:
     void acquireGrabbedScreen(HDC* dc, HBITMAP* bitmap);
     void releaseGrabbedScreen();
     void mouseEvt(int x, int y, UINT iMsg, WPARAM wParam) { ProcessPointerEvent(x, y, (DWORD)wParam, iMsg); }
+    void kbdEvt(int virtkey, DWORD keyData) { ProcessKeyEvent(virtkey, keyData); }
 // GREG END
 
 private:

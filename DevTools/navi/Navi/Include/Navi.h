@@ -49,6 +49,7 @@ namespace NaviLibrary
 // BEGIN GREG
 		bool isFocused;
         bool autoUpdatedOnFocus;
+        std::string currentLocation;
 // END GREG
 		NaviPosition position;
 		bool movable;
@@ -378,6 +379,13 @@ namespace NaviLibrary
 		* @param	isAutoUpdatedOnFocus	Whether or not this Navi should be updated when focused.
 		*/
 		Navi* setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus = false);
+
+		/**
+		* Get the current location (URL).
+		*
+		* @return	The URL of the last onLocationChange event.
+		*/
+        const std::string& getCurrentLocation();
 // END GREG
 
 		/**

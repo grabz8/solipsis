@@ -3,7 +3,8 @@
 
 // GREG BEGIN
 //#include <OgreExternalTextureSource.h>
-#include "OgreExternalTextureSourceEx.h"
+#include <ExternalTextureSourceEx.h>
+#include <Event.h>
 // GREG END
 
 namespace Solipsis
@@ -27,7 +28,7 @@ class VNCPlugin;
  */
 // GREG BEGIN
 //class TightVNCTextureSystem : public Ogre::ExternalTextureSource
-class TightVNCTextureSystem : public Ogre::ExternalTextureSourceEx
+class TightVNCTextureSystem : public Solipsis::ExternalTextureSourceEx
 // GREG END
 {
 public:
@@ -69,7 +70,10 @@ protected:
     void destroyAdvancedTexture(const Ogre::String& material, const Ogre::String& group);
 
 // GREG BEGIN
-    void mouseEvt(const Ogre::String& material, const Ogre::Vector2& xy, Ogre::ExternalTextureSourceEx::eMouseKbdEvent mouseKbdEvent);
+    /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
+    Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt) { return ""; }
+    /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
+    void handleEvt(const Ogre::String& material, const Solipsis::Event& evt);
 // GREG END
 
     bool requiresAuthorization() const;

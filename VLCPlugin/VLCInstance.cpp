@@ -90,11 +90,15 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
     mLibVLCInstance = libvlc_new(vlc_argc, (char**)vlc_argv, &mLibVLCException);
     _libvlc_exception(&mLibVLCException);
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_add");
-    int item = libvlc_playlist_add (mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
+    int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
     _libvlc_exception(&mLibVLCException);
+    PlayListEntry playListEntry = {item, mMrl};
+    mPlayList.push_back(playListEntry);
+    mCurrentPlayListItem = 0;
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
-    libvlc_playlist_play (mLibVLCInstance, item, 0, NULL, &mLibVLCException); 
+    libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
     _libvlc_exception(&mLibVLCException);
+    mStopped = false;
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() END");
     free(vlc_argv);
 }
@@ -113,6 +117,96 @@ VLCInstance::~VLCInstance()
 
     delete mScreen;
     LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() END");
+}
+
+//-------------------------------------------------------------------------------------
+String VLCInstance::handleEvt(const String& evt)
+{
+    String result = "";
+
+    if (mLibVLCInstance == 0) return result;
+
+    std::vector<String> tokens;
+    std::string delimiter = "?";
+    size_t p0 = 0, p1 = String::npos;
+    while (p0 != String::npos)
+    {
+        p1 = evt.find_first_of(delimiter, p0);
+        if (p1 != p0)
+        {
+            String token = evt.substr(p0, p1 - p0);
+            tokens.push_back(token);
+        }
+        p0 = evt.find_first_not_of(delimiter, p1);
+    }
+
+    if (tokens.size() < 1) return result;
+    if (tokens[0].compare("getmrl") == 0)
+        return mMrl;
+    else if (tokens[0].compare("setmrl") == 0)
+    {
+        if ((tokens.size() < 2) || tokens[1].empty()) return result;
+        mMrl = tokens[1];
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_stop");
+        libvlc_playlist_stop(mLibVLCInstance, &mLibVLCException);
+        _libvlc_exception(&mLibVLCException);
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_add");
+        int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+        PlayListEntry playListEntry = {item, mMrl};
+        mPlayList.push_back(playListEntry);
+        mCurrentPlayListItem = (int)mPlayList.size() - 1;
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+    }
+    else if (tokens[0].compare("getmute") == 0)
+    {
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_audio_get_mute");
+        result = (libvlc_audio_get_mute(mLibVLCInstance, &mLibVLCException) ? "true" : "false");
+        _libvlc_exception(&mLibVLCException);
+    }
+    else if (tokens[0].compare("playpause") == 0)
+    {
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play/libvlc_playlist_pause");
+        if (mStopped)
+            libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        else
+            libvlc_playlist_pause(mLibVLCInstance, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+        mStopped = false;
+    }
+    else if (tokens[0].compare("stop") == 0)
+    {
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_stop");
+        libvlc_playlist_stop(mLibVLCInstance, &mLibVLCException);
+        _libvlc_exception(&mLibVLCException);
+        mStopped = true;
+    }
+    else if ((tokens[0].compare("prev") == 0) && (mCurrentPlayListItem > 0))
+    {
+        mCurrentPlayListItem--;
+        mMrl = mPlayList[mCurrentPlayListItem].mrl;
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+    }
+    else if ((tokens[0].compare("next") == 0) && (mCurrentPlayListItem < (int)mPlayList.size() - 1))
+    {
+        mCurrentPlayListItem++;
+        mMrl = mPlayList[mCurrentPlayListItem].mrl;
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+    }
+    else if (tokens[0].compare("mute") == 0)
+    {
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_audio_toggle_mute");
+        libvlc_audio_toggle_mute(mLibVLCInstance, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+    }
+
+    return result;
 }
 
 //-------------------------------------------------------------------------------------

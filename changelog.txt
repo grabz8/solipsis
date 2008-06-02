@@ -513,3 +513,10 @@ Physics input removed from options of navigator
 Entity clone creation into XMLImport
 
 ---------------------------
+02/06/08
+
+Context panels fully managed with LUA (avatar, WWW navi, VLC)
+Events (LUA commands, mouse, keyboards) sent to VLC/VNC plugins with the extended class ExternalTextureSourceEx
+Keyboard events now supported by VNC plugin
+
+---------------------------

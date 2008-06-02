@@ -1,7 +1,8 @@
 #ifndef __VLCTextureSource_h__
 #define __VLCTextureSource_h__
 
-#include <OgreExternalTextureSource.h>
+#include <ExternalTextureSourceEx.h>
+#include <Event.h>
 
 namespace Solipsis {
 
@@ -34,7 +35,7 @@ class VLCPlugin;
  *  same eg. but with mpeg video (no transcodage)
  *   vlc_params --sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}
  */
-class VLCTextureSource : public Ogre::ExternalTextureSource
+class VLCTextureSource : public ExternalTextureSourceEx
 {
 public:
     /** Constructor
@@ -108,6 +109,10 @@ protected:
     void createDefinedTexture(const Ogre::String& material, const Ogre::String& group);
     /// @copydoc Ogre::ExternalTextureSource::destroyAdvancedTexture
     void destroyAdvancedTexture(const Ogre::String& material, const Ogre::String& group);
+    /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
+    Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt);
+    /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
+    void handleEvt(const Ogre::String& material, const Event& evt) {}
 
 protected:
 	static CmdMrl msCmdMrl;             //! Command for setting media resource link

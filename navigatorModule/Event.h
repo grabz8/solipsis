@@ -17,6 +17,7 @@ enum MouseButton {
 class MouseState {
 public:
     int mX, mY, mZ;
+    float mXreal, mYreal, mZreal;
     int mXrel, mYrel, mZrel;
     MouseButton mButtons;
 };

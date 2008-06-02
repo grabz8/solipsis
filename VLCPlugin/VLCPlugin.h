@@ -65,6 +65,13 @@ public:
     */
     Ogre::TexturePtr getTextureForInstance(const int id);
 
+    /** Handle 1 event by an existing VLC instance
+    @param[in] id VLC Instance id
+    @param[in] evt Event to handle
+    @return Event resulting string
+    */
+    Ogre::String handleEvt(int id, const Ogre::String& evt);
+
 private:
     /// VLC texture source
     VLCTextureSource* mVLCTextureSource;

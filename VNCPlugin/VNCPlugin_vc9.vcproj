@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;VNCPLUGIN_EXPORTS;OGRE_VNCPLUGIN_EXPORTS;__WIN32__;XMD_H;_WINSTATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VNCPLUGIN_EXPORTS;OGRE_VNCPLUGIN_EXPORTS;__WIN32__;XMD_H;_WINSTATIC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -205,10 +205,6 @@
 			Name="Fichiers d&apos;en-tête"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
-			<File
-				RelativePath=".\OgreExternalTextureSourceEx.h"
-				>
-			</File>
 			<File
 				RelativePath=".\TightVNCConnection.h"
 				>

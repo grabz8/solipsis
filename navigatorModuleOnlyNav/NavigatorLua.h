@@ -40,7 +40,7 @@ public:
     int setConnectionParams(lua_State* luaState);
 
     // get render window metrics
-    // returns (width, height, colourDepth, left, top)
+    // returns (width:int, height:int, colourDepth:int, left:int, top:int)
     int getRenderWinMetrics(lua_State* luaState);
 
     // send 1 message on chat
@@ -52,6 +52,18 @@ public:
     // params (item:string)
     // returns boolean
     int contextItemSelected(lua_State* luaState);
+
+    // hide 1 navi UI panel
+    // params (naviName:string)
+    // returns boolean
+    int hideNavi(lua_State* luaState);
+
+    // handle 1 event by 1 material created from 1 external texture source (texture based plugin)
+    // params (extTextSrcExPlugin:string)
+    // params (mtlName:string)
+    // params (extTextSrcExEvt:string)
+    // returns extTextSrcExResult:string
+    int extTextSrcExHandleEvt(lua_State* luaState);
 
     //-------------------------------------------------------------------------------------
     // C++ to Lua
