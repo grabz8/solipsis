@@ -24,26 +24,27 @@ HELP
 --------------------------------------------------------------------------------
 
 Camera:
-1        First-Person view mode
-2        First-Person view mode with mouse to interact
-3        Third-Person view mode
-4        Third-Person view mode with camera orbit
-MOUSE    Cursor mode (3rd person) / View mode (1st person)
-DBLCLICK In plugins mode, you have to double-click left mouse to enter/leave FirstPerson mouse mode
+1                First-Person view mode
+2                First-Person view mode with mouse to interact
+3                Third-Person view mode
+4                Third-Person view mode with camera orbit
+MOUSE            Cursor mode (3rd person) / View mode (1st person)
+MOUSE DBL LCLICK In plugins mode, you have to double-click left mouse to enter/leave FirstPerson mouse mode
 
 
 Move (french keyboard letters):
-UP/Z     Move forward
-DOWN/S   Move backward
-LEFT/Q   Turn left (3rd person) / Straff left (1st person)
-RIGHT/D  Turn right (3rd person) / Straff right (1st person)
-PGUP/E   Fly up (+ deactivate gravity)
-PGDOWN/C Fly down
-END      Activate gravity
+UP/Z             Move forward
+DOWN/S           Move backward
+LEFT/Q           Turn left (3rd person) / Straff left (1st person)
+RIGHT/D          Turn right (3rd person) / Straff right (1st person)
+PGUP/E           Fly up (+ deactivate gravity)
+PGDOWN/C         Fly down
+END              Activate gravity
 
 
 Panels:
-ESC      Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...)
+MOUSE RCLICK     Display context panel (avatar, WWW navi, VLC, ...)
+ESC              Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...)
 
 
 Debug commands:
