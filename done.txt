@@ -113,3 +113,6 @@ to the mesh' normals direction ! Flip them resolved it.
   exception : 
    Mask dimensions must be greater than or equal to the dimensions of the Navi's internal texture.
    Mask Dimensions: 400x300, Texture Dimensions: 512x512
+
+- VNCPlugin : kbd events OK but kbd mapping is strange azerty vs qwerty (virtual keys to debug)
+=> fixed by using getKeyboardLayout() and MapVirtualKeyEx(), still some minor addons to do
