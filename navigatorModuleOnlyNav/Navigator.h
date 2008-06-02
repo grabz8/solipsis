@@ -43,7 +43,8 @@ public:
     enum QueryFlags
     {
         QFNaviPanel = 1<<0,
-        QFVNCPanel = QFNaviPanel<<1,
+        QFVLCPanel = QFNaviPanel<<1,
+        QFVNCPanel = QFVLCPanel<<1,
         QFAvatar = QFVNCPanel<<1,
         QFObject = QFAvatar<<1,
         QFGizmo = QFObject<<1
@@ -73,6 +74,7 @@ protected:
     Real mMaxObjectPickingDistance;
     Real mMaxAvatarPickingDistance;
     Real mMaxNaviPickingDistance;
+    Real mMaxVLCPickingDistance;
     Real mMaxVNCPickingDistance;
     RaySceneQuery* mRaySceneQuery;
     MovableObject* mPickedMovable;
@@ -167,6 +169,7 @@ public:
                         Vector2& closestUV,
                         Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
                         int& naviX, int& naviY);
+    bool is1VLCHitByMouse(MovableObject*& vlcMovableObj);
     bool is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY);
     void computeVncHit(Vector2& closestUV,
                        Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,

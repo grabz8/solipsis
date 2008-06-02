@@ -1,3 +1,26 @@
+/*
+This source file is part of Solipsis
+    (Solipsis is an opensource decentralized Metaverse platform)
+For the latest info, see http://www.solipsis.org/
+
+Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
+Author JAN Gregory
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
@@ -32,7 +55,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     mOgrePeerManager(0),
     mNavigatorGUI(0),
     mMaxNaviPickingDistance(10),
-    mMaxVNCPickingDistance(5),
+    mMaxVLCPickingDistance(10),
+    mMaxVNCPickingDistance(8),
     mMaxAvatarPickingDistance(10),
     mMaxObjectPickingDistance(20),
     mRaySceneQuery(0),
@@ -411,6 +435,7 @@ void Navigator::demoVLC(const String params)
 
         // Creates the VLC Plane and subsequent NaviMaterial
         Entity* vlcEnt = mSceneMgr->createEntity("demoVLC", "demoVNCPlane.mesh");
+        vlcEnt->setQueryFlags(QFVLCPanel);
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
         ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
         vlcExtTextSrc->setParameter("mrl", mrl);
@@ -557,7 +582,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
         if (it->movable && (it->distance > 0))
         {
             if (movablesList.length() > 0) movablesList += ", ";
-            movablesList += it->movable->getName() + ":" + StringConverter::toString(it->distance);
+            movablesList += it->movable->getName() + ":" + StringConverter::toString(it->distance) + ":" + StringConverter::toString(it->movable->getQueryFlags());
             // stop checking if we have found a raycast hit that is closer
             // than all remaining entities
             if ((closestDistance >= 0.0f) && (closestDistance < it->distance))
@@ -647,7 +672,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             else // SInWorld
             {
                 // stop checking if we are too far
-                if (it->distance >= std::max(std::max(mMaxNaviPickingDistance, mMaxVNCPickingDistance), mMaxAvatarPickingDistance))
+                if (it->distance >= std::max(std::max(std::max(mMaxNaviPickingDistance, mMaxVLCPickingDistance), mMaxVNCPickingDistance), mMaxAvatarPickingDistance))
                     break;
                 // only check this result if its a hit against an entity
                 /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
@@ -670,7 +695,8 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                         closestTriUV0, closestTriUV1, closestTriUV2))
                     {
                         if (((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
-                            ((it->movable->getQueryFlags() == QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)))
+                            ((it->movable->getQueryFlags() == QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)) ||
+                            ((it->movable->getQueryFlags() == QFVLCPanel) && (it->distance < mMaxVLCPickingDistance)))
                             mPickedMovable = it->movable;
                     }
                 }
@@ -684,6 +710,25 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     {
         closestHitPoint = mouseRay.getPoint(closestDistance);
         OGRE_LOG("Navigator::computeMousePicking() found movable=" + mPickedMovable->getName() + ", closestDistance=" + StringConverter::toString(closestDistance) + ", closestHitPoint=" + StringConverter::toString(closestHitPoint));
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
+{
+    // if 1 Navi entity hit
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFNaviPanel))
+    {
+        naviName = "WWW_" + mPickedMovable->getName();
+        // compute texture coordinates of the hit
+        computeNaviHit(naviName,
+                       closestUV,
+                       closestTriUV0, closestTriUV1, closestTriUV2,
+                       naviX, naviY);
+        OGRE_LOG("Navigator::is1NaviHitByMouse() found Navi movable=" + mPickedMovable->getName() + ", naviName=" + naviName + ", (naviX, naviY)=(" + StringConverter::toString(naviX) + ", " + StringConverter::toString(naviY) + ")");
         return true;
     }
 
@@ -717,36 +762,17 @@ void Navigator::computeNaviHit(const String& naviName,
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
+bool Navigator::is1VLCHitByMouse(MovableObject*& vlcMovableObj)
 {
     // if 1 Navi entity hit
-    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFNaviPanel))
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFVLCPanel))
     {
-        naviName = "WWW_" + mPickedMovable->getName();
-        // compute texture coordinates of the hit
-        computeNaviHit(naviName,
-                       closestUV,
-                       closestTriUV0, closestTriUV1, closestTriUV2,
-                       naviX, naviY);
-        OGRE_LOG("Navigator::is1NaviHitByMouse() found Navi movable=" + mPickedMovable->getName() + ", naviName=" + naviName + ", (naviX, naviY)=(" + StringConverter::toString(naviX) + ", " + StringConverter::toString(naviY) + ")");
+        vlcMovableObj = mPickedMovable;
+        OGRE_LOG("Navigator::is1VLCHitByMouse() found VLC movable=" + mPickedMovable->getName());
         return true;
     }
 
     return false;
-}
-
-
-//-------------------------------------------------------------------------------------
-void Navigator::computeVncHit(Vector2& closestUV,
-                              Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
-                              Vector2& vncXY)
-{
-    // uv computation found into the "Pick" sample of MS Direct SDK
-    Vector2 dt1 = closestTriUV1 - closestTriUV0;
-    Vector2 dt2 = closestTriUV2 - closestTriUV0;
-    vncXY.x = closestTriUV0.x + closestUV.x*dt1.x + closestUV.y*dt2.x;
-    vncXY.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
-    OGRE_LOG("Navigator::computeVncHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", vncXY=" + StringConverter::toString(vncXY));
 }
 
 //-------------------------------------------------------------------------------------
@@ -765,6 +791,19 @@ bool Navigator::is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY)
     }
 
     return false;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::computeVncHit(Vector2& closestUV,
+                              Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                              Vector2& vncXY)
+{
+    // uv computation found into the "Pick" sample of MS Direct SDK
+    Vector2 dt1 = closestTriUV1 - closestTriUV0;
+    Vector2 dt2 = closestTriUV2 - closestTriUV0;
+    vncXY.x = closestTriUV0.x + closestUV.x*dt1.x + closestUV.y*dt2.x;
+    vncXY.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
+    OGRE_LOG("Navigator::computeVncHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", vncXY=" + StringConverter::toString(vncXY));
 }
 
 //-------------------------------------------------------------------------------------
@@ -1618,7 +1657,7 @@ bool Navigator::mdlrXMLImport()
 	{
 		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
 		Radian angle = pldir.getYaw();
-		Ogre::Vector3 dep = Vector3(1.5,0,0);
+		Ogre::Vector3 dep = Vector3(2.0,0,0);
 
 		Real cosY = Math::Cos(angle);
 		Real sinY = Math::Sin(angle);

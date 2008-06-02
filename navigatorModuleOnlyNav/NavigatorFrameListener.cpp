@@ -1,7 +1,8 @@
 #include "NaviManager.h"
 #include "Navi.h"
+#include "OgreTimer.h"
 #include "OgreExternalTextureSourceManager.h"
-#include "OgreExternalTextureSourceEx.h"
+#include "ExternalTextureSourceEx.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
@@ -10,6 +11,8 @@ using namespace NaviLibrary;
 using namespace Solipsis;
 
 #define MOUSE_WHEEL_FACTOR (1.0f/120.0f)*0.25f
+#define ESCAPE_HITS_CANCEL_FOCUS_DURATION 1000
+#define ESCAPE_HITS_CANCEL_FOCUS 2
 
 //-------------------------------------------------------------------------------------
 NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
@@ -17,7 +20,9 @@ NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     mNavigator(navigator),
     mBoundingBoxesShows(false),
     mCameraMode(CMDetached),
-    mSavedCameraMode(CMDetached)
+    mSavedCameraMode(CMDetached),
+    mEscapeHitsB4CancellingFocus(0),
+    mLastEscapeHitTimer(0)
 {
     mStandardOverlay = OverlayManager::getSingleton().getByName("Solipsis/StandardOverlay");
     if (mStandardOverlay != 0)
@@ -240,12 +245,53 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 		}
 	}
 
+    // Escape hits count to cancel focus Navi/VNC/...
+    if (evt.mKey == KC_ESCAPE)
+    {
+        unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
+        if (mEscapeHitsB4CancellingFocus == 0)
+            mLastEscapeHitTimer = now;
+        if (now - mLastEscapeHitTimer < ESCAPE_HITS_CANCEL_FOCUS_DURATION)
+            mEscapeHitsB4CancellingFocus++;
+        else
+            mEscapeHitsB4CancellingFocus = 1;
+        mLastEscapeHitTimer = now;
+    }
+
     // Updating Navi with the key pressed
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused()) 
-		return true;
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            NaviManager::Get().deFocusAllNavis();
+        }
+        return true;
+    }
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
+
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            return true;
+        }
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+        ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+        Evt vncEvt;
+        vncEvt.mKeyboard = evt;
+        vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        return true;
+    }
 
     switch (evt.mKey)
     {
@@ -323,6 +369,20 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
     // Updating Navi with the key released
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
 		return true;
+
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    {
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+        ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+        Evt vncEvt;
+        vncEvt.mKeyboard = evt;
+        vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        return true;
+    }
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar != 0)
@@ -428,7 +488,12 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
             String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
             ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
             ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-            vncExtTextSrc->mouseEvt(mtlName, vncXY, ExternalTextureSourceEx::MKE_MOUSEMOVED);
+            Evt vncEvt;
+            vncEvt.mType = evt.mType;
+            vncEvt.mMouse.mState = evt.mState;
+            vncEvt.mMouse.mState.mXreal = vncXY.x;
+            vncEvt.mMouse.mState.mYreal = vncXY.y;
+            vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
         }
     }
 
@@ -550,12 +615,24 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             String naviName;
             int naviX, naviY;
             Avatar* avatar;
-            MovableObject* vncMovableObj;
+            MovableObject* vncMovableObj = 0;
             Vector2 vncXY;
             if (navigatorGUI->isContextVisible())
                 navigatorGUI->contextHide();
-            else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible() && mNavigator->is1AvatarHitByMouse(avatar))
-                navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, "look#talk#cancel");
+            else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
+            {
+                MovableObject* vlcMovableObj = 0;
+                if (mNavigator->is1AvatarHitByMouse(avatar))
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
+                else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
+                else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
+                {
+                    Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
+                    String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                }
+            }
             else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
             {
                 NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
@@ -569,8 +646,12 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
                 ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
                 ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-                ExternalTextureSourceEx::eMouseKbdEvent mke = (evt.mState.mButtons & MBLeft) ? ExternalTextureSourceEx::MKE_MOUSELBTNDWN : ((evt.mState.mButtons & MBRight) ? ExternalTextureSourceEx::MKE_MOUSERBTNDWN : ExternalTextureSourceEx::MKE_MOUSEMBTNDWN);
-                vncExtTextSrc->mouseEvt(mtlName, vncXY, mke);
+                Evt vncEvt;
+                vncEvt.mType = evt.mType;
+                vncEvt.mMouse.mState = evt.mState;
+                vncEvt.mMouse.mState.mXreal = vncXY.x;
+                vncEvt.mMouse.mState.mYreal = vncXY.y;
+                vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
             }
         }
         else if ((mNavigator->getState() == Navigator::SModeling) &&
@@ -655,8 +736,12 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                 String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
                 ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
                 ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-                ExternalTextureSourceEx::eMouseKbdEvent mke = (evt.mState.mButtons & MBLeft) ? ExternalTextureSourceEx::MKE_MOUSELBTNUP : ((evt.mState.mButtons & MBRight) ? ExternalTextureSourceEx::MKE_MOUSERBTNUP : ExternalTextureSourceEx::MKE_MOUSEMBTNUP);
-                vncExtTextSrc->mouseEvt(mtlName, vncXY, mke);
+                Evt vncEvt;
+                vncEvt.mType = evt.mType;
+                vncEvt.mMouse.mState = evt.mState;
+                vncEvt.mMouse.mState.mXreal = vncXY.x;
+                vncEvt.mMouse.mState.mYreal = vncXY.y;
+                vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
             }
         }
         else if ((mNavigator->getState() == Navigator::SModeling) &&

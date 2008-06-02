@@ -26,7 +26,10 @@ public:
         NAVI_LOGIN = 0,
         NAVI_OPTIONS,
         NAVI_CHAT,
-        NAVI_CONTEXT,
+        NAVI_CTXTAVATAR,
+        NAVI_CTXTWWW,
+        NAVI_CTXTVLC,
+        NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
         NAVI_AVATARMAIN,
@@ -43,6 +46,7 @@ protected:
     static const std::string mNavisNames[NAVI_COUNT];
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
+    int mCurrentCtxtPanel;
 #ifdef UIDEBUG
     bool mTreeDirty;
 #endif
@@ -63,9 +67,10 @@ public:
     void inWorld();
 
     // Contextual panel
-    void contextShow(int x, int y, const std::string& items);
+    void contextShow(int x, int y, NaviPanel ctxtPanel, const String& params);
     bool isContextVisible();
     void contextHide();
+    void contextDestroy();
 
     // Main modeler panel
     void modelerMainShow();
@@ -277,8 +282,6 @@ protected:
 	// Update the sliders modifiers
 	void avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale);
 
-	// Time of the last click on a specific action
-	double lastTime;
     // Start mode link when the user click on the Menu PopUp on 'link'
     bool mModeLink;
     bool mLockAmbientDiffuse;
@@ -297,6 +300,9 @@ protected:
     NaviPanel getNaviPanel(const std::string& naviName);
     void naviToShowPageLoaded(const NaviData& naviData);
     void hidePreviousNavi();
+
+public:
+    bool hideNavi(const std::string& naviName);
 };
 
 } // namespace Solipsis

@@ -25,8 +25,8 @@ protected:
     bool mBoundingBoxesShows;
     CameraMode mCameraMode;
     CameraMode mSavedCameraMode;
-
-    Real time;
+    int mEscapeHitsB4CancellingFocus;
+    unsigned long mLastEscapeHitTimer;
 
 public:
     NavigatorFrameListener(Navigator* navigator);

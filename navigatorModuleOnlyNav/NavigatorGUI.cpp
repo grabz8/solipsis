@@ -16,7 +16,10 @@ const std::string NavigatorGUI::mNavisNames[] = {
     "uilogin",
     "uioptions",
     "uichat",
-    "uicontext",
+    "uictxtavatar",
+    "uictxtwww",
+    "uictxtvlc",
+    "uictxtvnc",
     "uimdlrmain",
     "uimdlrprop",
     "uiavatarmain",
@@ -30,7 +33,7 @@ const std::string NavigatorGUI::mNavisNames[] = {
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
     mCurrentNavi(-1),
-	lastTime(0.)
+    mCurrentCtxtPanel(-1)
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
@@ -44,6 +47,9 @@ NavigatorGUI::~NavigatorGUI()
 {
     // Hide previous Navi UI
     hidePreviousNavi();
+
+    // Destroy context Navi UI panel
+    contextDestroy();
 
     // Finalizing Navi
     delete mNaviMgr;
@@ -149,41 +155,53 @@ void NavigatorGUI::inWorld()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::contextShow(int x, int y, const std::string& items)
+void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& params)
 {
-    if (mNavisStates[NAVI_CONTEXT] == NSNotCreated)
+    if (mCurrentCtxtPanel != -1)
+        contextHide();
+    // Create Navi UI context
+    // Lua
+    if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", mNavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
     {
-        // Create Navi UI context
-        // Lua
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", mNavisNames[NAVI_CONTEXT].c_str(), x, y, items.c_str()))
-        {
-            OGRE_LOG("Navigator::contextShow() Unable to create GUI called " + mNavisNames[NAVI_CONTEXT]);
-            return;
-        }
-        mNavisStates[NAVI_CONTEXT] = NSCreated;
+        OGRE_LOG("Navigator::contextShow() Unable to create GUI called " + mNavisNames[ctxtPanel]);
+        return;
     }
-    else
-        mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT])->show(true);
+    mNavisStates[ctxtPanel] = NSCreated;
+    mCurrentCtxtPanel = ctxtPanel;
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isContextVisible()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT]);
+    if (mCurrentCtxtPanel == -1) return false;
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
     return ((navi != 0) && navi->getVisibility());
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::contextHide()
 {
-    if (mNavisStates[NAVI_CONTEXT] != NSNotCreated)
+    if (mCurrentCtxtPanel == -1) return;
+    if (mNavisStates[mCurrentCtxtPanel] != NSNotCreated)
     {
-        // Destroy Navi UI context
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CONTEXT]);
+        // Hide Navi UI context
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
         navi->hide();
-        mNaviMgr->destroyNavi(navi);
-        mNavisStates[NAVI_CONTEXT] = NSNotCreated;
+        mCurrentCtxtPanel = -1;
     }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::contextDestroy()
+{
+    if (mCurrentCtxtPanel == -1) return;
+    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
+
+    // Destroy Navi UI context
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    mNaviMgr->destroyNavi(navi);
+    mNavisStates[mCurrentCtxtPanel] = NSNotCreated;
+    mCurrentCtxtPanel = -1;
 }
 
 //-------------------------------------------------------------------------------------
@@ -2475,6 +2493,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         vlcExtTextSrc->createDefinedTexture(mtlName);
         objEntity->setMaterialName(mtlName);
+        objEntity->setQueryFlags(Navigator::QFVLCPanel);
     }
 }
 
@@ -4009,6 +4028,21 @@ void NavigatorGUI::hidePreviousNavi()
         mNavisStates[mCurrentNavi] = NSNotCreated;
         mCurrentNavi = -1;
     }
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::hideNavi(const std::string& naviName)
+{
+    // Hide 1 Navi UI
+    NaviPanel panel = getNaviPanel(naviName);
+    if (panel == -1) return false;
+    if (mNavisStates[panel] == NSNotCreated) return false;
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(naviName);
+    if (navi == 0) return false;
+    navi->hide();
+    if (mCurrentNavi == panel) mCurrentNavi = -1;
+    if (mCurrentCtxtPanel == panel) mCurrentCtxtPanel = -1;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
