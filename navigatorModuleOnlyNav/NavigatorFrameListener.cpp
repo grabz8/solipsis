@@ -765,7 +765,6 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     if (mCamera->getParentSceneNode() != 0)
         mCamera->getParentSceneNode()->detachObject(mCamera);
 
-	MouseEvt mouseEvt;
     switch (mode)
     {
     case CMDetached:
