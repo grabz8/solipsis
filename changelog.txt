@@ -520,3 +520,10 @@ Events (LUA commands, mouse, keyboards) sent to VLC/VNC plugins with the extende
 Keyboard events now supported by VNC plugin
 
 ---------------------------
+03/06/08
+
+GPL2.0 licence header added into sources
+addIntoCfg.bat single instance moved into Common
+warning about vc7 added into readme.txt
+
+---------------------------

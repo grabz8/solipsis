@@ -1,4 +1,11 @@
 --------------------------------------------------------------------------------
+                               S O L I P S I S
+--------------------------------------------------------------------------------
+Solipsis is an opensource decentralized Metaverse platform
+For the latest info, see http://www.solipsis.org/
+
+
+--------------------------------------------------------------------------------
 CONFIG
 --------------------------------------------------------------------------------
 
@@ -94,9 +101,9 @@ To run the Peer application you currently have to specify host, port and verbosi
 HOW TO BUILD
 --------------------------------------------------------------------------------
 
-vcX stands for Visual config (vc7 or vc8)
+vcX stands for Visual config (vc7 or vc8 or vc9), be aware vc7 projects are no more up-to-date so it s at your own risk
 
-Install Visual Studio 2005 + SP1 package
+Install Visual Studio 2005 + SP1 package or VS 2008
 If you are using Visual Studio Express 2005, upgrade it with the SP1 package
 Update the default Visual Studio COREWIN properties XML file to add system libraries:
  VSExpress2005 C:\Program Files\Microsoft Visual Studio 8\VC\VCProjectDefaults\corewin_express.vsprops
@@ -190,8 +197,9 @@ Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced /
  XPCOM_DEBUG_BREAK = warn
 
 LLMozLib was originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll, msvcr71.dll, msvcr71d.dll
-are necessary when Solipsis is compiled/linked on VC > 7.1, unfortunately those DLLs were not packaged in
-a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist
+are necessary when Solipsis is compiled/linked in Debug mode on VC > 7.1, unfortunately those DLLs were not
+packaged in a redistributable, you can find them into DevTools\llmozlib\libraries\i686-win32\vc71redist OR
+run navigatorModuleOnlyNav\copyDebugVC71RedistFiles.bat
 
 In Network configs, before launching, don t forget to run:
 navigatorModuleOnlyNav\copyFirefoxPlugins.bat

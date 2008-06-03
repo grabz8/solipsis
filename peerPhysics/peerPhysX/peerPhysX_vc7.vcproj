@@ -47,7 +47,7 @@
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
+$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -101,7 +101,7 @@ $(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(Proj
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
+$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\peerSimulator\$(ConfigurationName)\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -157,7 +157,7 @@ $(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(Proj
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Debug&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Debug\plugins.cfg&quot;
+$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Debug\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -211,7 +211,7 @@ $(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(Proj
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
 				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Release&quot; /y
-$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Release\plugins.cfg&quot;
+$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\Release\plugins.cfg&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>

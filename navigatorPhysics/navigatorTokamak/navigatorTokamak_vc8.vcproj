@@ -95,7 +95,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

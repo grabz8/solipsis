@@ -39,7 +39,8 @@ Some rules for developpers
  3rd-parties into DevTools
  . . .
 
-2- create as many configuration projects as you can (Visual Studio 2003 = vc7, Visual Studio 2005 = vc8, Visual Studio 2008 = vc9, ...)
+2- create as many configuration projects as you can (Visual Studio 2005 = vc8, Visual Studio 2008 = vc9, ...)
+   Visual Studio 2003 = vc7 is no more used
 
 3- if you need some third-parties (libraries, ...), check it is not already available into DevTools directory
  tinyxml,
@@ -65,3 +66,8 @@ Coding rules
 1- include <> if header file is outside of the project, include "" if header file is in the same project
 
 2- add/use doxygen comments
+
+3- always add current GPL licence header into your new source files
+
+4- all sources are in DOS format (for instance), check you commit files in this format (run a file cygwin command)
+
