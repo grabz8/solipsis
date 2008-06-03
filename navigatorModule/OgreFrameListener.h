@@ -1,35 +1,24 @@
 /*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+This source file is part of Solipsis
+    (Solipsis is an opensource decentralized Metaverse platform)
+For the latest info, see http://www.solipsis.org/
 
-Copyright (c) 2000-2006 Torus Knot Software Ltd
-Also see acknowledgements in Readme.html
+Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
+Author JAN Gregory
 
-You may use this sample code for anything you like, it is not covered by the
-LGPL like the rest of the engine.
------------------------------------------------------------------------------
-*/
-/*
------------------------------------------------------------------------------
-Filename:    ExampleFrameListener.h
-Description: Defines an example frame listener which responds to frame events.
-This frame listener just moves a specified camera around based on
-keyboard and mouse movements.
-Mouse:    Freelook
-W or Up:  Forward
-S or Down:Backward
-A:        Step left
-D:        Step right
-             PgUp:     Move upwards
-             PgDown:   Move downwards
-             F:        Toggle frame rate stats on/off
-             R:        Render mode
-             T:        Cycle texture filtering
-                       Bilinear, Trilinear, Anisotropic(8)
-             P:        Toggle on/off display of camera position / orientation
------------------------------------------------------------------------------
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #ifndef __OgreFrameListener_h__
