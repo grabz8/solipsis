@@ -187,7 +187,8 @@ Character::Character(String pFileName, String pName, SceneManager* pSceneMgr) :
 		HashMap<String,ushort> subMeshNameMap = mesh->getSubMeshNameMap();
 		for(HashMap<String,ushort>::iterator sm = subMeshNameMap.begin(); sm != subMeshNameMap.end(); sm++)
 		{
-			sprintf(name, "%s_part%i", mName.data(), id++);
+			Path subName( (*sm).first );
+			sprintf(name, "%s", subName.getLastFileName(true).data() );
 
 			TiXmlElement bodyPartElement("BodyPart");
 			bodyPartElement.SetAttribute("name",name);

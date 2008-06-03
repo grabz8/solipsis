@@ -677,18 +677,45 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 		switch( pTab )
 		{
 		case 0:	// animations tab
-			if(avatar->getNumAnimations() > 0)
 			{
-				// ...
+				navi->evaluateJS("$('avatarTabbers').tabber.tabShow(0)");
+
+				// Setup the animation list
+				vector<std::string> list;
+				for(int i=0; i<avatar->getNumAnimations(); i++)
+					list.push_back( avatar->getEntity()->getSkeleton()->getAnimation( i )->getName() );
+				std::string text = avatar->getEntity()->getSkeleton()->getAnimation( avatar->getCurrentAnimation() )->getName();
+				navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
+				text = "";
+				vector<std::string>::iterator iter = list.begin();
+				int id = 0;
+				while(iter!=list.end())
+				{
+					text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
+					text += (*iter).data();
+					text += "')>";
+					text += (*iter).data();
+					text += "</a></div>";
+					iter++;
+				}
+				navi->evaluateJS("$('animationSelectItem').innerHTML = \"" + text + "\"");
+
+				int nbItem = list.size();
+				if( nbItem < 7 )
+					navi->evaluateJS("$('animationSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
+				list.clear();
 			}
 			break;
 		case 1:	//  properties tab
 			{
+				navi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
+
 				// height
 				navi->evaluateJS("height.onchange = function() {}");
 				Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
 				navi->evaluateJS("height.setValue(" + StringConverter::toString(int((size.y-0.5)*100)) + ")");
 				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
+
 				navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
 
 				// bones
@@ -741,6 +768,8 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 			break;
 		case 2: // material
 			{
+				navi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
+
 				int type = AvatarEditor::getSingletonPtr()->selectType;
 				ModifiableMaterialObject* object;
 				
@@ -762,7 +791,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
 				navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
 				navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
-				navi->evaluateJS("shininess.setValue(" + StringConverter::toString(material->getShininess()*100) + ")");
+				navi->evaluateJS("shininess.setValue(" + StringConverter::toString(Real(material->getShininess()/128.)*100) + ")");
 				navi->evaluateJS("transparency.setValue("+ StringConverter::toString(material->getAlpha()*100) + ")");
 				UV = material->getTextureScroll() ;
 				navi->evaluateJS("scrollU.setValue(" + StringConverter::toString(UV.x*100+50) + ")");
@@ -1063,7 +1092,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
 			navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
 			navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
-			navi->evaluateJS("shininess.setValue(" + StringConverter::toString(obj->getShininess()*100) + ")");
+			navi->evaluateJS("shininess.setValue(" + StringConverter::toString(Real(obj->getShininess()/128.)*100) + ")");
 			navi->evaluateJS("transparency.setValue(" + StringConverter::toString(obj->getAlpha()*100) + ")");
 			UV = obj->getMaterialManager()->getTextureScroll();
 			navi->evaluateJS("scrollU.setValue(" + StringConverter::toString(UV.x*100+50) + ")");
@@ -2316,7 +2345,7 @@ void NavigatorGUI::modelerPropShininess(const NaviData& naviData)
 
 	Object3D *obj = mNavigator->mModeler->getSelected();
 	if( obj != 0 )
-		obj->setShininess( atoi(value.c_str())/100. );
+		obj->setShininess( atoi(value.c_str())/1.28 );
 }
 
 //-------------------------------------------------------------------------------------
@@ -2766,19 +2795,10 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 	{
 		navi->evaluateJS(std::string("$('AnimPlayPause').value = 'Pause'"));
 		navi->evaluateJS(std::string("$('AnimTime').style = 'display: block'"));
-		user->setState(Avatar::State(avatar->getCurrentAnimation()+1));
-		user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation()+1)->getName());
+		user->setState(Avatar::State(avatar->getCurrentAnimation()));
+		user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation())->getName());
 	}
-	
-	std::string text("$('AnimName').innerHTML = '<p>Animation ");
-	text += StringConverter::toString(avatar->getCurrentAnimation()+1);
-	text += "//";
-	text += StringConverter::toString(avatar->getNumAnimations());
-	text += "<br/><b>";
-	text += user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation())->getName();
-	text += "</b></p>'";
-	navi->evaluateJS(text);
-	
+		
 	// ...
 }
 //-------------------------------------------------------------------------------------
@@ -2805,12 +2825,12 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 	unsigned int numAnim = avatar->getNumAnimations();
 	unsigned int current = avatar->getCurrentAnimation();
 	if(++current >= numAnim) current = 0;
-	//avatar->setCurrentAnimation(current);
+	avatar->setCurrentAnimation(current);
 	
 	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
-	//user->stopAnimation();
-	//user->setState(Avatar::State(current+1));
-	//user->startAnimation( text );
+	user->stopAnimation();
+	user->setState(Avatar::State(current+1));
+	user->startAnimation( text );
 
 	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
@@ -2825,12 +2845,12 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 	unsigned int numAnim = avatar->getNumAnimations();
 	int current = avatar->getCurrentAnimation();
 	if(--current < 0) current = numAnim-1;
-	//avatar->setCurrentAnimation(current);
+	avatar->setCurrentAnimation(current);
 
 	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
-	//user->stopAnimation();
-	//user->setState(Avatar::State(current+1));
-	//user->startAnimation( text );
+	user->stopAnimation();
+	user->setState(Avatar::State(current+1));
+	user->startAnimation( text );
 
 	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
@@ -3557,7 +3577,7 @@ void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
-		material->setShininess( atoi(value.c_str())/100. );
+		material->setShininess( atoi(value.c_str())*1.28 );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
@@ -3998,41 +4018,9 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 		list->clear();
 	}
 	else if (naviPanel == NAVI_AVATARPROP)
-	{
-		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
-		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-		Avatar* user = mNavigator->getUserAvatar();
-
-		// Setup the animation list
-		vector<std::string> list;
-		for(int i=0; i<avatar->getNumAnimations(); i++)
-			list.push_back( avatar->getEntity()->getSkeleton()->getAnimation( i )->getName() );
-		std::string text = avatar->getEntity()->getSkeleton()->getAnimation( avatar->getCurrentAnimation() )->getName();
-		navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
-		text = "";
-		vector<std::string>::iterator iter = list.begin();
-		int id = 0;
-		while(iter!=list.end())
-		{
-			text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
-			text += (*iter).data();
-			text += "')>";
-			text += (*iter).data();
-			text += "</a></div>";
-			iter++;
-		}
-		navi->evaluateJS("$('animationSelectItem').innerHTML = \"" + text + "\"");
-
-		avatarTabberLoad(1);
-		navi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
-
-		int nbItem = list.size();
-		if( nbItem < 7 )
-			navi->evaluateJS("$('animationSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
-		list.clear();
-	}
+		avatarTabberLoad( 1 );
     else if (naviPanel == NAVI_MODELERPROP)
-        modelerTabberLoad(0);
+        modelerTabberLoad( 0 );
 	
 
     // Show Navi UI
