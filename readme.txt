@@ -138,6 +138,16 @@ Download the BOOST package release 1.34.1 (http://sourceforge.net, search boost 
 Download the FMOD EX package (http://www.fmod.org/index.php/download),
  install it and define your FMOD_PATH env. var. (eg. C:\Program Files\FMOD SoundSystem\FMOD Programmers API Win32\api)
 
+Peer module is using Ageia PhysX:
+ Download 2 packages runtime & SDK on http://devsupport.ageia.com
+ Download runtime : PhysX_7.06.25_SystemSoftware.exe
+ Download SDK : PhysX_2.7.2_SDK_Core.exe
+ Define your PHYSX_DIR env. var.
+ After compilation, run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
+Last compilation performed with:
+ PhysX_7.11.13_SystemSoftware.exe
+ PhysX_2.7.3_SDK_Core.exe
+
 Get SVN repository for Solipsis
 
 Open ogrenew/Ogre_vc8.sln
@@ -155,20 +165,13 @@ If you are using Ogre prebuilt-SDK
 Open solipsis_vcX.sln
 Batch build Navigator project (Debug+Release)
 
+Finally, open/build plugins from their dedicated solutions:
+ voiceEngine_vcX.sln
+ VNCPlugin_vcX.sln
+ VLCPlugin_vcX.sln
+
 Check into the Navigator project settings you set correctly the Debug/Working directory to $(TargetDir)
 Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navigator.exe
-(avoid to launch the Debug config, you will be too often prompted by Mozilla/LLMozLib assertions,
-they will be suppressed in the future)
-
-If you are using Ageia PhysX:
- Download 2 packages runtime & SDK on http://devsupport.ageia.com
- Download runtime : PhysX_7.06.25_SystemSoftware.exe
- Download SDK : PhysX_2.7.2_SDK_Core.exe
- Define your PHYSX_DIR env. var.
- Run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
-Last compilation performed with:
- PhysX_7.11.13_SystemSoftware.exe
- PhysX_2.7.3_SDK_Core.exe
 
 To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
