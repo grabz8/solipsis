@@ -527,3 +527,9 @@ addIntoCfg.bat single instance moved into Common
 warning about vc7 added into readme.txt
 
 ---------------------------
+04/06/08
+
+VirtualDive DigitalOcean scene updated with ocean water shader
+EntryGate position+gravity
+
+---------------------------
