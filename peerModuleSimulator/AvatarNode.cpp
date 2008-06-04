@@ -124,8 +124,6 @@ bool AvatarNode::addAwareEntity(Entity* entity)
     {
         OGRE_LOG("AvatarNode::addAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " creating physics of entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
         entity->createPhysics(mPhysicsScene);
-        if (entity->getXmlEntity()->getType() == ETSite)
-            mAvatar.setGravity(true);
     }
 #endif
 

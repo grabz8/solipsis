@@ -38,7 +38,9 @@ protected:
     /// Collision mesh filename
     std::string mCollisionMeshFilename;
     /// Position of the entry gate
-    Ogre::Vector3 mGatePosition;
+    Ogre::Vector3 mEntryGatePosition;
+    /// Gravity enabled on entry gate
+    bool mEntryGateGravity;
 
 public:
     /** Constructor. */
@@ -47,7 +49,9 @@ public:
     virtual ~Site();
 
     /// Get the position of the entry gate
-    const Ogre::Vector3& getGatePosition() { return mGatePosition; }
+    const Ogre::Vector3& getEntryGatePosition() { return mEntryGatePosition; }
+    /// Get the gravity of the entry gate
+    bool entryGateGravityEnabled() { return mEntryGateGravity; }
 
 #ifdef PHYSICSPLUGINS
     /** See Entity. */

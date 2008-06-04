@@ -351,7 +351,8 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
     node->setPosition(18,-58,133);
 
     // Destroy the scene collision mesh
-    mSceneMgr->destroySceneNode(collision);
+    if (collision != 0)
+        mSceneMgr->destroySceneNode(collision);
 
     bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
     Scene* peerScene = new Scene(xmlEntity, isLocal, node);

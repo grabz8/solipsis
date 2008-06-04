@@ -142,8 +142,6 @@
                 top: 150px;
             }
             #demoPhysics1Button { left: 0px; top: 180px; }
-            #peerNewButton { top: 10px; width: 100px; }
-            #peerDO1Button { top: 35px; width: 100px; }
         </style>
     </head>
 
@@ -158,18 +156,18 @@
 					    <li title="Tree" onclick="new NaviData('debugRefreshTree').add({naviName:'uidebug'}).send();">Tree</li>
 				    </ul>
 				    <div id="Helpers" class="mootabs_panel">
-                        <button id="helpersToggleAxisButton" class="buttonRow1" name="buttonHelpersToggleAxis" value="buttonHelpersToggleAxis" type="button" onclick="debugCommand('toggleAxis', document.getElementById('inputHelpersPosAxis').value)">toggleAxis</button>
+                        <button id="helpersToggleAxisButton" class="buttonRow1" name="buttonHelpersToggleAxis" value="buttonHelpersToggleAxis" type="button" onclick="debugCommand('toggleAxis', $('inputHelpersPosAxis').value)">toggleAxis</button>
                         <div id="helpersPosAxisInput">
-                            <input id="inputHelpersPosAxis" class="inputText" name="inputHelpersPosAxis" value="0,0,0" type="text" size="7" onchange="debugCommand('posAxis', document.getElementById('inputHelpersPosAxis').value)" />
+                            <input id="inputHelpersPosAxis" class="inputText" name="inputHelpersPosAxis" value="0,0,0" type="text" size="7" onchange="debugCommand('posAxis', $('inputHelpersPosAxis').value)" />
                         </div>
                         <div id="helpersSclAxisInput">
-                            <input id="inputHelpersSclAxis" class="inputText" name="inputHelpersSclAxis" value="1" type="text" size="1" onchange="debugCommand('sclAxis', document.getElementById('inputHelpersSclAxis').value)" />
+                            <input id="inputHelpersSclAxis" class="inputText" name="inputHelpersSclAxis" value="1" type="text" size="1" onchange="debugCommand('sclAxis', $('inputHelpersSclAxis').value)" />
                         </div>
                         <button id="rotateSunLightButton" class="buttonRow1" name="buttonRotateSunLight" value="buttonRotateSunLight" type="button" onclick="debugCommand('rotateSunLight', '')">rotateSunLight</button>
 				    </div>
 				    <div id="Demos" class="mootabs_panel">
                         <button id="demoNavi1Button" class="buttonRow1" name="buttonDemoNavi1" value="buttonDemoNavi1" type="button" onclick="debugCommand('demoNavi1', '')">demoNavi1</button>
-                        <form id="urlForm" action="" onsubmit="debugCommand('demoNavi2', document.getElementById('inputUrl').value);return false;">
+                        <form id="urlForm" action="" onsubmit="debugCommand('demoNavi2', $('inputUrl').value);return false;">
                             <div id="urlText">URL</div>
                             <div id="urlInput">
                                 <input id="inputUrl" class="inputText" name="inputUrl" value="" type="text" size="30" />
@@ -182,19 +180,19 @@
                             <button id="navGoButton" class="buttonNav" name="buttonNavGo" value="buttonNavStop" type="button" onclick="navCommand('go', '')">Go</button>
                         </div>
                         <button id="demoPhysics1Button" class="buttonRow1" name="buttonDemoPhysics1" value="buttonDemoPhysics1" type="button" onclick="debugCommand('demoPhysics1', '')">demoPhysics1</button>
-                        <form id="urlpwdVNCForm" action="" onsubmit="debugCommand('demoVNC', document.getElementById('inputUrlPwdVNC').value);return false;">
+                        <form id="urlpwdVNCForm" action="" onsubmit="debugCommand('demoVNC', $('inputUrlPwdVNC').value);return false;">
                             <div id="urlpwdVNCText">VNC</div>
                             <div id="urlpwdVNCInput">
                                 <input id="inputUrlPwdVNC" class="inputText" name="inputUrlPwdVNC" value="localhost:5900;solipsis" type="text" size="30" />
                             </div>
                         </form>
-                        <form id="mrlVLCForm" action="" onsubmit="debugCommand('demoVLC', document.getElementById('inputMrlVLC').value);return false;">
+                        <form id="mrlVLCForm" action="" onsubmit="debugCommand('demoVLC', $('inputMrlVLC').value);return false;">
                             <div id="mrlVLCText">VLC</div>
                             <div id="mrlVLCInput">
                                 <input id="inputMrlVLC" class="inputText" name="inputMrlVLC" value="" type="text" size="30" />
                             </div>
                         </form>
-                        <form id="voiceForm" action="" onsubmit="debugCommand('demoVoice', document.getElementById('inputVoice').value);return false;">
+                        <form id="voiceForm" action="" onsubmit="debugCommand('demoVoice', $('inputVoice').value);return false;">
                             <div id="voiceText">Voice</div>
                             <div id="voiceInput">
                                 <input id="inputVoice" class="inputText" name="inputVoice" value="localhost:30000" type="text" size="16" />
@@ -203,8 +201,6 @@
                         <button id="demoVoiceSpeakButton" class="buttonSpeak" name="buttonDemoVoiceSpeak" value="buttonDemoVoiceSpeak" type="button" onclick="debugCommand('demoVoice', 'speak')">Speak !</button>
                     </div>
 				    <div id="Tests" class="mootabs_panel">
-                        <button id="peerNewButton" class="buttonRow1" name="buttonPeerNew" value="buttonPeerNew" type="button" onclick="debugCommand('testEvt', 'peerNew')">peerNew</button>
-                        <button id="peerDO1Button" class="buttonRow1" name="buttonPeerDO1" value="buttonPeerDO1" type="button" onclick="debugCommand('testEvt', 'peerDO1')">peerDO1</button>
 				    </div>
 				    <div id="Tree" class="mootabs_panel">
                         <div id="allTree" />

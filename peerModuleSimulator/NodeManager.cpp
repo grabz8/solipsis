@@ -261,6 +261,29 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  </content>\
 </entity>\
 ";
+            else if (Peer::getSingleton().mSceneDemoLoaded.compare("DigitalOcean1") == 0)
+                xmlSiteStr = "\
+<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\">\
+ <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+ </aabb>\
+ <content>\
+  <lod level=\"0\">\
+   <files>"
+"    <file name=\"DigitalOcean1.xml\" />\
+    <file name=\"scenes/DigitalOcean1.osm\" />\
+    <file name=\"scenes/MEFourmigues.mesh\" />\
+    <file name=\"materials/scripts/fourmigues.material\" />\
+    <file name=\"materials/textures/fourmigues-carree-RGB.jpg\" />\
+    <file name=\"materials/textures/mer.jpg\" />"
+"   </files>\
+  </lod>\
+ </content>\
+</entity>\
+";
             else
                 xmlSiteStr = "\
 <entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\">\
@@ -331,12 +354,14 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         // Create the avatar node
         NodeId siteNodeId = "00000010";
         SiteNode* siteNode = (SiteNode*)mNodes[siteNodeId];
-        Vector3 avatarPos = siteNode->getEntity().getGatePosition();
+        Vector3 avatarPos = siteNode->getEntity().getEntryGatePosition();
+        EntityFlags avatarFlags = EFNone;
+        if (siteNode->getEntity().entryGateGravityEnabled()) avatarFlags |= EFGravity;
         std::stringstream avatarPosStrStrm;
         XmlHelpers::ostreamVector3(avatarPosStrStrm << "<position ", avatarPos) << " />";
         std::string xmlAvatarStr = "\
 <entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
- <flags bitmask=\"" + Ogre::StringConverter::toString(EFGravity) + "\" />\
+ <flags bitmask=\"" + Ogre::StringConverter::toString(avatarFlags) + "\" />\
  " + avatarPosStrStrm.str() + "\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\

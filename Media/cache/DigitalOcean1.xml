@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <peerDatas>
-  <sceneNode name="DigitalOcean1" static="true" filename="DigitalOcean1.osm" />
+  <sceneNode name="DigitalOcean1" static="true" filename="DigitalOcean1.osm" >
+    <entryGate gravity="false" >
+        <position x="30.0" y="-26.0" z="80.0" />
+    </entryGate>
+  </sceneNode>
 </peerDatas>

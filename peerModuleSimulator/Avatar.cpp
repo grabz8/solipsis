@@ -60,6 +60,8 @@ void Avatar::createPhysics(IPhysicsScene* physicsScene)
     mPhysicsCharacter = mPhysicsScene->createCharacter();
     mPhysicsCharacter->create(characterDesc);
 
+    mGravity = mXmlEntity->getFlags() & EFGravity;
+
     mDirty = false;
 }
 

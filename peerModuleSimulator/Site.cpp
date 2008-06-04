@@ -33,7 +33,8 @@ Site::Site(XmlEntity* xmlEntity) :
     Entity(xmlEntity),
     mOSMFilename(""),
     mCollisionMeshFilename(""),
-    mGatePosition(Vector3::ZERO)
+    mEntryGatePosition(Vector3::ZERO),
+    mEntryGateGravity(false)
 {
     // Set the scene collision mesh
     std::string xmlFilename;
@@ -67,10 +68,18 @@ Site::Site(XmlEntity* xmlEntity) :
     if (sceneNodeElt != 0)
     {
         mOSMFilename = sceneNodeElt->Attribute("filename");
-        mCollisionMeshFilename = sceneNodeElt->Attribute("collision");
-        TiXmlElement* gatePosElt;
-        if ((gatePosElt = sceneNodeElt->FirstChildElement("gatePos")) != 0)
-            XmlHelpers::fromXmlEltVector3(gatePosElt, mGatePosition);
+        const char* collisionMeshFilename = sceneNodeElt->Attribute("collision");
+        mCollisionMeshFilename = (collisionMeshFilename != 0) ? collisionMeshFilename : "";
+        TiXmlElement* entryGateElt = sceneNodeElt->FirstChildElement("entryGate");
+        if (entryGateElt != 0)
+        {
+            const char* entryGateGravity = entryGateElt->Attribute("gravity");
+            if (entryGateGravity != 0)
+                mEntryGateGravity = (String(entryGateGravity).compare("true") == 0);
+            TiXmlElement* entryGatePosElt;
+            if ((entryGatePosElt = entryGateElt->FirstChildElement("position")) != 0)
+                XmlHelpers::fromXmlEltVector3(entryGatePosElt, mEntryGatePosition);
+        }
     }
 }
 

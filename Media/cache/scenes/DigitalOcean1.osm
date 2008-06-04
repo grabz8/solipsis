@@ -7,12 +7,9 @@
     </shadowTechnique>
     <entities>
       <entity name="fourmigues001" hidden="false" filename="MEFourmigues.mesh" CastShadows="yes" ReceiveShadows="yes">
-<!--        <position x="0" y="0" z="0" />-->
-<!--        <rotation x="0" y="0" z="0" w="-1" />-->
-<!--        <scale x="1" y="1" z="1" />-->
-        <position x="0" y="-150" z="-600" />
-        <rotation x="0.7071067811865476" y="0" z="0" w="-0.7071067811865476" />
-        <scale x="400" y="400" z="400" />
+        <position x="0" y="0" z="0" />
+        <rotation x="0" y="0" z="0" w="1" />
+        <scale x="1" y="1" z="1" />
       </entity>
     </entities>
 </oe_scene>
