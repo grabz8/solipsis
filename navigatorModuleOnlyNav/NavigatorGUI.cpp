@@ -1227,11 +1227,11 @@ void NavigatorGUI::debugRefreshUrl()
 
 #ifdef DEMO_NAVI2
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
-    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("demoNavi2Video");
+    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
     // Set current url
     char txt[256];
-    sprintf(txt, "$('inputUrl').value = '%s'", mNavigator->demoNavi2GetUrl().c_str());
+    sprintf(txt, "$('inputUrl').value = '%s'", naviDemoNavi2->getCurrentLocation().c_str());
     navi->evaluateJS(txt);
     // Activate/Deactivate Back/Forward buttons
     sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
@@ -2496,10 +2496,10 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		Object3D * obj = mNavigator->mModeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
-	    std::string urlStr = navi->evaluateJS("document.getElementById('MaterialWWWUrl').value");
-	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialWWWWidth').value");
-	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialWWWHeight').value");
-	    std::string fpsStr = navi->evaluateJS("document.getElementById('MaterialWWWFps').value");
+	    std::string urlStr = navi->evaluateJS("$('MaterialWWWUrl').value");
+	    std::string widthStr = navi->evaluateJS("$('MaterialWWWWidth').value");
+	    std::string heightStr = navi->evaluateJS("$('MaterialWWWHeight').value");
+	    std::string fpsStr = navi->evaluateJS("$('MaterialWWWFps').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
@@ -2524,11 +2524,11 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		Object3D * obj = mNavigator->mModeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
-	    std::string mrlStr = navi->evaluateJS("document.getElementById('MaterialVLCMrl').value");
-	    std::string widthStr = navi->evaluateJS("document.getElementById('MaterialVLCWidth').value");
-	    std::string heightStr = navi->evaluateJS("document.getElementById('MaterialVLCHeight').value");
-	    std::string fpsStr = navi->evaluateJS("document.getElementById('MaterialVLCFps').value");
-        std::string paramsStr = navi->evaluateJS("document.getElementById('MaterialVLCParams').value");
+	    std::string mrlStr = navi->evaluateJS("$('MaterialVLCMrl').value");
+	    std::string widthStr = navi->evaluateJS("$('MaterialVLCWidth').value");
+	    std::string heightStr = navi->evaluateJS("$('MaterialVLCHeight').value");
+	    std::string fpsStr = navi->evaluateJS("$('MaterialVLCFps').value");
+        std::string paramsStr = navi->evaluateJS("$('MaterialVLCParams').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
@@ -2557,9 +2557,9 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		Object3D * obj = mNavigator->mModeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
-	    std::string hostStr = navi->evaluateJS("document.getElementById('MaterialVNCHost').value");
-	    std::string portStr = navi->evaluateJS("document.getElementById('MaterialVNCPort').value");
-	    std::string pwdStr = navi->evaluateJS("document.getElementById('MaterialVNCPwd').value");
+	    std::string hostStr = navi->evaluateJS("$('MaterialVNCHost').value");
+	    std::string portStr = navi->evaluateJS("$('MaterialVNCPort').value");
+	    std::string pwdStr = navi->evaluateJS("$('MaterialVNCPwd').value");
         int port = atoi(portStr.c_str());
 
         Entity* objEntity = obj->getEntity();
@@ -3947,7 +3947,7 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
 
 #ifdef DEMO_NAVI2
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
-    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("demoNavi2Video");
+    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
     if (cmd.compare("back") == 0)
         naviDemoNavi2->navigateBack();
@@ -3957,7 +3957,7 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
         naviDemoNavi2->navigateStop();
     else if (cmd.compare("go") == 0)
     {
-    	std::string url = navi->evaluateJS("document.getElementById('inputUrl').value");
+    	std::string url = navi->evaluateJS("$('inputUrl').value");
         naviDemoNavi2->navigateTo(url);
     }
 #endif
