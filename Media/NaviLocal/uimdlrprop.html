@@ -64,6 +64,25 @@
 				//alert(message);
 				new NaviData('sendMessage').add({msg:message}).send();
             }  
+            
+            function decToHex(dec) 
+            {
+                var hexa="0123456789ABCDEF";
+                var hex="";
+                while (dec>15) 
+                {
+                    tmp=dec-(Math.floor(dec/16))*16;
+                    hex=hexa.charAt(tmp)+hex;
+                    dec=Math.floor(dec/16);
+                }
+                hex=hexa.charAt(dec)+hex;
+                if(hex.length <= 1) hex = '0' + hex;
+                return(hex);
+            }
+            function hexToDec(hex) 
+            {
+                return parseInt(hex,16);
+            }
         </script>
 		
 		
@@ -318,8 +337,10 @@
 									</td>
 								</tr>
 								<tr>
-									<td></td>
-									<td></td>
+									<td colspan="2">
+                                        <input type="checkbox" id="doubleSide" onclick="elementClicked('MdlrDoubleSide')">
+                                        Double Side
+                                    </td>
 									<td>Scale U</td>
 									<td>
 										<div class="slider" id="scaleU">

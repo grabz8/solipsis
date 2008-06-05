@@ -218,6 +218,8 @@ public:
     bool startModeling();
     /** Stop the modeling mode. */
     bool endModeling();
+	/** Create a plane. */
+    bool createPlane();
     /** Create a box. */
     bool createBox();
     /** Create a corner. */

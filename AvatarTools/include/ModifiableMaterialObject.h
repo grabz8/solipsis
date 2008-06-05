@@ -150,6 +150,10 @@ public:
 	///param texture Ogre texture to add
 	void addTexture(TexturePtr texture);
 
+	///brief Method which remove a texture from the object's texture list.
+	///param texture Ogre texture to remove.
+	void removeTexture(TexturePtr texture);
+
 
 
 	///brief Method which reset the modifications of the object, i. e. which reset the colour and set the default texture.
@@ -161,6 +165,12 @@ private:
 	TextureVector mTextures;							///brief Collection of possibles textures of the object.
 	TextureVector::iterator mDefaultTextureIterator;	///brief Iterator pointing on the default texture of the object (the first added in fact).
 	TextureVector::iterator mCurrentTextureIterator;	///brief Iterator pointing on the texture which is currently applied on the object.
+
+	ColourValue mBackAmbient;
+	ColourValue mBackDiffuse;
+	ColourValue mBackSpecular;
+	Real mBackShininess;
+	Real mBackTranparency;
 };
 
 }

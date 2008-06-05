@@ -42,6 +42,13 @@ ModifiableMaterialObject::~ModifiableMaterialObject()
 void ModifiableMaterialObject::initialise(const MaterialPtr& material)
 {
 	mModifiedMaterial = new ModifiedMaterial(material);
+
+	mBackAmbient = getColourAmbient();
+	mBackDiffuse = getColourDiffuse();
+	mBackSpecular = getColourSpecular();
+	mBackShininess = getShininess();
+	mBackTranparency = getTransparency();
+
 	if (mModifiedMaterial->hasATexture())
 	{
 		String textureName = mModifiedMaterial->getTextureName();
@@ -145,7 +152,13 @@ void ModifiableMaterialObject::setShininess(const float shininess)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::resetColour()
 {
-	setColour(ColourValue(0.5,0.5,0.5,1));
+	//setColour(ColourValue(0.5,0.5,0.5,1));
+
+	setColourAmbient( mBackAmbient );
+	setColourDiffuse( mBackDiffuse );
+	setColourSpecular( mBackSpecular );
+	setShininess( mBackShininess );
+	setTransparency( mBackTranparency );
 }
 
 
@@ -231,6 +244,13 @@ void ModifiableMaterialObject::addTexture(TexturePtr texture)
 	mTextures.push_back(texture);
 	mDefaultTextureIterator = mTextures.begin();
 	mCurrentTextureIterator = mDefaultTextureIterator;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::removeTexture(TexturePtr texture)
+{
+	setPreviousTextureAsCurrent();
+	mTextures.remove(texture);
 }
 
 

@@ -97,6 +97,25 @@
             $('goodyModelSelectTitre').innerHTML = ""+value;
             new NaviData('GoodyModelSelected').add({item:value}).send();
         }
+        
+        function decToHex(dec) 
+        {
+            var hexa="0123456789ABCDEF";
+            var hex="";
+            while (dec>15) 
+            {
+                tmp=dec-(Math.floor(dec/16))*16;
+                hex=hexa.charAt(tmp)+hex;
+                dec=Math.floor(dec/16);
+            }
+            hex=hexa.charAt(dec)+hex;
+            if(hex.length <= 1) hex = '0' + hex;
+            return(hex);
+        }
+        function hexToDec(hex) 
+        {
+            return parseInt(hex,16);
+        }
     </script>
 
     <style type="text/css">
@@ -538,9 +557,9 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                </td>
-                                <td>
+                                <td colspan="2">
+                                    <input type="checkbox" id="doubleSide" onclick="elementClicked('AvatarDoubleSide')">
+                                    Double Side
                                 </td>
                                 <td>
                                     Scale U
@@ -580,12 +599,16 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="4">
+                                <td colspan="3">
                                     <br>
                                     <br>
                                     <input type="button" value="Add texture" onclick="elementClicked('AvatarAddTexture');updTexture()">
                                     <input type="button" value="Remove texture" onclick="elementClicked('AvatarRemoveTexture');updTexture()">
-                                    <input type="button" value="Apply" onclick="elementClicked('AvatarApplyTexture')">
+                                </td>
+                                <td>
+                                    <br />
+                                    <br />
+                                    <input type="button" value="Reset colour" onclick="elementClicked('AvatarResetColour')">
                                 </td>
                             </tr>
                             <tr valign="middle">

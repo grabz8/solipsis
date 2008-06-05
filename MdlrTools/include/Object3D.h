@@ -41,8 +41,8 @@ namespace Solipsis {
 
 class ModifiedMaterialManager ;
 
-#define PRIMCOUNT 13
-const string SOLTYPESTRING[] = { "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","HALF_CYLINDER","CONE","HALF_CONE","SPHERE","HALF_SPHERE","TORUS","TUBE","RING","OTHER"};
+#define PRIMCOUNT 14
+const string SOLTYPESTRING[] = { "PLANE", "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","HALF_CYLINDER","CONE","HALF_CONE","SPHERE","HALF_SPHERE","TORUS","TUBE","RING","OTHER"};
 typedef std::vector<unsigned int> uintvector;
 typedef std::vector<Real> realvector;
 
@@ -56,6 +56,7 @@ class Object3D
 public:
 	/// brief The 13 primitives that could be created by default
 	enum Type { 
+		PLANE,
 		BOX, CORNER, PYRAMID,
 		PRISM, 
 		CYLINDER, HALF_CYLINDER, CONE, HALF_CONE,
@@ -489,6 +490,16 @@ static Object3D::Type objectStringToType(Ogre::String &toFind)
 	}
 	return Object3D::Type::OTHER;
 }
+
+// ---------------------------------------------------------------------------------
+class Object3DPlane : public Object3D
+{
+public:
+	Object3DPlane(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	{
+        mType = PLANE;
+	}
+};
 
 // ---------------------------------------------------------------------------------
 class Object3DBox : public Object3D

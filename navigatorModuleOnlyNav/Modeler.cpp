@@ -133,6 +133,7 @@ bool Modeler::init(Avatar * playerAvatar)
 	mSelection->mTransformation->createGizmos( node , mSceneManager, mCamera );	
 
 	// Init generic primitives to clone when the creation will be called
+	mGenericPlane = mSceneManager->createEntity( "GenericPlane", "Plane.mesh" );
 	mGenericBox = mSceneManager->createEntity( "GenericBox", "Box.mesh" );
 	mGenericPrism = mSceneManager->createEntity( "GenericPrism", "Prism.mesh" );
 	mGenericCylinder = mSceneManager->createEntity( "GenericCylinder", "Cylinder.mesh" );
@@ -156,7 +157,33 @@ bool Modeler::init(Avatar * playerAvatar)
 	return true; // Success
 }
 
+/// Create a plane.
+bool Modeler::createPlane(Vector3 &player_pos)
+{
+	static int num = -1;
+	char name[31];
+	sprintf(name, "Plane%.3u",++num);
 
+	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(name) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+#ifdef SHADOWS
+	entity->setCastShadows(true);
+#endif
+    entity->setQueryFlags(Navigator::QFObject);
+	node->attachObject( entity );
+
+	Object3DPlane* obj = new Object3DPlane( String(name), node );
+	mSelection->add3DObject(obj);
+	obj->mCentreSelection = player_pos;
+
+	node->setPosition(player_pos);
+	//OGRE_LOG("Modeler::createPlane()");
+	//OGRE_LOG(name);
+	return true;
+}
+
+/// Create a box.
 bool Modeler::createBox(Vector3	&player_pos)
 {
 	static int num = -1;

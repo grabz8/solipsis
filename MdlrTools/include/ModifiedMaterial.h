@@ -47,6 +47,10 @@ public:
 	///param subEntity SubEntity from which the material has to be modified
 	ModifiedMaterial(SubEntity* subEntity);
 
+	///brief Return the owner material
+	///return the owner material
+	MaterialPtr getOwner();
+
 	///brief Return the shininess  of the material
 	///return the shininess  of the material
 	const float getShininess();

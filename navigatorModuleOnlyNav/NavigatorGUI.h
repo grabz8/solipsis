@@ -143,6 +143,7 @@ protected:
     void modelerMainFileSave(const NaviData& naviData);
     void modelerMainFileExit(const NaviData& naviData);
     // Modeler object creation callbacks
+	void modelerMainCreatePlane(const NaviData& naviData);
     void modelerMainCreateBox(const NaviData& naviData);
     void modelerMainCreateCorner(const NaviData& naviData);
     void modelerMainCreatePyramid(const NaviData& naviData);
@@ -197,6 +198,7 @@ protected:
     void modelerColorDiffuse(const NaviData& naviData);
     void modelerColorSpecular(const NaviData& naviData);
     void modelerColorLockAmbientDiffuse(const NaviData& naviData);
+	void modelerDoubleSide(const NaviData& naviData);
     void modelerPropShininess(const NaviData& naviData);
     void modelerPropTransparency(const NaviData& naviData);
     void modelerPropScrollU(const NaviData& naviData);
@@ -266,6 +268,7 @@ protected:
 	void avatarColorDiffuse(const NaviData& naviData);
 	void avatarColorSpecular(const NaviData& naviData);
 	void avatarColorLockAmbientDiffuse(const NaviData& naviData);
+	void avatarDoubleSide(const NaviData& naviData);
 	void avatarPropShininess(const NaviData& naviData);
 	void avatarPropTransparency(const NaviData& naviData);
 	void avatarPropScrollU(const NaviData& naviData);
@@ -275,9 +278,9 @@ protected:
 	void avatarPropRotateU(const NaviData& naviData);
 	void avatarPropTextureAdd(const NaviData& naviData);
 	void avatarPropTextureRemove(const NaviData& naviData);
-	void avatarPropTextureApply(const NaviData& naviData);
 	void avatarPropTexturePrev(const NaviData& naviData);
 	void avatarPropTextureNext(const NaviData& naviData);
+	void avatarPropResetColour(const NaviData& naviData);
 
 
 

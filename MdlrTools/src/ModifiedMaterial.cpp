@@ -48,7 +48,7 @@ mMaterial(material), mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.
 		mTextureUnitState = mPass->getTextureUnitState(0);
 	}else{
 		mTextureUnitState = mPass->createTextureUnitState();
-	}	
+	}
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -78,6 +78,11 @@ mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.5,1))
 	}else{
 		mTextureUnitState = mPass->createTextureUnitState();
 	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+MaterialPtr ModifiedMaterial::getOwner()
+{
+	return mMaterial;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const ColourValue& ModifiedMaterial::getDiffus()

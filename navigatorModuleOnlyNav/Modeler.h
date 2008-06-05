@@ -70,6 +70,8 @@ public:
 	/// Init the modeler mode
 	bool	init(Avatar * playerAvatar);
 	
+	/// Create a plane 
+	bool createPlane(Vector3	&player_pos);
 	/// Create a box 
 	bool createBox(Vector3	&player_pos);
 	/// Create a corner. 
@@ -165,6 +167,7 @@ private :
 	bool				mOnGizmo;
 
 	/// Primitive entities
+	Entity				*mGenericPlane;
 	Entity				*mGenericBox;
 	Entity				*mGenericPrism;
 	Entity				*mGenericCylinder;

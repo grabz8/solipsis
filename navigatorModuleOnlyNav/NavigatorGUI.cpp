@@ -246,6 +246,7 @@ void NavigatorGUI::modelerMainShow()
 	    navi->bind("FileImport", NaviDelegate(this, &NavigatorGUI::modelerMainFileImport));
 	    navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
 	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
+		navi->bind("CreatePlane", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePlane)); 
 		navi->bind("CreateBox", NaviDelegate(this, &NavigatorGUI::modelerMainCreateBox)); 
 		navi->bind("CreateCorner", NaviDelegate(this, &NavigatorGUI::modelerMainCreateCorner)); 
 		navi->bind("CreatePyramid", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePyramid));
@@ -377,6 +378,7 @@ void NavigatorGUI::modelerPropShow()
 		navi->bind("MdlrDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorDiffuse));
 		navi->bind("MdlrSpecular", NaviDelegate(this, &NavigatorGUI::modelerColorSpecular));
 		navi->bind("MdlrLockAmbientDiffuse", NaviDelegate(this, &NavigatorGUI::modelerColorLockAmbientDiffuse));
+		navi->bind("MdlrDoubleSide", NaviDelegate(this, &NavigatorGUI::modelerDoubleSide));
 		navi->bind("MdlrShininess", NaviDelegate(this, &NavigatorGUI::modelerPropShininess));
 		navi->bind("MdlrTransparency", NaviDelegate(this, &NavigatorGUI::modelerPropTransparency));
 		navi->bind("MdlrScrollU", NaviDelegate(this, &NavigatorGUI::modelerPropScrollU));
@@ -587,6 +589,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("AvatarDiffuse", NaviDelegate(this, &NavigatorGUI::avatarColorDiffuse));
 		navi->bind("AvatarSpecular", NaviDelegate(this, &NavigatorGUI::avatarColorSpecular));
 		navi->bind("AvatarLockAmbientDiffuse", NaviDelegate(this, &NavigatorGUI::avatarColorLockAmbientDiffuse));
+		navi->bind("AvatarDoubleSide", NaviDelegate(this, &NavigatorGUI::avatarDoubleSide));
 		navi->bind("AvatarShininess", NaviDelegate(this, &NavigatorGUI::avatarPropShininess));
 		navi->bind("AvatarTransparency", NaviDelegate(this, &NavigatorGUI::avatarPropTransparency));
 		navi->bind("AvatarScrollU", NaviDelegate(this, &NavigatorGUI::avatarPropScrollU));
@@ -596,21 +599,10 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("AvatarRotateU", NaviDelegate(this, &NavigatorGUI::avatarPropRotateU));
 		navi->bind("AvatarAddTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureAdd));
 		navi->bind("AvatarRemoveTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureRemove));
-		navi->bind("AvatarApplyTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureApply));
 		navi->bind("AvatarPrevTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTexturePrev));
 		navi->bind("AvatarNextTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureNext));
-/*		navi->bind("AvatarPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
-		navi->bind("AvatarPositionY", NaviDelegate(this, &NavigatorGUI::modelerPropPositionY));
-		navi->bind("AvatarPositionZ", NaviDelegate(this, &NavigatorGUI::modelerPropPositionZ));
-		navi->bind("AvatarOrientationX", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationX));
-		navi->bind("AvatarOrientationY", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationY));
-		navi->bind("AvatarOrientationZ", NaviDelegate(this, &NavigatorGUI::modelerPropOrientationZ));
-		navi->bind("AvatarScaleX", NaviDelegate(this, &NavigatorGUI::modelerPropScaleX));
-		navi->bind("AvatarScaleY", NaviDelegate(this, &NavigatorGUI::modelerPropScaleY));
-		navi->bind("AvatarScaleZ", NaviDelegate(this, &NavigatorGUI::modelerPropScaleZ));
-		navi->bind("AvatarCollision", NaviDelegate(this, &NavigatorGUI::modelerPropCollision));
-		navi->bind("AvatarGravity", NaviDelegate(this, &NavigatorGUI::modelerPropGravity));
-*/
+		navi->bind("AvatarResetColour", NaviDelegate(this, &NavigatorGUI::avatarPropResetColour));
+
         mNavisStates[NAVI_AVATARPROP] = NSCreated;
 	}
 	else //if(!isAvatarMainVisible())
@@ -780,6 +772,19 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				ModifiedMaterial* material = object->getModifiedMaterial();
 
+				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getAmbient().r * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getAmbient().g * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getAmbient().b * 255) + ")");
+				navi->evaluateJS("$S('pAmbient').background='#" + text + "'");
+				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().r * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().g * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().b * 255) + ")");
+				navi->evaluateJS("$S('pDiffuse').background='#" + text + "'");
+				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getSpecular().r * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getSpecular().g * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getSpecular().b * 255) + ")");
+				navi->evaluateJS("$S('pSpecular').background='#" + text + "'");
+
 				navi->evaluateJS("shininess.onchange = function() {}");
 				navi->evaluateJS("transparency.onchange = function() {}");
 				navi->evaluateJS("scrollU.onchange = function() {}");
@@ -788,9 +793,6 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("scaleV.onchange = function() {}");
 				navi->evaluateJS("rotateU.onchange = function() {}");
 
-				navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
-				navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
-				navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
 				navi->evaluateJS("shininess.setValue(" + StringConverter::toString(Real(material->getShininess()/128.)*100) + ")");
 				navi->evaluateJS("transparency.setValue("+ StringConverter::toString(material->getAlpha()*100) + ")");
 				UV = material->getTextureScroll() ;
@@ -808,6 +810,10 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("scaleU.onchange = function() {elementClicked('AvatarScaleU')}");
 				navi->evaluateJS("scaleV.onchange = function() {elementClicked('AvatarScaleV')}");
 				navi->evaluateJS("rotateU.onchange = function() {elementClicked('AvatarRotateU')}");
+
+				MaterialPtr mat = object->getModifiedMaterial()->getOwner();
+				CullingMode mode = mat->getTechnique(0)->getPass(0)->getCullingMode();
+				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CullingMode::CULL_NONE)?"true":"false" );
 
 				avatarUpdateTextures( object );
 			}
@@ -1081,6 +1087,19 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			modelerUpdateDeformationSliders();
 			break;
 		case 2:	// material tab
+			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().r * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().g * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().b * 255) + ")");
+			navi->evaluateJS("$S('pAmbient').background='#" + text + "'");
+			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().r * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().g * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().b * 255) + ")");
+			navi->evaluateJS("$S('pDiffuse').background='#" + text + "'");
+			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getSpecular().r * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getSpecular().g * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getSpecular().b * 255) + ")");
+			navi->evaluateJS("$S('pSpecular').background='#" + text + "'");
+
 			navi->evaluateJS("shininess.onchange = function() {}");
 			navi->evaluateJS("transparency.onchange = function() {}");
 			navi->evaluateJS("scrollU.onchange = function() {}");
@@ -1089,9 +1108,6 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("scaleV.onchange = function() {}");
 			navi->evaluateJS("rotateU.onchange = function() {}");
 
-			navi->evaluateJS("$S('pAmbient').background='#'+'FFFFFF'");
-			navi->evaluateJS("$S('pDiffuse').background='#'+'FFFFFF'");
-			navi->evaluateJS("$S('pSpecular').background='#'+'FFFFFF'");
 			navi->evaluateJS("shininess.setValue(" + StringConverter::toString(Real(obj->getShininess()/128.)*100) + ")");
 			navi->evaluateJS("transparency.setValue(" + StringConverter::toString(obj->getAlpha()*100) + ")");
 			UV = obj->getMaterialManager()->getTextureScroll();
@@ -1109,7 +1125,11 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("scaleU.onchange = function() {elementClicked('MdlrScaleU')}");
 			navi->evaluateJS("scaleV.onchange = function() {elementClicked('MdlrScaleV')}");
 			navi->evaluateJS("rotateU.onchange = function() {elementClicked('MdlrRotateU')}");
-
+			{
+				MaterialPtr mat = obj->getMaterialManager()->getModifiedMaterial()->getOwner();
+				CullingMode mode = mat->getTechnique(0)->getPass(0)->getCullingMode();
+				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CullingMode::CULL_NONE)?"true":"false" );
+			}
 			modelerUpdateTextures();
 			break;
 		case 3:	// 3D tab
@@ -1667,6 +1687,14 @@ void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
     OGRE_LOG("NavigatorGUI::modelerMainFileExit()");
 	
     modelerMainUnload();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainCreatePlane(const NaviData& naviData)
+{
+	OGRE_LOG("NavigatorGUI::modelerMainCreatePlane()");
+	//mNavigator->startModeling();
+	mNavigator->createPlane();
 }
 
 //-------------------------------------------------------------------------------------
@@ -2336,7 +2364,19 @@ void NavigatorGUI::modelerColorLockAmbientDiffuse(const NaviData& naviData)
 	std::string value = navi->evaluateJS("$('lockAmbientdiffuse').checked");
 	mLockAmbientDiffuse = (value == "true")?true:false;
 }
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerDoubleSide(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	std::string value = navi->evaluateJS("$('doubleSide').checked");
 
+	Object3D *obj = mNavigator->mModeler->getSelected();
+	if( obj != 0 )
+	{	
+		MaterialPtr mat = obj->getMaterialManager()->getModifiedMaterial()->getOwner();
+		mat->getTechnique(0)->getPass(0)->setCullingMode( (value == "true")?CULL_NONE:CULL_CLOCKWISE );
+	}
+}
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropShininess(const NaviData& naviData)
 {
@@ -2356,7 +2396,10 @@ void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 
 	Object3D *obj = mNavigator->mModeler->getSelected();
 	if( obj != 0 )
+	{
 		obj->setAlpha( atoi(value.c_str())/100. );
+		obj->getMaterialManager()->getModifiedMaterial()->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
+	}
 }
 
 //-------------------------------------------------------------------------------------
@@ -3561,6 +3604,24 @@ void NavigatorGUI::avatarColorLockAmbientDiffuse(const NaviData& naviData)
 	mLockAmbientDiffuse = (value == "true")?true:false;
 }
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarDoubleSide(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("$('doubleSide').checked");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	MaterialPtr mat = object->getModifiedMaterial()->getOwner();
+	mat->getTechnique(0)->getPass(0)->setCullingMode( (value == "true")?CULL_NONE:CULL_CLOCKWISE );
+}
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
@@ -3596,7 +3657,30 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
+	{
 		material->setAlpha( atoi(value.c_str())/100. );
+		material->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
+	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropResetColour(const NaviData& naviData)
+{
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	std::string value = navi->evaluateJS("transparency.getValue()");
+
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	ModifiableMaterialObject* object;
+
+	int type = AvatarEditor::getSingletonPtr()->selectType;
+	if( type == 2 ) // Goody
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+	else //if( type <= 1 ) // BodyPart
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+
+	object->resetColour();
+
+	// update colour sliders
+	avatarTabberLoad( 2 );
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
@@ -3745,30 +3829,15 @@ void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
 		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
 	else //if( type <= 1 ) // BodyPart
 		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-/*
+
 	//get selected texture :
-	if( obj->getMaterialManager()->getNbTexture() > 1 )
+	if( object->isTextureModifiable() )
 	{
-		TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
-		obj->deleteTexture( tPtr );
+		// remove the old texture and set the previous texture as current
+		object->removeTexture( object->getCurrentTexture() );
 	}
 
 	avatarUpdateTextures( object );
-*/
-}
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::avatarPropTextureApply(const NaviData& naviData)
-{
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	BodyPartModel* bpm = avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
-
-	//get selected texture :
-	//if( bpm->isTextureModifiable() )
-	//if( obj->getMaterialManager()->getNbTexture() > 1 )
-	{
-		//TexturePtr tPtr = obj->getMaterialManager()->getCurrentTexture();
-		//obj->setCurrentTexture( tPtr );
-	}
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTexturePrev(const NaviData& naviData)

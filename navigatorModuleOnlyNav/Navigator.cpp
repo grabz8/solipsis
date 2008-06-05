@@ -1282,6 +1282,25 @@ bool Navigator::endModeling()
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::createPlane()
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+	return mModeler->createPlane(plpos + dep);
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::createBox()
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
