@@ -599,11 +599,11 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     ((it->movable->getMovableType().compare("Entity") == 0) ||
                     (it->movable->getMovableType().compare("ManualObject") == 0)))
                 {
-                    if (it->movable->getQueryFlags() == QFAvatar)
+                    if (it->movable->getQueryFlags() & QFAvatar)
                         continue;
 
                     //if (it->movable->getMovableType().compare("Entity") == 0)
-                    if (it->movable->getQueryFlags() == QFObject)
+                    if (it->movable->getQueryFlags() & QFObject)
                     {
                         if( mModeler && !mModeler->isSelectionLocked() )
                         {
@@ -643,7 +643,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                                     mModeler->deselectNode();
 
                                 mModeler->lockGizmo(false);
-                                if (it->movable->getQueryFlags() == QFObject)
+                                if (it->movable->getQueryFlags() & QFObject)
                                 {
                                     mPickedMovable = it->movable;
                                     Entity* ent = mSceneMgr->getEntity(name);
@@ -659,7 +659,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                             closestUV,
                             closestTriUV0, closestTriUV1, closestTriUV2))
                         {
-                            if ((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
+                            if ((it->movable->getQueryFlags() & QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
                                 mPickedMovable = it->movable;
                         }
                     }
@@ -681,7 +681,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     ((it->movable->getMovableType().compare("Entity") == 0) ||
                     (it->movable->getMovableType().compare("ManualObject") == 0)))
                 {
-                    if (it->movable->getQueryFlags() == QFAvatar)
+                    if (it->movable->getQueryFlags() & QFAvatar)
                     {
                         mPickedMovable = it->movable;
                         break;
@@ -694,9 +694,9 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                         closestUV,
                         closestTriUV0, closestTriUV1, closestTriUV2))
                     {
-                        if (((it->movable->getQueryFlags() == QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
-                            ((it->movable->getQueryFlags() == QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)) ||
-                            ((it->movable->getQueryFlags() == QFVLCPanel) && (it->distance < mMaxVLCPickingDistance)))
+                        if (((it->movable->getQueryFlags() & QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
+                            ((it->movable->getQueryFlags() & QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)) ||
+                            ((it->movable->getQueryFlags() & QFVLCPanel) && (it->distance < mMaxVLCPickingDistance)))
                             mPickedMovable = it->movable;
                     }
                 }
@@ -720,7 +720,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
 bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
 {
     // if 1 Navi entity hit
-    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFNaviPanel))
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFNaviPanel))
     {
         naviName = "WWW_" + mPickedMovable->getName();
         // compute texture coordinates of the hit
@@ -765,7 +765,7 @@ void Navigator::computeNaviHit(const String& naviName,
 bool Navigator::is1VLCHitByMouse(MovableObject*& vlcMovableObj)
 {
     // if 1 Navi entity hit
-    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFVLCPanel))
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFVLCPanel))
     {
         vlcMovableObj = mPickedMovable;
         OGRE_LOG("Navigator::is1VLCHitByMouse() found VLC movable=" + mPickedMovable->getName());
@@ -779,7 +779,7 @@ bool Navigator::is1VLCHitByMouse(MovableObject*& vlcMovableObj)
 bool Navigator::is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY)
 {
     // if 1 VNC entity hit
-    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFVNCPanel))
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFVNCPanel))
     {
         vncMovableObj = mPickedMovable;
         // compute texture coordinates of the hit
@@ -810,7 +810,7 @@ void Navigator::computeVncHit(Vector2& closestUV,
 bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
 {
     // if 1 Avatar entity hit
-    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() == QFAvatar))
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFAvatar))
     {
         // retrieve avatar instance
         for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)

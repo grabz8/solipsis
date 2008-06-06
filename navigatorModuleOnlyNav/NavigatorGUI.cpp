@@ -338,7 +338,7 @@ void NavigatorGUI::modelerPropShow()
 		navi->setOpacity(0.75f);
 
 		// page loaded
-		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::modelerPropPageLoaded));
 
 		// generic function for all the binds
 		//navi->bind("MdlrProperties", NaviDelegate(this, &NavigatorGUI::modelerProperties));
@@ -480,7 +480,7 @@ void NavigatorGUI::avatarMainShow()
         navi->setMask("uiavatarmain.png");
         navi->setOpacity(0.75f);
         
-        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::avatarMainPageLoaded));
 		navi->bind("AvatarPrev", NaviDelegate(this, &NavigatorGUI::avatarMainSelectPrev));
 		navi->bind("AvatarNext", NaviDelegate(this, &NavigatorGUI::avatarMainSelectNext));
 		navi->bind("AvatarSelected", NaviDelegate(this, &NavigatorGUI::avatarMainSelected));
@@ -556,7 +556,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->setOpacity(0.75f);
 
 		// page loaded
-		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::avatarPropPageLoaded));
 
 		// detect a changement on the properties tabber
 		navi->bind("ClickOnTabber", NaviDelegate(this, &NavigatorGUI::avatarTabberChange));
@@ -1971,6 +1971,21 @@ void NavigatorGUI::modelerActionSave(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropPageLoaded(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::modelerPropPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+
+    // Update the properties panel from the selected object datas
+    modelerTabberLoad( 0 );
+
+    // Show Navi UI
+    if (mNavisStates[NAVI_MODELERPROP] == NSCreated)
+        navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropObjectName(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
@@ -2555,7 +2570,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         naviWWWTexture->setForceMaxUpdate(fps != 0);
         naviWWWTexture->setOpacity(1.0f);
         objEntity->setMaterialName(naviWWWTexture->getMaterialName());
-        objEntity->setQueryFlags(Navigator::QFNaviPanel);
+        objEntity->addQueryFlags(Navigator::QFNaviPanel);
 	}
 }
 
@@ -2588,7 +2603,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         vlcExtTextSrc->createDefinedTexture(mtlName);
         objEntity->setMaterialName(mtlName);
-        objEntity->setQueryFlags(Navigator::QFVLCPanel);
+        objEntity->addQueryFlags(Navigator::QFVLCPanel);
     }
 }
 
@@ -2614,7 +2629,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
         MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         vncExtTextSrc->createDefinedTexture(mtlName);
         objEntity->setMaterialName(mtlName);
-        objEntity->setQueryFlags(Navigator::QFVNCPanel);
+        objEntity->addQueryFlags(Navigator::QFVNCPanel);
     }
 }
 
@@ -2738,6 +2753,50 @@ void NavigatorGUI::modelerPropGravity(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarMainPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+
+    // Update the properties panel from the selected object datas
+	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	Avatar* user = mNavigator->getUserAvatar();
+
+	std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
+	text += avatar->getName();
+	text += "</b></p>'";
+	navi->evaluateJS(text.data());
+
+	// Setup the avatar name list
+	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + AvatarEditor::getSingletonPtr()->getName() + "'");
+	text = "";
+	vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
+	vector<std::string>::iterator iter = list->begin();
+	int id = 0;
+	while(iter!=list->end())
+	{
+		text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
+		text += (*iter).data();
+		text += "')>";
+		text += (*iter).data();
+		text += "</a></div>";
+		iter++;
+	}
+	navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
+
+	// Select the avatar from the user.xml // avatarName
+	int nbItem = list->size();
+	if( nbItem < 7 )
+		navi->evaluateJS("$('avatarSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
+	list->clear();
+
+    // Show Navi UI
+    if (mNavisStates[NAVI_AVATARMAIN] == NSCreated)
+        navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileOpen(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::avatarMainFileOpen()");
@@ -2816,6 +2875,20 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 		std::string text( AvatarEditor::getSingletonPtr()->getName() );
 		navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	}
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
+{
+    OGRE_LOG("NavigatorGUI::avatarPropPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+
+    // Update the properties panel from the selected object datas
+    avatarTabberLoad( 1 );
+
+    // Show Navi UI
+    if (mNavisStates[NAVI_AVATARPROP] == NSCreated)
+        navi->show(true);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
@@ -4050,47 +4123,6 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
     naviName = naviData["naviName"].str();
     NaviPanel naviPanel = getNaviPanel(naviName);
     OGRE_LOG("naviName=" + naviName + ", naviPanel=" + StringConverter::toString(naviPanel));
-
-    // Update the properties panel from the selected object datas
-	if (naviPanel == NAVI_AVATARMAIN)
-	{
-		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
-		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-		Avatar* user = mNavigator->getUserAvatar();
-
-		std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-		text += avatar->getName();
-		text += "</b></p>'";
-		navi->evaluateJS(text.data());
-
-		// Setup the avatar name list
-		navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + AvatarEditor::getSingletonPtr()->getName() + "'");
-		text = "";
-		vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
-		vector<std::string>::iterator iter = list->begin();
-		int id = 0;
-		while(iter!=list->end())
-		{
-			text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
-			text += (*iter).data();
-			text += "')>";
-			text += (*iter).data();
-			text += "</a></div>";
-			iter++;
-		}
-		navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
-
-		// Select the avatar from the user.xml // avatarName
-		int nbItem = list->size();
-		if( nbItem < 7 )
-			navi->evaluateJS("$('avatarSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
-		list->clear();
-	}
-	else if (naviPanel == NAVI_AVATARPROP)
-		avatarTabberLoad( 1 );
-    else if (naviPanel == NAVI_MODELERPROP)
-        modelerTabberLoad( 0 );
-	
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)

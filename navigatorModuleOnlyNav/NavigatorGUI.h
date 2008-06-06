@@ -167,6 +167,8 @@ protected:
     void modelerActionUndo(const NaviData& naviData);
     void modelerActionSave(const NaviData& naviData);
 
+    // Modeler properties page callbacks
+    void modelerPropPageLoaded(const NaviData& naviData);
     // Modeler properties callbacks
     void modelerPropObjectName(const NaviData& naviData);
     void modelerPropCreator(const NaviData& naviData);
@@ -232,6 +234,7 @@ protected:
 
     // Avatar page callbacks
 	void avatarTabberChange(const NaviData& naviData);
+    void avatarMainPageLoaded(const NaviData& naviData);
     void avatarMainFileOpen(const NaviData& naviData);
     void avatarMainFileEdit(const NaviData& naviData);
     void avatarMainFileSave(const NaviData& naviData);
@@ -240,6 +243,8 @@ protected:
     void avatarMainSelectPrev(const NaviData& naviData);
 	void avatarMainSelectNext(const NaviData& naviData);
 	void avatarMainSelected(const NaviData& naviData);
+    // Avatar properties page callbacks
+    void avatarPropPageLoaded(const NaviData& naviData);
 	// Avatar animation page callbaks
 	void avatarPropAnimPlayPause(const NaviData& naviData);
 	void avatarPropAnimStop(const NaviData& naviData);

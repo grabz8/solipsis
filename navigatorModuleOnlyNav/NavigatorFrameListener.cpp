@@ -88,6 +88,31 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     Modeler* modeler = mNavigator->mModeler;
 	AvatarEditor* avatarEditor = mNavigator->mAvatarEditor;
 
+    // Escape hits count to cancel focus Navi/VNC/...
+    if (evt.mKey == KC_ESCAPE)
+    {
+        unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
+        if (mEscapeHitsB4CancellingFocus == 0)
+            mLastEscapeHitTimer = now;
+        if (now - mLastEscapeHitTimer < ESCAPE_HITS_CANCEL_FOCUS_DURATION)
+            mEscapeHitsB4CancellingFocus++;
+        else
+            mEscapeHitsB4CancellingFocus = 1;
+        mLastEscapeHitTimer = now;
+    }
+
+    // Updating Navi with the key pressed
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            NaviManager::Get().deFocusAllNavis();
+        }
+        return true;
+    }
+
 	// is modeling ?
     if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
     {
@@ -206,36 +231,11 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 		}
 	}
 
-    // Escape hits count to cancel focus Navi/VNC/...
-    if (evt.mKey == KC_ESCAPE)
-    {
-        unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
-        if (mEscapeHitsB4CancellingFocus == 0)
-            mLastEscapeHitTimer = now;
-        if (now - mLastEscapeHitTimer < ESCAPE_HITS_CANCEL_FOCUS_DURATION)
-            mEscapeHitsB4CancellingFocus++;
-        else
-            mEscapeHitsB4CancellingFocus = 1;
-        mLastEscapeHitTimer = now;
-    }
-
-    // Updating Navi with the key pressed
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
-    {
-        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
-        {
-            mEscapeHitsB4CancellingFocus = 0;
-            mNavigator->resetMousePicking();
-            NaviManager::Get().deFocusAllNavis();
-        }
-        return true;
-    }
-
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
 
     // VNC panel ?
-    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
     {
         if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
         {
@@ -368,6 +368,10 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
 
+    // Updating Navi with the key released
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
+		return true;
+
     // In modeler ?
     if (mNavigator->getState() == Navigator::SModeling)
     {
@@ -381,12 +385,8 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
         }
     }
 
-    // Updating Navi with the key released
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
-		return true;
-
     // VNC panel ?
-    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
     {
         MovableObject* vncMovableObj = mNavigator->getPickedMovable();
         Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
@@ -480,7 +480,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     }
 
     // VNC panel ?
-    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
     {
         MovableObject* vncMovableObj = mNavigator->getPickedMovable();
         Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
@@ -728,7 +728,7 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
             NaviManager::Get().getFocusedNavi()->injectMouseUp(naviX, naviY);
         }
         // VNC panel ?
-        else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() == Navigator::QFVNCPanel))
+        else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
         {
             MovableObject* vncMovableObj = mNavigator->getPickedMovable();
             Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));

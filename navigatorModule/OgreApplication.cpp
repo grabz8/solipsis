@@ -59,6 +59,9 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
     if (mRoot == 0)
         return false;
 
+    // Set default query flags to 0
+    MovableObject::setDefaultQueryFlags(0);
+
     if (configManagedByOgre)
     {
         // Show the configuration dialog and initialize the system
