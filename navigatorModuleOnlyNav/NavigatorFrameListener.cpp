@@ -538,37 +538,43 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (!Ogre::Math::RealEqual(mouseWheel, 0))
     {
 // GILLES begin
-        if (getCameraMode() != CM3rdPerson)
-        {
-            if (getCameraMode() != CMAroundPerson)
-                setCameraMode(CM3rdPerson);
-            mouseWheel *= 6; //To be sure to go away from the avatar
-        }
-// GILLES end
-        if (getCameraMode() != CMAroundPerson)
+
+		if (getCameraMode() == CM1stPerson&&mouseWheel < 0.0f)
+		{
+			setCameraMode(CM3rdPerson);
+			mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));//To be sure to go away from the avatar
+			
+		}
+        if (getCameraMode() != CMAroundPerson&&getCameraMode() != CM1stPerson)
         {
             Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
             Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
             Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
-
+		
             size.x /=2;
             size.y *=-1;
             size.z = 0;
             //move 3rd person camera toward avatar
-            mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation()*size)); 
+            mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size)); 
             mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
 
             //Switch to 1st person camera if close to avatar
-            Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size);
-            //Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
-            Vector3 camAbs = mCamera->getPosition();
-            //Vector3 camAbs = mCamera->getWorldPosition();
-            if (posAbs.squaredDistance(camAbs)<(size.x)*(size.x))
+ 
+			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+			//Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+            Vector3 camAbs = mCamera->getWorldPosition();
+			//Vector3 camAbs = mCamera->getPosition();  Attention:getWorldPosition() instead of getPosition() to use the same coordinate. 
+            if (posAbs.squaredDistance(camAbs) < (size.x)*(size.x))
             {
-                if (getCameraMode() == CM3rdPerson)
-                    setCameraMode(CM1stPerson);
+				if (getCameraMode() == CM3rdPerson)
+				{
+					mCamNode->translate(Vector3(-1*mouseWheel*MOUSE_WHEEL_FACTOR,0,0));// Revise the position of 3rd person camera
+					setCameraMode(CM1stPerson);
+				}
             }
         }
+				
+// GILLES end
     }
 
     if (getCameraMode() == CM1stPerson)

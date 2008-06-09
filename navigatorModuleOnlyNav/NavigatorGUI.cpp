@@ -239,7 +239,7 @@ void NavigatorGUI::modelerMainShow()
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512);
         navi->setMovable(true);
         navi->hide();
-        navi->setMask("uimdlrmain.png");
+        navi->setMask("uimdlrmain_mask.png");//Eliminate the black shadow at the margin of the menu
         navi->setOpacity(0.75f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
 	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::modelerMainFileOpen));
@@ -334,7 +334,7 @@ void NavigatorGUI::modelerPropShow()
 		NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERPROP], "local://uimdlrprop.html", NaviPosition(TopRight), 512, 512);
 		navi->setMovable(true);
 		navi->hide();
-		navi->setMask("uimdlrprop.png");
+		navi->setMask("uimdlrprop_mask.png");//Eliminate the black shadow at the margin of the menu
 		navi->setOpacity(0.75f);
 
 		// page loaded
@@ -477,7 +477,7 @@ void NavigatorGUI::avatarMainShow()
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARMAIN], "local://uiavatarmain.html", NaviPosition(TopRight), 256, 512);
         navi->setMovable(true);
         navi->hide();
-        navi->setMask("uiavatarmain.png");
+        navi->setMask("uiavatarmain_mask.png");//Eliminate the black shadow at the margin of the menu
         navi->setOpacity(0.75f);
         
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::avatarMainPageLoaded));
@@ -552,7 +552,7 @@ void NavigatorGUI::avatarPropShow()
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARPROP], "local://uiavatarprop.html", NaviPosition(TopRight), 512, 512);
 		navi->setMovable(true);
 		navi->hide();
-		navi->setMask("uiavatarprop.png");
+		navi->setMask("uiavatarprop_mask.png");//Eliminate the black shadow at the margin of the menu
 		navi->setOpacity(0.75f);
 
 		// page loaded
