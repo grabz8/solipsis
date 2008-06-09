@@ -527,15 +527,13 @@ addIntoCfg.bat single instance moved into Common
 warning about vc7 added into readme.txt
 
 ---------------------------
-04/06/08
+09/06/08
 
-VirtualDive DigitalOcean scene updated with ocean water shader
-EntryGate position+gravity
+Change the graphics interfaces.(the files uiavatarmain.png, ... in /Media/Navilocal)
 
----------------------------
-06/06/08
+Optimize the zoom in 3rd person camera mode.
 
-Keys pressed into Modeler navi have now priority upon modeler shortcuts (like suppr key to enter url / delete selected object)
-Modeler selection of objects with materials Navi/VLC/VNC is now working well with QueryFlags bitmask (like Object | VNC)
+3rd person --zoom  in--> 1st person
+1st person --zoom out--> 3rd person
 
 ---------------------------
