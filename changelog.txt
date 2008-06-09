@@ -532,8 +532,7 @@ warning about vc7 added into readme.txt
 Change the graphics interfaces.(the files uiavatarmain.png, ... in /Media/Navilocal)
 
 Optimize the zoom in 3rd person camera mode.
-
-3rd person --zoom  in--> 1st person
-1st person --zoom out--> 3rd person
+   3rd person --zoom  in--> 1st person
+   1st person --zoom out--> 3rd person
 
 ---------------------------
