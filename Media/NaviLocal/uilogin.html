@@ -109,9 +109,11 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="loginText">Login</div>
-            <div id="loginInput">
-                <input id="inputLogin" class="inputText" name="inputLogin" value="me" type="text" size="35" />
-            </div>
+            <form id="loginForm" action="" onsubmit="buttonPressed('connect');return false;">
+                <div id="loginInput">
+                    <input id="inputLogin" class="inputText" name="inputLogin" value="me" type="text" size="35" />
+                </div>
+            </form>
             <div id="infosText"></div>
             <div id="connectButton" class="button" onclick="buttonPressed('connect')"></div>
             <div id="optionsButton" class="button" onclick="buttonPressed('options')"></div>
