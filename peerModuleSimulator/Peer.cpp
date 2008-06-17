@@ -252,7 +252,7 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
     std::stringstream s;
     s << "<solipsis><entities>";
     for (Entity::EntityMap::iterator entity = ownedEntities.begin(); entity != ownedEntities.end(); ++entity)
-        s << "<entity uid=" << entity->first << " />";
+        s << "<entity uid=" << convertEntityUIDToHexString(entity->first) << " />";
     s << "</entities></solipsis>";
     xmlRespStr = s.str();
 

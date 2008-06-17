@@ -527,6 +527,18 @@ addIntoCfg.bat single instance moved into Common
 warning about vc7 added into readme.txt
 
 ---------------------------
+04/06/08
+
+VirtualDive DigitalOcean scene updated with ocean water shader
+EntryGate position+gravity
+
+---------------------------
+06/06/08
+
+Keys pressed into Modeler navi have now priority upon modeler shortcuts (like suppr key to enter url / delete selected object)
+Modeler selection of objects with materials Navi/VLC/VNC is now working well with QueryFlags bitmask (like Object | VNC)
+
+---------------------------
 09/06/08
 
 Change the graphics interfaces.(the files uiavatarmain.png, ... in /Media/Navilocal)
@@ -534,5 +546,17 @@ Change the graphics interfaces.(the files uiavatarmain.png, ... in /Media/Navilo
 Optimize the zoom in 3rd person camera mode.
    3rd person --zoom  in--> 1st person
    1st person --zoom out--> 3rd person
+
+
+---------------------------
+13/06/08
+
+multiavatars management added:
+ characterInstance class added
+ .saf files contains _edition.nature
+ <uid>.sif file contains now specific character instance properties (_edition.conf)
+ xml avatarNode file removed
+ xml sceneNode file is renamed in <uid>.xml
+uilogin updated to connect on login input ENTER key pressed
 
 ---------------------------

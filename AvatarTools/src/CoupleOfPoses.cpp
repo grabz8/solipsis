@@ -98,8 +98,10 @@ void CoupleOfPoses::setPosition(float position)
 	assert((position >= 0.0f)&&(position <= 1.0f));
 	mPosition = position;
 	
+#if 0 //GREG
 	mOwner->getOwner()->updatePoseReference(mLeftPoseIndex,1.0f - mPosition);
 	mOwner->getOwner()->updatePoseReference(mRightPoseIndex,mPosition);
+#endif //GREG
 }
 	
 //--------------------------------------------------------------------------------------------------------------------------------------------------

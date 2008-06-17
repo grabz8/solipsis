@@ -24,14 +24,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorGUI.h"
 #include "Navigator.h"
 #include "OgreHelpers.h"
+#include <OgreExternalTextureSourceManager.h>
 #include "DebugHelpers.h"
-#include "Navi.h"
-#include "Modeler.h"
-#include "AvatarEditor.h"
-#include "Character.h"
-#include "CharacterManager.h"
+#include <Navi.h>
+#include <Modeler.h>
+#include <AvatarEditor.h>
+#include <CharacterManager.h>
+#include <Character.h>
+#include <CharacterInstance.h>
 #include "Avatar.h"
-#include "OgreExternalTextureSourceManager.h"
 
 using namespace Solipsis;
 
@@ -136,7 +137,7 @@ void NavigatorGUI::login()
         navi->setAutoUpdateOnFocus(true);
         navi->setMaxUPS(24);
         navi->hide();
-        //navi->setMask("uilogin.png");
+        navi->setMask("uilogin.png");
         navi->setOpacity(0.75f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
@@ -658,7 +659,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	// get the current avatar
-	Character* avatar = mNavigator->mAvatarEditor->getManager()->getCurrent();
+	CharacterInstance* avatar = mNavigator->mAvatarEditor->getManager()->getCurrentInstance();
 	if( avatar != 0 )
 	{
 		ColourValue col;
@@ -674,7 +675,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				// Setup the animation list
 				vector<std::string> list;
-				for(int i=0; i<avatar->getNumAnimations(); i++)
+                for(int i=0; i<avatar->getCharacter()->getNumAnimations(); i++)
 					list.push_back( avatar->getEntity()->getSkeleton()->getAnimation( i )->getName() );
 				std::string text = avatar->getEntity()->getSkeleton()->getAnimation( avatar->getCurrentAnimation() )->getName();
 				navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
@@ -728,12 +729,12 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				// body parts
 				name = "None";
-				if(avatar->getNumBodyParts() > 0)
-					 name = avatar->getCurrentBodyPart()->getName();
+				if(avatar->getCharacter()->getNumBodyParts() > 0)
+                    name = avatar->getCurrentBodyPart()->getBodyPart()->getName();
 				navi->evaluateJS("$('BodyPartName').innerHTML = '" + name + "'");
 
 				name = "None";
-				if(avatar->getNumBodyParts() > 0)
+				if(avatar->getCharacter()->getNumBodyParts() > 0)
 					name = avatar->getCurrentBodyPart()->getCurrentBodyPartModelName();
 				navi->evaluateJS("$('BodyPartModelName').innerHTML = '" + name + "'");
 				if( name == "None" )
@@ -741,12 +742,12 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				// attachements / goodies
 				name = "None";
-				if(avatar->getNumGoodies() > 0)
-					name = avatar->getCurrentGoody()->getName();
+				if(avatar->getCharacter()->getNumGoodies() > 0)
+                    name = avatar->getCurrentGoody()->getGoody()->getName();
 				navi->evaluateJS("$('AttachName').innerHTML = '" + name + "'");
 
 				name = "None";
-				if(avatar->getNumGoodies() > 0)
+				if(avatar->getCharacter()->getNumGoodies() > 0)
 					name = avatar->getCurrentGoody()->getCurrentGoodyModelName();
 				navi->evaluateJS("$('AttachModelName').innerHTML = '" + name + "'");
 				if( name == "None" )
@@ -766,9 +767,9 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				ModifiableMaterialObject* object;
 				
 				if( type == 2 ) // Goody
-					object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+					object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 				else //if( type <= 1 ) // BodyPart
-					object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+					object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 				ModifiedMaterial* material = object->getModifiedMaterial();
 
@@ -1333,8 +1334,8 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 
 	// Setup the avatar name list
 	std::string text("");
-	vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
-	vector<std::string>::iterator iter = list->begin();
+	vector<String>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
+	vector<String>::iterator iter = list->begin();
 	int id = 0;
 /*	while(iter!=list->end())
 	{
@@ -2760,11 +2761,11 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 
     // Update the properties panel from the selected object datas
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 
 	std::string text("$('AvatarName').innerHTML = '<p>Name : <b>");
-	text += avatar->getName();
+    text += avatar->getCharacter()->getName();
 	text += "</b></p>'";
 	navi->evaluateJS(text.data());
 
@@ -2834,9 +2835,11 @@ void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
 void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::avatarMainSelectPrev()");
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+    userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setPrevAsCurrent();
-	mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
-	mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+    userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
+    userAvatar->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
@@ -2847,9 +2850,11 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::avatarMainSelectNext()");
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+    userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setNextAsCurrent();
-	mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
-    mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+    userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
+    userAvatar->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
@@ -2863,13 +2868,14 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string item( naviData["item"].str() );
 	
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
-	if( avatar->getName() != item )
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
+	if( avatar->getCharacter()->getName() != item )
 	{
-		AvatarEditor::getSingletonPtr()->setCurrentByName( item );
-
-		mNavigator->getUserAvatar()->setEntity( AvatarEditor::getSingletonPtr()->getEntity() );
-		mNavigator->getUserAvatar()->setState(Avatar::SIdle);
+        Avatar* userAvatar = mNavigator->getUserAvatar();
+        userAvatar->detachFromSceneNode();
+		AvatarEditor::getSingletonPtr()->setCurrentByName(item);
+        userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
+        userAvatar->setState(Avatar::SIdle);
 
 		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 		std::string text( AvatarEditor::getSingletonPtr()->getName() );
@@ -2894,7 +2900,7 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
 void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAnimPlayPause()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -2921,7 +2927,7 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAnimStop()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -2934,11 +2940,11 @@ void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAnimNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	unsigned int numAnim = avatar->getNumAnimations();
+	unsigned int numAnim = avatar->getCharacter()->getNumAnimations();
 	unsigned int current = avatar->getCurrentAnimation();
 	if(++current >= numAnim) current = 0;
 	avatar->setCurrentAnimation(current);
@@ -2954,11 +2960,11 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAnimPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	unsigned int numAnim = avatar->getNumAnimations();
+	unsigned int numAnim = avatar->getCharacter()->getNumAnimations();
 	int current = avatar->getCurrentAnimation();
 	if(--current < 0) current = numAnim-1;
 	avatar->setCurrentAnimation(current);
@@ -2974,12 +2980,12 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAnimPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	float height = atoi(navi->evaluateJS("height.getValue()").data()) / 100. + 0.5;
 	float scale = height / avatar->getEntity()->getBoundingBox().getSize().y;
-	SceneNode* node = avatar->getNode();
+	SceneNode* node = avatar->getSceneNode();
 
 //	static Node* child = node->removeChild( (unsigned short) 2 );
 	node->setScale( scale, scale, scale );
@@ -2991,7 +2997,7 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBonePrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	Bone* bone = avatar->setPreviousBoneAsCurrent();
@@ -3026,7 +3032,7 @@ void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBoneNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	Bone* bone = avatar->setNextBoneAsCurrent();
@@ -3061,12 +3067,12 @@ void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	BodyPart* bp = avatar->setPreviousBodyPartAsCurrent();
+	BodyPartInstance* bp = avatar->setPreviousBodyPartAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
-	std::string bpName = bp->getName();
+	std::string bpName = bp->getBodyPart()->getName();
 
 	std::string str = "$('BodyPartName').innerHTML = '";
 	str += bpName;
@@ -3097,12 +3103,12 @@ void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	BodyPart* bp = avatar->setNextBodyPartAsCurrent();
+	BodyPartInstance* bp = avatar->setNextBodyPartAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
-	std::string bpName = bp->getName();
+	std::string bpName = bp->getBodyPart()->getName();
 
 	std::string str = "$('BodyPartName').innerHTML = '";
 	str += bpName;
@@ -3133,10 +3139,10 @@ void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPMPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	BodyPart* bp = avatar->getCurrentBodyPart();
+	BodyPartInstance* bp = avatar->getCurrentBodyPart();
 	bp->setPreviousBodyPartModelAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
 
@@ -3166,10 +3172,10 @@ void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPMNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	BodyPart* bp = avatar->getCurrentBodyPart();
+	BodyPartInstance* bp = avatar->getCurrentBodyPart();
 	bp->setNextBodyPartModelAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
 
@@ -3199,7 +3205,7 @@ void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPMEdit()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	AvatarEditor::getSingletonPtr()->selectType = 1;
@@ -3210,21 +3216,21 @@ void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 void NavigatorGUI::avatarPropBPMRemove(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropBPMRemove()");
-	//Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	if(avatar->getNumGoodies() > 0)
+	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
-		Goody* g = avatar->setPreviousGoodyAsCurrent();
+		GoodyInstance* g = avatar->setPreviousGoodyAsCurrent();
 		GoodyModel* gm = g->getCurrentGoodyModel();
-		std::string gName = g->getName();
+		std::string gName = g->getGoody()->getName();
 
 		std::string str = "$('AttachName').innerHTML = '";
 		str += gName;
@@ -3254,14 +3260,14 @@ void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	if(avatar->getNumGoodies() > 0)
+	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
-		Goody* g = avatar->setNextGoodyAsCurrent();
+		GoodyInstance* g = avatar->setNextGoodyAsCurrent();
 		GoodyModel* gm = g->getCurrentGoodyModel();
-		std::string gName = g->getName();
+		std::string gName = g->getGoody()->getName();
 
 		std::string str = "$('AttachName').innerHTML = '";
 		str += gName;
@@ -3291,12 +3297,12 @@ void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttMPrev()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	if(avatar->getNumGoodies() > 0)
+	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
-		Goody* g = avatar->getCurrentGoody();
+		GoodyInstance* g = avatar->getCurrentGoody();
 		g->setPreviousGoodyModelAsCurrent();
 		GoodyModel* gm = g->getCurrentGoodyModel();
 
@@ -3323,12 +3329,12 @@ void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttMNext()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
-	if(avatar->getNumGoodies() > 0)
+	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
-		Goody* g = avatar->getCurrentGoody();
+		GoodyInstance* g = avatar->getCurrentGoody();
 		g->setNextGoodyModelAsCurrent();
 		GoodyModel* gm = g->getCurrentGoodyModel();
 
@@ -3355,7 +3361,7 @@ void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttMEdit()");
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	AvatarEditor::getSingletonPtr()->selectType = 2;
@@ -3366,7 +3372,7 @@ void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 void NavigatorGUI::avatarPropAttMRemove(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropAttMRemove()");
-	//Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
@@ -3374,7 +3380,7 @@ void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 
 	std::string slider( naviData["slider"].str().c_str() );
@@ -3386,13 +3392,13 @@ void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 	float value = atoi( navi->evaluateJS(temp).c_str() ) / 100.;
 
 	Bone* bone = avatar->getCurrentBone();
-	BodyPart* body = NULL;
-	Goody* goody = NULL;
+	BodyPartInstance* body = NULL;
+	GoodyInstance* goody = NULL;
 
 	// get the selected object ( BodyPart / Goody )
-	if( avatar->getNumBodyParts() > 0 )
+	if( avatar->getCharacter()->getNumBodyParts() > 0 )
 		body = avatar->getCurrentBodyPart();
-	if( avatar->getNumGoodies() > 0 )
+	if( avatar->getCharacter()->getNumGoodies() > 0 )
 		goody = avatar->getCurrentGoody();
 
 	// enable modification on the bone properties
@@ -3549,7 +3555,7 @@ void NavigatorGUI::avatarPropReset(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 
 	std::string slider( naviData["slider"].str().c_str() );
 	int type = AvatarEditor::getSingletonPtr()->selectType;
@@ -3575,14 +3581,14 @@ void NavigatorGUI::avatarColorAmbient(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3615,14 +3621,14 @@ void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3656,14 +3662,14 @@ void NavigatorGUI::avatarColorSpecular(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3682,14 +3688,14 @@ void NavigatorGUI::avatarDoubleSide(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("$('doubleSide').checked");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	MaterialPtr mat = object->getModifiedMaterial()->getOwner();
 	mat->getTechnique(0)->getPass(0)->setCullingMode( (value == "true")?CULL_NONE:CULL_CLOCKWISE );
@@ -3700,14 +3706,14 @@ void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("shininess.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3719,14 +3725,14 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3741,14 +3747,14 @@ void NavigatorGUI::avatarPropResetColour(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	object->resetColour();
 
@@ -3761,14 +3767,14 @@ void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scrollU.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3783,14 +3789,14 @@ void NavigatorGUI::avatarPropScrollV(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scrollV.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3805,14 +3811,14 @@ void NavigatorGUI::avatarPropScaleU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scaleU.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3827,14 +3833,14 @@ void NavigatorGUI::avatarPropScaleV(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scaleV.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
@@ -3849,14 +3855,14 @@ void NavigatorGUI::avatarPropRotateU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("rotateU.getValue()");
 
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	ModifiedMaterial* material = object->getModifiedMaterial();
 
@@ -3871,14 +3877,14 @@ void NavigatorGUI::avatarPropTextureAdd(const NaviData& naviData)
 	
 	if (PathTexture != NULL )
 	{
-		Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+		CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 		ModifiableMaterialObject* object;
 
 		int type = AvatarEditor::getSingletonPtr()->selectType;
 		if( type == 2 ) // Goody
-			object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+			object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 		else //if( type <= 1 ) // BodyPart
-			object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+			object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 		String TextureFilePath (PathTexture);
 
@@ -3894,17 +3900,17 @@ void NavigatorGUI::avatarPropTextureAdd(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
 {
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 	
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	//get selected texture :
-	if( object->isTextureModifiable() )
+	if( object->getModifiableMaterialObjectBase()->isTextureModifiable() )
 	{
 		// remove the old texture and set the previous texture as current
 		object->removeTexture( object->getCurrentTexture() );
@@ -3915,28 +3921,28 @@ void NavigatorGUI::avatarPropTextureRemove(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTexturePrev(const NaviData& naviData)
 {
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	object->setNextTextureAsCurrent();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTextureNext(const NaviData& naviData)
 {
-	Character* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrent();
+	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	ModifiableMaterialObject* object;
 
 	int type = AvatarEditor::getSingletonPtr()->selectType;
 	if( type == 2 ) // Goody
-		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentGoody()->getCurrentGoodyModelInstance();
 	else //if( type <= 1 ) // BodyPart
-		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModel();
+		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
 	object->setPreviousTextureAsCurrent();
 }
@@ -3964,7 +3970,7 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 	text = "textTabTextures = \"";
 	//if( pObject->isTextureModifiable() )
 	{
-		TextureVectorIterator tvIter = pObject->getTextureIterator();
+		TextureVectorIterator tvIter = pObject->getModifiableMaterialObjectBase()->getTextureIterator();
 		while( tvIter.hasMoreElements() )
 		{
 			texture = tvIter.getNext();

@@ -43,6 +43,8 @@ class XMLDATAS_EXPORT XmlHelpers
 {
 public:
     static bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr);
+    static std::string convertUIntToHexString(unsigned int value);
+    static unsigned int convertHexStringToUInt(const char* str);
     static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
     static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
     static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
@@ -81,12 +83,18 @@ enum ShapeType {
 typedef unsigned int EntityUID;
 typedef unsigned int Lod;
 
-inline void convertStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
-inline void convertStringToEntityType(const char* str, EntityType& entityType) { entityType = (EntityType)atoi(str); }
-inline void convertStringToEntityFlags(const char* str, EntityFlags& entityFlags) { entityFlags = (EntityFlags)atoi(str); }
-inline void convertStringToShapeType(const char* str, ShapeType& shapeType) { shapeType = (ShapeType)atoi(str); }
-inline void convertStringToEntityUID(const char* str, EntityUID& uid) { uid = (EntityUID)atoi(str); }
-inline void convertStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
+XMLDATAS_EXPORT const std::string& convertEventTypeToRepr(const EventType& evtType);
+inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
+XMLDATAS_EXPORT const std::string& convertEntityTypeToRepr(const EntityType& entityType);
+inline void convertDecStringToEntityType(const char* str, EntityType& entityType) { entityType = (EntityType)atoi(str); }
+XMLDATAS_EXPORT std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags);
+inline std::string convertEntityFlagsToHexString(const EntityFlags& entityFlags) { return XmlHelpers::convertUIntToHexString(entityFlags); }
+inline EntityFlags convertHexStringToEntityFlags(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+XMLDATAS_EXPORT const std::string& convertShapeTypeToRepr(const ShapeType& shapeType);
+inline void convertDecStringToShapeType(const char* str, ShapeType& shapeType) { shapeType = (ShapeType)atoi(str); }
+inline std::string convertEntityUIDToHexString(const EntityUID& entityUID) { return XmlHelpers::convertUIntToHexString(entityUID); }
+inline EntityUID convertHexStringToEntityUID(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
 
 #ifdef POOL
 template<class T>
@@ -319,7 +327,7 @@ public:
     typedef std::map<Lod, ContentFileList> ContentLodMap;
 
 protected:
-    ContentLodMap contentLodMap;
+    ContentLodMap mContentLodMap;
 
 public:
     XmlContent()
@@ -329,14 +337,14 @@ public:
     static Pool& getStaticPool();
     virtual Pool& getPool() const;
     virtual void clear() {
-        contentLodMap.clear();
+        mContentLodMap.clear();
     }
 #endif
 
     virtual std::string toXmlString() const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
-    ContentLodMap& getContentLodMap() { return contentLodMap; }
+    ContentLodMap& getContentLodMap() { return mContentLodMap; }
 };
 
 class XMLDATAS_EXPORT XmlEntity : public XmlData
@@ -433,18 +441,22 @@ public:
 
     void setUid(const EntityUID& uid) { mUid = uid; mDefinedAttributes |= DAUid; }
     const EntityUID& getUid() { return mUid; }
+    std::string getUidString() { return convertEntityUIDToHexString(mUid); }
 
     void setOwner(const NodeId& owner) { mOwner = owner; mDefinedAttributes |= DAOwner; }
     const NodeId& getOwner() { return mOwner; }
 
     void setType(const EntityType& type) { mType = type; mDefinedAttributes |= DAType; }
     EntityType getType() { return mType; }
+    const std::string& getTypeRepr() { return convertEntityTypeToRepr(mType); }
 
     void setName(const std::string& name) { mName = name; mDefinedAttributes |= DAName; }
     const std::string& getName() { return mName; }
 
     void setFlags(const EntityFlags& flags) { mFlags = flags; mDefinedAttributes |= DAFlags; }
     EntityFlags getFlags() { return mFlags; }
+    std::string getFlagsString() { return convertEntityFlagsToHexString(mFlags); }
+    std::string getFlagsRepr() { return convertEntityFlagsToRepr(mFlags); }
 
     void setDisplacement(const Ogre::Vector3& displacement) { mDisplacement = displacement; mDefinedAttributes |= DADisplacement; }
     const Ogre::Vector3& getDisplacement() { return mDisplacement; }
@@ -509,6 +521,7 @@ public:
 
     void setType(const EventType& type) { mType = type; }
     EventType getType() { return mType; }
+    const std::string& getTypeRepr() { return convertEventTypeToRepr(mType); }
 
 #ifdef POOL
     void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }

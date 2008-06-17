@@ -27,12 +27,12 @@ namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 Entity::Entity(XmlEntity* xmlEntity) :
-    mXmlEntity(xmlEntity),
-    mGravity(false)
+    mXmlEntity(xmlEntity)
 #ifdef PHYSICSPLUGINS
     ,mPhysicsScene(0)
 #endif
 {
+    applyGravity(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -56,6 +56,15 @@ XmlEntity* Entity::getXmlEntity()
 #endif
 {
     return mXmlEntity;
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::applyGravity(bool applied)
+{
+    if (!applied)
+        mGravity = false;
+    else
+        mGravity = mXmlEntity->getFlags() & EFGravity;
 }
 
 //-------------------------------------------------------------------------------------

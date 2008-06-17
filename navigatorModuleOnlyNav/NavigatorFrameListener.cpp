@@ -21,10 +21,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "NaviManager.h"
-#include "Navi.h"
-#include "OgreTimer.h"
-#include "OgreExternalTextureSourceManager.h"
+#include <NaviManager.h>
+#include <Navi.h>
+#include <OgreTimer.h>
+#include <OgreExternalTextureSourceManager.h>
 #include "ExternalTextureSourceEx.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
@@ -783,6 +783,8 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
     if (mode == mCameraMode) return;
 
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+
     if (mCamera->getParentSceneNode() != 0)
         mCamera->getParentSceneNode()->detachObject(mCamera);
 
@@ -796,28 +798,28 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         mCamNode->setOrientation(Quaternion::IDENTITY);
         mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
         mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
-        mNavigator->getUserAvatar()->setMvtType(Avatar::MT1stPerson);
+        userAvatar->setMvtType(Avatar::MT1stPerson);
         break;
     case CM3rdPerson:
         mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
         mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
-        mNavigator->getUserAvatar()->setMvtType(Avatar::MT3rdPerson);
+        userAvatar->setMvtType(Avatar::MT3rdPerson);
         break;
 // GILLES begin
     case CMAroundPerson:
         mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
         //mCamera->yaw(Radian(Ogre::Math::HALF_PI));
         mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode")->attachObject(mCamera);
-        mNavigator->getUserAvatar()->setMvtType(Avatar::MTArountPerson);
+        userAvatar->setMvtType(Avatar::MTArountPerson);
         break;
 // GILLES end
     }
 // GILLES begin
-    //mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson, false);
-    //mNavigator->getUserAvatar()->getSceneNode()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson, false);
-	mNavigator->getUserAvatar()->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
-    //mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson);
-    mNavigator->getUserAvatar()->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
+    //userAvatar->getSceneNode()->setVisible(mode == CM3rdPerson, false);
+    //userAvatar->getSceneNode()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson, false);
+	userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
+    //userAvatar->setNameVisibility(mode == CM3rdPerson);
+    userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
         //navigatorGUI->SetMouseVisibility(mode != CM1stPerson);

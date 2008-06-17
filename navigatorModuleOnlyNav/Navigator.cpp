@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
+#include <OgreExternalTextureSourceManager.h>
 #include "DebugHelpers.h"
 #include "Navi.h"
 #include "NaviLua.h"
-#include "OgreExternalTextureSourceManager.h"
-#include "Modeler.h"
-#include "AvatarEditor.h"
-#include "CharacterManager.h"
-#include "Character.h"
+#include <Modeler.h>
+#include <AvatarEditor.h>
+#include <CharacterManager.h>
+#include <CharacterInstance.h>
 #include "VoiceEngineManager.h"
 
 
@@ -263,6 +263,8 @@ void Navigator::demoNavi1()
     if (active) return;
     active = true;
 
+    SceneNode* userAvatarSceneNode = mUserAvatar->getSceneNode();
+
     // Create a plane
     Plane plane(Vector3::NEGATIVE_UNIT_Z, -1.1);
     MeshManager::getSingleton().createPlane("demoNavi1Plane", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane, 1.5, 1.5, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
@@ -278,7 +280,7 @@ void Navigator::demoNavi1()
     vidEnt->setMaterialName(vidNavi->getMaterialName());
     //http://www.youtube.com/watch?v=ZQcUS4chhc4
     //http://fr.youtube.com/watch?v=u5WIEep8DJg
-    SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1VideoNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
+    SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1VideoNode", userAvatarSceneNode->getPosition() + Vector3(1, 1.5, 1));
     videoNode->attachObject(vidEnt);
     videoNode->yaw(Degree(45), Node::TS_WORLD);
 
@@ -289,7 +291,7 @@ void Navigator::demoNavi1()
     txtNavi->show(true);
     txtNavi->setMaxUPS(8);
     txtEnt->setMaterialName(txtNavi->getMaterialName());
-    SceneNode* txtNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1TextNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(1, 1.5, 1));
+    SceneNode* txtNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1TextNode", userAvatarSceneNode->getPosition() + Vector3(1, 1.5, 1));
     txtNode->attachObject(txtEnt);
     txtNode->yaw(Degree(-25), Node::TS_WORLD);
 
@@ -303,7 +305,7 @@ void Navigator::demoNavi1()
     MaterialPtr googleMtl = (MaterialPtr)MaterialManager::getSingletonPtr()->getByName(googleMtlName);
     googleMtl->setDepthWriteEnabled(true);
     knotEnt->setMaterialName(googleMtlName);
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1WebKnotNode", mUserAvatar->getSceneNode()->getPosition() + Vector3(-3, 1.75, 4));
+    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode("demoNavi1WebKnotNode", userAvatarSceneNode->getPosition() + Vector3(-3, 1.75, 4));
     node->setScale(Vector3(0.015f, 0.015f, 0.015f));
     node->attachObject(knotEnt);
 }
@@ -822,7 +824,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
             if ((avatar == mUserAvatar) && (((NavigatorFrameListener*)mFrameListener)->getCameraMode() == NavigatorFrameListener::CM1stPersonWithMouse)) continue;
-            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Entity:Uid=" + avatar->getXmlEntity()->getUid() + ", Entity:Name=" + avatar->getEntity()->getName());
+            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Entity:Uid=" + avatar->getXmlEntity()->getUidString() + ", Entity:Name=" + avatar->getEntity()->getName());
             return true;
         }
     }
@@ -1094,7 +1096,7 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerNew(XmlEntity* xmlEntity)
 #endif
 {
-    OGRE_LOG("Navigator::onPeerNew() uid:" + StringConverter::toString(xmlEntity->getUid()));
+    OGRE_LOG("Navigator::onPeerNew() uid:" + xmlEntity->getUidString());
 
 #ifdef UIDEBUG
     if (mNavigatorGUI != 0)
@@ -1111,7 +1113,7 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerLost(XmlEntity* xmlEntity)
 #endif
 {
-    OGRE_LOG("Navigator::onPeerLost() uid:" + StringConverter::toString(xmlEntity->getUid()));
+    OGRE_LOG("Navigator::onPeerLost() uid:" + xmlEntity->getUidString());
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
@@ -1197,45 +1199,12 @@ void Navigator::sendEvents()
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
+bool Navigator::OnAvatarNodeCreate(OgrePeer* ogrePeer)
 {
     // User Avatar ?
     if (ogrePeer->isLocal())
     {
         mUserAvatar = (Avatar*)ogrePeer;
-
-        // create the sun light
-        Light *sunLight = mSceneMgr->createLight("SunLight");
-        sunLight->setType(Light::LT_DIRECTIONAL);
-        Vector3 sunLightDir = Vector3(0.5f, -1.0f, 0.25f);
-        sunLightDir.normalise();
-        sunLight->setDirection(sunLightDir);
-        sunLight->setDiffuseColour(ColourValue::White);
-        sunLight->setSpecularColour(ColourValue::White);
-#ifdef SHADOWS
-        sunLight->setCastShadows(true);
-#endif
-
-        // Create camera node/pitch nodes
-        Vector3 avatarSize = mUserAvatar->getEntity()->getBoundingBox().getSize();
-        Vector3 avatarHalfSize = mUserAvatar->getEntity()->getBoundingBox().getHalfSize();
-
-        // Create First person camera node/pitch node
-        SceneNode* camNode = mUserAvatar->getSceneNode()->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
-        camNode->yaw(Radian(-Math::HALF_PI));
-        SceneNode* pitchCamNode = camNode->createChildSceneNode("FirstPersonCamPitchNode");
-
-        // Create the Third camera node/pitch node
-        camNode = mUserAvatar->getSceneNode()->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
-        camNode->yaw(Radian(-Math::HALF_PI));
-        pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
-
-// GILLES begin
-		// Create the Fourth camera node/pitch node
-        camNode = mUserAvatar->getSceneNode()->createChildSceneNode("TurnAroundPersonCamNode", Vector3(0, 1.1, 0)*avatarSize);
-        pitchCamNode = camNode->createChildSceneNode("TurnAroundPersonCamPitchNode", Vector3(-4, 1.1, 0)*avatarSize);
-        //pitchCamNode->yaw(Radian(Math::PI));
-// GILLES end
 
         // set Third person camera
         ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);
@@ -1245,8 +1214,19 @@ bool Navigator::OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer)
+bool Navigator::OnSceneNodeCreate(OgrePeer* ogrePeer)
 {
+    // create the sun light
+    Light *sunLight = mSceneMgr->createLight("SunLight");
+    sunLight->setType(Light::LT_DIRECTIONAL);
+    Vector3 sunLightDir = Vector3(0.5f, -1.0f, 0.25f);
+    sunLightDir.normalise();
+    sunLight->setDirection(sunLightDir);
+    sunLight->setDiffuseColour(ColourValue::White);
+    sunLight->setSpecularColour(ColourValue::White);
+#ifdef SHADOWS
+    sunLight->setCastShadows(true);
+#endif
 
     return true;
 }
@@ -1737,7 +1717,7 @@ bool Navigator::avatarXMLLoad()
 bool Navigator::avatarXMLSave()
 {
 	if( mAvatarEditor )
-		mAvatarEditor->getManager()->getCurrent()->saveModified();
+		mAvatarEditor->getManager()->getCurrentInstance()->saveModified();
 
     return true;
 }

@@ -35,7 +35,7 @@ AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
     mAvatar(xmlEntity),
     mPhysicsScene(0)
 {
-    OGRE_LOG("AvatarNode::AvatarNode() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()));
+    OGRE_LOG("AvatarNode::AvatarNode() uid:" + mAvatar.getXmlEntity()->getUidString());
 
 #ifdef PHYSICSPLUGINS
     IPhysicsEngine* engine = PhysicsEngineManager::getSingleton().getSelectedEngine();
@@ -43,7 +43,7 @@ AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
         throw Exception(Exception::ERR_INTERNAL_ERROR,
         "No physics engine selected !",
         "AvatarNode::AvatarNode");
-    OGRE_LOG("AvatarNode::AvatarNode() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " creating physics scene with engine:" + engine->getName());
+    OGRE_LOG("AvatarNode::AvatarNode() uid:" + mAvatar.getXmlEntity()->getUidString() + " creating physics scene with engine:" + engine->getName());
     // Create the physical scene
     mPhysicsScene = engine->createScene();
     if (!mPhysicsScene->create())
@@ -70,7 +70,7 @@ AvatarNode::~AvatarNode()
         Peer::getSingleton().removeTimeListener(this);
 
 #ifdef PHYSICSPLUGINS
-    OGRE_LOG("AvatarNode::~AvatarNode() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " destroying physics scene");
+    OGRE_LOG("AvatarNode::~AvatarNode() uid:" + mAvatar.getXmlEntity()->getUidString() + " destroying physics scene");
     if (mPhysicsScene != 0)
         PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
     mPhysicsScene = 0;
@@ -102,19 +102,19 @@ IPhysicsScene* AvatarNode::getPhysicsScene()
 //-------------------------------------------------------------------------------------
 bool AvatarNode::addAwareEntity(Entity* entity)
 {
-    OGRE_LOG("AvatarNode::addAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " adding entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+    OGRE_LOG("AvatarNode::addAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " adding entity uid:" + entity->getXmlEntity()->getUidString());
 
     pthread_mutex_lock(&mMutex);
 
     mAwareEntities[entity->getXmlEntity()->getUid()] = entity;
     if (entity->getXmlEntity()->getOwner().compare(mNodeId) == 0)
     {
-        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " owned entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " owned entity uid:" + entity->getXmlEntity()->getUidString());
         mOwnedEntities[entity->getXmlEntity()->getUid()] = entity;
     }
     else
     {
-        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " adding listener on entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " adding listener on entity uid:" + entity->getXmlEntity()->getUidString());
         entity->addEntityListener(this);
     }
 
@@ -122,8 +122,9 @@ bool AvatarNode::addAwareEntity(Entity* entity)
     // for instance we create physics of scenes + my own avatar
     if (!((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner().compare(mNodeId) != 0)))
     {
-        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " creating physics of entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+        OGRE_LOG("AvatarNode::addAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " creating physics of entity uid:" + entity->getXmlEntity()->getUidString());
         entity->createPhysics(mPhysicsScene);
+        entity->applyGravity(true);
     }
 #endif
 
@@ -150,13 +151,13 @@ bool AvatarNode::addAwareEntity(Entity* entity)
 //-------------------------------------------------------------------------------------
 bool AvatarNode::removeAwareEntity(Entity* entity)
 {
-    OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " removing entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+    OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " removing entity uid:" + entity->getXmlEntity()->getUidString());
 
     pthread_mutex_lock(&mMutex);
 
     if (entity->getXmlEntity()->getOwner().compare(mNodeId) != 0)
     {
-        OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " removing listener on entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+        OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " removing listener on entity uid:" + entity->getXmlEntity()->getUidString());
         entity->removeEntityListener(this);
     }
 
@@ -165,7 +166,7 @@ bool AvatarNode::removeAwareEntity(Entity* entity)
 #ifdef PHYSICSPLUGINS
     if (!((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner().compare(mNodeId) != 0)))
     {
-        OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " destroying physics of entity uid:" + StringConverter::toString(entity->getXmlEntity()->getUid()));
+        OGRE_LOG("AvatarNode::removeAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " destroying physics of entity uid:" + entity->getXmlEntity()->getUidString());
         entity->destroyPhysics();
     }
 #endif
@@ -225,7 +226,7 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
             {
                 avatar->getXmlEntity()->setDisplacement(xmlEntity->getDisplacement());
 #ifdef LOGSNDRCV
-                OGRE_LOG("RCV uid:" + StringConverter::toString(xmlEntity->getUid()) + " " + StringConverter::toString(xmlEntity->getDisplacement()));
+                OGRE_LOG("RCV uid:" + xmlEntity->getUidString() + " " + StringConverter::toString(xmlEntity->getDisplacement()));
 #endif
                 unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
                 if (l == (unsigned long)-1) { l = n; c = 0; }
@@ -323,7 +324,7 @@ c++;
             mAvatar.mUpdatedXmlEntity->setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity->setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
+            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
             evt->setDatas(RefCntPoolPtr<XmlData>(mAvatar.mUpdatedXmlEntity));
 #else
@@ -333,7 +334,7 @@ c++;
             mAvatar.mUpdatedXmlEntity.setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity.setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + StringConverter::toString(mAvatar.getXmlEntity()->getUid()) + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
+            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
             evt->setDatas(&mAvatar.mUpdatedXmlEntity);
 #endif

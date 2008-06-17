@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /// date 2007.06.25
 
 using namespace Ogre;
+
 namespace Solipsis {
 
 class BodyPart;
@@ -42,9 +43,9 @@ public:
 	///brief Constructor
 	///param name Name of the CoupleOfPoses. It could be "Size" for example if the BodyPart to which the couple of poses is attached is named "Noze".
 	///param leftStateName Name of the left state (associated to the left pose). For a couple of poses representing the larger of the noze, it could be a thin noze for example.
-	///param leftPoseIndex Index of the left pose in the avatar's mesh.
+	///param leftPoseIndex Index of the left pose in the character's mesh.
 	///param rightStateName Name of the right state (associated to the right pose). For a couple of poses representing the larger of the noze, it could be a thin noze for example.
-	///param rightPoseIndex Index of the right pose in the avatar's mesh.
+	///param rightPoseIndex Index of the right pose in the character's mesh.
 	///param owner BodyPart to which the couple of poses is attached.
 	CoupleOfPoses(const String& name, const String& leftStateName, ushort leftPoseIndex, const String& rightStateName, ushort rightPoseIndex, BodyPart* owner);
 
@@ -66,12 +67,12 @@ public:
 	///return Name of the left state.
 	const String& getLeftStateName();
 
-	///brief Method which returns the index of the left pose in the avatar's mesh.
-	///return Index of the left pose in the avatar's mesh.
+	///brief Method which returns the index of the left pose in the character's mesh.
+	///return Index of the left pose in the character's mesh.
 	ushort getLeftPoseIndex();
 
-	///brief Method which returns the ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the avatar in the left state, so with a thin noze if we take our precedent example).
-	///return ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the avatar in the left state, so with a thin noze if we take our precedent example).
+	///brief Method which returns the ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the character in the left state, so with a thin noze if we take our precedent example).
+	///return ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the character in the left state, so with a thin noze if we take our precedent example).
 //	CEGUI::Imageset* getLeftPoseImageSet();
 	Image* getLeftPoseImageSet();
 
@@ -79,11 +80,11 @@ public:
 	///return Name of the right state.
 	const String& getRightStateName();
 
-	///brief Method which returns the index of the right pose in the avatar's mesh.
-	///return Index of the right pose in the avatar's mesh.
+	///brief Method which returns the index of the right pose in the character's mesh.
+	///return Index of the right pose in the character's mesh.
 	ushort getRightPoseIndex();
 
-	///brief Method which returns the ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the avatar in the right state, so with a large noze if we take our precedent example).
+	///brief Method which returns the ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the character in the right state, so with a large noze if we take our precedent example).
 	///return ImageSet containing the CEGUI picture for the left pose.
 //	CEGUI::Imageset* getRightPoseImageSet();
 	Image* getRightPoseImageSet();
@@ -112,14 +113,14 @@ private:
 	float mPosition;						///brief Position of the couple of poses. It's the the influence of the right pose. So the influence of the left pose is 1-mPosition. It is between 0 and 1.
 
 	String mLeftStateName;					///brief Name of the left state (associated to the left pose). For a couple of poses representing the larger of the noze, it could be a thin noze for example.
-	ushort mLeftPoseIndex;					///brief Index of the left pose in the avatar's mesh.
-//	CEGUI::Imageset* mLeftPoseImageSet;		///brief ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the avatar in the left state, so with a thin noze if we take our precedent example).
-	Image* mLeftPoseImageSet;				///brief ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the avatar in the left state, so with a thin noze if we take our precedent example).
+	ushort mLeftPoseIndex;					///brief Index of the left pose in the character's mesh.
+//	CEGUI::Imageset* mLeftPoseImageSet;		///brief ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the character in the left state, so with a thin noze if we take our precedent example).
+	Image* mLeftPoseImageSet;				///brief ImageSet containing the CEGUI picture for the left pose (It should be a "photo" of the character in the left state, so with a thin noze if we take our precedent example).
 
 	String mRightStateName;					///brief Name of the right state (associated to the right pose). For a couple of poses representing the larger of the noze, it could be a large noze for example.
-	ushort mRightPoseIndex;					///brief Index of the right pose in the avatar's mesh.
-//	CEGUI::Imageset* mRightPoseImageSet;	///brief ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the avatar in the right state, so with a large noze if we take our precedent example).
-	Image* mRightPoseImageSet;				///brief ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the avatar in the right state, so with a large noze if we take our precedent example).
+	ushort mRightPoseIndex;					///brief Index of the right pose in the character's mesh.
+//	CEGUI::Imageset* mRightPoseImageSet;	///brief ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the character in the right state, so with a large noze if we take our precedent example).
+	Image* mRightPoseImageSet;				///brief ImageSet containing the CEGUI picture for the right pose (It should be a "photo" of the character in the right state, so with a large noze if we take our precedent example).
 };
 
 }

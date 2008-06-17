@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Selection.h"
 #include "Transformations.h"
 #include "Navigator.h"
-#include "OgreExternalTextureSourceManager.h"
+#include <OgreExternalTextureSourceManager.h>
 
 namespace Solipsis {
 

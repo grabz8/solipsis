@@ -24,16 +24,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GoodyModel.h"
 #include "Goody.h"
 #include "Character.h"
+#include "CharacterInstance.h"
 
 using namespace Solipsis;
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+GoodyModelInstance::GoodyModelInstance(GoodyModel* goodyModel, GoodyInstance* owner) :
+ModifiableMaterialObject(goodyModel),
+mGoodyModel(goodyModel), mOwner(owner)
+{
+    mEntity = mGoodyModel->mEntity->clone(mOwner->getOwner()->getUidString() + mGoodyModel->getName());
+    String s = "Material" + mOwner->getOwner()->getUidString() + mGoodyModel->mOwner->getName() + mGoodyModel->mName;
+    MaterialPtr materialGoody = MaterialManager::getSingleton().getByName(s);
+    if (materialGoody.isNull())
+    	materialGoody = mGoodyModel->mEntity->getSubEntity(0)->getMaterial()->clone(s, true, mOwner->getOwner()->getResourceGroup());
+    mEntity->getSubEntity(0)->setMaterialName(materialGoody->getName());
+	initialise(materialGoody);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+GoodyModelInstance::~GoodyModelInstance()
+{
+    mEntity->getSubEntity(0)->setMaterialName(mGoodyModel->mEntity->getSubEntity(0)->getMaterial()->getName());
+    mOwner->getOwner()->getSceneMgr()->destroyEntity(mEntity);
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 GoodyModel::GoodyModel(const String& name, Entity* entity, Goody* owner) :
 mOwner(owner), mName(name), mEntity(entity)
 {
-	const MaterialPtr& materialGoody = mEntity->getSubEntity(0)->getMaterial()->clone("Material"+mOwner->getOwner()->getName()+mOwner->getName()+name);
-	mEntity->getSubEntity(0)->setMaterialName(materialGoody->getName());
-	initialise(materialGoody);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

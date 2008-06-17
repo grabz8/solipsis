@@ -34,6 +34,7 @@ Avatar::Avatar(XmlEntity* xmlEntity) :
     ,mPhysicsCharacter(0)
 #endif
 {
+    applyGravity(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -59,8 +60,6 @@ void Avatar::createPhysics(IPhysicsScene* physicsScene)
     characterDesc.stepOffset = mRadius;
     mPhysicsCharacter = mPhysicsScene->createCharacter();
     mPhysicsCharacter->create(characterDesc);
-
-    mGravity = mXmlEntity->getFlags() & EFGravity;
 
     mDirty = false;
 }

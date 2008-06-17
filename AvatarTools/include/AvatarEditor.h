@@ -36,32 +36,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Ogre.h>
 #include <MyZipArchive.h>
 
-
 using namespace Ogre;
+
 namespace Solipsis {
 
 class CharacterManager;
-class Character;
+class CharacterInstance;
 
 class AvatarEditor
 {
 public:
-	AvatarEditor(std::string pPath, SceneManager* pSceneMgr);
+	AvatarEditor(const String& pPath, SceneManager* pSceneMgr);
     ~AvatarEditor();
 
-    /** Get the singleton for the avatar editor. */
+    /** Get the singleton for the haracter editor. */
     static AvatarEditor* getSingletonPtr();
 
 	/** Get list of .SAF files from the path directory. */
-	void buildListSAF(std::string pPathDirectory = "");
+	void buildListSAF(const String& pPathDirectory = "");
 
-	/** */    
-	void setUid(String pUid);
+	/** Set the character instance of the user character */    
+	void setCharacterInstance(CharacterInstance* pCharacterInstance);
 
-	/** The avatar manager. */
+	/** The character manager. */
 	CharacterManager* getManager();
-	/** Get as current avatar from his name. */
-	bool setCurrentByName(std::string pName);
+	/** Get as current character from his name. */
+	bool setCurrentByName(const String& pName);
 	/** */
 	void setNextAsCurrent();
 	/** */
@@ -90,21 +90,19 @@ public:
 	int selectType;
 	
 private:
-	/** Update the current avatar' datas */
-	void updateCurrent(Character* pAvatar);
+	/** Update the current character' datas */
+	void updateCurrent(const String& pName);
 
     static AvatarEditor* ms_singletonPtr;
 	String mPath;
 	SceneManager* mSceneMgr;
     MyZipArchive* archive;
-	CharacterManager* mAvatars;
+	CharacterManager* mCharacters;
 
-	String mUidString;
+    String mUidString;
 	String mCurrentName;
-	SceneNode* mNode;
+	SceneNode* mSceneNode;
 	Entity* mEntity;
-
-
 
 	String mMeshFilename;
     String mSkeletonFilename;

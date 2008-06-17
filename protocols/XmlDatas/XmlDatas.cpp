@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "XmlDatas.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace Solipsis {
 
@@ -49,6 +51,23 @@ bool XmlHelpers::getAttribute(TiXmlElement* elt, const char* attrName, const cha
     if ((attr == 0) || (attr[0] == '\0'))
         return false;
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlHelpers::convertUIntToHexString(unsigned int value)
+{
+    char valueStr[9];
+    _snprintf(valueStr, 8, "%08X", value);
+    valueStr[8] = '\0';
+    return valueStr;
+}
+
+//-------------------------------------------------------------------------------------
+unsigned int XmlHelpers::convertHexStringToUInt(const char* str)
+{
+    unsigned int value;
+    sscanf(str, "%08X", &value);
+    return value;
 }
 
 //-------------------------------------------------------------------------------------
@@ -94,6 +113,57 @@ bool XmlHelpers::fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q)
 }
 
 //-------------------------------------------------------------------------------------
+const std::string& convertEventTypeToRepr(const EventType& evtType)
+{
+    static std::string EventTypeRepr[] = {
+        "ETNewEntity",
+        "ETLostEntity",
+        "ETUpdatedEntity",
+        "ETActionOnEntity",
+        "ETStatusReport"
+    };
+    return EventTypeRepr[evtType];
+}
+
+//-------------------------------------------------------------------------------------
+const std::string& convertEntityTypeToRepr(const EntityType& entityType)
+{
+    static std::string EntityTypeRepr[] = {
+        "ETAvatar",
+        "ETSite",
+        "ETObject"
+    };
+    return EntityTypeRepr[entityType];
+}
+
+//-------------------------------------------------------------------------------------
+std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags)
+{
+    std::string entityFlagsRepr;
+    if (entityFlags & EFGravity)
+        entityFlagsRepr += "EFGravity|";
+    if (entityFlagsRepr.empty())
+        entityFlagsRepr = "EFNone";
+    else
+        entityFlagsRepr.erase(entityFlagsRepr.length() - 1, 1);
+    return entityFlagsRepr;
+}
+
+//-------------------------------------------------------------------------------------
+const std::string& convertShapeTypeToRepr(const ShapeType& shapeType)
+{
+    static std::string ShapeTypeRepr[] = {
+        "STPoint",
+        "STCircle",
+        "ST2DRect",
+        "STSphere",
+        "STBox",
+        "STPolygonVolume"
+    };
+    return ShapeTypeRepr[shapeType];
+}
+
+//-------------------------------------------------------------------------------------
 std::string XmlLogin::toXmlString() const
 {
     std::stringstream s;
@@ -128,7 +198,7 @@ std::string XmlContent::toXmlString() const
 {
     std::stringstream s;
     s << "<content>";
-    for (ContentLodMap::const_iterator lod = contentLodMap.begin(); lod != contentLodMap.end(); ++lod)
+    for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
     {
         const ContentFileList& contentFileList = lod->second;
         s << "<lod level=\"" << lod->first << "\">";
@@ -147,7 +217,7 @@ std::string XmlContent::toXmlString() const
 //-------------------------------------------------------------------------------------
 bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
 {
-    contentLodMap.clear();
+    mContentLodMap.clear();
 
     ContentFileList contentFileList;
     TiXmlElement* elt;
@@ -157,7 +227,7 @@ bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
     {
         if (!XmlHelpers::getAttribute(lodElt, "level", attr)) return false;
         Lod lod;
-        convertStringToLod(attr, lod);
+        convertDecStringToLod(attr, lod);
 
         if ((elt = lodElt->FirstChildElement("files")) == 0)
             return false;
@@ -169,7 +239,7 @@ bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
             contentFileList.push_back(std::string(attr));
         }
 
-        contentLodMap[lod] = contentFileList;
+        mContentLodMap[lod] = contentFileList;
     }
 
     return true;
@@ -188,7 +258,8 @@ std::string XmlEntity::toXmlString() const
 {
     std::stringstream s;
     if (!mDefinedAttributes & DAUid) return s.str();
-    s << "<entity uid=\"" << mUid << "\"";
+    std::string uidStr;
+    s << "<entity uid=\"" << convertEntityUIDToHexString(mUid) << "\"";
     if (mDefinedAttributes & DAOwner) s << " owner=\"" << mOwner << "\"";
     if (mDefinedAttributes & DAType) s << " type=\"" << mType << "\"";
     if (mDefinedAttributes & DAName) s << " name=\"" << mName << "\"";
@@ -225,7 +296,7 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     const char* attr = 0;
 
     if (!XmlHelpers::getAttribute(xmlElt, "uid", attr)) return false;
-    convertStringToEntityUID(attr, mUid);
+    mUid = convertHexStringToEntityUID(attr);
     mDefinedAttributes |= DAUid;
     if (XmlHelpers::getAttribute(xmlElt, "owner", attr))
     {
@@ -234,7 +305,7 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     }
     if (XmlHelpers::getAttribute(xmlElt, "type", attr))
     {
-        convertStringToEntityType(attr, mType);
+        convertDecStringToEntityType(attr, mType);
         mDefinedAttributes |= DAType;
     }
     if (XmlHelpers::getAttribute(xmlElt, "name", attr))
@@ -246,7 +317,7 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     if ((elt = xmlElt->FirstChildElement("flags")) != 0)
     {
         if (!XmlHelpers::getAttribute(elt, "bitmask", attr)) return false;
-        convertStringToEntityFlags(attr, mFlags);
+        mFlags = convertHexStringToEntityFlags(attr);
         mDefinedAttributes |= DAFlags;
     }
     if ((elt = xmlElt->FirstChildElement("displacement")) != 0)
@@ -323,7 +394,7 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
         return false;
 
     if (!XmlHelpers::getAttribute(elt, "type", attr)) return false;
-    convertStringToEventType(attr, mType);
+    convertDecStringToEventType(attr, mType);
 
     if ((elt = elt->FirstChildElement("entity")) != 0)
     {

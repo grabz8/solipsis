@@ -43,7 +43,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
     try
     {
         // Authentication
-        EntityUID AvatarEntityId;
+        EntityUID AvatarEntityUid;
         NodeId nodeId;
         if (xmlLogin->getPwd().compare("demo") == 0)
         {
@@ -53,7 +53,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             char nidhex[16];
             sprintf(nidhex, "%08X", connection + 1);
             nodeId = nidhex;
-            AvatarEntityId = 0x10000 + connection + 1;
+            AvatarEntityUid = 0x10000 + connection + 1;
         }
         else
             return 0;
@@ -64,7 +64,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             std::string xmlSiteStr;
             if (Peer::getSingleton().mSceneDemoLoaded.compare("Ile") == 0)
                 xmlSiteStr = "\
-<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Ile\">\
+<entity uid=\"11112223\" owner=\"00000001\" type=\"1\" name=\"Ile\">\
  <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\
@@ -74,7 +74,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>"
-"    <file name=\"Ile.xml\" />\
+"    <file name=\"11112223.xml\" />\
     <file name=\"scenes/Ile.osm\" />\
     <file name=\"scenes/Ile_bassin.mesh\" />\
     <file name=\"scenes/Ile_bateauPhare.mesh\" />\
@@ -263,7 +263,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
 ";
             else if (Peer::getSingleton().mSceneDemoLoaded.compare("DigitalOcean1") == 0)
                 xmlSiteStr = "\
-<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\">\
+<entity uid=\"11112224\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\">\
  <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\
@@ -273,7 +273,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>"
-"    <file name=\"DigitalOcean1.xml\" />\
+"    <file name=\"11112224.xml\" />\
     <file name=\"scenes/DigitalOcean1.osm\" />\
     <file name=\"scenes/MEFourmigues.mesh\" />\
     <file name=\"materials/scripts/fourmigues.material\" />\
@@ -296,7 +296,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>"
-"    <file name=\"Deltastation1.xml\" />\
+"    <file name=\"11112222.xml\" />\
     <file name=\"scenes/Deltastation1.osm\" />\
     <file name=\"scenes/gun6.mesh\" />\
     <file name=\"scenes/sidegunR.mesh\" />\
@@ -360,8 +360,8 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         std::stringstream avatarPosStrStrm;
         XmlHelpers::ostreamVector3(avatarPosStrStrm << "<position ", avatarPos) << " />";
         std::string xmlAvatarStr = "\
-<entity uid=\"" + Ogre::StringConverter::toString(AvatarEntityId) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
- <flags bitmask=\"" + Ogre::StringConverter::toString(avatarFlags) + "\" />\
+<entity uid=\"" + convertEntityUIDToHexString(AvatarEntityUid) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
+ <flags bitmask=\"" + convertEntityFlagsToHexString(avatarFlags) + "\" />\
  " + avatarPosStrStrm.str() + "\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\
@@ -371,11 +371,8 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>\
-    <file name=\"User.xml\" />\
-    <file name=\"models/salamandra.mesh\" />\
-    <file name=\"models/salamandra.mesh.skeleton\" />\
-    <file name=\"materials/scripts/salamandra.material\" />\
-    <file name=\"materials/textures/LightMapSalamandra2.tga\" />\
+    <file name=\"models/Kevin.saf\" />\
+    <file name=\"models/" + convertEntityUIDToHexString(AvatarEntityUid) + ".sif\" />\
    </files>\
   </lod>\
  </content>\

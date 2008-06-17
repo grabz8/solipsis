@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarEditor.h"
 #include "CharacterManager.h"
 #include "Character.h"
+#include "CharacterInstance.h"
 #include <SolipsisErrorHandler.h>
 #include <FileBrowser.h>
 
@@ -32,27 +33,27 @@ using namespace Solipsis;
 AvatarEditor* AvatarEditor::ms_singletonPtr = 0;
 
 //-------------------------------------------------------------------------------------
-AvatarEditor::AvatarEditor(std::string pPath, SceneManager* pSceneMgr) :
+AvatarEditor::AvatarEditor(const String& pPath, SceneManager* pSceneMgr) :
 	mPath(pPath),
 	mSceneMgr(pSceneMgr),
     archive(0),
-	mAvatars(0),
-	mUidString(""),
+	mCharacters(0),
+    mUidString(""),
 	mCurrentName(""),
     mMeshFilename(""),
     mSkeletonFilename(""),
-	mNode(0),
+	mSceneNode(0),
 	mEntity(0),
 	selectType(-1)
 {
     ms_singletonPtr = this;
-	mAvatars = new CharacterManager(pPath, mSceneMgr);
+	mCharacters = new CharacterManager(pPath, mSceneMgr);
 	mExecPath = _getcwd(NULL, 0);
 }
 //-------------------------------------------------------------------------------------
 AvatarEditor::~AvatarEditor()
 {
-	delete mAvatars; 
+	delete mCharacters; 
 
 	delete ms_singletonPtr;
     ms_singletonPtr = 0;
@@ -63,26 +64,23 @@ AvatarEditor* AvatarEditor::getSingletonPtr()
     return ms_singletonPtr;
 }
 //-------------------------------------------------------------------------------------
-void AvatarEditor::buildListSAF(std::string pPathDirectory)
+void AvatarEditor::buildListSAF(const String& pPathDirectory)
 {
-	if(pPathDirectory == "") 
-		pPathDirectory = mPath;
+    Path charactersFolderPath(pPathDirectory.empty() ? mPath : pPathDirectory); //Folder where to find the zip archives representing the characters.
 
-	Path avatarsFolderPath(pPathDirectory); //Folder where to find the zip archives representing the avatars.
-
-	if (SOLisDirectory(avatarsFolderPath.getFormatedPath().c_str()))
+	if (SOLisDirectory(charactersFolderPath.getFormatedPath().c_str()))
 	{
-		std::vector<std::string> fileList;
-		SOLlistDirectoryFiles(avatarsFolderPath.getFormatedPath().c_str(),&fileList);
-		std::vector<std::string>::iterator itFiles = fileList.begin();
+		std::vector<String> fileList;
+		SOLlistDirectoryFiles(charactersFolderPath.getFormatedPath().c_str(),&fileList);
+		std::vector<String>::iterator itFiles = fileList.begin();
 
 		while (itFiles != fileList.end())
 		{
-			Path avatarPath( String((*itFiles).c_str()));
-			if (avatarPath.getExtension() == "saf")
+			Path characterPath( String((*itFiles).c_str()));
+			if (characterPath.getExtension() == "saf")
 			{
-				mAvatars->addCharacter(avatarPath.getLastFileName(true));
-				SOLIPSISINFO("Adding avatar from file :",avatarPath.getUniversalPath().c_str());
+				mCharacters->addCharacter(characterPath.getLastFileName(false));
+				SOLIPSISINFO("Adding character from file :",characterPath.getUniversalPath().c_str());
 			}
 			itFiles++;
 		}
@@ -91,54 +89,67 @@ void AvatarEditor::buildListSAF(std::string pPathDirectory)
 		FileBrowser::displayMessageWindow("Error","The directory for the .SAF files doesn't existe.");
 }
 //-------------------------------------------------------------------------------------
-void AvatarEditor::setUid(String pUid)
+void AvatarEditor::setCharacterInstance(CharacterInstance* pCharacterInstance)
 {
-	mUidString = pUid;
-	mAvatars->setUid( pUid );
+    mUidString = pCharacterInstance->getUidString();
+    mCharacters->setCurrentInstance(pCharacterInstance);
+
+	mSceneNode = mCharacters->getCurrentInstance()->getSceneNode();
+	mEntity = mCharacters->getCurrentInstance()->getEntity();
+    mMeshFilename = pCharacterInstance->getCharacter()->getMeshName();
+	mSkeletonFilename = pCharacterInstance->getCharacter()->getSkeletonName();
+	mCurrentName = pCharacterInstance->getCharacter()->getName();
 }
 //-------------------------------------------------------------------------------------
 CharacterManager* AvatarEditor::getManager()
 {
-	return mAvatars;
+	return mCharacters;
 }
 //-------------------------------------------------------------------------------------
-void AvatarEditor::updateCurrent(Character* pAvatar)
+void AvatarEditor::updateCurrent(const String& pName)
 {
-	mMeshFilename = pAvatar->getMeshName();
-	mSkeletonFilename = pAvatar->getSkeletonName();
-	mCurrentName = pAvatar->getName(); //pName;
+    Vector3 savedPosition = mSceneNode->getPosition();
+    Quaternion savedOrientation = mSceneNode->getOrientation();
 
-	mNode = mAvatars->getCurrent()->getNode();
-	if(mEntity)
-		mEntity->setVisible(false);
-	mEntity = mAvatars->getCurrent()->getEntity();
-	mEntity->setVisible(true);
+    if (!mCurrentName.empty())
+    {
+        mCharacters->getCurrentInstance()->deleteModified();
+        mCharacters->destroyCharacterInstance(mCharacters->getCurrentInstance());
+    }
+
+    CharacterInstance* characterInstance = mCharacters->loadCharacterInstance(mUidString, pName);
+    mCharacters->setCurrentInstance(characterInstance);
+
+	mSceneNode = characterInstance->getSceneNode();
+    mSceneNode->setPosition(savedPosition);
+    mSceneNode->setOrientation(savedOrientation);
+	mEntity = characterInstance->getEntity();
+    mMeshFilename = characterInstance->getCharacter()->getMeshName();
+	mSkeletonFilename = characterInstance->getCharacter()->getSkeletonName();
+	mCurrentName = pName;
 }
 //-------------------------------------------------------------------------------------
-bool AvatarEditor::setCurrentByName(std::string pName)
+bool AvatarEditor::setCurrentByName(const String& pName)
 {
-	if(mCurrentName != pName)
-		updateCurrent( mAvatars->getByName(pName) );
-
+	if (mCurrentName != pName)
+        updateCurrent(pName);
 	return true;
 }
 //-------------------------------------------------------------------------------------
 void AvatarEditor::setNextAsCurrent()
 {
-	Character* avatar = mAvatars->getNextFromName(mCurrentName);
-	if(avatar->getName() == mCurrentName)
+	String name = mCharacters->getNextFromName(mCurrentName);
+	if (name == mCurrentName)
 		return;
-
-	updateCurrent(avatar);
+	updateCurrent(name);
 }
 //-------------------------------------------------------------------------------------
 void AvatarEditor::setPrevAsCurrent()
 {
-	Character* avatar = mAvatars->getPrevFromName(mCurrentName);
-	if(avatar->getName() == mCurrentName)
+    String name = mCharacters->getPrevFromName(mCurrentName);
+	if (name == mCurrentName)
 		return;
-
-	updateCurrent(avatar);
+	updateCurrent(name);
 }
 //-------------------------------------------------------------------------------------
 String AvatarEditor::getName()
@@ -158,7 +169,7 @@ String AvatarEditor::getSkeletonName()
 //-------------------------------------------------------------------------------------
 SceneNode* AvatarEditor::getSceneNode()
 {
-	return mNode;
+	return mSceneNode;
 }
 //-------------------------------------------------------------------------------------
 Entity* AvatarEditor::getEntity()

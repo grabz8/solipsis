@@ -32,18 +32,49 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ModifiableMaterialObject.h"
 
-
 using namespace Ogre;
+
 namespace Solipsis {
 
 class Goody;
+class GoodyInstance;
 
-/// brief This is the class representing a GoodyModel of a Goody of avatar. It could be for instance a "Rolex" if the Goody is a "watch". We can change his colour (more precisely the colour of the submesh 0 of the mesh representing the GoodyModel) if it's allowed. Same thing for the texture.
+class GoodyModel;
+class GoodyModelInstance : public ModifiableMaterialObject
+{
+public:
+	///brief Constructor
+	///param goodyModel Goody model of this instance.
+	///param owner GoodyInstance from which the GoodyModelInstance is a model.
+    GoodyModelInstance(GoodyModel* goodyModel, GoodyInstance* owner);
+	~GoodyModelInstance();
+
+	///brief Method which gives the GoodyModel.
+    GoodyModel* getGoodyModel() { return mGoodyModel; }
+
+	///brief Method which return the owner.
+	///return Owner.
+    GoodyInstance* getOwner() { return mOwner; }
+
+	///brief Method which return the SubEntity representing the GoodyModel.
+	///return Entity representing the GoodyModel.
+    Entity* getEntity() { return mEntity; }
+
+private:
+	GoodyModel* mGoodyModel;							///brief GoodyModel associated to the GoodyModelInstance.
+	GoodyInstance* mOwner;								///brief Owner of the GoodyModelInstance.
+	Entity* mEntity;									///brief Entity associated to the GoodyModel.
+};
+
+
+/// brief This is the class representing a GoodyModel of a Goody of character. It could be for instance a "Rolex" if the Goody is a "watch". We can change his colour (more precisely the colour of the submesh 0 of the mesh representing the GoodyModel) if it's allowed. Same thing for the texture.
 /// author François FOURNEL
 /// date 2007.06.25
 
-class GoodyModel : public ModifiableMaterialObject
+class GoodyModel : public ModifiableMaterialObjectBase
 {
+    friend class GoodyModelInstance;
+
 public:
 	///brief Constructor
 	///param name Name of the GoodyModel.

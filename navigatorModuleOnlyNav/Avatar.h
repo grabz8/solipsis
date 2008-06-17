@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Avatar_h__
 
 #include "OgrePeer.h"
+#include <CharacterInstance.h>
 #include "KeyMotion.h"
 #include "MovableText.h"
 #include "Event.h"
@@ -73,10 +74,10 @@ protected:
     /// Last real position received
     Vector3 mLastRealPosition;
 
-    /// Scene node
-    SceneNode* mSceneNode;
-    /// Entity
-    Entity* mEntity;
+    /// Character
+    CharacterInstance* mCharacterInstance;
+    /// Scene node to attach cameras
+    SceneNode* mCamerasSceneNode;
     /// Current animation state
     AnimationState* mAnimationState;
     /// Name label
@@ -85,10 +86,6 @@ protected:
     ManualObject* mSelectionObject;
     /// Whether to apply the gravity
     bool mGravity;
-    /// Radius
-    Real mRadius;
-    /// Height
-    Real mHeight;
 
 private:
     /// Animation name for Idle
@@ -118,9 +115,9 @@ private:
 public:
     /** Constructor. */
 #ifdef POOL
-    Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity);
+    Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInstance* characterInstance);
 #else
-    Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity);
+    Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterInstance);
 #endif
     /** Destructor. */
     virtual ~Avatar();
@@ -145,12 +142,20 @@ public:
 #endif
     }
 
+    /** Get the character instance. */
+    CharacterInstance* getCharacterInstance();
+    /** Set the character instance. */
+    void setCharacterInstance(CharacterInstance* characterInstance);
     /** Get the scene node. */
-    SceneNode* getSceneNode();
+    inline SceneNode* getSceneNode() { return mCharacterInstance->getSceneNode(); }
     /** Get the entity. */
-    Entity* getEntity();
-	/** Set the entity. */
-	void setEntity(Entity* pEntity);
+    inline Entity* getEntity() { return mCharacterInstance->getEntity(); }
+
+    /** Refresh extra nodes and movables according to the new character instance scene node. */
+    void onSceneNodeChanged();
+    /** Detach extra nodes and movables from the character instance scene node. */
+    void detachFromSceneNode();
+
     /** Set whether the name is visible or not. */
     void setNameVisibility(bool visible);
 

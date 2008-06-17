@@ -35,6 +35,8 @@ class Site : public Entity
 protected:
     /// OSM filename
     std::string mOSMFilename;
+    /// Collision mesh name
+    std::string mCollisionMeshName;
     /// Collision mesh filename
     std::string mCollisionMeshFilename;
     /// Position of the entry gate

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include "Modeler.h"
 #include "AvatarEditor.h"
+#include "CharacterManager.h"
 
 using namespace Solipsis;
 
@@ -81,91 +82,31 @@ bool OgrePeerManager::load(RefCntPoolPtr<XmlEntity>& xmlEntity)
 bool OgrePeerManager::load(XmlEntity* xmlEntity)
 #endif
 {
-    class TiXmlDocumentPtr : public Ogre::SharedPtr<TiXmlDocument> {
-    public:
-	    TiXmlDocumentPtr() : Ogre::SharedPtr<TiXmlDocument>() {}	
-	    explicit TiXmlDocumentPtr(TiXmlDocument* rep) : Ogre::SharedPtr<TiXmlDocument>(rep) {}
-	    TiXmlDocumentPtr(const TiXmlDocumentPtr& r) : Ogre::SharedPtr<TiXmlDocument>(r) {} 
-    };
-
-	// Create new XML document
-    TiXmlDocumentPtr xmlDoc = TiXmlDocumentPtr(new TiXmlDocument());
-
-    // Open XML file and parse it
-    String xmlFile = xmlEntity->getName() + ".xml";
-    if (xmlEntity->getType() == ETAvatar)
-        xmlFile = "User.xml";
-    DataStreamPtr stream;
-    try
+    OgrePeer* newOgrePeer = 0;
+    switch (xmlEntity->getType())
     {
-    	stream = ResourceGroupManager::getSingleton().openResource(xmlFile);
+    case ETAvatar:
+        newOgrePeer = createAvatarNode(xmlEntity);
+        break;
+    case ETSite:
+        newOgrePeer = createSceneNode(xmlEntity);
+        break;
+    case ETObject:
+        newOgrePeer = createObjectNode(xmlEntity);
+        break;
     }
-    catch (Ogre::Exception& e)
-    {
-        OGRE_LOG("OgrePeerManager::load() Unable to load peer XML file " + xmlFile);
-        return false;
-    }
-    if (!stream->size())
-    {
-        OGRE_LOG("OgrePeerManager::load() Empty peer XML file " + xmlFile);
-        return false;
-    }
-    size_t size = stream->size();
-    char *buf = new char[size + 1];
-    memset(buf, 0, size + 1);
-    stream->read(buf, size);
-    stream.setNull();
-    xmlDoc->Parse(buf);
-    delete[] buf;
-
-    // Check for errors
-    if (xmlDoc->Error())
-    {
-        OGRE_LOG("OgrePeerManager::load() Failed to load peer XML file " + xmlFile + ", " + String(xmlDoc->ErrorDesc()));
-        return false;
-    }
-
-    // Process elements
-    TiXmlElement* peerDatasElt = xmlDoc->FirstChildElement("peerDatas");
-    if (peerDatasElt == 0)
-    {
-        OGRE_LOG("OgrePeerManager::load() Malformed peer XML file " + xmlFile);
-        return false;
-    }
-    for (TiXmlElement* elt = peerDatasElt->FirstChildElement(); elt != 0; elt = elt->NextSiblingElement())
-    {
-        OgrePeer* newOgrePeer = 0;
-        if (String(elt->Value()).compare("avatarNode") == 0)
-        {
-            newOgrePeer = createAvatarNode(xmlEntity, elt);
-            if (newOgrePeer == 0)
-                OGRE_LOG("OgrePeerManager::load() Unable to load avatarNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
-        }
-        else if (String(elt->Value()).compare("sceneNode") == 0)
-        {
-            xmlObjectFilename = xmlFile;
-            newOgrePeer = createSceneNode(xmlEntity, elt);
-            if (newOgrePeer == 0)
-                OGRE_LOG("OgrePeerManager::load() Unable to load sceneNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
-        }
-        else if (String(elt->Value()).compare("objectNode") == 0)
-        {
-            //xmlObjectFilename = xmlFile;
-            newOgrePeer = createObjectNode(xmlEntity, elt);
-            if (newOgrePeer == 0)
-                OGRE_LOG("OgrePeerManager::load() Unable to load objectNode in peer XML file " + xmlFile + ", raw " + StringConverter::toString(elt->Row()));
-        }
-        if (newOgrePeer != 0)
-            mOgrePeersMap[xmlEntity->getUid()] = newOgrePeer;
-    }
+    if (newOgrePeer != 0)
+        mOgrePeersMap[xmlEntity->getUid()] = newOgrePeer;
+    else
+        OGRE_LOG("OgrePeerManager::load() Unable to load node type:" + xmlEntity->getTypeRepr() + ", uid:" + xmlEntity->getUidString());
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-std::string OgrePeerManager::getXmlObjectFilename()
+const String& OgrePeerManager::getXmlObjectFilename()
 {
-    return xmlObjectFilename;
+    return mXmlObjectFilename;
 }
 
 //-------------------------------------------------------------------------------------
@@ -270,35 +211,29 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
 #endif
 {
     if (mSceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR,
-            "No scene manager !",
-            "OgrePeerManager::CreateAvatarNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateAvatarNode");
 
-    const char* name = xmlElt->Attribute("name");
+    std::string uidStr = xmlEntity->getUidString();
+    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
 
-	String uidString = StringConverter::toString(xmlEntity->getUid());
-	AvatarEditor::getSingletonPtr()->setUid(uidString);
+    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, "");
+    if (characterInstance == 0)
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "OgrePeerManager::CreateAvatarNode");
+    if (isLocal)
+        // set the current user character editable by the avatar editor
+        AvatarEditor::getSingletonPtr()->setCharacterInstance(characterInstance);
 
-	// Get the wanted avatar from his name
-	if (!AvatarEditor::getSingletonPtr()->setCurrentByName(name))
-		return false;
-
-	// Get a reference from this avatar
-	SceneNode* node = AvatarEditor::getSingletonPtr()->getSceneNode();
-	Entity* entity = AvatarEditor::getSingletonPtr()->getEntity();
-	
 #ifdef SHADOWS
     entity->setCastShadows(true);
 #endif
 
-    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
-    Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, node, entity);
+    Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, characterInstance);
     peerAvatar->setStateAnimName(Avatar::SWalk, "Walk");
     peerAvatar->setStateAnimName(Avatar::SRun, "Run");
     peerAvatar->setStateAnimName(Avatar::SFly, "Fly");
@@ -306,7 +241,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
     peerAvatar->setState(Avatar::SIdle);
 
     if (mCallbacks != 0)
-        if (!mCallbacks->OnAvatarNodeCreate(xmlElt, peerAvatar))
+        if (!mCallbacks->OnAvatarNodeCreate(peerAvatar))
         {
             delete peerAvatar;
             return 0;
@@ -317,21 +252,44 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* 
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
 #endif
 {
     if (mSceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR,
-            "No scene manager !",
-            "OgrePeerManager::CreateSceneNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateSceneNode");
 
+	// Open XML file and parse it
+	TiXmlDocument xmlDoc;
+    String xmlFile = xmlEntity->getUidString() + ".xml";
+    mXmlObjectFilename = xmlFile;
+    DataStreamPtr stream;
+    try {
+    	stream = ResourceGroupManager::getSingleton().openResource(xmlFile);
+    } catch (Ogre::Exception& e) {
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load XML file " + xmlFile + ", exception: " + e.getFullDescription(), "OgrePeerManager::CreateSceneNode");
+    }
+    if (!stream->size())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Empty XML file " + xmlFile, "OgrePeerManager::CreateSceneNode");
+    size_t size = stream->size();
+    char *buf = new char[size + 1];
+    memset(buf, 0, size + 1);
+    stream->read(buf, size);
+    stream.setNull();
+    xmlDoc.Parse(buf);
+    delete[] buf;
+    // Check for errors
+    if (xmlDoc.Error())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Failed to load XML file " + xmlFile + ", " + String(xmlDoc.ErrorDesc()), "OgrePeerManager::CreateSceneNode");
+    // Process elements
+    TiXmlElement* xmlElt = xmlDoc.RootElement()->FirstChildElement("sceneNode");
+    if (xmlElt == 0)
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Malformed sceneNode XML file " + xmlFile, "OgrePeerManager::CreateSceneNode");
     const char* name = xmlElt->Attribute("name");
     const char* filename = xmlElt->Attribute("filename");
     const char* collision = xmlElt->Attribute("collision");
-    String uidString = StringConverter::toString(xmlEntity->getUid());
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(uidString + "Scene");
+    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUidString() + "Scene");
     OSMScene osmScene(mSceneMgr);
     OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
     if (!osmScene.initialise(filename, &osmSceneCallbacks))
@@ -348,7 +306,6 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
 #endif
 
     node->setPosition(xmlEntity->getPosition());
-    node->setPosition(18,-58,133);
 
     // Destroy the scene collision mesh
     if (collision != 0)
@@ -358,7 +315,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
     Scene* peerScene = new Scene(xmlEntity, isLocal, node);
 
     if (mCallbacks != 0)
-        if (!mCallbacks->OnSceneNodeCreate(xmlElt, peerScene))
+        if (!mCallbacks->OnSceneNodeCreate(peerScene))
         {
             delete peerScene;
             return 0;
@@ -369,16 +326,40 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity, TiXmlElement* x
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt)
+OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
 #endif
 {
     if (mSceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR,
-        "No scene manager !",
-        "OgrePeerManager::CreateObjectNode");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateObjectNode");
 
+	// Open XML file and parse it
+	TiXmlDocument xmlDoc;
+    String xmlFile = xmlEntity->getUidString() + ".xml";
+    mXmlObjectFilename = xmlFile;
+    DataStreamPtr stream;
+    try {
+    	stream = ResourceGroupManager::getSingleton().openResource(xmlFile);
+    } catch (Ogre::Exception& e) {
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load XML file " + xmlFile + ", exception: " + e.getFullDescription(), "OgrePeerManager::CreateSceneNode");
+    }
+    if (!stream->size())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Empty XML file " + xmlFile, "OgrePeerManager::CreateSceneNode");
+    size_t size = stream->size();
+    char *buf = new char[size + 1];
+    memset(buf, 0, size + 1);
+    stream->read(buf, size);
+    stream.setNull();
+    xmlDoc.Parse(buf);
+    delete[] buf;
+    // Check for errors
+    if (xmlDoc.Error())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Failed to load XML file " + xmlFile + ", " + String(xmlDoc.ErrorDesc()), "OgrePeerManager::CreateSceneNode");
+    // Process elements
+    TiXmlElement* xmlElt = xmlDoc.FirstChildElement("objectNode");
+    if (xmlElt == 0)
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Malformed objectNode XML file " + xmlFile, "OgrePeerManager::CreateSceneNode");
     const char* name = xmlElt->Attribute("name");
     const char* filename = xmlElt->Attribute("filename");
 

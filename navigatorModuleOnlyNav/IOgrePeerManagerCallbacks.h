@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IOgrePeerManagerCallbacks_h__
 #define __IOgrePeerManagerCallbacks_h__
 
-#include "tinyxml.h"
 #include "OgrePeer.h"
 
 namespace Solipsis {
@@ -37,10 +36,10 @@ public:
 	virtual ~IOgrePeerManagerCallbacks() {};
 
 	// Called when an avatar should be created
-    virtual bool OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer) { return true; };
+    virtual bool OnAvatarNodeCreate(OgrePeer* ogrePeer) { return true; };
 
 	// Called when a scene should be created
-	virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer) { return true; };
+	virtual bool OnSceneNodeCreate(OgrePeer* ogrePeer) { return true; };
 };
 
 } // namespace Solipsis

@@ -21,10 +21,405 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "Character.h"
 #include "Goody.h"
+#include "Character.h"
+#include "CharacterInstance.h"
 
 using namespace Solipsis;
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+GoodyInstance::GoodyInstance(Goody* pGoody, CharacterInstance* owner) :
+	mGoody(pGoody),
+	mCurrentRotationsAnglesScrollPositions(Vector3(0.5,0.5,0.5)),
+	mCurrentPositionScrollPositions(Vector3(0.5,0.5,0.5)),
+    mOwner(owner)
+{
+    mCurrentGoodyModelIterator = mGoody->mDefaultGoodyModelIterator;
+    mCurrentGoodyModelInstance = 0;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+GoodyInstance::~GoodyInstance()
+{
+    delete mCurrentGoodyModelInstance;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+bool GoodyInstance::isColourModifiable()
+{	
+	return ((mCurrentGoodyModelInstance != 0)&&(mCurrentGoodyModelInstance->isColourModifiable()));
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setColourModifiable(bool isColourModifiable)
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "No current GoodyModel, so can't change it's properties !");
+    mCurrentGoodyModelInstance->setColourModifiable(isColourModifiable);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const ColourValue& GoodyInstance::getColour()
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "There is no CurrentGoodyModel for this Goody so this one can't have a colour !");
+	return mCurrentGoodyModelInstance->getColour();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setColour(const ColourValue&	colour)
+{
+	assert( (mCurrentGoodyModelInstance  != 0) && "There is no CurrentGoodyModel for this Goody so this one can't have a colour !");
+	mCurrentGoodyModelInstance->setColour(colour);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+bool GoodyInstance::isTextureModifiable()
+{
+	return ((mCurrentGoodyModelIterator->second != NULL)&&(mCurrentGoodyModelIterator->second->isTextureModifiable()));
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TexturePtr GoodyInstance::getCurrentTexture()
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "No current GoodyModel, so it can't have a current texture !");
+	return mCurrentGoodyModelInstance->getCurrentTexture();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setPreviousTextureAsCurrent()
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "No current GoodyModel, so can't change it's properties !");
+	mCurrentGoodyModelInstance->setPreviousTextureAsCurrent();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setNextTextureAsCurrent()
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "No current GoodyModel, so can't change it's properties !");
+	mCurrentGoodyModelInstance->setNextTextureAsCurrent();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::addTexture(const TexturePtr& texture)
+{
+	assert( (mCurrentGoodyModelInstance != 0) && "No current GoodyModel, so can't change it's properties !");
+	mCurrentGoodyModelInstance->addTexture(texture);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::updateGoodyPosition()
+{
+	assert( (mCurrentGoodyModelIterator->first != "None") && "No current GoodyModel so can't update its position at the screen !");
+
+	Entity* characterEntity = mOwner->getEntity();
+	Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+	if (goodyModelEntity->isAttached()) characterEntity->detachObjectFromBone(goodyModelEntity);
+	characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const Vector3& GoodyInstance::getCurrentPosition()
+{
+	static Vector3 currentPosition;
+
+	if (mCurrentPositionScrollPositions.x <= 0.5f)
+		currentPosition.x = (mGoody->mDefaultPosition.x - mGoody->mMinPosition.x)*(mCurrentPositionScrollPositions.x/0.5f) + mGoody->mMinPosition.x;
+	else
+		currentPosition.x = (mGoody->mMaxPosition.x - mGoody->mDefaultPosition.x)*((mCurrentPositionScrollPositions.x - 0.5f)/0.5f) + mGoody->mDefaultPosition.x;
+
+	if (mCurrentPositionScrollPositions.y <= 0.5f)
+		currentPosition.y = (mGoody->mDefaultPosition.y - mGoody->mMinPosition.y)*(mCurrentPositionScrollPositions.y/0.5f) + mGoody->mMinPosition.y;
+	else
+		currentPosition.y = (mGoody->mMaxPosition.y - mGoody->mDefaultPosition.y)*((mCurrentPositionScrollPositions.y - 0.5f)/0.5f) + mGoody->mDefaultPosition.y;
+
+	if (mCurrentPositionScrollPositions.z <= 0.5f)
+		currentPosition.z = (mGoody->mDefaultPosition.z - mGoody->mMinPosition.z)*(mCurrentPositionScrollPositions.z/0.5f) + mGoody->mMinPosition.z;
+	else
+		currentPosition.z = (mGoody->mMaxPosition.z - mGoody->mDefaultPosition.z)*((mCurrentPositionScrollPositions.z - 0.5f)/0.5f) + mGoody->mDefaultPosition.z;
+
+	return currentPosition;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const Vector3& GoodyInstance::getCurrentRotationsAngles()
+{
+	static Vector3 currentRotationsAngles;
+
+	if (mCurrentRotationsAnglesScrollPositions.x <= 0.5f)
+		currentRotationsAngles.x = (mGoody->mDefaultRotationsAngles.x - mGoody->mMinRotationsAngles.x)*(mCurrentRotationsAnglesScrollPositions.x/0.5f) + mGoody->mMinRotationsAngles.x;
+	else
+		currentRotationsAngles.x = (mGoody->mMaxRotationsAngles.x - mGoody->mDefaultRotationsAngles.x)*((mCurrentRotationsAnglesScrollPositions.x - 0.5f)/0.5f) + mGoody->mDefaultRotationsAngles.x;
+
+	if (mCurrentRotationsAnglesScrollPositions.y <= 0.5f)
+		currentRotationsAngles.y = (mGoody->mDefaultRotationsAngles.y - mGoody->mMinRotationsAngles.y)*(mCurrentRotationsAnglesScrollPositions.y/0.5f) + mGoody->mMinRotationsAngles.y;
+	else
+		currentRotationsAngles.y = (mGoody->mMaxRotationsAngles.y - mGoody->mDefaultRotationsAngles.y)*((mCurrentRotationsAnglesScrollPositions.y - 0.5f)/0.5f) + mGoody->mDefaultRotationsAngles.y;
+
+	if (mCurrentRotationsAnglesScrollPositions.z <= 0.5f)
+		currentRotationsAngles.z = (mGoody->mDefaultRotationsAngles.z - mGoody->mMinRotationsAngles.z)*(mCurrentRotationsAnglesScrollPositions.z/0.5f) + mGoody->mMinRotationsAngles.z;
+	else
+		currentRotationsAngles.z = (mGoody->mMaxPosition.z - mGoody->mDefaultRotationsAngles.z)*((mCurrentRotationsAnglesScrollPositions.z - 0.5f)/0.5f) + mGoody->mDefaultRotationsAngles.z;
+
+	return currentRotationsAngles;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const Quaternion& GoodyInstance::getCurrentOrientation()
+{
+	const Vector3& currentRotationsAngles = getCurrentRotationsAngles();
+
+	static Quaternion orientation;
+	orientation = Quaternion(Radian(Degree(currentRotationsAngles.x)),Vector3(1,0,0)) *
+		Quaternion(Radian(Degree(currentRotationsAngles.y)),Vector3(0,1,0)) *
+		Quaternion(Radian(Degree(currentRotationsAngles.z)),Vector3(0,0,1));
+
+	return orientation;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentXScrollPosition()
+{
+	return mCurrentPositionScrollPositions.x;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentYScrollPosition()
+{
+	return mCurrentPositionScrollPositions.y;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentZScrollPosition()
+{
+	return mCurrentPositionScrollPositions.z;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentYawAngleScrollPosition()
+{
+	return mCurrentRotationsAnglesScrollPositions.x;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentPitchAngleScrollPosition()
+{
+	return mCurrentRotationsAnglesScrollPositions.y;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+float GoodyInstance::getCurrentRollAngleScrollPosition()
+{
+	return mCurrentRotationsAnglesScrollPositions.z;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentXScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentPositionScrollPositions.x = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+        updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentYScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentPositionScrollPositions.y = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+		updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentZScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentPositionScrollPositions.z = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+		updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::resetCurrentPosition()
+{
+	setCurrentXScrollPosition(0.5f);
+	setCurrentYScrollPosition(0.5f);
+	setCurrentZScrollPosition(0.5f);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentYawAngleScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentRotationsAnglesScrollPositions.x = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+		updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentPitchAngleScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentRotationsAnglesScrollPositions.y = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+		updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentRollAngleScrollPosition(float position)
+{
+	assert((position >= 0) && (position <= 1));
+
+	mCurrentRotationsAnglesScrollPositions.z = position;
+
+	if (mCurrentGoodyModelIterator->first != "None")
+		updateGoodyPosition();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::resetCurrentRotation()
+{
+	setCurrentYawAngleScrollPosition(0.5f);
+	setCurrentPitchAngleScrollPosition(0.5f);
+	setCurrentRollAngleScrollPosition(0.5f);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+GoodyModel* GoodyInstance::getCurrentGoodyModel()
+{
+	return mCurrentGoodyModelIterator->second;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const String& GoodyInstance::getCurrentGoodyModelName()
+{
+	return mCurrentGoodyModelIterator->first;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setCurrentGoodyModel(const String& goodyModelName)
+{
+	Entity* characterEntity = mOwner->getEntity();
+
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->detachObjectFromBone(goodyModelEntity);
+        delete mCurrentGoodyModelInstance;
+        mCurrentGoodyModelInstance = 0;
+	}
+
+	if (goodyModelName != "None")
+	{
+		assert( (mGoody->mGoodyModels[goodyModelName] != NULL) && "GoodyModel not found !");
+	}
+	mCurrentGoodyModelIterator = mGoody->mGoodyModels.find(goodyModelName);
+
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+        mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setPreviousGoodyModelAsCurrent()
+{
+	Entity* characterEntity = mOwner->getEntity();
+
+	//hiding the old current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->detachObjectFromBone(goodyModelEntity);
+        delete mCurrentGoodyModelInstance;
+        mCurrentGoodyModelInstance = 0;
+	}
+
+	//changing the current GoodModel
+	if (mCurrentGoodyModelIterator == mGoody->mGoodyModels.begin()) mCurrentGoodyModelIterator = mGoody->mGoodyModels.end();
+	mCurrentGoodyModelIterator--;
+
+	//displaying the new current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+        mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setNextGoodyModelAsCurrent()
+{
+	Entity* characterEntity = mOwner->getEntity();
+
+	//hiding the old current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->detachObjectFromBone(goodyModelEntity);
+        delete mCurrentGoodyModelInstance;
+        mCurrentGoodyModelInstance = 0;
+	}
+
+	//changing the current GoodModel
+	mCurrentGoodyModelIterator++;
+	if (mCurrentGoodyModelIterator == mGoody->mGoodyModels.end()) mCurrentGoodyModelIterator = mGoody->mGoodyModels.begin();
+
+	//displaying the new current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+        mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setDefaultGoodyModelAsCurrent()
+{
+	Entity* characterEntity = mOwner->getEntity();
+
+	//hiding the old current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->detachObjectFromBone(goodyModelEntity);
+        delete mCurrentGoodyModelInstance;
+        mCurrentGoodyModelInstance = 0;
+	}
+
+	//changing the current GoodModel
+	mCurrentGoodyModelIterator = mGoody->mDefaultGoodyModelIterator;
+
+	//displaying the new current GoodyModel
+	if (mCurrentGoodyModelIterator->second != NULL)
+	{
+        mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
+		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
+		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::resetModifications()
+{
+    if (mCurrentGoodyModelInstance != 0)
+        mCurrentGoodyModelInstance->resetModifications();
+
+	setDefaultGoodyModelAsCurrent();
+
+	resetCurrentPosition();	
+	resetCurrentRotation();
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 Goody::Goody(const String& name,
@@ -34,13 +429,12 @@ Goody::Goody(const String& name,
 			 Character* owner) :
 	mName(name),
 	mBoneName(boneName),
-	mMinRotationsAngles(minRotationsAngles), mCurrentRotationsAnglesScrollPositions(Vector3(0.5,0.5,0.5)), mDefaultRotationsAngles(defaultRotationsAngles), mMaxRotationsAngles(maxRotationsAngles),
-	mMinPosition(minPosition), mCurrentPositionScrollPositions(Vector3(0.5,0.5,0.5)), mDefaultPosition(defaultPosition), mMaxPosition(maxPosition),
+	mMinRotationsAngles(minRotationsAngles), mDefaultRotationsAngles(defaultRotationsAngles), mMaxRotationsAngles(maxRotationsAngles),
+	mMinPosition(minPosition), mDefaultPosition(defaultPosition), mMaxPosition(maxPosition),
 	mOwner(owner)
 {
 	mGoodyModels["None"] = NULL;
-	mCurrentGoodyModelIterator = mGoodyModels.begin();
-	mDefaultGoodyModelIterator = mCurrentGoodyModelIterator;
+	mDefaultGoodyModelIterator = mGoodyModels.begin();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,269 +453,9 @@ const String& Goody::getBoneName()
 	return mBoneName;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-bool Goody::isColourModifiable()
-{	
-	return ((mCurrentGoodyModelIterator->second != NULL)&&(mCurrentGoodyModelIterator->second->isColourModifiable()));
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setColourModifiable(bool isColourModifiable)
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "No current GoodyModel, so can't change it's properties !");
-    mCurrentGoodyModelIterator->second->setColourModifiable(isColourModifiable);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const ColourValue& Goody::getColour()
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "There is no CurrentGoodyModel for this Goody so this one can't have a colour !");
-	return mCurrentGoodyModelIterator->second->getColour();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setColour(const ColourValue&	colour)
-{
-	assert( (mCurrentGoodyModelIterator->second  != NULL) && "There is no CurrentGoodyModel for this Goody so this one can't have a colour !");
-	mCurrentGoodyModelIterator->second->setColour(colour);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-bool Goody::isTextureModifiable()
-{
-	return ((mCurrentGoodyModelIterator->second  != NULL)&&(mCurrentGoodyModelIterator->second ->isTextureModifiable()));
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-TexturePtr Goody::getCurrentTexture()
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "No current GoodyModel, so it can't have a current texture !");
-	return mCurrentGoodyModelIterator->second->getCurrentTexture();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setPreviousTextureAsCurrent()
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "No current GoodyModel, so can't change it's properties !");
-	mCurrentGoodyModelIterator->second->setPreviousTextureAsCurrent();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setNextTextureAsCurrent()
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "No current GoodyModel, so can't change it's properties !");
-	mCurrentGoodyModelIterator->second->setNextTextureAsCurrent();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::addTexture(const TexturePtr& texture)
-{
-	assert( (mCurrentGoodyModelIterator->second != NULL) && "No current GoodyModel, so can't change it's properties !");
-	mCurrentGoodyModelIterator->second->addTexture(texture);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::updateGoodyPosition()
-{
-	assert( (mCurrentGoodyModelIterator->first != "None") && "No current GoodyModel so can't update its position at the screen !");
-
-	Entity* avatarEntity = mOwner->getEntity();
-	Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-	if (goodyModelEntity->isAttached()) avatarEntity->detachObjectFromBone(goodyModelEntity);
-	avatarEntity->attachObjectToBone(mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const Vector3& Goody::getCurrentPosition()
-{
-	static Vector3 currentPosition;
-
-	if (mCurrentPositionScrollPositions.x <= 0.5f)
-		currentPosition.x = (mDefaultPosition.x - mMinPosition.x)*(mCurrentPositionScrollPositions.x/0.5f) + mMinPosition.x;
-	else
-		currentPosition.x = (mMaxPosition.x - mDefaultPosition.x)*((mCurrentPositionScrollPositions.x - 0.5f)/0.5f) + mDefaultPosition.x;
-
-	if (mCurrentPositionScrollPositions.y <= 0.5f)
-		currentPosition.y = (mDefaultPosition.y - mMinPosition.y)*(mCurrentPositionScrollPositions.y/0.5f) + mMinPosition.y;
-	else
-		currentPosition.y = (mMaxPosition.y - mDefaultPosition.y)*((mCurrentPositionScrollPositions.y - 0.5f)/0.5f) + mDefaultPosition.y;
-
-	if (mCurrentPositionScrollPositions.z <= 0.5f)
-		currentPosition.z = (mDefaultPosition.z - mMinPosition.z)*(mCurrentPositionScrollPositions.z/0.5f) + mMinPosition.z;
-	else
-		currentPosition.z = (mMaxPosition.z - mDefaultPosition.z)*((mCurrentPositionScrollPositions.z - 0.5f)/0.5f) + mDefaultPosition.z;
-
-	return currentPosition;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const Vector3& Goody::getCurrentRotationsAngles()
-{
-	static Vector3 currentRotationsAngles;
-
-	if (mCurrentRotationsAnglesScrollPositions.x <= 0.5f)
-		currentRotationsAngles.x = (mDefaultRotationsAngles.x - mMinRotationsAngles.x)*(mCurrentRotationsAnglesScrollPositions.x/0.5f) + mMinRotationsAngles.x;
-	else
-		currentRotationsAngles.x = (mMaxRotationsAngles.x - mDefaultRotationsAngles.x)*((mCurrentRotationsAnglesScrollPositions.x - 0.5f)/0.5f) + mDefaultRotationsAngles.x;
-
-	if (mCurrentRotationsAnglesScrollPositions.y <= 0.5f)
-		currentRotationsAngles.y = (mDefaultRotationsAngles.y - mMinRotationsAngles.y)*(mCurrentRotationsAnglesScrollPositions.y/0.5f) + mMinRotationsAngles.y;
-	else
-		currentRotationsAngles.y = (mMaxRotationsAngles.y - mDefaultRotationsAngles.y)*((mCurrentRotationsAnglesScrollPositions.y - 0.5f)/0.5f) + mDefaultRotationsAngles.y;
-
-	if (mCurrentRotationsAnglesScrollPositions.z <= 0.5f)
-		currentRotationsAngles.z = (mDefaultRotationsAngles.z - mMinRotationsAngles.z)*(mCurrentRotationsAnglesScrollPositions.z/0.5f) + mMinRotationsAngles.z;
-	else
-		currentRotationsAngles.z = (mMaxPosition.z - mDefaultRotationsAngles.z)*((mCurrentRotationsAnglesScrollPositions.z - 0.5f)/0.5f) + mDefaultRotationsAngles.z;
-
-	return currentRotationsAngles;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const Quaternion& Goody::getCurrentOrientation()
-{
-	const Vector3& currentRotationsAngles = getCurrentRotationsAngles();
-
-	static Quaternion orientation;
-	orientation = Quaternion(Radian(Degree(currentRotationsAngles.x)),Vector3(1,0,0)) *
-		Quaternion(Radian(Degree(currentRotationsAngles.y)),Vector3(0,1,0)) *
-		Quaternion(Radian(Degree(currentRotationsAngles.z)),Vector3(0,0,1));
-
-	return orientation;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentXScrollPosition()
-{
-	return mCurrentPositionScrollPositions.x;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentYScrollPosition()
-{
-	return mCurrentPositionScrollPositions.y;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentZScrollPosition()
-{
-	return mCurrentPositionScrollPositions.z;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentYawAngleScrollPosition()
-{
-	return mCurrentRotationsAnglesScrollPositions.x;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentPitchAngleScrollPosition()
-{
-	return mCurrentRotationsAnglesScrollPositions.y;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-float Goody::getCurrentRollAngleScrollPosition()
-{
-	return mCurrentRotationsAnglesScrollPositions.z;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentXScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentPositionScrollPositions.x = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-        updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentYScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentPositionScrollPositions.y = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-		updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentZScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentPositionScrollPositions.z = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-		updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::resetCurrentPosition()
-{
-	setCurrentXScrollPosition(0.5f);
-	setCurrentYScrollPosition(0.5f);
-	setCurrentZScrollPosition(0.5f);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentYawAngleScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentRotationsAnglesScrollPositions.x = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-		updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentPitchAngleScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentRotationsAnglesScrollPositions.y = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-		updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentRollAngleScrollPosition(float position)
-{
-	assert((position >= 0) && (position <= 1));
-
-	mCurrentRotationsAnglesScrollPositions.z = position;
-
-	if (mCurrentGoodyModelIterator->first != "None")
-		updateGoodyPosition();
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::resetCurrentRotation()
-{
-	setCurrentYawAngleScrollPosition(0.5f);
-	setCurrentPitchAngleScrollPosition(0.5f);
-	setCurrentRollAngleScrollPosition(0.5f);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 bool Goody::isGoodyModelModifiable()
 {
 	return (mGoodyModels.size() > 1);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-GoodyModel* Goody::getCurrentGoodyModel()
-{
-	return mCurrentGoodyModelIterator->second;
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const String& Goody::getCurrentGoodyModelName()
-{
-	return mCurrentGoodyModelIterator->first;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -345,102 +479,6 @@ GoodyModelsMapIterator Goody::getGoodyModelsMapIterator()
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setCurrentGoodyModel(const String& goodyModelName)
-{
-	Entity* avatarEntity = mOwner->getEntity();
-
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->detachObjectFromBone(goodyModelEntity);
-	}
-
-	if (goodyModelName != "None")
-	{
-		assert( (mGoodyModels[goodyModelName] != NULL) && "GoodyModel not found !");
-	}
-	mCurrentGoodyModelIterator = mGoodyModels.find(goodyModelName);
-
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->attachObjectToBone(mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
-	}
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setPreviousGoodyModelAsCurrent()
-{
-	Entity* avatarEntity = mOwner->getEntity();
-
-	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->detachObjectFromBone(goodyModelEntity);
-	}
-
-	//changing the current GoodModel
-	if (mCurrentGoodyModelIterator == mGoodyModels.begin()) mCurrentGoodyModelIterator = mGoodyModels.end();
-	mCurrentGoodyModelIterator--;
-
-	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->attachObjectToBone(mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
-	}
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setNextGoodyModelAsCurrent()
-{
-	Entity* avatarEntity = mOwner->getEntity();
-
-
-	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->detachObjectFromBone(goodyModelEntity);
-	}
-
-	//changing the current GoodModel
-	mCurrentGoodyModelIterator++;
-	if (mCurrentGoodyModelIterator == mGoodyModels.end()) mCurrentGoodyModelIterator = mGoodyModels.begin();
-
-	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->attachObjectToBone(mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
-	}
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::setDefaultGoodyModelAsCurrent()
-{
-	Entity* avatarEntity = mOwner->getEntity();
-
-	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->detachObjectFromBone(goodyModelEntity);
-	}
-
-	//changing the current GoodModel
-	mCurrentGoodyModelIterator = mDefaultGoodyModelIterator;
-
-	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
-	{
-		Entity* goodyModelEntity = mCurrentGoodyModelIterator->second->getEntity();
-		avatarEntity->attachObjectToBone(mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
-	}
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 void Goody::setDefaultGoodyModel(const String& goodyModelName)
 {
 	if (goodyModelName != "None")
@@ -460,17 +498,3 @@ void Goody::addGoodyModel(const String& meshName,const String& name, SceneManage
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void Goody::resetModifications()
-{
-	GoodyModelsMapIterator goodyModelsMapIterator = getGoodyModelsMapIterator();
-	while(goodyModelsMapIterator.hasMoreElements())
-	{
-		GoodyModel* goodyModel = goodyModelsMapIterator.getNext();
-		if (goodyModel != NULL) goodyModel->resetModifications();
-	}
-
-	setDefaultGoodyModelAsCurrent();
-
-	resetCurrentPosition();	
-	resetCurrentRotation();
-}

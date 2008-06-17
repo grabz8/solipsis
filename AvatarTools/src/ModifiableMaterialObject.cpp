@@ -25,8 +25,66 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
+ModifiableMaterialObjectBase::ModifiableMaterialObjectBase() :
+mColourModifiable(false)
+{
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-ModifiableMaterialObject::ModifiableMaterialObject()
+bool ModifiableMaterialObjectBase::isColourModifiable()
+{
+	return mColourModifiable;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObjectBase::setColourModifiable(bool isColourModifiable)
+{
+	mColourModifiable = isColourModifiable;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+bool ModifiableMaterialObjectBase::isTextureModifiable()
+{
+	return (mTextures.size() > 1);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TexturePtr ModifiableMaterialObjectBase::getTexture(const String& name)
+{
+	TextureVector::iterator textureIterator = mTextures.begin();
+	TextureVector::iterator endVector = mTextures.end();
+	while ((textureIterator != endVector) && ((*textureIterator)->getName() != name)) textureIterator++;
+	if (textureIterator != endVector)
+	{
+		return *textureIterator;
+	}else{
+		static TexturePtr nullTexture;
+		return nullTexture;
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TextureVectorIterator ModifiableMaterialObjectBase::getTextureIterator()
+{
+	return TextureVectorIterator(mTextures.begin(),mTextures.end());
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObjectBase::addTexture(TexturePtr texture)
+{
+	mTextures.push_back(texture);
+	mDefaultTextureIterator = mTextures.begin();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObjectBase::removeTexture(TexturePtr texture)
+{
+	mTextures.remove(texture);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+ModifiableMaterialObject::ModifiableMaterialObject(ModifiableMaterialObjectBase* modifiableMaterialObjectBase) :
+mModifiableMaterialObjectBase(modifiableMaterialObjectBase)
 {
 	mModifiedMaterial = NULL;
 }
@@ -42,6 +100,8 @@ ModifiableMaterialObject::~ModifiableMaterialObject()
 void ModifiableMaterialObject::initialise(const MaterialPtr& material)
 {
 	mModifiedMaterial = new ModifiedMaterial(material);
+
+	mModifiedMaterial->useAddedColour(mModifiableMaterialObjectBase->isColourModifiable());
 
 	mBackAmbient = getColourAmbient();
 	mBackDiffuse = getColourDiffuse();
@@ -63,17 +123,16 @@ ModifiedMaterial* ModifiableMaterialObject::getModifiedMaterial()
 	return mModifiedMaterial;
 }
 
-
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 bool ModifiableMaterialObject::isColourModifiable()
 {
-	return mModifiedMaterial->isUsingAddedColour();
+    return mModifiedMaterial->isUsingAddedColour();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setColourModifiable(bool isColourModifiable)
 {
+    mModifiableMaterialObjectBase->setColourModifiable(isColourModifiable);
 	mModifiedMaterial->useAddedColour(isColourModifiable);
 }
 
@@ -161,29 +220,6 @@ void ModifiableMaterialObject::resetColour()
 	setTransparency( mBackTranparency );
 }
 
-
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-bool ModifiableMaterialObject::isTextureModifiable()
-{
-	return (mTextures.size() > 1);
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-TexturePtr ModifiableMaterialObject::getTexture(const String& name)
-{
-	TextureVector::iterator textureIterator = mTextures.begin();
-	TextureVector::iterator endVector = mTextures.end();
-	while ((textureIterator != endVector) && ((*textureIterator)->getName() != name)) textureIterator++;
-	if (textureIterator != endVector)
-	{
-		return *textureIterator;
-	}else{
-		static TexturePtr nullTexture;
-		return nullTexture;
-	}
-}
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 TexturePtr ModifiableMaterialObject::getCurrentTexture()
 {
@@ -191,15 +227,9 @@ TexturePtr ModifiableMaterialObject::getCurrentTexture()
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-TextureVectorIterator ModifiableMaterialObject::getTextureIterator()
-{
-	return TextureVectorIterator(mTextures.begin(),mTextures.end());
-}
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setPreviousTextureAsCurrent()
 {
-	if (mCurrentTextureIterator == mTextures.begin()) mCurrentTextureIterator = mTextures.end();
+    if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.begin()) mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.end();
 	mCurrentTextureIterator--;
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
@@ -208,15 +238,15 @@ void ModifiableMaterialObject::setPreviousTextureAsCurrent()
 void ModifiableMaterialObject::setNextTextureAsCurrent()
 {
 	mCurrentTextureIterator++;
-	if (mCurrentTextureIterator == mTextures.end()) mCurrentTextureIterator = mTextures.begin();
+	if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.end()) mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.begin();
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setCurrentTexture(TexturePtr texture)
 {
-	TextureVector::iterator textureIterator = mTextures.begin();
-	TextureVector::iterator endVector = mTextures.end();
+	TextureVector::iterator textureIterator = mModifiableMaterialObjectBase->mTextures.begin();
+	TextureVector::iterator endVector = mModifiableMaterialObjectBase->mTextures.end();
 	while ((textureIterator != endVector) && ((*textureIterator)->getName() != texture->getName())) textureIterator++;
 	assert( (textureIterator != endVector) && "Texture not found !");
 
@@ -233,24 +263,22 @@ void ModifiableMaterialObject::setCurrentTexture(const String& textureName)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setDefaultTextureAsCurrent()
 {
-	mCurrentTextureIterator = mDefaultTextureIterator;
+	mCurrentTextureIterator = mModifiableMaterialObjectBase->mDefaultTextureIterator;
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
-
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::addTexture(TexturePtr texture)
 {
-	mTextures.push_back(texture);
-	mDefaultTextureIterator = mTextures.begin();
-	mCurrentTextureIterator = mDefaultTextureIterator;
+    mModifiableMaterialObjectBase->addTexture(texture);
+	mCurrentTextureIterator = mModifiableMaterialObjectBase->mDefaultTextureIterator;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::removeTexture(TexturePtr texture)
 {
 	setPreviousTextureAsCurrent();
-	mTextures.remove(texture);
+    mModifiableMaterialObjectBase->removeTexture(texture);
 }
 
 

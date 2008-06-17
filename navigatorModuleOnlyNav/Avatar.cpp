@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Avatar.h"
 #include "OgreHelpers.h"
 #include "Navigator.h"
+#include <CharacterManager.h>
 
 using namespace Solipsis;
 
@@ -48,9 +49,9 @@ String Avatar::mDefaultStateAnimName[SCount] = {
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
 #else
-Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity* entity) :
+Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
 #endif
     OgrePeer(xmlEntity, isLocal),
 #ifdef POOL
@@ -58,9 +59,10 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
 #endif
     mState(SNone),
     mMvtType(MT3rdPerson),
-    mSceneNode(sceneNode),
-    mEntity(entity),
+    mCamerasSceneNode(0),
     mAnimationState(0),
+    mNameLabel(0),
+    mSelectionObject(0),
     mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
@@ -68,6 +70,8 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 {
+    setCharacterInstance(characterInstance);
+
 #ifdef POOL
     if (isLocal)
     {
@@ -85,46 +89,18 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
         mStateAnimName[a] = mDefaultStateAnimName[a];
 
 //	if(!entity->isAttached())
-//		mSceneNode->attachObject(entity);
-
-    String uidString = StringConverter::toString(xmlEntity->getUid());
-
-    // Set Name Label
-    mNameLabel = new MovableText(uidString + "Label", mXmlEntity->getName().substr(0, 16), false);
-    mNameLabel->setScale(0.1f);
-    mNameLabel->setCharacterHeight(1);
-    mNameLabel->setColor(ColourValue::White);
-    mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
-    Real aabbHeight = entity->getBoundingBox().getSize().y;
-    mNameLabel->setAdditionalHeight(aabbHeight);
-    mSceneNode->attachObject(mNameLabel);
-
-/* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
-   picking is expected, switch material of pickable entities, render into 1 picking texture, switch
-   back materials and finally get the entity according to the picked color value */
-/*    entity->setMaterialName("Solipsis/ColorPicking");
-    SubEntity* subEntity = entity->getSubEntity(0);
-    subEntity->setCustomParameter(1, Vector4(0.0f, 1.0f, 0.0f, 0.0f));*/
-/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
-//    entity->setQueryFlags(Navigator::QFAvatar);
-    mSelectionObject = new ManualObject(uidString + "Sel");
-    AxisAlignedBox entityBbox = entity->getBoundingBox();
-    AxisAlignedBox selectionBbox;
-    selectionBbox.setExtents(entityBbox.getCenter() - entityBbox.getHalfSize()*0.5f, entityBbox.getCenter() + entityBbox.getHalfSize()*0.5f);
-    mSelectionObject->setBoundingBox(selectionBbox);
-    mSelectionObject->setQueryFlags(Navigator::QFAvatar);
-    mSceneNode->attachObject(mSelectionObject);
+//		getSceneNode()->attachObject(entity);
 
     if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
-        sceneNode->setPosition(mXmlEntity->getPosition());
+        getSceneNode()->setPosition(mXmlEntity->getPosition());
     else
-        sceneNode->setPosition(Vector3::ZERO);
-    mLastRealPosition = sceneNode->getPosition();
+        getSceneNode()->setPosition(Vector3::ZERO);
+    mLastRealPosition = getSceneNode()->getPosition();
 
     if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
-        sceneNode->setOrientation(xmlEntity->getOrientation());
+        getSceneNode()->setOrientation(xmlEntity->getOrientation());
     else
-        sceneNode->setOrientation(Quaternion::IDENTITY);
+        getSceneNode()->setOrientation(Quaternion::IDENTITY);
 
     mGravity = mXmlEntity->getFlags() & EFGravity;
 }
@@ -132,23 +108,20 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, Entity*
 //-------------------------------------------------------------------------------------
 Avatar::~Avatar()
 {
-    if (mSceneNode == 0) return;
+    if (mCharacterInstance == 0) return;
+    if (getSceneNode() == 0) return;
 
     if (mSelectionObject != 0)
     {
-        mSceneNode->detachObject(mSelectionObject);
+        getSceneNode()->detachObject(mSelectionObject);
         delete mSelectionObject;
     }
     if (mNameLabel != 0)
     {
-        mSceneNode->detachObject(mNameLabel);
+        getSceneNode()->detachObject(mNameLabel);
         delete mNameLabel;
     }
-    if (mEntity != 0) {
-        mSceneNode->detachObject(mEntity);
-        mSceneNode->getCreator()->destroyEntity(mEntity);
-    }
-    mSceneNode->getCreator()->destroySceneNode(mSceneNode->getName());
+    CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
 
 #ifdef POOL
 #else
@@ -157,21 +130,107 @@ Avatar::~Avatar()
 }
 
 //-------------------------------------------------------------------------------------
-SceneNode* Avatar::getSceneNode()
+CharacterInstance* Avatar::getCharacterInstance()
 {
-    return mSceneNode;
+    return mCharacterInstance;
 }
 
 //-------------------------------------------------------------------------------------
-Entity* Avatar::getEntity()
+void Avatar::setCharacterInstance(CharacterInstance* characterInstance)
 {
-    return mEntity;
+    mCharacterInstance = characterInstance;
+    onSceneNodeChanged();
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::setEntity(Entity* pEntity)
+void Avatar::onSceneNodeChanged()
 {
-    mEntity = pEntity;
+    AxisAlignedBox entityBbox = getEntity()->getBoundingBox();
+    Vector3 avatarSize = entityBbox.getSize();
+    Vector3 avatarHalfSize = entityBbox.getHalfSize();
+    String uidString = mXmlEntity->getUidString();
+
+    // Name Label
+    if (mNameLabel == 0)
+    {
+        mNameLabel = new MovableText(uidString + "Label", mXmlEntity->getName().substr(0, 16), false);
+        mNameLabel->setScale(0.1f);
+        mNameLabel->setCharacterHeight(1);
+        mNameLabel->setColor(ColourValue::White);
+        mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
+    }
+    mNameLabel->setAdditionalHeight(avatarSize.y);
+    getSceneNode()->attachObject(mNameLabel);
+
+    // Picking
+/* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
+   picking is expected, switch material of pickable entities, render into 1 picking texture, switch
+   back materials and finally get the entity according to the picked color value */
+/*    getEntity()->setMaterialName("Solipsis/ColorPicking");
+    SubEntity* subEntity = getEntity()->getSubEntity(0);
+    subEntity->setCustomParameter(1, Vector4(0.0f, 1.0f, 0.0f, 0.0f));*/
+/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//    getEntity()->setQueryFlags(Navigator::QFAvatar);
+    if (mSelectionObject == 0)
+    {
+        mSelectionObject = new ManualObject(uidString + "Sel");
+        mSelectionObject->setQueryFlags(Navigator::QFAvatar);
+    }
+    AxisAlignedBox selectionBbox;
+    selectionBbox.setExtents(entityBbox.getCenter() - entityBbox.getHalfSize()*0.5f, entityBbox.getCenter() + entityBbox.getHalfSize()*0.5f);
+    mSelectionObject->setBoundingBox(selectionBbox);
+    getSceneNode()->attachObject(mSelectionObject);
+
+    // Create or re-attach the cameras scene node on the character instance scene node
+    if (isLocal())
+    {
+        if (mCamerasSceneNode == 0)
+        {
+            // Create camera node/pitch nodes
+            mCamerasSceneNode = getSceneNode()->createChildSceneNode(uidString + "CamerasNode");
+
+            // Create First person camera node/pitch node
+            SceneNode* camNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
+            camNode->yaw(Radian(-Math::HALF_PI));
+            SceneNode* pitchCamNode = camNode->createChildSceneNode("FirstPersonCamPitchNode");
+
+            // Create the Third camera node/pitch node
+            camNode = mCamerasSceneNode->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
+            camNode->yaw(Radian(-Math::HALF_PI));
+            pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
+
+        // GILLES begin
+	        // Create the Fourth camera node/pitch node
+            camNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode", Vector3(0, 1.1, 0)*avatarSize);
+            pitchCamNode = camNode->createChildSceneNode("TurnAroundPersonCamPitchNode", Vector3(-4, 1.1, 0)*avatarSize);
+            //pitchCamNode->yaw(Radian(Math::PI));
+        // GILLES end
+        }
+        else
+        {
+            mCamerasSceneNode->setPosition(Vector3::ZERO);
+            mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
+            getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::detachFromSceneNode()
+{
+    // Name Label
+    getSceneNode()->detachObject(mNameLabel);
+
+    // Picking
+    getSceneNode()->detachObject(mSelectionObject);
+
+    // Re-attach cameras scene node on parent
+    if (isLocal())
+    {
+        mCamerasSceneNode->setPosition(getSceneNode()->getPosition());
+        mCamerasSceneNode->setOrientation(getSceneNode()->getOrientation());
+        getSceneNode()->getParentSceneNode()->addChild(getSceneNode()->removeChild(mCamerasSceneNode));
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -248,7 +307,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     {
         mLastRealPosition = xmlEntity->getPosition();
 #ifdef LOGSNDRCV
-        OGRE_LOG("RCV uid:" + StringConverter::toString(xmlEntity->getUid()) + " " + StringConverter::toString(mLastRealPosition));
+        OGRE_LOG("RCV uid:" + xmlEntity->getUidString() + " " + StringConverter::toString(mLastRealPosition));
 #endif
         unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
         if (l == (unsigned long)-1) { l = n; c = 0; }
@@ -262,7 +321,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     }
     if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
     {
-        mSceneNode->setOrientation(xmlEntity->getOrientation());
+        getSceneNode()->setOrientation(xmlEntity->getOrientation());
     }
 
     return true;
@@ -272,7 +331,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
 void Avatar::startAnimation(const String &name, bool loop)
 {
     if (name.length() == 0) return;
-    mAnimationState = mEntity->getAnimationState(name);
+    mAnimationState = getEntity()->getAnimationState(name);
     mAnimationState->setLoop(loop);
     mAnimationState->setEnabled(true);
 }
@@ -281,7 +340,7 @@ void Avatar::startAnimation(const String &name, bool loop)
 void Avatar::stopAnimation()
 {
     if (mStateAnimName[mState].length() == 0) return;
-    AnimationState* animationStateToStop = mEntity->getAnimationState(mStateAnimName[mState]);
+    AnimationState* animationStateToStop = getEntity()->getAnimationState(mStateAnimName[mState]);
     animationStateToStop->setLoop(false);
     animationStateToStop->setEnabled(false);
 }
@@ -295,9 +354,9 @@ void Avatar::animate(Real timeSinceLastFrame)
 
     if (isLocal())
     {
-        Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
-        Vector3 vup = mSceneNode->getOrientation()*Vector3::UNIT_Y;
-        Vector3 vri = mSceneNode->getOrientation()*Vector3::UNIT_Z;
+        Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
+        Vector3 vup = getSceneNode()->getOrientation()*Vector3::UNIT_Y;
+        Vector3 vri = getSceneNode()->getOrientation()*Vector3::UNIT_Z;
         Real frontBackMvt;
         Real leftRightMvt;
         Real upDownMvt;
@@ -328,10 +387,10 @@ void Avatar::animate(Real timeSinceLastFrame)
         else if (mMvtType == MTArountPerson)
         {
             // TurnAround person rotation
-            //MovableObject* movable = mSceneNode->getAttachedObject(2);
-            //mSceneNode->detachObject (movable);
-            mSceneNode->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
-            //mSceneNode->attachObject (movable);
+            //MovableObject* movable = getSceneNode()->getAttachedObject(2);
+            //getSceneNode()->detachObject (movable);
+            getSceneNode()->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+            //getSceneNode()->attachObject (movable);
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
                 nextState = SWalk;
         }
@@ -343,8 +402,8 @@ void Avatar::animate(Real timeSinceLastFrame)
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
                 nextState = SWalk;
         }
-        if (!mSceneNode->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
-            mUpdatedXmlEntity->setOrientation(mSceneNode->getOrientation());
+        if (!getSceneNode()->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
+            mUpdatedXmlEntity->setOrientation(getSceneNode()->getOrientation());
 
         if (mPgupKeyMotion.isPressed() && isGravityEnabled())
             setGravity(false);
@@ -382,24 +441,24 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             mUpdatedXmlEntity->setDisplacement(d);
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + StringConverter::toString(mUpdatedXmlEntity->getUid()) + " " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
+            OGRE_LOG("SND uid:" + mUpdatedXmlEntity->getUidString() + " " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
 #endif
         }
     }
     // Smooth X,Z + Smoothless Y positionning (smooth even with only 8 updates/sec)
-    Vector3 renderedDisplacement = mLastRealPosition - mSceneNode->getPosition();
+    Vector3 renderedDisplacement = mLastRealPosition - getSceneNode()->getPosition();
     Real motionXZ = std::min(1.0f, SMOOTH_FACTOR*timeSinceLastFrame);
     Real motionY = std::min(1.0f, SMOOTH_FACTOR*2*timeSinceLastFrame);
     Vector3 m(motionXZ, motionY, motionXZ);
-    mSceneNode->translate(renderedDisplacement*m);
+    getSceneNode()->translate(renderedDisplacement*m);
     // Direct positionning
-    //mSceneNode->setPosition(mLastRealPosition);
+    //getSceneNode()->setPosition(mLastRealPosition);
     // Smooth X,Z + Direct Y positionning
-    //mSceneNode->setPosition(mSceneNode->getPosition()*Vector3(1, 0, 1) + mLastRealPosition*Vector3::UNIT_Y);
+    //getSceneNode()->setPosition(getSceneNode()->getPosition()*Vector3(1, 0, 1) + mLastRealPosition*Vector3::UNIT_Y);
 
     if (!isLocal())
     {
-        Vector3 vpn = mSceneNode->getOrientation()*Vector3::UNIT_X;
+        Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
         Real frontBackMvt = (renderedDisplacement*m).length()/(TRANSLATION_SPEED_MPS*timeSinceLastFrame);
         if (vpn.dotProduct(renderedDisplacement) < 0)
             frontBackMvt = -frontBackMvt;
@@ -484,7 +543,7 @@ void Avatar::yaw(const Radian& angle)
 {
     // Update XML entity
     if (isLocal())
-        mSceneNode->yaw(angle);
+        getSceneNode()->yaw(angle);
 }
 
 //-------------------------------------------------------------------------------------

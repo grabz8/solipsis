@@ -62,7 +62,7 @@ private:
     SceneManager* mSceneMgr;
 
     // Scene object filename
-    std::string xmlObjectFilename;
+    String mXmlObjectFilename;
 
     // Callbacks
     IOgrePeerManagerCallbacks* mCallbacks;
@@ -82,7 +82,7 @@ public:
 #endif
 
     // Get the scene object filename
-    String getXmlObjectFilename();
+    const String& getXmlObjectFilename();
 
     // Remove 1 peer according to its ID and if it is local or networked
     bool remove(const EntityUID& entity, bool local);
@@ -108,13 +108,13 @@ public:
 
 protected:
 #ifdef POOL
-    virtual OgrePeer* createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt);
-    virtual OgrePeer* createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt);
-    virtual OgrePeer* createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity, TiXmlElement* xmlElt);
+    virtual OgrePeer* createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual OgrePeer* createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual OgrePeer* createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
 #else
-    virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
-    virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
-    virtual OgrePeer* createObjectNode(XmlEntity* xmlEntity, TiXmlElement* xmlElt);
+    virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity);
+    virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity);
+    virtual OgrePeer* createObjectNode(XmlEntity* xmlEntity);
 #endif
 };
 

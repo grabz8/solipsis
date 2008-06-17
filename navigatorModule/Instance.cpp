@@ -183,8 +183,20 @@ bool Instance::run()
 
             mOgreApplication->unlock();
         }
+        catch (Ogre::Exception e)
+        {
+            // Hum hum TODO add a good Solipsis::exception class
+            Ogre::LogManager::getSingleton().logMessage("Caught an Ogre exception, " + e.getFullDescription());
+            requestTerminate();
+            mOgreApplication->unlock();
+        }
         catch (...)
         {
+            // Hum hum TODO add a good Solipsis::exception class
+            mOgreApplication->unlock();
+            Ogre::LogManager::getSingleton().logMessage("Caught an exception !");
+            requestTerminate();
+            mOgreApplication->unlock();
         }
     }
 

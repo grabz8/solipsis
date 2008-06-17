@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\CharacterInstance.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\CharacterManager.cpp"
 				>
 			</File>
@@ -216,6 +220,10 @@
 			</File>
 			<File
 				RelativePath=".\include\Character.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\CharacterInstance.h"
 				>
 			</File>
 			<File

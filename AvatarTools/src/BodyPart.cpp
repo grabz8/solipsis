@@ -23,20 +23,213 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "BodyPart.h"
 #include "Character.h"
+#include "CharacterInstance.h"
 //#include "ScreenshotManager.h"
 
 using namespace Solipsis;
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPartInstance::BodyPartInstance(BodyPart* pBodyPart, CharacterInstance* owner) :
+	mBodyPart(pBodyPart),
+    mOwner(owner)
+{
+	mCurrentBodyPartModelIterator = mBodyPart->mDefaultBodyPartModelIterator;
+    if (mCurrentBodyPartModelIterator->second != 0)
+    {
+        mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(true);
+    }
+    else
+        mCurrentBodyPartModelInstance = 0;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPartInstance::~BodyPartInstance()
+{
+    delete mCurrentBodyPartModelInstance;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+bool BodyPartInstance::isColourModifiable()
+{	
+	return ((mCurrentBodyPartModelIterator->second != NULL)&&(mCurrentBodyPartModelIterator->second->isColourModifiable()));
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setColourModifiable(bool isColourModifiable)
+{
+	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so can't change it's properties !");
+    mCurrentBodyPartModelIterator->second->setColourModifiable(isColourModifiable);
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const ColourValue& BodyPartInstance::getColour()
+{
+	assert( (mCurrentBodyPartModelInstance != 0) && "There is no CurrentBodyPartModel for this BodyPart so this one can't have a colour !");
+	return mCurrentBodyPartModelInstance->getColour();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setColour(const ColourValue&	colour)
+{
+	assert( (mCurrentBodyPartModelInstance  != 0) && "There is no CurrentBodyPartModel for this BodyPart so this one can't have a colour !");
+	mCurrentBodyPartModelInstance->setColour(colour);
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+bool BodyPartInstance::isTextureModifiable()
+{
+	return ((mCurrentBodyPartModelIterator->second  != NULL)&&(mCurrentBodyPartModelIterator->second ->isTextureModifiable()));
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TexturePtr BodyPartInstance::getCurrentTexture()
+{
+	assert( (mCurrentBodyPartModelInstance != 0) && "No current BodyPartModel, so it can't have a current texture !");
+	return mCurrentBodyPartModelInstance->getCurrentTexture();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setPreviousTextureAsCurrent()
+{
+	assert( (mCurrentBodyPartModelInstance != 0) && "No current BodyPartModel, so can't change it's properties !");
+	mCurrentBodyPartModelInstance->setPreviousTextureAsCurrent();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setNextTextureAsCurrent()
+{
+	assert( (mCurrentBodyPartModelInstance != 0) && "No current BodyPartModel, so can't change it's properties !");
+	mCurrentBodyPartModelInstance->setNextTextureAsCurrent();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::addTexture(const TexturePtr& texture)
+{
+	assert( (mCurrentBodyPartModelInstance != 0) && "No current BodyPartModel, so can't change it's properties !");
+	mCurrentBodyPartModelInstance->addTexture(texture);
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPartModel* BodyPartInstance::getCurrentBodyPartModel()
+{
+	return mCurrentBodyPartModelIterator->second;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+const String& BodyPartInstance::getCurrentBodyPartModelName()
+{
+	return mCurrentBodyPartModelIterator->first;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setCurrentBodyPartModel(const String& bodyPartModelName)
+{
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(false);
+        delete mCurrentBodyPartModelInstance;
+        mCurrentBodyPartModelInstance = 0;
+	}
+
+	if (bodyPartModelName == "None")
+	{
+		assert( mBodyPart->mCanHaveNoBodyPartModel && "This BodyPart must have a BodyPartModel");
+	}else{
+        assert( (mBodyPart->mBodyPartModels[bodyPartModelName] != NULL) && "BodyPartModel not found !");
+	}
+	mCurrentBodyPartModelIterator = mBodyPart->mBodyPartModels.find(bodyPartModelName);
+
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+        mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(true);
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setPreviousBodyPartModelAsCurrent()
+{
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(false);
+        delete mCurrentBodyPartModelInstance;
+        mCurrentBodyPartModelInstance = 0;
+	}
+
+	if (mCurrentBodyPartModelIterator == mBodyPart->mBodyPartModels.begin()) mCurrentBodyPartModelIterator = mBodyPart->mBodyPartModels.end();
+	mCurrentBodyPartModelIterator--;
+
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+        mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(true);
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setNextBodyPartModelAsCurrent()
+{
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(false);
+        delete mCurrentBodyPartModelInstance;
+        mCurrentBodyPartModelInstance = 0;
+	}
+
+	mCurrentBodyPartModelIterator++;
+	if (mCurrentBodyPartModelIterator == mBodyPart->mBodyPartModels.end()) mCurrentBodyPartModelIterator = mBodyPart->mBodyPartModels.begin();
+
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+        mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(true);
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setDefaultBodyPartModelAsCurrent()
+{
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(false);
+        delete mCurrentBodyPartModelInstance;
+        mCurrentBodyPartModelInstance = 0;
+	}
+
+	mCurrentBodyPartModelIterator = mBodyPart->mDefaultBodyPartModelIterator;
+
+	if (mCurrentBodyPartModelIterator->second != NULL)
+	{
+        mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
+		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
+		bodyPartModelSubEntity->setVisible(true);
+	}
+}
+#if 0 //GREG
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::resetCouplesOfPoses()
+{
+	CouplesOfPosesIterator couplesOfPosesIterator = getCouplesOfPosesIterator();
+	while(couplesOfPosesIterator.hasMoreElements())
+	{
+		CoupleOfPoses* coupleOfPoses = couplesOfPosesIterator.getNext();
+		coupleOfPoses->setPosition(0.5f);
+	}
+}
+#endif //GREG
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::resetModifications()
+{
+    if (mCurrentBodyPartModelInstance != 0)
+        mCurrentBodyPartModelInstance->resetModifications();
+
+	setDefaultBodyPartModelAsCurrent();
+
+#if 0 //GREG
+	resetCouplesOfPoses();
+#endif //GREG
+}
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPart::BodyPart(const String& name, const String& defaultBodyPartModelSubEntityName, const String& defaultBodyPartModelCompleteName, Character* owner) :
 mName(name), mOwner(owner), mCanHaveNoBodyPartModel(false)
 {
 	addBodyPartModel(defaultBodyPartModelSubEntityName,defaultBodyPartModelCompleteName);
 
-	mCurrentBodyPartModelIterator = mBodyPartModels.begin();
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(true);
-
-	mDefaultBodyPartModelIterator = mCurrentBodyPartModelIterator;
+	mDefaultBodyPartModelIterator = mBodyPartModels.begin();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const String& BodyPart::getName()
@@ -49,74 +242,12 @@ Character* BodyPart::getOwner()
 	return mOwner;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-bool BodyPart::isColourModifiable()
-{	
-	return ((mCurrentBodyPartModelIterator->second != NULL)&&(mCurrentBodyPartModelIterator->second->isColourModifiable()));
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setColourModifiable(bool isColourModifiable)
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so can't change it's properties !");
-    mCurrentBodyPartModelIterator->second->setColourModifiable(isColourModifiable);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const ColourValue& BodyPart::getColour()
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "There is no CurrentBodyPartModel for this BodyPart so this one can't have a colour !");
-	return mCurrentBodyPartModelIterator->second->getColour();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setColour(const ColourValue&	colour)
-{
-	assert( (mCurrentBodyPartModelIterator->second  != NULL) && "There is no CurrentBodyPartModel for this BodyPart so this one can't have a colour !");
-	mCurrentBodyPartModelIterator->second->setColour(colour);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-bool BodyPart::isTextureModifiable()
-{
-	return ((mCurrentBodyPartModelIterator->second  != NULL)&&(mCurrentBodyPartModelIterator->second ->isTextureModifiable()));
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-TexturePtr BodyPart::getCurrentTexture()
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so it can't have a current texture !");
-	return mCurrentBodyPartModelIterator->second->getCurrentTexture();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setPreviousTextureAsCurrent()
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so can't change it's properties !");
-	mCurrentBodyPartModelIterator->second->setPreviousTextureAsCurrent();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setNextTextureAsCurrent()
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so can't change it's properties !");
-	mCurrentBodyPartModelIterator->second->setNextTextureAsCurrent();
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::addTexture(const TexturePtr& texture)
-{
-	assert( (mCurrentBodyPartModelIterator->second != NULL) && "No current BodyPartModel, so can't change it's properties !");
-	mCurrentBodyPartModelIterator->second->addTexture(texture);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 bool BodyPart::isBodyPartModelModifiable()
 {
 	size_t nbBodyPartModels;
 	nbBodyPartModels = (mCanHaveNoBodyPartModel)? 1 : 0;
 	nbBodyPartModels += mBodyPartModels.size();
 	return (nbBodyPartModels > 1);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-BodyPartModel* BodyPart::getCurrentBodyPartModel()
-{
-	return mCurrentBodyPartModelIterator->second;
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-const String& BodyPart::getCurrentBodyPartModelName()
-{
-	return mCurrentBodyPartModelIterator->first;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPartModel* BodyPart::getDefaultBodyPartModel()
@@ -135,51 +266,6 @@ BodyPartModel* BodyPart::getBodyPartModel(const String& name)
 BodyPartModelsMapIterator BodyPart::getBodyPartModelsMapIterator()
 {
 	return MapIterator<BodyPartModelsMap>(mBodyPartModels.begin(),mBodyPartModels.end());
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setCurrentBodyPartModel(const String& bodyPartModelName)
-{
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(false);
-
-	if (bodyPartModelName == "None")
-	{
-		assert( mCanHaveNoBodyPartModel && "This BodyPart must have a BodyPartModel");
-	}else{
-        assert( (mBodyPartModels[bodyPartModelName] != NULL) && "BodyPartModel not found !");
-	}
-	mCurrentBodyPartModelIterator = mBodyPartModels.find(bodyPartModelName);
-
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(true);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setPreviousBodyPartModelAsCurrent()
-{
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(false);
-
-	if (mCurrentBodyPartModelIterator == mBodyPartModels.begin()) mCurrentBodyPartModelIterator = mBodyPartModels.end();
-	mCurrentBodyPartModelIterator--;
-
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(true);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setNextBodyPartModelAsCurrent()
-{
-
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(false);
-
-	mCurrentBodyPartModelIterator++;
-	if (mCurrentBodyPartModelIterator == mBodyPartModels.end()) mCurrentBodyPartModelIterator = mBodyPartModels.begin();
-
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(true);
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::setDefaultBodyPartModelAsCurrent()
-{
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(false);
-
-	mCurrentBodyPartModelIterator = mDefaultBodyPartModelIterator;
-
-	if (mCurrentBodyPartModelIterator->second != NULL) mCurrentBodyPartModelIterator->second->getSubEntity()->setVisible(true);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void BodyPart::setDefaultBodyPartModel(const String& bodyPartModelName)
@@ -206,8 +292,7 @@ void BodyPart::addBodyPartModel(const String& subEntityName,const String& name)
 		assert((subEntity != NULL)&&"SubEntity not found!");
 
 		assert((getBodyPartModel(name) == NULL)&&"BodyPartModel already present in body part !");
-		mBodyPartModels[name] = new BodyPartModel(name,subEntity,this);
-		subEntity->setVisible(false);
+		mBodyPartModels[name] = new BodyPartModel(name,subEntityName,subEntity,this);
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -226,8 +311,10 @@ void BodyPart::addCoupleOfPoses(const String& name, ushort leftPoseIndex, const 
 	CoupleOfPoses* coupleOfPoses = new CoupleOfPoses(name,leftStateName,leftPoseIndex,rightStateName,rightPoseIndex,this);
 	mCouplesOfPoses[name] = coupleOfPoses;
 
+#if 0 //GREG
 	mOwner->addPoseReference(leftPoseIndex,0);
 	mOwner->addPoseReference(rightPoseIndex,0);
+#endif //GREG
 
 //GILLES	ScreenshotManager::getSingleton().addCoupleOfPosesToRenderToTexture(coupleOfPoses,leftPoseCameraCylindricCoordinates,rightPoseCameraCylindricCoordinates);
 }
@@ -250,30 +337,3 @@ void BodyPart::addCoupleOfPoses(const String& name, const String& leftPoseName, 
 
 	addCoupleOfPoses(name, leftPoseIndex, leftPoseCameraCylindricCoordinates, leftStateName, rightPoseIndex, rightPoseCameraCylindricCoordinates, rightStateName);	
 }
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::resetCouplesOfPoses()
-{
-	CouplesOfPosesIterator couplesOfPosesIterator = getCouplesOfPosesIterator();
-	while(couplesOfPosesIterator.hasMoreElements())
-	{
-		CoupleOfPoses* coupleOfPoses = couplesOfPosesIterator.getNext();
-		coupleOfPoses->setPosition(0.5f);
-	}
-}
-//--------------------------------------------------------------------------------------------------------------------------------------------------
-void BodyPart::resetModifications()
-{
-	BodyPartModelsMapIterator bodyPartModelsMapIterator = getBodyPartModelsMapIterator();
-	while(bodyPartModelsMapIterator.hasMoreElements())
-	{
-		BodyPartModel* bodyPartModel = bodyPartModelsMapIterator.getNext();
-		if (bodyPartModel != NULL) bodyPartModel->resetModifications();
-	}
-
-	setDefaultBodyPartModelAsCurrent();
-
-	resetCouplesOfPoses();
-}
-
-	
-

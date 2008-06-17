@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "CharacterManager.h"
 #include "Character.h"
+#include "CharacterInstance.h"
 #include <Path.h>
 #include <FileBrowser.h>
 #include <MyZipArchive.h>
@@ -34,10 +35,11 @@ CharacterManager* CharacterManager::ms_singletonPtr = 0;
 //-------------------------------------------------------------------------------------
 CharacterManager::CharacterManager(String pPath, SceneManager* pSceneMgr) :
 	mSceneMgr(pSceneMgr),
-	mCurrent(NULL)
+	mCurrentInstance(0)
 {
 	mPath = pPath + "/";
 	ms_singletonPtr = this;
+    mDefaultCharacterName = "";
 }
 //-------------------------------------------------------------------------------------
 CharacterManager::~CharacterManager() {}
@@ -47,35 +49,24 @@ CharacterManager* CharacterManager::getSingletonPtr()
     return ms_singletonPtr;
 }
 //-------------------------------------------------------------------------------------
-void CharacterManager::setUid(String pUid)
+bool CharacterManager::addCharacter(const String& pName)
 {
-	mUidString = pUid;
-}
-//-------------------------------------------------------------------------------------
-bool CharacterManager::addCharacter(String pName)
-{
-	Path completName(mPath + pName);
-	String characterName = completName.getLastFileName(false);
-	
-	mCharacters[characterName] = NULL;
-	//setCurrentCharacter(character->getName());
-
-	mNameList.push_back(characterName);
-
+    if (mDefaultCharacterName.empty())
+        mDefaultCharacterName = pName;
+	mCharacters[pName] = NULL;
+	mNameList.push_back(pName);
 	return true;
 }
 //-------------------------------------------------------------------------------------
-Character* CharacterManager::loadCharacter(std::string pName)
+Character* CharacterManager::loadCharacter(const String& pName)
 {
 	Character* character = mCharacters[pName];
 	if (character == NULL) 
 	{
-		mCharacters.erase(pName);
-	
 		Path completName(mPath + pName + ".saf");
 
-		character = new Character(completName.getUniversalPath(), mUidString+"Avatar", mSceneMgr);
-		//If the loading of the avatar has passed, we displayed an error message and delete the Avatar.
+        character = new Character(completName.getUniversalPath(), mSceneMgr);
+		//If the loading of the character has passed, we displayed an error message and delete the character.
 		if (!character->isLoadingSuccessful())
 		{
 			FileBrowser::displayMessageWindow("Error loading the character",character->getLoadingErrorMessage().c_str());
@@ -85,24 +76,36 @@ Character* CharacterManager::loadCharacter(std::string pName)
 		mCharacters[pName] = character;
 	}
 	
-	mCurrent = character;
-	return mCurrent;
+	return character;
 }
-//-------------------------------------------------------------------------------------
-Character* CharacterManager::getCurrent()
+//---------------------------------------------------------------------------------
+CharacterInstance* CharacterManager::loadCharacterInstance(const String& pUidString, const String& pDefaultCharacterName)
 {
-	return mCurrent;
+    String defaultCharacterName = pDefaultCharacterName;
+    if (defaultCharacterName.empty())
+        defaultCharacterName = mDefaultCharacterName;
+    CharacterInstance* instance = new CharacterInstance(mPath + pUidString + ".sif", pUidString, defaultCharacterName, mSceneMgr, this);
+    return instance;
 }
-//-------------------------------------------------------------------------------------
-Character* CharacterManager::getByName(String pName)
+//---------------------------------------------------------------------------------
+void CharacterManager::destroyCharacterInstance(CharacterInstance* pCharacterInstance)
 {
-	//CharactersMap::iterator iterator = mCharacters.find(pName);
-	//return (*iterator).second;
-	
-	return loadCharacter(pName);
+    if (mCurrentInstance == pCharacterInstance)
+        mCurrentInstance = 0;
+    delete pCharacterInstance;
 }
 //-------------------------------------------------------------------------------------
-Character* CharacterManager::getNextFromName(String pName)
+void CharacterManager::setCurrentInstance(CharacterInstance* pCharacterInstance)
+{
+	mCurrentInstance = pCharacterInstance;
+}
+//-------------------------------------------------------------------------------------
+CharacterInstance* CharacterManager::getCurrentInstance()
+{
+	return mCurrentInstance;
+}
+//-------------------------------------------------------------------------------------
+String CharacterManager::getNextFromName(const String& pName)
 {
 	CharactersMap::iterator iterator = mCharacters.find(pName);
 
@@ -110,10 +113,10 @@ Character* CharacterManager::getNextFromName(String pName)
 	if(iterator == mCharacters.end()) 
 		iterator = mCharacters.begin();
 
-	return loadCharacter((*iterator).first);
+	return (*iterator).first;
 }
 //-------------------------------------------------------------------------------------
-Character* CharacterManager::getPrevFromName(String pName)
+String CharacterManager::getPrevFromName(const String& pName)
 {
 	CharactersMap::iterator iterator = mCharacters.find(pName);
 
@@ -121,10 +124,10 @@ Character* CharacterManager::getPrevFromName(String pName)
 		iterator = mCharacters.end();
 	iterator--;
 
-	return loadCharacter((*iterator).first);
+	return (*iterator).first;
 }
 //-------------------------------------------------------------------------------------
-std::vector<std::string>* CharacterManager::getNameList()
+std::vector<String>* CharacterManager::getNameList()
 {
 	return &mNameList;
 }

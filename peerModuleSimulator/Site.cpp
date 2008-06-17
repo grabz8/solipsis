@@ -68,8 +68,8 @@ Site::Site(XmlEntity* xmlEntity) :
     if (sceneNodeElt != 0)
     {
         mOSMFilename = sceneNodeElt->Attribute("filename");
-        const char* collisionMeshFilename = sceneNodeElt->Attribute("collision");
-        mCollisionMeshFilename = (collisionMeshFilename != 0) ? collisionMeshFilename : "";
+        const char* collisionMeshName = sceneNodeElt->Attribute("collision");
+        mCollisionMeshName = (collisionMeshName != 0) ? collisionMeshName : "";
         TiXmlElement* entryGateElt = sceneNodeElt->FirstChildElement("entryGate");
         if (entryGateElt != 0)
         {
@@ -94,7 +94,7 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
 {
     Entity::createPhysics(physicsScene);
 
-    if (mOSMFilename.empty() || mCollisionMeshFilename.empty())
+    if (mOSMFilename.empty() || mCollisionMeshName.empty())
         return;
 
     TiXmlDocument osmFileDoc;
@@ -117,7 +117,7 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
         attr = entity->Attribute("name");
         if ((attr == 0) || (attr[0] == '\0'))
             continue;
-        if (strcmp(attr, mCollisionMeshFilename.c_str()) == 0)
+        if (strcmp(attr, mCollisionMeshName.c_str()) == 0)
             break;
         entity = entity->NextSiblingElement("entity");
     }

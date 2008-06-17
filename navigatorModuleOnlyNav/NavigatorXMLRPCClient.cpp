@@ -84,7 +84,7 @@ bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<EntityUID>
         if (attr != 0)
         {
             EntityUID uid;
-            convertStringToEntityUID(attr, uid);
+            uid = convertHexStringToEntityUID(attr);
             myXmlEntities.push_back(uid);
         }
     }

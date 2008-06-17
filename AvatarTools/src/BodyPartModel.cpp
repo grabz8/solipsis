@@ -21,23 +21,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "CharacterInstance.h"
+#include "BodyPart.h"
 #include "Character.h"
+#include "CharacterInstance.h"
 
 using namespace Solipsis;
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-BodyPartModel::BodyPartModel(const String& name,SubEntity* subEntity,BodyPart* owner) : ModifiableMaterialObject()
+BodyPartModelInstance::BodyPartModelInstance(BodyPartModel* bodyPartModel, BodyPartInstance* owner) :
+ModifiableMaterialObject(bodyPartModel),
+mBodyPartModel(bodyPartModel), mOwner(owner)
 {
-	mName = name;
-	mSubEntity = subEntity;
-	mOwner = owner;
-	String s = "Material"+mOwner->getOwner()->getName()+mOwner->getName()+name;
-	MaterialPtr materialSubEntity = mSubEntity->getMaterial()->clone(s);
+    mSubEntity = mOwner->getOwner()->getEntity()->getSubEntity(mBodyPartModel->mSubEntityName);
+	String s = "Material" + mOwner->getOwner()->getUidString() + mBodyPartModel->mOwner->getName() + mBodyPartModel->mName;
+    MaterialPtr materialSubEntity = MaterialManager::getSingleton().getByName(s);
+    if (materialSubEntity.isNull())
+        materialSubEntity = mBodyPartModel->mSubEntity->getMaterial()->clone(s, true, mOwner->getOwner()->getResourceGroup());
 	mSubEntity->setMaterialName(materialSubEntity->getName());
 	initialise(materialSubEntity);
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPartModelInstance::~BodyPartModelInstance()
+{
+    mSubEntity->setMaterialName(mBodyPartModel->mSubEntity->getMaterial()->getName());
+}
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPartModel::BodyPartModel(const String& name,const String& subEntityName,SubEntity* subEntity,BodyPart* owner) :
+mOwner(owner), mName(name), mSubEntity(subEntity), mSubEntityName(subEntityName)
+{
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const String& BodyPartModel::getName()

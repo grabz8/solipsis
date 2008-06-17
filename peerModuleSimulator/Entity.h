@@ -87,7 +87,9 @@ public:
 #else
     XmlEntity* getXmlEntity();
 #endif
-    /** Set whether the gravity is applied or not. */
+    /** Apply or not the gravity. */
+    void applyGravity(bool enabled);
+    /** Set whether the gravity is activated or not. */
     void setGravity(bool enabled);
     /** Determines whether the gravity is applied or not. */
     bool isGravityEnabled();

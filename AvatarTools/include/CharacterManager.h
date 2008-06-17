@@ -35,9 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreMemoryMacros.h>
 
 using namespace Ogre;
+
 namespace Solipsis {
 
 class Character;
+class CharacterInstance;
 
 typedef std::map<String,Character*> CharactersMap;
 typedef MapIterator<CharactersMap> CharactersIterator;
@@ -52,28 +54,30 @@ public:
 	///return The single instance of the classe
 	static CharacterManager* getSingletonPtr();
 
-	///brief Set the UI
-	void setUid(String pUid);
 	///brief Open an character from a filebrowser and add it to the list
 	bool addCharacter() { return true; }
 	///brief Open an character from the list 
-	bool addCharacter(String pName);
+	bool addCharacter(const String& pName);
 	///brief Remove the character from the list
-	bool removeCharacter(String pName) { return true; }
+	bool removeCharacter(const String& pName) { return true; }
 
 	///brief Load a SAF file if haven't loaded before
-	Character* CharacterManager::loadCharacter(std::string pName);
-	///brief Get the current character
-	Character* getCurrent();
-	///brief Get the character from his name
-	Character* getByName(String pName);
+	Character* CharacterManager::loadCharacter(const String& pName);
+	///brief Load SIF/SAF files of a character instance
+    CharacterInstance* CharacterManager::loadCharacterInstance(const String& pUidString, const String& pDefaultCharacterName);
+	///brief Destroy a character instance
+    void destroyCharacterInstance(CharacterInstance* pCharacterInstance);
+	///brief Set the current character instance
+    void setCurrentInstance(CharacterInstance* pCharacterInstance);
+	///brief Get the current character instance
+	CharacterInstance* getCurrentInstance();
 	///brief Get the next character after the named one
-	Character* getNextFromName(String pName);
+	String getNextFromName(const String& pName);
 	///brief Get the previews character after the named one
-	Character* getPrevFromName(String pName);
+	String getPrevFromName(const String& pName);
 
 	///brief Get the name list of the added characters
-	std::vector<std::string>* getNameList();
+	std::vector<String>* getNameList();
 
 
 
@@ -83,12 +87,12 @@ private:
 	static CharacterManager* ms_singletonPtr;
 	SceneManager* mSceneMgr;
 	String mPath;
-	String mUidString;
 
-	std::vector<std::string> mNameList;
+	String mDefaultCharacterName;
+	std::vector<String> mNameList;
 	CharactersMap mCharacters;					///brief Map containing our Characters.
-	Character* mCurrent;						///brief Character which is currently being modified.
-	bool mCurrentCharacterJustChanged;			///brief Tells us if the current avatar just changed, it is used by CEGUI and MyApp in order to they know current avatar has changed.
+	CharacterInstance* mCurrentInstance;		///brief Character instance which is currently being modified.
+	bool mCurrentCharacterJustChanged;			///brief Tells us if the current character just changed, it is used by CEGUI and MyApp in order to they know current character has changed.
 };
 
 }

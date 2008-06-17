@@ -208,9 +208,9 @@ public:
     void sendEvents();
 
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool OnAvatarNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+    virtual bool OnAvatarNodeCreate(OgrePeer* ogrePeer);
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool OnSceneNodeCreate(TiXmlElement* xmlElt, OgrePeer* ogrePeer);
+    virtual bool OnSceneNodeCreate(OgrePeer* ogrePeer);
 
     // Modeler part
 
