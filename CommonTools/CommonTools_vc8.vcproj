@@ -158,6 +158,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTIO.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTLog.cpp"
 				>
 			</File>
@@ -201,6 +205,10 @@
 			</File>
 			<File
 				RelativePath=".\CTException.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTIO.h"
 				>
 			</File>
 			<File

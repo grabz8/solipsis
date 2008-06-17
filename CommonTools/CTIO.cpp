@@ -21,59 +21,55 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "CTLog.h"
-#include "CTScopedMutexLock.h"
-
-#include <iostream>
-#include <stdarg.h>
+#include "CTIO.h"
 
 #if defined(_WINDOWS)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <sys\stat.h>
 #else
 #include <unistd.h>
+#include <sys/stat.h>
 #endif
+
+#include <fstream>
 
 namespace CommonTools {
 
-// Default log handler
-static class DefaultLogHandler : public LogHandler
+//-------------------------------------------------------------------------------------
+bool IO::isFileExists(std::string& filename)
 {
-public:
-    void log(int level, const char* msg)
-    { 
-#ifdef USE_WINDOWS_DEBUG
-        if (level <= ms_Verbosity) { OutputDebugString(msg); OutputDebugString("\n"); }
-#else
-        if (level <= ms_Verbosity) std::cout << msg << std::endl; 
-#endif  
-    }
-} defaultLogHandler;
-
-// Message log singleton
-LogHandler* LogHandler::ms_LogHandler = &defaultLogHandler;
-
-// Default verbosity level
-LogHandler::VerbosityLevel LogHandler::ms_Verbosity = VL_NONE;
-
-// Variable args mutex
-pthread_mutex_t ms_LogMutex(PTHREAD_MUTEX_INITIALIZER);
+    struct stat _stat;
+    if (stat(filename.c_str(), &_stat) != 0) return false;
+    return ((_stat.st_mode & S_IFMT) != 0);
+}
 
 //-------------------------------------------------------------------------------------
-void LogHandler::logf(int level, const char* fmt, ...)
+bool IO::copyFile(std::string& srcFilename, std::string& dstFilename)
 {
-    if (level <= LogHandler::getVerbosityLevel())
+    std::ifstream in(srcFilename.c_str(), std::ios::in | std::ios::binary);
+    std::ofstream out(dstFilename.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+    if (!in)
+        return false;
+    if (!out)
+        return false;
+
+    std::streamsize c = 0;
+    char tmpBuf[2048];
+    while (!in.eof())
     {
-        char buf[1024];
-        {
-            ScopedMutexLock lock(ms_LogMutex);
-            va_list va;
-            va_start(va, fmt);
-            _vsnprintf(buf, sizeof(buf)-1, fmt, va);
-            buf[sizeof(buf) - 1] = 0;
-        }
-        LogHandler::getLogHandler()->log(level, buf);
+        // Read until 2048 chars in the source file
+        in.read(tmpBuf, 2048);
+        // Number of chars we read
+        c = in.gcount();
+        // Write read characters to dest file
+        out.write(tmpBuf, c);
     }
+    // Close the two files
+    in.close();
+    out.close();
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
