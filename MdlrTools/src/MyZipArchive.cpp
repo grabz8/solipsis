@@ -265,6 +265,12 @@ void MyZipArchive::removeFile(const String& filePath)
 	SOLdeleteFile(Ogre::String(mPath->getFormatedPath() + ".__backup__").c_str());
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+void MyZipArchive::copyFile(const String& filePath, const String& destFilePath, MyZipArchive& destArchive)
+{
+	FileBuffer fileBuffer = this->readFile(filePath);
+    destArchive.writeFile(destFilePath, fileBuffer);
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 int MyZipArchive::getNbFile() 
 {
 	if (!isArchivePresent()) return 0;

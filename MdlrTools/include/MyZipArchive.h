@@ -95,6 +95,12 @@ public:
 	///param filePath Path of the file in the archive, universal for all OS (with "/").
 	void removeFile(const String& filePath);
 
+	///brief Method which copy a file into another archive.
+	///param filePath Path of the file in the archive, universal for all OS (with "/").
+	///param destFilePath Path of the file in the destination archive, universal for all OS (with "/").
+	///param destArchive Destination archive.
+    void copyFile(const String& filePath, const String& destFilePath, MyZipArchive& destArchive);
+
 	///brief Method which return the number of file present in the current archive
 	///return the number of file present in this archive
 	int getNbFile() ;
