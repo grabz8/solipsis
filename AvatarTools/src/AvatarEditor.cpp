@@ -54,8 +54,6 @@ AvatarEditor::AvatarEditor(const String& pPath, SceneManager* pSceneMgr) :
 AvatarEditor::~AvatarEditor()
 {
 	delete mCharacters; 
-
-	delete ms_singletonPtr;
     ms_singletonPtr = 0;
 }
 //-------------------------------------------------------------------------------------

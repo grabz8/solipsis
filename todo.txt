@@ -6,6 +6,9 @@
 
 [Navigator]
 
+- still 1 bug when importing Ogre mesh from modeler tool, like demoVNCPlane.mesh, when application is stopped,
+resourceManager crashes into its destructor
+
 - VNCPlugin : try to use our zlib123 instead of zlib114, to use pthread instead of omnithread, then add plugins
   solutions into the global navigator solution (VNCPlugin, VLCPlugin, voiceEngine)
 

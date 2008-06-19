@@ -16,15 +16,19 @@ echo ========== Cleaning up... ==========
 del /s *.ncb
 del /s vc*.idb
 del /s vc*.pdb
+del /s *.vcproj.*.user
+del /s /A:H *.suo
 
 rmdir Common\bin\navigator\debug /S /Q
 rmdir Common\bin\navigator\release /S /Q
+rmdir Common\bin\navigator
 
 rmdir Common\bin\node\debug /S /Q
 rmdir Common\bin\node\release /S /Q
 
 rmdir Common\bin\peerSimulator\debug /S /Q
 rmdir Common\bin\peerSimulator\release /S /Q
+rmdir Common\bin\peerSimulator
 
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
@@ -84,6 +88,10 @@ rmdir DevTools\OgreOde\ode\build\vs2003\obj /S /Q
 rmdir DevTools\OgreOde\ode\build\vs2005\obj /S /Q
 rmdir DevTools\OgreOde\ode\build\vs2008\obj /S /Q
 del DevTools\pthreads\pthreadVC* /S /Q
+del DevTools\pthreads\BuildLog.htm /Q
+del DevTools\pthreads\mt.dep /Q
+del DevTools\pthreads\pthread.obj /Q
+del DevTools\pthreads\version.res /Q
 rmdir DevTools\tinyxml\Debug /S /Q
 rmdir DevTools\tinyxml\Release /S /Q
 rmdir DevTools\tokamak\lib\debugdll /S /Q
@@ -150,6 +158,8 @@ rmdir navigatorPlugin\navigatorPlugin\Debug_vc9 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Release_vc7 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Release_vc8 /S /Q
 rmdir navigatorPlugin\navigatorPlugin\Release_vc9 /S /Q
+del navigatorPlugin\navigatorPlugin\nsINavigatorPlugin.xpt /Q
+del navigatorPlugin\navigatorPlugin\SolipsisNavigator.xpt /Q
 
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc7 /S /Q
 rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc8 /S /Q

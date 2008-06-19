@@ -9,16 +9,16 @@ For the latest info, see http://www.solipsis.org/
 CONFIG
 --------------------------------------------------------------------------------
 
-Ogre built 1.4.3 from SVN repository
-DXSDK (August 2007)
-Visual C++ 2005 release runtime
+Ogre built >= 1.4.3 from SVN repository
+DXSDK (>= August 2007)
+Visual C++ >= 2005 release runtime
 
 
 --------------------------------------------------------------------------------
 PREREQUISITES
 --------------------------------------------------------------------------------
 
-DXSDK (August 2007) => C:\WINDOWS\system32\d3dx9*_35.dll
+DXSDK (>= August 2007) => C:\WINDOWS\system32\d3dx9*_35.dll or >=
 otherwise install at least August 2007 DX Redist package from http://www.microsoft.com/downloads
 
 Ageia PhysX drivers
@@ -68,13 +68,10 @@ F12      Toggle bounding-boxes display
  Demos
   demoNavi1      Launch DEMO_NAVI1 (refer below)
   demoPhysics1   Launch DEMO_PHYSICS1 (refer below) (NavDemo only)
- Tests
-  peerLost       Small test on LOST evt from Solipsis node (NavDemo only)
-  peerNew        Small test on NEW evt (for instance this evt is automatically launched on uichat.html page loaded evt) (NavDemo only)
 
 
 Demos Tips/Tricks:
-into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment 2 lines under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
+into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment line under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
 into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update the position of the demoNavi2 panel
 into Media\lua\boot.lua, you can tune default connection params into the line navigator:setConnectionParams("localhost", 8550, "me")
 
@@ -178,11 +175,10 @@ To generate HTML documentation:
  Define your DOXYGEN_PATH env. var. on directory containing doxygen.exe
  Run Docs\doxygen\doxygen.bat
 
-To generate setup from NSIS
+To generate setup from NSIS: (unfortunately the vdproj are not supported by Express editions so we use NSIS, not so bad after all ;-)
  Download NSIS on nsis.sourceforge.net
- HM NIS Edit can help you on http://hmne.sourceforge.net
  Define your NSIS_PATH env. var. on directory containing makensis.exe
- Run setup\nsis\makensis.bat
+ Run setup\nsis\makensis.bat or setup\nsis\makensisNCS.bat (files are taken from the Release directory so check you really build all)
 
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
 UIDEBUG        Set/Unset the debug user interface panel

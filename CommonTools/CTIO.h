@@ -35,8 +35,12 @@ class IO
 public:
     /// Returns true if a file exists
     static bool isFileExists(std::string& file);
+    /// Returns true if a directory exists
+    static bool isDirectoryExists(std::string& path);
     /// Copy a file
     static bool copyFile(std::string& srcFile, std::string& dstFile);
+    /// Retrieve a relative path by descending from the current working directory
+    static std::string retrieveRelativePathByDescendingCWD(std::string& path);
 };
 
 } // namespace CommonTools

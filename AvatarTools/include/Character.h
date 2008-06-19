@@ -64,7 +64,7 @@ class Character
 {
 public:
 	///Constructor, load the mesh of the Character, create an entity and a sceneNode associated to the Character and load all Goodies and BodyParts according to the nature xml file.
-	Character(const String pFileName, SceneManager* pSceneMgr);
+	Character(const String pName, SceneManager* pSceneMgr);
 	///brief Destructor
 	~Character();
 

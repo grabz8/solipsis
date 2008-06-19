@@ -659,7 +659,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
 	// get the current avatar
-	CharacterInstance* avatar = mNavigator->mAvatarEditor->getManager()->getCurrentInstance();
+	CharacterInstance* avatar = mNavigator->getAvatarEditor()->getManager()->getCurrentInstance();
 	if( avatar != 0 )
 	{
 		ColourValue col;
@@ -3957,7 +3957,7 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 	Ogre::Image image;
 
 	// Go back to the main directory
-	_chdir(mNavigator->mAvatarEditor->mExecPath.c_str());
+	_chdir(mNavigator->getAvatarEditor()->mExecPath.c_str());
 	
 	// create a temporary forlder for the thumbnail textures
 #ifdef WIN32
@@ -4015,7 +4015,7 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 	navi->evaluateJS(text);
 
 	// Go back to the main directory
-	_chdir(mNavigator->mAvatarEditor->mExecPath.c_str());
+	_chdir(mNavigator->getAvatarEditor()->mExecPath.c_str());
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)

@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Transformations.h"
 #include "Event.h"
 #include "NavigatorSound.h"
+#include "AvatarEditor.h"
 
 namespace Solipsis {
 
@@ -91,6 +92,8 @@ protected:
 
     NavigatorGUI* mNavigatorGUI;
 
+    AvatarEditor* mAvatarEditor;
+
 // COLOR PICKING
 //    TexturePtr mColorPickingRT;
 // COLOR PICKING
@@ -139,6 +142,7 @@ public:
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
+    AvatarEditor* getAvatarEditor();
 
     lua_State* getLuaState();
     void setNavigatorLua(NavigatorLua* navigatorLua);
@@ -267,8 +271,6 @@ public:
     bool avatarXMLSave();
     /** Save to another XML file. */
     bool avatarXMLSaveAs();
-    /** The avatar editor. */
-    AvatarEditor* mAvatarEditor;
 
     bool isOnLeftCTRL;
 

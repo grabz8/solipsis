@@ -560,3 +560,10 @@ multiavatars management added:
 uilogin updated to connect on login input ENTER key pressed
 
 ---------------------------
+18/06/08
+
+cleanup updated
+NSIS simplified with NCS config added
+Modeler fix for getMeshInformation() memory crash into urealvector of vertices workaround when importing Ogre mesh
+
+---------------------------

@@ -40,17 +40,17 @@ public:
 };
 
 //---------------------------------------------------------------------------------
-Character::Character(String pFileName, SceneManager* pSceneMgr) :
+Character::Character(String pName, SceneManager* pSceneMgr) :
 	mPath(NULL),
 	mZipArchive(NULL),
 	mSceneMgr(pSceneMgr),
-	mName(pFileName),
+	mName(pName),
 	mSkeletonName(""),
 	mMeshName(""),
 	mLoadingSuccessful(false)
 {
 	//Checking the validity of the archive, the presence of the edition.mesh and edition.material files.
-	mPath = new Path(pFileName);
+	mPath = new Path(pName);
 	if (mPath->getExtension() != "saf")
 	{
 		mLoadingErrorMessage = "The character archive must be a saf file !"; 

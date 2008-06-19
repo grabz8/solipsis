@@ -41,3 +41,4 @@ Demo Notes:
  If web page loading seems frozen after you got focus on 1 Navi panel, hit [Escape]
  To share 1 whiteboard, use www.skrbl.com, click on "start skrbl now" on the host, then use the url displayed above
  on other navigators to share the created whiteboard (eg. www.skrbl.com/70966862)
+ You can use modeler to add objects with WWW navi, VNC or VLC textures

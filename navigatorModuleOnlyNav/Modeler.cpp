@@ -869,7 +869,11 @@ bool Modeler::XMLImport(Vector3 pos, const char* pathToLoad)
 		Path FilePath (	path ) ;
 		String entityName = FilePath.getLastFileName(false);
 
-        ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
+/*        try {
+            ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
+        }
+        catch (Ogre::Exception e)
+        {}*/
 
 	    static int num = -1;
 	    char name[31];

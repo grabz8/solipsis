@@ -290,7 +290,9 @@ static const int RTOD = 0;
 		size_t prev_vert = vertex_count;
 		size_t prev_ind = index_count;
 
-		size_t vertexDecl;
+		// we compute full vertices vector size because push_back errors occured !! strange !!
+        size_t verticesSize = 0;
+        size_t verticesIdx = 0;
 
 		// Calculate how many vertices and indices we're going to need
 		for(int i = 0;i < mesh->getNumSubMeshes();i++)
@@ -305,16 +307,26 @@ static const int RTOD = 0;
 					VertexData* vertex_data = mesh->sharedVertexData;
 					vertex_count += vertex_data->vertexCount;
 					added_shared = true;
-					// ...
-					vertexDecl = vertex_data->vertexDeclaration->getVertexSize(0);
-				}
+					// we compute full vertices vector size because push_back errors occured !! strange !!
+                    size_t vsize = 0;
+                    const Ogre::VertexDeclaration::VertexElementList& elist = vertex_data->vertexDeclaration->getElements();
+                    for(Ogre::VertexDeclaration::VertexElementList::const_iterator elem=elist.begin();elem!=elist.end();++elem)
+        		        vsize += elem->getSize()/4;
+                    verticesSize += vertex_count*vsize;
+
+                }
 			}
 			else
 			{
 				VertexData* vertex_data = submesh->vertexData;
 				vertex_count += vertex_data->vertexCount;
-				// ...
-				vertexDecl = vertex_data->vertexDeclaration->getVertexSize(0);
+				// we compute full vertices vector size because push_back errors occured !! strange !!
+                size_t vsize = 0;
+                const Ogre::VertexDeclaration::VertexElementList& elist = vertex_data->vertexDeclaration->getElements();
+                for(Ogre::VertexDeclaration::VertexElementList::const_iterator elem=elist.begin();elem!=elist.end();++elem)
+    		        vsize += elem->getSize()/4;
+                verticesSize += vertex_count*vsize;
+
 			}
 
 			// Add the indices
@@ -324,6 +336,9 @@ static const int RTOD = 0;
 
 		// Allocate space for the vertices and indices
 		indices->resize(index_count);
+		// we compute full vertices vector size because push_back errors occured !! strange !!
+        vertices->clear();
+        vertices->resize(verticesSize);
 
 		added_shared = false;
 
@@ -342,16 +357,29 @@ static const int RTOD = 0;
 					shared_offset = current_offset;
 				}
 
-				const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
+// we compute full vertices vector size because push_back errors occured !! strange !!
+/*				const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
 				Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 				//unsigned char* vertex = static_cast<unsigned char*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-				size_t tt = vbuf->getNumVertices();
+				size_t tt = vbuf->getNumVertices();*/
 
 //vertices->resize(tt * vertexDecl/4);
-				vertices->clear();
-                tmpVertices = static_cast<Real*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+//				vertices->clear();
+/*                tmpVertices = static_cast<Real*>(vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
 				for (int ind = 0 ; ind < vertex_data->vertexCount * vertexDecl/4 ; ind ++)
-					vertices->push_back(tmpVertices[ind]);
+					vertices->push_back(tmpVertices[ind]);*/
+                const Ogre::VertexDeclaration::VertexElementList& elist = vertex_data->vertexDeclaration->getElements();
+				Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer((elist.begin())->getSource());
+                unsigned char* elemsPtr = static_cast<unsigned char*>(vbuf->lock(HardwareBuffer::HBL_READ_ONLY));
+                for (size_t j = 0; j < vertex_data->vertexCount; ++j, elemsPtr += vbuf->getVertexSize())
+                {
+                    for(Ogre::VertexDeclaration::VertexElementList::const_iterator elem=elist.begin();elem!=elist.end();++elem)
+                    {
+        		        elem->baseVertexPointerToElement(elemsPtr, &tmpVertices);
+                        for (size_t k = 0;k < elem->getSize()/4; ++k)
+                            (*vertices)[verticesIdx++] = tmpVertices[k];
+                    }
+                }
 
 				vbuf->unlock();
 				next_offset += vertex_data->vertexCount;

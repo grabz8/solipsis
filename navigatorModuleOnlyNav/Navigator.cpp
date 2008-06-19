@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "DebugHelpers.h"
+#include <CTIO.h>
 #include "Navi.h"
 #include "NaviLua.h"
 #include <Modeler.h>
@@ -54,6 +55,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mXmlRpcClient(0),
     mOgrePeerManager(0),
     mNavigatorGUI(0),
+    mAvatarEditor(0),
     mMaxNaviPickingDistance(10),
     mMaxVLCPickingDistance(10),
     mMaxVNCPickingDistance(8),
@@ -64,7 +66,6 @@ Navigator::Navigator(const String name, IApplication* application) :
     mUserAvatar(0),
     mNavigatorSound(0),
     mModeler(0),
-	mAvatarEditor(0),
     isOnLeftCTRL(false)
 {
     ms_singletonPtr = this;
@@ -94,6 +95,9 @@ Navigator::~Navigator()
 
     // Destroy the GUI
     delete mNavigatorGUI;
+
+    // Destroy avatar editor
+    delete mAvatarEditor;
 
     // Lua finalization
     lua_close(mLuaState);
@@ -200,6 +204,12 @@ OgrePeerManager* Navigator::getOgrePeerManager()
 NavigatorGUI* Navigator::getNavigatorGUI()
 {
     return mNavigatorGUI;
+}
+
+//-------------------------------------------------------------------------------------
+AvatarEditor* Navigator::getAvatarEditor()
+{
+    return mAvatarEditor;
 }
 
 //-------------------------------------------------------------------------------------
@@ -929,6 +939,11 @@ void Navigator::createScene()
 
     // Create OgrePeer manager
     mOgrePeerManager = new OgrePeerManager(mSceneMgr, this);
+
+    // Create the avatar editor
+    std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
+    mAvatarEditor = new AvatarEditor(mediaCacheModelsRelativePath, mSceneMgr);
+    mAvatarEditor->buildListSAF();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1539,13 +1554,6 @@ bool Navigator::createMesh()
 bool Navigator::startAvatarEdit()
 {
     mState = SAvatarEdit;
-
-	// Init a new Avatar editor
-	if (!mAvatarEditor)
-	{
-		//mAvatarEditor = new AvatarEditor(...);
-		mAvatarEditor = AvatarEditor::getSingletonPtr();
-	}
   
 	return true;
 }
@@ -1556,14 +1564,6 @@ bool Navigator::endAvatarEdit()
 	// Go back in world
 	mState = SInWorld;
 
-	if( mAvatarEditor )
-	{
-		//mAvatarEditor->...
-	}
-
-// TODO : remove those comments
-//	delete mAvatarEditor;
-//	mAvatarEditor = NULL;
     return true;
 }
 

@@ -52,14 +52,6 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
     mCallbacks(callbacks)
 {
     mOgrePeersMap.clear();
-
-	static AvatarEditor* avatarEditor = NULL;
-	if(!avatarEditor)
-	{
-		//avatarEditor = new AvatarEditor("..\\..\\..\\..\\media\\cache\\models", mSceneMgr);
-		avatarEditor = new AvatarEditor("../../../../media/cache/models", mSceneMgr);
-		avatarEditor->buildListSAF();
-	}
 }
 
 //-------------------------------------------------------------------------------------

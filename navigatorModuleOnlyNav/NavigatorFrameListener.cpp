@@ -86,7 +86,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     Modeler* modeler = mNavigator->mModeler;
-	AvatarEditor* avatarEditor = mNavigator->mAvatarEditor;
+	AvatarEditor* avatarEditor = mNavigator->getAvatarEditor();
 
     // Escape hits count to cancel focus Navi/VNC/...
     if (evt.mKey == KC_ESCAPE)
