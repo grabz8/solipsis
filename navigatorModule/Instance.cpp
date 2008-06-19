@@ -190,6 +190,13 @@ bool Instance::run()
             requestTerminate();
             mOgreApplication->unlock();
         }
+        catch (std::exception e)
+        {
+            // Hum hum TODO add a good Solipsis::exception class
+            Ogre::LogManager::getSingleton().logMessage("Caught an std::exception, " + String(e.what()));
+            requestTerminate();
+            mOgreApplication->unlock();
+        }
         catch (...)
         {
             // Hum hum TODO add a good Solipsis::exception class
