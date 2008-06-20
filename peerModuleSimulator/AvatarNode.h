@@ -62,6 +62,7 @@ protected:
     /// Map of entities avatar is aware of
     Entity::EntityMap mAwareEntities;
 
+    /// Map of Xml entities updated
     XmlEntityMap mXmlEntityMap;
 
 #ifdef PHYSICSPLUGINS
