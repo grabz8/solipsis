@@ -6,28 +6,23 @@ Ogre
 url      http://www.ogre3d.org/phpBB2/
 username g6r6e6g
 email    gregoryjan@free.fr
-password greg666
 
 Navi
 url      http://navi.agelessanime.com/forum
 username g6r6e6g
 email    gregoryjan@free.fr
-password greg666
 
 Mozilla
 http://www.nabble.com
 http://www.nabble.com/Mozilla---Embedding-f6665.html
 username g6r6e6g
 email    gregoryjan@free.fr
-password greg666
 
 PhysX
 http://devsupport.ageia.com
 email    gregoryjan@free.fr
-password greg666
 
 VLC
 http://forum.videolan.org
 username g6r6e6g
 email    gregoryjan@free.fr
-password greg666
