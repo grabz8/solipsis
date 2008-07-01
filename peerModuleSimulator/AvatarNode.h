@@ -52,8 +52,6 @@ public:
 #endif
 
 protected:
-    /// Mutex
-    pthread_mutex_t mMutex;
     /// Avatar entity
     Avatar mAvatar;
 
@@ -72,20 +70,27 @@ protected:
 
 public:
     /** Constructor. */
+#ifdef POOL
+    AvatarNode(const NodeId& nodeId, RefCntPoolPtr<XmlEntity>& xmlEntity);
+#else
     AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity);
+#endif
     /** Destructor. */
     virtual ~AvatarNode();
 
+    /** See Solipsis::Node. */
+    virtual const Entity& getManagedEntity() { return mAvatar; }
+
 	/** Get associated avatar entity. */
     Avatar& getEntity();
-	/** Get associated avatar owned entities. */
+	/** Get owned entities. */
     Entity::EntityMap& getOwnedEntities();
 #ifdef PHYSICSPLUGINS
     IPhysicsScene* getPhysicsScene();
 #endif
 
     /** Add an entity to aware of. */
-    bool addAwareEntity(Entity* entity);
+    bool addAwareEntity(Entity* entity, bool sendNewEvt = true);
     /** Remove an entity to aware of. */
     bool removeAwareEntity(Entity* entity);
 
@@ -100,8 +105,11 @@ public:
     /** See Solipsis::Node. */
     virtual bool freeze(bool frozen);
 
+    /** See Solipsis::Node. */
+    virtual TiXmlElement* getSavedElt();
+
     /** See Solipsis::TimeListener. */
-    virtual bool tick(Real timeSinceLastTick);
+    virtual bool tick(Ogre::Real timeSinceLastTick);
 
     /** See Solipsis::EntityListener. */
     virtual bool updated(const Node& node, Entity& entity, XmlEvt& xmlEvt);

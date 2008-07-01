@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // GREG BEGIN
 //#include <OgreExternalTextureSource.h>
 #include <ExternalTextureSourceEx.h>
+#include <OgreTexture.h>
 #include <Event.h>
 // GREG END
 
@@ -146,6 +147,11 @@ private:
     typedef std::vector<Ogre::MaterialPtr> MaterialList;
     typedef std::map<int, MaterialList> IDMaterialMap;
     IDMaterialMap mMaterials;
+
+// GREG BEGIN
+    static Ogre::String ms_TmpTextureName;
+    Ogre::TexturePtr mTmpTexture;
+// GREG END
 
 };  //  class TightVNCTextureSystem
 

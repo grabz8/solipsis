@@ -23,64 +23,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Site.h"
 #include "OgreHelpers.h"
+#include <CTIO.h>
 
 using namespace Ogre;
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-Site::Site(XmlEntity* xmlEntity) :
-    Entity(xmlEntity),
-    mOSMFilename(""),
-    mCollisionMeshFilename(""),
-    mEntryGatePosition(Vector3::ZERO),
-    mEntryGateGravity(false)
+#ifdef POOL
+Site::Site(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId) :
+#else
+Site::Site(XmlEntity* xmlEntity, const NodeId& managerNodeId) :
+#endif
+    Entity(xmlEntity, managerNodeId),
+    mCollisionMeshFilename("")
 {
-    // Set the scene collision mesh
-    std::string xmlFilename;
-    XmlContent* content = mXmlEntity->getContent();
-    XmlContent::ContentFileList& contentFileListLod0 = content->getContentLodMap()[0];
-    static const std::basic_string <char>::size_type npos = -1;
-    for (XmlContent::ContentFileList::iterator f = contentFileListLod0.begin(); f != contentFileListLod0.end(); ++f)
-        if ((*f).rfind(".xml") != std::string::npos)
-        {
-            xmlFilename = *f;
-            break;
-        }
-    if (xmlFilename.empty())
-        return;
-
-    TiXmlDocument xmlFileDoc;
-	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlFilename);
-	if (!pStream->size())
-        return;
-	size_t iSize = pStream->size();
-	char *pBuf = new char[iSize+1];
-	memset(pBuf, 0, iSize+1);
-	pStream->read(pBuf, iSize);
-	pStream.setNull();
-	xmlFileDoc.Parse(pBuf);
-	delete[] pBuf;
-	// check for errors
-    if (xmlFileDoc.Error())
-        return;
-    TiXmlElement* sceneNodeElt = xmlFileDoc.RootElement()->FirstChildElement("sceneNode");
-    if (sceneNodeElt != 0)
-    {
-        mOSMFilename = sceneNodeElt->Attribute("filename");
-        const char* collisionMeshName = sceneNodeElt->Attribute("collision");
-        mCollisionMeshName = (collisionMeshName != 0) ? collisionMeshName : "";
-        TiXmlElement* entryGateElt = sceneNodeElt->FirstChildElement("entryGate");
-        if (entryGateElt != 0)
-        {
-            const char* entryGateGravity = entryGateElt->Attribute("gravity");
-            if (entryGateGravity != 0)
-                mEntryGateGravity = (String(entryGateGravity).compare("true") == 0);
-            TiXmlElement* entryGatePosElt;
-            if ((entryGatePosElt = entryGateElt->FirstChildElement("position")) != 0)
-                XmlHelpers::fromXmlEltVector3(entryGatePosElt, mEntryGatePosition);
-        }
-    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -94,11 +51,30 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
 {
     Entity::createPhysics(physicsScene);
 
-    if (mOSMFilename.empty() || mCollisionMeshName.empty())
+    // Get the scene content for LOD 0
+    XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
+    RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
+    // Collision ?
+    if (xmlSceneLodContent0->getCollision().empty())
         return;
 
+    // Find .ssf file
+    XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
+    for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
+        if (lodContent0File->filename.find(".ssf") == lodContent0File->filename.length() - 4)
+            break;
+    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
+        return;
+
+    // Create the resource group
+    std::string mediaCacheSceneRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\scenes"));
+    String resourceGroup = mXmlEntity->getUidString() + "Resources";
+    ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
+    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheSceneRelativePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+
+    // Load .osm
     TiXmlDocument osmFileDoc;
-	DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(mOSMFilename);
+    DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlSceneLodContent0->getMainFilename());
 	if (!pStream->size())
         return;
 	size_t iSize = pStream->size();
@@ -117,7 +93,7 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
         attr = entity->Attribute("name");
         if ((attr == 0) || (attr[0] == '\0'))
             continue;
-        if (strcmp(attr, mCollisionMeshName.c_str()) == 0)
+        if (strcmp(attr, xmlSceneLodContent0->getCollision().c_str()) == 0)
             break;
         entity = entity->NextSiblingElement("entity");
     }
@@ -145,6 +121,9 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
     Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(mCollisionMeshFilename);
     MeshPtr collisionMeshPtr(collisionMesh);
     mPhysicsScene->setTerrainMesh(collisionMeshPtr, getXmlEntity()->getPosition() + position, getXmlEntity()->getOrientation()*rotation, scale);
+
+    // Destroy the resource group
+    ResourceGroupManager::getSingleton().destroyResourceGroup(resourceGroup);
 }
 
 //-------------------------------------------------------------------------------------

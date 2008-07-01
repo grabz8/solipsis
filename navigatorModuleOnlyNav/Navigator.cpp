@@ -87,6 +87,7 @@ Navigator::~Navigator()
 
     // Clean up allocated peers datas
     cleanUpPeers(true);
+    // Destroy OgrePeer manager
     delete mOgrePeerManager;
 
     // Destroy the ray scene query
@@ -204,6 +205,12 @@ OgrePeerManager* Navigator::getOgrePeerManager()
 NavigatorGUI* Navigator::getNavigatorGUI()
 {
     return mNavigatorGUI;
+}
+
+//-------------------------------------------------------------------------------------
+Modeler* Navigator::getModeler()
+{
+    return mModeler;
 }
 
 //-------------------------------------------------------------------------------------
@@ -734,7 +741,9 @@ bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
     // if 1 Navi entity hit
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFNaviPanel))
     {
-        naviName = "WWW_" + mPickedMovable->getName();
+        Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        naviName = NaviLibrary::NaviManager::Get().getNaviFromMtlName(mtlName)->getName();
         // compute texture coordinates of the hit
         computeNaviHit(naviName,
                        closestUV,
@@ -939,6 +948,10 @@ void Navigator::createScene()
 
     // Create OgrePeer manager
     mOgrePeerManager = new OgrePeerManager(mSceneMgr, this);
+
+	// Init the Modeler 
+	mModeler = Modeler::getSingletonPtr(mSceneMgr, mCamera, mOgrePeerManager);
+	mModeler->init();
 
     // Create the avatar editor
     std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
@@ -1251,13 +1264,6 @@ bool Navigator::startModeling()
 {
 	mState = SModeling;
 
-	// Init a new Modeler 
-	if (!mModeler)
-	{
-		//mModeler = new Modeler(mSceneMgr,mCamera);
-		mModeler = Modeler::getSingletonPtr(mSceneMgr,mCamera);
-		mModeler->init(mUserAvatar);
-	}
     return true;
 }
 
@@ -1270,9 +1276,6 @@ bool Navigator::endModeling()
 	if( mModeler )
 		mModeler->deselectNode();
 
-// TODO : remove those comments
-//	delete mModeler;
-//	mModeler = NULL;
     return true;
 }
 
@@ -1627,29 +1630,6 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::mdlrXMLLoad()
-{
-	if( mModeler )
-	{
-		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
-		Radian angle = pldir.getYaw();
-		Ogre::Vector3 dep = Vector3(1.5,0,0);
-
-		Real cosY = Math::Cos(angle);
-		Real sinY = Math::Sin(angle);
-
-		Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
-		//y = point.y;							//		y' = y  
-		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
-		dep.x = x;
-
-		return mModeler->XMLLoad( mUserAvatar->getSceneNode()->getPosition() + dep );
-	}
-
-	return false;
-}
-
-//-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLImport()
 {
 	if( mModeler )
@@ -1666,18 +1646,19 @@ bool Navigator::mdlrXMLImport()
 		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 		dep.x = x;
 
-		return mModeler->XMLImport( mUserAvatar->getSceneNode()->getPosition() + dep );
+		return mModeler->XMLImport("", mUserAvatar->getSceneNode()->getPosition() + dep );
 	}
 
 	return false;
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::mdlrXMLSave(bool all, const char* pathToSave)
+bool Navigator::mdlrXMLSave(bool all)
 {
+    std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
 	if( mModeler )
 		if(all || !mModeler->isSelectionEmpty()) 
-			return mModeler->XMLSave(all, pathToSave);
+            return mModeler->XMLSave(all, mediaCacheModelsRelativePath.c_str());
 		else
 #ifdef WIN32
 			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 

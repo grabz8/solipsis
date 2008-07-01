@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorGUI.h"
 #include "Navigator.h"
 #include "OgreHelpers.h"
-#include <OgreExternalTextureSourceManager.h>
 #include "DebugHelpers.h"
 #include <Navi.h>
 #include <Modeler.h>
@@ -243,7 +242,6 @@ void NavigatorGUI::modelerMainShow()
         navi->setMask("uimdlrmain.png");//Eliminate the black shadow at the margin of the menu
         navi->setOpacity(0.75f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
-	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::modelerMainFileOpen));
 	    navi->bind("FileImport", NaviDelegate(this, &NavigatorGUI::modelerMainFileImport));
 	    navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
 	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
@@ -268,7 +266,6 @@ void NavigatorGUI::modelerMainShow()
 		navi->bind("ActionScale", NaviDelegate(this, &NavigatorGUI::modelerActionScale)); 
 		navi->bind("ActionLink", NaviDelegate(this, &NavigatorGUI::modelerActionLink)); 
 		navi->bind("ActionProperties", NaviDelegate(this, &NavigatorGUI::modelerActionProperties)); 
-		navi->bind("ActionSceneSave", NaviDelegate(this, &NavigatorGUI::modelerActionSave));
   
 		mNavisStates[NAVI_MODELERMAIN] = NSCreated;
     }
@@ -277,8 +274,9 @@ void NavigatorGUI::modelerMainShow()
 
     mNavigator->startModeling();
 
-    if (mNavigator->mModeler)
-        mNavigator->mModeler->lockSelection(false);
+    Modeler *modeler = mNavigator->getModeler();
+    if (modeler)
+        modeler->lockSelection(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -418,17 +416,18 @@ void NavigatorGUI::modelerPropShow()
 		modelerTabberLoad(1);
 	}
 
-	if( mNavigator->mModeler )
+    Modeler *modeler = mNavigator->getModeler();
+	if (modeler)
 	{
-		mNavigator->mModeler->lockSelection(true);
+		modeler->lockSelection(true);
 
-		if( !mNavigator->mModeler->isSelectionEmpty() )
+		if (!modeler->isSelectionEmpty())
 		{
 			// hide the gizmos axes
-			mNavigator->mModeler->lockGizmo(false);
-			mNavigator->mModeler->getSelection()->mTransformation->showGizmosMove(false);
-			mNavigator->mModeler->getSelection()->mTransformation->showGizmosRotate(false);
-			mNavigator->mModeler->getSelection()->mTransformation->showGizmosScale(false);
+			modeler->lockGizmo(false);
+			modeler->getSelection()->mTransformation->showGizmosMove(false);
+			modeler->getSelection()->mTransformation->showGizmosRotate(false);
+			modeler->getSelection()->mTransformation->showGizmosScale(false);
 		}
 	}
 }
@@ -461,8 +460,9 @@ void NavigatorGUI::modelerPropUnload()
 		// Update the selected objet dats from the properties panel
 		modelerTabberSave();
 
-		if( mNavigator->mModeler )
-			mNavigator->mModeler->lockSelection(false);
+        Modeler *modeler = mNavigator->getModeler();
+		if (modeler)
+			modeler->lockSelection(false);
     }
 }
 
@@ -498,8 +498,9 @@ void NavigatorGUI::avatarMainShow()
 
     mNavigator->startAvatarEdit();
 /*
-    if (mNavigator->mModeler)
-        mNavigator->mModeler->lockSelection(false);
+    Modeler *modeler = mNavigator->getModeler();
+    if (modeler)
+        modeler->lockSelection(false);
 */
 }
 //-------------------------------------------------------------------------------------
@@ -665,7 +666,6 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 		ColourValue col;
 		Ogre::Vector2 UV;
 		std::string text;
-		unsigned c,e;
 		
 		switch( pTab )
 		{
@@ -693,7 +693,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				}
 				navi->evaluateJS("$('animationSelectItem').innerHTML = \"" + text + "\"");
 
-				int nbItem = list.size();
+				size_t nbItem = list.size();
 				if( nbItem < 7 )
 					navi->evaluateJS("$('animationSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
 				list.clear();
@@ -715,7 +715,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				Bone* bone = avatar->getCurrentBone();
 				std::string name(bone->getName());
 				std::string temp("");
-				for(int i=0; i<name.length(); i++)
+				for(int i=0; i<(int)name.length(); i++)
 				{
 					char c = name[i];
 					if (! ((c < 48 && c != 32) || c == 255 ||
@@ -814,7 +814,7 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				MaterialPtr mat = object->getModifiedMaterial()->getOwner();
 				CullingMode mode = mat->getTechnique(0)->getPass(0)->getCullingMode();
-				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CullingMode::CULL_NONE)?"true":"false" );
+				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CULL_NONE)?"true":"false" );
 
 				avatarUpdateTextures( object );
 			}
@@ -829,7 +829,7 @@ void NavigatorGUI::avatarTabberSave()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pObject3D)
 {
-	if( mNavigator->mModeler->updateCommand( pCommand, pObject3D ) )
+	if( mNavigator->getModeler()->updateCommand( pCommand, pObject3D ) )
 	{
 		modelerUpdateDeformationSliders();
 
@@ -844,7 +844,7 @@ void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pO
 void NavigatorGUI::modelerUpdateDeformationSliders()
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
-	Object3D* obj = mNavigator->mModeler->getSelected();
+	Object3D* obj = mNavigator->getModeler()->getSelected();
 
 	// break the callback from the interface sliders
 	navi->evaluateJS("taperX.onchange = function() {}");
@@ -905,7 +905,8 @@ void NavigatorGUI::modelerUpdateTextures()
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 
-	Object3D* obj = mNavigator->mModeler->getSelected();
+    Modeler *modeler = mNavigator->getModeler();
+	Object3D* obj = modeler->getSelected();
 	
 	std::string texturePath, text;
 	String str;
@@ -913,7 +914,7 @@ void NavigatorGUI::modelerUpdateTextures()
 	Ogre::Image image;
 
 	// Go back to the main directory
-	_chdir(mNavigator->mModeler->mExecPath.c_str());
+	_chdir(modeler->mExecPath.c_str());
 	
 	// create a temporary forlder for the thumbnail textures
 #ifdef WIN32
@@ -931,55 +932,65 @@ void NavigatorGUI::modelerUpdateTextures()
 
 	// update Navi interface
 	text = "textTabTextures = \"";
-	for(unsigned t=1; t<obj->getMaterialManager()->getNbTexture(); t++)
+	for(int t=1; t<obj->getMaterialManager()->getNbTexture(); t++)
 	{
 		texture = obj->getMaterialManager()->getTexture(t);
-		texturePath = texture->getName();
-		Path path(texturePath);
-		size_t begin = path.getFormatedPath().find_last_of( '\\' );
-		size_t end = path.getFormatedPath().find_last_of( '.' );
-		std::string fileName( path.getFormatedPath(), begin+1, end-begin-1 );
-		fileName += ".jpg";
+        TextureExtParamsMap* textureExtParamsMap = obj->getMaterialManager()->getTextureExtParamsMap(texture);
+        if (textureExtParamsMap != 0)
+        {
+		    text += "<img src='./NaviLocal/";
+		    text += (*textureExtParamsMap)["type"] + "_texture.jpg";
+		    text +=	"' width=128 height=128/>";
+        }
+        else
+        {
+		    texturePath = texture->getName();
+		    Path path(texturePath);
+		    size_t begin = path.getFormatedPath().find_last_of( '\\' );
+		    size_t end = path.getFormatedPath().find_last_of( '.' );
+		    std::string fileName( path.getFormatedPath(), begin+1, end-begin-1 );
+		    fileName += ".jpg";
 
-		str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
+		    str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
 
-		//text += "<img src='file:///d:\\test.jpg";
-		text += "<img src='./solTmpTexture/";
-		text += fileName;
-		text +=	"' width=128 height=128/>	";
+		    //text += "<img src='file:///d:\\test.jpg";
+		    text += "<img src='./solTmpTexture/";
+		    text += fileName;
+		    text +=	"' width=128 height=128/>";
 
-		vector<std::string> files;
-		SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
-		vector<std::string>::iterator iter = files.begin();
-		bool found = false;
-		while( iter != files.end() )
-		{
-			if( (*iter) ==  fileName )
-			{
-				found = true;
-				break;
-			}
-			iter++;
-		}
-		files.clear();
-		if( !found )
-		{
-			image.load( texturePath, str);
-			image.resize( 128, 128 );
-			image.save( "NaviLocal\\solTmpTexture\\" + fileName );
-		}
+		    vector<std::string> files;
+		    SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
+		    vector<std::string>::iterator iter = files.begin();
+		    bool found = false;
+		    while( iter != files.end() )
+		    {
+			    if( (*iter) ==  fileName )
+			    {
+				    found = true;
+				    break;
+			    }
+			    iter++;
+		    }
+		    files.clear();
+		    if( !found )
+		    {
+			    image.load( texturePath, str);
+			    image.resize( 128, 128 );
+			    image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+		    }
+        }
 	}
 	text += "\"";
 	navi->evaluateJS(text);
 
 	// Go back to the main directory
-	_chdir(mNavigator->mModeler->mExecPath.c_str());
+	_chdir(modeler->mExecPath.c_str());
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerAddNewDeformation(Object3D::Command pCommand)
 {
-	Object3D* obj = mNavigator->mModeler->getSelected();
+	Object3D* obj = mNavigator->getModeler()->getSelected();
 	size_t nbCommands = mDeformButton.size();
 
 	// create new name :
@@ -1042,7 +1053,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 
 	// get the current object3D
-	Object3D* obj = mNavigator->mModeler->getSelected();
+	Object3D* obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		ColourValue col;
@@ -1088,9 +1099,9 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			modelerUpdateDeformationSliders();
 			break;
 		case 2:	// material tab
-			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().r * 255) + ")");
-			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().g * 255) + ")");
-			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbiant().b * 255) + ")");
+			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbient().r * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbient().g * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbient().b * 255) + ")");
 			navi->evaluateJS("$S('pAmbient').background='#" + text + "'");
 			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().r * 255) + ")");
 			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().g * 255) + ")");
@@ -1129,7 +1140,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			{
 				MaterialPtr mat = obj->getMaterialManager()->getModifiedMaterial()->getOwner();
 				CullingMode mode = mat->getTechnique(0)->getPass(0)->getCullingMode();
-				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CullingMode::CULL_NONE)?"true":"false" );
+				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CULL_NONE)?"true":"false" );
 			}
 			modelerUpdateTextures();
 			break;
@@ -1365,7 +1376,7 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 	// Select the avatar from the user.xml // avatarName
 	//text = AvatarEditor::getSingletonPtr()->getName();
 	//navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
-	int nbItem = list->size();
+	size_t nbItem = list->size();
 	if( nbItem < 7 )
 	{
 		sprintf(txt, "%ipx'", nbItem*16);
@@ -1403,7 +1414,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
     // Check
     static std::string validLoginExtrasChars = "$-_.@+!*'(),";
     bool validLogin = ((login.length() > 2) && (login.compare("null") != 0));
-    for(int i=0;i<login.length();i++)
+    for(int i=0;i<(int)login.length();i++)
     {
         if (!validLogin)
             break;
@@ -1657,15 +1668,6 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerMainFileOpen(const NaviData& naviData)
-{
-    OGRE_LOG("NavigatorGUI::modelerMainFileOpen()");
-	
-    //modelerMainUnload();
-	mNavigator->mdlrXMLLoad();
-}
-
-//-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileImport(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::modelerMainFileImport()");
@@ -1807,18 +1809,19 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::modelerActionDelete()");
 
-	if( mNavigator->mModeler )
-		if( !mNavigator->mModeler->isSelectionEmpty() )
+    Modeler *modeler = mNavigator->getModeler();
+	if (modeler)
+		if (!modeler->isSelectionEmpty())
         {
             //mNavigator->suppr();
 
             // remove the current selection
-            mNavigator->mModeler->removeSelection();
+            modeler->removeSelection();
 
             // hide the gizmos axes
-            mNavigator->mModeler->getSelection()->mTransformation->showGizmosMove(false);
-            mNavigator->mModeler->getSelection()->mTransformation->showGizmosRotate(false);
-            mNavigator->mModeler->getSelection()->mTransformation->showGizmosScale(false);
+            modeler->getSelection()->mTransformation->showGizmosMove(false);
+            modeler->getSelection()->mTransformation->showGizmosRotate(false);
+            modeler->getSelection()->mTransformation->showGizmosScale(false);
         }
 		else
 #ifdef WIN32
@@ -1831,21 +1834,22 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionMove(const NaviData& naviData)
 {
-	if( !mNavigator->mModeler->isSelectionEmpty() )
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
 		{
 			static bool active = false;
 
 			if (!active)
 			{
 				active = true;
-				mNavigator->mModeler->eventMove();
-				mNavigator->mModeler->lockGizmo(active);
+				modeler->eventMove();
+				modeler->lockGizmo(active);
 			}
 			else
 			{
 				active = false;
-				mNavigator->mModeler->lockGizmo(active);
-				mNavigator->mModeler->getSelection()->mTransformation->eventSelection();
+				modeler->lockGizmo(active);
+				modeler->getSelection()->mTransformation->eventSelection();
 			}
 		}
 	else
@@ -1859,21 +1863,22 @@ void NavigatorGUI::modelerActionMove(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
 {
-	if( !mNavigator->mModeler->isSelectionEmpty() )
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
 	{
 		static bool active = false;
 
 		if (!active)
 		{
 			active = true;
-			mNavigator->mModeler->eventRotate();
-			mNavigator->mModeler->lockGizmo(active);
+			modeler->eventRotate();
+			modeler->lockGizmo(active);
 		}
 		else
 		{
 			active = false;
-			mNavigator->mModeler->lockGizmo(active);
-			mNavigator->mModeler->getSelection()->mTransformation->eventSelection();
+			modeler->lockGizmo(active);
+			modeler->getSelection()->mTransformation->eventSelection();
 		}
 	}
 	else
@@ -1887,21 +1892,22 @@ void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionScale(const NaviData& naviData)
 {
-	if( !mNavigator->mModeler->isSelectionEmpty() )
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
 	{
 		static bool active = false;
 
 		if (!active)
 		{
 			active = true;
-			mNavigator->mModeler->eventScale();
-			mNavigator->mModeler->lockGizmo(active);
+			modeler->eventScale();
+			modeler->lockGizmo(active);
 		}
 		else
 		{
 			active = false;
-			mNavigator->mModeler->lockGizmo(active);
-			mNavigator->mModeler->getSelection()->mTransformation->eventSelection();
+			modeler->lockGizmo(active);
+			modeler->getSelection()->mTransformation->eventSelection();
 		}
 	}
 	else
@@ -1917,8 +1923,9 @@ void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 {
 	OGRE_LOG("NavigatorGUI::modelerActionLink()");
 
-	if( !mNavigator->mModeler->isSelectionEmpty() )
-		mNavigator->mModeler->lockLinkMode(true);
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
+		modeler->lockLinkMode(true);
 	else
 #ifdef WIN32
 		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
@@ -1933,7 +1940,8 @@ void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 	OGRE_LOG("NavigatorGUI::modelerActionProperties()");
 
 	// Test if an Object3D has ever been created before
-	if( !mNavigator->mModeler->isSelectionEmpty() )
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
 		{
 			// Hide the main modeler panel
 			modelerMainHide();
@@ -1955,20 +1963,11 @@ void NavigatorGUI::modelerActionUndo(const NaviData& naviData)
 	OGRE_LOG("NavigatorGUI::modelerActionUndo()");
 
 	//mNavigator->undo();
-    if( !mNavigator->mModeler->isSelectionEmpty() )
-        mNavigator->mModeler->getSelected()->undo();
+    Modeler *modeler = mNavigator->getModeler();
+	if (!modeler->isSelectionEmpty())
+        modeler->getSelected()->undo();
 
 	modelerUpdateDeformationSliders();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerActionSave(const NaviData& naviData)
-{
-	OGRE_LOG("NavigatorGUI::modelerActionSave()");
-
-	std::string path = "..\\..\\..\\..\\Media\\cache\\";
-	path += mNavigator->getOgrePeerManager()->getXmlObjectFilename();
-	mNavigator->mdlrXMLSave(true, path.c_str() );
 }
 
 //-------------------------------------------------------------------------------------
@@ -1992,7 +1991,7 @@ void NavigatorGUI::modelerPropObjectName(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('objectName').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setName(value);
 }
@@ -2003,7 +2002,7 @@ void NavigatorGUI::modelerPropCreator(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('creator').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setOwner(value.c_str());
 }
@@ -2014,7 +2013,7 @@ void NavigatorGUI::modelerPropOwner(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('owner').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setCreator(value.c_str());
 }
@@ -2025,7 +2024,7 @@ void NavigatorGUI::modelerPropGroup(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('group').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setGroup(value.c_str());
 }
@@ -2036,7 +2035,7 @@ void NavigatorGUI::modelerPropDescription(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('description').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setDesc(value.c_str());
 }
@@ -2047,7 +2046,7 @@ void NavigatorGUI::modelerPropTags(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('tags').value");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setTags(value.c_str());
 }
@@ -2072,11 +2071,11 @@ void NavigatorGUI::modelerPropTaperX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("taperX.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TAPERX, obj );
-		obj->apply( Object3D::Command::TAPERX, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TAPERX, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2086,11 +2085,11 @@ void NavigatorGUI::modelerPropTaperY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("taperY.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TAPERY, obj );
-		obj->apply( Object3D::Command::TAPERY, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TAPERY, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2100,11 +2099,11 @@ void NavigatorGUI::modelerPropTopShearX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("topShearX.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TOP_SHEARX, obj );
-		obj->apply( Object3D::Command::TOP_SHEARX, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TOP_SHEARX, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2114,11 +2113,11 @@ void NavigatorGUI::modelerPropTopShearY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("topShearY.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TOP_SHEARY, obj );
-		obj->apply( Object3D::Command::TOP_SHEARY, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TOP_SHEARY, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2128,11 +2127,11 @@ void NavigatorGUI::modelerPropTwistBegin(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("twistBegin.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TWIST_BEGIN, obj );
-		obj->apply( Object3D::Command::TWIST_BEGIN, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TWIST_BEGIN, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2142,11 +2141,11 @@ void NavigatorGUI::modelerPropTwistEnd(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("twistEnd.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::TWIST_END, obj );
-		obj->apply( Object3D::Command::TWIST_END, atoi(value.c_str())/100. );
+		obj->apply( Object3D::TWIST_END, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2156,11 +2155,11 @@ void NavigatorGUI::modelerPropDimpleBegin(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("dimpleBegin.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::DIMPLE_BEGIN, obj );
-		obj->apply( Object3D::Command::DIMPLE_BEGIN, atoi(value.c_str())/100. );
+		obj->apply( Object3D::DIMPLE_BEGIN, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2170,11 +2169,11 @@ void NavigatorGUI::modelerPropDimpleEnd(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("dimpleEnd.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::DIMPLE_END, obj );
-		obj->apply( Object3D::Command::DIMPLE_END, atoi(value.c_str())/100. );
+		obj->apply( Object3D::DIMPLE_END, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2184,11 +2183,11 @@ void NavigatorGUI::modelerPropPathCutBegin(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("pathCutBegin.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::PATH_CUT_BEGIN, obj );
-		obj->apply( Object3D::Command::PATH_CUT_BEGIN, atoi(value.c_str())/100. );
+		obj->apply( Object3D::PATH_CUT_BEGIN, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2198,11 +2197,11 @@ void NavigatorGUI::modelerPropPathCutEnd(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("pathCutEnd.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::PATH_CUT_END, obj );
-		obj->apply( Object3D::Command::PATH_CUT_END, atoi(value.c_str())/100. );
+		obj->apply( Object3D::PATH_CUT_END, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2212,11 +2211,11 @@ void NavigatorGUI::modelerPropHoleSizeX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("holeSizeX.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::HOLE_SIZEX, obj );
-		obj->apply( Object3D::Command::HOLE_SIZEX, atoi(value.c_str())/100. );
+		obj->apply( Object3D::HOLE_SIZEX, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2226,11 +2225,11 @@ void NavigatorGUI::modelerPropHoleSizeY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("holeSizeY.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::HOLE_SIZEY, obj );
-		obj->apply( Object3D::Command::HOLE_SIZEY, atoi(value.c_str())/100. );
+		obj->apply( Object3D::HOLE_SIZEY, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2240,11 +2239,11 @@ void NavigatorGUI::modelerPropHollowShape(const NaviData& naviData)
 	std::string value;
     value = naviData["shape"].str();
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::HOLLOW_SHAPE, obj );
-		obj->apply( Object3D::Command::HOLLOW_SHAPE, atoi(value.c_str()) );
+		obj->apply( Object3D::HOLLOW_SHAPE, atoi(value.c_str()) );
 	}
 }
 
@@ -2254,11 +2253,11 @@ void NavigatorGUI::modelerPropSkew(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("skew.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::SKEW, obj );
-		obj->apply( Object3D::Command::SKEW, atoi(value.c_str())/100. );
+		obj->apply( Object3D::SKEW, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2268,11 +2267,11 @@ void NavigatorGUI::modelerPropRevolution(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("revolution.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::REVOLUTION, obj );
-		obj->apply( Object3D::Command::REVOLUTION, atoi(value.c_str())/1. );
+		obj->apply( Object3D::REVOLUTION, atoi(value.c_str())/1. );
 	}
 }
 
@@ -2282,11 +2281,11 @@ void NavigatorGUI::modelerPropRadiusDelta(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("radiusDelta.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		modelerUpdateCommand( Object3D::RADIUS_DELTA, obj );
-		obj->apply( Object3D::Command::RADIUS_DELTA, atoi(value.c_str())/100. );
+		obj->apply( Object3D::RADIUS_DELTA, atoi(value.c_str())/100. );
 	}
 }
 
@@ -2310,10 +2309,10 @@ void NavigatorGUI::modelerColorAmbient(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
-		obj->setAmbiant( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		obj->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
 			obj->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
@@ -2339,12 +2338,12 @@ void NavigatorGUI::modelerColorDiffuse(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		obj->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
-			obj->setAmbiant( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			obj->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
 }
 
@@ -2368,7 +2367,7 @@ void NavigatorGUI::modelerColorSpecular(const NaviData& naviData)
 	}
 	rgb[idRGB] = atoi(color.c_str());
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setSpecular( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 }
@@ -2386,7 +2385,7 @@ void NavigatorGUI::modelerDoubleSide(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("$('doubleSide').checked");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{	
 		MaterialPtr mat = obj->getMaterialManager()->getModifiedMaterial()->getOwner();
@@ -2399,7 +2398,7 @@ void NavigatorGUI::modelerPropShininess(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("shininess.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setShininess( atoi(value.c_str())/1.28 );
 }
@@ -2410,9 +2409,10 @@ void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
+        obj->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
 		obj->setAlpha( atoi(value.c_str())/100. );
 		obj->getMaterialManager()->getModifiedMaterial()->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
@@ -2424,7 +2424,7 @@ void NavigatorGUI::modelerPropScrollU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scrollU.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		Ogre::Vector2 UV = obj->getMaterialManager()->getTextureScroll();
@@ -2438,7 +2438,7 @@ void NavigatorGUI::modelerPropScrollV(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scrollV.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		Ogre::Vector2 UV = obj->getMaterialManager()->getTextureScroll();
@@ -2452,7 +2452,7 @@ void NavigatorGUI::modelerPropScaleU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scaleU.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		Ogre::Vector2 UV = obj->getMaterialManager()->getTextureScale();
@@ -2466,7 +2466,7 @@ void NavigatorGUI::modelerPropScaleV(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scaleV.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
 		Ogre::Vector2 UV = obj->getMaterialManager()->getTextureScale();
@@ -2480,7 +2480,7 @@ void NavigatorGUI::modelerPropRotateU(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("rotateU.getValue()");
 
-	Object3D *obj = mNavigator->mModeler->getSelected();
+	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 		obj->setTextureRotate( Ogre::Radian(atoi(value.c_str())/100.*Math::TWO_PI) );
 }
@@ -2491,9 +2491,10 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 	char * PathTexture = FileBrowser::displayWindowForLoading( 
 			"Image Files (*.png;*.bmp;*.jpg)\0*.png;*.bmp;*.jpg\0", string("") ); 
 	
-	if (PathTexture != NULL && mNavigator->mModeler != 0)
+    Modeler *modeler = mNavigator->getModeler();
+	if (PathTexture != NULL && modeler != 0)
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 		String TextureFilePath (PathTexture);
 
 		//Create the new OGRE texture with the file selected :
@@ -2516,9 +2517,10 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTextureRemove(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 
 		//get selected texture :
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
@@ -2534,9 +2536,10 @@ void NavigatorGUI::modelerPropTextureRemove(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTextureApply(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 
 		//get selected texture :
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
@@ -2550,9 +2553,10 @@ void NavigatorGUI::modelerPropTextureApply(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string urlStr = navi->evaluateJS("$('MaterialWWWUrl').value");
@@ -2563,24 +2567,35 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
 
-        Entity* objEntity = obj->getEntity();
-        String mtlName = "WWW_" + objEntity->getName();
-        NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(mtlName, urlStr, width, height);
-        naviWWWTexture->show(true);
-        naviWWWTexture->setMaxUPS(fps);
-        naviWWWTexture->setForceMaxUpdate(fps != 0);
-        naviWWWTexture->setOpacity(1.0f);
-        objEntity->setMaterialName(naviWWWTexture->getMaterialName());
-        objEntity->addQueryFlags(Navigator::QFNaviPanel);
+        TextureExtParamsMap textureExtParamsMap;
+        textureExtParamsMap["plugin"] = "www";
+        textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFNaviPanel);
+        textureExtParamsMap["url"] = urlStr;
+        textureExtParamsMap["width"] = StringConverter::toString(width);
+        textureExtParamsMap["height"] = StringConverter::toString(height);
+        textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+
+		//Test if this texture is already in the list :
+		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
+		{
+			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+			return;
+		}
+
+		//Add texture for the object (with obj->mModifiedMaterialManager)
+		obj->addTexture(PtrTexture, textureExtParamsMap);
+		obj->setCurrentTexture(PtrTexture);
 	}
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string mrlStr = navi->evaluateJS("$('MaterialVLCMrl').value");
@@ -2592,54 +2607,72 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
 
-        Entity* objEntity = obj->getEntity();
-        String mtlName = "VLC_" + objEntity->getName();
-        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vlc");
-        ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
-        vlcExtTextSrc->setParameter("mrl", mrlStr);
-        vlcExtTextSrc->setParameter("width", StringConverter::toString(width));
-        vlcExtTextSrc->setParameter("height", StringConverter::toString(height));
-        vlcExtTextSrc->setParameter("frames_per_second", StringConverter::toString(fps));
-        vlcExtTextSrc->setParameter("vlc_params", paramsStr);
-        MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        vlcExtTextSrc->createDefinedTexture(mtlName);
-        objEntity->setMaterialName(mtlName);
-        objEntity->addQueryFlags(Navigator::QFVLCPanel);
+        TextureExtParamsMap textureExtParamsMap;
+        textureExtParamsMap["plugin"] = "vlc";
+        textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVLCPanel);
+        textureExtParamsMap["mrl"] = mrlStr;
+        textureExtParamsMap["width"] = StringConverter::toString(width);
+        textureExtParamsMap["height"] = StringConverter::toString(height);
+        textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
+        textureExtParamsMap["vlc_params"] = paramsStr;
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+
+		//Test if this texture is already in the list :
+		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
+		{
+			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+			return;
+		}
+
+		//Add texture for the object (with obj->mModifiedMaterialManager)
+		obj->addTexture(PtrTexture, textureExtParamsMap);
+		obj->setCurrentTexture(PtrTexture);
     }
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string hostStr = navi->evaluateJS("$('MaterialVNCHost').value");
 	    std::string portStr = navi->evaluateJS("$('MaterialVNCPort').value");
 	    std::string pwdStr = navi->evaluateJS("$('MaterialVNCPwd').value");
         int port = atoi(portStr.c_str());
+        std::string address = "vnc://" + hostStr + ":" + StringConverter::toString(port);
+        std::string password = "vncpwd:" + pwdStr;
 
-        Entity* objEntity = obj->getEntity();
-        String mtlName = "VNC_" + objEntity->getName();
-        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-        ExternalTextureSource* vncExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc");
-        vncExtTextSrc->setParameter("address", "vnc://" + hostStr + ":" + StringConverter::toString(port));
-        vncExtTextSrc->setParameter("password", "vncpwd:" + pwdStr);
-        MaterialManager::getSingleton().create(mtlName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        vncExtTextSrc->createDefinedTexture(mtlName);
-        objEntity->setMaterialName(mtlName);
-        objEntity->addQueryFlags(Navigator::QFVNCPanel);
+        TextureExtParamsMap textureExtParamsMap;
+        textureExtParamsMap["plugin"] = "vnc";
+        textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVNCPanel);
+        textureExtParamsMap["address"] = address;
+        textureExtParamsMap["password"] = password;
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+
+		//Test if this texture is already in the list :
+		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
+		{
+			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+			return;
+		}
+
+		//Add texture for the object (with obj->mModifiedMaterialManager)
+		obj->addTexture(PtrTexture, textureExtParamsMap);
+		obj->setCurrentTexture(PtrTexture);
     }
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTexturePrev(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 		obj->getMaterialManager()->setPreviousTexture();
 	}
 }
@@ -2647,9 +2680,10 @@ void NavigatorGUI::modelerPropTexturePrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTextureNext(const NaviData& naviData)
 {
-	if( mNavigator->mModeler != 0 )
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
 	{
-		Object3D * obj = mNavigator->mModeler->getSelected();
+		Object3D * obj = modeler->getSelected();
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
 			obj->getMaterialManager()->setNextTexture();
 	}
@@ -2661,8 +2695,9 @@ void NavigatorGUI::modelerPropPositionX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionX').value * 10000");
 
-	Vector3 vec = mNavigator->mModeler->getSelection()->getCenterPosition();
-	mNavigator->mModeler->getSelection()->moveTo(atoi(value.c_str())/10000., vec.y, vec.z);
+    Modeler *modeler = mNavigator->getModeler();
+	Vector3 vec = modeler->getSelection()->getCenterPosition();
+	modeler->getSelection()->moveTo(atoi(value.c_str())/10000., vec.y, vec.z);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2671,8 +2706,9 @@ void NavigatorGUI::modelerPropPositionY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionY').value * 10000");
 
-	Vector3 vec = mNavigator->mModeler->getSelection()->getCenterPosition();
-	mNavigator->mModeler->getSelection()->moveTo(vec.x, atoi(value.c_str())/10000., vec.z);
+    Modeler *modeler = mNavigator->getModeler();
+	Vector3 vec = modeler->getSelection()->getCenterPosition();
+	modeler->getSelection()->moveTo(vec.x, atoi(value.c_str())/10000., vec.z);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2681,8 +2717,9 @@ void NavigatorGUI::modelerPropPositionZ(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionZ').value * 10000");
 
-	Vector3 vec = mNavigator->mModeler->getSelection()->getCenterPosition();
-	mNavigator->mModeler->getSelection()->moveTo(vec.x, vec.y, atoi(value.c_str())/10000.);
+    Modeler *modeler = mNavigator->getModeler();
+	Vector3 vec = modeler->getSelection()->getCenterPosition();
+	modeler->getSelection()->moveTo(vec.x, vec.y, atoi(value.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2691,7 +2728,8 @@ void NavigatorGUI::modelerPropOrientationX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationX').value * 10000");
 
-	mNavigator->mModeler->getSelection()->rotateTo(atoi(value.c_str())/10000., 0, 0);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->rotateTo(atoi(value.c_str())/10000., 0, 0);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2700,7 +2738,8 @@ void NavigatorGUI::modelerPropOrientationY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationY').value * 10000");
 
-	mNavigator->mModeler->getSelection()->rotateTo(0, atoi(value.c_str())/10000., 0);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->rotateTo(0, atoi(value.c_str())/10000., 0);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2709,7 +2748,8 @@ void NavigatorGUI::modelerPropOrientationZ(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationZ').value * 10000");
 
-	mNavigator->mModeler->getSelection()->rotateTo(0, 0, atoi(value.c_str())/10000.);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->rotateTo(0, 0, atoi(value.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2718,7 +2758,8 @@ void NavigatorGUI::modelerPropScaleX(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
 
-	mNavigator->mModeler->getSelection()->scaleTo(atoi(value.c_str())/10000., 1, 1);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->scaleTo(atoi(value.c_str())/10000., 1, 1);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2727,7 +2768,8 @@ void NavigatorGUI::modelerPropScaleY(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
 
-	mNavigator->mModeler->getSelection()->scaleTo(1, atoi(value.c_str())/10000., 1);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->scaleTo(1, atoi(value.c_str())/10000., 1);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2736,7 +2778,8 @@ void NavigatorGUI::modelerPropScaleZ(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
 
-	mNavigator->mModeler->getSelection()->scaleTo(1, 1, atoi(value.c_str())/10000.);
+    Modeler *modeler = mNavigator->getModeler();
+	modeler->getSelection()->scaleTo(1, 1, atoi(value.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2787,7 +2830,7 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 	navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
 
 	// Select the avatar from the user.xml // avatarName
-	int nbItem = list->size();
+	size_t nbItem = list->size();
 	if( nbItem < 7 )
 		navi->evaluateJS("$('avatarSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
 	list->clear();
@@ -3004,7 +3047,7 @@ void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 	std::string str = bone->getName();
 	std::string temp;
 	char c;
-	for(int i=0; i<str.length(); i++)
+	for(int i=0; i<(int)str.length(); i++)
 	{
 		c = str[i];
 		if (! ((c < 48 && c != 32) || c == 255 ||
@@ -3039,7 +3082,7 @@ void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 	std::string str = bone->getName();
 	std::string temp;
 	char c;
-	for(int i=0; i<str.length(); i++)
+	for(int i=0; i<(int)str.length(); i++)
 	{
 		c = str[i];
 		if (! ((c < 48 && c != 32) || c == 255 ||
@@ -3737,7 +3780,8 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
 	{
-		material->setAlpha( atoi(value.c_str())/100. );
+        material->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+        material->setAlpha( atoi(value.c_str())/100. );
 		material->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
 }

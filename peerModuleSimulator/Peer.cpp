@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Peer.h"
 #include "OgreHelpers.h"
 #include "CTSystem.h"
+#include "AvatarNode.h"
 
 namespace Solipsis {
 
@@ -68,7 +69,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mInitialized(false),
     mHost("localhost"),
     mPort(8550),
-    mSceneDemoLoaded("Deltastation1"),
+    mSceneDemoLoaded(""),
     mVerbosity(0),
     mP2NServer(0)
 {
@@ -252,7 +253,7 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
     std::stringstream s;
     s << "<solipsis><entities>";
     for (Entity::EntityMap::iterator entity = ownedEntities.begin(); entity != ownedEntities.end(); ++entity)
-        s << "<entity uid=" << convertEntityUIDToHexString(entity->first) << " />";
+        s << "<entity uid=" << XmlHelpers::convertEntityUIDToHexString(entity->first) << " />";
     s << "</entities></solipsis>";
     xmlRespStr = s.str();
 

@@ -113,6 +113,9 @@ namespace NaviLibrary
 
 		std::string localNaviDirectory;
 		std::map<std::string,Navi*> activeNavis;
+// BEGIN GREG
+		std::map<std::string,std::string> mtlNameNaviNameMap;
+// END GREG
 		Navi* focusedNavi;
 		int hiddenWindowID;
 		std::map<std::string,Navi*>::iterator iter;
@@ -195,6 +198,7 @@ namespace NaviLibrary
 		Navi* createNavi(const std::string &naviName, const std::string &homepage, const NaviPosition &naviPosition,
 			unsigned short width, unsigned short height, unsigned short zOrder = 0);
 
+// BEGIN GREG
 		/**
 		* Creates a NaviMaterial. NaviMaterials are just like Navis except that they lack a movable overlay element. 
 		* Instead, you handle the material and apply it to anything you like. Mouse input for NaviMaterials should be 
@@ -213,10 +217,15 @@ namespace NaviLibrary
 		*							applied to a 3D object, FO_ANISOTROPIC is the best (and default) choice, otherwise set this to
 		*							FO_NONE for use in other overlays/GUI elements.
 		*
+		* @param	mtlName	The name of the Ogre material (if not empty then this material will be used instead of creating 1 new.
+		*
 		* @throws	Ogre::Exception::ERR_RT_ASSERTION_FAILED	Throws this if a Navi by the same name already exists.
 		*/
+//		Navi* createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
+//			Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC);
 		Navi* createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
-			Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC);
+			Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC, const std::string &mtlName = "");
+// END GREG
 
 		/**
 		* Retrieve a pointer to a Navi by name.
@@ -226,6 +235,17 @@ namespace NaviLibrary
 		* @return	If the Navi is found, returns a pointer to the Navi, otherwise returns 0.
 		*/
 		Navi* getNavi(const std::string &naviName);
+
+// BEGIN GREG
+		/**
+		* Retrieve a pointer to a Navi by its material name.
+		*
+		* @param	mtlName	The material name used by the Navi to retrieve.
+		*
+		* @return	If the Navi is found, returns a pointer to the Navi, otherwise returns 0.
+		*/
+        Navi* getNaviFromMtlName(const std::string &mtlName);
+// END GREG
 
 		/**
 		* Destroys a Navi.

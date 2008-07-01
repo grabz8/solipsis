@@ -92,6 +92,7 @@ protected:
 
     NavigatorGUI* mNavigatorGUI;
 
+    Modeler* mModeler;
     AvatarEditor* mAvatarEditor;
 
 // COLOR PICKING
@@ -142,6 +143,7 @@ public:
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
+    Modeler* getModeler();
     AvatarEditor* getAvatarEditor();
 
     lua_State* getLuaState();
@@ -252,14 +254,10 @@ public:
     bool createRing();
     /** Create a mesh. */
     bool createMesh();
-    /** Load from a XML file.*/
-    bool mdlrXMLLoad();
     /** Import a mesh file.*/
     bool mdlrXMLImport();
     /** Save to a XML file. */
-    bool mdlrXMLSave(bool all = false, const char* pathToSave = NULL);
-    /// The modeler object
-    Modeler* mModeler;
+    bool mdlrXMLSave(bool all = false);
 
     /** Start editing avatar mode. */
     bool startAvatarEdit();

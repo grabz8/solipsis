@@ -40,21 +40,52 @@ namespace Solipsis {
 
 class ModifiedMaterial ;
 
-//Textur iterator :
+//Texture iterator :
 typedef std::map<String,TexturePtr> TextureMap;
 typedef MapIterator<TextureMap> TextureMapIterator;
 
 typedef std::list<TexturePtr> TextureVector;
 typedef VectorIterator<TextureVector> TextureVectorIterator;
 
+/// brief The texture extended parameters map
+typedef std::map<String,String> TextureExtParamsMap;
+
+typedef std::map<String,TextureExtParamsMap> TextureNameExtParamsMap;
 
 class ModifiedMaterialManager
 {
+public:
+    class MMMTextureManager
+    {
+    public:
+	    /// brief callback to load a texture
+	    /// param object3D The object3D loading the texture
+	    /// param modifiedMaterialManager The material manager
+	    /// param entity The entity
+	    /// param name The name of the texture
+	    /// param textureExtParamsMap The extended parameters of the texture
+	    /// return the texture
+        virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, Entity* entity, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+	    /// brief callback to release a texture
+	    /// param modifiedMaterialManager The material manager
+	    /// param name The name of the texture
+	    /// param textureExtParamsMap The extended parameters of the texture
+        virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+    };
+
 public:
 	///brief Constructor
 	ModifiedMaterialManager(void);
 	///brief Destructor
 	~ModifiedMaterialManager(void);
+
+	///brief Static method to set the texture manager.
+	///param textureManager Texture manager.
+    static void setMMMTextureManager(MMMTextureManager* textureManager);
+
+	///brief Static method to get the texture manager.
+	///return The texture manager.
+    static MMMTextureManager* getMMMTextureManager();
 
 	///brief Method which initialises the class according to a material.
 	///param material Material of the object which is going to be modified.
@@ -128,7 +159,8 @@ public:
 
 	///brief Method which add a texture to the object, this texture will be choosable by the user who will be able to apply it on the object.
 	///param texture Ogre texture to add
-	void addTexture(TexturePtr texture);
+	///param textureExtParamsMap Texture extended parameters of added texture.
+	void addTexture(TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap = TextureExtParamsMap());
 
 	///brief Method which delete the last texture to the object textures list
 	void deleteLastTexture();
@@ -149,6 +181,11 @@ public:
 	///brief Method which reset the modifications of the object, i. e. which reset the colour and set the default texture.
 	void resetModifications();
 
+
+    ///brief Method which return the texture extended parameters.
+	///param pTexture texture
+	///return the texture extended parameters.
+	TextureExtParamsMap* getTextureExtParamsMap(TexturePtr pTexture);
 
 	///biref Sets the translation offset of the texture, ie scrolls the texture
 	///param pU  The amount the texture should be moved horizontally (u direction). 
@@ -180,9 +217,18 @@ public:
 	///return the value of alpha
 	float getAlpha();
 
+	///brief Sets the scene blending type to be applied to this object and all it children. 
+	///param pSceneBlendType scene blending type
+    void setSceneBlendType(Ogre::SceneBlendType pSceneBlendType);
+	///brief Get the scene blending type of the object
+	///return the scene blending type
+	Ogre::SceneBlendType getSceneBlendType();
+
 private:
 	ModifiedMaterial* mModifiedMaterial;				///brief ModifiedMaterial associated to the object's material.
 	TextureVector mTextures;							///brief Collection of possibles textures of the object.
+	TextureNameExtParamsMap mTextureNameExtParamsMap;	///brief Map of extended parameters of textures.
+    static MMMTextureManager* ms_MMMTextureManager;		///brief Texture manager singleton.
 	TextureVector::iterator mDefaultTextureIterator;	///brief Iterator pointing on the default texture of the object (the first added in fact).
 	TextureVector::iterator mCurrentTextureIterator;	///brief Iterator pointing on the texture which is currently applied on the object.
 

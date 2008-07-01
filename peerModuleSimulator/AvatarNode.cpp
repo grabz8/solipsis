@@ -22,17 +22,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "AvatarNode.h"
-#include "Site.h"
 #include "Peer.h"
 #include "OgreHelpers.h"
+#include "ObjectNode.h"
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+AvatarNode::AvatarNode(const NodeId& nodeId, RefCntPoolPtr<XmlEntity>& xmlEntity) :
+#else
 AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
+#endif
     Node(nodeId, "avatar"),
-    mMutex(PTHREAD_MUTEX_INITIALIZER),
-    mAvatar(xmlEntity),
+    mAvatar(xmlEntity, nodeId),
     mPhysicsScene(0)
 {
     OGRE_LOG("AvatarNode::AvatarNode() uid:" + mAvatar.getXmlEntity()->getUidString());
@@ -53,10 +56,6 @@ AvatarNode::AvatarNode(const NodeId& nodeId, XmlEntity* xmlEntity) :
         "AvatarNode::AvatarNode");
     }
 #endif
-
-    addAwareEntity(&mAvatar);
-
-    Peer::getSingleton().addTimeListener(this);
 }
 
 //-------------------------------------------------------------------------------------
@@ -100,7 +99,7 @@ IPhysicsScene* AvatarNode::getPhysicsScene()
 #endif
 
 //-------------------------------------------------------------------------------------
-bool AvatarNode::addAwareEntity(Entity* entity)
+bool AvatarNode::addAwareEntity(Entity* entity, bool sendNewEvt)
 {
     OGRE_LOG("AvatarNode::addAwareEntity() uid:" + mAvatar.getXmlEntity()->getUidString() + " adding entity uid:" + entity->getXmlEntity()->getUidString());
 
@@ -130,20 +129,23 @@ bool AvatarNode::addAwareEntity(Entity* entity)
 
     pthread_mutex_unlock(&mMutex);
 
+    if (sendNewEvt)
+    {
 #ifdef POOL
-    RefCntPoolPtr<XmlEvt> evt;
-    evt->setType(ETNewEntity);
-    evt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
-    pthread_mutex_lock(&mEvtsMutex);
-    mEvtsToHandleList.push_back(evt);
-    pthread_mutex_unlock(&mEvtsMutex);
+        RefCntPoolPtr<XmlEvt> evt;
+        evt->setType(ETNewEntity);
+        evt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
+        pthread_mutex_lock(&mEvtsMutex);
+        mEvtsToHandleList.push_back(evt);
+        pthread_mutex_unlock(&mEvtsMutex);
 #else
-    XmlEvt* evt = new XmlEvt(ETNewEntity);
-    evt->setDatas(entity->getXmlEntity());
-    pthread_mutex_lock(&mEvtsMutex);
-    mEvtsToHandleList.push_back(evt);
-    pthread_mutex_unlock(&mEvtsMutex);
+        XmlEvt* evt = new XmlEvt(ETNewEntity);
+        evt->setDatas(entity->getXmlEntity());
+        pthread_mutex_lock(&mEvtsMutex);
+        mEvtsToHandleList.push_back(evt);
+        pthread_mutex_unlock(&mEvtsMutex);
 #endif
+    }
 
     return true;
 }
@@ -246,6 +248,30 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
         }
         pthread_mutex_unlock(&mMutex);
     }
+    else if (xmlEvt.getType() == ETNewEntity)
+    {
+#ifdef POOL
+        RefCntPoolPtr<XmlEntity> xmlEntity = (RefCntPoolPtr<XmlEntity>)xmlEvt.getDatas();
+        if (xmlEntity.isNull())
+#else
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt.getDatas();
+        if (xmlEntity == 0)
+#endif
+        {
+            xmlRespStr = "No entity found in event !";
+            return false;
+        }
+        if (xmlEntity->getType() != ETObject)
+        {
+            xmlRespStr = "Only object entity can be added !";
+            return false;
+        }
+        // Create object node
+        xmlEntity->setOwner(mNodeId);
+        ObjectNode* objectNode = Peer::getSingleton().getNodeManager()->createObjectNode(xmlEntity);
+        addAwareEntity(&objectNode->getEntity(), false);
+        objectNode->incDecAwareCounter(+1);
+    }
 
     return true;
 }
@@ -285,6 +311,38 @@ bool AvatarNode::freeze(bool frozen)
     pthread_mutex_unlock(&mMutex);
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+TiXmlElement* AvatarNode::getSavedElt()
+{
+    OGRE_LOG("AvatarNode::getSavedElt() saving entity and entities/nodes owned by avatar node with nodeId:" + mNodeId);
+
+    // Get root node
+    TiXmlElement* nodeElt = Node::getSavedElt();
+    // Add avatar entity
+    mAvatar.getXmlEntity()->toXmlElt(*nodeElt);
+
+    // Add owned entities nodes ids
+    TiXmlElement* ownedEntitiesElt = new TiXmlElement("ownedEntities");
+    nodeElt->LinkEndChild(ownedEntitiesElt); 
+    pthread_mutex_lock(&mMutex);
+    for(Entity::EntityMap::iterator entity=mOwnedEntities.begin();entity!=mOwnedEntities.end();++entity)
+    {
+        NodeId ownedEntityNodeId = entity->second->getManagerNodeId();
+        TiXmlElement* ownedEntityNodeIdElt = new TiXmlElement("nodeId");
+        ownedEntitiesElt->LinkEndChild(ownedEntityNodeIdElt); 
+        TiXmlText* ownedEntityNodeIdText = new TiXmlText(ownedEntityNodeId.c_str());
+        ownedEntityNodeIdElt->LinkEndChild(ownedEntityNodeIdText);
+        // me ?
+        if (ownedEntityNodeId.compare(mNodeId) == 0) continue;
+        // save this node with owned entity
+        if (!Peer::getSingleton().getNodeManager()->saveNodeIdFile(ownedEntityNodeId))
+            return false;
+    }
+    pthread_mutex_unlock(&mMutex);
+
+    return nodeElt;
 }
 
 //-------------------------------------------------------------------------------------

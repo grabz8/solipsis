@@ -64,6 +64,7 @@ void VLCPlugin::initialise()
 //-------------------------------------------------------------------------------------
 void VLCPlugin::shutdown()
 {
+    mVLCTextureSource->clearInstances();
     delete mVLCTextureSource;
     mVLCTextureSource = 0;
 }
@@ -91,14 +92,16 @@ int VLCPlugin::newInstance(const String& mrl, int width, int height, int fps, co
 }
 
 //-------------------------------------------------------------------------------------
-void VLCPlugin::destroyInstance(int id)
+void VLCPlugin::destroyInstance(int id, bool force)
 {
-    LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance");
+    LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance" + force ? " forced" : "");
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
     if (i != mVLCInstanceMap.end())
-        i->second->destroy();
+        i->second->destroy(force);
+    if (force)
+        mVLCInstanceMap.erase(i);
     pthread_mutex_unlock(&mVLCInstanceMapMutex);
 }
 

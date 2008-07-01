@@ -80,6 +80,30 @@ mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.5,1))
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterial::refreshTechPassTextUnit()
+{
+	if (mMaterial->getNumTechniques() > 0)
+	{
+		mTechnique = mMaterial->getTechnique(0);
+	}else{
+		mTechnique = mMaterial->createTechnique();
+	}
+
+	if (mTechnique->getNumPasses() > 0)
+	{
+		mPass = mTechnique->getPass(0);
+	}else{
+		mPass = mTechnique->createPass();
+	}
+
+	if (mPass->getNumTextureUnitStates() > 0)
+	{
+		mTextureUnitState = mPass->getTextureUnitState(0);
+	}else{
+		mTextureUnitState = mPass->createTextureUnitState();
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 MaterialPtr ModifiedMaterial::getOwner()
 {
 	return mMaterial;
@@ -97,7 +121,7 @@ const ColourValue& ModifiedMaterial::getSpecular()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const float ModifiedMaterial::getShininess()
 {
-	return mPass->getShininess() ;
+	return mPass->getShininess();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const ColourValue& ModifiedMaterial::getAmbient()
@@ -307,8 +331,6 @@ Ogre::Radian ModifiedMaterial::getTextureRotate()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterial::setAlpha(float pValue)
 {
-    mPass->setSceneBlending(SBT_TRANSPARENT_ALPHA );
-
 	ColourValue colour = mPass->getDiffuse();
 	colour.a = pValue;
 	mPass->setDiffuse(colour);
@@ -318,6 +340,20 @@ void ModifiedMaterial::setAlpha(float pValue)
 float ModifiedMaterial::getAlpha()
 {
 	return mPass->getDiffuse().a ;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterial::setSceneBlendType(SceneBlendType pSceneBlendType)
+{
+    mPass->setSceneBlending(pSceneBlendType);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+SceneBlendType ModifiedMaterial::getSceneBlendType()
+{
+    if ((mPass->getSourceBlendFactor() == SBF_SOURCE_ALPHA) && (mPass->getDestBlendFactor() == SBF_ONE_MINUS_SOURCE_ALPHA))
+        return SBT_TRANSPARENT_ALPHA;
+    return SBT_REPLACE;
 }
 
 } // namespace

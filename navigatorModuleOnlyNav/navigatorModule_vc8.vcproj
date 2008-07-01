@@ -425,6 +425,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Object.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\navigatorModule\OgreApplication.cpp"
 				>
 			</File>
@@ -564,6 +568,10 @@
 			</File>
 			<File
 				RelativePath=".\NodeEventListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Object.h"
 				>
 			</File>
 			<File

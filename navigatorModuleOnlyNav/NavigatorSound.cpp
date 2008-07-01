@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorSound.h"
 #include "VoiceEngineManager.h"
 #include "OgreHelpers.h"
+#include <CTIO.h>
 
 namespace Solipsis {
 
@@ -62,6 +63,14 @@ bool NavigatorSound::initialize()
         OGRE_LOG("NavigatorSound::initialize() FMOD error: You are using an old version of FMOD " + Ogre::String(versionHexStr) + ". This program requires " + Ogre::String(FMOD_VERSIONHexStr));
         return false;
     }
+    FMOD_ADVANCEDSETTINGS settings;
+    memset(&settings, 0, sizeof(FMOD_ADVANCEDSETTINGS));
+    settings.cbsize = sizeof(FMOD_ADVANCEDSETTINGS);
+    std::string cwd = CommonTools::IO::getCWD();
+    settings.debugLogFilename = (char*)cwd.c_str();
+    result = mSoundSystem->setAdvancedSettings(&settings);
+    if (!fmodErrorCheck(result))
+        return false;
     result = mSoundSystem->init(1, FMOD_INIT_NORMAL, 0);
     if (!fmodErrorCheck(result))
         return false;

@@ -15,7 +15,7 @@ TODO LIST for Solipsis tools :
 	- replace the 'TUBE' by a cylinder and apply a 'HOLE+HOLLOW_SHAPE_CIRCLE' on it !!!
 	- UNDO & BOUNDINGBOX : the bounding box is not well reinitialized sometimes
 	- Object3D : replace some function from public to private ...
-	- TRANSFORMATIONS & Childs : apply the same update for the childs after a mSelection->move/rotate/scale
+	- TRANSFORMATIONS & Children : apply the same update for the childs after a mSelection->move/rotate/scale
 			Object3D *obj = mSelection->getFirstSelectedObject();	
 			mii->upDateCommand(Object3D::SCALE, obj);
 			obj->apply(Object3D::SCALE, mTransfo.x + 1, mTransfo.y + 1, mTransfo.z + 1 );

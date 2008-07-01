@@ -39,18 +39,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
-class XMLDATAS_EXPORT XmlHelpers
-{
-public:
-    static bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr);
-    static std::string convertUIntToHexString(unsigned int value);
-    static unsigned int convertHexStringToUInt(const char* str);
-    static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
-    static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
-    static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
-    static bool fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q);
-};
-
 typedef std::string NodeId;
 
 enum EventType {
@@ -81,20 +69,42 @@ enum ShapeType {
 };
 
 typedef unsigned int EntityUID;
+typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
+typedef unsigned int FileVersion;
 
-XMLDATAS_EXPORT const std::string& convertEventTypeToRepr(const EventType& evtType);
-inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
-XMLDATAS_EXPORT const std::string& convertEntityTypeToRepr(const EntityType& entityType);
-inline void convertDecStringToEntityType(const char* str, EntityType& entityType) { entityType = (EntityType)atoi(str); }
-XMLDATAS_EXPORT std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags);
-inline std::string convertEntityFlagsToHexString(const EntityFlags& entityFlags) { return XmlHelpers::convertUIntToHexString(entityFlags); }
-inline EntityFlags convertHexStringToEntityFlags(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
-XMLDATAS_EXPORT const std::string& convertShapeTypeToRepr(const ShapeType& shapeType);
-inline void convertDecStringToShapeType(const char* str, ShapeType& shapeType) { shapeType = (ShapeType)atoi(str); }
-inline std::string convertEntityUIDToHexString(const EntityUID& entityUID) { return XmlHelpers::convertUIntToHexString(entityUID); }
-inline EntityUID convertHexStringToEntityUID(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
-inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
+class XMLDATAS_EXPORT XmlHelpers
+{
+public:
+    static bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr);
+    static std::string convertUIntToHexString(unsigned int value);
+    static unsigned int convertHexStringToUInt(const char* str);
+    static std::string convertBoolToString(bool value);
+    static bool convertStringToBool(const char* str);
+    static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
+    static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
+    static TiXmlElement* toXmlEltVector3(const std::string& eltName, const Ogre::Vector3& v);
+    static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
+    static TiXmlElement* toXmlEltQuaternion(const std::string& eltName, const Ogre::Quaternion& q);
+    static bool fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q);
+
+    static const std::string& convertEventTypeToRepr(const EventType& evtType);
+    static inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
+    static const std::string& convertEntityTypeToRepr(const EntityType& entityType);
+    static inline void convertDecStringToEntityType(const char* str, EntityType& entityType) { entityType = (EntityType)atoi(str); }
+    static std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags);
+    static inline std::string convertEntityFlagsToHexString(const EntityFlags& entityFlags) { return XmlHelpers::convertUIntToHexString(entityFlags); }
+    static inline EntityFlags convertHexStringToEntityFlags(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+    static const std::string& convertShapeTypeToRepr(const ShapeType& shapeType);
+    static inline void convertDecStringToShapeType(const char* str, ShapeType& shapeType) { shapeType = (ShapeType)atoi(str); }
+    static inline std::string convertEntityUIDToHexString(const EntityUID& entityUID) { return XmlHelpers::convertUIntToHexString(entityUID); }
+    static inline EntityUID convertHexStringToEntityUID(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+    static inline std::string convertEntityVersionToHexString(const EntityVersion& entityVersion) { return XmlHelpers::convertUIntToHexString(entityVersion); }
+    static inline EntityVersion convertHexStringToEntityVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+    static inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
+    static inline std::string convertFileVersionToHexString(const FileVersion& fileVersion) { return XmlHelpers::convertUIntToHexString(fileVersion); }
+    static inline EntityUID convertHexStringToFileVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+};
 
 #ifdef POOL
 template<class T>
@@ -266,6 +276,7 @@ class XMLDATAS_EXPORT XmlData
 {
 public:
     virtual std::string toXmlString() const = 0;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const = 0;
     virtual bool fromXmlElt(TiXmlElement* xmlElt) = 0;
 
     /** Function for writing to a stream.
@@ -306,6 +317,7 @@ public:
 #endif
 
     virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
     void setUsername(const std::string& username) { mUsername = username; }
@@ -313,6 +325,108 @@ public:
 
     void setPwd(const std::string& pwd) { mPwd = pwd; }
     const std::string& getPwd() { return mPwd; }
+};
+
+class XMLDATAS_EXPORT XmlLodContent : public XmlData
+{
+#ifdef POOL
+protected:
+    static Pool mPool;
+#endif
+
+public:
+    typedef struct 
+    {
+        std::string filename;
+        FileVersion version;
+    } LodContentFileStruct;
+    typedef std::vector<LodContentFileStruct> LodContentFileList;
+
+protected:
+    Lod mLevel;
+#ifdef POOL
+    RefCntPoolPtr<XmlData> mDatas;
+#else
+    XmlData* mDatas;
+#endif
+    LodContentFileList mLodContentFileList;
+
+public:
+    XmlLodContent() :
+#ifdef POOL
+        mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+#else
+        mDatas(0)
+#endif
+    {}
+
+#ifdef POOL
+    static Pool& getStaticPool();
+    virtual Pool& getPool() const;
+    virtual void clear() {
+        mLevel = 0;
+        mDatas = RefCntPoolPtr<XmlData>::nullPtr;
+        mLodContentFileList.clear();
+    }
+#endif
+
+    virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+    virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+    void setLevel(Lod level) { mLevel = level; }
+    Lod getLevel() { return mLevel; }
+
+#ifdef POOL
+    void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
+    RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
+#else
+    void setDatas(XmlData* datas) { mDatas = datas; }
+    XmlData* getDatas() { return mDatas; }
+#endif
+
+    LodContentFileList& getLodContentFileList() { return mLodContentFileList; }
+};
+
+class XMLDATAS_EXPORT XmlSceneLodContent : public XmlData
+{
+#ifdef POOL
+protected:
+    static Pool mPool;
+#endif
+
+protected:
+    std::string mMainFilename;
+    std::string mCollision;
+
+public:
+    XmlSceneLodContent() :
+      mMainFilename(""),
+      mCollision("")
+    {}
+    XmlSceneLodContent(const std::string& mainFilename, const std::string& collision) :
+      mMainFilename(mainFilename),
+      mCollision(collision)
+    {}
+
+#ifdef POOL
+    static Pool& getStaticPool();
+    virtual Pool& getPool() const;
+    virtual void clear() {
+        mMainFilename.clear();
+        mCollision.clear();
+    }
+#endif
+
+    virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+    virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+    void setMainFilename(const std::string& mainFilename) { mMainFilename = mainFilename; }
+    const std::string& getMainFilename() { return mMainFilename; }
+
+    void setCollision(const std::string& collision) { mCollision = collision; }
+    const std::string& getCollision() { return mCollision; }
 };
 
 class XMLDATAS_EXPORT XmlContent : public XmlData
@@ -323,28 +437,88 @@ protected:
 #endif
 
 public:
-    typedef std::vector<std::string> ContentFileList;
-    typedef std::map<Lod, ContentFileList> ContentLodMap;
+    typedef std::map<Lod, RefCntPoolPtr<XmlLodContent>> ContentLodMap;
 
 protected:
+#ifdef POOL
+    RefCntPoolPtr<XmlData> mDatas;
+#else
+    XmlData* mDatas;
+#endif
     ContentLodMap mContentLodMap;
 
 public:
-    XmlContent()
+    XmlContent() :
+#ifdef POOL
+        mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+#else
+        mDatas(0)
+#endif
     {}
 
 #ifdef POOL
     static Pool& getStaticPool();
     virtual Pool& getPool() const;
     virtual void clear() {
+        mDatas = RefCntPoolPtr<XmlData>::nullPtr;
         mContentLodMap.clear();
     }
 #endif
 
     virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
+#ifdef POOL
+    void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
+    RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
+#else
+    void setDatas(XmlData* datas) { mDatas = datas; }
+    XmlData* getDatas() { return mDatas; }
+#endif
+
     ContentLodMap& getContentLodMap() { return mContentLodMap; }
+};
+
+class XMLDATAS_EXPORT XmlSceneContent : public XmlData
+{
+#ifdef POOL
+protected:
+    static Pool mPool;
+#endif
+
+public:
+    typedef struct 
+    {
+        bool mGravity;
+        Ogre::Vector3 mPosition;
+    } EntryGateStruct;
+
+protected:
+    EntryGateStruct mEntryGate;
+
+public:
+    XmlSceneContent()
+    {
+        mEntryGate.mGravity = false;
+        mEntryGate.mPosition = Ogre::Vector3::ZERO;
+    }
+
+#ifdef POOL
+    static Pool& getStaticPool();
+    virtual Pool& getPool() const;
+    virtual void clear() {
+        mEntryGate.mGravity = false;
+        mEntryGate.mPosition = Ogre::Vector3::ZERO;
+    }
+#endif
+
+    virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+    virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+    void setEntryGate(const EntryGateStruct& entryGate) { mEntryGate = entryGate; }
+    const EntryGateStruct& getEntryGate() { return mEntryGate; }
 };
 
 class XMLDATAS_EXPORT XmlEntity : public XmlData
@@ -361,7 +535,8 @@ public:
     static const DefinedAttributes DAOwner = (DefinedAttributes)(DAUid << 1);
     static const DefinedAttributes DAType = (DefinedAttributes)(DAOwner << 1);
     static const DefinedAttributes DAName = (DefinedAttributes)(DAType << 1);
-    static const DefinedAttributes DAFlags = (DefinedAttributes)(DAName << 1);
+    static const DefinedAttributes DAVersion = (DefinedAttributes)(DAName << 1);
+    static const DefinedAttributes DAFlags = (DefinedAttributes)(DAVersion << 1);
     static const DefinedAttributes DADisplacement = (DefinedAttributes)(DAFlags << 1);
     static const DefinedAttributes DAPosition = (DefinedAttributes)(DADisplacement << 1);
     static const DefinedAttributes DAOrientation = (DefinedAttributes)(DAPosition << 1);
@@ -374,14 +549,21 @@ protected:
     NodeId mOwner;
     EntityType mType;
     std::string mName;
+    EntityVersion mVersion;
     EntityFlags mFlags;
     Ogre::Vector3 mDisplacement;
     Ogre::Vector3 mPosition;
     Ogre::Quaternion mOrientation;
     Ogre::AxisAlignedBox mAABoundingBox;
+#ifdef POOL
+    RefCntPoolPtr<XmlData> mAnimation;
+    RefCntPoolPtr<XmlData> mShape;
+    RefCntPoolPtr<XmlContent> mContent;
+#else
     XmlData* mAnimation;
     XmlData* mShape;
     XmlContent* mContent;
+#endif
 
 public:
     XmlEntity() :
@@ -390,13 +572,20 @@ public:
       mOwner(""),
       mType(ETAvatar),
       mName(""),
+      mVersion(0),
       mFlags(EFNone),
       mDisplacement(Ogre::Vector3::ZERO),
       mPosition(Ogre::Vector3::ZERO),
       mOrientation(Ogre::Quaternion::IDENTITY),
+#ifdef POOL
+      mAnimation(RefCntPoolPtr<XmlData>::nullPtr),
+      mShape(RefCntPoolPtr<XmlData>::nullPtr),
+      mContent(RefCntPoolPtr<XmlContent>::nullPtr)
+#else
       mAnimation(0),
       mShape(0),
       mContent(0)
+#endif
     {}
     XmlEntity(const EntityUID& uid) :
       mDefinedAttributes(DAUid),
@@ -404,15 +593,21 @@ public:
       mOwner(""),
       mType(ETAvatar),
       mName(""),
+      mVersion(0),
       mFlags(EFNone),
       mDisplacement(Ogre::Vector3::ZERO),
       mPosition(Ogre::Vector3::ZERO),
       mOrientation(Ogre::Quaternion::IDENTITY),
+#ifdef POOL
+      mAnimation(RefCntPoolPtr<XmlData>::nullPtr),
+      mShape(RefCntPoolPtr<XmlData>::nullPtr),
+      mContent(RefCntPoolPtr<XmlContent>::nullPtr)
+#else
       mAnimation(0),
       mShape(0),
       mContent(0)
+#endif
     {}
-    virtual ~XmlEntity();
 
 #ifdef POOL
     static Pool& getStaticPool();
@@ -423,17 +618,19 @@ public:
         mOwner.clear();
         mType = ETAvatar;
         mName.clear();
+        mVersion = 0;
         mFlags = EFNone;
         mDisplacement = Ogre::Vector3::ZERO;
         mPosition = Ogre::Vector3::ZERO;
         mOrientation = Ogre::Quaternion::IDENTITY;
-        mAnimation = 0;
-        mShape = 0;
-        mContent = 0;
+        mAnimation = RefCntPoolPtr<XmlData>::nullPtr;
+        mShape = RefCntPoolPtr<XmlData>::nullPtr;
+        mContent = RefCntPoolPtr<XmlContent>::nullPtr;
     }
 #endif
 
     virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
     void setDefinedAttributes(const DefinedAttributes& definedAttributes) { mDefinedAttributes = definedAttributes; }
@@ -441,22 +638,26 @@ public:
 
     void setUid(const EntityUID& uid) { mUid = uid; mDefinedAttributes |= DAUid; }
     const EntityUID& getUid() { return mUid; }
-    std::string getUidString() { return convertEntityUIDToHexString(mUid); }
+    std::string getUidString() { return XmlHelpers::convertEntityUIDToHexString(mUid); }
 
     void setOwner(const NodeId& owner) { mOwner = owner; mDefinedAttributes |= DAOwner; }
     const NodeId& getOwner() { return mOwner; }
 
     void setType(const EntityType& type) { mType = type; mDefinedAttributes |= DAType; }
     EntityType getType() { return mType; }
-    const std::string& getTypeRepr() { return convertEntityTypeToRepr(mType); }
+    const std::string& getTypeRepr() { return XmlHelpers::convertEntityTypeToRepr(mType); }
 
     void setName(const std::string& name) { mName = name; mDefinedAttributes |= DAName; }
     const std::string& getName() { return mName; }
 
+    void setVersion(const EntityVersion& version) { mVersion = version; mDefinedAttributes |= DAVersion; }
+    const EntityVersion& getVersion() { return mVersion; }
+    std::string getVersionString() { return XmlHelpers::convertEntityVersionToHexString(mVersion); }
+
     void setFlags(const EntityFlags& flags) { mFlags = flags; mDefinedAttributes |= DAFlags; }
     EntityFlags getFlags() { return mFlags; }
-    std::string getFlagsString() { return convertEntityFlagsToHexString(mFlags); }
-    std::string getFlagsRepr() { return convertEntityFlagsToRepr(mFlags); }
+    std::string getFlagsString() { return XmlHelpers::convertEntityFlagsToHexString(mFlags); }
+    std::string getFlagsRepr() { return XmlHelpers::convertEntityFlagsToRepr(mFlags); }
 
     void setDisplacement(const Ogre::Vector3& displacement) { mDisplacement = displacement; mDefinedAttributes |= DADisplacement; }
     const Ogre::Vector3& getDisplacement() { return mDisplacement; }
@@ -470,8 +671,13 @@ public:
     void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
     const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
 
+#ifdef POOL
+    void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; }
+    RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
+#else
     void setContent(XmlContent* content) { mContent = content; }
     XmlContent* getContent() { return mContent; }
+#endif
 };
 
 class XMLDATAS_EXPORT XmlEvt : public XmlData
@@ -491,19 +697,19 @@ protected:
 
 public:
     XmlEvt() :
-        mType(ETNewEntity),
+      mType(ETNewEntity),
 #ifdef POOL
-        mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+      mDatas(RefCntPoolPtr<XmlData>::nullPtr)
 #else
-        mDatas(0)
+      mDatas(0)
 #endif
     {}
     XmlEvt(const EventType& type) :
-        mType(type),
+      mType(type),
 #ifdef POOL
-        mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+      mDatas(RefCntPoolPtr<XmlData>::nullPtr)
 #else
-        mDatas(0)
+      mDatas(0)
 #endif
     {}
 
@@ -517,11 +723,12 @@ public:
 #endif
 
     virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
     void setType(const EventType& type) { mType = type; }
     EventType getType() { return mType; }
-    const std::string& getTypeRepr() { return convertEventTypeToRepr(mType); }
+    const std::string& getTypeRepr() { return XmlHelpers::convertEventTypeToRepr(mType); }
 
 #ifdef POOL
     void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
@@ -535,7 +742,10 @@ public:
 #ifdef POOL
 RefCntPoolPtr<XmlData> RefCntPoolPtr<XmlData>::nullPtr((XmlData*)0);
 RefCntPoolPtr<XmlLogin> RefCntPoolPtr<XmlLogin>::nullPtr((XmlLogin*)0);
+RefCntPoolPtr<XmlLodContent> RefCntPoolPtr<XmlLodContent>::nullPtr((XmlLodContent*)0);
+RefCntPoolPtr<XmlSceneLodContent> RefCntPoolPtr<XmlSceneLodContent>::nullPtr((XmlSceneLodContent*)0);
 RefCntPoolPtr<XmlContent> RefCntPoolPtr<XmlContent>::nullPtr((XmlContent*)0);
+RefCntPoolPtr<XmlSceneContent> RefCntPoolPtr<XmlSceneContent>::nullPtr((XmlSceneContent*)0);
 RefCntPoolPtr<XmlEntity> RefCntPoolPtr<XmlEntity>::nullPtr((XmlEntity*)0);
 RefCntPoolPtr<XmlEvt> RefCntPoolPtr<XmlEvt>::nullPtr((XmlEvt*)0);
 #endif

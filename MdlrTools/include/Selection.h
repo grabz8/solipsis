@@ -278,6 +278,15 @@ public:
 /*
  *
  *	\brief 
+ *		Get the list of object selected.
+ *
+ *	\return the list of Object selected.
+*/
+    const Object3DPtrList& Selection::getSelectedObjectList();
+
+/*
+ *
+ *	\brief 
  *		Get the last inserted object in the list
  *
  *	\return a pointer of Objetc3D corresponding with the last inserted object in the list
@@ -292,7 +301,7 @@ public:
  *
  *	\return the list of Object present in the scene.
 */
-	const Object3DPtrList getObjectList();
+	const Object3DPtrList& getObjectList();
 
 /*
  *

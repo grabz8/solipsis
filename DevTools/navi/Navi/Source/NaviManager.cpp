@@ -88,7 +88,10 @@ NaviManager::~NaviManager()
 	for(iter = activeNavis.begin(); iter != activeNavis.end();)
 	{
 		Navi* toDelete = iter->second;
-		iter = activeNavis.erase(iter);
+// BEGIN GREG
+        mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(toDelete->getMaterialName()));
+// END GREG
+        iter = activeNavis.erase(iter);
 		delete toDelete;
 	}
 
@@ -128,6 +131,9 @@ void NaviManager::Update()
 		if(iter->second->okayToDelete)
 		{
 			Navi* naviToDelete = iter->second;
+// BEGIN GREG
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(naviToDelete->getMaterialName()));
+// END GREG
 			iter = activeNavis.erase(iter);
 			if(focusedNavi == naviToDelete) focusedNavi = 0;
 			delete naviToDelete;
@@ -154,19 +160,35 @@ Navi* NaviManager::createNavi(const std::string &naviName, const std::string &ho
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
 			"NaviManager::createNavi");
 
-	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, naviPosition, width, height, zOrder);
+// BEGIN GREG
+//	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, naviPosition, width, height, zOrder);
+    Navi* newNavi = new Navi(renderWindow, naviName, homepage, naviPosition, width, height, zOrder);
+    activeNavis[naviName] = newNavi;
+    mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
+    return newNavi;
+// END GREG
 }
 
+// BEGIN GREG
+//Navi* NaviManager::createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
+//									  Ogre::FilterOptions texFiltering)
 Navi* NaviManager::createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
-									  Ogre::FilterOptions texFiltering)
+									  Ogre::FilterOptions texFiltering, const std::string &mtlName)
 {
 	if(activeNavis.find(naviName) != activeNavis.end())
 		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
 			"NaviManager::createNaviMaterial");
 
-	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, width, height, texFiltering);
+// BEGIN GREG
+//	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, width, height, texFiltering);
+    Navi* newNavi = new Navi(renderWindow, naviName, homepage, width, height, texFiltering, mtlName);
+    activeNavis[naviName] = newNavi;
+    mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
+    return newNavi;
+// END GREG
 }
+// BEGIN GREG
 
 Navi* NaviManager::getNavi(const std::string &naviName)
 {
@@ -176,6 +198,17 @@ Navi* NaviManager::getNavi(const std::string &naviName)
 
 	return 0;
 }
+
+// BEGIN GREG
+Navi* NaviManager::getNaviFromMtlName(const std::string &mtlName)
+{
+    std::map<std::string,std::string>::const_iterator it = mtlNameNaviNameMap.find(mtlName);
+	if(it == mtlNameNaviNameMap.end())
+        return 0;
+    
+	return getNavi(it->second);
+}
+// END GREG
 
 void NaviManager::destroyNavi(const std::string &naviName)
 {

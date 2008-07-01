@@ -85,7 +85,7 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    Modeler* modeler = mNavigator->mModeler;
+    Modeler* modeler = mNavigator->getModeler();
 	AvatarEditor* avatarEditor = mNavigator->getAvatarEditor();
 
     // Escape hits count to cancel focus Navi/VNC/...
@@ -379,7 +379,7 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
         {
             case KC_LCONTROL:
                 mNavigator->isOnLeftCTRL = false;
-                mNavigator->mModeler->getSelection()->set_lock( false );
+                mNavigator->getModeler()->getSelection()->set_lock( false );
                 //return OgreFrameListener::keyReleased(evt);
                 break;
         }
@@ -769,7 +769,7 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                 !NaviManager::Get().isAnyNaviFocused())
         {
             //TODO : move / rotate / scale
-            //if (mNavigator->mModeler->isOnGizmo()) mNavigator->onMouseReleased(evt);
+            //if (mNavigator->getModeler()->isOnGizmo()) mNavigator->onMouseReleased(evt);
         }
         else
             NaviManager::Get().injectMouseUp(buttonsId);

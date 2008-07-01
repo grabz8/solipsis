@@ -47,6 +47,9 @@ public:
 	///param subEntity SubEntity from which the material has to be modified
 	ModifiedMaterial(SubEntity* subEntity);
 
+	///brief Refresh technique, pass and texture unit
+    void refreshTechPassTextUnit();
+
 	///brief Return the owner material
 	///return the owner material
 	MaterialPtr getOwner();
@@ -190,11 +193,17 @@ public:
 	Ogre::Radian getTextureRotate();
 
 	///biref Sets the alpha value to be applied to this object. 
-	///param pValue alpha value (between 0 - 1) 
+	///param pValue alpha value (between 0 - 1)
 	void setAlpha(float pValue);
 	///biref Get the alpha value of the object
 	///return the value of alpha
 	float getAlpha();
+	///brief Sets the scene blending type to be applied to this object and all it children. 
+	///param pSceneBlendType scene blending type
+    void setSceneBlendType(Ogre::SceneBlendType pSceneBlendType);
+	///brief Get the scene blending type of the object
+	///return the scene blending type
+	Ogre::SceneBlendType getSceneBlendType();
 
 
 

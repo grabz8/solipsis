@@ -63,6 +63,9 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
 	isMaterial = false;
+// BEGIN GREG
+    mtlName = "";
+// END GREG
 	okayToDelete = false;
 	isVisible = true;
 	fadingOut = false;
@@ -80,8 +83,12 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	Ogre::WindowEventUtilities::addWindowEventListener(renderWin, this);
 }
 
+// BEGIN GREG
+//Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height,
+//		   Ogre::FilterOptions texFiltering)
 Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height,
-		   Ogre::FilterOptions texFiltering)
+		   Ogre::FilterOptions texFiltering, const std::string &mtlName)
+// END GREG
 {
 	naviName = name;
 	naviWidth = width;
@@ -113,7 +120,10 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	keyFOpacity = 0;
 	keyFillR = keyFillG = keyFillB = 255;
 	isMaterial = true;
-	okayToDelete = false;
+// BEGIN GREG
+    this->mtlName = mtlName;
+// END GREG
+    okayToDelete = false;
 	isVisible = true;
 	fadingOut = false;
 	fadingOutStart = fadingOutEnd = 0;
@@ -124,7 +134,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	texHeight = height;
 
 	createMaterial(texFiltering);
-	createBrowser(renderWin, homepage);	
+    createBrowser(renderWin, homepage);	
 
 	WindowEventUtilities::addWindowEventListener(renderWin, this);
 }
@@ -149,7 +159,10 @@ Navi::~Navi()
 		OverlayManager::getSingletonPtr()->destroy(overlay);
 	}
 
-	MaterialManager::getSingletonPtr()->remove(naviName + "Material");
+// BEGIN GREG
+//	MaterialManager::getSingletonPtr()->remove(naviName + "Material");
+	MaterialManager::getSingletonPtr()->remove(mtlName);
+//END GREG
 	TextureManager::getSingletonPtr()->remove(naviName + "Texture");
 	if(usingMask) TextureManager::getSingletonPtr()->remove(naviName + "MaskTexture");
 }
@@ -160,7 +173,10 @@ void Navi::createOverlay(unsigned short zOrder)
 
 	panel = static_cast<PanelOverlayElement*>(overlayManager.createOverlayElement("Panel", naviName + "Panel"));
 	panel->setMetricsMode(Ogre::GMM_PIXELS);
-	panel->setMaterialName(naviName + "Material");
+// BEGIN GREG
+//	panel->setMaterialName(naviName + "Material");
+	panel->setMaterialName(mtlName);
+//END GREG
 	panel->setDimensions(naviWidth, naviHeight);
 	if(compensateNPOT)
 		panel->setUV(0, 0, (Real)naviWidth/(Real)texWidth, (Real)naviHeight/(Real)texHeight);	
@@ -236,8 +252,22 @@ void Navi::createMaterial(Ogre::FilterOptions texFiltering)
 
 	pixelBuffer->unlock();
 
-	MaterialPtr material = MaterialManager::getSingleton().create(naviName + "Material", 
-		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+// BEGIN GREG
+//	MaterialPtr material = MaterialManager::getSingleton().create(naviName + "Material", 
+//		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    MaterialPtr material;
+    if (mtlName.empty())
+    {
+        mtlName = naviName + "Material";
+	    material = MaterialManager::getSingleton().create(mtlName, 
+		    ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    }
+    else
+    {
+        material = MaterialManager::getSingleton().getByName(mtlName);
+        material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    }
+// END GREG
 	material->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
 	material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
 
@@ -975,7 +1005,10 @@ std::string Navi::getName()
 
 std::string Navi::getMaterialName()
 {
-	return naviName + "Material";
+// BEGIN GREG
+//	return naviName + "Material";
+    return mtlName;
+//END GREG
 }
 
 bool Navi::getVisibility()

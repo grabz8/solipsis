@@ -67,7 +67,11 @@ void VLCTextureSource::instanceDestroyed(int id)
 //-------------------------------------------------------------------------------------
 void VLCTextureSource::clearInstances()
 {
-    mMaterials.clear();
+    for(MaterialListMap::iterator materialListIt=mMaterials.begin();materialListIt!=mMaterials.end();materialListIt=mMaterials.begin())
+    {
+        mPlugin->destroyInstance(materialListIt->first, true);
+        mMaterials.erase(materialListIt);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -223,7 +227,7 @@ void VLCTextureSource::destroyAdvancedTexture(const Ogre::String& material, cons
                 // no more material using this VLC texture ?
                 if (materials.empty())
                     // destroy this VLC texture
-                    mPlugin->destroyInstance(materialListIt->first);
+                    mPlugin->destroyInstance(materialListIt->first, false);
                 return;
             }
         }
@@ -243,6 +247,7 @@ Ogre::String VLCTextureSource::handleEvt(const Ogre::String& material, const Ogr
                 return mPlugin->handleEvt(materialListIt->first, evt);
         }
     }
+    return "";
 }
 
 //-------------------------------------------------------------------------------------

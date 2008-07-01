@@ -23,13 +23,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Node.h"
 
+using namespace Ogre;
+
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 Node::Node(const NodeId& nodeId, const String& type) :
     mNodeId(nodeId),
     mType(type),
-    mEvtsMutex(PTHREAD_MUTEX_INITIALIZER)
+    mMutex(PTHREAD_MUTEX_INITIALIZER),
+    mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
+    mFrozen(true),
+    mAwareCounter(0)
 {
 }
 
@@ -94,6 +99,21 @@ bool Node::freeEvt(XmlEvt* evt)
     return true;
 }
 #endif
+
+//-------------------------------------------------------------------------------------
+bool Node::loadFromElt(TiXmlElement* nodeElt)
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+TiXmlElement* Node::getSavedElt()
+{
+    // root node
+    TiXmlElement* nodeElt = new TiXmlElement("node");
+
+    return nodeElt;
+}
 
 //-------------------------------------------------------------------------------------
 

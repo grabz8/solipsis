@@ -35,12 +35,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
+// GREG BEGIN
+Ogre::String TightVNCTextureSystem::ms_TmpTextureName = "VNCPlugin_TmpTexture";
+// GREG END
+
 TightVNCTextureSystem::TightVNCTextureSystem(VNCPlugin *plugin)
     : mPlugin(plugin)
 {
     mDictionaryName = "vnc";
     mParamDictName = "vnc";
     Ogre::ExternalTextureSourceManager::getSingleton().setExternalTextureSource("vnc", this);
+
+// GREG BEGIN
+    Ogre::TextureManager& tmgr = Ogre::TextureManager::getSingleton();
+    mTmpTexture = tmgr.createManual(ms_TmpTextureName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D,
+        16, 16, 0, Ogre::PF_BYTE_BGRA);
+// GREG END
 }
 
 void TightVNCTextureSystem::connectionCreated(int id, const Ogre::String& textureName)
@@ -185,6 +196,16 @@ void TightVNCTextureSystem::createDefinedTexture(const Ogre::String& materialNam
         MaterialList list;
         list.push_back(material);
         mMaterials.insert(std::make_pair(id, list));
+        // GREG BEGIN
+        Ogre::LogManager::getSingleton().logMessage(
+            "TightVNCTextureSystem - Assigning VNC temporary texture '" + ms_TmpTextureName +
+            "' to material");
+        Ogre::Technique* tech = material->getTechnique(0);
+        Ogre::Pass* pass = tech->getPass(0);
+        pass->removeAllTextureUnitStates();
+        Ogre::TextureUnitState* state = pass->createTextureUnitState();
+        state->setTextureName(ms_TmpTextureName);
+        // GREG END
     }
     else
     {

@@ -122,7 +122,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;HANDLEVTSYNC;NLOGSNDRCV"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;_CRT_SECURE_NO_WARNINGS;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib ULXMLRPCPPP2NServer.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;"
@@ -366,6 +366,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Object.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectNode.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\OgreHelpers.cpp"
 				>
 			</File>
@@ -429,6 +437,14 @@
 			</File>
 			<File
 				RelativePath=".\NodeManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ObjectNode.h"
 				>
 			</File>
 			<File

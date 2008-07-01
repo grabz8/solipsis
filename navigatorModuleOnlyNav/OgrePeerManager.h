@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "XmlDatas.h"
 #include "tinyxml.h"
 #include "Ogre.h"
+#include <Modeler.h>
 #include "IOgrePeerManagerCallbacks.h"
 
 using namespace Ogre;
@@ -37,7 +38,7 @@ namespace Solipsis {
 
 /** This class manages all Solipsis/Ogre peers.
 */
-class OgrePeerManager : public FrameListener
+class OgrePeerManager : public FrameListener, public IModelerCallbacks
 {
 public:
     typedef std::map<EntityUID, XmlEntity*> XmlEntitiesMap;
@@ -49,20 +50,20 @@ public:
 #endif
 
 private:
-    // Entities
+    // My entities
     XmlEntitiesMap mMyXmlEntities;
 
     // <Peer's name, OgrePeer> map
     OgrePeersMap mOgrePeersMap;
+
+    // User avatar
+    OgrePeer* mUserAvatar;
 
     // List of events to send
     EvtsList mEvtsList;
 
     // Scene manager
     SceneManager* mSceneMgr;
-
-    // Scene object filename
-    String mXmlObjectFilename;
 
     // Callbacks
     IOgrePeerManagerCallbacks* mCallbacks;
@@ -99,6 +100,9 @@ public:
 
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
+
+	/** See Solipsis::IModelerCallbacks. */
+	virtual bool OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList);
 
 	// Get/Set
 	SceneManager* getSceneManager() { return mSceneMgr; }

@@ -38,7 +38,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace CommonTools {
 
 //-------------------------------------------------------------------------------------
-bool IO::isFileExists(std::string& filename)
+std::string IO::getCWD()
+{
+    char *buffer;
+    if ((buffer = _getcwd(NULL, 0)) == NULL)
+        return "";
+
+    std::string cwd = buffer;
+    free(buffer);
+    return cwd;
+}
+
+//-------------------------------------------------------------------------------------
+bool IO::isFileExists(const std::string& filename)
 {
     struct stat _stat;
     if (stat(filename.c_str(), &_stat) != 0) return false;
@@ -46,15 +58,15 @@ bool IO::isFileExists(std::string& filename)
 }
 
 //-------------------------------------------------------------------------------------
-bool IO::isDirectoryExists(std::string& path)
+bool IO::isDirectoryExists(const std::string& pathname)
 {
     struct stat _stat;
-    if (stat(path.c_str(), &_stat) != 0) return false;
+    if (stat(pathname.c_str(), &_stat) != 0) return false;
     return ((_stat.st_mode & S_IFDIR) != 0);
 }
 
 //-------------------------------------------------------------------------------------
-bool IO::copyFile(std::string& srcFilename, std::string& dstFilename)
+bool IO::copyFile(const std::string& srcFilename, const std::string& dstFilename)
 {
     std::ifstream in(srcFilename.c_str(), std::ios::in | std::ios::binary);
     std::ofstream out(dstFilename.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
@@ -82,15 +94,29 @@ bool IO::copyFile(std::string& srcFilename, std::string& dstFilename)
 }
 
 //-------------------------------------------------------------------------------------
-std::string IO::retrieveRelativePathByDescendingCWD(std::string& path)
+bool IO::deleteFile(const std::string& filename)
+{
+    return (_unlink(filename.c_str()) == 0);
+}
+
+//-------------------------------------------------------------------------------------
+bool IO::renameFile(const std::string& srcFilename, const std::string& dstFilename)
+{
+    if (isFileExists(dstFilename))
+        deleteFile(dstFilename);
+    return (rename(srcFilename.c_str(), dstFilename.c_str()) == 0);
+}
+
+//-------------------------------------------------------------------------------------
+std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
 {
     std::string fullPath;
     char *cwd = _getcwd(NULL, 0);
     std::string currentPath = cwd;
-    std::string relativePath = path;
+    std::string relativePath = pathname;
     while (currentPath.find_last_of("\\") != std::string::npos)
     {
-        fullPath = currentPath + "\\" + path;
+        fullPath = currentPath + "\\" + pathname;
         if (isDirectoryExists(fullPath))
             return relativePath;
         currentPath = currentPath.substr(0, currentPath.find_last_of("\\"));

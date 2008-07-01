@@ -55,7 +55,11 @@ public: // TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO Entity class should have
 
 public:
     /** Constructor. */
-    Avatar(XmlEntity* xmlEntity);
+#ifdef POOL
+    Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId);
+#else
+    Avatar(XmlEntity* xmlEntity, const NodeId& managerNodeId);
+#endif
     /** Destructor. */
     virtual ~Avatar();
 

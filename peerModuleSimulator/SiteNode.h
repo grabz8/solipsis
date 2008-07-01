@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __SiteNode_h__
 #define __SiteNode_h__
 
-#include <map>
-#include "Ogre.h"
 #include "Node.h"
 #include "Site.h"
 
@@ -38,17 +36,37 @@ class SiteNode : public Node
 protected:
     /// Site entity
     Site mSite;
-    /// Map of stored entities
-    Entity::EntityMap mStoredEntities;
+
+    /// Map of present entities
+    Entity::EntityMap mPresentEntities;
 
 public:
     /** Constructor. */
+#ifdef POOL
+    SiteNode(const NodeId& nodeId, RefCntPoolPtr<XmlEntity>& xmlEntity);
+#else
     SiteNode(const NodeId& nodeId, XmlEntity* xmlEntity);
+#endif
     /** Destructor. */
     virtual ~SiteNode();
 
+    /** See Solipsis::Node. */
+    virtual const Entity& getManagedEntity() { return mSite; }
+
+    /** See Solipsis::Node. */
+    virtual bool loadFromElt(TiXmlElement* nodeElt);
+    /** See Solipsis::Node. */
+    virtual TiXmlElement* getSavedElt();
+
 	/** Get associated site entity. */
     Site& getEntity();
+	/** Get present entities. */
+    Entity::EntityMap& getPresentEntities();
+
+    /** Add an entity present in the site. */
+    bool addPresentEntity(Entity* entity);
+    /** Remove an entity present in the site. */
+    bool removePresentEntity(Entity* entity);
 };
 
 } // namespace Solipsis

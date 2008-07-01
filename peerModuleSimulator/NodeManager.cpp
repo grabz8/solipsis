@@ -23,18 +23,96 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NodeManager.h"
 #include "Peer.h"
+#include "AvatarNode.h"
+#include "SiteNode.h"
+#include "ObjectNode.h"
 #include "OgreHelpers.h"
+#include <CTIO.h>
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 NodeManager::NodeManager()
 {
+    mNodeIdXmlFilesPath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 }
 
 //-------------------------------------------------------------------------------------
 NodeManager::~NodeManager()
 {
+    // Destroy object nodes
+    for(NodeMap::const_iterator it=mNodes.begin();it!=mNodes.end();it=mNodes.begin())
+    {
+        Node *node = it->second;
+        OGRE_LOG("NodeManager::~NodeManager() Destroying forgotten node " + node->getNodeId() + " !");
+        mNodes.erase(it->first);
+        delete node;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+bool NodeManager::loadNodeIdFile(const NodeId& nodeId)
+{
+    std::string nodeIdFilename = mNodeIdXmlFilesPath + "\\" + nodeId + ".xml";
+    TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
+    if (!xmlNodeIdFileDoc.LoadFile())
+        return false;
+
+    OGRE_LOG("NodeManager::loadNodeIdFile() loading node with nodeId:" + nodeId + " from " + nodeIdFilename);
+
+    TiXmlElement* nodeElt = xmlNodeIdFileDoc.FirstChildElement("node");
+    if (nodeElt == 0)
+        return false;
+
+    // Create the node according to the managed entity
+    TiXmlElement* entityElt = nodeElt->FirstChildElement("entity");
+    if (entityElt == 0)
+        return false;
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> xmlEntity;
+    xmlEntity.allocate();
+#else
+    XmlEntity* xmlEntity = new XmlEntity();
+#endif
+    xmlEntity->fromXmlElt(entityElt);
+    Node* node = 0;
+    switch (xmlEntity->getType())
+    {
+    case ETAvatar:
+        node = new AvatarNode(nodeId, xmlEntity);
+        break;
+    case ETSite:
+        node = new SiteNode(nodeId, xmlEntity);
+        break;
+    case ETObject:
+        node = new ObjectNode(nodeId, xmlEntity);
+        break;
+    }
+    if (node == 0)
+        return false;
+    mNodes[nodeId] = node;
+
+    return node->loadFromElt(nodeElt);
+}
+
+//-------------------------------------------------------------------------------------
+bool NodeManager::saveNodeIdFile(const NodeId& nodeId)
+{
+    std::string nodeIdFilename = mNodeIdXmlFilesPath + "\\" + nodeId + ".xml";
+    TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
+
+    OGRE_LOG("NodeManager::saveNodeIdFile() saving node with nodeId:" + nodeId + " into " + nodeIdFilename);
+
+    Node* node = mNodes[nodeId];
+    if (node == 0)
+        return false;
+    TiXmlElement* nodeElt = node->getSavedElt();
+    if (nodeElt == 0)
+        return false;
+    xmlNodeIdFileDoc.LinkEndChild(nodeElt); 
+    xmlNodeIdFileDoc.SaveFile();
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -58,311 +136,111 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         else
             return 0;
 
+        // Load the site node on first avatar connected
+        bool sceneLoaded = true;
+        NodeId siteNodeId = "00000010";
+        if ((nodeId.compare("00000001") == 0) && Peer::getSingleton().mSceneDemoLoaded.empty())
+            sceneLoaded = loadNodeIdFile(siteNodeId);
+        // Load the avatar node
+        bool avatarLoaded = loadNodeIdFile(nodeId);
+
         // Simulate the scene around the avatar
-        if (nodeId.compare("00000001") == 0)
+        if (!sceneLoaded && (nodeId.compare("00000001") == 0))
         {
             std::string xmlSiteStr;
             if (Peer::getSingleton().mSceneDemoLoaded.compare("Ile") == 0)
                 xmlSiteStr = "\
-<entity uid=\"11112223\" owner=\"00000001\" type=\"1\" name=\"Ile\">\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <lod level=\"0\">\
-   <files>"
-"    <file name=\"11112223.xml\" />\
-    <file name=\"scenes/Ile.osm\" />\
-    <file name=\"scenes/Ile_bassin.mesh\" />\
-    <file name=\"scenes/Ile_bateauPhare.mesh\" />\
-    <file name=\"scenes/Ile_bateauPlage.mesh\" />\
-    <file name=\"scenes/Ile_batecole01.mesh\" />\
-    <file name=\"scenes/Ile_batecole02.mesh\" />\
-    <file name=\"scenes/Ile_batecole03.mesh\" />\
-    <file name=\"scenes/Ile_batecole04.mesh\" />\
-    <file name=\"scenes/Ile_bathaut.mesh\" />\
-    <file name=\"scenes/Ile_cabanebathaut.mesh\" />\
-    <file name=\"scenes/Ile_cagetigre.mesh\" />\
-    <file name=\"scenes/Ile_carton01.mesh\" />\
-    <file name=\"scenes/Ile_chaise01grenier.mesh\" />\
-    <file name=\"scenes/Ile_chaise02grenier.mesh\" />\
-    <file name=\"scenes/Ile_charbon.mesh\" />\
-    <file name=\"scenes/Ile_chofogrenier.mesh\" />\
-    <file name=\"scenes/Ile_collinefond.mesh\" />\
-    <file name=\"scenes/Ile_contourecage.mesh\" />\
-    <file name=\"scenes/Ile_contourEcole.mesh\" />\
-    <file name=\"scenes/Ile_distributeur.mesh\" />\
-    <file name=\"scenes/Ile_echelle.mesh\" />\
-    <file name=\"scenes/Ile_ElementsPlage01.mesh\" />\
-    <file name=\"scenes/Ile_ElementsPlage02.mesh\" />\
-    <file name=\"scenes/Ile_ElementsPlage03.mesh\" />\
-    <file name=\"scenes/Ile_ElementsPlage04.mesh\" />\
-    <file name=\"scenes/Ile_escalierrhino.mesh\" />\
-    <file name=\"scenes/Ile_etageregrenier.mesh\" />\
-    <file name=\"scenes/Ile_fleursbathaut.mesh\" />\
-    <file name=\"scenes/Ile_glace.mesh\" />\
-    <file name=\"scenes/Ile_glacierdeco.mesh\" />\
-    <file name=\"scenes/Ile_grenier.mesh\" />\
-    <file name=\"scenes/Ile_grilledome.mesh\" />\
-    <file name=\"scenes/Ile_grilleloup.mesh\" />\
-    <file name=\"scenes/Ile_Ile.mesh\" />\
-    <file name=\"scenes/Ile_lancecaramel.mesh\" />\
-    <file name=\"scenes/Ile_lancecaramel01.mesh\" />\
-    <file name=\"scenes/Ile_Lianes.mesh\" />\
-    <file name=\"scenes/Ile_marches01.mesh\" />\
-    <file name=\"scenes/Ile_marches02.mesh\" />\
-    <file name=\"scenes/Ile_mer.mesh\" />\
-    <file name=\"scenes/Ile_mer01.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle01.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle02.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle03.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle04.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle05.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle06.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle07.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle08.mesh\" />\
-    <file name=\"scenes/Ile_palmierIle09.mesh\" />\
-    <file name=\"scenes/Ile_palmierPlage01.mesh\" />\
-    <file name=\"scenes/Ile_palmierPlage02.mesh\" />\
-    <file name=\"scenes/Ile_palmierPlage03.mesh\" />\
-    <file name=\"scenes/Ile_palmiersbathaut.mesh\" />\
-    <file name=\"scenes/Ile_palmiersecole.mesh\" />\
-    <file name=\"scenes/Ile_palmiers_zoo.mesh\" />\
-    <file name=\"scenes/Ile_palmiertoit.mesh\" />\
-    <file name=\"scenes/Ile_panneaurhino.mesh\" />\
-    <file name=\"scenes/Ile_pavillon.mesh\" />\
-    <file name=\"scenes/Ile_Phare.mesh\" />\
-    <file name=\"scenes/Ile_Plage.mesh\" />\
-    <file name=\"scenes/Ile_pontonPhare01.mesh\" />\
-    <file name=\"scenes/Ile_pontonPhare02.mesh\" />\
-    <file name=\"scenes/Ile_Portezop.mesh\" />\
-    <file name=\"scenes/Ile_poubelle01.mesh\" />\
-    <file name=\"scenes/Ile_pourtourzoo.mesh\" />\
-    <file name=\"scenes/Ile_rochers03.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer01.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer02.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer04.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer05.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer06.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer07.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer08.mesh\" />\
-    <file name=\"scenes/Ile_rochersmer09.mesh\" />\
-    <file name=\"scenes/Ile_rochersPhare.mesh\" />\
-    <file name=\"scenes/Ile_RochersPLage01.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine01.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine02.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine03.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine04.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine05.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine06.mesh\" />\
-    <file name=\"scenes/Ile_rochersplaine07.mesh\" />\
-    <file name=\"scenes/Ile_Sol.mesh\" />\
-    <file name=\"scenes/Ile_solbatecole01.mesh\" />\
-    <file name=\"scenes/Ile_telescopgrenier.mesh\" />\
-    <file name=\"scenes/Ile_terrain.mesh\" />\
-    <file name=\"scenes/Ile_Tuyauxeau.mesh\" />\
-    <file name=\"scenes/Ile_verriere.mesh\" />\
-    <file name=\"scenes/Ile_wc.mesh\" />\
-    <file name=\"materials/scripts/Ile.material\" />\
-    <file name=\"materials/textures/mapsol.jpg\" />"
-"    <file name=\"materials/textures/OI_ail_02_lancecaramel.jpg\" />\
-    <file name=\"materials/textures/OI_ail_02_panneaurhino.jpg\" />\
-    <file name=\"materials/textures/OI_ail_02_telescopgrenier.jpg\" />\
-    <file name=\"materials/textures/OI_ail_03_merTextureComplète.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_bassin.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_bathaut.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_cabanebathaut.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_cagetigre.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_carton01.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_chaise01grenier.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_chaise02grenier.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_charbon.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_chofogrenier.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_contourecage.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_distributeur.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_echelle.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_escalierrhino.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_etageregrenier.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_fleursbathaut.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_glaceTextureComplète.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_glacierdeco.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_grenier.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_grilledome.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_grilleloup.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_Lianes.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_palmiersbathaut.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_palmiers_zoo.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_palmiertoit.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_pavillon.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_Portezop.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_poubelle01.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_pourtourzoo.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_terrain.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_Tuyauxeau.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_verriere.jpg\" />\
-    <file name=\"materials/textures/O_ail_02_wc.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_bateauPlage.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_collinefond.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_ElementsPlage01.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_ElementsPlage02.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_ElementsPlage03.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_ElementsPlage04.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_Ile.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle01.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle02.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle03.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle04.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle05.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle06.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle07.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle08.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierIle09.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierPlage01.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierPlage02.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierPlage03.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmierPlage03TextureComplete.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_palmiersecole.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_Plage.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_RochersPLage.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine01.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine02.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine03.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine04.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine05.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine06.jpg\" />\
-    <file name=\"materials/textures/O_ail_03_rochersplaine07.jpg\" />\
-    <file name=\"materials/textures/o_eco_batecole01.jpg\" />\
-    <file name=\"materials/textures/o_eco_batecole02.jpg\" />\
-    <file name=\"materials/textures/o_eco_batecole03_bis.jpg\" />\
-    <file name=\"materials/textures/o_eco_batecole04.jpg\" />\
-    <file name=\"materials/textures/o_eco_contourEcole.jpg\" />\
-    <file name=\"materials/textures/o_eco_marches01.jpg\" />\
-    <file name=\"materials/textures/o_eco_marches02.jpg\" />\
-    <file name=\"materials/textures/o_eco_solbatecole01.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_bateauPhare.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_Phare.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_pontonPhare01.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_pontonPhare02.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer01.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer02.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer03.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer04.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer05.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer06.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer07.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer08.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersmer09.jpg\" />\
-    <file name=\"materials/textures/O_sou_04_rochersPhare.jpg\" />"
-"   </files>\
-  </lod>\
- </content>\
+<entity uid=\"11112223\" owner=\"00000001\" type=\"1\" name=\"Ile\" version=\"00000000\">\
+<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+<aabb>\
+<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+</aabb>\
+<content>\
+<sceneContent>\
+<entryGate gravity=\"true\" >\
+<position x=\"170.0\" y=\"-60.0\" z=\"450.0\" />\
+</entryGate>\
+</sceneContent>\
+<lod level=\"0\">\
+<sceneLodContent mainFilename=\"Ile.osm\" collision=\"Ile_COLLISION\" />\
+<files>\
+<file name=\"11112224.ssf\" version=\"00000000\" />\
+</files>\
+</lod>\
+</content>\
 </entity>\
 ";
             else if (Peer::getSingleton().mSceneDemoLoaded.compare("DigitalOcean1") == 0)
                 xmlSiteStr = "\
-<entity uid=\"11112224\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\">\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <lod level=\"0\">\
-   <files>"
-"    <file name=\"11112224.xml\" />\
-    <file name=\"scenes/DigitalOcean1.osm\" />\
-    <file name=\"scenes/MEFourmigues.mesh\" />\
-    <file name=\"materials/scripts/fourmigues.material\" />\
-    <file name=\"materials/textures/fourmigues-carree-RGB.jpg\" />\
-    <file name=\"materials/textures/mer.jpg\" />"
-"   </files>\
-  </lod>\
- </content>\
+<entity uid=\"11112224\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\" version=\"00000000\">\
+<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+<aabb>\
+<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+</aabb>\
+<content>\
+<sceneContent>\
+<entryGate gravity=\"false\" >\
+<position x=\"30.0\" y=\"-26.0\" z=\"68.0\" />\
+</entryGate>\
+</sceneContent>\
+<lod level=\"0\">\
+<sceneLodContent mainFilename=\"DigitalOcean1.osm\" />\
+<files>\
+<file name=\"11112224.ssf\" version=\"00000000\" />\
+</files>\
+</lod>\
+</content>\
 </entity>\
 ";
             else
                 xmlSiteStr = "\
-<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\">\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <lod level=\"0\">\
-   <files>"
-"    <file name=\"11112222.xml\" />\
-    <file name=\"scenes/Deltastation1.osm\" />\
-    <file name=\"scenes/gun6.mesh\" />\
-    <file name=\"scenes/sidegunR.mesh\" />\
-    <file name=\"scenes/gun5.mesh\" />\
-    <file name=\"scenes/sidegunL.mesh\" />\
-    <file name=\"scenes/gun4.mesh\" />\
-    <file name=\"scenes/midgunR.mesh\" />\
-    <file name=\"scenes/gun3.mesh\" />\
-    <file name=\"scenes/midgunL.mesh\" />\
-    <file name=\"scenes/reargate.mesh\" />\
-    <file name=\"scenes/ingateR.mesh\" />\
-    <file name=\"scenes/ingateL.mesh\" />\
-    <file name=\"scenes/gun2.mesh\" />\
-    <file name=\"scenes/reargunR.mesh\" />\
-    <file name=\"scenes/gun1.mesh\" />\
-    <file name=\"scenes/reargunL.mesh\" />\
-    <file name=\"scenes/lift.mesh\" />\
-    <file name=\"scenes/landgate.mesh\" />\
-    <file name=\"scenes/skydome.mesh\" />\
-    <file name=\"scenes/gun8.mesh\" />\
-    <file name=\"scenes/frontgunR.mesh\" />\
-    <file name=\"scenes/gun7.mesh\" />\
-    <file name=\"scenes/frontgunL.mesh\" />\
-    <file name=\"scenes/outgateR.mesh\" />\
-    <file name=\"scenes/outgateL.mesh\" />\
-    <file name=\"scenes/frontis.mesh\" />\
-    <file name=\"scenes/roof.mesh\" />\
-    <file name=\"scenes/station.mesh\" />\
-    <file name=\"scenes/Cercle01.mesh\" />\
-    <file name=\"materials/scripts/Deltastation1.material\" />\
-    <file name=\"materials/textures/gunsdoors.bmp\" />\
-    <file name=\"materials/textures/deltachrome.bmp\" />\
-    <file name=\"materials/textures/deltacolor.bmp\" />\
-    <file name=\"materials/textures/luminred.bmp\" />\
-    <file name=\"materials/textures/deltaglass.bmp\" />\
-    <file name=\"materials/textures/luminambar.bmp\" />\
-    <file name=\"materials/textures/lumingreen.bmp\" />\
-    <file name=\"materials/textures/luminred.bmp\" />\
-    <file name=\"materials/textures/deltafloors.bmp\" />\
-    <file name=\"materials/textures/ciel.tga\" />"
-"   </files>\
-  </lod>\
- </content>\
+<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\" version=\"00000000\" >\
+<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+<aabb>\
+<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+</aabb>\
+<content>\
+<sceneContent>\
+<entryGate gravity=\"true\" >\
+<position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
+</entryGate>\
+</sceneContent>\
+<lod level=\"0\">\
+<sceneLodContent mainFilename=\"Deltastation1.osm\" collision=\"Delta_COLLISION\" />\
+<files>\
+<file name=\"11112222.ssf\" version=\"00000000\" />\
+</files>\
+</lod>\
+</content>\
 </entity>\
 ";
             TiXmlDocument xmlSiteDoc;
             xmlSiteDoc.Parse(xmlSiteStr.c_str());
-            XmlEntity* siteEntityDesc = new XmlEntity();
-            siteEntityDesc->fromXmlElt(xmlSiteDoc.RootElement());
-            NodeId siteNodeId = "00000010";
-            SiteNode* siteNode = new SiteNode(siteNodeId, siteEntityDesc);
+#ifdef POOL
+            RefCntPoolPtr<XmlEntity> siteXmlEntity;
+            siteXmlEntity.allocate();
+#else
+            XmlEntity* siteXmlEntity = new XmlEntity();
+#endif
+            siteXmlEntity->fromXmlElt(xmlSiteDoc.RootElement());
+            OGRE_LOG("NodeManager::login() initializing simulation site node name:" + siteXmlEntity->getName());
+            SiteNode* siteNode = new SiteNode(siteNodeId, siteXmlEntity);
             mNodes[siteNodeId] = siteNode;
         }
 
-        // Create the avatar node
-        NodeId siteNodeId = "00000010";
-        SiteNode* siteNode = (SiteNode*)mNodes[siteNodeId];
-        Vector3 avatarPos = siteNode->getEntity().getEntryGatePosition();
-        EntityFlags avatarFlags = EFNone;
-        if (siteNode->getEntity().entryGateGravityEnabled()) avatarFlags |= EFGravity;
-        std::stringstream avatarPosStrStrm;
-        XmlHelpers::ostreamVector3(avatarPosStrStrm << "<position ", avatarPos) << " />";
-        std::string xmlAvatarStr = "\
-<entity uid=\"" + convertEntityUIDToHexString(AvatarEntityUid) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\">\
- <flags bitmask=\"" + convertEntityFlagsToHexString(avatarFlags) + "\" />\
- " + avatarPosStrStrm.str() + "\
+        if (!avatarLoaded)
+        {
+            // Create the avatar node
+            std::string xmlAvatarStr = "\
+<entity uid=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\" version=\"00000000\">\
+ <flags bitmask=\"" + XmlHelpers::convertEntityFlagsToHexString(EFNone) + "\" />\
+ <position x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
  <aabb>\
   <min x=\"-0.82447118\" y=\"-0.013709042\" z=\"-0.64538133\" />\
@@ -371,20 +249,54 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>\
-    <file name=\"models/Kevin.saf\" />\
-    <file name=\"models/" + convertEntityUIDToHexString(AvatarEntityUid) + ".sif\" />\
+    <file name=\"Kevin.saf\" version=\"00000000\" />\
+    <file name=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + ".sif\" version=\"00000000\" />\
    </files>\
   </lod>\
  </content>\
 </entity>\
 ";
-        TiXmlDocument xmlAvatarDoc;
-        xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
-        XmlEntity* avatarXmlEntity = new XmlEntity();
-        avatarXmlEntity->fromXmlElt(xmlAvatarDoc.RootElement());
-        avatarXmlEntity->setDisplacement(Vector3::ZERO);
-        AvatarNode* avatarNode = new AvatarNode(nodeId, avatarXmlEntity);
-        mNodes[nodeId] = avatarNode;
+            TiXmlDocument xmlAvatarDoc;
+            xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
+#ifdef POOL
+            RefCntPoolPtr<XmlEntity> avatarXmlEntity;
+            avatarXmlEntity.allocate();
+#else
+            XmlEntity* avatarXmlEntity = new XmlEntity();
+#endif
+            avatarXmlEntity->fromXmlElt(xmlAvatarDoc.RootElement());
+            OGRE_LOG("NodeManager::login() initializing simulation avatar node name:" + avatarXmlEntity->getName());
+            AvatarNode* avatarNode = new AvatarNode(nodeId, avatarXmlEntity);
+            mNodes[nodeId] = avatarNode;
+        }
+
+        // Get 1st scene
+        SiteNode* firstSiteNode = 0;
+        for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+            if (node->second->getType().compare("site") == 0)
+            {
+                firstSiteNode = (SiteNode*)node->second;
+                break;
+            }
+        if (firstSiteNode == 0)
+            return 0;
+        // Get the avatar
+        AvatarNode* avatarNode = (AvatarNode*)mNodes[nodeId];
+        if (avatarNode == 0)
+            return 0;
+        // stop displacement
+        avatarNode->getEntity().getXmlEntity()->setDisplacement(Vector3::ZERO);
+        // If scene changed
+        // Move avatar on the entry gate of the scene + gravity
+        if (!sceneLoaded)
+        {
+            RefCntPoolPtr<XmlSceneContent> xmlSceneContent = firstSiteNode->getEntity().getXmlEntity()->getContent()->getDatas();
+            avatarNode->getEntity().getXmlEntity()->setPosition(xmlSceneContent->getEntryGate().mPosition);
+            if (xmlSceneContent->getEntryGate().mGravity)
+                avatarNode->getEntity().getXmlEntity()->setFlags(avatarNode->getEntity().getXmlEntity()->getFlags() | EFGravity);
+            else
+                avatarNode->getEntity().getXmlEntity()->setFlags(avatarNode->getEntity().getXmlEntity()->getFlags() & ~EFGravity);
+        }
 
         // Add other avatars to aware of
         for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
@@ -394,14 +306,35 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
                 {
                     AvatarNode* an = (AvatarNode*)node->second;
                     avatarNode->addAwareEntity(&an->getEntity());
+                    an->incDecAwareCounter(+1);
                     an->addAwareEntity(&avatarNode->getEntity());
                 }
                 else if (node->second->getType().compare("site") == 0)
                 {
                     SiteNode* sn = (SiteNode*)node->second;
                     avatarNode->addAwareEntity(&sn->getEntity());
+                    sn->incDecAwareCounter(+1);
+                }
+                else if (node->second->getType().compare("object") == 0)
+                {
+                    ObjectNode* on = (ObjectNode*)node->second;
+                    avatarNode->addAwareEntity(&on->getEntity());
+                    on->incDecAwareCounter(+1);
                 }
             }
+        // Add its own avatar to aware of
+        avatarNode->addAwareEntity(&avatarNode->getEntity());
+
+        // Add objects present into the scene
+        for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+            if (node->second->getType().compare("object") == 0)
+            {
+                ObjectNode* on = (ObjectNode*)node->second;
+                firstSiteNode->addPresentEntity(&on->getEntity());
+            }
+
+        // Unfreeze avatar node
+        avatarNode->freeze(false);
 
         return avatarNode;
     }
@@ -417,6 +350,14 @@ bool NodeManager::logout(const NodeId& nodeId)
 {
     AvatarNode* avatarNode = (AvatarNode*)mNodes[nodeId];
     avatarNode->freeze(true);
+
+    // Save this avatar node + entities owned
+    if (!saveNodeIdFile(nodeId))
+        throw Exception(Exception::ERR_INTERNAL_ERROR,
+        "Unable to save node with nodeId:" + nodeId + " !",
+        "NodeManager::logout");
+
+    // Destroy the node
     mDestroyedNodeIds.insert(nodeId);
 
     int connection;
@@ -432,39 +373,49 @@ bool NodeManager::logout(const NodeId& nodeId)
 //-------------------------------------------------------------------------------------
 bool NodeManager::update()
 {
+    NodeIdSet newDestroyedNodeIds;
     NodeIdSet::iterator i;
     for (i = mDestroyedNodeIds.begin(); i != mDestroyedNodeIds.end(); i++)
     {
-        AvatarNode* avatarNode = (AvatarNode*)mNodes[*i];
-        // Remove this avatar from avatars aware of
-        for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
-            if (node->first != avatarNode->getNodeId())
+        Node* node = mNodes[*i];
+        if (node->getType().compare("avatar") == 0)
+        {
+            AvatarNode* avatarNode = (AvatarNode*)node;
+            // Remove this avatar from avatars aware of
+            for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
             {
-                if (node->second->getType().compare("avatar") == 0)
+                if (node->first != avatarNode->getNodeId())
                 {
-                    AvatarNode* an = (AvatarNode*)node->second;
-                    avatarNode->removeAwareEntity(&an->getEntity());
-                    an->removeAwareEntity(&avatarNode->getEntity());
-                }
-                else if (node->second->getType().compare("site") == 0)
-                {
-                    SiteNode* sn = (SiteNode*)node->second;
-                    avatarNode->removeAwareEntity(&sn->getEntity());
+                    if (node->second->getType().compare("avatar") == 0)
+                    {
+                        AvatarNode* an = (AvatarNode*)node->second;
+                        avatarNode->removeAwareEntity(&an->getEntity());
+                        if (an->incDecAwareCounter(-1) <= 0)
+                            OGRE_LOG("NodeManager::update() Avatar node aware counter corruption detected !");
+                        an->removeAwareEntity(&avatarNode->getEntity());
+                    }
+                    else if (node->second->getType().compare("site") == 0)
+                    {
+                        SiteNode* sn = (SiteNode*)node->second;
+                        avatarNode->removeAwareEntity(&sn->getEntity());
+                        if (sn->incDecAwareCounter(-1) == 0)
+                            newDestroyedNodeIds.insert(node->first);
+                    }
+                    else if (node->second->getType().compare("object") == 0)
+                    {
+                        ObjectNode* on = (ObjectNode*)node->second;
+                        avatarNode->removeAwareEntity(&on->getEntity());
+                        if (on->incDecAwareCounter(-1) == 0)
+                            newDestroyedNodeIds.insert(node->first);
+                    }
                 }
             }
-        mNodes.erase(*i);
-        delete avatarNode;
-        /////////////////////////////////////
-        if (Peer::getSingleton().getConnectionsCount() == 0)
-        {
-            NodeId siteNodeId = "00000010";
-            delete mNodes[siteNodeId];
-            mNodes.erase(siteNodeId);
-            mNodes.clear();
         }
-        /////////////////////////////////////
+        mNodes.erase(*i);
+        delete node;
     }
     mDestroyedNodeIds.clear();
+    mDestroyedNodeIds = newDestroyedNodeIds;
 
     return true;
 }
@@ -509,6 +460,37 @@ bool NodeManager::freeEvt(const NodeId& nodeId, XmlEvt* evt)
         return false;
 
     return node->freeEvt(evt);
+}
+
+//-------------------------------------------------------------------------------------
+#ifdef POOL
+ObjectNode* NodeManager::createObjectNode(RefCntPoolPtr<XmlEntity> xmlEntity)
+#else
+ObjectNode* NodeManager::createObjectNode(XmlEntity* xmlEntity)
+#endif
+{
+    OGRE_LOG("NodeManager::createObjectNode() creating object node name:" + xmlEntity->getName());
+
+    static NodeId objectNodeId = "00000100";
+
+    // Create the object node
+    ObjectNode* objectNode = new ObjectNode(objectNodeId, xmlEntity);
+    mNodes[objectNodeId] = objectNode;
+
+    // Put it into the 1st scene
+    SiteNode* firstSiteNode = 0;
+    for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+        if (node->second->getType().compare("site") == 0)
+        {
+            firstSiteNode = (SiteNode*)node->second;
+            break;
+        }
+    if (firstSiteNode != 0)
+        firstSiteNode->addPresentEntity(&objectNode->getEntity());
+
+    objectNodeId = XmlHelpers::convertUIntToHexString(XmlHelpers::convertHexStringToUInt(objectNodeId.c_str()) + 1);
+
+    return objectNode;
 }
 
 //-------------------------------------------------------------------------------------

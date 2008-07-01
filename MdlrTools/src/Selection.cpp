@@ -349,6 +349,11 @@ size_t Selection::getNumSelectedObjects()
 	return mListNode.size();
 }
 //-------------------------------------------------------------------------------------
+const Object3DPtrList& Selection::getSelectedObjectList()
+{
+	return mListNode;
+}
+//-------------------------------------------------------------------------------------
 void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection)
 {
 	mCentreRotation->setOrientation( mCentreRotation->getInitialOrientation() );
@@ -382,7 +387,7 @@ void Selection::updateBackup()
 	}
 }
 //-------------------------------------------------------------------------------------
-const Object3DPtrList Selection::getObjectList()
+const Object3DPtrList& Selection::getObjectList()
 {
 	return mObjectList ;
 }

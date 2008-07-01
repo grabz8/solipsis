@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Object3D_h__
 
 #include <Ogre.h>
+#include "ModifiedMaterialManager.h"
 
 using namespace Ogre;
 using namespace std;
@@ -38,8 +39,6 @@ using namespace std;
 class TiXmlDocument;
 
 namespace Solipsis {
-
-class ModifiedMaterialManager ;
 
 #define PRIMCOUNT 14
 const string SOLTYPESTRING[] = { "PLANE", "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","HALF_CYLINDER","CONE","HALF_CONE","SPHERE","HALF_SPHERE","TORUS","TUBE","RING","OTHER"};
@@ -101,7 +100,6 @@ public:
 
 	/// brief The commands history list 
 	typedef std::pair<Command,Vector3> TCommand;
-
 
 public:
 	/// brief Constructor
@@ -192,7 +190,7 @@ public:
 	Vector3 getOrientation();	
 	
 	/// brief Link a child to the object. The node of pObj become the child of the node of this object
-	///		and pObj is added to the list mChilds. If oObj is already linked, it unlinks it.
+	///		and pObj is added to the list mChildren. If oObj is already linked, it unlinks it.
 	///	 param pObj Object to link with this Object.
 	///	 param pSceneMgr Current SceneManager
 	///	 return TRUE if node is linked correctly and FALSE if pObj is unlinked.
@@ -202,8 +200,8 @@ public:
 	///	 return TRUE is pObj is already link, else return FALSE.
 	bool isLink(Object3D* pObj);
 	/// Get the list of child
-	///	 return mChilds
-	vector<Object3D*>* getChilds();
+	///	 return mChildren
+	vector<Object3D*>* getChildren();
     /// Return the current parent of this object
 	///	 return mParent ;
 	Object3D* getParent() { return mParent; }
@@ -258,49 +256,60 @@ public:
 	ModifiedMaterialManager * getMaterialManager(){return mModifiedMaterialManager ;} ;
 	///brief Method which return a texture with a given name which belongs to the map of textures of the object.
 	TexturePtr getTexture(const String& name);
-	///brief Method which add a texture to the object and to all the childs, this texture will be choosable by the user who will be able to apply it on the object.
+	///brief Method which add a texture to the object and to all the children, this texture will be choosable by the user who will be able to apply it on the object.
 	///brief  Add texture only if it doesn't already added.
 	///param texture Ogre texture to add
-	void addTexture(TexturePtr texture);
+	///param textureExtParamsMap Texture extended parameters of added texture.
+	void addTexture(TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap = TextureExtParamsMap());
 	///brief Method which delete a texture to the object textures list. If it is the current texture, changes to deflaut texture.
 	///param texture Ogre texture to delete
 	void deleteTexture(TexturePtr pTexture) ;
-	///brief Method which set the given texture as the current texture of the object and for all childs. 
+	///brief Method which set the given texture as the current texture of the object and for all children. 
 	///param texture Texture to set as current texture.
 	void setCurrentTexture(const String& textureName);
-	///brief Method which set the given texture as the current texture of the object and for all childs. 
+	///brief Method which set the given texture as the current texture of the object and for all children. 
 	///param texture Texture to set as current texture.
-	void setCurrentTexture(const TexturePtr pTexture);
+	///param textureExtParamsMap Texture extended parameters of current texture.
+	void setCurrentTexture(const TexturePtr pTexture, const TextureExtParamsMap& textureExtParamsMap = TextureExtParamsMap());
 	///brief Method which return the current texture applied on the object.
 	///return the current texture applied on the object.
 	TexturePtr getCurrentTexture();
+	///brief Method which return the current texture extended parameters applied on the object.
+	///return the current texture extended parameters applied on the object.
+	TextureExtParamsMap* getCurrentTextureExtParamsMap();
 
-	void setAmbiant( const ColourValue pColor);
+	void setAmbient( const ColourValue pColor);
 	void setDiffus( const ColourValue pColor);
 	void setSpecular( const ColourValue pColor);
 	void setShininess ( const float pColor);
-	ColourValue getAmbiant();
+	ColourValue getAmbient();
 	ColourValue getDiffus();
 	ColourValue getSpecular();
 	float getShininess ();
 
-	///brief Sets the translation offset of the texture (ie scrolls the texture) and apply on all childs
+	///brief Sets the translation offset of the texture (ie scrolls the texture) and apply on all children
 	///param pU  The amount the texture should be moved horizontally (u direction). 
 	///param pV  The amount the texture should be moved vertically (v direction). 
 	void setTextureScroll(float pU, float pV);
-	///brief Sets the scaling factor applied to texture coordinates and apply on all childs 
+	///brief Sets the scaling factor applied to texture coordinates and apply on all children 
 	///param pU  The amount the texture should be scalled horizontally (u direction). 
 	///param pV  The amount the texture should be scalled vertically (v direction). 
 	void setTextureScale(float pU, float pV);
 	///brief Sets the anticlockwise rotation factor applied to texture coordinates. (in radian)
 	///param pAngle  angle  The angle of rotation (anticlockwise).   
 	void setTextureRotate(Ogre::Radian pAngle);
-	///brief Sets the alpha value to be applied to this object and all it childs. 
+	///brief Sets the alpha value to be applied to this object and all it children. 
 	///param pValue alpha value (between 0 - 1) 
-	void setAlpha(float pValue);
+    void setAlpha(float pValue);
 	///brief Get the alpha value of the object
 	///return the value of alpha
 	float getAlpha();
+	///brief Sets the scene blending type to be applied to this object and all it children. 
+	///param pSceneBlendType scene blending type
+    void setSceneBlendType(Ogre::SceneBlendType pSceneBlendType);
+	///brief Get the scene blending type of the object
+	///return the scene blending type
+	Ogre::SceneBlendType getSceneBlendType();
 
 	//brief Get Vertex number
 	int getVertexCount() {return (int)mVertexCount;};
@@ -373,10 +382,10 @@ private:
 	///brief Update only the hardware vertex buffer from the current vretex buffer
 	void updateBufferVertex();
 
-	/// Add child to the list mChilds
+	/// Add child to the list mChildren
 	///	 param child Object3D to add
 	void addChild(Object3D* child);
-	/// Remove child to the list mChilds. The object is not deleted.
+	/// Remove child to the list mChildren. The object is not deleted.
 	///	param child Object3D to remove
 	void removeChild(Object3D* child);
 	/// Set parent : just update mParent
@@ -397,7 +406,7 @@ protected:
 	Vector3 mSize;								/// brief The object size
 	Vector3 mCornerMin;							/// brief ...
 	Vector3 mCornerMax;							/// brief ...
-	vector<Object3D*>* mChilds;					/// brief The list of the sub objects / childs
+	vector<Object3D*>* mChildren;				/// brief The list of the sub objects / children
 	Object3D* mParent;							/// brief The parent
 	
 	Ogre::String mName;							/// brief ...
@@ -488,7 +497,7 @@ static Object3D::Type objectStringToType(Ogre::String &toFind)
 		if (toFind == SOLTYPESTRING[i])
 			return (Object3D::Type) i;
 	}
-	return Object3D::Type::OTHER;
+	return Object3D::OTHER;
 }
 
 // ---------------------------------------------------------------------------------

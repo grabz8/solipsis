@@ -29,13 +29,22 @@ namespace Solipsis {
 
 #ifdef POOL
 Pool XmlLogin::mPool;
+Pool XmlLodContent::mPool;
+Pool XmlSceneLodContent::mPool;
 Pool XmlContent::mPool;
+Pool XmlSceneContent::mPool;
 Pool XmlEntity::mPool;
 Pool XmlEvt::mPool;
 Pool& XmlLogin::getStaticPool() { return mPool; }
 Pool& XmlLogin::getPool() const { return mPool; }
+Pool& XmlLodContent::getStaticPool() { return mPool; }
+Pool& XmlLodContent::getPool() const { return mPool; }
+Pool& XmlSceneLodContent::getStaticPool() { return mPool; }
+Pool& XmlSceneLodContent::getPool() const { return mPool; }
 Pool& XmlContent::getStaticPool() { return mPool; }
 Pool& XmlContent::getPool() const { return mPool; }
+Pool& XmlSceneContent::getStaticPool() { return mPool; }
+Pool& XmlSceneContent::getPool() const { return mPool; }
 Pool& XmlEntity::getStaticPool() { return mPool; }
 Pool& XmlEntity::getPool() const { return mPool; }
 Pool& XmlEvt::getStaticPool() { return mPool; }
@@ -71,6 +80,20 @@ unsigned int XmlHelpers::convertHexStringToUInt(const char* str)
 }
 
 //-------------------------------------------------------------------------------------
+std::string XmlHelpers::convertBoolToString(bool value)
+{
+    return (value ? "true" : "false");
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlHelpers::convertStringToBool(const char* str)
+{
+    if (stricmp(str, "false") == 0)
+        return false;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 std::ostream& XmlHelpers::ostreamVector3(std::ostream& o, const Ogre::Vector3& v)
 {
     o << "x=\"" << v.x << "\" y=\"" << v.y << "\" z=\"" << v.z << "\"";
@@ -85,6 +108,16 @@ std::ostream& XmlHelpers::ostreamQuaternion(std::ostream& o, const Ogre::Quatern
 }
 
 //-------------------------------------------------------------------------------------
+TiXmlElement* XmlHelpers::toXmlEltVector3(const std::string& eltName, const Ogre::Vector3& v)
+{
+    TiXmlElement* vector3Elt = new TiXmlElement(eltName.c_str());
+    vector3Elt->SetAttribute("x", Ogre::StringConverter::toString(v.x).c_str());
+    vector3Elt->SetAttribute("y", Ogre::StringConverter::toString(v.y).c_str());
+    vector3Elt->SetAttribute("z", Ogre::StringConverter::toString(v.z).c_str());
+    return vector3Elt;
+}
+
+//-------------------------------------------------------------------------------------
 bool XmlHelpers::fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
 {
     const char* attr = 0;
@@ -95,6 +128,17 @@ bool XmlHelpers::fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
     if (!getAttribute(xmlElt, "z", attr)) return false;
     v.z = atof(attr);
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+TiXmlElement* XmlHelpers::toXmlEltQuaternion(const std::string& eltName, const Ogre::Quaternion& q)
+{
+    TiXmlElement* quaternionElt = new TiXmlElement(eltName.c_str());
+    quaternionElt->SetAttribute("x", Ogre::StringConverter::toString(q.x).c_str());
+    quaternionElt->SetAttribute("y", Ogre::StringConverter::toString(q.y).c_str());
+    quaternionElt->SetAttribute("z", Ogre::StringConverter::toString(q.z).c_str());
+    quaternionElt->SetAttribute("w", Ogre::StringConverter::toString(q.w).c_str());
+    return quaternionElt;
 }
 
 //-------------------------------------------------------------------------------------
@@ -113,7 +157,7 @@ bool XmlHelpers::fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q)
 }
 
 //-------------------------------------------------------------------------------------
-const std::string& convertEventTypeToRepr(const EventType& evtType)
+const std::string& XmlHelpers::convertEventTypeToRepr(const EventType& evtType)
 {
     static std::string EventTypeRepr[] = {
         "ETNewEntity",
@@ -126,7 +170,7 @@ const std::string& convertEventTypeToRepr(const EventType& evtType)
 }
 
 //-------------------------------------------------------------------------------------
-const std::string& convertEntityTypeToRepr(const EntityType& entityType)
+const std::string& XmlHelpers::convertEntityTypeToRepr(const EntityType& entityType)
 {
     static std::string EntityTypeRepr[] = {
         "ETAvatar",
@@ -137,7 +181,7 @@ const std::string& convertEntityTypeToRepr(const EntityType& entityType)
 }
 
 //-------------------------------------------------------------------------------------
-std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags)
+std::string XmlHelpers::convertEntityFlagsToRepr(const EntityFlags& entityFlags)
 {
     std::string entityFlagsRepr;
     if (entityFlags & EFGravity)
@@ -150,7 +194,7 @@ std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags)
 }
 
 //-------------------------------------------------------------------------------------
-const std::string& convertShapeTypeToRepr(const ShapeType& shapeType)
+const std::string& XmlHelpers::convertShapeTypeToRepr(const ShapeType& shapeType)
 {
     static std::string ShapeTypeRepr[] = {
         "STPoint",
@@ -171,10 +215,24 @@ std::string XmlLogin::toXmlString() const
     s << "<pwd>" << mPwd << "</pwd>";
     s << "<ctxt>";
     s << "<cnxMode>";
-    s << 0;
+    s << "0";
     s << "</cnxMode>";
     s << "</ctxt>";
     return s.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlLogin::toXmlElt(TiXmlElement& xmlElt) const
+{
+    xmlElt.SetAttribute("username", mUsername.c_str());
+    xmlElt.SetAttribute("pwd", mPwd.c_str());
+    TiXmlElement* ctxtElt = new TiXmlElement("ctxt");
+    TiXmlText* ctxt = new TiXmlText("0");
+    ctxtElt->LinkEndChild(ctxt);
+    TiXmlElement* cnxModeElt = new TiXmlElement("cnxMode");
+    ctxtElt->LinkEndChild(cnxModeElt);
+    xmlElt.LinkEndChild(ctxtElt);
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -194,63 +252,235 @@ bool XmlLogin::fromXmlElt(TiXmlElement* xmlElt)
 }
 
 //-------------------------------------------------------------------------------------
-std::string XmlContent::toXmlString() const
+std::string XmlLodContent::toXmlString() const
 {
     std::stringstream s;
-    s << "<content>";
-    for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
+    s << "<lod level=\"" << mLevel << "\">";
+#ifdef POOL
+    if (!mDatas.isNull()) s << mDatas->toXmlString();
+#else
+    if (mDatas != 0) s << mDatas->toXmlString();
+#endif
+    s << "<files>";
+    for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
-        const ContentFileList& contentFileList = lod->second;
-        s << "<lod level=\"" << lod->first << "\">";
-        s << "<files>";
-        for (ContentFileList::const_iterator file = contentFileList.begin(); file != contentFileList.end(); ++file)
-        {
-            s << "<file name=\"" << (*file) << "\"/>";
-        }
-        s << "</files>";
-        s << "</lod>";
+        s << "<file name=\"" << file->filename << "\" version=\"" + XmlHelpers::convertEntityVersionToHexString(file->version) + "\"/>";
     }
-    s << "</content>";
+    s << "</files>";
+    s << "</lod>";
     return s.str();
 }
 
 //-------------------------------------------------------------------------------------
-bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
+bool XmlLodContent::toXmlElt(TiXmlElement& xmlElt) const
 {
-    mContentLodMap.clear();
+    TiXmlElement* lodElt = new TiXmlElement("lod");
+    lodElt->SetAttribute("level", mLevel);
+#ifdef POOL
+    if (!mDatas.isNull()) mDatas->toXmlElt(*lodElt);
+#else
+    if (mDatas != 0) mDatas->toXmlElt(*lodElt);
+#endif
+    TiXmlElement* filesElt = new TiXmlElement("files");
+    for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
+    {
+        TiXmlElement* fileElt = new TiXmlElement("file");
+        fileElt->SetAttribute("name", file->filename.c_str());
+        fileElt->SetAttribute("version", XmlHelpers::convertEntityVersionToHexString(file->version).c_str());
+        filesElt->LinkEndChild(fileElt);
+    }
+    lodElt->LinkEndChild(filesElt);
+    xmlElt.LinkEndChild(lodElt);
+    return true;
+}
 
-    ContentFileList contentFileList;
+//-------------------------------------------------------------------------------------
+bool XmlLodContent::fromXmlElt(TiXmlElement* xmlElt)
+{
+#ifdef POOL
+#else
+    delete mDatas;
+    mDatas = 0;
+#endif
+    mLodContentFileList.clear();
+
     TiXmlElement* elt;
     const char* attr = 0;
 
-    for (TiXmlElement* lodElt = xmlElt->FirstChildElement("lod"); lodElt != 0; lodElt = lodElt->NextSiblingElement("lod"))
+    if (!XmlHelpers::getAttribute(xmlElt, "level", attr)) return false;
+    XmlHelpers::convertDecStringToLod(attr, mLevel);
+
+    if ((elt = xmlElt->FirstChildElement("sceneLodContent")) != 0)
     {
-        if (!XmlHelpers::getAttribute(lodElt, "level", attr)) return false;
-        Lod lod;
-        convertDecStringToLod(attr, lod);
+#ifdef POOL
+        RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent;
+        xmlSceneLodContent->fromXmlElt(elt);
+        mDatas = RefCntPoolPtr<XmlData>(xmlSceneLodContent);
+#else
+        XmlSceneLodContent* sceneLodContent = new XmlSceneLodContent();
+        sceneLodContent->fromXmlElt(elt);
+        mDatas = sceneLodContent;
+#endif
+    }
 
-        if ((elt = lodElt->FirstChildElement("files")) == 0)
-            return false;
+    if ((elt = xmlElt->FirstChildElement("files")) == 0)
+        return false;
 
-        contentFileList.clear();
-        for (TiXmlElement* fileElt = elt->FirstChildElement("file"); fileElt != 0; fileElt = fileElt->NextSiblingElement("file"))
-        {
-            if (!XmlHelpers::getAttribute(fileElt, "name", attr)) return false;
-            contentFileList.push_back(std::string(attr));
-        }
-
-        mContentLodMap[lod] = contentFileList;
+    for (TiXmlElement* fileElt = elt->FirstChildElement("file"); fileElt != 0; fileElt = fileElt->NextSiblingElement("file"))
+    {
+        LodContentFileStruct lodContentFileStruct;
+        if (!XmlHelpers::getAttribute(fileElt, "name", attr)) return false;
+        lodContentFileStruct.filename = std::string(attr);
+        if (!XmlHelpers::getAttribute(fileElt, "version", attr)) return false;
+        lodContentFileStruct.version = XmlHelpers::convertHexStringToFileVersion(attr);
+        mLodContentFileList.push_back(lodContentFileStruct);
     }
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-XmlEntity::~XmlEntity()
+std::string XmlSceneLodContent::toXmlString() const
 {
-    delete mAnimation;
-    delete mShape;
-    delete mContent;
+    std::stringstream s;
+    s << "<sceneLodContent mainFilename=\"" << mMainFilename << "\" collision=\"" << mCollision << "\" />";
+    return s.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlSceneLodContent::toXmlElt(TiXmlElement& xmlElt) const
+{
+    TiXmlElement* sceneLodContentElt = new TiXmlElement("sceneLodContent");
+    sceneLodContentElt->SetAttribute("mainFilename", mMainFilename.c_str());
+    sceneLodContentElt->SetAttribute("collision", mCollision.c_str());
+    xmlElt.LinkEndChild(sceneLodContentElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlSceneLodContent::fromXmlElt(TiXmlElement* xmlElt)
+{
+    const char* attr = 0;
+
+    if (!XmlHelpers::getAttribute(xmlElt, "mainFilename", attr)) return false;
+    mMainFilename = attr;
+    if (XmlHelpers::getAttribute(xmlElt, "collision", attr))
+        mCollision = attr;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlContent::toXmlString() const
+{
+    std::stringstream s;
+    s << "<content>";
+#ifdef POOL
+    if (!mDatas.isNull()) s << mDatas->toXmlString();
+#else
+    if (mDatas != 0) s << mDatas->toXmlString();
+#endif
+    for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
+    {
+        s << lod->second->toXmlString();
+    }
+    s << "</content>";
+    return s.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlContent::toXmlElt(TiXmlElement& xmlElt) const
+{
+    TiXmlElement* contentElt = new TiXmlElement("content");
+#ifdef POOL
+    if (!mDatas.isNull()) mDatas->toXmlElt(*contentElt);
+#else
+    if (mDatas != 0) mDatas->toXmlElt(*contentElt);
+#endif
+    for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
+    {
+        lod->second->toXmlElt(*contentElt);
+    }
+    xmlElt.LinkEndChild(contentElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
+{
+#ifdef POOL
+#else
+    delete mDatas;
+    mDatas = 0;
+#endif
+
+    TiXmlElement* elt;
+
+    if ((elt = xmlElt->FirstChildElement("sceneContent")) != 0)
+    {
+#ifdef POOL
+        RefCntPoolPtr<XmlSceneContent> xmlSceneContent;
+        xmlSceneContent->fromXmlElt(elt);
+        mDatas = RefCntPoolPtr<XmlData>(xmlSceneContent);
+#else
+        XmlSceneContent* sceneContent = new XmlSceneContent();
+        sceneContent->fromXmlElt(elt);
+        mDatas = sceneContent;
+#endif
+    }
+
+    mContentLodMap.clear();
+
+    for (TiXmlElement* lodElt = xmlElt->FirstChildElement("lod"); lodElt != 0; lodElt = lodElt->NextSiblingElement("lod"))
+    {
+        RefCntPoolPtr<XmlLodContent> xmlLodContent;
+        xmlLodContent->fromXmlElt(lodElt);
+        mContentLodMap[xmlLodContent->getLevel()] = xmlLodContent;
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlSceneContent::toXmlString() const
+{
+    std::stringstream s;
+    s << "<sceneContent>";
+    s << "<entryGate gravity=\"" + XmlHelpers::convertBoolToString(mEntryGate.mGravity) + "\">";
+    XmlHelpers::ostreamVector3(s << "<position ", mEntryGate.mPosition) << " />";
+    s << "</entryGate>";
+    s << "</sceneContent>";
+    return s.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlSceneContent::toXmlElt(TiXmlElement& xmlElt) const
+{
+    TiXmlElement* sceneLodContentElt = new TiXmlElement("sceneContent");
+    TiXmlElement* entryGateElt = new TiXmlElement("entryGate");
+    entryGateElt->SetAttribute("gravity", XmlHelpers::convertBoolToString(mEntryGate.mGravity).c_str());
+    entryGateElt->LinkEndChild(XmlHelpers::toXmlEltVector3("position", mEntryGate.mPosition));
+    sceneLodContentElt->LinkEndChild(entryGateElt);
+    xmlElt.LinkEndChild(sceneLodContentElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlSceneContent::fromXmlElt(TiXmlElement* xmlElt)
+{
+    TiXmlElement* elt;
+    const char* attr = 0;
+
+    if ((elt = xmlElt->FirstChildElement("entryGate")) == 0)
+        return false;
+    if (!XmlHelpers::getAttribute(elt, "gravity", attr)) return false;
+    mEntryGate.mGravity = XmlHelpers::convertStringToBool(attr);
+    TiXmlElement* subElt;
+    if ((subElt = elt->FirstChildElement("position")) == 0)
+        return false;
+    XmlHelpers::fromXmlEltVector3(subElt, mEntryGate.mPosition);
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -259,12 +489,13 @@ std::string XmlEntity::toXmlString() const
     std::stringstream s;
     if (!mDefinedAttributes & DAUid) return s.str();
     std::string uidStr;
-    s << "<entity uid=\"" << convertEntityUIDToHexString(mUid) << "\"";
+    s << "<entity uid=\"" << XmlHelpers::convertEntityUIDToHexString(mUid) << "\"";
     if (mDefinedAttributes & DAOwner) s << " owner=\"" << mOwner << "\"";
     if (mDefinedAttributes & DAType) s << " type=\"" << mType << "\"";
     if (mDefinedAttributes & DAName) s << " name=\"" << mName << "\"";
+    if (mDefinedAttributes & DAVersion) s << " version=\"" << XmlHelpers::convertEntityVersionToHexString(mVersion) << "\"";
     s << ">";
-    if (mDefinedAttributes & DAFlags) s << "<flags bitmask=\"" << mFlags << "\" />";
+    if (mDefinedAttributes & DAFlags) s << "<flags bitmask=\"" << XmlHelpers::convertEntityFlagsToHexString(mFlags) << "\" />";
     if (mDefinedAttributes & DADisplacement) XmlHelpers::ostreamVector3(s << "<displacement ", mDisplacement) << " />";
     if (mDefinedAttributes & DAPosition) XmlHelpers::ostreamVector3(s << "<position ", mPosition) << " />";
     if (mDefinedAttributes & DAOrientation) XmlHelpers::ostreamQuaternion(s << "<orientation ", mOrientation) << " />";
@@ -275,28 +506,79 @@ std::string XmlEntity::toXmlString() const
         XmlHelpers::ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
         s << "</aabb>";
     }
+#ifdef POOL
+    if (!mAnimation.isNull()) s << mAnimation->toXmlString();
+    if (!mShape.isNull()) s << mShape->toXmlString();
+    if (!mContent.isNull()) s << mContent->toXmlString();
+#else
     if (mAnimation != 0) s << mAnimation->toXmlString();
     if (mShape != 0) s << mShape->toXmlString();
     if (mContent != 0) s << mContent->toXmlString();
+#endif
     s << "</entity>";
     return s.str();
 }
 
 //-------------------------------------------------------------------------------------
+bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
+{
+    if (!mDefinedAttributes & DAUid) return false;
+    TiXmlElement* entityElt = new TiXmlElement("entity");
+    entityElt->SetAttribute("uid", XmlHelpers::convertEntityUIDToHexString(mUid).c_str());
+    if (mDefinedAttributes & DAOwner) entityElt->SetAttribute("owner", mOwner.c_str());
+    if (mDefinedAttributes & DAType) entityElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
+    if (mDefinedAttributes & DAName) entityElt->SetAttribute("name", mName.c_str());
+    if (mDefinedAttributes & DAVersion) entityElt->SetAttribute("version", XmlHelpers::convertEntityVersionToHexString(mVersion).c_str());
+    if (mDefinedAttributes & DAFlags)
+    {
+        TiXmlElement* flagsElt = new TiXmlElement("flags");
+        flagsElt->SetAttribute("bitmask", XmlHelpers::convertEntityFlagsToHexString(mFlags).c_str());
+        entityElt->LinkEndChild(flagsElt);
+    }
+    if (mDefinedAttributes & DADisplacement)
+        entityElt->LinkEndChild(XmlHelpers::toXmlEltVector3("displacement", mDisplacement));
+    if (mDefinedAttributes & DAPosition)
+        entityElt->LinkEndChild(XmlHelpers::toXmlEltVector3("position", mPosition));
+    if (mDefinedAttributes & DAOrientation)
+        entityElt->LinkEndChild(XmlHelpers::toXmlEltQuaternion("orientation", mOrientation));
+    if (mDefinedAttributes & DAAABoundingBox)
+    {
+        TiXmlElement* aabbElt = new TiXmlElement("aabb");
+        aabbElt->LinkEndChild(XmlHelpers::toXmlEltVector3("min", mAABoundingBox.getMinimum()));
+        aabbElt->LinkEndChild(XmlHelpers::toXmlEltVector3("max", mAABoundingBox.getMaximum()));
+        entityElt->LinkEndChild(aabbElt);
+    }
+#ifdef POOL
+    if (!mAnimation.isNull()) mAnimation->toXmlElt(*entityElt);
+    if (!mShape.isNull()) mShape->toXmlElt(*entityElt);
+    if (!mContent.isNull()) mContent->toXmlElt(*entityElt);
+#else
+    if (mAnimation != 0) mAnimation->toXmlElt(*entityElt);
+    if (mShape != 0) mShape->toXmlElt(*entityElt);
+    if (mContent != 0) mContent->toXmlElt(*entityElt);
+#endif
+    xmlElt.LinkEndChild(entityElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
 {
+#ifdef POOL
+#else
     delete mAnimation;
     mAnimation = 0;
     delete mShape;
     mShape = 0;
     delete mContent;
     mContent = 0;
+#endif
 
     TiXmlElement* elt;
     const char* attr = 0;
 
     if (!XmlHelpers::getAttribute(xmlElt, "uid", attr)) return false;
-    mUid = convertHexStringToEntityUID(attr);
+    mUid = XmlHelpers::convertHexStringToEntityUID(attr);
     mDefinedAttributes |= DAUid;
     if (XmlHelpers::getAttribute(xmlElt, "owner", attr))
     {
@@ -305,7 +587,7 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     }
     if (XmlHelpers::getAttribute(xmlElt, "type", attr))
     {
-        convertDecStringToEntityType(attr, mType);
+        XmlHelpers::convertDecStringToEntityType(attr, mType);
         mDefinedAttributes |= DAType;
     }
     if (XmlHelpers::getAttribute(xmlElt, "name", attr))
@@ -313,11 +595,16 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         mName = attr;
         mDefinedAttributes |= DAName;
     }
+    if (XmlHelpers::getAttribute(xmlElt, "version", attr))
+    {
+        mVersion = XmlHelpers::convertHexStringToEntityVersion(attr);
+        mDefinedAttributes |= DAVersion;
+    }
 
     if ((elt = xmlElt->FirstChildElement("flags")) != 0)
     {
         if (!XmlHelpers::getAttribute(elt, "bitmask", attr)) return false;
-        mFlags = convertHexStringToEntityFlags(attr);
+        mFlags = XmlHelpers::convertHexStringToEntityFlags(attr);
         mDefinedAttributes |= DAFlags;
     }
     if ((elt = xmlElt->FirstChildElement("displacement")) != 0)
@@ -349,16 +636,22 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     if ((elt = xmlElt->FirstChildElement("animation")) != 0)
     {
         mDefinedAttributes |= DAAnimation;
+        //
     }
     if ((elt = xmlElt->FirstChildElement("shape")) != 0)
     {
-//        mShape = new XmlShape();
-//        mShape->fromXmlElt(elt);
+        //
     }
     if ((elt = xmlElt->FirstChildElement("content")) != 0)
     {
+#ifdef POOL
+        RefCntPoolPtr<XmlContent> xmlContent;
+        xmlContent->fromXmlElt(elt);
+        mContent = RefCntPoolPtr<XmlContent>(xmlContent);
+#else
         mContent = new XmlContent();
         mContent->fromXmlElt(elt);
+#endif
     }
 
     return true;
@@ -379,6 +672,20 @@ std::string XmlEvt::toXmlString() const
 }
 
 //-------------------------------------------------------------------------------------
+bool XmlEvt::toXmlElt(TiXmlElement& xmlElt) const
+{
+    TiXmlElement* evtElt = new TiXmlElement("evt");
+    evtElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
+#ifdef POOL
+    if (!mDatas.isNull()) mDatas->toXmlElt(*evtElt);
+#else
+    if (mDatas != 0) mDatas->toXmlElt(*evtElt);
+#endif
+    xmlElt.LinkEndChild(evtElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
 {
 #ifdef POOL
@@ -394,7 +701,7 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
         return false;
 
     if (!XmlHelpers::getAttribute(elt, "type", attr)) return false;
-    convertDecStringToEventType(attr, mType);
+    XmlHelpers::convertDecStringToEventType(attr, mType);
 
     if ((elt = elt->FirstChildElement("entity")) != 0)
     {

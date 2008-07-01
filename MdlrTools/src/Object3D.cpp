@@ -80,7 +80,7 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mBufCurrent->cornerMax	= mBufBackup->cornerMax	= mBufPrim->cornerMax	= mCornerMax;
 	mBufCurrent->cornerMin	= mBufBackup->cornerMin	= mBufPrim->cornerMin	= mCornerMin;
 
-	mChilds = NULL;		// TODO : must be loaded from the .XML
+	mChildren = NULL;		// TODO : must be loaded from the .XML
 	mParent = 0;		// TODO : must be loaded from the .XML
 
 	mName = pName;
@@ -121,10 +121,15 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 //-------------------------------------------------------------------------------------
 Object3D::~Object3D()
 {
-	//delete mEntity;		
+	//delete mEntity;	
+    mNode->detachObject(mEntity);
+    mNode->getCreator()->destroyMovableObject(mEntity);
 	mEntity = 0;
+    mNode->getCreator()->destroySceneNode(mNode->getName());
 	mNode = 0;
-	delete mChilds;		mChilds = 0;
+	delete mChildren;		mChildren = 0;
+
+	delete mModifiedMaterialManager;
 }
 
 //-------------------------------------------------------------------------------------
@@ -247,11 +252,11 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 
 	e = doc.RootElement()->FirstChildElement("material");
 	ColourValue cv;
-	from_string(e->FirstChildElement("matambiant")->Attribute("r"),cv.r);
-	from_string(e->FirstChildElement("matambiant")->Attribute("g"),cv.g);
-	from_string(e->FirstChildElement("matambiant")->Attribute("b"),cv.b);
-	from_string(e->FirstChildElement("matambiant")->Attribute("a"),cv.a);
-	setAmbiant(cv);
+	from_string(e->FirstChildElement("matambient")->Attribute("r"),cv.r);
+	from_string(e->FirstChildElement("matambient")->Attribute("g"),cv.g);
+	from_string(e->FirstChildElement("matambient")->Attribute("b"),cv.b);
+	from_string(e->FirstChildElement("matambient")->Attribute("a"),cv.a);
+	setAmbient(cv);
 	from_string(e->FirstChildElement("matdiff")->Attribute("r"),cv.r);
 	from_string(e->FirstChildElement("matdiff")->Attribute("g"),cv.g);
 	from_string(e->FirstChildElement("matdiff")->Attribute("b"),cv.b);
@@ -266,7 +271,9 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("matshin")->Attribute("value"),value);
 	setShininess( value);
 	from_string(e->FirstChildElement("matopac")->Attribute("value"),value);
-	setAlpha( value);
+	setAlpha(value);
+    if (value < 1.0)
+        setSceneBlendType(SBT_TRANSPARENT_ALPHA);
 	//texture scroll, scale and rotate :
 	Ogre::Vector2 tmpVec;
 	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
@@ -284,10 +291,28 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	//add texture to the current list :
 	while (trans != NULL)
 	{
-		//texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-		texture = TextureManager::getSingleton().load( trans->Attribute("Name") , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        TextureExtParamsMap textureExtParamsMap;
+    	TiXmlElement *textureExtParamsMapElt = trans->FirstChildElement("textureExtParamsMap");
+        if (textureExtParamsMapElt != 0)
+        {
+            TiXmlElement *textureExtParamElt = textureExtParamsMapElt->FirstChildElement("param");
+            while (textureExtParamElt != 0)
+            {
+                textureExtParamsMap[textureExtParamElt->Attribute("Name")] = textureExtParamElt->Attribute("Value");
+                textureExtParamElt = textureExtParamElt->NextSiblingElement("param");
+            }
+        }
+        if (mModifiedMaterialManager->getMMMTextureManager() != 0)
+        {
+            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(mModifiedMaterialManager, mEntity, trans->Attribute("Name"), textureExtParamsMap);
+        }
+        else
+        {
+            //texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		    texture = TextureManager::getSingleton().load( trans->Attribute("Name") , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        }
 
-		addTexture (texture) ;
+		addTexture (texture, textureExtParamsMap) ;
 
 		from_string( trans->Attribute("currenttexture") , currenttexture);
 		if( strcmp (currenttexture.c_str() , "true" ) == 0 )
@@ -423,8 +448,8 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t</model>" << endl;
 
 	toSave << "\t<material>" << endl;
-	ColourValue cv  = getAmbiant();
-	toSave << "\t\t<matambiant r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
+	ColourValue cv  = getAmbient();
+	toSave << "\t\t<matambient r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
 	cv  = getDiffus();
 	toSave << "\t\t<matdiff r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
 	cv  = getSpecular();
@@ -453,19 +478,35 @@ int		Object3D::saveToFile(const char* fileName)
 
 	for (int i=1; i< mModifiedMaterialManager->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
 	{
-		texturePath = mModifiedMaterialManager->getTexture(i)->getName();
+        TexturePtr texturei = mModifiedMaterialManager->getTexture(i);
+		texturePath = texturei->getName();
 		nameSizeChar = texturePath.find_last_of( '\\' );
 		std::string textureName (texturePath, nameSizeChar+1,texturePath.length() );
 
-		if( mModifiedMaterialManager->getTexture(i) == mModifiedMaterialManager->getCurrentTexture() )
+		if( texturei == mModifiedMaterialManager->getCurrentTexture() )
 		{
 			currentTexture = "true" ;
 		}
 		else
 			currentTexture = "false" ;
 
+        TextureExtParamsMap *textureExtParamsMap = mModifiedMaterialManager->getTextureExtParamsMap(texturei);
+
 		//save in XML :
-		toSave << "\t\t\t<texture Name=\"" << textureName << "\" currenttexture=\"" << currentTexture << "\" />"  << endl;		
+		toSave << "\t\t\t<texture Name=\"" << textureName << "\" currenttexture=\"" << currentTexture << "\">" << endl;	
+        if (textureExtParamsMap != 0)
+        {
+            toSave << "\t\t\t\t<textureExtParamsMap>" << endl;
+            for(TextureExtParamsMap::const_iterator it=textureExtParamsMap->begin();it!=textureExtParamsMap->end();++it)
+            {
+                TiXmlString xmlStringIn(it->second.c_str());
+                TiXmlString xmlStringOut;
+                TiXmlBase::EncodeString(xmlStringIn, &xmlStringOut);
+                toSave << "\t\t\t\t\t<param Name=\"" << it->first << "\" Value=\"" << xmlStringOut.c_str() << "\" />" << endl;
+            }
+            toSave << "\t\t\t\t</textureExtParamsMap>" << endl;
+        }
+        toSave << "\t\t\t</texture>" << endl;
 	}
 
 	toSave << "\t\t</texturelist>" << endl;
@@ -1120,11 +1161,11 @@ vvv = NULL;
 		mBufCurrent->indexCount		= indexCount;
 	}
 
-	// childs
- 	if (mChilds)
+	// children
+ 	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			switch( command )
 			{
@@ -1168,7 +1209,7 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 	Vector3 Wpostion = pObjScenNode->getWorldPosition() ;;
 	if( isLink(pObj) )
 	{			//remove it ...
-		removeChild( pObj);			//to mChilds
+		removeChild( pObj);			//to mChildren
 									//to this current node :
 		mNode->removeChild( pObjScenNode );
 		pSceneMgr->getRootSceneNode()->addChild( pObjScenNode );
@@ -1180,7 +1221,7 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 		if(pObj->getParent() == NULL)//if this object hasn't parent :
 		{
 			//we can add it ...
-			addChild( pObj);			//... to mChilds
+			addChild( pObj);			//... to mChildren
 										//... to this current node	 
 			pSceneMgr->getRootSceneNode()->removeChild( pObjScenNode ) ;
 			mNode->addChild( pObjScenNode );
@@ -1197,11 +1238,11 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 //-------------------------------------------------------------------------------------
 bool Object3D::isLink(Object3D* pObj)
 {
-	if (!mChilds)
+	if (!mChildren)
 		return false;
 
 	vector< Object3D* >::iterator itr ;
-	for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+	for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 	{
 		if ( (*itr) == pObj )
 			return true;
@@ -1212,29 +1253,29 @@ bool Object3D::isLink(Object3D* pObj)
 //-------------------------------------------------------------------------------------
 void Object3D::addChild(Object3D* pChild)
 {
-	if( !mChilds )
-		mChilds = new vector< Object3D* >;
+	if( !mChildren )
+		mChildren = new vector< Object3D* >;
 
-	mChilds->push_back( pChild ) ;
+	mChildren->push_back( pChild ) ;
 }
 
 //-------------------------------------------------------------------------------------
-vector< Object3D* >* Object3D::getChilds()
+vector< Object3D* >* Object3D::getChildren()
 {
-	return mChilds;
+	return mChildren;
 }
 
 //-------------------------------------------------------------------------------------
 void Object3D::removeChild(Object3D* pChild)
 {
-	if( mChilds )
+	if( mChildren )
 	{
 		vector< Object3D* >::iterator i ;
-		for(i = mChilds->begin(); i!=mChilds->end(); i++)
+		for(i = mChildren->begin(); i!=mChildren->end(); i++)
 		{
 			if ( (*i) == pChild )
 			{
-				mChilds->erase( i);
+				mChildren->erase( i);
 				return ;
 			}
 		}
@@ -1394,13 +1435,13 @@ void Object3D::resizeBuffers( realvector &pVertexData, size_t pVertexCount, uint
 	mVertexData->vertexCount = pVertexCount;
 
 	Real *vertextmp = new Real[pVertexData.size()];
-	for (int i= 0 ; i< pVertexData.size();i++)
+	for (int i= 0 ; i<(int)pVertexData.size();i++)
 	{
 		vertextmp[i] = pVertexData[i];
 	}
 
 	unsigned int *indextmp = new unsigned int [pIndexData.size()];
-	for (int i= 0 ; i< pIndexData.size();i++)
+	for (int i= 0 ; i<(int)pIndexData.size();i++)
 	{
 		indextmp[i] = pIndexData[i];
 	}
@@ -1451,10 +1492,10 @@ void Object3D::resizeBuffers( realvector &pVertexData, size_t pVertexCount, uint
 void Object3D::showBoundingBox(bool pValue)
 {
 	mNode->showBoundingBox(pValue);
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->showBoundingBox(pValue);
 		}
@@ -1471,21 +1512,21 @@ TexturePtr Object3D::getTexture(const String& name)
 	return mModifiedMaterialManager->getTexture( name );
 }
 //-------------------------------------------------------------------------------------
-void Object3D::addTexture(TexturePtr texture)
+void Object3D::addTexture(TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap)
 {
 	//Test if this texture already exists :
 	TexturePtr PrecPtrTexture = mModifiedMaterialManager->getTexture(texture->getName() );	//return NULL if this texture doesn't exist
 	if ( PrecPtrTexture == TexturePtr () )	//if (PrecPtrTexture == NULL) ...
 	{
-		mModifiedMaterialManager->addTexture(texture);
+		mModifiedMaterialManager->addTexture(texture, textureExtParamsMap);
 	}
 	
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
-			(*itr)->addTexture(texture);
+			(*itr)->addTexture(texture, textureExtParamsMap);
 		}
 	}
 }
@@ -1499,11 +1540,11 @@ void Object3D::deleteTexture(TexturePtr pTexture)
 		mModifiedMaterialManager->deleteTexture( pTexture ) ;
 	}
 
-	//Apply remove for all childs :
-	if (mChilds)
+	//Apply remove for all children :
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->deleteTexture( pTexture);
 		}
@@ -1523,33 +1564,33 @@ void Object3D::setCurrentTexture(const String& textureName)
 
 	mModifiedMaterialManager->setCurrentTexture( texture) ;
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setCurrentTexture(texture);
 		}
 	}
 }
 //-------------------------------------------------------------------------------------
-void Object3D::setCurrentTexture(const TexturePtr pTexture)
+void Object3D::setCurrentTexture(const TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap)
 {
 	//test if this texture is in the list
-	if( ! mModifiedMaterialManager->isPresentInList( pTexture ) )
+	if( ! mModifiedMaterialManager->isPresentInList(texture))
 	{
 		//we add it if it isn't present :
-		mModifiedMaterialManager->addTexture( pTexture );
+		mModifiedMaterialManager->addTexture(texture, textureExtParamsMap);
 	}
 
-	mModifiedMaterialManager->setCurrentTexture( pTexture) ;
+	mModifiedMaterialManager->setCurrentTexture(texture);
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
-			(*itr)->setCurrentTexture(pTexture);
+			(*itr)->setCurrentTexture(texture, textureExtParamsMap);
 		}
 	}
 }
@@ -1559,15 +1600,20 @@ TexturePtr Object3D::getCurrentTexture()
 	return mModifiedMaterialManager->getCurrentTexture() ;
 }
 //-------------------------------------------------------------------------------------
-void Object3D::setAmbiant( const ColourValue pColor)
+TextureExtParamsMap* Object3D::getCurrentTextureExtParamsMap()
+{
+	return mModifiedMaterialManager->getTextureExtParamsMap(mModifiedMaterialManager->getCurrentTexture()) ;
+}
+//-------------------------------------------------------------------------------------
+void Object3D::setAmbient( const ColourValue pColor)
 {
 	mModifiedMaterialManager->getModifiedMaterial()->setAmbient( pColor);
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
-			(*itr)->setAmbiant(pColor);
+			(*itr)->setAmbient(pColor);
 		}
 	}
 }
@@ -1575,10 +1621,10 @@ void Object3D::setAmbiant( const ColourValue pColor)
 void Object3D::setDiffus( const ColourValue pColor)
 {
 	mModifiedMaterialManager->getModifiedMaterial()->setDiffus( pColor);
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setDiffus( pColor);
 		}
@@ -1588,10 +1634,10 @@ void Object3D::setDiffus( const ColourValue pColor)
 void Object3D::setSpecular( const ColourValue pColor)
 {
 	mModifiedMaterialManager->getModifiedMaterial()->setSpecular( pColor);
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setSpecular( pColor);
 		}
@@ -1601,17 +1647,17 @@ void Object3D::setSpecular( const ColourValue pColor)
 void Object3D::setShininess ( const float pColor)
 {
 	mModifiedMaterialManager->getModifiedMaterial()->setShininess ( pColor);
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setShininess( pColor);
 		}
 	}
 }
 //-------------------------------------------------------------------------------------
-ColourValue Object3D::getAmbiant()
+ColourValue Object3D::getAmbient()
 {
 	return mModifiedMaterialManager->getModifiedMaterial()->getAmbient() ;
 }
@@ -1647,7 +1693,7 @@ void Object3D::rotateFromParent( float pValueX, float pValueY, float pValueZ )
 		+pValueZ * Math::PI / 180 );
 
 	dec -= mNode->getPosition();
-	mNode->translate( dec.x, dec.y, dec.z, Node::TransformSpace::TS_PARENT );
+	mNode->translate( dec.x, dec.y, dec.z, Node::TS_PARENT );
 }
 
 //-------------------------------------------------------------------------------------
@@ -1655,10 +1701,10 @@ void Object3D::setTextureScroll(float pU, float pV)
 {
 	mModifiedMaterialManager->setTextureScroll( pU, pV) ;
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setTextureScroll(pU, pV) ;
 		}
@@ -1669,10 +1715,10 @@ void Object3D::setTextureScale(float pU, float pV)
 {
 	mModifiedMaterialManager->setTextureScale( pU, pV) ;
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setTextureScale(pU, pV) ;
 		}
@@ -1683,10 +1729,10 @@ void Object3D::setTextureRotate(Ogre::Radian pAngle)
 {
 	mModifiedMaterialManager->setTextureRotate( pAngle) ;
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setTextureRotate(pAngle) ;
 		}
@@ -1695,12 +1741,12 @@ void Object3D::setTextureRotate(Ogre::Radian pAngle)
 //-------------------------------------------------------------------------------------
 void Object3D::setAlpha(float pValue)
 {
-	mModifiedMaterialManager->setAlpha( pValue ) ;
+	mModifiedMaterialManager->setAlpha(pValue);
 
-	if (mChilds)
+	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
-		for( itr = mChilds->begin(); itr != mChilds->end(); itr++ )
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setAlpha( pValue ) ;
 		}
@@ -1710,6 +1756,25 @@ void Object3D::setAlpha(float pValue)
 float Object3D::getAlpha()
 {
 	return mModifiedMaterialManager->getAlpha() ;
+}
+//-------------------------------------------------------------------------------------
+void Object3D::setSceneBlendType(SceneBlendType pSceneBlendType)
+{
+	mModifiedMaterialManager->setSceneBlendType(pSceneBlendType);
+
+	if (mChildren)
+	{
+		vector< Object3D* >::iterator itr ;
+		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
+		{
+			(*itr)->setSceneBlendType( pSceneBlendType ) ;
+		}
+	}
+}
+//-------------------------------------------------------------------------------------
+SceneBlendType Object3D::getSceneBlendType()
+{
+	return mModifiedMaterialManager->getSceneBlendType() ;
 }
 //-------------------------------------------------------------------------------------
 bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld ) 
@@ -1831,8 +1896,8 @@ bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld )
 	mCommandList.push_back( pCommandNew );
 
 	// and do the same thing to the childrens
-	if( mChilds )
-		for( std::vector< Object3D* >::iterator child = mChilds->begin(); child != mChilds->end(); child++ )
+	if( mChildren )
+		for( std::vector< Object3D* >::iterator child = mChildren->begin(); child != mChildren->end(); child++ )
 			(*child)->addCommand( pCommandNew, temp );
 
 	// replace the last command by the current one
@@ -1994,8 +2059,8 @@ bool Object3D::undo()
 	}
 
 	// do all the same for the childrens
-	if ( mChilds )//&& !childs->empty() )
-		for( vector< Object3D* >::iterator child = mChilds->begin(); child != mChilds->end(); child++ )	
+	if ( mChildren )//&& !children->empty() )
+		for( vector< Object3D* >::iterator child = mChildren->begin(); child != mChildren->end(); child++ )	
 			(*child)->undo();
 
 	return true;

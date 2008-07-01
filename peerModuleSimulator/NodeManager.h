@@ -28,12 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IP2NClient.h"
 #include "XmlDatas.h"
 #include "Node.h"
-#include "AvatarNode.h"
-#include "SiteNode.h"
 
 using namespace Ogre;
 
 namespace Solipsis {
+
+class AvatarNode;
+class ObjectNode;
 
 /** This class manages all Solipsis nodes.
 */
@@ -50,6 +51,9 @@ private:
     NodeMap mNodes;
     /// Set of destroyed nodes Ids
     NodeIdSet mDestroyedNodeIds;
+
+    /// Xml node id files path
+    std::string mNodeIdXmlFilesPath;
 
 public:
 	NodeManager();
@@ -77,6 +81,18 @@ public:
     /** Free event (handled event). */
     bool freeEvt(const NodeId& nodeId, XmlEvt* evt);
 #endif
+
+    /** Create an ObjectNode. */
+#ifdef POOL
+	ObjectNode* createObjectNode(RefCntPoolPtr<XmlEntity> xmlEntity);
+#else
+	ObjectNode* createObjectNode(XmlEntity* xmlEntity);
+#endif
+
+    /** Load entities of a nodeId */
+    bool loadNodeIdFile(const NodeId& nodeId);
+    /** Save/Update entities of a nodeId */
+    bool saveNodeIdFile(const NodeId& nodeId);
 };
 
 } // namespace Solipsis

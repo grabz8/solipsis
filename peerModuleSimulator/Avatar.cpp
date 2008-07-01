@@ -28,8 +28,12 @@ using namespace Ogre;
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-Avatar::Avatar(XmlEntity* xmlEntity) :
-    Entity(xmlEntity)
+#ifdef POOL
+Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId) :
+#else
+Avatar::Avatar(XmlEntity* xmlEntity, const NodeId& managerNodeId) :
+#endif
+    Entity(xmlEntity, managerNodeId)
 #ifdef PHYSICSPLUGINS
     ,mPhysicsCharacter(0)
 #endif

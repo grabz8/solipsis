@@ -33,27 +33,18 @@ namespace Solipsis {
 class Site : public Entity
 {
 protected:
-    /// OSM filename
-    std::string mOSMFilename;
-    /// Collision mesh name
-    std::string mCollisionMeshName;
     /// Collision mesh filename
     std::string mCollisionMeshFilename;
-    /// Position of the entry gate
-    Ogre::Vector3 mEntryGatePosition;
-    /// Gravity enabled on entry gate
-    bool mEntryGateGravity;
 
 public:
     /** Constructor. */
-    Site(XmlEntity* xmlEntity);
+#ifdef POOL
+    Site(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId);
+#else
+    Site(XmlEntity* xmlEntity, const NodeId& managerNodeId);
+#endif
     /** Destructor. */
     virtual ~Site();
-
-    /// Get the position of the entry gate
-    const Ogre::Vector3& getEntryGatePosition() { return mEntryGatePosition; }
-    /// Get the gravity of the entry gate
-    bool entryGateGravityEnabled() { return mEntryGateGravity; }
 
 #ifdef PHYSICSPLUGINS
     /** See Entity. */

@@ -23,13 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma once
 
-#include "OgrePeer.h"
 #include "Object3D.h"
-//#include "Selection.h"
 
 #include "SolipsisErrorHandler.h"
 #include "ModifiedMaterialManager.h"
 #include "ModifiedMaterial.h"
+#include "Selection.h"
 
 #include "FileBrowser.h"
 #include "Path.h"
@@ -44,32 +43,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
-// Ogre Class 
-//class Ogre::SceneManager;
-//class Ogre::Camera;
+/** This class defines a callbacks interface on Modeler.
+ */
+class IModelerCallbacks
+{
+public:
+	// Called when an Object3DList was saved
+	virtual bool OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList) { return true; };
+};
 
-
-class Avatar;
-class Selection;
-class Object3D;
-
-
-class Modeler
+class Modeler : public ModifiedMaterialManager::MMMTextureManager
 {
 private:
     static Modeler* ms_singletonPtr;
 
 public:
 	/// Default constructor
-	Modeler(Ogre::SceneManager* pSceneMgr, Ogre::Camera* pCamera);
+	Modeler(Ogre::SceneManager* pSceneMgr, Ogre::Camera* pCamera, IModelerCallbacks* modelerCallbacks = 0);
 	/// Default destructor
 	~Modeler(void);
 
-	static Modeler* getSingletonPtr(SceneManager* pSceneMgr = NULL, Camera* pCamera = NULL);
+	static Modeler* getSingletonPtr(SceneManager* pSceneMgr = 0, Camera* pCamera = 0, IModelerCallbacks* modelerCallbacks = 0);
 
 	/// Init the modeler mode
-	bool	init(Avatar * playerAvatar);
-	
+	bool	init();
+
 	/// Create a plane 
 	bool createPlane(Vector3	&player_pos);
 	/// Create a box 
@@ -138,9 +136,9 @@ public:
 
 
 	/// Load from / Save to a XML SOLIPSIS file
-	bool XMLLoad(Vector3 pos = Vector3::ZERO, const char* pathToLoad = NULL);
-	bool XMLImport(Vector3 pos = Vector3::ZERO, const char* pathToLoad = NULL);
-	bool XMLSave(bool all = false, const char* pathToSave = NULL);
+	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO);
+	bool XMLImport(const String& filename, Vector3 pos = Vector3::ZERO);
+	bool XMLSave(bool all = false, const char* pathToSave = 0);
 
 	/// Update the command list of the stored deformations
 	bool updateCommand(Object3D::Command pCommand, Object3D* pObject);
@@ -152,6 +150,12 @@ public:
 
 private:
 	Object3D * createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos);
+
+public:
+    /// See TextureManager::loadTexture
+    virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, Entity* entity, const String& name, const TextureExtParamsMap& textureExtParamsMap);
+    /// See TextureManager::releaseTexture
+    virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
 
 private : 
 	/// Backup old camera to set active when we will exit mode
@@ -165,6 +169,9 @@ private :
 	bool				mLinkMode;
 	/// Gizmo
 	bool				mOnGizmo;
+
+    /// Callbacks
+    IModelerCallbacks	*mModelerCallbacks;
 
 	/// Primitive entities
 	Entity				*mGenericPlane;

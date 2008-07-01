@@ -65,6 +65,8 @@ protected:
 #else
     XmlEntity* mXmlEntity;
 #endif
+    /// Node identifier of the node managing this entity
+    NodeId mManagerNodeId;
     /// Whether to apply the gravity
     bool mGravity;
 #ifdef PHYSICSPLUGINS
@@ -77,16 +79,22 @@ protected:
 
 public:
     /** Constructor. */
-    Entity(XmlEntity* xmlEntity);
+#ifdef POOL
+    Entity(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId);
+#else
+    Entity(XmlEntity* xmlEntity, const NodeId& managerNodeId);
+#endif
     /** Destructor. */
     virtual ~Entity();
 
     /** Get the entity descriptor. */
 #ifdef POOL
-    RefCntPoolPtr<XmlEntity>& getXmlEntity();
+    const RefCntPoolPtr<XmlEntity>& getXmlEntity() const;
 #else
     XmlEntity* getXmlEntity();
 #endif
+    /** Get the node identifier of the node managing this entity. */
+    const NodeId& getManagerNodeId();
     /** Apply or not the gravity. */
     void applyGravity(bool enabled);
     /** Set whether the gravity is activated or not. */

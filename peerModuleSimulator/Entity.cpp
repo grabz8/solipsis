@@ -26,8 +26,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-Entity::Entity(XmlEntity* xmlEntity) :
-    mXmlEntity(xmlEntity)
+#ifdef POOL
+Entity::Entity(RefCntPoolPtr<XmlEntity>& xmlEntity, const NodeId& managerNodeId) :
+#else
+Entity::Entity(XmlEntity* xmlEntity, const NodeId& managerNodeId) :
+#endif
+    mXmlEntity(xmlEntity),
+    mManagerNodeId(managerNodeId)
 #ifdef PHYSICSPLUGINS
     ,mPhysicsScene(0)
 #endif
@@ -50,12 +55,18 @@ Entity::~Entity()
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-RefCntPoolPtr<XmlEntity>& Entity::getXmlEntity()
+const RefCntPoolPtr<XmlEntity>& Entity::getXmlEntity() const
 #else
 XmlEntity* Entity::getXmlEntity()
 #endif
 {
     return mXmlEntity;
+}
+
+//-------------------------------------------------------------------------------------
+const NodeId& Entity::getManagerNodeId()
+{
+    return mManagerNodeId;
 }
 
 //-------------------------------------------------------------------------------------

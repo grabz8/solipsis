@@ -233,11 +233,13 @@ String VLCInstance::handleEvt(const String& evt)
 }
 
 //-------------------------------------------------------------------------------------
-void VLCInstance::destroy()
+void VLCInstance::destroy(bool force)
 {
-    LogManager::getSingleton().logMessage("VLCInstance::destroy()");
-    mSafeToDelete = false;
+    LogManager::getSingleton().logMessage("VLCInstance::destroy()" + force ? " forced" : "");
+    pthread_mutex_lock(&mUpdateMutex);
+    mSafeToDelete = force;
     mAlive = false;
+    pthread_mutex_unlock(&mUpdateMutex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -305,7 +307,7 @@ bool VLCInstance::frameEnded(const FrameEvent& e)
         mSafeToDelete = true;
         pthread_mutex_unlock(&mUpdateMutex);
         mTextureSource->instanceDestroyed(mID);
-       return true;
+        return true;
     }
     pthread_mutex_unlock(&mUpdateMutex);
 

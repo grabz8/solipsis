@@ -69,7 +69,7 @@ public:
     /** Destroy a VLC instance (notifying it should no more listen frames)
     @param[in] id VLC Instance id
     */
-    void destroyInstance(int id);
+    void destroyInstance(int id, bool force = false);
 
     /** delete a VLC instance
     @param[in] id VLC Instance id

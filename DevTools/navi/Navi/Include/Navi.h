@@ -73,6 +73,9 @@ namespace NaviLibrary
 		unsigned char keyFillR, keyFillG, keyFillB;
 		unsigned char* naviCache;
 		bool isMaterial;
+// BEGIN GREG
+        std::string mtlName;
+// END GREG
 		std::vector<NaviEventListener*> eventListeners;
 		std::multimap<std::string, NaviDelegate> delegateMap;
 		std::multimap<std::string, NaviDelegate>::iterator delegateIter;
@@ -101,8 +104,12 @@ namespace NaviLibrary
 		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
 			unsigned short width, unsigned short height, unsigned short zOrder);
 
+// BEGIN GREG
+//		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height, 
+//			Ogre::FilterOptions texFiltering);
 		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, unsigned short width, unsigned short height, 
-			Ogre::FilterOptions texFiltering);
+			Ogre::FilterOptions texFiltering, const std::string &mtlName);
+// END GREG
 
 		~Navi();
 

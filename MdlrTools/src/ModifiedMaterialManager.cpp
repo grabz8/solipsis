@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+ModifiedMaterialManager::MMMTextureManager* ModifiedMaterialManager::ms_MMMTextureManager = 0;
+
 ModifiedMaterialManager::ModifiedMaterialManager(void)
 {
 	mModifiedMaterial = NULL;
@@ -34,10 +36,35 @@ ModifiedMaterialManager::ModifiedMaterialManager(void)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 ModifiedMaterialManager::~ModifiedMaterialManager(void)
 {
+    while (!mTextures.empty())
+    {
+        TexturePtr lastTexture = mTextures.back();
+        // Destroy texture
+        if (ms_MMMTextureManager != 0)
+        {
+            TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(lastTexture->getName());
+            if (it != mTextureNameExtParamsMap.end())
+                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), it->second);
+            else
+                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), TextureExtParamsMap());
+        }
+        mTextures.pop_back();
+    }
 	if (mModifiedMaterial)
 		delete mModifiedMaterial;
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setMMMTextureManager(MMMTextureManager* textureManager)
+{
+    ms_MMMTextureManager = textureManager;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+ModifiedMaterialManager::MMMTextureManager* ModifiedMaterialManager::getMMMTextureManager()
+{
+    return ms_MMMTextureManager;
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::initialise(const MaterialPtr& material)
@@ -114,7 +141,7 @@ TexturePtr ModifiedMaterialManager::getTexture(const String& name)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 TexturePtr ModifiedMaterialManager::getTexture(const int n)
 {
-	if( (n>-1)&&(n < mTextures.size()) )
+	if( (n>-1)&&(n < (int)mTextures.size()) )
 	{
 		TextureVector::iterator textureIterator = mTextures.begin();
 		for(int i=0; i<n ; i++)
@@ -198,9 +225,11 @@ void ModifiedMaterialManager::setDefaultTextureAsCurrent()
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiedMaterialManager::addTexture(TexturePtr texture)
+void ModifiedMaterialManager::addTexture(TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap)
 {
 	mTextures.push_back(texture);
+    if (!textureExtParamsMap.empty())
+        mTextureNameExtParamsMap[texture->getName()] = textureExtParamsMap;
 
 	//mDefaultTextureIterator = mTextures.end();
 	//mDefaultTextureIterator--;
@@ -231,8 +260,18 @@ void ModifiedMaterialManager::deleteLastTexture()
             mDefaultTextureIterator = mTextures.begin() ;
 		if( mCurrentTextureIterator == itr)
 			setCurrentTexture( (*(mTextures.begin())) ) ;
-				
-		mTextures.pop_back();
+
+        // Destroy texture
+        TexturePtr lastTexture = mTextures.back();
+        if (ms_MMMTextureManager != 0)
+        {
+            TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(lastTexture->getName());
+            if (it != mTextureNameExtParamsMap.end())
+                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), it->second);
+            else
+                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), TextureExtParamsMap());
+        }
+        mTextures.pop_back();
 		
 	}
 
@@ -257,6 +296,15 @@ void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 		*/
 	{
 		setPreviousTextureAsCurrent();
+        // Destroy texture
+        if (ms_MMMTextureManager != 0)
+        {
+            TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(pTexture->getName());
+            if (it != mTextureNameExtParamsMap.end())
+                ms_MMMTextureManager->releaseTexture(this, pTexture->getName(), it->second);
+            else
+                ms_MMMTextureManager->releaseTexture(this, pTexture->getName(), TextureExtParamsMap());
+        }
 		mTextures.remove( pTexture );
 	}
 }
@@ -273,6 +321,15 @@ bool ModifiedMaterialManager::isPresentInList(TexturePtr pTexture)
 		}
 	}
 	return false ;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TextureExtParamsMap* ModifiedMaterialManager::getTextureExtParamsMap(TexturePtr pTexture)
+{
+    TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(pTexture->getName());
+    if (it == mTextureNameExtParamsMap.end())
+        return 0;
+    return &(it->second);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -314,13 +371,25 @@ Ogre::Radian ModifiedMaterialManager::getTextureRotate()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setAlpha(float pValue)
 {
-	mModifiedMaterial->setAlpha( pValue ) ;
+	mModifiedMaterial->setAlpha(pValue);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 float ModifiedMaterialManager::getAlpha()
 {
 	return mModifiedMaterial->getAlpha() ;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setSceneBlendType(Ogre::SceneBlendType pSceneBlendType)
+{
+	mModifiedMaterial->setSceneBlendType(pSceneBlendType);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+Ogre::SceneBlendType ModifiedMaterialManager::getSceneBlendType()
+{
+	return mModifiedMaterial->getSceneBlendType() ;
 }
 
 }// namespace

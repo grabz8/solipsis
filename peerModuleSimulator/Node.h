@@ -30,9 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IP2NClient.h"
 #include "XmlDatas.h"
 
-using namespace Ogre;
-
 namespace Solipsis {
+
+class Entity;
 
 /** This class represents a generic Node.
 */
@@ -49,24 +49,33 @@ protected:
     /// Node unique identifier
     NodeId mNodeId;
     /// Type
-    String mType;
-    /// Mutex
+    Ogre::String mType;
+    /// Mutex on instance
+    pthread_mutex_t mMutex;
+    /// Mutex on events
     pthread_mutex_t mEvtsMutex;
     /// List of events to handle
     XmlEvtToHandleList mEvtsToHandleList;
     /// Frozen state
     bool mFrozen;
+    /// Aware counter
+    unsigned int mAwareCounter;
 
 public:
     /** Constructor. */
-    Node(const NodeId& nodeId, const String& type);
+    Node(const NodeId& nodeId, const Ogre::String& type);
     /** Destructor. */
     virtual ~Node();
 
     /** Gets the identifier. */
     const NodeId& getNodeId();
-    /** Gets the type. */
-    const String& getType();
+    /** Get the type. */
+    const Ogre::String& getType();
+    /** Get the managed entity. */
+    virtual const Entity& getManagedEntity() = 0;
+
+    /** Increment/Decrement the aware counter and returns new value. */
+    unsigned int incDecAwareCounter(int incDec) { mAwareCounter += incDec; return mAwareCounter; }
 
     /** Process an event. */
     virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
@@ -83,6 +92,11 @@ public:
 #endif
     /** Freeze. */
     virtual bool freeze(bool frozen) { mFrozen = frozen; return true; }
+
+    /** Load from node XML element. */
+    virtual bool loadFromElt(TiXmlElement* nodeElt);
+    /** Get the saved node XML element. */
+    virtual TiXmlElement* getSavedElt();
 };
 
 } // namespace Solipsis

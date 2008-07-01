@@ -65,7 +65,7 @@ public:
     Ogre::String handleEvt(const Ogre::String& evt);
 
     /// Destroy
-    void destroy();
+    void destroy(bool force = false);
 
 private:
     /// @copydoc Ogre::FrameListener::frameStarted

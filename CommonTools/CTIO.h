@@ -33,14 +33,20 @@ namespace CommonTools {
 class IO
 {
 public:
+    /// Returns the current working directory
+    static std::string getCWD();
     /// Returns true if a file exists
-    static bool isFileExists(std::string& file);
+    static bool isFileExists(const std::string& filename);
     /// Returns true if a directory exists
-    static bool isDirectoryExists(std::string& path);
+    static bool isDirectoryExists(const std::string& pathname);
     /// Copy a file
-    static bool copyFile(std::string& srcFile, std::string& dstFile);
+    static bool copyFile(const std::string& srcFilename, const std::string& dstFilename);
+    /// Delete a file
+    static bool deleteFile(const std::string& filename);
+    /// Rename a file
+    static bool renameFile(const std::string& srcFilename, const std::string& dstFilename);
     /// Retrieve a relative path by descending from the current working directory
-    static std::string retrieveRelativePathByDescendingCWD(std::string& path);
+    static std::string retrieveRelativePathByDescendingCWD(const std::string& pathname);
 };
 
 } // namespace CommonTools
