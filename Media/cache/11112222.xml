@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<nodes>
-    <sceneNode name="DeltaStation1" static="true" filename="Deltastation1.osm" collision="Delta_COLLISION" >
-        <entryGate gravity="true" >
-            <position x="17.0" y="-50.0" z="115.0" />
-        </entryGate>
-    </sceneNode>
-<!--    <objectNode name="Box000" static="false" filename="..\..\..\..\Media\cache\Box000.sof" />-->
-</nodes>

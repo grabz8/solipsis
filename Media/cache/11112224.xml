@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<nodes>
-    <sceneNode name="DigitalOcean1" static="true" filename="DigitalOcean1.osm" >
-        <entryGate gravity="false" >
-            <position x="30.0" y="-26.0" z="68.0" />
-        </entryGate>
-    </sceneNode>
-</nodes>
