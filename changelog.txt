@@ -567,3 +567,13 @@ NSIS simplified with NCS config added
 Modeler fix for getMeshInformation() memory crash into urealvector of vertices workaround when importing Ogre mesh
 
 ---------------------------
+01/07/08
+
+scenes are zipped into .ssf files
+Peer module load/save nodes (avatar node saves its avatarNode + nodes of owned entities)
+Avatar node saved file contains list of owned nodes/entities
+Site node saved file contains list of present nodes/entities
+1 object node is saved through modeler with its .sof (1st step of implementation)
+WWW/VLC/VNC textures are described into the XML of the object3D saved into the .sof
+
+---------------------------
