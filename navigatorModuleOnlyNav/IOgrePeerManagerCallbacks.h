@@ -33,8 +33,6 @@ namespace Solipsis {
 class IOgrePeerManagerCallbacks
 {
 public:
-	virtual ~IOgrePeerManagerCallbacks() {};
-
 	// Called when an avatar should be created
     virtual bool OnAvatarNodeCreate(OgrePeer* ogrePeer) { return true; };
 
