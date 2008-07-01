@@ -703,7 +703,7 @@ void Character::addSubMesh(const MeshPtr& mesh, const String& boneName, SubMesh*
 		point[2] = positionOut.z;
 	}
 
-	vertexBuffer->lock(HardwareBuffer::LockOptions::HBL_NORMAL);
+	vertexBuffer->lock(HardwareBuffer::HBL_NORMAL);
 	vertexBuffer->writeData(0,vertexBufferSize,vertexBufferData);
 	delete[] vertexBufferData;
 }
