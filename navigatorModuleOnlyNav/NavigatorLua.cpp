@@ -33,6 +33,7 @@ const char NavigatorLua::className[] = "NavigatorLua";
 
 Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, bind),
+    LunarMethod(NavigatorLua, setNameValueVariable),
     LunarMethod(NavigatorLua, setConnectionParams),
     LunarMethod(NavigatorLua, getRenderWinMetrics),
     LunarMethod(NavigatorLua, sendMessage),
@@ -63,6 +64,22 @@ int NavigatorLua::bind(lua_State* luaState)
     mNavigator->setNavigatorLua(this);
 
     lua_pushboolean(luaState, true);
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int NavigatorLua::setNameValueVariable(lua_State* luaState)
+{
+    OGRE_LOG("NavigatorLua::setNameValueVariable()");
+
+    // Set default values
+    String varName, varValue;
+    if (lua_isstring(mLuaState, 1))
+        varName = (String)luaL_checkstring(luaState, 1);
+    if (lua_isstring(mLuaState, 2))
+        varValue = (String)luaL_checkstring(luaState, 2);
+
+    lua_pushboolean(luaState, mNavigator->setNameValueVariable(varName, varValue));
     return 1;
 }
 

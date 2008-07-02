@@ -88,10 +88,11 @@ You can build:
 
 
 To run the Peer application you currently have to specify host, port and verbosity of the Peer/Navigator XMLRPC server:
--h <IPaddr:str>    : IP address (default: localhost)
--p <port:int>      : port (default: 8550)
--v <verbosity:int> : verbosity level (0..2)
--s <sceneName:str> : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
+-h <IPaddr:str>         : IP address (default: localhost)
+-p <port:int>           : port (default: 8550)
+-v <verbosity:int>      : verbosity level (0..2)
+-s <sceneName:str>      : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
+-m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between 1 Peer and N Navigators)
 
 
 --------------------------------------------------------------------------------

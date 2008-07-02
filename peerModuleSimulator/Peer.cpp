@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include "CTSystem.h"
 #include "AvatarNode.h"
+#include <CTIO.h>
 
 namespace Solipsis {
 
@@ -70,6 +71,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mHost("localhost"),
     mPort(8550),
     mSceneDemoLoaded(""),
+    mMediaCachePath(""),
     mVerbosity(0),
     mP2NServer(0)
 {
@@ -103,7 +105,17 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
             mSceneDemoLoaded = argv[iarg];
             continue;
         }
+        if ((strstr(argv[iarg], "-m") != 0) && (argc > iarg+1))
+        {
+            iarg++;
+            mMediaCachePath = argv[iarg];
+            continue;
+        }
     }
+
+    // Retrieve Media/Cache path
+    if (mMediaCachePath.empty())
+        mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     mPhysicsEngineManager = new PhysicsEngineManager();
     mNodeManager = new NodeManager();

@@ -196,6 +196,17 @@ void Navigator::setConnectionLogin(String& login)
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::setNameValueVariable(const String& varName, const String& varValue)
+{
+    if (varName == "MediaCachePath")
+    {
+        mMediaCachePath = varValue;
+        return true;
+    }
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
 OgrePeerManager* Navigator::getOgrePeerManager()
 {
     return mOgrePeerManager;
@@ -921,6 +932,10 @@ bool Navigator::initPostOgreCore()
         return false;
     }
 
+    // Retrieve Media/Cache path (either set by lua either found from cwd)
+    if (mMediaCachePath.empty())
+        mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+
     return true;
 }
 
@@ -954,8 +969,8 @@ void Navigator::createScene()
 	mModeler->init();
 
     // Create the avatar editor
-    std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
-    mAvatarEditor = new AvatarEditor(mediaCacheModelsRelativePath, mSceneMgr);
+    String mediaCacheModelsPath = mMediaCachePath + "\\models";
+    mAvatarEditor = new AvatarEditor(std::string(mediaCacheModelsPath), mSceneMgr);
     mAvatarEditor->buildListSAF();
 }
 
@@ -1655,10 +1670,10 @@ bool Navigator::mdlrXMLImport()
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLSave(bool all)
 {
-    std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
+    String mediaCacheModelsPath = mMediaCachePath + "\\models";
 	if( mModeler )
 		if(all || !mModeler->isSelectionEmpty()) 
-            return mModeler->XMLSave(all, mediaCacheModelsRelativePath.c_str());
+            return mModeler->XMLSave(all, mediaCacheModelsPath.c_str());
 		else
 #ifdef WIN32
 			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 

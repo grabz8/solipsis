@@ -224,10 +224,11 @@ bool SOLlistDirectoryFiles(const char* path,std::vector<std::string> *toFill)
 		return FALSE;
 
 	// Update and set the current directory
-	std::string newPath (currentDir);
+/*	std::string newPath (currentDir);
 	newPath += "\\";
 	newPath += path;
-	_chdir(newPath.c_str());
+	_chdir(newPath.c_str());*/
+	_chdir(path);
 
 	hSearch=FindFirstFile("*.*", &File);
 	if(hSearch ==  INVALID_HANDLE_VALUE)

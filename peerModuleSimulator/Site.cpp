@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "Site.h"
+#include "Peer.h"
 #include "OgreHelpers.h"
 #include <CTIO.h>
 
@@ -67,10 +68,10 @@ void Site::createPhysics(IPhysicsScene* physicsScene)
         return;
 
     // Create the resource group
-    std::string mediaCacheSceneRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\scenes"));
+    std::string mediaCacheScenePath = Peer::getSingleton().mMediaCachePath + "\\scenes";
     String resourceGroup = mXmlEntity->getUidString() + "Resources";
     ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheSceneRelativePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheScenePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
 
     // Load .osm
     TiXmlDocument osmFileDoc;

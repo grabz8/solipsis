@@ -27,14 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SiteNode.h"
 #include "ObjectNode.h"
 #include "OgreHelpers.h"
-#include <CTIO.h>
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 NodeManager::NodeManager()
 {
-    mNodeIdXmlFilesPath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 }
 
 //-------------------------------------------------------------------------------------
@@ -53,7 +51,7 @@ NodeManager::~NodeManager()
 //-------------------------------------------------------------------------------------
 bool NodeManager::loadNodeIdFile(const NodeId& nodeId)
 {
-    std::string nodeIdFilename = mNodeIdXmlFilesPath + "\\" + nodeId + ".xml";
+    std::string nodeIdFilename = Peer::getSingleton().mMediaCachePath + "\\" + nodeId + ".xml";
     TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
     if (!xmlNodeIdFileDoc.LoadFile())
         return false;
@@ -98,7 +96,7 @@ bool NodeManager::loadNodeIdFile(const NodeId& nodeId)
 //-------------------------------------------------------------------------------------
 bool NodeManager::saveNodeIdFile(const NodeId& nodeId)
 {
-    std::string nodeIdFilename = mNodeIdXmlFilesPath + "\\" + nodeId + ".xml";
+    std::string nodeIdFilename = Peer::getSingleton().mMediaCachePath + "\\" + nodeId + ".xml";
     TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
 
     OGRE_LOG("NodeManager::saveNodeIdFile() saving node with nodeId:" + nodeId + " into " + nodeIdFilename);
@@ -137,7 +135,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             return 0;
 
         // Load the site node on first avatar connected
-        bool sceneLoaded = true;
+        bool sceneLoaded = false;
         NodeId siteNodeId = "00000010";
         if ((nodeId.compare("00000001") == 0) && Peer::getSingleton().mSceneDemoLoaded.empty())
             sceneLoaded = loadNodeIdFile(siteNodeId);
@@ -279,11 +277,17 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
                 break;
             }
         if (firstSiteNode == 0)
+        {
+            OGRE_LOG("NodeManager::login() Unable to find first site node");
             return 0;
+        }
         // Get the avatar
         AvatarNode* avatarNode = (AvatarNode*)mNodes[nodeId];
         if (avatarNode == 0)
+        {
+            OGRE_LOG("NodeManager::login() Unable to find the avatar node");
             return 0;
+        }
         // stop displacement
         avatarNode->getEntity().getXmlEntity()->setDisplacement(Vector3::ZERO);
         // If scene changed

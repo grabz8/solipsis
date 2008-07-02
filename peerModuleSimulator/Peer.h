@@ -72,6 +72,7 @@ protected:
 public:
     time_t mFirstEvtDate;
     std::string mSceneDemoLoaded;
+    std::string mMediaCachePath;
 
 protected: 
     Peer(const char* appPath, int argc, char** argv);

@@ -85,6 +85,7 @@ protected:
     String mHost;
     int mPort;
     String mLogin;
+    String mMediaCachePath;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
@@ -140,6 +141,8 @@ public:
     void setConnectionPort(int port);
     String& getConnectionLogin();
     void setConnectionLogin(String& login);
+    bool setNameValueVariable(const String& varName, const String& varValue);
+    const String& getMediaCachePath() { return mMediaCachePath; }
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();

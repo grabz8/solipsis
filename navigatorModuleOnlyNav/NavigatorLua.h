@@ -57,6 +57,11 @@ public:
     // returns boolean
     int bind(lua_State* luaState);
 
+    // set variable by name/value
+    // params (varName:string, varValue:string)
+    // returns boolean
+    int setNameValueVariable(lua_State* luaState);
+
     // set connection parameters
     // params (connectionHost:string, connectionPort:int)
     // returns boolean

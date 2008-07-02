@@ -336,10 +336,10 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "OgrePeerManager::CreateSceneNode");
 
     // Create the resource group
-    std::string mediaCacheSceneRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\scenes"));
+    String mediaCacheScenePath = Navigator::getSingletonPtr()->getMediaCachePath() + "\\scenes";
     String resourceGroup = xmlEntity->getUidString() + "Resources";
     ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheSceneRelativePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheScenePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
     ResourceGroupManager::getSingleton().initialiseResourceGroup(resourceGroup);
 
     // Create the scene node
@@ -404,8 +404,8 @@ OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
     if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No .sof object file found !", "OgrePeerManager::CreateObjectNode");
 
-    std::string mediaCacheModelsRelativePath = CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache\\models"));
-    String pathname = mediaCacheModelsRelativePath + "\\" + lodContent0File->filename;
+    String mediaCacheModelsPath = Navigator::getSingletonPtr()->getMediaCachePath() + "\\models";
+    String pathname = mediaCacheModelsPath + "\\" + lodContent0File->filename;
 
     Modeler* modeler = Modeler::getSingletonPtr();
     Object3DPtrList newObjects;

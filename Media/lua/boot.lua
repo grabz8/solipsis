@@ -36,6 +36,7 @@ end
 -- Create the NavigatorLua instance
 navigator = NavigatorLua()
 navigator:bind()
+navigator:setNameValueVariable("MediaCachePath", "")
 navigator:setConnectionParams("localhost", 8550, "me")
 
 -- some usefull URLs
