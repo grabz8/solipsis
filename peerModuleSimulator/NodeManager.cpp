@@ -492,6 +492,15 @@ ObjectNode* NodeManager::createObjectNode(XmlEntity* xmlEntity)
     if (firstSiteNode != 0)
         firstSiteNode->addPresentEntity(&objectNode->getEntity());
 
+    // Add avatars to aware of
+    for (NodeMap::iterator node = mNodes.begin(); node != mNodes.end(); ++node)
+        if (node->second->getType().compare("avatar") == 0)
+        {
+            AvatarNode* an = (AvatarNode*)node->second;
+            an->addAwareEntity(&objectNode->getEntity(), (node->first != xmlEntity->getOwner()));
+            objectNode->incDecAwareCounter(+1);
+        }
+
     objectNodeId = XmlHelpers::convertUIntToHexString(XmlHelpers::convertHexStringToUInt(objectNodeId.c_str()) + 1);
 
     return objectNode;

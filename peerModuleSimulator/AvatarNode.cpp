@@ -269,8 +269,6 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
         // Create object node
         xmlEntity->setOwner(mNodeId);
         ObjectNode* objectNode = Peer::getSingleton().getNodeManager()->createObjectNode(xmlEntity);
-        addAwareEntity(&objectNode->getEntity(), false);
-        objectNode->incDecAwareCounter(+1);
     }
 
     return true;
