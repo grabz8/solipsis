@@ -1160,7 +1160,7 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
     if (plugin == "www")
     {
         NaviManager &naviMgr = NaviLibrary::NaviManager::Get();
-        Navi *navi = naviMgr.getNaviFromMtlName("WWW_" + mtlName);
+        Navi *navi = naviMgr.getNaviFromMtlName(mtlName);
         if (navi == 0)
     		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
         else
