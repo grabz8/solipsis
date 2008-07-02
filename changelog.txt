@@ -577,3 +577,8 @@ Site node saved file contains list of present nodes/entities
 WWW/VLC/VNC textures are described into the XML of the object3D saved into the .sof
 
 ---------------------------
+02/07/08
+
+arg -m added to Peer module in order to specify 1 network shared Media/cache directory
+
+---------------------------
