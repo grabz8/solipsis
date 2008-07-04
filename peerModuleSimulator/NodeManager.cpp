@@ -163,7 +163,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
 <lod level=\"0\">\
 <sceneLodContent mainFilename=\"Ile.osm\" collision=\"Ile_COLLISION\" />\
 <files>\
-<file name=\"11112224.ssf\" version=\"00000000\" />\
+<file name=\"11112223.ssf\" version=\"00000000\" />\
 </files>\
 </lod>\
 </content>\
