@@ -125,10 +125,14 @@ void Entity::removeEntityListener(EntityListener* oldListener)
 }
 
 //-----------------------------------------------------------------------
-void Entity::throwUpdateToEntityListeners(const Node& node, Entity& entity, XmlEvt& xmlEvt)
+#ifdef POOL
+void Entity::throwEvtToEntityListeners(const Node& node, Entity& entity, RefCntPoolPtr<XmlEvt>& xmlEvt)
+#else
+void Entity::throwEvtToEntityListeners(const Node& node, Entity& entity, XmlEvt* xmlEvt)
+#endif
 {
     for (std::set<EntityListener*>::iterator i = mEntityListeners.begin(); i != mEntityListeners.end(); ++i)
-        (*i)->updated(node, entity, xmlEvt);
+        (*i)->onEvt(node, entity, xmlEvt);
 }
 
 //-------------------------------------------------------------------------------------

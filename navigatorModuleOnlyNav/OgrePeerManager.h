@@ -98,6 +98,13 @@ public:
     bool update(XmlEntity* xmlEntity);
 #endif
 
+	// Action
+#ifdef POOL
+    bool action(RefCntPoolPtr<XmlAction>& xmlAction);
+#else
+    bool action(XmlAction* xmlAction);
+#endif
+
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
 

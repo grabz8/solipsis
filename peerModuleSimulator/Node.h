@@ -78,17 +78,21 @@ public:
     unsigned int incDecAwareCounter(int incDec) { mAwareCounter += incDec; return mAwareCounter; }
 
     /** Process an event. */
-    virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
+#ifdef POOL
+    virtual bool processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
+#else
+    virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
+#endif
 #ifdef POOL
     /** Get next event to handle. */
     virtual RefCntPoolPtr<XmlEvt> getNextEvtToHandle();
     /** Free event (handled event). */
-    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& evt);
+    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
 #else
     /** Get next event to handle. */
     virtual XmlEvt* getNextEvtToHandle();
     /** Free event (handled event). */
-    virtual bool freeEvt(XmlEvt* evt);
+    virtual bool freeEvt(XmlEvt* xmlEvt);
 #endif
     /** Freeze. */
     virtual bool freeze(bool frozen) { mFrozen = frozen; return true; }

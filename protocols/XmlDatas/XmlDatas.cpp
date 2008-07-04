@@ -34,6 +34,7 @@ Pool XmlSceneLodContent::mPool;
 Pool XmlContent::mPool;
 Pool XmlSceneContent::mPool;
 Pool XmlEntity::mPool;
+Pool XmlAction::mPool;
 Pool XmlEvt::mPool;
 Pool& XmlLogin::getStaticPool() { return mPool; }
 Pool& XmlLogin::getPool() const { return mPool; }
@@ -47,6 +48,8 @@ Pool& XmlSceneContent::getStaticPool() { return mPool; }
 Pool& XmlSceneContent::getPool() const { return mPool; }
 Pool& XmlEntity::getStaticPool() { return mPool; }
 Pool& XmlEntity::getPool() const { return mPool; }
+Pool& XmlAction::getStaticPool() { return mPool; }
+Pool& XmlAction::getPool() const { return mPool; }
 Pool& XmlEvt::getStaticPool() { return mPool; }
 Pool& XmlEvt::getPool() const { return mPool; }
 #endif
@@ -181,6 +184,16 @@ const std::string& XmlHelpers::convertEntityTypeToRepr(const EntityType& entityT
 }
 
 //-------------------------------------------------------------------------------------
+const std::string& XmlHelpers::convertActionTypeToRepr(const ActionType& actionType)
+{
+    static std::string ActionTypeRepr[] = {
+        "ATNone",
+        "ATChat"
+    };
+    return ActionTypeRepr[actionType];
+}
+
+//-------------------------------------------------------------------------------------
 std::string XmlHelpers::convertEntityFlagsToRepr(const EntityFlags& entityFlags)
 {
     std::string entityFlagsRepr;
@@ -264,7 +277,7 @@ std::string XmlLodContent::toXmlString() const
     s << "<files>";
     for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
-        s << "<file name=\"" << file->filename << "\" version=\"" + XmlHelpers::convertEntityVersionToHexString(file->version) + "\"/>";
+        s << "<file name=\"" << file->filename << "\" version=\"" + XmlHelpers::convertEntityVersionToHexString(file->version) + "\" />";
     }
     s << "</files>";
     s << "</lod>";
@@ -488,7 +501,6 @@ std::string XmlEntity::toXmlString() const
 {
     std::stringstream s;
     if (!mDefinedAttributes & DAUid) return s.str();
-    std::string uidStr;
     s << "<entity uid=\"" << XmlHelpers::convertEntityUIDToHexString(mUid) << "\"";
     if (mDefinedAttributes & DAOwner) s << " owner=\"" << mOwner << "\"";
     if (mDefinedAttributes & DAType) s << " type=\"" << mType << "\"";
@@ -658,6 +670,47 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
 }
 
 //-------------------------------------------------------------------------------------
+std::string XmlAction::toXmlString() const
+{
+    std::stringstream s;
+    s << "<action type=\"" << mType << "\"";
+    s << " sourceEntityUid=\"" << XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid) << "\"";
+    s << " targetEntityUid=\"" << XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid) << "\"";
+    s << " desc=\"" << mDesc << "\"";
+    s << " />";
+    return s.str();
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlAction::toXmlElt(TiXmlElement& xmlElt) const
+{
+    TiXmlElement* actionElt = new TiXmlElement("action");
+    actionElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
+    actionElt->SetAttribute("sourceEntityUid", XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid).c_str());
+    actionElt->SetAttribute("targetEntityUid", XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid).c_str());
+    actionElt->SetAttribute("desc", mDesc.c_str());
+    xmlElt.LinkEndChild(actionElt);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlAction::fromXmlElt(TiXmlElement* xmlElt)
+{
+    const char* attr = 0;
+
+    if (!XmlHelpers::getAttribute(xmlElt, "type", attr)) return false;
+    XmlHelpers::convertDecStringToActionType(attr, mType);
+    if (!XmlHelpers::getAttribute(xmlElt, "sourceEntityUid", attr)) return false;
+    mSourceEntityUid = XmlHelpers::convertHexStringToEntityUID(attr);
+    if (!XmlHelpers::getAttribute(xmlElt, "targetEntityUid", attr)) return false;
+    mTargetEntityUid = XmlHelpers::convertHexStringToEntityUID(attr);
+    if (!XmlHelpers::getAttribute(xmlElt, "desc", attr)) return false;
+    mDesc = attr;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 std::string XmlEvt::toXmlString() const
 {
     std::stringstream s;
@@ -703,16 +756,29 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
     if (!XmlHelpers::getAttribute(elt, "type", attr)) return false;
     XmlHelpers::convertDecStringToEventType(attr, mType);
 
-    if ((elt = elt->FirstChildElement("entity")) != 0)
+    TiXmlElement* subElt;
+    if ((subElt = elt->FirstChildElement("entity")) != 0)
     {
 #ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity;
-        xmlEntity->fromXmlElt(elt);
+        xmlEntity->fromXmlElt(subElt);
         mDatas = RefCntPoolPtr<XmlData>(xmlEntity);
 #else
-        XmlEntity* entity = new XmlEntity();
-        entity->fromXmlElt(elt);
-        mDatas = entity;
+        XmlEntity* xmlEntity = new XmlEntity();
+        xmlEntity->fromXmlElt(subElt);
+        mDatas = xmlEntity;
+#endif
+    }
+    else if ((subElt = elt->FirstChildElement("action")) != 0)
+    {
+#ifdef POOL
+        RefCntPoolPtr<XmlAction> xmlAction;
+        xmlAction->fromXmlElt(subElt);
+        mDatas = RefCntPoolPtr<XmlData>(xmlAction);
+#else
+        XmlAction* xmlAction = new XmlAction();
+        xmlAction->fromXmlElt(subElt);
+        mDatas = xmlAction;
 #endif
     }
 

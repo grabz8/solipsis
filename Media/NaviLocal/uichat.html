@@ -24,7 +24,7 @@
             body
             {
                 padding-left: 11em;
-	            background-color: #000000;
+	            background-color: #FFFFFF;
 	            overflow: hidden;
 	            font-family: Verdana;
 	            font-size: small;
@@ -32,23 +32,28 @@
             }
             #container
             {
-	            background-image: url('uichat.png');
 	            position: absolute;
 	            left: 0px;
 	            top: 0px;
 	            width: 512px;
-	            height: 64px;
+	            height: 128px;
             }
             #chatInput
             {
 	            position: absolute;
-	            left: 65px;
-	            top: 5px;
+	            left: 0px;
+	            top: 0px;
             }
             .inputText
             {
                 background-color: #FFFFFF;
                 color: #000000;
+            }
+            #chatTextArea
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 20px;
             }
         </style>
     </head>
@@ -59,9 +64,12 @@
             Here you will use 1 reentrant hidden form in order to validate the message by pressing ENTER,
             by returning false the page won t be reloaded
              -->
+            <div id="chatTextArea">
+                <textarea disabled="disabled" id="textChat" rows="5"  cols="61"></textarea>
+            </div>
             <form id="chatForm" action="" visible="false" onsubmit="sendMessage(document.getElementById('inputChat').value);return false;">
                 <div id="chatInput">
-                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="65" />
+                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="81" />
                 </div>
             </form>
         </div>

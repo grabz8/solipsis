@@ -68,7 +68,6 @@ bool NodeManager::loadNodeIdFile(const NodeId& nodeId)
         return false;
 #ifdef POOL
     RefCntPoolPtr<XmlEntity> xmlEntity;
-    xmlEntity.allocate();
 #else
     XmlEntity* xmlEntity = new XmlEntity();
 #endif
@@ -222,7 +221,6 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             xmlSiteDoc.Parse(xmlSiteStr.c_str());
 #ifdef POOL
             RefCntPoolPtr<XmlEntity> siteXmlEntity;
-            siteXmlEntity.allocate();
 #else
             XmlEntity* siteXmlEntity = new XmlEntity();
 #endif
@@ -258,7 +256,6 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
 #ifdef POOL
             RefCntPoolPtr<XmlEntity> avatarXmlEntity;
-            avatarXmlEntity.allocate();
 #else
             XmlEntity* avatarXmlEntity = new XmlEntity();
 #endif
@@ -425,7 +422,11 @@ bool NodeManager::update()
 }
 
 //-------------------------------------------------------------------------------------
-bool NodeManager::processEvt(const NodeId& nodeId, XmlEvt& xmlEvt, std::string& xmlRespStr)
+#ifdef POOL
+bool NodeManager::processEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr)
+#else
+bool NodeManager::processEvt(const NodeId& nodeId, XmlEvt* xmlEvt, std::string& xmlRespStr)
+#endif
 {
     Node* node = mNodes[nodeId];
     if (node == 0)
@@ -454,16 +455,16 @@ XmlEvt* NodeManager::getNextEvtToHandle(const NodeId& nodeId)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool NodeManager::freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& evt)
+bool NodeManager::freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& xmlEvt)
 #else
-bool NodeManager::freeEvt(const NodeId& nodeId, XmlEvt* evt)
+bool NodeManager::freeEvt(const NodeId& nodeId, XmlEvt* xmlEvt)
 #endif
 {
     Node* node = mNodes[nodeId];
     if (node == 0)
         return false;
 
-    return node->freeEvt(evt);
+    return node->freeEvt(xmlEvt);
 }
 
 //-------------------------------------------------------------------------------------

@@ -1274,6 +1274,17 @@ void NavigatorGUI::debugRefreshUrl()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::addChatText(const String& message)
+{
+    OGRE_LOG("NavigatorGUI::addChatText()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
+    std::string jsStr = "$('textChat').value += '" + message + "\\n'";
+    navi->evaluateJS(jsStr);
+    navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 {
     OGRE_LOG("NavigatorGUI::debugPageLoaded()");
@@ -1660,6 +1671,7 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
 
     // Set current values
+    navi->evaluateJS("$('textChat').value = ''");
     navi->evaluateJS("$('inputChat').value = ''");
 
     // Show Navi UI chat

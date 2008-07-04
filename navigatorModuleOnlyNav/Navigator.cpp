@@ -1066,28 +1066,23 @@ bool Navigator::sendMessage(const String& message)
     if (mXmlRpcClient == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
-// GILLES begin
-    // Push debug command
-    String cmd (message);
-    String param (message);
-
-    size_t separator = message.find_first_of("::");
-    if (separator > 0) 
-    {
-        cmd = String (message, 0, separator);
-        param = String (message, separator+2, message.length());
-        DebugHelpers::debugCommands[cmd] = param;
-        return true;
-    }
-// GILLES end
-
 #ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETActionOnEntity);
+    RefCntPoolPtr<XmlAction> xmlAction;
+    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlAction->setType(ATChat);
+    xmlAction->setDesc(std::string(message));
+    xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
 #else
     XmlEvt xmlEvt(ETActionOnEntity);
+    XmlAction xmlAction(ETActionOnEntity);
+    xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlAction->setType(ATChat);
+    xmlAction->setDesc(std::string(message));
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 #endif
@@ -1176,35 +1171,55 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+void Navigator::onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction)
+#else
+void Navigator::onPeerAction(XmlAction* xmlAction)
+#endif
+{
+    OGRE_LOG("Navigator::onPeerAction()");
+
+    if (!mOgrePeerManager->action(xmlAction))
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peer !", "Navigator::onPeerAction");
+}
+
+//-------------------------------------------------------------------------------------
 void Navigator::processEvents()
 {
 //    OGRE_LOG("Navigator::processEvents()");
 
     // Process each event
     NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
-    for (NodeEventListener::EvtsList::iterator evt = nodeEvents->begin();evt != nodeEvents->end();++evt)
+    for (NodeEventListener::EvtsList::iterator xmlEvt = nodeEvents->begin();xmlEvt != nodeEvents->end();++xmlEvt)
     {
-        switch ((*evt)->getType())
+        switch ((*xmlEvt)->getType())
         {
         case ETNewEntity:
 #ifdef POOL
-            onPeerNew(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+            onPeerNew(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
 #else
-            onPeerNew((XmlEntity*)((*evt)->getDatas()));
+            onPeerNew((XmlEntity*)((*xmlEvt)->getDatas()));
 #endif
             break;
         case ETLostEntity:
 #ifdef POOL
-            onPeerLost(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+            onPeerLost(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
 #else
-            onPeerLost((XmlEntity*)((*evt)->getDatas()));
+            onPeerLost((XmlEntity*)((*xmlEvt)->getDatas()));
 #endif
             break;
         case ETUpdatedEntity:
 #ifdef POOL
-            onPeerUpdated(RefCntPoolPtr<XmlEntity>((*evt)->getDatas()));
+            onPeerUpdated(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
 #else
-            onPeerUpdated((XmlEntity*)((*evt)->getDatas()));
+            onPeerUpdated((XmlEntity*)((*xmlEvt)->getDatas()));
+#endif
+            break;
+        case ETActionOnEntity:
+#ifdef POOL
+            onPeerAction(RefCntPoolPtr<XmlAction>((*xmlEvt)->getDatas()));
+#else
+            onPeerAction((XmlAction*)((*xmlEvt)->getDatas()));
 #endif
             break;
         default: // Caller already check type consistency
@@ -1212,7 +1227,7 @@ void Navigator::processEvents()
         }
 #ifdef POOL
 #else
-        delete (*evt);
+        delete (*xmlEvt);
 #endif
     }
     endProcessEvents();
@@ -1229,12 +1244,12 @@ void Navigator::sendEvents()
     // Send each event
     std::string xmlResp;
     OgrePeerManager::EvtsList& evtsList = mOgrePeerManager->getEvtsToSendList();
-    for (OgrePeerManager::EvtsList::iterator it = evtsList.begin(); it != evtsList.end(); ++it)
+    for (OgrePeerManager::EvtsList::iterator xmlEvt = evtsList.begin(); xmlEvt != evtsList.end(); ++xmlEvt)
     {
 #ifdef POOL
-        if (!mXmlRpcClient->sendEvt(*(*it), xmlResp))
+        if (!mXmlRpcClient->sendEvt(*(*xmlEvt), xmlResp))
 #else
-        if (!mXmlRpcClient->sendEvt((*it), xmlResp))
+        if (!mXmlRpcClient->sendEvt((*xmlEvt), xmlResp))
 #endif
             OGRE_LOG("Navigator::sendEvents() Unable to send event !");
     }

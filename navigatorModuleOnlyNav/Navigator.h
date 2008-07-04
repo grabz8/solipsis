@@ -306,10 +306,12 @@ protected:
     virtual void onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity);
     virtual void onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity);
     virtual void onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual void onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction);
 #else
     virtual void onPeerNew(XmlEntity* xmlEntity);
     virtual void onPeerLost(XmlEntity* xmlEntity);
     virtual void onPeerUpdated(XmlEntity* xmlEntity);
+    virtual void onPeerAction(XmlAction* xmlAction);
 #endif
 };
 

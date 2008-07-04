@@ -304,19 +304,19 @@ IP2NClient::RetCode Peer::handleEvt(const NodeId& nodeId, std::string& xmlRespSt
 #endif
 
 #ifdef POOL
-    RefCntPoolPtr<XmlEvt> evt = mNodeManager->getNextEvtToHandle(nodeId);
-    if (!evt.isNull())
+    RefCntPoolPtr<XmlEvt> xmlEvt = mNodeManager->getNextEvtToHandle(nodeId);
+    if (!xmlEvt.isNull())
 #else
-    XmlEvt* evt = mNodeManager->getNextEvtToHandle(nodeId);
-    if (evt != 0)
+    XmlEvt* xmlEvt = mNodeManager->getNextEvtToHandle(nodeId);
+    if (xmlEvt != 0)
 #endif
     {
         std::stringstream s;
-        s << "<solipsis>" << evt->toXmlString() << "</solipsis>";
+        s << "<solipsis>" << xmlEvt->toXmlString() << "</solipsis>";
 #ifdef POOL
-        mNodeManager->freeEvt(nodeId, evt);
+        mNodeManager->freeEvt(nodeId, xmlEvt);
 #else
-        mNodeManager->freeEvt(nodeId, evt);
+        mNodeManager->freeEvt(nodeId, xmlEvt);
 #endif
         xmlRespStr = s.str();
     }
@@ -345,8 +345,12 @@ IP2NClient::RetCode Peer::sendEvt(const NodeId& nodeId, const std::string& xmlEv
         return IP2NClient::RCError;
     }
 
-    XmlEvt xmlEvt;
-    if (!xmlEvt.fromXmlElt(xmlDoc.RootElement()))
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+#else
+    XmlEvt* xmlEvt = new XmlEvt();
+#endif
+    if (!xmlEvt->fromXmlElt(xmlDoc.RootElement()))
     {
         xmlRespStr = "Invalid parameters !";
         return IP2NClient::RCError;

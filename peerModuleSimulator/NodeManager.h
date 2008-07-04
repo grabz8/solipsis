@@ -69,17 +69,21 @@ public:
     bool update();
 
     /** Process an event. */
-    bool processEvt(const NodeId& nodeId, XmlEvt& xmlEvt, std::string& xmlRespStr);
+#ifdef POOL
+    bool processEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
+#else
+    bool processEvt(const NodeId& nodeId, XmlEvt* xmlEvt, std::string& xmlRespStr);
+#endif
 #ifdef POOL
     /** Get next event to handle. */
     RefCntPoolPtr<XmlEvt> getNextEvtToHandle(const NodeId& nodeId);
     /** Free event (handled event). */
-    bool freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& evt);
+    bool freeEvt(const NodeId& nodeId, RefCntPoolPtr<XmlEvt>& xmlEvt);
 #else
     /** Get next event to handle. */
     XmlEvt* getNextEvtToHandle(const NodeId& nodeId);
     /** Free event (handled event). */
-    bool freeEvt(const NodeId& nodeId, XmlEvt* evt);
+    bool freeEvt(const NodeId& nodeId, XmlEvt* xmlEvt);
 #endif
 
     /** Create an ObjectNode. */

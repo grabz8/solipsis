@@ -134,8 +134,7 @@ function NavigatorLua:createGUI(guiName, ...)
 
 	if guiName == "uichat" then
 		-- Create Navi UI chat
-		naviMgrCreateNavi("uichat", "local://uichat.html", "TopLeft", 0, 0, 512, 64, true, false)
-		naviSetMask("uichat", "uichat.png")
+		naviMgrCreateNavi("uichat", "local://uichat.html", "TopLeft", 0, 0, 512, 128, true, false)
 		naviSetOpacity("uichat", 0.75)
 		naviAddEventListener("uichat", "uichatListener")
 		return true

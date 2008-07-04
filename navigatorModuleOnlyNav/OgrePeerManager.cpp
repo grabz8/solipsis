@@ -167,6 +167,37 @@ bool OgrePeerManager::update(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool OgrePeerManager::action(RefCntPoolPtr<XmlAction>& xmlAction)
+#else
+bool OgrePeerManager::update(XmlAction* xmlAction)
+#endif
+{
+    if (xmlAction->getType() == ATChat)
+    {
+        String from = "???";
+        OgrePeersMap::iterator it = mOgrePeersMap.find(xmlAction->getSourceEntityUid());
+        if (it != mOgrePeersMap.end())
+            from = it->second->getXmlEntity()->getName();
+        Navigator::getSingletonPtr()->getNavigatorGUI()->addChatText(from + " " + xmlAction->getDesc());
+    }
+
+    OgrePeersMap::iterator it = mOgrePeersMap.find(xmlAction->getTargetEntityUid());
+    if ((it == mOgrePeersMap.end()) || (it->second == 0))
+        return false;
+
+    OgrePeer* ogrePeer = it->second;
+    bool result = ogrePeer->action(xmlAction);
+
+#ifdef POOL
+#else
+    delete xmlAction;
+#endif
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
 bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 {
     // Animate
@@ -216,7 +247,6 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
     // Create the Xml entity
 #ifdef POOL
     RefCntPoolPtr<XmlEntity> xmlEntity;
-    xmlEntity.allocate();
 #else
     XmlEntity* xmlEntity = new XmlEntity();
 #endif
@@ -230,9 +260,7 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
     xmlEntity->setOrientation(Quaternion::IDENTITY);
 #ifdef POOL
     RefCntPoolPtr<XmlContent> xmlContent;
-    xmlContent.allocate();
     RefCntPoolPtr<XmlLodContent> xmlLodContent0;
-    xmlLodContent0.allocate();
 #else
     XmlContent* xmlContent = new XmlContent();
     XmlLodContent* xmlLodContent0 = new XmlLodContent();

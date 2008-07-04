@@ -582,3 +582,8 @@ WWW/VLC/VNC textures are described into the XML of the object3D saved into the .
 arg -m added to Peer module in order to specify 1 network shared Media/cache directory
 
 ---------------------------
+04/07/08
+
+chat updated with 1 input+textarea panel, messages are broadcasted to other present avatars
+
+---------------------------

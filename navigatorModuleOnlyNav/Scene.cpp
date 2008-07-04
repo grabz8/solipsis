@@ -28,11 +28,11 @@ using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-Scene::Scene(RefCntPoolPtr<XmlEntity>& entity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
+Scene::Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
 #else
-Scene::Scene(XmlEntity* entity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
+Scene::Scene(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery) :
 #endif
-    OgrePeer(entity, isLocal),
+    OgrePeer(xmlEntity, isLocal),
     mSceneNode(sceneNode),
     mStaticGeometry(0),
     mRaySceneQuery(raySceneQuery)
@@ -75,6 +75,16 @@ bool Scene::update(XmlEntity* xmlEntity)
         mSceneNode->setOrientation(xmlEntity->getOrientation());
     }
 
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+#ifdef POOL
+bool Scene::action(RefCntPoolPtr<XmlAction>& xmlAction)
+#else
+bool Scene::action(XmlAction* xmlAction)
+#endif
+{
     return true;
 }
 

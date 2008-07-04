@@ -184,6 +184,12 @@ public:
 #else
     virtual bool update(XmlEntity* xmlEntity);
 #endif
+    /** See OgrePeer. */
+#ifdef POOL
+    virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction);
+#else
+    virtual bool action(XmlAction* xmlAction);
+#endif
 
     /** Starts 1 animation. */
     void startAnimation(const String &name, bool loop = true);

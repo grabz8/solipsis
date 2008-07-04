@@ -132,17 +132,17 @@ bool AvatarNode::addAwareEntity(Entity* entity, bool sendNewEvt)
     if (sendNewEvt)
     {
 #ifdef POOL
-        RefCntPoolPtr<XmlEvt> evt;
-        evt->setType(ETNewEntity);
-        evt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
+        RefCntPoolPtr<XmlEvt> xmlEvt;
+        xmlEvt->setType(ETNewEntity);
+        xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
         pthread_mutex_lock(&mEvtsMutex);
-        mEvtsToHandleList.push_back(evt);
+        mEvtsToHandleList.push_back(xmlEvt);
         pthread_mutex_unlock(&mEvtsMutex);
 #else
-        XmlEvt* evt = new XmlEvt(ETNewEntity);
-        evt->setDatas(entity->getXmlEntity());
+        XmlEvt* xmlEvt = new XmlEvt(ETNewEntity);
+        xmlEvt->setDatas(entity->getXmlEntity());
         pthread_mutex_lock(&mEvtsMutex);
-        mEvtsToHandleList.push_back(evt);
+        mEvtsToHandleList.push_back(xmlEvt);
         pthread_mutex_unlock(&mEvtsMutex);
 #endif
     }
@@ -176,17 +176,17 @@ bool AvatarNode::removeAwareEntity(Entity* entity)
     pthread_mutex_unlock(&mMutex);
 
 #ifdef POOL
-    RefCntPoolPtr<XmlEvt> evt;
-    evt->setType(ETLostEntity);
-    evt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+    xmlEvt->setType(ETLostEntity);
+    xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
     pthread_mutex_lock(&mEvtsMutex);
-    mEvtsToHandleList.push_back(evt);
+    mEvtsToHandleList.push_back(xmlEvt);
     pthread_mutex_unlock(&mEvtsMutex);
 #else
-    XmlEvt* evt = new XmlEvt(ETLostEntity);
-    evt->setDatas(entity->getXmlEntity());
+    XmlEvt* xmlEvt = new XmlEvt(ETLostEntity);
+    xmlEvt->setDatas(entity->getXmlEntity());
     pthread_mutex_lock(&mEvtsMutex);
-    mEvtsToHandleList.push_back(evt);
+    mEvtsToHandleList.push_back(xmlEvt);
     pthread_mutex_unlock(&mEvtsMutex);
 #endif
 
@@ -194,16 +194,20 @@ bool AvatarNode::removeAwareEntity(Entity* entity)
 }
 
 //-------------------------------------------------------------------------------------
-bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
+#ifdef POOL
+bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr)
+#else
+bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
+#endif
 {
     static int c;
     static unsigned long l = (unsigned long)-1;
-    if (xmlEvt.getType() == ETUpdatedEntity)
+    if (xmlEvt->getType() == ETUpdatedEntity)
     {
 #ifdef POOL
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt.getDatas().get();
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas().get();
 #else
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt.getDatas();
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
 #endif
         if (xmlEntity == 0)
         {
@@ -243,18 +247,18 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
             if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
             {
                 avatar->getXmlEntity()->setOrientation(xmlEntity->getOrientation());
-                mAvatar.throwUpdateToEntityListeners(*this, mAvatar, xmlEvt);
+                mAvatar.throwEvtToEntityListeners(*this, mAvatar, xmlEvt);
             }
         }
         pthread_mutex_unlock(&mMutex);
     }
-    else if (xmlEvt.getType() == ETNewEntity)
+    else if (xmlEvt->getType() == ETNewEntity)
     {
 #ifdef POOL
-        RefCntPoolPtr<XmlEntity> xmlEntity = (RefCntPoolPtr<XmlEntity>)xmlEvt.getDatas();
+        RefCntPoolPtr<XmlEntity> xmlEntity = (RefCntPoolPtr<XmlEntity>)xmlEvt->getDatas();
         if (xmlEntity.isNull())
 #else
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt.getDatas();
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
         if (xmlEntity == 0)
 #endif
         {
@@ -270,28 +274,48 @@ bool AvatarNode::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
         xmlEntity->setOwner(mNodeId);
         ObjectNode* objectNode = Peer::getSingleton().getNodeManager()->createObjectNode(xmlEntity);
     }
+    else if (xmlEvt->getType() == ETActionOnEntity)
+    {
+#ifdef POOL
+        XmlAction* xmlAction = (XmlAction*)xmlEvt->getDatas().get();
+#else
+        XmlAction* xmlAction = (XmlAction*)xmlEvt->getDatas();
+#endif
+        if (xmlAction == 0)
+        {
+            xmlRespStr = "No action found in event !";
+            return false;
+        }
+        if (xmlAction->getTargetEntityUid() == mAvatar.getXmlEntity()->getUid())
+        {
+            pthread_mutex_lock(&mEvtsMutex);
+            mEvtsToHandleList.push_back(xmlEvt);
+            pthread_mutex_unlock(&mEvtsMutex);
+        }
+        mAvatar.throwEvtToEntityListeners(*this, mAvatar, xmlEvt);
+    }
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool AvatarNode::freeEvt(RefCntPoolPtr<XmlEvt>& evt)
+bool AvatarNode::freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt)
 #else
-bool AvatarNode::freeEvt(XmlEvt* evt)
+bool AvatarNode::freeEvt(XmlEvt* xmlEvt)
 #endif
 {
     pthread_mutex_lock(&mEvtsMutex);
 #ifdef POOL
-    if (evt->getDatas() == mAvatar.mUpdatedXmlEntity)
+    if (xmlEvt->getDatas() == mAvatar.mUpdatedXmlEntity)
         mAvatar.mUpdatedXmlEntity->setDefinedAttributes(XmlEntity::DANone);
 #else
-    if (evt->getDatas() == &mAvatar.mUpdatedXmlEntity)
+    if (xmlEvt->getDatas() == &mAvatar.mUpdatedXmlEntity)
         mAvatar.mUpdatedXmlEntity.setDefinedAttributes(XmlEntity::DANone);
 #endif
     pthread_mutex_unlock(&mEvtsMutex);
 
-    return Node::freeEvt(evt);
+    return Node::freeEvt(xmlEvt);
 }
 
 //-------------------------------------------------------------------------------------
@@ -375,27 +399,27 @@ c++;
 #ifdef POOL
         if (!mAvatar.mUpdatedXmlEntity->getDefinedAttributes() & XmlEntity::DAUid)
         {
-            RefCntPoolPtr<XmlEvt> evt;
-            evt->setType(ETUpdatedEntity);
+            RefCntPoolPtr<XmlEvt> xmlEvt;
+            xmlEvt->setType(ETUpdatedEntity);
             mAvatar.mUpdatedXmlEntity->setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity->setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
             OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
-            evt->setDatas(RefCntPoolPtr<XmlData>(mAvatar.mUpdatedXmlEntity));
+            xmlEvt->setDatas(RefCntPoolPtr<XmlData>(mAvatar.mUpdatedXmlEntity));
 #else
         if (!mAvatar.mUpdatedXmlEntity.getDefinedAttributes() & XmlEntity::DAUid)
         {
-            XmlEvt* evt = new XmlEvt(ETUpdatedEntity);
+            XmlEvt* xmlEvt = new XmlEvt(ETUpdatedEntity);
             mAvatar.mUpdatedXmlEntity.setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity.setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
             OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
-            evt->setDatas(&mAvatar.mUpdatedXmlEntity);
+            xmlEvt->setDatas(&mAvatar.mUpdatedXmlEntity);
 #endif
-            mEvtsToHandleList.push_back(evt);
-            mAvatar.throwUpdateToEntityListeners(*this, mAvatar, *evt);
+            mEvtsToHandleList.push_back(xmlEvt);
+            mAvatar.throwEvtToEntityListeners(*this, mAvatar, xmlEvt);
             mAvatar.mDirty = false;
         }
         pthread_mutex_unlock(&mEvtsMutex);
@@ -407,39 +431,74 @@ c++;
 }
 
 //-------------------------------------------------------------------------------------
-bool AvatarNode::updated(const Node& node, Entity& entity, XmlEvt& xmlEvt)
+#ifdef POOL
+bool AvatarNode::onEvt(const Node& node, Entity& entity, RefCntPoolPtr<XmlEvt>& xmlEvt)
+#else
+bool AvatarNode::onEvt(const Node& node, Entity& entity, XmlEvt* xmlEvt)
+#endif
 {
     pthread_mutex_lock(&mEvtsMutex);
-//    XmlEvt* evt = new XmlEvt(ETUpdatedEntity);
-//    evt->setDatas(xmlEvt.getDatas());
-//    mEvtsToHandleList.push_back(evt);
+
+    if (xmlEvt->getType() == ETUpdatedEntity)
+    {
 #ifdef POOL
-    if (mXmlEntityMap.find(entity.getXmlEntity()->getUid()) == mXmlEntityMap.end())
-        mXmlEntityMap[entity.getXmlEntity()->getUid()] = RefCntPoolPtr<XmlEntity>(new XmlEntity(entity.getXmlEntity()->getUid()));
-    RefCntPoolPtr<XmlEntity>& local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
-    XmlEntity* evtEntity = (XmlEntity*)xmlEvt.getDatas().get();
-    local->setDefinedAttributes(evtEntity->getDefinedAttributes());
-    if (local->getDefinedAttributes() & XmlEntity::DAPosition)
-        local->setPosition(evtEntity->getPosition());
-    if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
-        local->setOrientation(evtEntity->getOrientation());
-    RefCntPoolPtr<XmlEvt> evt;
-    evt->setType(ETUpdatedEntity);
-    evt->setDatas(RefCntPoolPtr<XmlData>(local));
-    mEvtsToHandleList.push_back(evt);
+        if (mXmlEntityMap.find(entity.getXmlEntity()->getUid()) == mXmlEntityMap.end())
+            mXmlEntityMap[entity.getXmlEntity()->getUid()] = RefCntPoolPtr<XmlEntity>(new XmlEntity(entity.getXmlEntity()->getUid()));
+        RefCntPoolPtr<XmlEntity>& local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
+        XmlEntity* evtEntity = (XmlEntity*)xmlEvt->getDatas().get();
+        local->setDefinedAttributes(evtEntity->getDefinedAttributes());
+        if (local->getDefinedAttributes() & XmlEntity::DAPosition)
+            local->setPosition(evtEntity->getPosition());
+        if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
+            local->setOrientation(evtEntity->getOrientation());
+        RefCntPoolPtr<XmlEvt> fwdXmlEvt;
+        fwdXmlEvt->setType(ETUpdatedEntity);
+        fwdXmlEvt->setDatas(RefCntPoolPtr<XmlData>(local));
 #else
-    if (mXmlEntityMap.find(entity.getXmlEntity()->getUid()) == mXmlEntityMap.end())
-        mXmlEntityMap[entity.getXmlEntity()->getUid()] = new XmlEntity(entity.getXmlEntity()->getUid());
-    XmlEntity* local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
-    local->setDefinedAttributes(((XmlEntity*)xmlEvt.getDatas())->getDefinedAttributes());
-    if (local->getDefinedAttributes() & XmlEntity::DAPosition)
-        local->setPosition(((XmlEntity*)xmlEvt.getDatas())->getPosition());
-    if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
-        local->setOrientation(((XmlEntity*)xmlEvt.getDatas())->getOrientation());
-    XmlEvt* evt = new XmlEvt(ETUpdatedEntity);
-    evt->setDatas(local);
-    mEvtsToHandleList.push_back(evt);
+        if (mXmlEntityMap.find(entity.getXmlEntity()->getUid()) == mXmlEntityMap.end())
+            mXmlEntityMap[entity.getXmlEntity()->getUid()] = new XmlEntity(entity.getXmlEntity()->getUid());
+        XmlEntity* local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
+        XmlEntity* evtEntity = (XmlEntity*)xmlEvt->getDatas();
+        local->setDefinedAttributes(evtEntity->getDefinedAttributes());
+        if (local->getDefinedAttributes() & XmlEntity::DAPosition)
+            local->setPosition(evtEntity->getPosition());
+        if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
+            local->setOrientation(evtEntity->getOrientation());
+        XmlEvt* fwdXmlEvt = new XmlEvt(ETUpdatedEntity);
+        fwdXmlEvt->setDatas(local);
 #endif
+        mEvtsToHandleList.push_back(fwdXmlEvt);
+    }
+    else if (xmlEvt->getType() == ETActionOnEntity)
+    {
+        XmlAction* xmlAction = (XmlAction*)xmlEvt->getDatas().get();
+        if (xmlAction->getTargetEntityUid() == mAvatar.getXmlEntity()->getUid())
+            mEvtsToHandleList.push_back(xmlEvt);
+        else if (xmlAction->getSourceEntityUid() == xmlAction->getTargetEntityUid())
+        {
+#ifdef POOL
+            RefCntPoolPtr<XmlEvt> fwdXmlEvt;
+            fwdXmlEvt->setType(xmlEvt->getType());
+            RefCntPoolPtr<XmlAction> action;
+            action->setType(xmlAction->getType());
+            action->setSourceEntityUid(xmlAction->getSourceEntityUid());
+            action->setTargetEntityUid(mAvatar.getXmlEntity()->getUid());
+            action->setDesc(xmlAction->getDesc());
+            fwdXmlEvt->setDatas(RefCntPoolPtr<XmlData>(action));
+#else
+            XmlEvt* fwdXmlEvt = new XmlEvt();
+            fwdXmlEvt->setType(xmlEvt->getType());
+            XmlEvt* action = new XmlAction();
+            action->setType(xmlAction->getType());
+            action->setSourceEntityUid(xmlAction->getSourceEntityUid());
+            action->setTargetEntityUid(mAvatar->getXmlEntity()->getUid());
+            action->setDesc(xmlAction->getDesc());
+            fwdXmlEvt->setDatas(action);
+#endif
+            mEvtsToHandleList.push_back(fwdXmlEvt);
+        }
+    }
+
     pthread_mutex_unlock(&mEvtsMutex);
 
     return true;

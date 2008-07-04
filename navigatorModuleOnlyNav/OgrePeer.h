@@ -80,6 +80,12 @@ public:
 #else
     virtual bool update(XmlEntity* xmlEntity) = 0;
 #endif
+    /** Action on entity. */
+#ifdef POOL
+    virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction) = 0;
+#else
+    virtual bool action(XmlAction* xmlAction) = 0;
+#endif
 };
 
 } // namespace Solipsis

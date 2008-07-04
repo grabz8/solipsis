@@ -55,6 +55,16 @@ void Object::update(Real timeSinceLastFrame)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
+bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
+#else
+bool Object::action(XmlAction* xmlAction)
+#endif
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+#ifdef POOL
 bool Object::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
 bool Object::update(XmlEntity* xmlEntity)

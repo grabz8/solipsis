@@ -328,6 +328,16 @@ bool Avatar::update(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef POOL
+bool Avatar::action(RefCntPoolPtr<XmlAction>& xmlAction)
+#else
+bool Avatar::action(XmlAction* xmlAction)
+#endif
+{
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 void Avatar::startAnimation(const String &name, bool loop)
 {
     if (name.length() == 0) return;

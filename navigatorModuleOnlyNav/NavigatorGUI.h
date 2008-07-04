@@ -124,6 +124,8 @@ public:
     void debugRefreshUrl();
 #endif
 
+    void addChatText(const String& message);
+
 protected:
     // Handlers
     // Login/Options/InWorld callbacks

@@ -95,12 +95,16 @@ public:
     bool removeAwareEntity(Entity* entity);
 
     /** See Solipsis::Node. */
-    virtual bool processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr);
+#ifdef POOL
+    virtual bool processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
+#else
+    virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
+#endif
     /** See Solipsis::Node. */
 #ifdef POOL
-    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& evt);
+    virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
 #else
-    virtual bool freeEvt(XmlEvt* evt);
+    virtual bool freeEvt(XmlEvt* xmlEvt);
 #endif
     /** See Solipsis::Node. */
     virtual bool freeze(bool frozen);
@@ -112,7 +116,11 @@ public:
     virtual bool tick(Ogre::Real timeSinceLastTick);
 
     /** See Solipsis::EntityListener. */
-    virtual bool updated(const Node& node, Entity& entity, XmlEvt& xmlEvt);
+#ifdef POOL
+    virtual bool onEvt(const Node& node, Entity& entity, RefCntPoolPtr<XmlEvt>& xmlEvt);
+#else
+    virtual bool onEvt(const Node& node, Entity& entity, XmlEvt* xmlEvt);
+#endif
 };
 
 } // namespace Solipsis

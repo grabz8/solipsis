@@ -56,7 +56,11 @@ const String& Node::getType()
 }
 
 //-------------------------------------------------------------------------------------
-bool Node::processEvt(XmlEvt& xmlEvt, std::string& xmlRespStr)
+#ifdef POOL
+bool Node::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr)
+#else
+bool Node::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
+#endif
 {
     return true;
 }
@@ -69,30 +73,30 @@ XmlEvt* Node::getNextEvtToHandle()
 #endif
 {
 #ifdef POOL
-    RefCntPoolPtr<XmlEvt> evt(RefCntPoolPtr<XmlEvt>::nullPtr);
+    RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
 #else
-    XmlEvt* evt = 0;
+    XmlEvt* xmlEvt = 0;
 #endif
 
     pthread_mutex_lock(&mEvtsMutex);
     if (!mEvtsToHandleList.empty())
     {
-        evt = mEvtsToHandleList.front();
+        xmlEvt = mEvtsToHandleList.front();
         mEvtsToHandleList.pop_front();
     }
     pthread_mutex_unlock(&mEvtsMutex);
 
-    return evt;
+    return xmlEvt;
 }
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool Node::freeEvt(RefCntPoolPtr<XmlEvt>& evt)
+bool Node::freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt)
 {
     return true;
 }
 #else
-bool Node::freeEvt(XmlEvt* evt)
+bool Node::freeEvt(XmlEvt* xmlEvt)
 {
     delete evt;
 

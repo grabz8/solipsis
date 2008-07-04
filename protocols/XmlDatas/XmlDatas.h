@@ -55,6 +55,11 @@ enum EntityType {
     ETObject = 2        /// Object (movable)
 };
 
+enum ActionType {
+    ATNone = 0,         /// No action
+    ATChat = 1,         /// Chat message sent by the target entity
+};
+
 typedef unsigned int EntityFlags;
 const EntityFlags EFNone = (EntityFlags)0;
 const EntityFlags EFGravity = (EntityFlags)1;  /// Gravity applied
@@ -92,6 +97,8 @@ public:
     static inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
     static const std::string& convertEntityTypeToRepr(const EntityType& entityType);
     static inline void convertDecStringToEntityType(const char* str, EntityType& entityType) { entityType = (EntityType)atoi(str); }
+    static const std::string& convertActionTypeToRepr(const ActionType& actionType);
+    static inline void convertDecStringToActionType(const char* str, ActionType& actionType) { actionType = (ActionType)atoi(str); }
     static std::string convertEntityFlagsToRepr(const EntityFlags& entityFlags);
     static inline std::string convertEntityFlagsToHexString(const EntityFlags& entityFlags) { return XmlHelpers::convertUIntToHexString(entityFlags); }
     static inline EntityFlags convertHexStringToEntityFlags(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
@@ -680,6 +687,58 @@ public:
 #endif
 };
 
+class XMLDATAS_EXPORT XmlAction : public XmlData
+{
+#ifdef POOL
+protected:
+    static Pool mPool;
+#endif
+
+protected:
+    ActionType mType;
+    EntityUID mSourceEntityUid;
+    EntityUID mTargetEntityUid;
+    std::string mDesc;
+
+public:
+    XmlAction() :
+      mType(ATNone),
+      mSourceEntityUid(0),
+      mTargetEntityUid(0),
+      mDesc("")
+    {}
+
+#ifdef POOL
+    static Pool& getStaticPool();
+    virtual Pool& getPool() const;
+    virtual void clear() {
+        mType = ATNone;
+        mSourceEntityUid = 0;
+        mTargetEntityUid = 0;
+        mDesc.clear();
+    }
+#endif
+
+    virtual std::string toXmlString() const;
+    virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+    virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+    void setType(const ActionType& type) { mType = type; }
+    ActionType getType() { return mType; }
+    const std::string& getTypeRepr() { return XmlHelpers::convertActionTypeToRepr(mType); }
+
+    void setSourceEntityUid(const EntityUID& sourceEntityUid) { mSourceEntityUid = sourceEntityUid; }
+    const EntityUID& getSourceEntityUid() { return mSourceEntityUid; }
+    std::string getSourceEntityUidString() { return XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid); }
+
+    void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
+    const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
+    std::string getTargetEntityUidString() { return XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid); }
+
+    void setDesc(const std::string& desc) { mDesc = desc; }
+    const std::string& getDesc() { return mDesc; }
+};
+
 class XMLDATAS_EXPORT XmlEvt : public XmlData
 {
 #ifdef POOL
@@ -747,6 +806,7 @@ RefCntPoolPtr<XmlSceneLodContent> RefCntPoolPtr<XmlSceneLodContent>::nullPtr((Xm
 RefCntPoolPtr<XmlContent> RefCntPoolPtr<XmlContent>::nullPtr((XmlContent*)0);
 RefCntPoolPtr<XmlSceneContent> RefCntPoolPtr<XmlSceneContent>::nullPtr((XmlSceneContent*)0);
 RefCntPoolPtr<XmlEntity> RefCntPoolPtr<XmlEntity>::nullPtr((XmlEntity*)0);
+RefCntPoolPtr<XmlAction> RefCntPoolPtr<XmlAction>::nullPtr((XmlAction*)0);
 RefCntPoolPtr<XmlEvt> RefCntPoolPtr<XmlEvt>::nullPtr((XmlEvt*)0);
 #endif
 

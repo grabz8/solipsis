@@ -41,11 +41,15 @@ class Entity;
 class EntityListener
 {
 public:
-    /** Called when an entity is updated.
+    /** Called when an entity treated an event.
         @return
             True to go ahead, false otherwise.
     */
-    virtual bool updated(const Node& node, Entity& entity, XmlEvt& xmlEvt) = 0;
+#ifdef POOL
+    virtual bool onEvt(const Node& node, Entity& entity, RefCntPoolPtr<XmlEvt>& xmlEvt) = 0;
+#else
+    virtual bool onEvt(const Node& node, Entity& entity, XmlEvt* xmlEvt) = 0;
+#endif
 };
 
 /** This class manages 1 entity by its descriptor.
@@ -114,8 +118,12 @@ public:
     void addEntityListener(EntityListener* newListener);
     /** Removes a EntityListener from the list of listening classes. */
     void removeEntityListener(EntityListener* oldListener);
-    /** Throw an update to list of listening classes. */
-    void throwUpdateToEntityListeners(const Node& node, Entity& entity, XmlEvt& xmlEvt);
+    /** Throw an event to list of listening classes. */
+#ifdef POOL
+    void throwEvtToEntityListeners(const Node& node, Entity& entity, RefCntPoolPtr<XmlEvt>& xmlEvt);
+#else
+    void throwEvtToEntityListeners(const Node& node, Entity& entity, XmlEvt* xmlEvt);
+#endif
 
     /** Update. */
     virtual bool update(Ogre::Real timeSinceLastFrame) = 0;
