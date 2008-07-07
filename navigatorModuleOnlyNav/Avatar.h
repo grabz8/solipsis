@@ -82,6 +82,8 @@ protected:
     AnimationState* mAnimationState;
     /// Name label
     MovableText* mNameLabel;
+	/// Chat label
+    MovableText* mChatLabel;
     /// Selection object
     ManualObject* mSelectionObject;
     /// Whether to apply the gravity

@@ -62,6 +62,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mCamerasSceneNode(0),
     mAnimationState(0),
     mNameLabel(0),
+	mChatLabel(0),
     mSelectionObject(0),
     mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
@@ -121,6 +122,11 @@ Avatar::~Avatar()
         getSceneNode()->detachObject(mNameLabel);
         delete mNameLabel;
     }
+	if (mChatLabel != 0)
+    {
+        getSceneNode()->detachObject(mChatLabel);
+        delete mChatLabel;
+    }
     CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
 
 #ifdef POOL
@@ -161,6 +167,19 @@ void Avatar::onSceneNodeChanged()
     }
     mNameLabel->setAdditionalHeight(avatarSize.y);
     getSceneNode()->attachObject(mNameLabel);
+
+	// Chat Label
+    if (mChatLabel == 0)
+    {
+        mChatLabel = new MovableText(uidString + "ChatLabel", " ", false);
+        mChatLabel->setScale(0.15f);
+        mChatLabel->setCharacterHeight(1);
+		mChatLabel->setSpaceWidth(1);
+        mChatLabel->setColor(ColourValue(.8,1,.8,1));
+        mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
+    }
+	mChatLabel->setAdditionalHeight(avatarSize.y + .2);
+	getSceneNode()->attachObject(mChatLabel);
 
     // Picking
 /* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
@@ -334,6 +353,10 @@ bool Avatar::action(RefCntPoolPtr<XmlAction>& xmlAction)
 bool Avatar::action(XmlAction* xmlAction)
 #endif
 {
+	String label = xmlAction->getDesc();
+	if( label.size() < 1 ) label = " ";
+	mChatLabel->setCaption( label );
+
     return true;
 }
 
