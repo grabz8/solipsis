@@ -298,6 +298,38 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
 }
 
 //-------------------------------------------------------------------------------------
+bool OgrePeerManager::OnUserAvatarSave()
+{
+    Avatar *userAvatar = (Avatar*)mUserAvatar;
+    userAvatar->OnAvatarSave();
+
+    // Create the Xml entity
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> xmlEntity;
+#else
+    XmlEntity* xmlEntity = new XmlEntity();
+#endif
+    xmlEntity->setDefinedAttributes(XmlEntity::DANone);
+    xmlEntity->setUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlEntity->setType(mUserAvatar->getXmlEntity()->getType());
+    xmlEntity->setVersion(mUserAvatar->getXmlEntity()->getVersion());
+    xmlEntity->setContent(mUserAvatar->getXmlEntity()->getContent());
+
+    // Send updated entity event
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+    xmlEvt->setType(ETUpdatedEntity);
+    xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
+#else
+    XmlEvt xmlEvt(ETUpdatedEntity);
+    xmlEvt.setDatas(xmlEntity);
+#endif
+    mEvtsList.push_back(xmlEvt);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 #ifdef POOL
 OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else

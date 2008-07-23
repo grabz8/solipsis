@@ -221,6 +221,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         if (entity->getXmlEntity()->getType() == ETAvatar)
         {
             Avatar* avatar = (Avatar*)entity;
+            bool throwEvtToEntityListeners = false;
             if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
             {
                 EntityFlags diff = avatar->getXmlEntity()->getFlags() ^ xmlEntity->getFlags();
@@ -247,8 +248,15 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
             {
                 avatar->getXmlEntity()->setOrientation(xmlEntity->getOrientation());
-                mAvatar.throwEvtToEntityListeners(*this, mAvatar, xmlEvt);
+                throwEvtToEntityListeners = true;
             }
+            if (!xmlEntity->getContent().isNull())
+            {
+                avatar->getXmlEntity()->setContent(xmlEntity->getContent());
+                throwEvtToEntityListeners = true;
+            }
+            if (throwEvtToEntityListeners)
+                mAvatar.throwEvtToEntityListeners(*this, mAvatar, xmlEvt);
         }
         pthread_mutex_unlock(&mMutex);
     }
@@ -446,11 +454,14 @@ bool AvatarNode::onEvt(const Node& node, Entity& entity, XmlEvt* xmlEvt)
             mXmlEntityMap[entity.getXmlEntity()->getUid()] = RefCntPoolPtr<XmlEntity>(new XmlEntity(entity.getXmlEntity()->getUid()));
         RefCntPoolPtr<XmlEntity>& local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
         XmlEntity* evtEntity = (XmlEntity*)xmlEvt->getDatas().get();
+        local->setContent(RefCntPoolPtr<XmlContent>::nullPtr);
         local->setDefinedAttributes(evtEntity->getDefinedAttributes());
         if (local->getDefinedAttributes() & XmlEntity::DAPosition)
             local->setPosition(evtEntity->getPosition());
         if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
             local->setOrientation(evtEntity->getOrientation());
+        if (!evtEntity->getContent().isNull())
+            local->setContent(entity.getXmlEntity()->getContent());
         RefCntPoolPtr<XmlEvt> fwdXmlEvt;
         fwdXmlEvt->setType(ETUpdatedEntity);
         fwdXmlEvt->setDatas(RefCntPoolPtr<XmlData>(local));
@@ -459,11 +470,14 @@ bool AvatarNode::onEvt(const Node& node, Entity& entity, XmlEvt* xmlEvt)
             mXmlEntityMap[entity.getXmlEntity()->getUid()] = new XmlEntity(entity.getXmlEntity()->getUid());
         XmlEntity* local = mXmlEntityMap[entity.getXmlEntity()->getUid()];
         XmlEntity* evtEntity = (XmlEntity*)xmlEvt->getDatas();
+        local->setContent(0);
         local->setDefinedAttributes(evtEntity->getDefinedAttributes());
         if (local->getDefinedAttributes() & XmlEntity::DAPosition)
             local->setPosition(evtEntity->getPosition());
         if (local->getDefinedAttributes() & XmlEntity::DAOrientation)
             local->setOrientation(evtEntity->getOrientation());
+        if (evtEntity->getContent() != 0)
+            local->setContent(entity.getXmlEntity()->getContent());
         XmlEvt* fwdXmlEvt = new XmlEvt(ETUpdatedEntity);
         fwdXmlEvt->setDatas(local);
 #endif

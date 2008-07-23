@@ -158,6 +158,9 @@ public:
     /** Detach extra nodes and movables from the character instance scene node. */
     void detachFromSceneNode();
 
+	/** Called when the avatar was saved. */
+	void OnAvatarSave();
+
     /** Set whether the name is visible or not. */
     void setNameVisibility(bool visible);
 

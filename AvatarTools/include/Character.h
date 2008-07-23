@@ -99,12 +99,12 @@ public:
 	///brief Method that return the entity associated to the Character.
 	///return entity associated with the Character.
     Entity* getEntity() { return mEntity; }
+	///brief Method that return the pathname of the Character.
+	///return Character's pathname.
+    Path* getPath() { return mPath; }
 	///brief Method that return the identifiant name of the Character (root of the .mesh file).
 	///return Character's root.
     String getName() { return mName; }
-	///brief Method that return the complete name of the Character, the one displayed on the left window.
-	///return Character's name.
-	String getCompleteName() { return mCompleteName; }
 	///brief Method that return the mesh name of the Character.
 	///return Mesh name.
 	String getMeshName() { return mMeshName; }

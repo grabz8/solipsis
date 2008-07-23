@@ -116,6 +116,9 @@ public:
     Character* getCharacter() { return mCharacter; }
     const String& getUidString() { return mUidString; }
     const String& getResourceGroup() { return mResourceGroup; }
+	///brief Method that return the pathname of the Character.
+	///return Character's pathname.
+    Path* getUidPath() { return mUidPath; }
 	///brief Method that return the mesh pointer associated with the Character.
 	///return mesh pointer associated with the Character.
     MeshPtr getMesh() { return mMesh; }

@@ -1728,7 +1728,10 @@ bool Navigator::avatarXMLLoad()
 bool Navigator::avatarXMLSave()
 {
 	if( mAvatarEditor )
+    {
 		mAvatarEditor->getManager()->getCurrentInstance()->saveModified();
+        mOgrePeerManager->OnUserAvatarSave();
+    }
 
     return true;
 }

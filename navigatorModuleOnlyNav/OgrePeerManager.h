@@ -111,6 +111,9 @@ public:
 	/** See Solipsis::IModelerCallbacks. */
 	virtual bool OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList);
 
+	/** Called when the user avatar was saved. */
+	bool OnUserAvatarSave();
+
 	// Get/Set
 	SceneManager* getSceneManager() { return mSceneMgr; }
     OgrePeersMap::iterator getOgrePeersIteratorBegin() { return mOgrePeersMap.begin(); }

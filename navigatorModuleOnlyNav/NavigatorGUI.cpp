@@ -2894,7 +2894,6 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
     userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setPrevAsCurrent();
     userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
-    userAvatar->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
@@ -2909,7 +2908,6 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
     userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setNextAsCurrent();
     userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
-    userAvatar->setState(Avatar::SIdle);
 
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
@@ -2930,7 +2928,6 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
         userAvatar->detachFromSceneNode();
 		AvatarEditor::getSingletonPtr()->setCurrentByName(item);
         userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
-        userAvatar->setState(Avatar::SIdle);
 
 		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 		std::string text( AvatarEditor::getSingletonPtr()->getName() );

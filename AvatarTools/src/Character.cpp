@@ -603,6 +603,8 @@ Character::~Character()
     mSceneMgr->destroyEntity(mEntity);
 
     mMesh->removeAnimation(mName + "_CustomizationAnimation");
+
+    delete mPath;
 }
 
 //---------------------------------------------------------------------------------

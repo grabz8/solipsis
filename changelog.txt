@@ -594,4 +594,10 @@ add the plugin for the 3ds format.le source code is in ../plugin_3ds.
 change the correspond .bat files.
 
 standardize the models loaded.
+
 ----------------------------
+23/07/08
+
+when avatar is saved, update evt is sent to peer and forwarded to other avatars
+
+---------------------------

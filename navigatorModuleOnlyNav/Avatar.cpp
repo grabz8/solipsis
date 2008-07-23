@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include "Navigator.h"
 #include <CharacterManager.h>
+#include <Character.h>
+#include <CharacterInstance.h>
 
 using namespace Solipsis;
 
@@ -99,7 +101,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mLastRealPosition = getSceneNode()->getPosition();
 
     if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
-        getSceneNode()->setOrientation(xmlEntity->getOrientation());
+        getSceneNode()->setOrientation(mXmlEntity->getOrientation());
     else
         getSceneNode()->setOrientation(Quaternion::IDENTITY);
 
@@ -232,11 +234,17 @@ void Avatar::onSceneNodeChanged()
             getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
         }
     }
+
+    getSceneNode()->setPosition(mXmlEntity->getPosition());
+    getSceneNode()->setOrientation(mXmlEntity->getOrientation());
+    setState(SIdle);
 }
 
 //-------------------------------------------------------------------------------------
 void Avatar::detachFromSceneNode()
 {
+    setState(SNone);
+
     // Name Label
     getSceneNode()->detachObject(mNameLabel);
 
@@ -250,6 +258,35 @@ void Avatar::detachFromSceneNode()
         mCamerasSceneNode->setOrientation(getSceneNode()->getOrientation());
         getSceneNode()->getParentSceneNode()->addChild(getSceneNode()->removeChild(mCamerasSceneNode));
     }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::OnAvatarSave()
+{
+    assert(isLocal());
+
+    String safFilename = mCharacterInstance->getCharacter()->getPath()->getLastFileName(true);
+    String sifFilename = mCharacterInstance->getUidPath()->getLastFileName(true);
+
+    // Get the scene content for LOD 0
+    XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
+    XmlLodContent::LodContentFileList::iterator lodContent0File;
+    for(lodContent0File = contentLodMap[0]->getLodContentFileList().begin();lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
+        if (lodContent0File->filename.find(".saf") == lodContent0File->filename.length() - 4)
+        {
+            lodContent0File->filename = safFilename;
+            break;
+        }
+    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .saf avatar file found !", "Avatar::OnAvatarSave");
+    for(lodContent0File = contentLodMap[0]->getLodContentFileList().begin();lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
+        if (lodContent0File->filename.find(".sif") == lodContent0File->filename.length() - 4)
+        {
+            lodContent0File->filename = sifFilename;
+            break;
+        }
+    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .sif avatar file found !", "Avatar::OnAvatarSave");
 }
 
 //-------------------------------------------------------------------------------------
@@ -341,6 +378,17 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
     {
         getSceneNode()->setOrientation(xmlEntity->getOrientation());
+        mXmlEntity->setOrientation(getSceneNode()->getOrientation());
+    }
+    if (!xmlEntity->getContent().isNull())
+    {
+        std::string uidStr = xmlEntity->getUidString();
+        detachFromSceneNode();
+        CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
+        CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, "");
+        if (characterInstance == 0)
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::update");
+        setCharacterInstance(characterInstance);
     }
 
     return true;
@@ -423,6 +471,7 @@ void Avatar::animate(Real timeSinceLastFrame)
             //MovableObject* movable = getSceneNode()->getAttachedObject(2);
             //getSceneNode()->detachObject (movable);
             getSceneNode()->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
+            mXmlEntity->setOrientation(getSceneNode()->getOrientation());
             //getSceneNode()->attachObject (movable);
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
                 nextState = SWalk;
@@ -488,6 +537,7 @@ void Avatar::animate(Real timeSinceLastFrame)
     //getSceneNode()->setPosition(mLastRealPosition);
     // Smooth X,Z + Direct Y positionning
     //getSceneNode()->setPosition(getSceneNode()->getPosition()*Vector3(1, 0, 1) + mLastRealPosition*Vector3::UNIT_Y);
+    mXmlEntity->setPosition(getSceneNode()->getPosition());
 
     if (!isLocal())
     {
@@ -576,7 +626,10 @@ void Avatar::yaw(const Radian& angle)
 {
     // Update XML entity
     if (isLocal())
+    {
         getSceneNode()->yaw(angle);
+        mXmlEntity->setOrientation(getSceneNode()->getOrientation());
+    }
 }
 
 //-------------------------------------------------------------------------------------
