@@ -35,10 +35,12 @@ According to use of XMLRPC++ or ULXMLRPCPP, then HandleEvt will respond
 NOEVT or will block until 1 EVT must be processed
 LOGSNDRCV define is used to log some traces
 
-Peer.exe is taking 3 optional args:
--h <server host>
--p <port number>
--v <verbosity 0..2>
+Peer.exe is taking 4 optional args:
+-h <IPaddr:str>         : IP address (default: localhost)
+-p <port:int>           : port (default: 8550)
+-v <verbosity:int>      : verbosity level (0..2)
+-s <sceneName:str>      : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
+-m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between 1 Peer and N Navigators)
 
 
 --------------------------------------------------------------------------------
