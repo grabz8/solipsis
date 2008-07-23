@@ -148,73 +148,73 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
             if (Peer::getSingleton().mSceneDemoLoaded.compare("Ile") == 0)
                 xmlSiteStr = "\
 <entity uid=\"11112223\" owner=\"00000001\" type=\"1\" name=\"Ile\" version=\"00000000\">\
-<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
-<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
-<aabb>\
-<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-</aabb>\
-<content>\
-<sceneContent>\
-<entryGate gravity=\"true\" >\
-<position x=\"170.0\" y=\"-60.0\" z=\"450.0\" />\
-</entryGate>\
-</sceneContent>\
-<lod level=\"0\">\
-<sceneLodContent mainFilename=\"Ile.osm\" collision=\"Ile_COLLISION\" />\
-<files>\
-<file name=\"11112223.ssf\" version=\"00000000\" />\
-</files>\
-</lod>\
-</content>\
+ <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+ </aabb>\
+ <content>\
+  <sceneContent>\
+   <entryGate gravity=\"true\" >\
+    <position x=\"170.0\" y=\"-60.0\" z=\"450.0\" />\
+   </entryGate>\
+  </sceneContent>\
+  <lod level=\"0\">\
+   <sceneLodContent mainFilename=\"Ile.osm\" collision=\"Ile_COLLISION\" />\
+   <files>\
+    <file name=\"11112223.ssf\" version=\"00000000\" />\
+   </files>\
+  </lod>\
+ </content>\
 </entity>\
 ";
             else if (Peer::getSingleton().mSceneDemoLoaded.compare("DigitalOcean1") == 0)
                 xmlSiteStr = "\
 <entity uid=\"11112224\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\" version=\"00000000\">\
-<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
-<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
-<aabb>\
-<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-</aabb>\
-<content>\
-<sceneContent>\
-<entryGate gravity=\"false\" >\
-<position x=\"30.0\" y=\"-26.0\" z=\"68.0\" />\
-</entryGate>\
-</sceneContent>\
-<lod level=\"0\">\
-<sceneLodContent mainFilename=\"DigitalOcean1.osm\" />\
-<files>\
-<file name=\"11112224.ssf\" version=\"00000000\" />\
-</files>\
-</lod>\
-</content>\
+ <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+ </aabb>\
+ <content>\
+  <sceneContent>\
+   <entryGate gravity=\"false\" >\
+    <position x=\"30.0\" y=\"-26.0\" z=\"68.0\" />\
+   </entryGate>\
+  </sceneContent>\
+  <lod level=\"0\">\
+   <sceneLodContent mainFilename=\"DigitalOcean1.osm\" />\
+   <files>\
+    <file name=\"11112224.ssf\" version=\"00000000\" />\
+   </files>\
+  </lod>\
+ </content>\
 </entity>\
 ";
             else
                 xmlSiteStr = "\
 <entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\" version=\"00000000\" >\
-<position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
-<orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
-<aabb>\
-<min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-<max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-</aabb>\
-<content>\
-<sceneContent>\
-<entryGate gravity=\"true\" >\
-<position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
-</entryGate>\
-</sceneContent>\
-<lod level=\"0\">\
-<sceneLodContent mainFilename=\"Deltastation1.osm\" collision=\"Delta_COLLISION\" />\
-<files>\
-<file name=\"11112222.ssf\" version=\"00000000\" />\
-</files>\
-</lod>\
-</content>\
+ <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+ </aabb>\
+ <content>\
+  <sceneContent>\
+   <entryGate gravity=\"true\" >\
+    <position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
+   </entryGate>\
+  </sceneContent>\
+  <lod level=\"0\">\
+   <sceneLodContent mainFilename=\"Deltastation1.osm\" collision=\"Delta_COLLISION\" />\
+   <files>\
+    <file name=\"11112222.ssf\" version=\"00000000\" />\
+   </files>\
+  </lod>\
+ </content>\
 </entity>\
 ";
             TiXmlDocument xmlSiteDoc;
