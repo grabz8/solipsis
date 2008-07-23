@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreExternalTextureSourceManager.h>
 #include <Navi.h>
 #include <CTIO.h>
+#include <Plugin_3ds.h>
+
 
 namespace Solipsis {
 
@@ -811,7 +813,7 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
     if (filenameToLoad.empty())
     {
 		char *fileToLoad = FileBrowser::displayWindowForLoading( 
-			"Ogre Mesh File,(*.mesh)\0*.mesh\0", string("") ); 
+			" Ogre Mesh File,(*.mesh)\0*.mesh\0 3D Studio File,(*.3ds)\0*.3ds\0", string("") ); 
         if (fileToLoad != 0)
             filenameToLoad = fileToLoad;
     }
@@ -822,28 +824,43 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
     if (!filenameToLoad.empty())
 	{
 		Path FilePath (filenameToLoad) ;
+		Ogre::String ext = FilePath.getExtension() ;
 		String entityName = FilePath.getLastFileName(false);
 
-/*        try {
-            ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
-        }
-        catch (Ogre::Exception e)
-        {}*/
+		//try {
+  //          ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
+  //      }
+  //      catch (Ogre::Exception e)
+  //      {} 
 
 	    static int num = -1;
 	    char name[31];
 	    sprintf(name, "Imported%.3u",++num);
 
         Entity* entity = 0;
-        if (!mSceneManager->hasEntity(entityName))
-            entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
+		if (!mSceneManager->hasEntity(entityName))
+		{
+            //ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
+			if(ext == "mesh")
+				entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
+				//entity = mSceneManager->createEntity( entityName, "b.mesh");
+			else if(ext == "3ds")
+			{
+				//ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
+				entity = Plugin_3ds::createEntityFrom3ds(entityName,filenameToLoad,mSceneManager);
+			}
+		}
         entity = mSceneManager->getEntity(entityName)->clone(name);
+		Vector3 size = entity->getBoundingBox().getSize();
+		Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
 	    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
 #ifdef SHADOWS
 	    entity->setCastShadows(true);
 #endif
-        entity->setQueryFlags(Navigator::QFObject);
+        //entity->setQueryFlags(Navigator::QFObject);
 	    node->attachObject( entity );
+		node->scale(5.0/mNormalise,5.0/mNormalise,5.0/mNormalise);//standardize the models loaded.
+		
 
         Object3DOther* obj = new Object3DOther( String(name), node );
         mSelection->add3DObject(obj);

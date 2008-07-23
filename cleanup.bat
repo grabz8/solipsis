@@ -55,6 +55,7 @@ rmdir Dependencies\speex /S /Q
 rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 rmdir Dependencies\vlc /S /Q
+rmdir Dependencies\plugin_3ds /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q

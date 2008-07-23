@@ -587,3 +587,11 @@ arg -m added to Peer module in order to specify 1 network shared Media/cache dir
 chat updated with 1 input+textarea panel, messages are broadcasted to other present avatars
 
 ---------------------------
+22/07/08
+
+add the plugin for the 3ds format.le source code is in ../plugin_3ds.
+
+change the correspond .bat files.
+
+standardize the models loaded.
+----------------------------
