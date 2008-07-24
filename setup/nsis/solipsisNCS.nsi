@@ -36,6 +36,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+RequestExecutionLevel user
 OutFile "Setup.exe"
 InstallDir "$PROGRAMFILES\Solipsis"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -58,8 +59,9 @@ SectionEnd
 
 Section -AdditionalIcons
   SetOutPath $INSTDIR
+  File "url.ico"
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk" "$INSTDIR\${PRODUCT_NAME}.url" "" "$INSTDIR\url.ico" 0
   CreateShortCut "$SMPROGRAMS\Solipsis\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
@@ -88,11 +90,10 @@ FunctionEnd
 Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
+  Delete "$INSTDIR\url.ico"
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
-  Delete "$SMPROGRAMS\Solipsis\Website.lnk"
-  Delete "$DESKTOP\Solipsis PeerSimulator.lnk"
-  Delete "$SMPROGRAMS\Solipsis\Solipsis PeerSimulator.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Navigator.lnk"
 
