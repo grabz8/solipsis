@@ -601,3 +601,8 @@ standardize the models loaded.
 when avatar is saved, update evt is sent to peer and forwarded to other avatars
 
 ---------------------------
+24/07/08
+
+modeler and avatarEditor keyboard focus pbs fixed (F8, F9, move/rot/scale keys)
+
+---------------------------
