@@ -101,7 +101,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         mLastEscapeHitTimer = now;
     }
 
-    // Updating Navi with the key pressed
+    // Cancel focus on Navi ?
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
     {
         if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
@@ -109,8 +109,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             mEscapeHitsB4CancellingFocus = 0;
             mNavigator->resetMousePicking();
             NaviManager::Get().deFocusAllNavis();
+            return true;
         }
-        return true;
     }
 
 	// is modeling ?
@@ -230,6 +230,10 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 			return OgreFrameListener::keyPressed(evt);
 		}
 	}
+
+    // Navi focused -> key processed by the navi
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+        return true;
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
         navigatorGUI->contextHide();
@@ -368,10 +372,6 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
 
-    // Updating Navi with the key released
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
-		return true;
-
     // In modeler ?
     if (mNavigator->getState() == Navigator::SModeling)
     {
@@ -384,6 +384,10 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
                 break;
         }
     }
+
+    // Navi focused -> key processed by the navi
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
+		return true;
 
     // VNC panel ?
     if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
