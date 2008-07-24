@@ -9,6 +9,8 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
+!define PRODUCT_PLATFORM "win32"
+
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
@@ -37,7 +39,7 @@
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 RequestExecutionLevel user
-OutFile "Setup.exe"
+OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-${PRODUCT_PLATFORM}.exe"
 InstallDir "$PROGRAMFILES\Solipsis"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
