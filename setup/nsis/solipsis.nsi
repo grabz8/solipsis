@@ -61,7 +61,7 @@ SectionEnd
 
 Section "Media" SEC03
   SetOutPath "$INSTDIR\Media"
-  File /r /x .svn /x NaviLocal /x lua /x *.sif "..\..\Media\*.*"
+  File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
 SectionEnd
 
 Section -AdditionalIcons
