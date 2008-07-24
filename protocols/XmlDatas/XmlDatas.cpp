@@ -647,7 +647,6 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     }
     if ((elt = xmlElt->FirstChildElement("animation")) != 0)
     {
-        mDefinedAttributes |= DAAnimation;
         //
     }
     if ((elt = xmlElt->FirstChildElement("shape")) != 0)

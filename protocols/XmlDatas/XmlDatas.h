@@ -548,7 +548,6 @@ public:
     static const DefinedAttributes DAPosition = (DefinedAttributes)(DADisplacement << 1);
     static const DefinedAttributes DAOrientation = (DefinedAttributes)(DAPosition << 1);
     static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAOrientation << 1);
-    static const DefinedAttributes DAAnimation = (DefinedAttributes)(DAAABoundingBox << 1);
 
 protected:
     DefinedAttributes mDefinedAttributes;
