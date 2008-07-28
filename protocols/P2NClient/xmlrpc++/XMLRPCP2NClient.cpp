@@ -104,14 +104,14 @@ IP2NClient::RetCode XMLRPCP2NClient::login(const std::string& xmlParams, std::st
         }
         mNodeId = resultStruct[NODEID_TAG];
         xmlResp = resultStruct[RESPONSE_TAG];
-        TiXmlDocument xmlDoc;
+/*        TiXmlDocument xmlDoc;
         xmlDoc.Parse(xmlResp.c_str());
         // check for errors
         if (xmlDoc.Error())
         {
             LOG("XMLRPCP2NClient::login() Unable to parse response !");
             return IP2NClient::RCError;
-        }
+        }*/
         mConnected = true;
         LOG("XMLRPCP2NClient::login()\nxmlParams=\n" + xmlParams + "\nxmlResp=\n" + xmlResp + "\nretCode=" + convert2string(retCode) + "\nmNodeId=" + mNodeId);
     }

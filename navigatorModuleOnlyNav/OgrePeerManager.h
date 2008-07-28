@@ -50,8 +50,8 @@ public:
 #endif
 
 private:
-    // My entities
-    XmlEntitiesMap mMyXmlEntities;
+    // My node identifier
+    NodeId mNodeId;
 
     // <Peer's name, OgrePeer> map
     OgrePeersMap mOgrePeersMap;
@@ -72,8 +72,8 @@ public:
     OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
     ~OgrePeerManager();
 
-    // Set my entities
-    void setMyEntities(std::list<EntityUID> myEntities);
+    // Set my node identifier
+    void setNodeId(const NodeId& nodeId);
 
     // Load
 #ifdef POOL

@@ -261,13 +261,6 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
         return IP2NClient::RCError;
     }
     nodeId = avatarNode->getNodeId();
-    Entity::EntityMap& ownedEntities = avatarNode->getOwnedEntities();
-    std::stringstream s;
-    s << "<solipsis><entities>";
-    for (Entity::EntityMap::iterator entity = ownedEntities.begin(); entity != ownedEntities.end(); ++entity)
-        s << "<entity uid=" << XmlHelpers::convertEntityUIDToHexString(entity->first) << " />";
-    s << "</entities></solipsis>";
-    xmlRespStr = s.str();
 
     /////////////////////////////////////
     mConnectionsCount++;

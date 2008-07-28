@@ -48,10 +48,10 @@ public:
 
     /** log on Solipsis host.
     @param xmlLogin Login parameters
-    @param myEntities List of owned entities
+    @param nodeId Node identifier
     @returns True if login succeeded
     */
-    bool login(const XmlLogin& xmlLogin, std::list<EntityUID>& myXmlEntities);
+    bool login(const XmlLogin& xmlLogin, NodeId& nodeId);
     /** log off Solipsis host.
     @returns True if logout succeeded
     */

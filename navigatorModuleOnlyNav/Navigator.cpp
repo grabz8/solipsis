@@ -1022,11 +1022,11 @@ bool Navigator::connect()
 #else
     XmlLogin xmlLogin(getConnectionLogin(), "demo");
 #endif
-    std::list<EntityUID> myEntities;
+    NodeId nodeId;
 #ifdef POOL
-    bool nodeResponse = mXmlRpcClient->login(*xmlLogin, myEntities);
+    bool nodeResponse = mXmlRpcClient->login(*xmlLogin, nodeId);
 #else
-    bool nodeResponse = mXmlRpcClient->login(xmlLogin, myEntities);
+    bool nodeResponse = mXmlRpcClient->login(xmlLogin, nodeId);
 #endif
 
     if (!nodeResponse)
@@ -1036,8 +1036,8 @@ bool Navigator::connect()
     }
     else
     {
-        // Set my entitys into OgrePeer manager
-        mOgrePeerManager->setMyEntities(myEntities);
+        // Set my node identifier
+        mOgrePeerManager->setNodeId(nodeId);
 
         // Connected !
 

@@ -177,14 +177,14 @@ IP2NClient::RetCode ULXMLRPCPPP2NClient::login(const std::string& xmlParams, std
         }
         mNodeId = ((ulxr::RpcString)resultStruct.getMember(ULXR_PCHAR(NODEID_TAG))).getString();
         xmlResp = ((ulxr::RpcString)resultStruct.getMember(ULXR_PCHAR(RESPONSE_TAG))).getString();
-        TiXmlDocument xmlDoc;
+/*        TiXmlDocument xmlDoc;
         xmlDoc.Parse(xmlResp.c_str());
         // check for errors
         if (xmlDoc.Error())
         {
             LOG("ULXMLRPCPPP2NClient::login() Unable to parse response !");
             return IP2NClient::RCError;
-        }
+        }*/
         mConnected = true;
         LOG("ULXMLRPCPPP2NClient::login()\nxmlParams=\n" + xmlParams + "\nxmlResp=\n" + xmlResp + "\nretCode=" + convert2string(retCode) + "\nmNodeId=" + mNodeId);
     }

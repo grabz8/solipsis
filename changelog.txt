@@ -608,3 +608,8 @@ NSIS setup improved (webpage visit with icon, vista start shortcuts not deleted 
 media/cache files saved into the setup)
 
 ---------------------------
+28/07/08
+
+RakNet integration : on login, owned entities list no more sent (the owner attribute is compared to the nodeId returned on login)
+
+---------------------------

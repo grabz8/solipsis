@@ -55,39 +55,17 @@ NavigatorXMLRPCClient::~NavigatorXMLRPCClient()
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, std::list<EntityUID>& myXmlEntities)
+bool NavigatorXMLRPCClient::login(const XmlLogin& xmlLogin, NodeId& nodeId)
 {
     std::string xmlParams;
     std::string xmlResp;
-
-    myXmlEntities.clear();
 
     xmlParams.append("<solipsis>").append(xmlLogin.toXmlString()).append("</solipsis>");
     IP2NClient::RetCode retCode = mP2NClient->login(xmlParams, xmlResp);
     if (retCode != IP2NClient::RCOk)
         return false;
 
-    TiXmlDocument xmlDoc;
-    TiXmlElement* elt;
-    xmlDoc.Parse(xmlResp.c_str());
-    // check for errors
-    if (xmlDoc.Error() || (strcmp(xmlDoc.RootElement()->Value(), "solipsis") != 0))
-    {
-        OGRE_LOG("Invalid response ! xmlResp=\n" + xmlResp);
-        return false;
-    }
-    if ((elt = xmlDoc.RootElement()->FirstChildElement("entities")) == 0)
-        return true;
-    for (elt = elt->FirstChildElement("entity"); elt != 0; elt = elt->NextSiblingElement("entity"))
-    {
-        const char* attr = elt->Attribute("uid");
-        if (attr != 0)
-        {
-            EntityUID uid;
-            uid = XmlHelpers::convertHexStringToEntityUID(attr);
-            myXmlEntities.push_back(uid);
-        }
-    }
+    nodeId = mP2NClient->getNodeId();
 
     return true;
 }

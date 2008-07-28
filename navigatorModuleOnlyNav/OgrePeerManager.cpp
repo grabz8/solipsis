@@ -62,11 +62,9 @@ OgrePeerManager::~OgrePeerManager()
 }
 
 //-------------------------------------------------------------------------------------
-void OgrePeerManager::setMyEntities(std::list<EntityUID> myEntities)
+void OgrePeerManager::setNodeId(const NodeId& nodeId)
 {
-    mMyXmlEntities.clear();
-    for (std::list<EntityUID>::iterator it=myEntities.begin(); it != myEntities.end(); ++it)
-        mMyXmlEntities[(*it)] = 0;
+    mNodeId = nodeId;
 }
 
 //-------------------------------------------------------------------------------------
@@ -278,7 +276,6 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
 
     // Store it
     mOgrePeersMap[xmlEntity->getUid()] = peerObject;
-    mMyXmlEntities[xmlEntity->getUid()] = 0;
 
     // Send new entity event
 #ifdef POOL
@@ -340,7 +337,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateAvatarNode");
 
     std::string uidStr = xmlEntity->getUidString();
-    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
+    bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
     CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, "");
     if (characterInstance == 0)
@@ -427,7 +424,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
     if (!xmlSceneLodContent0->getCollision().empty())
         mSceneMgr->destroySceneNode(xmlSceneLodContent0->getCollision());
 
-    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
+    bool isLocal = (xmlEntity->getOwner() == mNodeId);
     Scene* peerScene = new Scene(xmlEntity, isLocal, node);
 
     if (mCallbacks != 0)
@@ -450,7 +447,7 @@ OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
     if (mSceneMgr == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateObjectNode");
 
-    bool isLocal = (mMyXmlEntities.find(xmlEntity->getUid()) != mMyXmlEntities.end());
+    bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
     // Get the scene content for LOD 0
     XmlContent::ContentLodMap& contentLodMap = xmlEntity->getContent()->getContentLodMap();
