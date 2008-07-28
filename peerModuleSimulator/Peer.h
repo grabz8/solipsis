@@ -70,7 +70,6 @@ protected:
     bool mResetTime;
 
 public:
-    time_t mFirstEvtDate;
     std::string mSceneDemoLoaded;
     std::string mMediaCachePath;
 
