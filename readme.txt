@@ -24,6 +24,7 @@ otherwise install at least August 2007 DX Redist package from http://www.microso
 Ageia PhysX drivers
 If you are using PhysX plugin then check you have a recent release of PhysX drivers
 supporting Engine release 2.7.2 from http://www.ageia.com/drivers/drivers.html
+Since nVidia got Ageia PhysX, you can follow this link http://developer.nvidia.com/object/physx_downloads.html
 
 
 --------------------------------------------------------------------------------
@@ -145,6 +146,7 @@ Peer module is using Ageia PhysX:
 Last compilation performed with:
  PhysX_7.11.13_SystemSoftware.exe
  PhysX_2.7.3_SDK_Core.exe
+Last repository: http://developer.nvidia.com/object/physx_downloads.html
 
 Get SVN repository for Solipsis
 
