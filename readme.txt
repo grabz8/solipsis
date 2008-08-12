@@ -24,7 +24,8 @@ otherwise install at least August 2007 DX Redist package from http://www.microso
 Ageia PhysX drivers
 If you are using PhysX plugin then check you have a recent release of PhysX drivers
 supporting Engine release 2.7.2 from http://www.ageia.com/drivers/drivers.html
-Since nVidia got Ageia PhysX, you can follow this link http://developer.nvidia.com/object/physx_downloads.html
+Since nVidia got Ageia PhysX, you can follow this link http://developer.nvidia.com/object/physx_downloads.html,
+if you do not have 1 nVidia graphics card then keep drivers 7.11.13 and SDK 2.7.3
 
 
 --------------------------------------------------------------------------------
@@ -101,6 +102,7 @@ HOW TO BUILD
 --------------------------------------------------------------------------------
 
 vcX stands for Visual config (vc7 or vc8 or vc9), be aware vc7 projects are no more up-to-date so it s at your own risk
+To define environment variables press [WINDOWS]+[PAUSE] / Advanced / Env. Var.
 
 Install Visual Studio 2005 + SP1 package or VS 2008
 If you are using Visual Studio Express 2005, upgrade it with the SP1 package
@@ -129,11 +131,11 @@ into ogrenew/Dependencies/lib/<config>
 
 Check you installed correctly the DirectX SDK August 2007 (at least ;-) )
 - C:\Program Files\Microsoft DirectX SDK (August 2007) present
-- the env. var. DXSDK is defined
+- the env. var. DXSDK is defined (eg. C:\Program Files\Microsoft DirectX SDK (November 2007)\)
 
 VoiceEngine:
 Download the BOOST package release 1.34.1 (http://sourceforge.net, search boost c++ libraries, download 1.34.1)
- (because some bugs found into pool<> in 1.35), unzip it and define your BOOST_ROOT env. var.
+ (because some bugs found into pool<> in 1.35), unzip it and define your BOOST_ROOT env. var. (eg. C:\boost_1_34_1)
 Download the FMOD EX package (http://www.fmod.org/index.php/download),
  install it and define your FMOD_PATH env. var. (eg. C:\Program Files\FMOD SoundSystem\FMOD Programmers API Win32\api)
 
@@ -141,7 +143,7 @@ Peer module is using Ageia PhysX:
  Download 2 packages runtime & SDK on http://devsupport.ageia.com
  Download runtime : PhysX_7.06.25_SystemSoftware.exe
  Download SDK : PhysX_2.7.2_SDK_Core.exe
- Define your PHYSX_DIR env. var.
+ Define your PHYSX_DIR env. var. (eg. C:\Program Files\AGEIA Technologies\SDK\v2.7.3)
  After compilation, run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
 Last compilation performed with:
  PhysX_7.11.13_SystemSoftware.exe
@@ -156,7 +158,7 @@ Add Additional Include path "$(DXSDK_DIR)\include"
 Add Additional Lib path "$(DXSDK_DIR)\lib\x86" 
 Batch build all (Debug+Release)
 
-Define the OGRE_HOME env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
+Define the OGRE_HOME env. var.
 If you are compiling Ogre from source code
  OGRE_HOME = C:\<your_path>\ogrenew
 If you are using Ogre prebuilt-SDK
@@ -175,12 +177,12 @@ Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navi
 
 To generate HTML documentation:
  Download Doxygen Tool (doxygen.exe)
- Define your DOXYGEN_PATH env. var. on directory containing doxygen.exe
+ Define your DOXYGEN_PATH env. var. on directory containing doxygen.exe (eg. C:\doxygen)
  Run Docs\doxygen\doxygen.bat
 
 To generate setup from NSIS: (unfortunately the vdproj are not supported by Express editions so we use NSIS, not so bad after all ;-)
  Download NSIS on nsis.sourceforge.net
- Define your NSIS_PATH env. var. on directory containing makensis.exe
+ Define your NSIS_PATH env. var. on directory containing makensis.exe (eg. C:\Program Files\NSIS)
  Run setup\nsis\makensis.bat or setup\nsis\makensisNCS.bat (files are taken from the Release directory so check you really build all)
 
 COMPILATION DEFINES (add 1 starting 'N' char to unset it):
@@ -195,7 +197,7 @@ NSHADOWS       Set/Unset shadows (hm hm just test, still lot of stuff)
 LOGSNDRCV      Set/Unset traces on sent/received XML msgs
 
 About Navi/LLMozLib Debug assertion, to avoid them:
-Define the XPCOM_DEBUG_BREAK syst. env. var. with [WINDOWS]+[PAUSE] / Advanced / Env. Var.
+Define the XPCOM_DEBUG_BREAK syst. env. var.
  XPCOM_DEBUG_BREAK = warn
 
 LLMozLib was originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll, msvcr71.dll, msvcr71d.dll
