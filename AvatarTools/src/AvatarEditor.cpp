@@ -84,7 +84,7 @@ void AvatarEditor::buildListSAF(const String& pPathDirectory)
 		}
 	}
 	else
-		FileBrowser::displayMessageWindow("Error","The directory for the .SAF files doesn't existe.");
+		FileBrowser::displayMessageWindow("Error","The directory for the .SAF files doesn't exist.");
 }
 //-------------------------------------------------------------------------------------
 void AvatarEditor::setCharacterInstance(CharacterInstance* pCharacterInstance)
