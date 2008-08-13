@@ -54,12 +54,12 @@ public:
 	///return The single instance of the classe
 	static CharacterManager* getSingletonPtr();
 
-	///brief Open an character from a filebrowser and add it to the list
-	bool addCharacter() { return true; }
 	///brief Open an character from the list 
 	bool addCharacter(const String& pName);
 	///brief Remove the character from the list
 	bool removeCharacter(const String& pName) { return true; }
+	///brief Set the default character
+	void setDefaultCharacter(const String& pName);
 
 	///brief Load a SAF file if haven't loaded before
 	Character* CharacterManager::loadCharacter(const String& pName);
