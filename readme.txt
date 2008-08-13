@@ -27,6 +27,9 @@ supporting Engine release 2.7.2 from http://www.ageia.com/drivers/drivers.html
 Since nVidia got Ageia PhysX, you can follow this link http://developer.nvidia.com/object/physx_downloads.html,
 if you do not have 1 nVidia graphics card then keep drivers 7.11.13 and SDK 2.7.3
 
+Download the Microsoft Platform SDK to build the VNC plugin (afx is needed),
+(PSDK for Windows Server 2003 was used with Visual Express 2005)
+
 
 --------------------------------------------------------------------------------
 HELP
