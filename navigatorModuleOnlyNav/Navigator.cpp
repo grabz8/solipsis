@@ -972,6 +972,10 @@ void Navigator::createScene()
     String mediaCacheModelsPath = mMediaCachePath + "\\models";
     mAvatarEditor = new AvatarEditor(std::string(mediaCacheModelsPath), mSceneMgr);
     mAvatarEditor->buildListSAF();
+    // Randomize the default character
+    std::vector<String>* characters = mAvatarEditor->getManager()->getNameList();
+    int idx = Root::getSingleton().getTimer()->getMilliseconds()%characters->size();
+    mAvatarEditor->getManager()->setDefaultCharacter(characters->at(idx));
 }
 
 //-------------------------------------------------------------------------------------
