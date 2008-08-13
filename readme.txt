@@ -170,6 +170,10 @@ If you are using Ogre prebuilt-SDK
 Open solipsis_vcX.sln
 Batch build Navigator project (Debug+Release)
 
+To build the VNC plugin afx is needed so define the directories of the PSDK into the VS options,
+Tools/Options menu, Projects and solutions, VC++ directories, Include files + C:\Program Files\Microsoft Platform SDK\Include + C:\Program Files\Microsoft Platform SDK\Include\mfc,
+Library files + C:\Program Files\Microsoft Platform SDK\Lib
+
 Finally, open/build plugins from their dedicated solutions:
  voiceEngine_vcX.sln
  VNCPlugin_vcX.sln
