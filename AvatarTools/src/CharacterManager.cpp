@@ -58,6 +58,13 @@ bool CharacterManager::addCharacter(const String& pName)
 	return true;
 }
 //-------------------------------------------------------------------------------------
+void CharacterManager::setDefaultCharacter(const String& pName)
+{
+    if (mCharacters.find(pName) == mCharacters.end())
+        return;
+    mDefaultCharacterName = pName;
+}
+//-------------------------------------------------------------------------------------
 Character* CharacterManager::loadCharacter(const String& pName)
 {
 	Character* character = mCharacters[pName];
