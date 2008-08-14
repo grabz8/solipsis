@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __CTIO_h__
 
 #include <string>
+#include <vector>
 
 namespace CommonTools {
 
@@ -32,6 +33,9 @@ namespace CommonTools {
  */
 class IO
 {
+public:
+    typedef std::vector<std::string> FilenameVector;
+
 public:
     /// Returns the current working directory
     static std::string getCWD();
@@ -45,6 +49,8 @@ public:
     static bool deleteFile(const std::string& filename);
     /// Rename a file
     static bool renameFile(const std::string& srcFilename, const std::string& dstFilename);
+    /// Get filenames contained in a directory
+    static bool getFilenames(const std::string& pathname, FilenameVector& filenames);
     /// Retrieve a relative path by descending from the current working directory
     static std::string retrieveRelativePathByDescendingCWD(const std::string& pathname);
 };

@@ -162,6 +162,30 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTIOLinux.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\CTIOWin.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTLog.cpp"
 				>
 			</File>
@@ -226,13 +250,6 @@
 			<File
 				RelativePath=".\CTSystem.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
