@@ -205,34 +205,47 @@ void Avatar::onSceneNodeChanged()
     // Create or re-attach the cameras scene node on the character instance scene node
     if (isLocal())
     {
+        SceneNode* firstPersonCamNode = 0;
+        SceneNode* thirdPersonCamNode = 0;
+        SceneNode* turnAroundPersonCamNode = 0;
+        SceneNode* turnAroundPersonCamPitchNode = 0;
         if (mCamerasSceneNode == 0)
         {
             // Create camera node/pitch nodes
             mCamerasSceneNode = getSceneNode()->createChildSceneNode(uidString + "CamerasNode");
 
             // Create First person camera node/pitch node
-            SceneNode* camNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode", Vector3(0, 0.95, 0)*avatarSize);
-            camNode->yaw(Radian(-Math::HALF_PI));
-            SceneNode* pitchCamNode = camNode->createChildSceneNode("FirstPersonCamPitchNode");
+            firstPersonCamNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode");
+            firstPersonCamNode->yaw(Radian(-Math::HALF_PI));
+            SceneNode* pitchCamNode = firstPersonCamNode->createChildSceneNode("FirstPersonCamPitchNode");
 
             // Create the Third camera node/pitch node
-            camNode = mCamerasSceneNode->createChildSceneNode("ThirdPersonCamNode", Vector3(-4, 1.1, 0)*avatarSize.y);
-            camNode->yaw(Radian(-Math::HALF_PI));
-            pitchCamNode = camNode->createChildSceneNode("ThirdPersonCamPitchNode");
+            thirdPersonCamNode = mCamerasSceneNode->createChildSceneNode("ThirdPersonCamNode");
+            thirdPersonCamNode->yaw(Radian(-Math::HALF_PI));
+            pitchCamNode = thirdPersonCamNode->createChildSceneNode("ThirdPersonCamPitchNode");
 
         // GILLES begin
 	        // Create the Fourth camera node/pitch node
-            camNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode", Vector3(0, 1.1, 0)*avatarSize);
-            pitchCamNode = camNode->createChildSceneNode("TurnAroundPersonCamPitchNode", Vector3(-4, 1.1, 0)*avatarSize);
+            turnAroundPersonCamNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode");
+            turnAroundPersonCamPitchNode = turnAroundPersonCamNode->createChildSceneNode("TurnAroundPersonCamPitchNode");
             //pitchCamNode->yaw(Radian(Math::PI));
         // GILLES end
         }
         else
         {
-            mCamerasSceneNode->setPosition(Vector3::ZERO);
-            mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
+            firstPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("FirstPersonCamNode");
+            thirdPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("ThirdPersonCamNode");
+            turnAroundPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("TurnAroundPersonCamNode");
+            turnAroundPersonCamPitchNode = (SceneNode*)turnAroundPersonCamNode->getChild("TurnAroundPersonCamPitchNode");
             getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
         }
+
+        mCamerasSceneNode->setPosition(Vector3::ZERO);
+        mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
+        firstPersonCamNode->setPosition(Vector3(0, 0.95, 0)*avatarSize);
+        thirdPersonCamNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize.y);
+        turnAroundPersonCamNode->setPosition(Vector3(0, 1.1, 0)*avatarSize);
+        turnAroundPersonCamPitchNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize);
     }
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
@@ -382,6 +395,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     }
     if (!xmlEntity->getContent().isNull())
     {
+        OGRE_LOG("Avatar::update() Destroy/Load new character of avatar uid:" + mXmlEntity->getUidString());
         std::string uidStr = xmlEntity->getUidString();
         detachFromSceneNode();
         CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
