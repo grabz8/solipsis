@@ -339,7 +339,12 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     std::string uidStr = xmlEntity->getUidString();
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
-    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, "");
+    String defaultCharacterName = "";
+    XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
+    for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
+        if (it->filename.find(".saf") == it->filename.length() - 4)
+            defaultCharacterName = it->filename.substr(0, it->filename.length() - 4);
+    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, defaultCharacterName);
     if (characterInstance == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "OgrePeerManager::CreateAvatarNode");
     if (isLocal)
@@ -358,7 +363,12 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     peerAvatar->setState(Avatar::SIdle);
 
     if (isLocal)
+    {
         mUserAvatar = peerAvatar;
+
+/*	    characterInstance->saveModified();
+        OnUserAvatarSave();*/
+    }
 
     if (mCallbacks != 0)
         if (!mCallbacks->OnAvatarNodeCreate(peerAvatar))
