@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SiteNode.h"
 #include "ObjectNode.h"
 #include "OgreHelpers.h"
+#include <CTIO.h>
 
 namespace Solipsis {
 
@@ -233,6 +234,14 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
         if (!avatarLoaded)
         {
             // Create the avatar node
+            // Randomize the character
+            CommonTools::IO::FilenameVector filenames;
+            CommonTools::IO::getFilenames(Peer::getSingleton().mMediaCachePath + "\\models", filenames);
+            CommonTools::IO::FilenameVector safFilenames;
+            for (CommonTools::IO::FilenameVector::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
+                if (it->find(".saf") == it->length() - 4)
+                    safFilenames.push_back(*it);
+            int safIdx = time(NULL)%(int)safFilenames.size();
             std::string xmlAvatarStr = "\
 <entity uid=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + "\" owner=\"" + nodeId + "\" type=\"0\" name=\"" + xmlLogin->getUsername() + "\" version=\"00000000\">\
  <flags bitmask=\"" + XmlHelpers::convertEntityFlagsToHexString(EFNone) + "\" />\
@@ -245,7 +254,7 @@ AvatarNode* NodeManager::login(XmlLogin* xmlLogin)
  <content>\
   <lod level=\"0\">\
    <files>\
-    <file name=\"Kevin.saf\" version=\"00000000\" />\
+    <file name=\"" + safFilenames[safIdx] + "\" version=\"00000000\" />\
     <file name=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + ".sif\" version=\"00000000\" />\
    </files>\
   </lod>\
