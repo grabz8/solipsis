@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "1.0.1"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -54,15 +54,22 @@ Section "Navigator" SEC01
   CreateShortCut "$DESKTOP\Solipsis Navigator.lnk" "$INSTDIR\navigator\Navigator.exe"
 SectionEnd
 
-Section "PeerSimulator" SEC02
-  SetOutPath "$INSTDIR\peerSimulator"
-  File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerSimulator\Release\*.*"
+Section "PeerRakNet" SEC02
+  SetOutPath "$INSTDIR\peerRakNet"
+  File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
   File "resources.cfg"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerSimulator.lnk" "$INSTDIR\peerSimulator\peer.exe" "-h localhost -p 8550 -v 0 -s Deltastation1"
-  CreateShortCut "$DESKTOP\Solipsis PeerSimulator.lnk" "$INSTDIR\peerSimulator\peer.exe" "-h localhost -p 8550 -v 0 -s Deltastation1"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8550 -v 0"
+  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8550 -v 0"
 SectionEnd
 
-Section "Media" SEC03
+Section "RakNetServer" SEC03
+  SetOutPath "$INSTDIR\raknetserver"
+  File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+SectionEnd
+
+Section "Media" SEC04
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
 SectionEnd
@@ -104,6 +111,8 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
+  Delete "$DESKTOP\Solipsis RakNet Server.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk"
   Delete "$DESKTOP\Solipsis PeerSimulator.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis PeerSimulator.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"
@@ -111,6 +120,7 @@ Section Uninstall
 
   RMDir "$SMPROGRAMS\Solipsis"
   RMDir /r "$INSTDIR\Media"
+  RMDir /r "$INSTDIR\raknetserver"
   RMDir /r "$INSTDIR\peerSimulator"
   RMDir /r "$INSTDIR\navigator"
   RMDir "$INSTDIR"

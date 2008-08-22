@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "1.0.1"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -54,7 +54,14 @@ Section "Navigator" SEC01
   CreateShortCut "$DESKTOP\Solipsis Navigator.lnk" "$INSTDIR\navigator\Navigator.exe"
 SectionEnd
 
-Section "Media" SEC02
+Section "RakNetServer" SEC02
+  SetOutPath "$INSTDIR\raknetserver"
+  File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+SectionEnd
+
+Section "Media" SEC03
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
 SectionEnd
@@ -96,11 +103,14 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
+  Delete "$DESKTOP\Solipsis RakNet Server.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Navigator.lnk"
 
   RMDir "$SMPROGRAMS\Solipsis"
   RMDir /r "$INSTDIR\Media"
+  RMDir /r "$INSTDIR\raknetserver"
   RMDir /r "$INSTDIR\navigator"
   RMDir "$INSTDIR"
 
