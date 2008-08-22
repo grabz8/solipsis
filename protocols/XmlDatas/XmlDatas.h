@@ -77,11 +77,23 @@ typedef unsigned int EntityUID;
 typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
 typedef unsigned int FileVersion;
+typedef unsigned char AnimationState;
+
+const AnimationState ASNone = (AnimationState)0;
+const AnimationState ASAvatarNone = (AnimationState)0;      /// Avatar no animation
+const AnimationState ASAvatarIdle = (AnimationState)1;      /// Avatar on idle
+const AnimationState ASAvatarWalk = (AnimationState)2;      /// Avatar is walking
+const AnimationState ASAvatarRun = (AnimationState)3;       /// Avatar is running
+const AnimationState ASAvatarFly = (AnimationState)4;       /// Avatar is flying
+const AnimationState ASAvatarSwim = (AnimationState)5;      /// Avatar is swimming
+const AnimationState ASAvatarAnimCount = (ASAvatarSwim - ASAvatarNone + 1); /// Number of animations for avatar
 
 class XMLDATAS_EXPORT XmlHelpers
 {
 public:
     static bool getAttribute(TiXmlElement* elt, const char* attrName, const char*& attr);
+    static std::string convertUCharToHexString(unsigned char value);
+    static unsigned char convertHexStringToUChar(const char* str);
     static std::string convertUIntToHexString(unsigned int value);
     static unsigned int convertHexStringToUInt(const char* str);
     static std::string convertBoolToString(bool value);
@@ -111,6 +123,8 @@ public:
     static inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
     static inline std::string convertFileVersionToHexString(const FileVersion& fileVersion) { return XmlHelpers::convertUIntToHexString(fileVersion); }
     static inline EntityUID convertHexStringToFileVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+    static inline std::string convertAnimationStateToHexString(AnimationState animationState) { return XmlHelpers::convertUCharToHexString(animationState); }
+    static inline AnimationState convertHexStringToAnimationState(const char* str) { return XmlHelpers::convertHexStringToUChar(str); }
 };
 
 #ifdef POOL
@@ -547,7 +561,9 @@ public:
     static const DefinedAttributes DADisplacement = (DefinedAttributes)(DAFlags << 1);
     static const DefinedAttributes DAPosition = (DefinedAttributes)(DADisplacement << 1);
     static const DefinedAttributes DAOrientation = (DefinedAttributes)(DAPosition << 1);
-    static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAOrientation << 1);
+    static const DefinedAttributes DAAnimation = (DefinedAttributes)(DAOrientation << 1);
+    static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAAnimation << 1);
+    static const DefinedAttributes DAContent = (DefinedAttributes)(DAAABoundingBox << 1);
 
 protected:
     DefinedAttributes mDefinedAttributes;
@@ -560,13 +576,12 @@ protected:
     Ogre::Vector3 mDisplacement;
     Ogre::Vector3 mPosition;
     Ogre::Quaternion mOrientation;
+    AnimationState mAnimationState;
     Ogre::AxisAlignedBox mAABoundingBox;
 #ifdef POOL
-    RefCntPoolPtr<XmlData> mAnimation;
     RefCntPoolPtr<XmlData> mShape;
     RefCntPoolPtr<XmlContent> mContent;
 #else
-    XmlData* mAnimation;
     XmlData* mShape;
     XmlContent* mContent;
 #endif
@@ -583,12 +598,11 @@ public:
       mDisplacement(Ogre::Vector3::ZERO),
       mPosition(Ogre::Vector3::ZERO),
       mOrientation(Ogre::Quaternion::IDENTITY),
+      mAnimationState(ASNone),
 #ifdef POOL
-      mAnimation(RefCntPoolPtr<XmlData>::nullPtr),
       mShape(RefCntPoolPtr<XmlData>::nullPtr),
       mContent(RefCntPoolPtr<XmlContent>::nullPtr)
 #else
-      mAnimation(0),
       mShape(0),
       mContent(0)
 #endif
@@ -604,12 +618,11 @@ public:
       mDisplacement(Ogre::Vector3::ZERO),
       mPosition(Ogre::Vector3::ZERO),
       mOrientation(Ogre::Quaternion::IDENTITY),
+      mAnimationState(ASNone),
 #ifdef POOL
-      mAnimation(RefCntPoolPtr<XmlData>::nullPtr),
       mShape(RefCntPoolPtr<XmlData>::nullPtr),
       mContent(RefCntPoolPtr<XmlContent>::nullPtr)
 #else
-      mAnimation(0),
       mShape(0),
       mContent(0)
 #endif
@@ -629,7 +642,7 @@ public:
         mDisplacement = Ogre::Vector3::ZERO;
         mPosition = Ogre::Vector3::ZERO;
         mOrientation = Ogre::Quaternion::IDENTITY;
-        mAnimation = RefCntPoolPtr<XmlData>::nullPtr;
+        mAnimationState = ASNone;
         mShape = RefCntPoolPtr<XmlData>::nullPtr;
         mContent = RefCntPoolPtr<XmlContent>::nullPtr;
     }
@@ -638,6 +651,8 @@ public:
     virtual std::string toXmlString() const;
     virtual bool toXmlElt(TiXmlElement& xmlElt) const;
     virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+    static void copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEntity, RefCntPoolPtr<XmlEntity>& dstXmlEntity);
 
     void setDefinedAttributes(const DefinedAttributes& definedAttributes) { mDefinedAttributes = definedAttributes; }
     DefinedAttributes getDefinedAttributes() { return mDefinedAttributes; }
@@ -674,11 +689,14 @@ public:
     void setOrientation(const Ogre::Quaternion& orientation) { mOrientation = orientation; mDefinedAttributes |= DAOrientation; }
     const Ogre::Quaternion& getOrientation() { return mOrientation; }
 
+    void setAnimation(AnimationState animationState) { mAnimationState = animationState; mDefinedAttributes |= DAAnimation; }
+    AnimationState getAnimation() { return mAnimationState; }
+
     void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
     const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
 
 #ifdef POOL
-    void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; }
+    void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }
     RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
 #else
     void setContent(XmlContent* content) { mContent = content; }

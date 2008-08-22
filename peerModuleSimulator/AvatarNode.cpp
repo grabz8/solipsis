@@ -233,7 +233,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             {
                 avatar->getXmlEntity()->setDisplacement(xmlEntity->getDisplacement());
 #ifdef LOGSNDRCV
-                OGRE_LOG("RCV uid:" + xmlEntity->getUidString() + " " + StringConverter::toString(xmlEntity->getDisplacement()));
+                OGRE_LOG("RCV uid:" + xmlEntity->getUidString() + " d:" + StringConverter::toString(xmlEntity->getDisplacement()));
 #endif
                 unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
                 if (l == (unsigned long)-1) { l = n; c = 0; }
@@ -412,7 +412,7 @@ c++;
             mAvatar.mUpdatedXmlEntity->setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity->setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
+            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " p:" + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
             xmlEvt->setDatas(RefCntPoolPtr<XmlData>(mAvatar.mUpdatedXmlEntity));
 #else
@@ -422,7 +422,7 @@ c++;
             mAvatar.mUpdatedXmlEntity.setUid(mAvatar.getXmlEntity()->getUid());
             mAvatar.mUpdatedXmlEntity.setPosition(mAvatar.getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " " + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
+            OGRE_LOG("SND uid:" + mAvatar.getXmlEntity()->getUidString() + " p:" + StringConverter::toString(mAvatar.getXmlEntity()->getPosition()));
 #endif
             xmlEvt->setDatas(&mAvatar.mUpdatedXmlEntity);
 #endif

@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
-String Avatar::mDefaultStateAnimName[SCount] = {
+String Avatar::mDefaultStateAnimName[ASAvatarAnimCount] = {
     "",
     "Idle",
     "Walk",
@@ -59,7 +59,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
 #ifdef POOL
     mUpdatedXmlEntity((XmlEntity*)0),
 #endif
-    mState(SNone),
+    mState(ASAvatarNone),
     mMvtType(MT3rdPerson),
     mCamerasSceneNode(0),
     mAnimationState(0),
@@ -73,7 +73,8 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 {
-    setCharacterInstance(characterInstance);
+    for (int a = 0;a < ASAvatarAnimCount; ++a)
+        mStateAnimName[a] = mDefaultStateAnimName[a];
 
 #ifdef POOL
     if (isLocal)
@@ -88,8 +89,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
         mUpdatedXmlEntity = new XmlEntity(mXmlEntity->getUid());
 #endif
 
-    for (int a = 0;a < SCount; ++a)
-        mStateAnimName[a] = mDefaultStateAnimName[a];
+    setCharacterInstance(characterInstance);
 
 //	if(!entity->isAttached())
 //		getSceneNode()->attachObject(entity);
@@ -104,6 +104,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
         getSceneNode()->setOrientation(mXmlEntity->getOrientation());
     else
         getSceneNode()->setOrientation(Quaternion::IDENTITY);
+    mLastRealOrientation = getSceneNode()->getOrientation();
 
     mGravity = mXmlEntity->getFlags() & EFGravity;
 }
@@ -250,13 +251,13 @@ void Avatar::onSceneNodeChanged()
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
     getSceneNode()->setOrientation(mXmlEntity->getOrientation());
-    setState(SIdle);
+    setState(ASAvatarIdle);
 }
 
 //-------------------------------------------------------------------------------------
 void Avatar::detachFromSceneNode()
 {
-    setState(SNone);
+    setState(ASAvatarNone);
 
     // Name Label
     getSceneNode()->detachObject(mNameLabel);
@@ -296,6 +297,7 @@ void Avatar::OnAvatarSave()
         if (lodContent0File->filename.find(".sif") == lodContent0File->filename.length() - 4)
         {
             lodContent0File->filename = sifFilename;
+            lodContent0File->version++;
             break;
         }
     if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
@@ -309,7 +311,7 @@ void Avatar::setNameVisibility(bool visible)
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::setState(State state)
+void Avatar::setState(Solipsis::AnimationState state)
 {
 //    OGRE_LOG("Avatar::setState()" + StringConverter::toString((int)state));
     if (mStateAnimName[mState].length() > 0)
@@ -317,16 +319,18 @@ void Avatar::setState(State state)
     if (mStateAnimName[state].length() > 0)
         startAnimation(mStateAnimName[state]);
     mState = state;
+    if (mIsLocal)
+        mUpdatedXmlEntity->setAnimation(mState);
 }
 
 //-------------------------------------------------------------------------------------
-Avatar::State Avatar::getState()
+Solipsis::AnimationState Avatar::getState()
 {
     return mState;
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::setStateAnimName(State state, const String& name)
+void Avatar::setStateAnimName(Solipsis::AnimationState state, const String& name)
 {
     mStateAnimName[state] = name;
 }
@@ -370,30 +374,33 @@ bool Avatar::update(XmlEntity* xmlEntity)
 {
     static int c;
     static unsigned long l = (unsigned long)-1;
-    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
+    unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
+    if (l == (unsigned long)-1) { l = n; c = 0; }
+    c++;
+    if (n - l > 10000)
+    {
+        Real fr = (Real)c/10.0f;
+        OGRE_LOG("Avatar::update() fr=" + StringConverter::toString(fr));
+        l = n; c = 0;
+    }
+
+    XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
+    if (definedAttributes & XmlEntity::DAFlags)
         mXmlEntity->setFlags(xmlEntity->getFlags());
-    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAPosition)
+    if (definedAttributes & XmlEntity::DAPosition)
     {
         mLastRealPosition = xmlEntity->getPosition();
-#ifdef LOGSNDRCV
-        OGRE_LOG("RCV uid:" + xmlEntity->getUidString() + " " + StringConverter::toString(mLastRealPosition));
-#endif
-        unsigned long n = Root::getSingleton().getTimer()->getMilliseconds();
-        if (l == (unsigned long)-1) { l = n; c = 0; }
-        c++;
-        if (n - l > 10000)
-        {
-            Real fr = (Real)c/10.0f;
-            OGRE_LOG("Avatar::update() fr=" + StringConverter::toString(fr));
-            l = n; c = 0;
-        }
     }
-    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAOrientation)
+    if (definedAttributes & XmlEntity::DAOrientation)
     {
-        getSceneNode()->setOrientation(xmlEntity->getOrientation());
-        mXmlEntity->setOrientation(getSceneNode()->getOrientation());
+        mLastRealOrientation = xmlEntity->getOrientation();
     }
-    if (!xmlEntity->getContent().isNull())
+    if (definedAttributes & XmlEntity::DAAnimation)
+    {
+        setState(xmlEntity->getAnimation());
+        mXmlEntity->setAnimation(xmlEntity->getAnimation());
+    }
+    if (definedAttributes & XmlEntity::DAContent)
     {
         OGRE_LOG("Avatar::update() Destroy/Load new character of avatar uid:" + mXmlEntity->getUidString());
         std::string uidStr = xmlEntity->getUidString();
@@ -404,6 +411,13 @@ bool Avatar::update(XmlEntity* xmlEntity)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::update");
         setCharacterInstance(characterInstance);
     }
+
+#ifdef LOGSNDRCV
+    String log = "RCV uid:" + xmlEntity->getUidString();
+    if (definedAttributes & XmlEntity::DAPosition) log += " p:" + StringConverter::toString(mLastRealPosition);
+    if (definedAttributes & XmlEntity::DAOrientation) log += " o:" + StringConverter::toString(mLastRealOrientation);
+    OGRE_LOG(log);
+#endif
 
     return true;
 }
@@ -435,7 +449,7 @@ void Avatar::startAnimation(const String &name, bool loop)
 void Avatar::stopAnimation()
 {
     if (mStateAnimName[mState].length() == 0) return;
-    AnimationState* animationStateToStop = getEntity()->getAnimationState(mStateAnimName[mState]);
+    Ogre::AnimationState* animationStateToStop = getEntity()->getAnimationState(mStateAnimName[mState]);
     animationStateToStop->setLoop(false);
     animationStateToStop->setEnabled(false);
 }
@@ -443,7 +457,10 @@ void Avatar::stopAnimation()
 //-------------------------------------------------------------------------------------
 void Avatar::animate(Real timeSinceLastFrame)
 {
-    State nextState = mState;
+    if (timeSinceLastFrame == 0.0)
+        return;
+
+    AnimationState nextState = mState;
     Real animOffset = 0;
     Real animLength = 0;
 
@@ -457,16 +474,16 @@ void Avatar::animate(Real timeSinceLastFrame)
         Real upDownMvt;
         Vector3 mvt = Vector3(0, 0, 0);
 
-        mUpdatedXmlEntity->setDefinedAttributes(mUpdatedXmlEntity->getDefinedAttributes() & ~(XmlEntity::DAFlags | XmlEntity::DADisplacement | XmlEntity::DAOrientation));
+        mUpdatedXmlEntity->setDefinedAttributes(mUpdatedXmlEntity->getDefinedAttributes() & ~(XmlEntity::DAFlags | XmlEntity::DADisplacement | XmlEntity::DAOrientation | XmlEntity::DAAnimation));
 
         mUpKeyMotion.update(timeSinceLastFrame);
         mDownKeyMotion.update(timeSinceLastFrame);
         frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
         mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
-        if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
-            nextState = SWalk;
-        if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
-            nextState = SRun;
+        if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != ASAvatarWalk))
+            nextState = ASAvatarWalk;
+        if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != ASAvatarRun))
+            nextState = ASAvatarRun;
 
         mLeftKeyMotion.update(timeSinceLastFrame);
         mRightKeyMotion.update(timeSinceLastFrame);
@@ -475,8 +492,8 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             // First person straff
             mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
-            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
-                nextState = SWalk;
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
+                nextState = ASAvatarWalk;
         }
 // GILLES begin
         else if (mMvtType == MTArountPerson)
@@ -487,16 +504,16 @@ void Avatar::animate(Real timeSinceLastFrame)
             getSceneNode()->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
             mXmlEntity->setOrientation(getSceneNode()->getOrientation());
             //getSceneNode()->attachObject (movable);
-            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
-                nextState = SWalk;
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
+                nextState = ASAvatarWalk;
         }
 // GILLES end
         else
         {
             // Third person rotation
             yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
-            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == SIdle))
-                nextState = SWalk;
+            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
+                nextState = ASAvatarWalk;
         }
         if (!getSceneNode()->getOrientation().equals(mUpdatedXmlEntity->getOrientation(), XMLUPDATE_ROTATION_THRESHOLD))
             mUpdatedXmlEntity->setOrientation(getSceneNode()->getOrientation());
@@ -509,18 +526,18 @@ void Avatar::animate(Real timeSinceLastFrame)
         mPgupKeyMotion.update(timeSinceLastFrame);
         mPgdownKeyMotion.update(timeSinceLastFrame);
         upDownMvt = mPgupKeyMotion.getMotion() - mPgdownKeyMotion.getMotion();
-    //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != SFly))
-    //        nextState = SFly;
+    //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != ASAvatarFly))
+    //        nextState = ASAvatarFly;
 
         animLength = mAnimationState->getLength();
-        if ((mState == SWalk) || (mState == SRun))
+        if ((mState == ASAvatarWalk) || (mState == ASAvatarRun))
             if (Math::Abs(frontBackMvt) > EPSILON_SPEED)    // Avatar is walking or running
                 animOffset = frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*(animLength/TRANSLATION_ANIM_LOOP);
-            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)   // Avatar is rotating : mState = SWalk
+            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)   // Avatar is rotating : mState = ASAvatarWalk
                 animOffset = leftRightMvt*ROTATION_SPEED_RPS.valueRadians()*timeSinceLastFrame*(animLength/ROTATION_ANIM_LOOP.valueRadians());
             else
-                nextState = SIdle;
-        else // mState = SIdle / SFly / SSwim
+                nextState = ASAvatarIdle;
+        else // mState = ASAvatarIdle / ASAvatarFly / ASAvatarSwim
             animOffset = timeSinceLastFrame;
         if (mAnimationState != 0)
             mAnimationState->addTime(animOffset);
@@ -537,7 +554,7 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             mUpdatedXmlEntity->setDisplacement(d);
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + mUpdatedXmlEntity->getUidString() + " " + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
+            OGRE_LOG("SND uid:" + mUpdatedXmlEntity->getUidString() + " d:" + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
 #endif
         }
     }
@@ -559,24 +576,27 @@ void Avatar::animate(Real timeSinceLastFrame)
         Real frontBackMvt = (renderedDisplacement*m).length()/(TRANSLATION_SPEED_MPS*timeSinceLastFrame);
         if (vpn.dotProduct(renderedDisplacement) < 0)
             frontBackMvt = -frontBackMvt;
-        if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != SWalk))
-            nextState = SWalk;
-        if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != SRun))
-            nextState = SRun;
-
+        Real motionOrientation = std::min(1.0f, SMOOTH_FACTOR*timeSinceLastFrame);
+        Quaternion newOrientation = Quaternion::Slerp(motionOrientation, getSceneNode()->getOrientation(), mLastRealOrientation, true);
+        Vector3 newVpn = newOrientation*Vector3::UNIT_X;
+        getSceneNode()->setOrientation(newOrientation);
+        mXmlEntity->setOrientation(getSceneNode()->getOrientation());
+        Radian toAngle;
+        Vector3 toAxis;
+        vpn.getRotationTo(newVpn).ToAngleAxis(toAngle, toAxis);
+        Real leftRightMvt = toAngle.valueRadians()/(ROTATION_SPEED_RPS.valueRadians()*timeSinceLastFrame);
         animLength = mAnimationState->getLength();
-        if ((mState == SWalk) || (mState == SRun))
+        if ((mState == ASAvatarWalk) || (mState == ASAvatarRun))
+        {
             if (Math::Abs(frontBackMvt) > EPSILON_SPEED)    // Avatar is walking or running
                 animOffset = frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*(animLength/TRANSLATION_ANIM_LOOP);
-            else
-                nextState = SIdle;
+            else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)   // Avatar is rotating : mState = ASAvatarWalk
+                animOffset = leftRightMvt*ROTATION_SPEED_RPS.valueRadians()*timeSinceLastFrame*(animLength/ROTATION_ANIM_LOOP.valueRadians());
+        }
         else
             animOffset = timeSinceLastFrame;
         if (mAnimationState != 0)
             mAnimationState->addTime(animOffset);
-
-        if (mState != nextState)
-            setState(nextState);
     }
 }
 

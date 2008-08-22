@@ -92,12 +92,15 @@ You can build:
 - the Navigator application with the Peer embedded (DebugNCS/ReleaseNCS configs, NCS stands for NullClientServer)
 
 
-To run the Peer application you currently have to specify host, port and verbosity of the Peer/Navigator XMLRPC server:
+To run the Peer application you currently have to specify host, port and verbosity of the Peer/Navigator XMLRPC server,
+additionally you have to specify host, port of the RakNet server, in DebugNCS/ReleaseNCS configs those parameters should be passed to the Navigator application:
 -h <IPaddr:str>         : IP address (default: localhost)
 -p <port:int>           : port (default: 8550)
 -v <verbosity:int>      : verbosity level (0..2)
--s <sceneName:str>      : Scene name loaded by the peer simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
--m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between 1 Peer and N Navigators)
+-m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator, its Peer and the RakNet Server)
+-rh <IPaddr:str>        : IP address of the RakNet server (default: localhost)
+-rp <port:int>          : port of the RakNet server (default: 8660)
+-id <avatarNodeId:str>  : Unique avatar node identifier, hex string of 8 digits (default: 00000001), check each peer has 1 different id !
 
 
 --------------------------------------------------------------------------------
@@ -214,7 +217,7 @@ run navigatorModuleOnlyNav\copyDebugVC71RedistFiles.bat
 
 In Network configs, before launching, don t forget to run:
 navigatorModuleOnlyNav\copyFirefoxPlugins.bat
-peerModuleSimulator\copyPhysXFiles.bat
+peerModuleRakNet\copyPhysXFiles.bat
 
 In NCS configs, before launching, don t forget to run:
 navigatorModuleOnlyNav\copyNCSPhysXFiles.bat

@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTIO.h>
 #include <Plugin_3ds.h>
 
-
 namespace Solipsis {
 
 Modeler* Modeler::ms_singletonPtr = 0;
@@ -827,11 +826,11 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
 		Ogre::String ext = FilePath.getExtension() ;
 		String entityName = FilePath.getLastFileName(false);
 
-		//try {
-  //          ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
-  //      }
-  //      catch (Ogre::Exception e)
-  //      {} 
+        //try {
+        //    ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getFormatedRootPath(), "FileSystem");//, name + "Resources");
+        //}
+        //catch (Ogre::Exception e)
+        //{}
 
 	    static int num = -1;
 	    char name[31];
@@ -851,16 +850,18 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
 			}
 		}
         entity = mSceneManager->getEntity(entityName)->clone(name);
-		Vector3 size = entity->getBoundingBox().getSize();
-		Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
 	    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
 #ifdef SHADOWS
 	    entity->setCastShadows(true);
 #endif
-        //entity->setQueryFlags(Navigator::QFObject);
-	    node->attachObject( entity );
-		node->scale(5.0/mNormalise,5.0/mNormalise,5.0/mNormalise);//standardize the models loaded.
-		
+        entity->setQueryFlags(Navigator::QFObject);
+	    node->attachObject(entity);
+		if (ext == "3ds")
+        {
+		    Vector3 size = entity->getBoundingBox().getSize();
+		    Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
+    		node->scale(5.0/mNormalise,5.0/mNormalise,5.0/mNormalise);//standardize the models loaded.
+        }
 
         Object3DOther* obj = new Object3DOther( String(name), node );
         mSelection->add3DObject(obj);

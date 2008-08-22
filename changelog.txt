@@ -613,3 +613,13 @@ media/cache files saved into the setup)
 RakNet integration : on login, owned entities list no more sent (the owner attribute is compared to the nodeId returned on login)
 
 ---------------------------
+21/08/08
+
+RakNet integration
+ RakNet server + peerModuleRakNet replace the previous peerModuleSimulator
+Avatar network interpolation
+ mvt smoothing improved (20 updates/sec between P&N and P&RakNet server)
+ animation state passed on the network
+ orientation now smoothed
+
+---------------------------

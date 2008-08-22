@@ -35,19 +35,43 @@ namespace Solipsis {
 class KeyMotion
 {
 protected:
+    /// Initial impulsion
     Real mImpulse;
+    /// Maximum speed (eg. in m/sec)
     Real mMaxSpeed;
+    /// Acceleration factor with 1/60 timing (eg. 1.5 to multiply speed by 1.5 every 1/60th sec)
     Real mAccelerationFactor;
+    /// Deceleration factor with 1/60 timing (eg. 0.5 to multiply speed by 0.5 every 1/60th sec)
     Real mDecelerationFactor;
+    /// State of key, if pressed or no
     bool mPressed;
+    /// Current motion value
     Real mMotion;
 
 public:
+    /** Constructor.
+    @remarks Stopped motion and default values without smoothing.
+    */
     KeyMotion(Real impulse = 1.0, Real maxSpeed = 1.0, Real accelerationFactor = 1.0, Real decelerationFactor = 1.0);
 
+    /** Set key state.
+    @param pressed If key is pressed or not
+    */
     void setState(bool pressed);
+
+    /** Update the motion.
+    @return True if key is pressed
+    */
     bool isPressed();
+
+    /** Get the motion value.
+    @param timeSinceLastFrame Elapsed time in seconds since the last frame
+    */
     Real getMotion();
+
+    /** Update the motion value.
+    @param timeSinceLastFrame Elapsed time in seconds since the last frame
+    */
     void update(Real timeSinceLastFrame);
 };
 

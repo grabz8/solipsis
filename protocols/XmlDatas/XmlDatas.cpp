@@ -66,6 +66,23 @@ bool XmlHelpers::getAttribute(TiXmlElement* elt, const char* attrName, const cha
 }
 
 //-------------------------------------------------------------------------------------
+std::string XmlHelpers::convertUCharToHexString(unsigned char value)
+{
+    char valueStr[3];
+    _snprintf(valueStr, 8, "%02X", value);
+    valueStr[2] = '\0';
+    return valueStr;
+}
+
+//-------------------------------------------------------------------------------------
+unsigned char XmlHelpers::convertHexStringToUChar(const char* str)
+{
+    unsigned int value;
+    sscanf(str, "%02X", &value);
+    return value;
+}
+
+//-------------------------------------------------------------------------------------
 std::string XmlHelpers::convertUIntToHexString(unsigned int value)
 {
     char valueStr[9];
@@ -511,6 +528,7 @@ std::string XmlEntity::toXmlString() const
     if (mDefinedAttributes & DADisplacement) XmlHelpers::ostreamVector3(s << "<displacement ", mDisplacement) << " />";
     if (mDefinedAttributes & DAPosition) XmlHelpers::ostreamVector3(s << "<position ", mPosition) << " />";
     if (mDefinedAttributes & DAOrientation) XmlHelpers::ostreamQuaternion(s << "<orientation ", mOrientation) << " />";
+    if (mDefinedAttributes & DAAnimation) s << "<animation state=\"" << XmlHelpers::convertAnimationStateToHexString(mAnimationState) << "\" />";
     if (mDefinedAttributes & DAAABoundingBox)
     {
         s << "<aabb>";
@@ -519,11 +537,9 @@ std::string XmlEntity::toXmlString() const
         s << "</aabb>";
     }
 #ifdef POOL
-    if (!mAnimation.isNull()) s << mAnimation->toXmlString();
     if (!mShape.isNull()) s << mShape->toXmlString();
     if (!mContent.isNull()) s << mContent->toXmlString();
 #else
-    if (mAnimation != 0) s << mAnimation->toXmlString();
     if (mShape != 0) s << mShape->toXmlString();
     if (mContent != 0) s << mContent->toXmlString();
 #endif
@@ -553,6 +569,12 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
         entityElt->LinkEndChild(XmlHelpers::toXmlEltVector3("position", mPosition));
     if (mDefinedAttributes & DAOrientation)
         entityElt->LinkEndChild(XmlHelpers::toXmlEltQuaternion("orientation", mOrientation));
+    if (mDefinedAttributes & DAAnimation)
+    {
+        TiXmlElement* animationElt = new TiXmlElement("animation");
+        animationElt->SetAttribute("state", XmlHelpers::convertAnimationStateToHexString(mAnimationState).c_str());
+        entityElt->LinkEndChild(animationElt);
+    }
     if (mDefinedAttributes & DAAABoundingBox)
     {
         TiXmlElement* aabbElt = new TiXmlElement("aabb");
@@ -561,11 +583,9 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
         entityElt->LinkEndChild(aabbElt);
     }
 #ifdef POOL
-    if (!mAnimation.isNull()) mAnimation->toXmlElt(*entityElt);
     if (!mShape.isNull()) mShape->toXmlElt(*entityElt);
     if (!mContent.isNull()) mContent->toXmlElt(*entityElt);
 #else
-    if (mAnimation != 0) mAnimation->toXmlElt(*entityElt);
     if (mShape != 0) mShape->toXmlElt(*entityElt);
     if (mContent != 0) mContent->toXmlElt(*entityElt);
 #endif
@@ -634,6 +654,14 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         XmlHelpers::fromXmlEltQuaternion(elt, mOrientation);
         mDefinedAttributes |= DAOrientation;
     }
+    if ((elt = xmlElt->FirstChildElement("animation")) != 0)
+    {
+        if (XmlHelpers::getAttribute(elt, "state", attr))
+        {
+            mAnimationState = XmlHelpers::convertHexStringToAnimationState(attr);
+            mDefinedAttributes |= DAAnimation;
+        }
+    }
     if ((elt = xmlElt->FirstChildElement("aabb")) != 0)
     {
         Ogre::Vector3 min, max;
@@ -644,10 +672,6 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
             XmlHelpers::fromXmlEltVector3(subElt, max);
         mAABoundingBox.setExtents(min, max);
         mDefinedAttributes |= DAAABoundingBox;
-    }
-    if ((elt = xmlElt->FirstChildElement("animation")) != 0)
-    {
-        //
     }
     if ((elt = xmlElt->FirstChildElement("shape")) != 0)
     {
@@ -663,9 +687,26 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         mContent = new XmlContent();
         mContent->fromXmlElt(elt);
 #endif
+        mDefinedAttributes |= DAContent;
     }
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEntity, RefCntPoolPtr<XmlEntity>& dstXmlEntity)
+{
+    XmlEntity::DefinedAttributes definedAttributes = dstXmlEntity->getDefinedAttributes();
+    if (definedAttributes & XmlEntity::DAUid)
+        dstXmlEntity->setUid(srcXmlEntity->getUid());
+    if (definedAttributes & XmlEntity::DAPosition)
+        dstXmlEntity->setPosition(srcXmlEntity->getPosition());
+    if (definedAttributes & XmlEntity::DAOrientation)
+        dstXmlEntity->setOrientation(srcXmlEntity->getOrientation());
+    if (definedAttributes & XmlEntity::DAAnimation)
+        dstXmlEntity->setAnimation(srcXmlEntity->getAnimation());
+    if (definedAttributes & XmlEntity::DAContent)
+        dstXmlEntity->setContent(srcXmlEntity->getContent());
 }
 
 //-------------------------------------------------------------------------------------

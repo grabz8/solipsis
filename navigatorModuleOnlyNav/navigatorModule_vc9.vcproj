@@ -306,7 +306,7 @@
 				AdditionalDependencies="pthreadVC.lib tinyxml.lib XmlDatas.lib P2NNullClientServer.lib OgreMain.lib OIS.lib llmozlib.lib Navi.lib lua.lib CommonTools.lib brep.lib csg.lib MdlrTools.lib zlib.lib AvatarTools.lib fmodex_vc.lib Plugin_3ds.lib"
 				OutputFile="$(OutDir)\Navigator.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\CommonTools\lib\Release;..\Dependencies\MdlrTools\lib\Release;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;;..\Dependencies\plugin_3ds\lib;$(NOINHERIT)"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;..\Dependencies\llmozlib\win32_vc9\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\navi\lib_vc9;..\Dependencies\lua\lib\releaselib;..\Dependencies\CommonTools\lib\Release;..\Dependencies\MdlrTools\lib\Release;..\Dependencies\brep\lib;..\Dependencies\csg\lib;..\Dependencies\zlib123\lib;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\AvatarTools\lib;&quot;$(FMOD_PATH)\lib&quot;;..\Dependencies\plugin_3ds\lib"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
 				SubSystem="2"

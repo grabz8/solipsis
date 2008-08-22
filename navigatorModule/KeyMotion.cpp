@@ -61,12 +61,31 @@ void KeyMotion::update(Real timeSinceLastFrame)
     {
         if (mMotion < mImpulse)
             mMotion = mImpulse;
-        if (mMotion < mMaxSpeed)
+/*        Real refFps = 1.0/60.0;
+        while (timeSinceLastFrame > refFps)
+        {
             mMotion *= mAccelerationFactor;
+            timeSinceLastFrame -= refFps;
+            if (mMotion > mMaxSpeed) break;
+        }
+        mMotion *= 1.0 + (mAccelerationFactor - 1.0)*(timeSinceLastFrame*60.0);*/
+        // Approximation
+        mMotion *= 1.0 + (mAccelerationFactor - 1.0)*(timeSinceLastFrame*60.0);
+        if (mMotion > mMaxSpeed)
+            mMotion = mMaxSpeed;
     }
     else
     {
-        mMotion *= mDecelerationFactor;
+/*        Real refFps = 1.0/60.0;
+        while (timeSinceLastFrame > refFps)
+        {
+            mMotion *= mDecelerationFactor;
+            timeSinceLastFrame -= refFps;
+            if (mMotion < mImpulse) break;
+        }
+        mMotion *= 1.0 - (1.0 - mDecelerationFactor)*(timeSinceLastFrame*60.0);*/
+        // Approximation
+        mMotion *= 1.0 - std::max(1.0, (1.0 - mDecelerationFactor)*(timeSinceLastFrame*60.0));
         if (mMotion < mImpulse)
             mMotion = 0.0f;
     }

@@ -39,16 +39,6 @@ namespace Solipsis {
 class Avatar : public OgrePeer
 {
 public:
-    /** Enumeration denoting the state (animation, ...) */
-    enum State {
-        SNone,
-        SIdle,
-        SWalk,
-        SRun,
-        SFly,
-        SSwim,
-        SCount
-    };
     /** Enumeration denoting the type of movement (rotate, straff, ...) */
     enum MvtType {
         MT1stPerson,
@@ -64,22 +54,24 @@ protected:
     XmlEntity* mUpdatedXmlEntity;
 #endif
     /// Default animation names
-    static String mDefaultStateAnimName[SCount];
+    static String mDefaultStateAnimName[ASAvatarAnimCount];
     /// Animation names
-    String mStateAnimName[SCount];
+    String mStateAnimName[ASAvatarAnimCount];
     /// Current state
-    State mState;
+    AnimationState mState;
     /// Current movement type
     MvtType mMvtType;
     /// Last real position received
     Vector3 mLastRealPosition;
+    /// Last real orientation received
+    Quaternion mLastRealOrientation;
 
     /// Character
     CharacterInstance* mCharacterInstance;
     /// Scene node to attach cameras
     SceneNode* mCamerasSceneNode;
     /// Current animation state
-    AnimationState* mAnimationState;
+    Ogre::AnimationState* mAnimationState;
     /// Name label
     MovableText* mNameLabel;
 	/// Chat label
@@ -135,7 +127,8 @@ public:
             XmlEntity::DAFlags |
             XmlEntity::DADisplacement |
             XmlEntity::DAPosition |
-            XmlEntity::DAOrientation))
+            XmlEntity::DAOrientation |
+            XmlEntity::DAAnimation))
             return mUpdatedXmlEntity;
 #ifdef POOL
         return RefCntPoolPtr<XmlEntity>::nullPtr;
@@ -165,11 +158,11 @@ public:
     void setNameVisibility(bool visible);
 
     /** Set the current state. */
-    void setState(State state);
+    void setState(AnimationState state);
     /** Get the current state. */
-    State getState();
+    AnimationState getState();
     /** Set the animation name of 1 state. */
-    void setStateAnimName(State state, const String& name);
+    void setStateAnimName(AnimationState state, const String& name);
 
     /** Set the current movement type. */
     void setMvtType(MvtType mvtType);

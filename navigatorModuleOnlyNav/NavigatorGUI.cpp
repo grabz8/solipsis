@@ -2969,7 +2969,7 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 	{
 		navi->evaluateJS(std::string("$('AnimPlayPause').value = 'Pause'"));
 		navi->evaluateJS(std::string("$('AnimTime').style = 'display: block'"));
-		user->setState(Avatar::State(avatar->getCurrentAnimation()));
+		user->setState(AnimationState(avatar->getCurrentAnimation()));
 		user->startAnimation(user->getEntity()->getSkeleton()->getAnimation(avatar->getCurrentAnimation())->getName());
 	}
 		
@@ -2985,7 +2985,7 @@ void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 
 	navi->evaluateJS(std::string("$('AnimPlayPause').value = 'Play'"));
 	navi->evaluateJS(std::string("$('AnimTime').style = 'display: none'"));
-	user->setState(Avatar::State(0));
+	user->setState(ASAvatarNone);
 	user->stopAnimation();
 }
 //-------------------------------------------------------------------------------------
@@ -3003,7 +3003,7 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 	
 	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
 	user->stopAnimation();
-	user->setState(Avatar::State(current+1));
+	user->setState(AnimationState(current+1));
 	user->startAnimation( text );
 
 	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
@@ -3023,7 +3023,7 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 
 	std::string text( user->getEntity()->getSkeleton()->getAnimation(current)->getName() );
 	user->stopAnimation();
-	user->setState(Avatar::State(current+1));
+	user->setState(AnimationState(current+1));
 	user->startAnimation( text );
 
 	navi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");

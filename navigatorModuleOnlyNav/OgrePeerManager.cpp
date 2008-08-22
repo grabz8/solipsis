@@ -230,6 +230,11 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList)
 {
     static EntityUID nextEntityUID = 0x00000001; // hmhm Entities UID management TODO
+    EntityUID objectEntityUid;
+    const char *m = mNodeId.c_str();
+    sscanf(mNodeId.c_str(), "%08X", &objectEntityUid);
+    objectEntityUid <<= 16;
+    objectEntityUid |= nextEntityUID;
 
     // Rename the sof file
     String::size_type dotPos = sofPathname.find_last_of(".");
@@ -238,7 +243,7 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
         filenamePos = 0;
     else
         filenamePos++;
-    String dstSofFilename = XmlHelpers::convertEntityUIDToHexString(nextEntityUID) + sofPathname.substr(dotPos, sofPathname.length() - dotPos);
+    String dstSofFilename = XmlHelpers::convertEntityUIDToHexString(objectEntityUid) + sofPathname.substr(dotPos, sofPathname.length() - dotPos);
     String dstSofPathname = sofPathname.substr(0, filenamePos) + dstSofFilename;
     CommonTools::IO::renameFile(std::string(sofPathname), std::string(dstSofPathname));
 
@@ -249,7 +254,7 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
     XmlEntity* xmlEntity = new XmlEntity();
 #endif
     xmlEntity->setDefinedAttributes(XmlEntity::DANone);
-    xmlEntity->setUid(nextEntityUID);
+    xmlEntity->setUid(objectEntityUid);
     xmlEntity->setType(ETObject);
     xmlEntity->setName(xmlEntity->getUidString());
     xmlEntity->setVersion(0);
@@ -289,7 +294,7 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
     mEvtsList.push_back(xmlEvt);
 
     // hmhm next entity UID ??!??
-//    nextEntityUID++;
+    nextEntityUID++;
 
     return true;
 }
@@ -356,11 +361,12 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
 #endif
 
     Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, characterInstance);
-    peerAvatar->setStateAnimName(Avatar::SWalk, "Walk");
-    peerAvatar->setStateAnimName(Avatar::SRun, "Run");
-    peerAvatar->setStateAnimName(Avatar::SFly, "Fly");
-    peerAvatar->setStateAnimName(Avatar::SSwim, "Swim");
-    peerAvatar->setState(Avatar::SIdle);
+    peerAvatar->setStateAnimName(ASAvatarIdle, "Idle");
+    peerAvatar->setStateAnimName(ASAvatarWalk, "Walk");
+    peerAvatar->setStateAnimName(ASAvatarRun, "Run");
+    peerAvatar->setStateAnimName(ASAvatarFly, "Fly");
+    peerAvatar->setStateAnimName(ASAvatarSwim, "Swim");
+    peerAvatar->setState(ASAvatarIdle);
 
     if (isLocal)
     {

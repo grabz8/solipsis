@@ -26,9 +26,17 @@ rmdir Common\bin\navigator
 rmdir Common\bin\node\debug /S /Q
 rmdir Common\bin\node\release /S /Q
 
+rmdir Common\bin\peerRakNet\debug /S /Q
+rmdir Common\bin\peerRakNet\release /S /Q
+rmdir Common\bin\peerRakNet
+
 rmdir Common\bin\peerSimulator\debug /S /Q
 rmdir Common\bin\peerSimulator\release /S /Q
 rmdir Common\bin\peerSimulator
+
+rmdir Common\bin\RakNetServer\debug /S /Q
+rmdir Common\bin\RakNetServer\release /S /Q
+rmdir Common\bin\RakNetServer
 
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
@@ -56,6 +64,7 @@ rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 rmdir Dependencies\vlc /S /Q
 rmdir Dependencies\plugin_3ds /S /Q
+rmdir Dependencies\RakNet /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -123,6 +132,9 @@ rmdir DevTools\vnc_winsrc\vncviewer\Debug /S /Q
 rmdir DevTools\vnc_winsrc\vncviewer\Release /S /Q
 rmdir DevTools\speex\win32\libspeex\Debug /S /Q
 rmdir DevTools\speex\win32\libspeex\Release /S /Q
+rmdir DevTools\RakNet\Lib\DLL\Debug /S /Q
+rmdir DevTools\RakNet\Lib\DLL\Release /S /Q
+del DevTools\RakNet\Lib\*.* /Q
 
 rmdir Docs\doxygen\html /S /Q
 
@@ -190,6 +202,11 @@ rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
 rmdir protocols\P2NNullClientServer\Debug /S /Q
 rmdir protocols\P2NNullClientServer\Release /S /Q
 
+rmdir peerModuleRakNet\Debug /S /Q
+rmdir peerModuleRakNet\Release /S /Q
+rmdir peerModuleRakNet\DebugNCS /S /Q
+rmdir peerModuleRakNet\ReleaseNCS /S /Q
+
 rmdir peerModuleSimulator\Debug /S /Q
 rmdir peerModuleSimulator\Release /S /Q
 rmdir peerModuleSimulator\DebugNCS /S /Q
@@ -229,6 +246,9 @@ rmdir voiceEngine\TestServer\Debug /S /Q
 rmdir voiceEngine\TestServer\Release /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Debug /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Release /S /Q
+
+rmdir RakNetServer\Debug /S /Q
+rmdir RakNetServer\Release /S /Q
 
 rmdir VLCPlugin\Debug /S /Q
 rmdir VLCPlugin\Release /S /Q
