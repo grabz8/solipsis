@@ -1,0 +1,253 @@
+/*
+This source file is part of Solipsis
+    (Solipsis is an opensource decentralized Metaverse platform)
+For the latest info, see http://www.solipsis.org/
+
+Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
+Author JAN Gregory
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#include "Entity.h"
+#include "Peer.h"
+#include "OgreHelpers.h"
+#include <CTIO.h>
+
+using namespace RakNet;
+using namespace Ogre;
+
+namespace Solipsis {
+
+Entity::EntityMap Entity::entities;
+
+//-------------------------------------------------------------------------------------
+Entity::Entity() :
+    RakNetEntity(),
+    mCollisionMeshFilename("")
+#ifdef PHYSICSPLUGINS
+    ,mPhysicsScene(0)
+#endif
+#ifdef PHYSICSPLUGINS
+    ,mPhysicsCharacter(0)
+#endif
+{
+    applyGravity(true);
+}
+
+//-------------------------------------------------------------------------------------
+Entity::~Entity()
+{
+#ifdef PHYSICSPLUGINS
+    destroyPhysics();
+#endif
+
+    EntityMap::iterator it = entities.find(mXmlEntity->getUid());
+    if (it != entities.end())
+    {
+        Peer::getSingleton().getNodeManager()->onLostEntity(this);
+        entities.erase(it);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::addEntity(Entity* entity, bool sendNewEvt)
+{
+    entities[entity->getXmlEntity()->getUid()] = entity;
+    Peer::getSingleton().getNodeManager()->onNewEntity(entity, sendNewEvt);
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+{
+    RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
+
+    EntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+    if (it == entities.end())
+        addEntity(this, true);
+    else
+        Peer::getSingleton().getNodeManager()->onUpdatedEntity(this);
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::applyGravity(bool applied)
+{
+    if (!applied)
+        mGravity = false;
+    else
+        mGravity = mXmlEntity->getFlags() & EFGravity;
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::setGravity(bool enabled)
+{
+    mGravity = enabled;
+}
+
+//-------------------------------------------------------------------------------------
+bool Entity::isGravityEnabled()
+{
+    return mGravity;
+}
+
+#ifdef PHYSICSPLUGINS
+//-------------------------------------------------------------------------------------
+IPhysicsScene* Entity::getPhysicsScene()
+{
+    return mPhysicsScene;
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::createPhysics(IPhysicsScene* physicsScene)
+{
+    destroyPhysics();
+
+    mPhysicsScene = physicsScene;
+
+    if (mXmlEntity->getType() == ETSite)
+    {
+        // Get the scene content for LOD 0
+        XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
+        RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
+        // Collision ?
+        if (xmlSceneLodContent0->getCollision().empty())
+            return;
+
+        // Find .ssf file
+        XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
+        for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
+            if (lodContent0File->filename.find(".ssf") == lodContent0File->filename.length() - 4)
+                break;
+        if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
+            return;
+
+        // Create the resource group
+        std::string mediaCacheScenePath = Peer::getSingleton().getMediaCachePath() + "\\scenes";
+        String resourceGroup = mXmlEntity->getUidString() + "Resources";
+        ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
+        ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheScenePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+
+        // Load .osm
+        TiXmlDocument osmFileDoc;
+        DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlSceneLodContent0->getMainFilename());
+	    if (!pStream->size())
+            return;
+	    size_t iSize = pStream->size();
+	    char *pBuf = new char[iSize+1];
+	    memset(pBuf, 0, iSize+1);
+	    pStream->read(pBuf, iSize);
+	    pStream.setNull();
+	    osmFileDoc.Parse(pBuf);
+	    delete[] pBuf;
+
+        TiXmlElement* entities = osmFileDoc.RootElement()->FirstChildElement("entities");
+        TiXmlElement* entity = entities->FirstChildElement("entity");
+        while (entity != 0)
+        {
+            const char* attr = 0;
+            attr = entity->Attribute("name");
+            if ((attr == 0) || (attr[0] == '\0'))
+                continue;
+            if (strcmp(attr, xmlSceneLodContent0->getCollision().c_str()) == 0)
+                break;
+            entity = entity->NextSiblingElement("entity");
+        }
+        if (entity == 0)
+            return;
+        mCollisionMeshFilename = entity->Attribute("filename");
+
+        Vector3 position;
+        Quaternion rotation;
+        Vector3 scale;
+
+        // Position
+	    TiXmlElement* posElem = entity->FirstChildElement("position");
+        if (posElem)
+            XmlHelpers::fromXmlEltVector3(posElem, position);
+	    // Rotation
+	    TiXmlElement* rotElem = entity->FirstChildElement("rotation");
+        if (rotElem)
+            XmlHelpers::fromXmlEltQuaternion(rotElem, rotation);
+	    // Scale
+	    TiXmlElement* scaleElem = entity->FirstChildElement("scale");
+        if (scaleElem)
+            XmlHelpers::fromXmlEltVector3(scaleElem, scale);
+
+        Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(mCollisionMeshFilename);
+        MeshPtr collisionMeshPtr(collisionMesh);
+        mPhysicsScene->setTerrainMesh(collisionMeshPtr, getXmlEntity()->getPosition() + position, getXmlEntity()->getOrientation()*rotation, scale);
+
+        // Destroy the resource group
+        ResourceGroupManager::getSingleton().destroyResourceGroup(resourceGroup);
+    }
+    else
+    {
+        // Compute radius and height of character
+        Vector3 aabbHalfSize = mXmlEntity->getAABoundingBox().getHalfSize();
+        mRadius = std::min(aabbHalfSize.x, aabbHalfSize.z);
+        mHeight = aabbHalfSize.y*2;
+
+        IPhysicsCharacter::Desc characterDesc;
+        characterDesc.position = mXmlEntity->getPosition();
+        characterDesc.radius = mRadius;
+        characterDesc.height = mHeight;
+        characterDesc.stepOffset = mRadius;
+        mPhysicsCharacter = mPhysicsScene->createCharacter();
+        mPhysicsCharacter->create(characterDesc);
+
+        mDirty = false;
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::destroyPhysics()
+{
+    if (mXmlEntity->getType() == ETAvatar)
+    {
+        if ((mPhysicsScene != 0) && (mPhysicsCharacter != 0))
+            mPhysicsScene->destroyCharacter(mPhysicsCharacter);
+
+        mPhysicsCharacter = 0;
+    }
+
+    mPhysicsScene = 0;
+}
+#endif
+
+//-------------------------------------------------------------------------------------
+bool Entity::update(Real timeSinceLastFrame)
+{
+#ifdef PHYSICSPLUGINS
+    // Move physics character
+    if (mPhysicsCharacter != 0)
+    {
+        Vector3 displacement = mXmlEntity->getDisplacement()*timeSinceLastFrame;
+        if (mGravity)
+            displacement.y += -9.80665f*timeSinceLastFrame;
+        mPhysicsCharacter->move(displacement);
+        Vector3 newPosition;
+        mPhysicsCharacter->getPosition(newPosition);
+        if ((newPosition - mXmlEntity->getPosition()).squaredLength() > 0.0001f)
+            mDirty = true;
+        mXmlEntity->setPosition(newPosition);
+    }
+#endif
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+
+} // namespace Solipsis
