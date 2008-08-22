@@ -7,25 +7,33 @@
  3- On PC hosting the Peer, Install PhysX drivers from PhysX\PhysX_7.11.13_SystemSoftware.exe
     or from Internet (http://www.ageia.com/drivers/drivers.html search "WindowsXP Version 7.11.13")
 
- 4- Install Solipsis from Solipsis\Setup.exe, do not try to launch it directly from installer
+ 4- Install Solipsis from Solipsis\Setup.exe
 
- 5- Launch the Peer with cmd.exe
-    "Program Files"\Solipsis\Common\bin\peerSimulator\Release\Peer.exe -h <IP@> -p 8550 -v 0
+ 5- Launch the RakNet server
+    "Program Files"\Solipsis\Common\bin\RakNetServer\Release\RakNetServer.exe"
+    See readme.txt for additional arguments
 
- 6- For convenience, edit the file "Program Files"\Solipsis\Common\bin\navigator\Release\lua\boot.lua
+ 6- Launch the Peer with cmd.exe
+    "Program Files"\Solipsis\Common\bin\peerRakNet\Release\Peer.exe -h <IP@> -p 8550 -v 0
+    OR
+    In NCS config, the Peer is embedded into the Navigator so run the Navigator with previous arguments
+    See readme.txt for additional arguments
+
+ 7- For convenience, edit the file "Program Files"\Solipsis\Common\bin\navigator\Release\lua\boot.lua
     and parameters into navigator:setConnectionParams("<IP@>", 8550, "me1")
 
- 7- Launch Navigator from the Solipsis programs group
+ 8- Launch Navigator from the Solipsis programs group
+    See readme.txt for additional arguments
 
- 8- Select graphics device parameters, Direct3D, Windowed/Fullscreen, ...
+ 9- Select graphics device parameters, Direct3D, Windowed/Fullscreen, ...
 
- 9- Normally on login panel, you should see connection parameters tuned into boot.lua
+10- Normally on login panel, you should see connection parameters tuned into boot.lua
     "Connect to <IP@> (port 8550)"
 
-10- For Navi Web panels into the 3D world, if you are behind a firewall, go into Options/Proxy
+11- For Navi Web panels into the 3D world, if you are behind a firewall, go into Options/Proxy
     to setup the proxy parameters
 
-11- Press connect and you should see your avatar dropped into the scene
+12- Press connect and you should see your avatar dropped into the scene
 
 
 Notes about Flash Player plugin:
