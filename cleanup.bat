@@ -247,6 +247,11 @@ rmdir voiceEngine\TestServer\Release /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Debug /S /Q
 rmdir voiceEngine\voiceEngineFModSpeex\Release /S /Q
 
+rmdir plugin_3ds\3dsftk3\SOURCE\Debug /S /Q
+rmdir plugin_3ds\3dsftk3\SOURCE\Release /S /Q
+rmdir plugin_3ds\Debug /S /Q
+rmdir plugin_3ds\Release /S /Q
+
 rmdir RakNetServer\Debug /S /Q
 rmdir RakNetServer\Release /S /Q
 
