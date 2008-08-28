@@ -49,7 +49,7 @@ NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx)
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::~NavigatorXMLRPCClient()
 {
-    OGRE_LOG("NavigatorXMLRPCClient::~NavigatorXMLRPCClient() mSharedCnx=" + StringConverter::toString(mSharedCnx) + " mP2NClient->isConnected()=" + StringConverter::toString(mP2NClient->isConnected()));
+    OGRE_LOG("NavigatorXMLRPCClient::~NavigatorXMLRPCClient() mSharedCnx=" + std::string(mSharedCnx ? "true" : "false") + " mP2NClient->isConnected()=" + std::string(mP2NClient->isConnected() ? "true" : "false"));
     if ((mSharedCnx == 0) && mP2NClient->isConnected())
         mP2NClient->logout();
 }
