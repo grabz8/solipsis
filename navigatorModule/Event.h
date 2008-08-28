@@ -220,7 +220,7 @@ typedef struct MouseEvt {
 
 typedef struct UserEvt {
     EvtType mType;
-    int code;
+    int mCode;
     void* mData1;
     void* mData2;
 } UserEvt;
