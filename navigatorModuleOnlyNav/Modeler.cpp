@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Navi.h>
 #include <CTIO.h>
 #include <Plugin_3ds.h>
+#include <Plugin_skp.h>
 
 namespace Solipsis {
 
@@ -812,7 +813,7 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
     if (filenameToLoad.empty())
     {
 		char *fileToLoad = FileBrowser::displayWindowForLoading( 
-			" Ogre Mesh File,(*.mesh)\0*.mesh\0 3D Studio File,(*.3ds)\0*.3ds\0", string("") ); 
+			" Ogre Mesh File,(*.mesh)\0*.mesh\0 3D Studio File,(*.3ds)\0*.3ds\0 Google SketchUp File,(*.skp)\0*.skp\0", string("") ); 
         if (fileToLoad != 0)
             filenameToLoad = fileToLoad;
     }
@@ -842,11 +843,14 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
             //ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
 			if(ext == "mesh")
 				entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
-				//entity = mSceneManager->createEntity( entityName, "b.mesh");
+				
 			else if(ext == "3ds")
 			{
-				//ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
 				entity = Plugin_3ds::createEntityFrom3ds(entityName,filenameToLoad,mSceneManager);
+			}
+			else if(ext == "skp")
+			{
+				entity = Plugin_skp::createEntityFromskp(entityName,filenameToLoad,mSceneManager);
 			}
 		}
         entity = mSceneManager->getEntity(entityName)->clone(name);
@@ -856,16 +860,15 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
 #endif
         entity->setQueryFlags(Navigator::QFObject);
 	    node->attachObject(entity);
-		if (ext == "3ds")
-        {
-		    Vector3 size = entity->getBoundingBox().getSize();
-		    Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
-    		node->scale(5.0/mNormalise,5.0/mNormalise,5.0/mNormalise);//standardize the models loaded.
-        }
+		Vector3 size = entity->getBoundingBox().getSize();
 
-        Object3DOther* obj = new Object3DOther( String(name), node );
-        mSelection->add3DObject(obj);
-	    obj->mCentreSelection = pos;
+		Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
+		node->scale(4.0/mNormalise,4.0/mNormalise,4.0/mNormalise);//standardize the models loaded.
+
+
+     //   Object3DOther* obj = new Object3DOther( String(name), node );
+     //   mSelection->add3DObject(obj);
+	    //obj->mCentreSelection = pos;
 
 	    node->setPosition(pos);
     }

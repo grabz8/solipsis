@@ -623,3 +623,10 @@ Avatar network interpolation
  orientation now smoothed
 
 ---------------------------
+01/09/08
+
+add the plugin for the 3ds format.le source code is in ../plugin_3ds.
+
+change the correspond .bat files.
+
+---------------------------

@@ -405,11 +405,14 @@ bool Plugin_3ds::convert3dsToMesh(const Ogre::String & sz3dsFileName,
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         //pLogMgr->logMessage("Created.");
 
-        if(mat->ambient.r != 0||mat->ambient.g != 0||mat->ambient.b !=0)
-			ogremat->setAmbient(mat->ambient.r, mat->ambient.g, mat->ambient.b);
+  //      if(mat->ambient.r != 0||mat->ambient.g != 0||mat->ambient.b !=0)
+		//	ogremat->setAmbient(mat->ambient.r, mat->ambient.g, mat->ambient.b);
+		//else
+		//	ogremat->setAmbient(0.5, 0.5, 0.5);
+		ogremat->setAmbient(mat->diffuse.r, mat->diffuse.g, mat->diffuse.b);
 		ogremat->setDiffuse(mat->diffuse.r, mat->diffuse.g, mat->diffuse.b, 1 + mat->transparency);
-		if(mat->specular.r != 0||mat->specular.g != 0||mat->specular.b !=0)
-			ogremat->setSpecular(mat->specular.r, mat->specular.g, mat->specular.b, 1);
+		//if(mat->specular.r != 0||mat->specular.g != 0||mat->specular.b !=0)
+		//	ogremat->setSpecular(mat->specular.r, mat->specular.g, mat->specular.b, 1);
         
 		if(mat->shading == Flat)
 			ogremat->setShadingMode(Ogre::ShadeOptions::SO_FLAT);
@@ -494,10 +497,9 @@ Ogre::Entity* Plugin_3ds::createEntityFrom3ds(const Ogre::String & entityName,
 	ent = mSceneMgr->createEntity(entityName,mMeshFileName+".mesh");
 
 	DeleteFileA((szMeshPrefix+".mesh").c_str());
-	////assert(LogMgr != NULL);
-	////LogMgr->logMessage("Delete "+szMeshPrefix+".mesh file.");
+	//LogMgr->logMessage("Delete "+szMeshPrefix+".mesh file.");
 	DeleteFileA((szMeshPrefix+".material").c_str());
-	////LogMgr->logMessage("Delete "+szMeshPrefix+".material file.");
+	//LogMgr->logMessage("Delete "+szMeshPrefix+".material file.");
 	
 	return ent;
 

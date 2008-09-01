@@ -64,6 +64,7 @@ rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 rmdir Dependencies\vlc /S /Q
 rmdir Dependencies\plugin_3ds /S /Q
+rmdir Dependencies\plugin_skp /S /Q
 rmdir Dependencies\RakNet /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q

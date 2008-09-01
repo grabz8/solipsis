@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="plugin_3ds"
-	ProjectGUID="{6F1BEDD7-D31B-4CEE-8B70-D254F1F1F0BE}"
-	RootNamespace="Plugin_3ds"
+	Name="Plugin_skp"
+	ProjectGUID="{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
+	RootNamespace="Plugin_skp"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)3dsftk3\INC&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_3DS_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME))\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_SKP_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,8 +61,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib 3dsftk3\source\debug\3dsftk3_d.lib"
-				OutputFile="$(OutDir)\Plugin_3ds_d.dll"
+				AdditionalDependencies="OgreMain_d.lib"
+				OutputFile="$(OutDir)\Plugin_skp_d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
 				GenerateDebugInformation="true"
@@ -89,8 +89,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)3dsftk3\INC\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)lib\msvs2005\*.*&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -120,8 +119,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)3dsftk3\INC&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_3DS_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(OGRE_SRC)\OgreMain\include&quot;;&quot;$(OGRE_SRC)\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_SKP_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -139,8 +138,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain.lib 3dsftk3\source\release\3dsftk3.lib"
-				OutputFile="$(OutDir)\Plugin_3ds.dll"
+				AdditionalDependencies="OgreMain.lib"
+				OutputFile="$(OutDir)\Plugin_skp.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
 				GenerateDebugInformation="true"
@@ -169,8 +168,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)3dsftk3\INC\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)lib\msvs2005\*.*&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -183,15 +181,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\getopt.c"
+				RelativePath=".\src\plugin_skp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\plugin_3ds.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\plugin_3dsDLL.cpp"
+				RelativePath=".\src\plugin_skpDLL.cpp"
 				>
 			</File>
 		</Filter>
@@ -201,15 +195,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\getopt.h"
+				RelativePath=".\src\GeomUtilities.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\plugin_3ds.h"
+				RelativePath=".\src\GeomUtilities.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\plugin_3dsPrerequisites.h"
+				RelativePath=".\src\plugin_skp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\plugin_skpPrerequisites.h"
 				>
 			</File>
 		</Filter>

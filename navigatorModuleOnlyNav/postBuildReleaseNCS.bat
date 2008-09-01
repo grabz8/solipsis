@@ -65,6 +65,7 @@ if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
 xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds.dll" xcopy "..\Dependencies\plugin_3ds\lib\plugin_3ds.dll" "%dst%" /s /y
+if not exist "%dst%\plugin_skp.dll" xcopy "..\Dependencies\plugin_skp\include\Release\*.dll" "%dst%" /s /y
 if not exist "%dst%\RakNet.dll" xcopy "..\Dependencies\RakNet\lib\RakNet.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
