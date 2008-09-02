@@ -589,7 +589,7 @@ chat updated with 1 input+textarea panel, messages are broadcasted to other pres
 ---------------------------
 22/07/08
 
-add the plugin for the 3ds format.le source code is in ../plugin_3ds.
+add the plugin for the 3ds format.The source code is in ../plugin_3ds.
 
 change the correspond .bat files.
 
@@ -625,7 +625,7 @@ Avatar network interpolation
 ---------------------------
 01/09/08
 
-add the plugin for the 3ds format.le source code is in ../plugin_3ds.
+add the plugin for the skp format.The source code is in ../plugin_skp.
 
 change the correspond .bat files.
 

@@ -148,7 +148,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetServer", "RakNetServe
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "Plugin_skp\Plugin_skp.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "plugin_skp\Plugin_skp.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -866,9 +866,9 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
 		node->scale(4.0/mNormalise,4.0/mNormalise,4.0/mNormalise);//standardize the models loaded.
 
 
-     //   Object3DOther* obj = new Object3DOther( String(name), node );
-     //   mSelection->add3DObject(obj);
-	    //obj->mCentreSelection = pos;
+		//Object3DOther* obj = new Object3DOther( String(name), node );
+		//mSelection->add3DObject(obj);
+		//obj->mCentreSelection = pos;
 
 	    node->setPosition(pos);
     }
