@@ -349,6 +349,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\RakNetServer\CacheManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Entity.cpp"
 				>
 			</File>
@@ -407,6 +411,10 @@
 			>
 			<File
 				RelativePath=".\AvatarNode.h"
+				>
+			</File>
+			<File
+				RelativePath="..\RakNetServer\CacheManager.h"
 				>
 			</File>
 			<File

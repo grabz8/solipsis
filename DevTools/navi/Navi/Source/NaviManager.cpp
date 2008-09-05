@@ -155,19 +155,31 @@ Navi* NaviManager::createNavi(const std::string &naviName, const std::string &ho
 	if(!zOrder)
 		zOrder = zOrderCounter++;
 
-	if(activeNavis.find(naviName) != activeNavis.end())
+// BEGIN GREG
+/*	if(activeNavis.find(naviName) != activeNavis.end())
 		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
-			"NaviManager::createNavi");
+			"NaviManager::createNavi");*/
+	iter = activeNavis.find(naviName);
+    if (iter != activeNavis.end())
+        if (iter->second->okayToDelete)
+        {
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(iter->second->getMaterialName()));
+		    if(focusedNavi == iter->second) focusedNavi = 0;
+		    delete iter->second;
+        }
+        else
+		    OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
+			    "An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
+			    "NaviManager::createNavi");
 
-// BEGIN GREG
 //	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, naviPosition, width, height, zOrder);
     Navi* newNavi = new Navi(renderWindow, naviName, homepage, naviPosition, width, height, zOrder);
     activeNavis[naviName] = newNavi;
     mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
     return newNavi;
-// END GREG
 }
+// END GREG
 
 // BEGIN GREG
 //Navi* NaviManager::createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
@@ -175,20 +187,30 @@ Navi* NaviManager::createNavi(const std::string &naviName, const std::string &ho
 Navi* NaviManager::createNaviMaterial(const std::string &naviName, const std::string &homepage, unsigned short width, unsigned short height,
 									  Ogre::FilterOptions texFiltering, const std::string &mtlName)
 {
-	if(activeNavis.find(naviName) != activeNavis.end())
+/*	if(activeNavis.find(naviName) != activeNavis.end())
 		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
-			"NaviManager::createNaviMaterial");
+			"NaviManager::createNaviMaterial");*/
+	iter = activeNavis.find(naviName);
+    if (iter != activeNavis.end())
+        if (iter->second->okayToDelete)
+        {
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(iter->second->getMaterialName()));
+		    if(focusedNavi == iter->second) focusedNavi = 0;
+		    delete iter->second;
+        }
+        else
+		    OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
+			    "An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
+			    "NaviManager::createNaviMaterial");
 
-// BEGIN GREG
 //	return activeNavis[naviName] = new Navi(renderWindow, naviName, homepage, width, height, texFiltering);
     Navi* newNavi = new Navi(renderWindow, naviName, homepage, width, height, texFiltering, mtlName);
     activeNavis[naviName] = newNavi;
     mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
     return newNavi;
-// END GREG
 }
-// BEGIN GREG
+// END GREG
 
 Navi* NaviManager::getNavi(const std::string &naviName)
 {

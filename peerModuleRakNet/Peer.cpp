@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace RakNet;
 using namespace Ogre;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -86,6 +87,10 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mEvtsToProcessMutex(PTHREAD_MUTEX_INITIALIZER)
 {
     assert(Peer::ms_Singleton == 0);
+
+    CommonTools::LogHandler::setLogHandler(&mOgreLogger);
+    CommonTools::LogHandler::getLogHandler()->setVerbosityLevel(CommonTools::LogHandler::VL_DEBUG);
+
     if (appPath != 0)
         mAppPath = appPath;
 
@@ -164,15 +169,15 @@ IPhysicsScene* Peer::getPhysicsScene()
         if (engine == 0)
             throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No physics engine selected !",
-            "AvatarNode::AvatarNode");
-        OGRE_LOG("AvatarNode::AvatarNode() creating physics scene with engine:" + engine->getName());
+            "Peer::getPhysicsScene");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::getPhysicsScene() creating physics scene with engine:%s", engine->getName().c_str());
         // Create the physical scene
         mPhysicsScene = engine->createScene();
         if (!mPhysicsScene->create())
         {
             throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to create the PhysX scene !",
-            "AvatarNode::AvatarNode");
+            "Peer::getPhysicsScene");
         }
     }
 #endif
@@ -234,18 +239,35 @@ void Peer::run()
                 switch (packet->data[0])
                 {
                 case ID_CONNECTION_ATTEMPT_FAILED:
-                    OGRE_LOG("Peer::run() ID_CONNECTION_ATTEMPT_FAILED");
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_ATTEMPT_FAILED");
                     break;
                 case ID_NO_FREE_INCOMING_CONNECTIONS:
-                    OGRE_LOG("Peer::run() ID_NO_FREE_INCOMING_CONNECTIONS");
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_NO_FREE_INCOMING_CONNECTIONS");
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
-                    OGRE_LOG("Peer::run() ID_CONNECTION_REQUEST_ACCEPTED");
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_REQUEST_ACCEPTED");
+                    // Set notifications interval for big file transfer
+                    mRakNetConnection.mRakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/mRakNetConnection.mRakPeer->GetMTUSize(packet->systemAddress));
+                    // Store the server address
                     mRakNetConnection.mServerSystemAddress = packet->systemAddress;
-                    mRakNetConnection.logMessage("Peer::run() ID_CONNECTION_REQUEST_ACCEPTED mRakNetServerSystemAddress:" + std::string(mRakNetConnection.mServerSystemAddress.ToString()));
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() mRakNetServerSystemAddress:%s", mRakNetConnection.mServerSystemAddress.ToString());
+                    break;
+                case RakNetConnection::ID_REQUESTING_FILETRANSFER:
+                    {
+                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_REQUESTING_FILETRANSFER from %s", packet->systemAddress.ToString());
+                        BitStream bitStream(packet->data, packet->length, false);
+                        bitStream.IgnoreBytes(1);
+                        unsigned short fileListTransferSetID;
+                        bitStream.Read(fileListTransferSetID);
+                        std::string filename;
+                        RakNetConnection::DeserializeString(&bitStream, filename);
+                        FileVersion version;
+                        bitStream.Read(version);
+                        mRakNetConnection.mCacheManager.sendFile(packet->systemAddress, fileListTransferSetID, filename, version);
+                    }
                     break;
                 case RakNetConnection::ID_ACTION_ON_ENTITY:
-                    mRakNetConnection.logMessage("Peer::run() RakNetConnection::ID_ACTION from " + std::string(packet->systemAddress.ToString()));
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
                     BitStream bitStream(packet->data + 1, packet->length - 1, false);
                     mNodeManager->onActionOnEntity(&bitStream);
                     break;
@@ -296,9 +318,10 @@ void Peer::PhysicsEngineLogger::logMessage(const std::string& message)
 }
 
 //-------------------------------------------------------------------------------------
-void Peer::RakNetConnectionLogger::logMessage(const std::string& message)
-{
-    OGRE_LOG(message);
+void Peer::OgreLogger::log(int level, const char* msg)
+{ 
+    if (level > mVerbosity) return;
+    OGRE_LOG(std::string(msg));
 }
 
 //-------------------------------------------------------------------------------------
@@ -331,8 +354,6 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
 
     // We are the client
     mRakNetConnection.mServer = false;
-    // Set logger
-    mRakNetConnection.mLogger = &mRakNetConnectionLogger;
     // Get 1 instance of the RakNet peer interface
     mRakNetConnection.mRakPeer = RakNetworkFactory::GetRakPeerInterface();
     // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
@@ -360,8 +381,12 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
 	StringTable::Instance()->AddString("SiteNode", false);
 	StringTable::Instance()->AddString("Entity", false);
 
+    // Initializing the cache
+    mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Initializing cache manager");
+
     mRakNetConnection.mRakPeer->Connect(mRakNetHost.c_str(), mRakNetPort, 0, 0, 0);
-    OGRE_LOG("Connecting ...");
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Connecting ...");
 
     pthread_mutex_unlock(&mRakNetMutex);
 
@@ -378,6 +403,9 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
     pthread_mutex_unlock(&mRakNetMutex);
 
     mNodeManager->onLostNode(mNodeId);
+
+    // Finalizing the cache
+    mRakNetConnection.mCacheManager.finalize();
 
     return IP2NClient::RCOk;
 }
@@ -463,7 +491,7 @@ bool Peer::_initialize()
 //    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
     if (PhysicsEngineManager::getSingleton().getSelectedEngine() == 0)
     {
-        OGRE_LOG("No physics engine selected !");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "No physics engine selected !");
         return false;
     }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
@@ -476,7 +504,7 @@ bool Peer::_initialize()
 	mP2NServer->init();
 	if (!mP2NServer->start())
     {
-        OGRE_LOG("Unable to start the Peer/Navigator server !");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Unable to start the Peer/Navigator server !");
         return false;
     }
 
@@ -497,7 +525,7 @@ void Peer::_finalize()
     delete mP2NServer;
 
 #ifdef PHYSICSPLUGINS
-    OGRE_LOG("Peer::_finalize() destroying physics scene");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::_finalize() destroying physics scene");
     if (mPhysicsScene != 0)
         PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
     mPhysicsScene = 0;

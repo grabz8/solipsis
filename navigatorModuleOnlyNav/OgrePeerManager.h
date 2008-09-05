@@ -53,8 +53,11 @@ private:
     // My node identifier
     NodeId mNodeId;
 
-    // <Peer's name, OgrePeer> map
+    // <EntityUID, OgrePeer> map
     OgrePeersMap mOgrePeersMap;
+
+    // <EntityUID, OgrePeer> map of reserved EntityUID
+    OgrePeersMap mReservedOgrePeersMap;
 
     // User avatar
     OgrePeer* mUserAvatar;
@@ -89,7 +92,7 @@ public:
     bool remove(const EntityUID& entity, bool local);
 
     // Remove all peers (locals or networked)
-    bool removeAll(bool local);
+    void removeAll(bool local);
 
 	// Update
 #ifdef POOL
@@ -108,11 +111,20 @@ public:
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
 
+	/** Get 1 new entity uid. */
+    EntityUID getNewEntityUID();
+	/** Retrieve 1 peer according to its entity uid. */
+    OgrePeer* getOgrePeer(const EntityUID& entityUID);
+
+    /** See Solipsis::IModelerCallbacks. */
+	virtual bool onObject3DSave(const String& sofFilename, Object3D* object3D);
+    /** See Solipsis::IModelerCallbacks. */
+	virtual bool onObject3DDelete(Object3D* object3D);
 	/** See Solipsis::IModelerCallbacks. */
-	virtual bool OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList);
+	virtual bool isObject3DOwned(Object3D* object3D);
 
 	/** Called when the user avatar was saved. */
-	bool OnUserAvatarSave();
+	bool onUserAvatarSave();
 
 	// Get/Set
 	SceneManager* getSceneManager() { return mSceneMgr; }

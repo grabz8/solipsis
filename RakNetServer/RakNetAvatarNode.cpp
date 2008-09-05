@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <StringCompressor.h>
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -38,10 +39,9 @@ RakNetAvatarNode::RakNetAvatarNode() :
     RakNetNode("avatar"),
     mEntity(0),
     mName(""),
-    mIsLocal(false),
-    mFileListTransferSetID(65535)
+    mIsLocal(false)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::RakNetAvatarNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::RakNetAvatarNode()");
 
     avatarNodes.push_back(this);
 }
@@ -49,7 +49,7 @@ RakNetAvatarNode::RakNetAvatarNode() :
 //-------------------------------------------------------------------------------------
 RakNetAvatarNode::~RakNetAvatarNode()
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::~RakNetAvatarNode()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::~RakNetAvatarNode()");
 
     for (AvatarNodeList::iterator it = avatarNodes.begin(); it != avatarNodes.end(); ++it)
         if (*it == this)
@@ -60,17 +60,21 @@ RakNetAvatarNode::~RakNetAvatarNode()
 
     if (mEntity != 0)
     {
-        if (RakNetConnection::getSingleton()->mServer)
+        // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
+        if (RakNetConnection::getSingletonPtr()->mServer)
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::~RakNetAvatarNode() mEntity->BroadcastDestruction");
             mEntity->BroadcastDestruction();
-        delete mEntity;
-        mEntity = 0;
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::~RakNetAvatarNode() delete mEntity");
+            delete mEntity;
+        }
     }
 }
 
 //-------------------------------------------------------------------------------------
 RakNetAvatarNode* RakNetAvatarNode::findByAddress(SystemAddress& systemAddress)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::findByAddress() systemAddress:" + std::string(systemAddress.ToString()));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::findByAddress() systemAddress:%s", systemAddress.ToString());
 
     for (AvatarNodeList::iterator it = avatarNodes.begin(); it != avatarNodes.end(); ++it)
         if ((*it)->getSystemAddress() == systemAddress)
@@ -79,38 +83,36 @@ RakNetAvatarNode* RakNetAvatarNode::findByAddress(SystemAddress& systemAddress)
             return avatarNode;
         }
 
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::findByAddress() systemAddress:" + std::string(systemAddress.ToString()) + " not found !");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::findByAddress() systemAddress:%s not found !", systemAddress.ToString());
     return 0;
 }
 
 //-------------------------------------------------------------------------------------
 void RakNetAvatarNode::deleteByAddress(SystemAddress& systemAddress)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::deleteByAddress() systemAddress:" + std::string(systemAddress.ToString()));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::deleteByAddress() systemAddress:%s", systemAddress.ToString());
 
     std::string avatarNodesListStr;
     for (AvatarNodeList::iterator itz = avatarNodes.begin(); itz != avatarNodes.end(); ++itz)
         avatarNodesListStr += " " + (*itz)->mNodeId;
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::deleteByAddress() avatarNodesListStr:" + avatarNodesListStr);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::deleteByAddress() avatarNodesListStr:%s", avatarNodesListStr.c_str());
     for (AvatarNodeList::iterator it = avatarNodes.begin(); it != avatarNodes.end(); ++it)
         if ((*it)->getSystemAddress() == systemAddress)
         {
             RakNetAvatarNode *avatarNode = (RakNetAvatarNode*)*it;
             // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
-            // It is in the derived class QueryIsDestructionAuthority() that we give the client authority to network delete the object
             avatarNode->BroadcastDestruction();
-
             delete avatarNode;
             return;
         }
 
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::deleteByAddress() systemAddress:" + std::string(systemAddress.ToString()) + " not found !");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::deleteByAddress() systemAddress:%s not found !", systemAddress.ToString());
 }
 
 //-------------------------------------------------------------------------------------
 bool RakNetAvatarNode::SerializeConstruction(BitStream *bitStream, SerializationContext *serializationContext)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::SerializeConstruction()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::SerializeConstruction()");
 
     StringTable::Instance()->EncodeString("AvatarNode", 128, bitStream);
 
@@ -120,10 +122,10 @@ bool RakNetAvatarNode::SerializeConstruction(BitStream *bitStream, Serialization
 //-------------------------------------------------------------------------------------
 bool RakNetAvatarNode::Serialize(BitStream *bitStream, SerializationContext *serializationContext)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::Serialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::Serialize()");
 
     // Server side
-    if (RakNetConnection::getSingleton()->mServer)
+    if (RakNetConnection::getSingletonPtr()->mServer)
     {
         bitStream->Write(mSystemAddress);
 
@@ -140,12 +142,14 @@ bool RakNetAvatarNode::Serialize(BitStream *bitStream, SerializationContext *ser
     {
         stringCompressor->EncodeString(mNodeId.c_str(), 16, bitStream);
         stringCompressor->EncodeString(mName.c_str(), 16, bitStream);
-        bitStream->Write(mFileListTransferSetID);
     }
 
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetAvatarNode::Serialize() mSystemAddress:%s, mNodeId:%s, mEntity:0x%08x(%s)", mSystemAddress.ToString(), mNodeId.c_str(), (unsigned int)mEntity, mEntity ? mEntity->GetNetworkID().systemAddress.ToString() : "");
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetAvatarNode::Serialize() mSystemAddress:%s, mNodeId:%s, mEntity:0x%08x(%s)",
+        mSystemAddress.ToString(),
+        mNodeId.c_str(),
+        (unsigned int)mEntity,
+        mEntity ? mEntity->GetNetworkID().systemAddress.ToString() : "");
 
     return true;
 }
@@ -153,10 +157,10 @@ bool RakNetAvatarNode::Serialize(BitStream *bitStream, SerializationContext *ser
 //-------------------------------------------------------------------------------------
 void RakNetAvatarNode::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetAvatarNode::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetAvatarNode::Deserialize()");
 
     // Client side
-    if (!RakNetConnection::getSingleton()->mServer)
+    if (!RakNetConnection::getSingletonPtr()->mServer)
     {
 	    bitStream->Read(mSystemAddress);
 
@@ -164,7 +168,7 @@ void RakNetAvatarNode::Deserialize(BitStream *bitStream, SerializationType seria
 
         NetworkID entityNetworkId;
         bitStream->Read(entityNetworkId);
-        mEntity = (RakNetEntity*)RakNetConnection::getSingleton()->mNetworkIdManager.GET_OBJECT_FROM_ID(entityNetworkId);
+        mEntity = (RakNetEntity*)RakNetConnection::getSingletonPtr()->mNetworkIdManager.GET_OBJECT_FROM_ID(entityNetworkId);
     }
     // Server side
     else
@@ -177,13 +181,17 @@ void RakNetAvatarNode::Deserialize(BitStream *bitStream, SerializationType seria
             mNodeId = output;
             stringCompressor->DecodeString(output, 16, bitStream);
             mName = output;
-            bitStream->Read(mFileListTransferSetID);
         }
     }
 
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetAvatarNode::Deserialize() mSystemAddress:%s, mNodeId:%s, mName:%s, mIsLocal:%s, mEntity:0x%08x(%s)", mSystemAddress.ToString(), mNodeId.c_str(), mName.c_str(), mIsLocal ? "true" : "false", (unsigned int)mEntity, mEntity ? mEntity->GetNetworkID().systemAddress.ToString() : "");
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetAvatarNode::Deserialize() mSystemAddress:%s, mNodeId:%s, mName:%s, mIsLocal:%s, mEntity:0x%08x(%s)",
+        mSystemAddress.ToString(),
+        mNodeId.c_str(),
+        mName.c_str(),
+        LOGHANDLER_LOGBOOL(mIsLocal),
+        (unsigned int)mEntity,
+        mEntity ? mEntity->GetNetworkID().systemAddress.ToString() : "");
 }
 
 //-------------------------------------------------------------------------------------

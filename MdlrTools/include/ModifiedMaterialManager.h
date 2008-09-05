@@ -38,7 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Ogre;
 namespace Solipsis {
 
-class ModifiedMaterial ;
+class ModifiedMaterial;
+class Object3D;
 
 //Texture iterator :
 typedef std::map<String,TexturePtr> TextureMap;
@@ -60,12 +61,10 @@ public:
     public:
 	    /// brief callback to load a texture
 	    /// param object3D The object3D loading the texture
-	    /// param modifiedMaterialManager The material manager
-	    /// param entity The entity
 	    /// param name The name of the texture
 	    /// param textureExtParamsMap The extended parameters of the texture
 	    /// return the texture
-        virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, Entity* entity, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+        virtual TexturePtr loadTexture(Object3D* object, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
 	    /// brief callback to release a texture
 	    /// param modifiedMaterialManager The material manager
 	    /// param name The name of the texture

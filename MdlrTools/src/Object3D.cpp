@@ -30,13 +30,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SolidBoolOp.h"
 
 #include "SolipsisErrorHandler.h"
-// Tinyxml
-#include "tinyxml/include/tinyxml.h"
+
+#include "tinyxml.h"
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-Object3D::Object3D(String pName, SceneNode* pNode)
+Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode)
 {
 	mNode = pNode;
 	mEntity = (Entity*)pNode->getAttachedObject(pName);
@@ -83,6 +83,7 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 	mChildren = NULL;		// TODO : must be loaded from the .XML
 	mParent = 0;		// TODO : must be loaded from the .XML
 
+    mEntityUID = pEntityUID;
 	mName = pName;
 
 	//mType = OTHER;
@@ -121,7 +122,14 @@ Object3D::Object3D(String pName, SceneNode* pNode)
 //-------------------------------------------------------------------------------------
 Object3D::~Object3D()
 {
-	//delete mEntity;	
+	while (mModifiedMaterialManager->getNbTexture() > 1)
+        mModifiedMaterialManager->deleteTexture(mModifiedMaterialManager->getTexture(mModifiedMaterialManager->getNbTexture() - 1));
+
+    const MaterialPtr& clonedMaterial = mModifiedMaterialManager->getModifiedMaterial()->getOwner();
+    MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);
+
+    const MeshPtr& clonedMesh = mEntity->getMesh();
+	MeshManager::getSingleton().remove((ResourcePtr&)clonedMesh);
     mNode->detachObject(mEntity);
     mNode->getCreator()->destroyMovableObject(mEntity);
 	mEntity = 0;
@@ -138,6 +146,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	Ogre::String extractedAttribute;
 
 	TiXmlElement *e = doc.RootElement()->FirstChildElement("properties");
+    mEntityUID = XmlHelpers::convertHexStringToEntityUID(e->FirstChildElement("objuid")->Attribute("Uid"));
 	mName = e->FirstChildElement("objname")->Attribute("Name");
 	mTags = e->FirstChildElement("objtags")->Attribute("Name");
 	mDesc = e->FirstChildElement("objdesc")->Attribute("Name");
@@ -304,7 +313,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
         }
         if (mModifiedMaterialManager->getMMMTextureManager() != 0)
         {
-            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(mModifiedMaterialManager, mEntity, trans->Attribute("Name"), textureExtParamsMap);
+            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(this, trans->Attribute("Name"), textureExtParamsMap);
         }
         else
         {
@@ -387,6 +396,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "<SOLObject>" << endl;
 	toSave << "\t<properties>" << endl;
 	toSave << "\t\t<modelerversion Name=\"" << SOLMODVERSION << "\" />" << endl;
+    toSave << "\t\t<objuid Uid=\"" << XmlHelpers::convertEntityUIDToHexString(mEntityUID) << "\" />" << endl;
 	toSave << "\t\t<objname Name=\"" << mName << "\" />" << endl;
 
 	// TODO : See how to save / restore TAGS without carriarge returns => The XML would be more human readable
@@ -535,6 +545,18 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave.close();
 
 	return 0; // no error
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setEntityUID(const EntityUID& entityUID)
+{
+	mEntityUID = entityUID;
+}
+
+//-------------------------------------------------------------------------------------
+const EntityUID& Object3D::getEntityUID()
+{
+	return mEntityUID;
 }
 
 //-------------------------------------------------------------------------------------

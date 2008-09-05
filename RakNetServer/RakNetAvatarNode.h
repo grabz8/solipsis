@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 #include <string>
+#include <FileList.h>
 #include "RakNetNode.h"
 
 namespace Solipsis {
@@ -48,9 +49,6 @@ protected:
 
     /// Local avatar node (set by server)
     bool mIsLocal;
-
-    /// Set ID (FileListTransfer) to received files from the owner of this avatar node (set by client)
-    unsigned short mFileListTransferSetID;
 
 	// All avatar nodes that have been created
 	static AvatarNodeList avatarNodes;

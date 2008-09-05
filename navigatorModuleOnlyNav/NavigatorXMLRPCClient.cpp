@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorXMLRPCClient.h"
 #include "tinyxml.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 #include "DebugHelpers.h"
 #include "Platform.h"
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, int verbosity, const std::string& extras)
@@ -49,7 +50,7 @@ NavigatorXMLRPCClient::NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx)
 //-------------------------------------------------------------------------------------
 NavigatorXMLRPCClient::~NavigatorXMLRPCClient()
 {
-    OGRE_LOG("NavigatorXMLRPCClient::~NavigatorXMLRPCClient() mSharedCnx=" + std::string(mSharedCnx ? "true" : "false") + " mP2NClient->isConnected()=" + std::string(mP2NClient->isConnected() ? "true" : "false"));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorXMLRPCClient::~NavigatorXMLRPCClient() mSharedCnx=%s mP2NClient->isConnected()=%s", LOGHANDLER_LOGBOOL(mSharedCnx), LOGHANDLER_LOGBOOL(mP2NClient->isConnected()));
     if ((mSharedCnx == 0) && mP2NClient->isConnected())
         mP2NClient->logout();
 }
@@ -107,7 +108,7 @@ bool NavigatorXMLRPCClient::handleEvt(XmlEvt** xmlEvt)
     // check for errors
     if (xmlDoc.Error() || (strcmp(xmlDoc.RootElement()->Value(), "solipsis") != 0))
     {
-        OGRE_LOG("Invalid event ! xmlResp=\n" + xmlResp);
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Invalid event ! xmlResp=\n%s", xmlResp.c_str());
         return false;
     }
 #ifdef POOL
@@ -137,7 +138,7 @@ bool NavigatorXMLRPCClient::sendEvt(const XmlEvt& xmlEvt, std::string& xmlResp)
 //-------------------------------------------------------------------------------------
 void NavigatorXMLRPCClient::logMessage(const std::string& message)
 {
-    OGRE_LOG(message);
+    LOGHANDLER_LOG(LogHandler::VL_DEBUG, message.c_str());
 }
 
 //-------------------------------------------------------------------------------------

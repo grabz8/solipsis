@@ -35,8 +35,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterInstance.h>
 #include "VoiceEngineManager.h"
 
-
 using namespace Solipsis;
+using namespace CommonTools;
 
 Navigator* Navigator::ms_singletonPtr = 0;
 
@@ -69,6 +69,9 @@ Navigator::Navigator(const String name, IApplication* application) :
     isOnLeftCTRL(false)
 {
     ms_singletonPtr = this;
+
+    CommonTools::LogHandler::setLogHandler(&mOgreLogger);
+    CommonTools::LogHandler::getLogHandler()->setVerbosityLevel(CommonTools::LogHandler::VL_DEBUG);
 
     // Lua initialization
     mLuaState = lua_open();
@@ -592,7 +595,7 @@ Entity* Navigator::getNaviEntity(const String& naviName)
 void Navigator::resetMousePicking()
 {
     mRaySceneQuery->clearResults();
-    closestDistance = -1.0f;
+    mClosestDistance = -1.0f;
     mPickedMovable = 0;
 }
 
@@ -604,7 +607,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     mRaySceneQuery->setSortByDistance(true);
     mRaySceneQuery->setQueryTypeMask(SceneManager::ENTITY_TYPE_MASK);
     RaySceneQueryResult &queryResult = mRaySceneQuery->execute();
-    closestDistance = -1.0f;
+    mClosestDistance = -1.0f;
     mPickedMovable = 0;
     String movablesList;
     for (RaySceneQueryResult::iterator it = queryResult.begin(); it != queryResult.end(); ++it )
@@ -615,7 +618,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
             movablesList += it->movable->getName() + ":" + StringConverter::toString(it->distance) + ":" + StringConverter::toString(it->movable->getQueryFlags());
             // stop checking if we have found a raycast hit that is closer
             // than all remaining entities
-            if ((closestDistance >= 0.0f) && (closestDistance < it->distance))
+            if ((mClosestDistance >= 0.0f) && (mClosestDistance < it->distance))
                 break;
             if (mState == SModeling)
             {
@@ -685,9 +688,9 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                         // if we found a new closest raycast for this object, update the
                         // mPickedMovable before moving on to the next object.
                         if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
-                            closestDistance,
-                            closestUV,
-                            closestTriUV0, closestTriUV1, closestTriUV2))
+                            mClosestDistance,
+                            mClosestUV,
+                            mClosestTriUV0, mClosestTriUV1, mClosestTriUV2))
                         {
                             if ((it->movable->getQueryFlags() & QFNaviPanel) && (it->distance < mMaxNaviPickingDistance))
                                 mPickedMovable = it->movable;
@@ -720,9 +723,9 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     // if we found a new closest raycast for this object, update the
                     // mPickedMovable before moving on to the next object.
                     if (OgreHelpers::isEntityHitByMouse(mouseRay, static_cast<Entity*>(it->movable),
-                        closestDistance,
-                        closestUV,
-                        closestTriUV0, closestTriUV1, closestTriUV2))
+                        mClosestDistance,
+                        mClosestUV,
+                        mClosestTriUV0, mClosestTriUV1, mClosestTriUV2))
                     {
                         if (((it->movable->getQueryFlags() & QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
                             ((it->movable->getQueryFlags() & QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)) ||
@@ -734,12 +737,12 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
         }
     }
 
-    OGRE_LOG("Navigator::computeMousePicking() found movables " + movablesList);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeMousePicking() found movables %s", movablesList.c_str());
     // if 1 entity hit
-    if ((closestDistance >= 0.0f) && (mPickedMovable != 0))
+    if ((mClosestDistance >= 0.0f) && (mPickedMovable != 0))
     {
-        closestHitPoint = mouseRay.getPoint(closestDistance);
-        OGRE_LOG("Navigator::computeMousePicking() found movable=" + mPickedMovable->getName() + ", closestDistance=" + StringConverter::toString(closestDistance) + ", closestHitPoint=" + StringConverter::toString(closestHitPoint));
+        mClosestHitPoint = mouseRay.getPoint(mClosestDistance);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeMousePicking() found movable=%s, mClosestDistance=%.2f, mClosestHitPoint=%s", mPickedMovable->getName().c_str(), mClosestDistance, StringConverter::toString(mClosestHitPoint).c_str());
         return true;
     }
 
@@ -757,10 +760,10 @@ bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
         naviName = NaviLibrary::NaviManager::Get().getNaviFromMtlName(mtlName)->getName();
         // compute texture coordinates of the hit
         computeNaviHit(naviName,
-                       closestUV,
-                       closestTriUV0, closestTriUV1, closestTriUV2,
+                       mClosestUV,
+                       mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
                        naviX, naviY);
-        OGRE_LOG("Navigator::is1NaviHitByMouse() found Navi movable=" + mPickedMovable->getName() + ", naviName=" + naviName + ", (naviX, naviY)=(" + StringConverter::toString(naviX) + ", " + StringConverter::toString(naviY) + ")");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1NaviHitByMouse() found Navi movable=%s, naviName=%s, (naviX, naviY)=(%d, %d)", mPickedMovable->getName().c_str(), naviName.c_str(), naviX, naviY);
         return true;
     }
 
@@ -784,13 +787,13 @@ void Navigator::computeNaviHit(const String& naviName,
     NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().getNavi(naviName);
     if (navi == 0)
     {
-        OGRE_LOG("Navigator::computeNaviHit() naviName=" + naviName + " not found !");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() naviName=%s not found !", naviName.c_str());
         return;
     }
     navi->getExtents(naviWidth, naviHeight);
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
-    OGRE_LOG("Navigator::computeNaviHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", closestResultUV=" + StringConverter::toString(closestResultUV));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -800,7 +803,7 @@ bool Navigator::is1VLCHitByMouse(MovableObject*& vlcMovableObj)
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFVLCPanel))
     {
         vlcMovableObj = mPickedMovable;
-        OGRE_LOG("Navigator::is1VLCHitByMouse() found VLC movable=" + mPickedMovable->getName());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1VLCHitByMouse() found VLC movable=%s", mPickedMovable->getName().c_str());
         return true;
     }
 
@@ -815,10 +818,10 @@ bool Navigator::is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY)
     {
         vncMovableObj = mPickedMovable;
         // compute texture coordinates of the hit
-        computeVncHit(closestUV,
-                      closestTriUV0, closestTriUV1, closestTriUV2,
+        computeVncHit(mClosestUV,
+                      mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
                       vncXY);
-        OGRE_LOG("Navigator::is1VNCHitByMouse() found VNC movable=" + mPickedMovable->getName() + ", vncXY=" + StringConverter::toString(vncXY));
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1VNCHitByMouse() found VNC movable=%s, vncXY=%s", mPickedMovable->getName().c_str(), StringConverter::toString(vncXY).c_str());
         return true;
     }
 
@@ -835,7 +838,7 @@ void Navigator::computeVncHit(Vector2& closestUV,
     Vector2 dt2 = closestTriUV2 - closestTriUV0;
     vncXY.x = closestTriUV0.x + closestUV.x*dt1.x + closestUV.y*dt2.x;
     vncXY.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
-    OGRE_LOG("Navigator::computeVncHit() uv=" + StringConverter::toString(Vector2(closestUV.x, closestUV.y)) + ", dt1=" + StringConverter::toString(dt1) + ", dt2=" + StringConverter::toString(dt2) + ", vncXY=" + StringConverter::toString(vncXY));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeVncHit() uv=%s, dt1=%s, dt2=%s, vncXY=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(vncXY).c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -854,7 +857,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
             if ((avatar == mUserAvatar) && (((NavigatorFrameListener*)mFrameListener)->getCameraMode() == NavigatorFrameListener::CM1stPersonWithMouse)) continue;
-            OGRE_LOG("Navigator::is1AvatarHitByMouse() found Avatar movable=" + mPickedMovable->getName() + ", Entity:Uid=" + avatar->getXmlEntity()->getUidString() + ", Entity:Name=" + avatar->getEntity()->getName());
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUidString().c_str(), avatar->getEntity()->getName().c_str());
             return true;
         }
     }
@@ -915,12 +918,12 @@ bool Navigator::initPostOgreCore()
     Lunar<NavigatorLua>::Register(mLuaState);
     if (luaL_loadfile(mLuaState, "lua\\boot.lua") != 0)
     {
-        OGRE_LOG("Navigator::initPostOgreCore() Unable to load boot.lua, error: " + String(lua_tostring(mLuaState, -1)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::initPostOgreCore() Unable to load boot.lua, error: %s", lua_tostring(mLuaState, -1));
         return false;
     }
     if (lua_pcall(mLuaState, 0, LUA_MULTRET, 0))
     {
-        OGRE_LOG("Navigator::initPostOgreCore() Unable to run boot.lua, error: " + String(lua_tostring(mLuaState, -1)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::initPostOgreCore() Unable to run boot.lua, error: %s", lua_tostring(mLuaState, -1));
         return false;
     }
 
@@ -928,7 +931,7 @@ bool Navigator::initPostOgreCore()
     mNavigatorSound = new NavigatorSound();
     if (!mNavigatorSound->initialize())
     {
-        OGRE_LOG("Navigator::initPostOgreCore() Unable to initialize sound");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::initPostOgreCore() Unable to initialize sound");
         return false;
     }
 
@@ -966,11 +969,10 @@ void Navigator::createScene()
 
 	// Init the Modeler 
 	mModeler = Modeler::getSingletonPtr(mSceneMgr, mCamera, mOgrePeerManager);
-	mModeler->init();
+	mModeler->init(mMediaCachePath);
 
     // Create the avatar editor
-    String mediaCacheModelsPath = mMediaCachePath + "\\models";
-    mAvatarEditor = new AvatarEditor(std::string(mediaCacheModelsPath), mSceneMgr);
+    mAvatarEditor = new AvatarEditor(mMediaCachePath, mSceneMgr);
     mAvatarEditor->buildListSAF();
 }
 
@@ -1000,6 +1002,13 @@ bool Navigator::setWindow(IWindow* w)
         return false;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::OgreLogger::log(int level, const char* msg)
+{ 
+    if (level > mVerbosity) return;
+    OGRE_LOG(std::string(msg));
 }
 
 //-------------------------------------------------------------------------------------
@@ -1091,12 +1100,12 @@ bool Navigator::sendMessage(const String& message)
 //-------------------------------------------------------------------------------------
 bool Navigator::contextItemSelected(const String& item)
 {
-    OGRE_LOG("Navigator::contextItemSelected()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::contextItemSelected()");
 
     if (mNavigatorGUI == 0) return true;
 
     mNavigatorGUI->contextHide();
-    OGRE_LOG("Navigator::contextItemSelected() item=" + item);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::contextItemSelected() item=%s", item.c_str());
 
     // Perform action associated to item selected
     // TODO
@@ -1134,14 +1143,14 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerNew(XmlEntity* xmlEntity)
 #endif
 {
-    OGRE_LOG("Navigator::onPeerNew() uid:" + xmlEntity->getUidString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUidString().c_str());
 
 #ifdef UIDEBUG
     if (mNavigatorGUI != 0)
         mNavigatorGUI->setTreeDirty(true);
 #endif
     if (!mOgrePeerManager->load(xmlEntity))
-        OGRE_LOG("Navigator::onPeerNew() Unable to load entity !");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onPeerNew() Unable to load entity !");
 }
 
 //-------------------------------------------------------------------------------------
@@ -1151,7 +1160,7 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerLost(XmlEntity* xmlEntity)
 #endif
 {
-    OGRE_LOG("Navigator::onPeerLost() uid:" + xmlEntity->getUidString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUidString().c_str());
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
@@ -1164,7 +1173,7 @@ void Navigator::onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 #endif
 {
-//    OGRE_LOG("Navigator::onPeerUpdated()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
     if (!mOgrePeerManager->update(xmlEntity))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer !", "Navigator::onPeerUpdated");
@@ -1177,7 +1186,7 @@ void Navigator::onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction)
 void Navigator::onPeerAction(XmlAction* xmlAction)
 #endif
 {
-    OGRE_LOG("Navigator::onPeerAction()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerAction()");
 
     if (!mOgrePeerManager->action(xmlAction))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peer !", "Navigator::onPeerAction");
@@ -1186,7 +1195,7 @@ void Navigator::onPeerAction(XmlAction* xmlAction)
 //-------------------------------------------------------------------------------------
 void Navigator::processEvents()
 {
-//    OGRE_LOG("Navigator::processEvents()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::processEvents()");
 
     // Process each event
     NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
@@ -1236,7 +1245,7 @@ void Navigator::processEvents()
 //-------------------------------------------------------------------------------------
 void Navigator::sendEvents()
 {
-//    OGRE_LOG("Navigator::sendEvents()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendEvents()");
 
     if (mXmlRpcClient == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send events without XMLRPC client", "Navigator::sendEvents");
@@ -1251,13 +1260,13 @@ void Navigator::sendEvents()
 #else
         if (!mXmlRpcClient->sendEvt((*xmlEvt), xmlResp))
 #endif
-            OGRE_LOG("Navigator::sendEvents() Unable to send event !");
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::sendEvents() Unable to send event !");
     }
     evtsList.clear();
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::OnAvatarNodeCreate(OgrePeer* ogrePeer)
+bool Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
 {
     // User Avatar ?
     if (ogrePeer->isLocal())
@@ -1272,7 +1281,7 @@ bool Navigator::OnAvatarNodeCreate(OgrePeer* ogrePeer)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::OnSceneNodeCreate(OgrePeer* ogrePeer)
+bool Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
 {
     // create the sun light
     Light *sunLight = mSceneMgr->createLight("SunLight");
@@ -1303,7 +1312,7 @@ bool Navigator::endModeling()
 	// Go back in world
 	mState = SInWorld;
 
-	if( mModeler )
+	if (mModeler)
 		mModeler->deselectNode();
 
     return true;
@@ -1325,7 +1334,9 @@ bool Navigator::createPlane()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createPlane(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createPlane(entityUID, name, plpos + dep);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1344,7 +1355,9 @@ bool Navigator::createBox()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createBox(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createBox(entityUID, name, plpos + dep);
 }
 
 
@@ -1364,7 +1377,9 @@ bool Navigator::createCorner()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createCorner(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createCorner(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createPyramid()
@@ -1382,7 +1397,9 @@ bool Navigator::createPyramid()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createPyramid(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createPyramid(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createPrism()
@@ -1400,7 +1417,9 @@ bool Navigator::createPrism()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createPrism(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createPrism(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createCylinder()
@@ -1418,7 +1437,9 @@ bool Navigator::createCylinder()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createCylinder(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createCylinder(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCyl()
@@ -1436,7 +1457,9 @@ bool Navigator::createHalfCyl()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createHalfCyl(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createHalfCyl(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createCone()
@@ -1454,7 +1477,9 @@ bool Navigator::createCone()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createCone(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createCone(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCone()
@@ -1472,7 +1497,9 @@ bool Navigator::createHalfCone()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createHalfCone(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createHalfCone(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createSphere()
@@ -1490,7 +1517,9 @@ bool Navigator::createSphere()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createSphere(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createSphere(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfSphere()
@@ -1508,7 +1537,9 @@ bool Navigator::createHalfSphere()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createHalfSphere(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createHalfSphere(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createTorus()
@@ -1526,7 +1557,9 @@ bool Navigator::createTorus()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createTorus(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createTorus(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createTube()
@@ -1544,7 +1577,9 @@ bool Navigator::createTube()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createTube(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createTube(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createRing()
@@ -1562,7 +1597,9 @@ bool Navigator::createRing()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createRing(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createRing(entityUID, name, plpos + dep);
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
@@ -1580,7 +1617,9 @@ bool Navigator::createMesh()
 	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 	dep.x = x;
 
-	return mModeler->createMesh(plpos + dep);
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createMesh(entityUID, name, plpos + dep);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1603,7 +1642,7 @@ bool Navigator::endAvatarEdit()
 //-------------------------------------------------------------------------------------
 void Navigator::onMouseMoved(const MouseEvt& evt)
 {
-	if ( mModeler )
+	if (mModeler)
 		if (!mModeler->isSelectionEmpty())
 		{
 			//mModeler->getSelection()->mTransformation->drapNdrop(...);
@@ -1613,7 +1652,7 @@ void Navigator::onMouseMoved(const MouseEvt& evt)
 //-------------------------------------------------------------------------------------
 void Navigator::onMousePressed(const MouseEvt& evt)
 {
-	if ( mModeler )
+	if (mModeler)
 		if (!mModeler->isSelectionEmpty())
 		{
 			//mModeler->getSelection()->mTransformation->firstClickForTransformation(...);
@@ -1623,7 +1662,7 @@ void Navigator::onMousePressed(const MouseEvt& evt)
 //-------------------------------------------------------------------------------------
 void Navigator::onMouseReleased(const MouseEvt& evt)
 {
-	if ( mModeler )
+	if (mModeler)
 		if (!mModeler->isSelectionEmpty())
 		{
 			//mModeler->getSelection()->mTransformation->releasedClickForTransformation();
@@ -1637,7 +1676,7 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 	SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
 	static Vector3 scale = Vector3(1,1,1);
 
-	switch(mModeler->getSelection()->mTransformation->getMode())
+	switch (mModeler->getSelection()->mTransformation->getMode())
 	{
 	case Transformations::MOVE:
 		mModeler->updateCommand( Object3D::TRANSLATE, mModeler->getSelected() );
@@ -1662,7 +1701,7 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLImport()
 {
-	if( mModeler )
+	if (mModeler)
 	{
 		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
 		Radian angle = pldir.getYaw();
@@ -1676,7 +1715,9 @@ bool Navigator::mdlrXMLImport()
 		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
 		dep.x = x;
 
-		return mModeler->XMLImport("", mUserAvatar->getSceneNode()->getPosition() + dep );
+        EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+        String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+		return mModeler->XMLImport(entityUID, name, "", mUserAvatar->getSceneNode()->getPosition() + dep );
 	}
 
 	return false;
@@ -1685,10 +1726,9 @@ bool Navigator::mdlrXMLImport()
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLSave(bool all)
 {
-    String mediaCacheModelsPath = mMediaCachePath + "\\models";
-	if( mModeler )
-		if(all || !mModeler->isSelectionEmpty()) 
-            return mModeler->XMLSave(all, mediaCacheModelsPath.c_str());
+	if (mModeler)
+		if (all || !mModeler->isSelectionEmpty())
+            return mModeler->XMLSave(all);
 		else
 #ifdef WIN32
 			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
@@ -1702,7 +1742,7 @@ bool Navigator::mdlrXMLSave(bool all)
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLLoad()
 {
-    if( mAvatarEditor )
+    if (mAvatarEditor)
 		//if( mAvatarEditor->XMLLoad() )
         {
             // 0. store the old avatar' parameters (camera mode ...)
@@ -1727,10 +1767,10 @@ bool Navigator::avatarXMLLoad()
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSave()
 {
-	if( mAvatarEditor )
+	if (mAvatarEditor)
     {
 		mAvatarEditor->getManager()->getCurrentInstance()->saveModified();
-        mOgrePeerManager->OnUserAvatarSave();
+        mOgrePeerManager->onUserAvatarSave();
     }
 
     return true;
@@ -1738,7 +1778,7 @@ bool Navigator::avatarXMLSave()
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSaveAs()
 {
-	if( mAvatarEditor )
+	if (mAvatarEditor)
 	{}
 
     return true;

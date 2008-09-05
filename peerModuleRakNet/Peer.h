@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Peer_h__
 #define __Peer_h__
 
+#include <CTLog.h>
 #include <CTBasicThread.h>
 #include "IPeer.h"
 #include "PhysicsEngineManager.h"
@@ -182,11 +183,13 @@ protected:
     };
     PhysicsEngineLogger mPhysicsEngineLogger;
 
-    class RakNetConnectionLogger : public IRakNetConnectionLogger {
-        /** See IRakNetConnectionLogger. */
-        virtual void logMessage(const std::string& message);
+    class OgreLogger : public CommonTools::LogHandler
+    {
+    public:
+        /** See CommonTools::LogHandler. */
+        void log(int level, const char* msg);
     };
-    RakNetConnectionLogger mRakNetConnectionLogger;
+    OgreLogger mOgreLogger;
 
     /** See IP2NServerRequestsHandler. */
     virtual IP2NClient::RetCode login(const std::string& xmlParamsStr, NodeId& nodeId, std::string& xmlRespStr);

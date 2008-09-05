@@ -23,8 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorSound.h"
 #include "VoiceEngineManager.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 #include <CTIO.h>
+
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -47,7 +49,7 @@ bool NavigatorSound::initialize()
     unsigned int version;
 
     // Create a System object and initialize.
-    OGRE_LOG("NavigatorSound::initialize() Initializing Sound System ...");
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::initialize() Initializing Sound System ...");
     result = FMOD::System_Create(&mSoundSystem);
     if (!fmodErrorCheck(result))
         return false;
@@ -56,11 +58,7 @@ bool NavigatorSound::initialize()
         return false;
     if (version < FMOD_VERSION)
     {
-        char versionHexStr[32];
-        char FMOD_VERSIONHexStr[32];
-        _snprintf(versionHexStr, sizeof(versionHexStr)-1, "%08x", version);
-        _snprintf(FMOD_VERSIONHexStr, sizeof(FMOD_VERSIONHexStr)-1, "%08x", FMOD_VERSION);
-        OGRE_LOG("NavigatorSound::initialize() FMOD error: You are using an old version of FMOD " + Ogre::String(versionHexStr) + ". This program requires " + Ogre::String(FMOD_VERSIONHexStr));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() FMOD error: You are using an old version of FMOD %08x. This program requires version %08x", version, FMOD_VERSION);
         return false;
     }
     FMOD_ADVANCEDSETTINGS settings;
@@ -76,17 +74,17 @@ bool NavigatorSound::initialize()
         return false;
 
     // Create Voice engine
-    OGRE_LOG("NavigatorSound::initialize() Initializing Voice Engine ...");
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::initialize() Initializing Voice Engine ...");
     VoiceEngineManager::getSingleton().selectEngine("FMod/Speex engine");
     IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
     if (voiceEngine == 0)
     {
-        OGRE_LOG("NavigatorSound::initialize() Could not find the FMod/Speex voice engine");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not find the FMod/Speex voice engine");
         return false;
     }
     if (!voiceEngine->initSoundSystem(mSoundSystem))
     {
-        OGRE_LOG("NavigatorSound::initialize() Could not initialize the voice engine");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not initialize the voice engine");
         return false;
     }
 
@@ -135,7 +133,7 @@ bool NavigatorSound::fmodErrorCheck(FMOD_RESULT result)
 {
     if (result != FMOD_OK)
     {
-        OGRE_LOG("NavigatorSound::fmodErrorCheck() FMOD error: (" + StringConverter::toString(result) + ") " + Ogre::String(FMOD_ErrorString(result)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::fmodErrorCheck() FMOD error: (%d) %s", result, FMOD_ErrorString(result));
         return false;
     }
     return true;

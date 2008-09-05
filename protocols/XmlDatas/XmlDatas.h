@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __XmlDatas_h__
 #define __XmlDatas_h__
 
-#include <vector>
+#include <list>
 #include <map>
 #include <ostream>
 #include "XmlDatasPrerequisites.h"
@@ -61,8 +61,8 @@ enum ActionType {
 };
 
 typedef unsigned int EntityFlags;
-const EntityFlags EFNone = (EntityFlags)0;
-const EntityFlags EFGravity = (EntityFlags)1;  /// Gravity applied
+static const EntityFlags EFNone = (EntityFlags)0;
+static const EntityFlags EFGravity = (EntityFlags)1;  /// Gravity applied
 
 enum ShapeType {
     STPoint = 0,            /// Point
@@ -77,16 +77,26 @@ typedef unsigned int EntityUID;
 typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
 typedef unsigned int FileVersion;
-typedef unsigned char AnimationState;
 
-const AnimationState ASNone = (AnimationState)0;
-const AnimationState ASAvatarNone = (AnimationState)0;      /// Avatar no animation
-const AnimationState ASAvatarIdle = (AnimationState)1;      /// Avatar on idle
-const AnimationState ASAvatarWalk = (AnimationState)2;      /// Avatar is walking
-const AnimationState ASAvatarRun = (AnimationState)3;       /// Avatar is running
-const AnimationState ASAvatarFly = (AnimationState)4;       /// Avatar is flying
-const AnimationState ASAvatarSwim = (AnimationState)5;      /// Avatar is swimming
-const AnimationState ASAvatarAnimCount = (ASAvatarSwim - ASAvatarNone + 1); /// Number of animations for avatar
+typedef struct {
+    std::string mFilename;
+    FileVersion mVersion;
+} LodContentFileStruct;
+
+typedef unsigned char AnimationState;
+static const AnimationState ASNone = (AnimationState)0;
+static const AnimationState ASAvatarNone = (AnimationState)0;      /// Avatar no animation
+static const AnimationState ASAvatarIdle = (AnimationState)1;      /// Avatar on idle
+static const AnimationState ASAvatarWalk = (AnimationState)2;      /// Avatar is walking
+static const AnimationState ASAvatarRun = (AnimationState)3;       /// Avatar is running
+static const AnimationState ASAvatarFly = (AnimationState)4;       /// Avatar is flying
+static const AnimationState ASAvatarSwim = (AnimationState)5;      /// Avatar is swimming
+static const AnimationState ASAvatarAnimCount = (ASAvatarSwim - ASAvatarNone + 1); /// Number of animations for avatar
+
+typedef struct {
+    bool mGravity;
+    Ogre::Vector3 mPosition;
+} EntryGateStruct;
 
 class XMLDATAS_EXPORT XmlHelpers
 {
@@ -99,11 +109,15 @@ public:
     static std::string convertBoolToString(bool value);
     static bool convertStringToBool(const char* str);
     static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
-    static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
     static TiXmlElement* toXmlEltVector3(const std::string& eltName, const Ogre::Vector3& v);
     static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
+    static std::ostream& ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q);
     static TiXmlElement* toXmlEltQuaternion(const std::string& eltName, const Ogre::Quaternion& q);
     static bool fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q);
+    static TiXmlElement* toXmlEltLodContentFileStruct(const std::string& eltName, const LodContentFileStruct& s);
+    static bool fromXmlEltLodContentFileStruct(TiXmlElement* xmlElt, LodContentFileStruct& s);
+    static TiXmlElement* toXmlEltEntryGateStruct(const std::string& eltName, const EntryGateStruct& s);
+    static bool fromXmlEltEntryGateStruct(TiXmlElement* xmlElt, EntryGateStruct& s);
 
     static const std::string& convertEventTypeToRepr(const EventType& evtType);
     static inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
@@ -122,7 +136,7 @@ public:
     static inline EntityVersion convertHexStringToEntityVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
     static inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
     static inline std::string convertFileVersionToHexString(const FileVersion& fileVersion) { return XmlHelpers::convertUIntToHexString(fileVersion); }
-    static inline EntityUID convertHexStringToFileVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
+    static inline FileVersion convertHexStringToFileVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
     static inline std::string convertAnimationStateToHexString(AnimationState animationState) { return XmlHelpers::convertUCharToHexString(animationState); }
     static inline AnimationState convertHexStringToAnimationState(const char* str) { return XmlHelpers::convertHexStringToUChar(str); }
 };
@@ -356,12 +370,7 @@ protected:
 #endif
 
 public:
-    typedef struct 
-    {
-        std::string filename;
-        FileVersion version;
-    } LodContentFileStruct;
-    typedef std::vector<LodContentFileStruct> LodContentFileList;
+    typedef std::list<LodContentFileStruct> LodContentFileList;
 
 protected:
     Lod mLevel;
@@ -507,13 +516,6 @@ class XMLDATAS_EXPORT XmlSceneContent : public XmlData
 protected:
     static Pool mPool;
 #endif
-
-public:
-    typedef struct 
-    {
-        bool mGravity;
-        Ogre::Vector3 mPosition;
-    } EntryGateStruct;
 
 protected:
     EntryGateStruct mEntryGate;

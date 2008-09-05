@@ -31,7 +31,7 @@ namespace CommonTools {
 void StringHelpers::tokenize(const string& str, const string& delimiter, vector<string>& tokens)
 {
     tokens.clear();
-    size_t p0 = 0, p1 = string::npos;
+    string::size_type p0 = 0, p1 = string::npos;
     while (p0 != string::npos)
     {
         p1 = str.find_first_of(delimiter, p0);
@@ -41,6 +41,24 @@ void StringHelpers::tokenize(const string& str, const string& delimiter, vector<
             tokens.push_back(token);
         }
         p0 = str.find_first_not_of(delimiter, p1);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void StringHelpers::getURLHostPort(const string& url, string& host, string& port)
+{
+    host.clear();
+    port.clear();
+    string::size_type p = url.find_first_of("://");
+    if (p != string::npos)
+        host = url.substr(p + 3);
+    else
+        host = url;
+    p = host.find_last_of(":");
+    if (p != string::npos)
+    {
+        port = host.substr(p + 1);
+        host = host.substr(0, p);
     }
 }
 

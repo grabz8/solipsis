@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileBuffer.h"
 #include "MyZipArchive.h"
 
+#include <XmlDatas.h>
 
 namespace Solipsis {
 
@@ -48,8 +49,12 @@ namespace Solipsis {
 class IModelerCallbacks
 {
 public:
-	// Called when an Object3DList was saved
-	virtual bool OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList) { return true; };
+	// Called when an Object3D was saved
+	virtual bool onObject3DSave(const String& sofFilename, Object3D* object3D) { return true; }
+	// Called when an Object3D was deleted
+	virtual bool onObject3DDelete(Object3D* object3D) { return true; }
+	// Called to known if Object3D is owned
+	virtual bool isObject3DOwned(Object3D* object3D) { return false; }
 };
 
 class Modeler : public ModifiedMaterialManager::MMMTextureManager
@@ -66,38 +71,38 @@ public:
 	static Modeler* getSingletonPtr(SceneManager* pSceneMgr = 0, Camera* pCamera = 0, IModelerCallbacks* modelerCallbacks = 0);
 
 	/// Init the modeler mode
-	bool	init();
+	bool	init(const String& pPath);
 
 	/// Create a plane 
-	bool createPlane(Vector3	&player_pos);
+	bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a box 
-	bool createBox(Vector3	&player_pos);
+	bool createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a corner. 
-	bool createCorner(Vector3	&player_pos);
+	bool createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a pyramid. 
-	bool createPyramid(Vector3	&player_pos);
+	bool createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a prism. 
-	bool createPrism(Vector3	&player_pos);
+	bool createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a cylinder. 
-	bool createCylinder(Vector3	&player_pos);
+	bool createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a half cylinder. 
-	bool createHalfCyl(Vector3	&player_pos);
+	bool createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a cone. 
-	bool createCone(Vector3	&player_pos);
+	bool createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a Halfcone. 
-	bool createHalfCone(Vector3	&player_pos);
+	bool createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a sphere. 
-	bool createSphere(Vector3	&player_pos);
+	bool createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a half sphere. 
-	bool createHalfSphere(Vector3	&player_pos);
+	bool createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a torus. 
-	bool createTorus(Vector3	&player_pos);
+	bool createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a tube. 
-	bool createTube(Vector3	&player_pos);
+	bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a ring. 
-	bool createRing(Vector3	&player_pos);
+	bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a mesh. 
-	bool createMesh(Vector3	&player_pos);
+	bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 
 	/// Test if the selection is empty
 	bool isSelectionEmpty();
@@ -137,14 +142,16 @@ public:
 
 	/// Load from / Save to a XML SOLIPSIS file
 	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO);
-	bool XMLImport(const String& filename, Vector3 pos = Vector3::ZERO);
-	bool XMLSave(bool all = false, const char* pathToSave = 0);
+	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO);
+	bool XMLSave(bool all = false);
 
 	/// Update the command list of the stored deformations
 	bool updateCommand(Object3D::Command pCommand, Object3D* pObject);
 
 
 
+	/// The load/save path
+	Ogre::String		mPath;
 	/// The execution path (to go back home each time)
 	Ogre::String		mExecPath;
 
@@ -153,7 +160,7 @@ private:
 
 public:
     /// See TextureManager::loadTexture
-    virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, Entity* entity, const String& name, const TextureExtParamsMap& textureExtParamsMap);
+    virtual TexturePtr loadTexture(Object3D* object, const String& name, const TextureExtParamsMap& textureExtParamsMap);
     /// See TextureManager::releaseTexture
     virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
 

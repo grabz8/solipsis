@@ -22,18 +22,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "Object.h"
+#include "OgreHelpers.h"
+#include "Navigator.h"
 #include "Modeler.h"
 
 using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, const Object3DPtrList& object3DList) :
+Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D) :
 #else
-Object::Object(XmlEntity* xmlEntity, bool isLocal, const Object3DPtrList& object3DList) :
+Object::Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D) :
 #endif
     OgrePeer(xmlEntity, isLocal),
-    mObject3DList(object3DList)
+    mObject3D(object3D)
 {
 }
 
@@ -43,9 +45,28 @@ Object::~Object()
     Modeler *modeler = Modeler::getSingletonPtr();
     if (modeler == 0)
         return;
-    Selection *selection = modeler->getSelection();
-    for(Object3DPtrList::const_iterator it=mObject3DList.begin();it!=mObject3DList.end();++it)
-        selection->remove3DObject(*it);
+    if (mObject3D != 0)
+    {
+        Selection *selection = modeler->getSelection();
+        selection->remove3DObject(mObject3D);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Object::onObjectSave()
+{
+    // Get the content for LOD 0
+    XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
+    XmlLodContent::LodContentFileList& lodContent0FileList = contentLodMap[0]->getLodContentFileList();
+    XmlLodContent::LodContentFileList::iterator lodContent0File;
+    for (lodContent0File = lodContent0FileList.begin(); lodContent0File != lodContent0FileList.end(); ++lodContent0File)
+        if (lodContent0File->mFilename.find(".sof") == lodContent0File->mFilename.length() - 4)
+        {
+            lodContent0File->mVersion++;
+            break;
+        }
+    if (lodContent0File == lodContent0FileList.end())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .sof object file found !", "Object::onObjectSave");
 }
 
 //-------------------------------------------------------------------------------------
@@ -70,6 +91,30 @@ bool Object::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
 bool Object::update(XmlEntity* xmlEntity)
 #endif
 {
+    XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
+
+    if (definedAttributes & XmlEntity::DAContent)
+    {
+        OGRE_LOG("Avatar::update() Destroy/Load new object uid:" + mXmlEntity->getUidString());
+
+        Modeler* modeler = Modeler::getSingletonPtr();
+        if (mObject3D != 0)
+        {
+            Selection *selection = modeler->getSelection();
+            selection->remove3DObject(mObject3D);
+        }
+
+        String pathname = "";
+        XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
+        for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
+            if (it->mFilename.find(".sof") == it->mFilename.length() - 4)
+                pathname = Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + it->mFilename;
+
+        Object3DPtrList newObjects;
+        if (!modeler->XMLLoad(pathname, newObjects))
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "Object::update");
+        mObject3D = *(newObjects.begin());
+    }
 
     return true;
 }

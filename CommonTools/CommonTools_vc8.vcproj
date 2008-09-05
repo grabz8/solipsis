@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTNetSocket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTStringHelpers.cpp"
 				>
 			</File>
@@ -237,6 +241,10 @@
 			</File>
 			<File
 				RelativePath=".\CTLog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTNetSocket.h"
 				>
 			</File>
 			<File

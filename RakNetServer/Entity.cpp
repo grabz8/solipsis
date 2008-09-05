@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetServer.h"
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -32,21 +33,26 @@ namespace Solipsis {
 Entity::Entity() :
     RakNetEntity()
 {
-    RakNetConnection::getSingleton()->logMessage("Entity::Entity()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::Entity()");
 }
 
 //-------------------------------------------------------------------------------------
 Entity::~Entity()
 {
-    RakNetConnection::getSingleton()->logMessage("Entity::~Entity()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::~Entity()");
+}
 
+//-------------------------------------------------------------------------------------
+void Entity::DeserializeDestruction(RakNet::BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::DeserializeDestruction()");
     RakNetServer::getSingleton().onEntityDestroyed(this);
 }
 
 //-------------------------------------------------------------------------------------
 void Entity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
-//    RakNetConnection::getSingleton()->logMessage("Entity::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::Deserialize()");
 
     bool uidNotYetInitialized = !(mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid);
     RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);

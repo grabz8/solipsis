@@ -44,6 +44,10 @@ protected:
     /// Map of owned entities
     Entity::EntityMap mOwnedEntities;
 
+    /// Avatar entity
+    /// ... Hm Hm should be RakNetAvatarNode::mEntity but it is initialized too late in deserialize() to unfreeze avatarNode in onNewEntity()
+    RakNetEntity *mAvatarEntity;
+
 public:
     /** Constructor. */
     AvatarNode();
@@ -52,7 +56,7 @@ public:
 
     void onNewEntity(Entity* entity, bool sendNewEvt);
     void onUpdatedEntity(Entity* entity);
-    void onLostEntity(Entity* entity);
+    void onLostEntity(Entity* entity, bool sendLostEvt);
 
     void onActionOnEntity(RakNet::BitStream *bitStream);
 
@@ -63,14 +67,6 @@ public:
 
 	/** See Replica2::QueryIsSerializationAuthority. */
 	virtual bool QueryIsSerializationAuthority(void) const;
-
-    class FileListTransferCallback : public FileListTransferCBInterface {
-        /** See FileListTransferCBInterface. */
-        virtual bool OnFile(OnFileStruct *onFileStruct);
-        /** See FileListTransferCBInterface. */
-        virtual void OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength);
-    };
-    FileListTransferCallback mFileListTransferCallback;
 
     /** See Solipsis::Node. */
 #ifdef POOL

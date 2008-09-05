@@ -253,6 +253,9 @@ rmdir plugin_3ds\3dsftk3\SOURCE\Release /S /Q
 rmdir plugin_3ds\Debug /S /Q
 rmdir plugin_3ds\Release /S /Q
 
+rmdir plugin_skp\Debug /S /Q
+rmdir plugin_skp\Release /S /Q
+
 rmdir RakNetServer\Debug /S /Q
 rmdir RakNetServer\Release /S /Q
 

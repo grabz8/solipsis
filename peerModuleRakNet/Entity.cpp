@@ -24,10 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Entity.h"
 #include "Peer.h"
 #include "OgreHelpers.h"
+#include <CTLog.h>
 #include <CTIO.h>
 
 using namespace RakNet;
 using namespace Ogre;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -50,16 +52,13 @@ Entity::Entity() :
 //-------------------------------------------------------------------------------------
 Entity::~Entity()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::~Entity()");
+
 #ifdef PHYSICSPLUGINS
     destroyPhysics();
 #endif
 
-    EntityMap::iterator it = entities.find(mXmlEntity->getUid());
-    if (it != entities.end())
-    {
-        Peer::getSingleton().getNodeManager()->onLostEntity(this);
-        entities.erase(it);
-    }
+    removeEntity(this, false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -70,15 +69,53 @@ void Entity::addEntity(Entity* entity, bool sendNewEvt)
 }
 
 //-------------------------------------------------------------------------------------
+void Entity::removeEntity(Entity* entity, bool sendLostEvt)
+{
+    entities.erase(entity->getXmlEntity()->getUid());
+    Peer::getSingleton().getNodeManager()->onLostEntity(entity, sendLostEvt);
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::DeserializeDestruction(RakNet::BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::DeserializeDestruction()");
+
+    removeEntity(this, true);
+}
+
+//-------------------------------------------------------------------------------------
 void Entity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
     RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
 
     EntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
-    if (it == entities.end())
-        addEntity(this, true);
-    else
+    if (it != entities.end())
+    {
+        // masking content updates until transfer is complete
+//        if (!mMissingFiles.empty())
+            mLastDeserializedDefinedAttributes &= ~XmlEntity::DAContent;
         Peer::getSingleton().getNodeManager()->onUpdatedEntity(this);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::onTransferComplete(const std::string& filename)
+{
+    RakNetEntity::onTransferComplete(filename);
+
+    if (mMissingFiles.empty())
+    {
+        EntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+        if (it == entities.end())
+        {
+            addEntity(this, true);
+        }
+        else
+        {
+            mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
+            Peer::getSingleton().getNodeManager()->onUpdatedEntity(this);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -128,16 +165,15 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         // Find .ssf file
         XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
         for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-            if (lodContent0File->filename.find(".ssf") == lodContent0File->filename.length() - 4)
+            if (lodContent0File->mFilename.find(".ssf") == lodContent0File->mFilename.length() - 4)
                 break;
         if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
             return;
 
         // Create the resource group
-        std::string mediaCacheScenePath = Peer::getSingleton().getMediaCachePath() + "\\scenes";
         String resourceGroup = mXmlEntity->getUidString() + "Resources";
         ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-        ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheScenePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+        ResourceGroupManager::getSingleton().addResourceLocation(Peer::getSingleton().getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
 
         // Load .osm
         TiXmlDocument osmFileDoc;

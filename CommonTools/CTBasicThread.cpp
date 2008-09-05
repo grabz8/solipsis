@@ -30,8 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace CommonTools {
 
-#define LH LogHandler
-
 //-------------------------------------------------------------------------------------
 BasicThread::BasicThread(const std::string& name) :
     mName(name),
@@ -53,7 +51,7 @@ bool BasicThread::start()
 {
     int rc;
 
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::start()", mName.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::start()", mName.c_str());
 
 	ScopedMutexLock lock(mMutex);
     if (mState != SInit)
@@ -64,13 +62,13 @@ bool BasicThread::start()
     rc = pthread_create(&mThreadId, NULL, startRoutine, this);
     if (rc != 0)
     {
-        LH::logf(LH::VL_DEBUG, "%s>BasicThread::start() pthread_create returned %d", mName.c_str(), rc);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::start() pthread_create returned %d", mName.c_str(), rc);
         return false;
     }
     rc = pthread_detach(mThreadId);
     if (rc != 0)
     {
-        LH::logf(LH::VL_DEBUG, "%s>BasicThread::start() pthread_detach returned %d", mName.c_str(), rc);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::start() pthread_detach returned %d", mName.c_str(), rc);
         return false;
     }
 
@@ -82,7 +80,7 @@ bool BasicThread::start()
 //-------------------------------------------------------------------------------------
 void BasicThread::stop(unsigned int stopTimeoutSec)
 {
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::stop() stop requested with stopTimeoutSec=%d", mName.c_str(), stopTimeoutSec);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::stop() stop requested with stopTimeoutSec=%d", mName.c_str(), stopTimeoutSec);
 
     mStopRequested = true;
     mStopTimeoutSec = stopTimeoutSec;
@@ -96,7 +94,7 @@ void BasicThread::finalize()
 
     if (mState == SInit) return;
 
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::finalize() waiting for termination ...", mName.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::finalize() waiting for termination ...", mName.c_str());
 
     mStopRequested = true;
     while ((mState == SRunning) && (elapsedMs < (unsigned long)mStopTimeoutSec*1000))
@@ -106,10 +104,10 @@ void BasicThread::finalize()
     }
     // Kill thread ?
     if (mState == SRunning) {
-        LH::logf(LH::VL_DEBUG, "%s>BasicThread::finalize() killing thread", mName.c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::finalize() killing thread", mName.c_str());
         rc = pthread_cancel(mThreadId);
         if (rc != 0)
-            LH::logf(LH::VL_DEBUG, "%s>BasicThread::finalize() pthread_cancel returned %d", mName.c_str(), rc);
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::finalize() pthread_cancel returned %d", mName.c_str(), rc);
     }
 
 	{
@@ -117,7 +115,7 @@ void BasicThread::finalize()
 		mState = SInit;
 	}
 
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::finalize() thread terminated", mName.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::finalize() thread terminated", mName.c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -126,12 +124,12 @@ void* BasicThread::startRoutine(void* args)
     BasicThread* basicThread = (BasicThread*)args;
     assert(basicThread != 0);
 
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::startRoutine() calling run()", basicThread->getName().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::startRoutine() calling run()", basicThread->getName().c_str());
 
     // call the run() method
     basicThread->run();
 
-    LH::logf(LH::VL_DEBUG, "%s>BasicThread::startRoutine() end of method run()", basicThread->getName().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "%s>BasicThread::startRoutine() end of method run()", basicThread->getName().c_str());
 
     // end of thread, so thead is now stopped
 	{

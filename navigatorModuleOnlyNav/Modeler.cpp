@@ -76,10 +76,12 @@ Modeler* Modeler::getSingletonPtr(SceneManager* pSceneMgr, Camera* pCamera, IMod
 
     return ms_singletonPtr;
 }
-bool Modeler::init()
+bool Modeler::init(const String& pPath)
 {
 	static bool init = false;
 	if(init) return true;
+
+	mPath = pPath;
 
 	// Init all the material we will need
 	MaterialPtr material = (MaterialPtr) (MaterialManager::getSingleton().createOrRetrieve("matRed","debugger").first); 
@@ -165,12 +167,8 @@ bool Modeler::init()
 }
 
 /// Create a plane.
-bool Modeler::createPlane(Vector3 &player_pos)
+bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Plane%.3u",++num);
-
 	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(name) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -180,23 +178,18 @@ bool Modeler::createPlane(Vector3 &player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DPlane* obj = new Object3DPlane( String(name), node );
+	Object3DPlane* obj = new Object3DPlane(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
-	//OGRE_LOG("Modeler::createPlane()");
-	//OGRE_LOG(name);
-	return true;
+
+    return true;
 }
 
 /// Create a box.
-bool Modeler::createBox(Vector3	&player_pos)
+bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Box%.3u",++num);
-
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -206,24 +199,19 @@ bool Modeler::createBox(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DBox* obj = new Object3DBox( String(name), node );
+	Object3DBox* obj = new Object3DBox(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
-	//OGRE_LOG("Modeler::createBox()");
-	//OGRE_LOG(name);
-	return true;
+
+    return true;
 }
 
 
 /// Create a corner. 
-bool Modeler::createCorner(Vector3	&player_pos)
+bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Corner%.3u",++num);
-
 	//genMeshCorner( String(name) + ".mesh", 100, 100, 100 );
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
@@ -234,7 +222,7 @@ bool Modeler::createCorner(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DCorner* obj = new Object3DCorner( String(name), node );
+	Object3DCorner* obj = new Object3DCorner(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -243,12 +231,8 @@ bool Modeler::createCorner(Vector3	&player_pos)
 }
 
 /// Create a pyramid. 
-bool Modeler::createPyramid(Vector3	&player_pos)
+bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Pyramid%.3u",++num);
-
 	//genMeshPyramid( String(name) + ".mesh", 100, 100, 100 );
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
@@ -259,7 +243,7 @@ bool Modeler::createPyramid(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DPyramid* obj = new Object3DPyramid( String(name), node );
+	Object3DPyramid* obj = new Object3DPyramid(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -268,12 +252,8 @@ bool Modeler::createPyramid(Vector3	&player_pos)
 }
 
 /// Create a prism. 
-bool Modeler::createPrism(Vector3	&player_pos)
+bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Prism%.3u",++num);
-
 	//genMeshPrism( String(name) + ".mesh", 100, 100 );
 	MeshPtr mptr = mGenericPrism->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
@@ -284,7 +264,7 @@ bool Modeler::createPrism(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DPrism* obj = new Object3DPrism( String(name), node );
+	Object3DPrism* obj = new Object3DPrism(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -293,12 +273,8 @@ bool Modeler::createPrism(Vector3	&player_pos)
 }
 
 /// Create a cylinder. 
-bool Modeler::createCylinder(Vector3	&player_pos)
+bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Cylinder%.3u",++num);
-
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -308,7 +284,7 @@ bool Modeler::createCylinder(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DCylinder* obj = new Object3DCylinder( String(name), node );
+	Object3DCylinder* obj = new Object3DCylinder(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -317,12 +293,8 @@ bool Modeler::createCylinder(Vector3	&player_pos)
 }
 
 /// Create a half cylinder. 
-bool Modeler::createHalfCyl(Vector3	&player_pos)
+bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "HalfCylinder%.3u",++num);
-
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -332,7 +304,7 @@ bool Modeler::createHalfCyl(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DHalfCylinder* obj = new Object3DHalfCylinder( String(name), node );
+	Object3DHalfCylinder* obj = new Object3DHalfCylinder(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -341,12 +313,8 @@ bool Modeler::createHalfCyl(Vector3	&player_pos)
 }
 
 /// Create a cone. 
-bool Modeler::createCone(Vector3	&player_pos)
+bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Cone%.3u",++num);
-
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -356,7 +324,7 @@ bool Modeler::createCone(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DCone* obj = new Object3DCone( String(name), node );
+	Object3DCone* obj = new Object3DCone(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -365,12 +333,8 @@ bool Modeler::createCone(Vector3	&player_pos)
 }
 
 /// Create a Halfcone. 
-bool Modeler::createHalfCone(Vector3	&player_pos)
+bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "HalfCone%.3u",++num);
-
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -380,7 +344,7 @@ bool Modeler::createHalfCone(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DHalfCone* obj = new Object3DHalfCone( String(name), node );
+	Object3DHalfCone* obj = new Object3DHalfCone(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -389,12 +353,8 @@ bool Modeler::createHalfCone(Vector3	&player_pos)
 }
 
 /// Create a sphere. 
-bool Modeler::createSphere(Vector3	&player_pos)
+bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Sphere%.3u",++num);
-
 	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -404,7 +364,7 @@ bool Modeler::createSphere(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DSphere* obj = new Object3DSphere( String(name), node );
+	Object3DSphere* obj = new Object3DSphere(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -413,12 +373,8 @@ bool Modeler::createSphere(Vector3	&player_pos)
 }
 
 /// Create a half sphere. 
-bool Modeler::createHalfSphere(Vector3	&player_pos)
+bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "HalfSphere%.3i",++num);
-
 	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -428,7 +384,7 @@ bool Modeler::createHalfSphere(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DHalfSphere* obj = new Object3DHalfSphere( String(name), node );
+	Object3DHalfSphere* obj = new Object3DHalfSphere(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -437,12 +393,8 @@ bool Modeler::createHalfSphere(Vector3	&player_pos)
 }
 
 /// Create a torus. 
-bool Modeler::createTorus(Vector3	&player_pos)
+bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Torus%.3i",++num);
-
 	MeshPtr mptr = mGenericTorus->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -452,7 +404,7 @@ bool Modeler::createTorus(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DTorus* obj = new Object3DTorus( String(name), node );
+	Object3DTorus* obj = new Object3DTorus(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -461,12 +413,8 @@ bool Modeler::createTorus(Vector3	&player_pos)
 }
 
 /// Create a tube. 
-bool Modeler::createTube(Vector3	&player_pos)
+bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Tube%.3i",++num);
-
 	MeshPtr mptr = mGenericTube->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -476,7 +424,7 @@ bool Modeler::createTube(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DTube* obj = new Object3DTube( String(name), node );
+	Object3DTube* obj = new Object3DTube(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -485,12 +433,8 @@ bool Modeler::createTube(Vector3	&player_pos)
 }
 
 /// Create a ring. 
-bool Modeler::createRing(Vector3	&player_pos)
+bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Ring%.3i",++num);
-
 	MeshPtr mptr = mGenericRing->getMesh()->clone( String(name) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -500,7 +444,7 @@ bool Modeler::createRing(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DRing* obj = new Object3DRing( String(name), node );
+	Object3DRing* obj = new Object3DRing(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -509,12 +453,8 @@ bool Modeler::createRing(Vector3	&player_pos)
 }
 
 /// Create a mesh. 
-bool Modeler::createMesh(Vector3	&player_pos)
+bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	static int num = -1;
-	char name[31];
-	sprintf(name, "Mesh%.3u",++num);
-
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
@@ -524,7 +464,7 @@ bool Modeler::createMesh(Vector3	&player_pos)
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
-	Object3DOther* obj = new Object3DOther( String(name), node );
+	Object3DOther* obj = new Object3DOther(entityUID, String(name), node );
 	mSelection->add3DObject(obj);
 	obj->mCentreSelection = player_pos;
 
@@ -554,7 +494,11 @@ Object3D* Modeler::getSelected()
 bool Modeler::selectNode(Entity* pEnt)
 {
 	if( mSelection )
-		return mSelection->clickNode( pEnt );
+    {
+        Object3D * obj = mSelection->get3DObject( pEnt );
+        if (mModelerCallbacks->isObject3DOwned(obj))
+            return mSelection->clickNode( pEnt );
+    }
 
 	return false;
 }
@@ -576,8 +520,16 @@ void Modeler::removeSelection()
 	Object3D* obj = getSelected();
 	do
 	{
-		// delete 3D entity
-		mSelection->remove3DObject( obj );
+/*        // delete the sof -> cacheManager !!!!
+        EntityUID entityUID = obj->getEntityUID();
+        Ogre::String entityUIDstr = Ogre::String(XmlHelpers::convertEntityUIDToHexString(entityUID));
+        Ogre::String fileZipToDelete = entityUIDstr + Ogre::String(".sof"); 
+        Ogre::String pathZipToDelete = mPath + Ogre::String("\\") + fileZipToDelete; 
+	    SOLdeleteFile( pathZipToDelete.c_str() );
+*/
+        if (mModelerCallbacks != 0)
+            if (!mModelerCallbacks->onObject3DDelete(obj))
+                mSelection->remove3DObject(obj); // here no object was found (maybe not yet saved) so we delete the object3D
 		obj = mSelection->getFirstSelectedObject();
 	}
 	while ( obj != 0 );
@@ -807,7 +759,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 }
 
 /// Import a mesh file to a XML SOLIPSIS file (.sof)
-bool Modeler::XMLImport(const String& filename, Vector3 pos)
+bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos)
 {
     String filenameToLoad = filename;
     if (filenameToLoad.empty())
@@ -833,17 +785,12 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
         //catch (Ogre::Exception e)
         //{}
 
-	    static int num = -1;
-	    char name[31];
-	    sprintf(name, "Imported%.3u",++num);
-
         Entity* entity = 0;
 		if (!mSceneManager->hasEntity(entityName))
 		{
             //ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
 			if(ext == "mesh")
 				entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
-				
 			else if(ext == "3ds")
 			{
 				entity = Plugin_3ds::createEntityFrom3ds(entityName,filenameToLoad,mSceneManager);
@@ -854,35 +801,114 @@ bool Modeler::XMLImport(const String& filename, Vector3 pos)
 			}
 		}
         entity = mSceneManager->getEntity(entityName)->clone(name);
-	    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+        SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
 #ifdef SHADOWS
-	    entity->setCastShadows(true);
+        entity->setCastShadows(true);
 #endif
         entity->setQueryFlags(Navigator::QFObject);
-	    node->attachObject(entity);
-		Vector3 size = entity->getBoundingBox().getSize();
+        node->attachObject(entity);
+        if ((ext == "3ds") || (ext == "skp"))
+        {
+            Vector3 size = entity->getBoundingBox().getSize();
+            Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
+            node->scale(4.0/mNormalise,4.0/mNormalise,4.0/mNormalise);//standardize the models loaded.
+        }
 
-		Ogre::Real mNormalise = (size.x>=size.y ? size.x : size.y)>=size.z ? (size.x>=size.y?size.x:size.y) : size.z;
-		node->scale(4.0/mNormalise,4.0/mNormalise,4.0/mNormalise);//standardize the models loaded.
+        Object3DOther* obj = new Object3DOther(entityUID, String(name), node );
+        mSelection->add3DObject(obj);
+        obj->mCentreSelection = pos;
 
-
-		//Object3DOther* obj = new Object3DOther( String(name), node );
-		//mSelection->add3DObject(obj);
-		//obj->mCentreSelection = pos;
-
-	    node->setPosition(pos);
+        node->setPosition(pos);
     }
-	return true;
+    return true;
 }
 
 /// Save to a XML SOLIPSIS file (.sof)
-bool Modeler::XMLSave(bool all, const char* pathToSave)
+bool Modeler::XMLSave(bool all)
 {
 	MyZipArchive* zz;
 
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
 
+	// Save all objects in this scene
+	if (!mSelection->isEmpty())
+	{
+        Object3D* obj = mSelection->getFirstSelectedObject();
+        while (obj != 0)
+        {
+            EntityUID entityUID = obj->getEntityUID();
+            Ogre::String entityUIDstr = Ogre::String(XmlHelpers::convertEntityUIDToHexString(entityUID));
+            Ogre::String fileZipToSave = entityUIDstr + Ogre::String(".sof"); 
+            Ogre::String pathZipToSave = mPath + Ogre::String("\\") + fileZipToSave; 
+		    zz = new MyZipArchive(pathZipToSave.c_str());
+
+            // if this archive is already present then remove all files
+		    if (zz->isArchivePresent())
+			    for (int f=zz->getNbFile(); f>=0; f--)
+				    zz->removeFile(zz->getName(f));
+
+		    // Update command list with the last called 
+		    updateCommand(Object3D::NONE, obj);
+
+		    // Save object in XML
+		    Ogre::String fileToSave = mPath + Ogre::String("\\") + obj->getName() + Ogre::String(".xml");
+		    obj->saveToFile(fileToSave.c_str());
+		    zz->writeFile(fileToSave);
+
+            if (!obj->mCommandList.empty())
+            {
+			    obj->mCommandList.pop_back();
+			    list<Object3D::TCommand>::iterator cmd = obj->mCommandList.end();
+                cmd--;
+		        const Object3D::Command command = (*cmd).first;
+		        obj->mCommandLast = command;
+            }
+
+		    //Save textures :
+#ifdef WIN32
+		    CreateDirectory( "solTmpTexture", NULL );
+#else
+		    system( "md solTmpTexture" );
+#endif
+		    std::string texturePath ;
+		    for (int i=1; i< obj->getMaterialManager()->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
+		    {
+			    texturePath = obj->getMaterialManager()->getTexture(i)->getName();
+
+			    Path path(texturePath);
+			    size_t nameSizeChar = path.getFormatedPath().find_last_of( '\\' );
+			    std::string fileName (path.getFormatedPath(), nameSizeChar+1, path.getFormatedPath().length() );
+
+			    TexturePtr Texture = TextureManager::getSingleton().getByName(texturePath);
+                // Extended texture
+                TextureExtParamsMap *textureExtParamsMap = obj->getMaterialManager()->getTextureExtParamsMap(Texture);
+                if (textureExtParamsMap == 0)
+                {
+				    String str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
+			        std::string newFile( "solTmpTexture\\" + fileName );
+    				
+			        Ogre::Image image;
+			        image.load( texturePath, str);
+			        image.save( newFile );
+
+			        if ( ! zz->isFilePresent( texturePath ) )
+				        zz->writeFile( newFile );
+
+			        SOLdeleteFile( newFile.c_str() );
+                }
+		    }
+		    SOLdeleteFile(fileToSave.c_str());
+
+            if (mModelerCallbacks != 0)
+                mModelerCallbacks->onObject3DSave(fileZipToSave, obj);
+
+            delete zz;
+
+            obj = mSelection->getNextSelectedObject();
+        }
+    }
+/*
 	//Create Path :
     std::string strCompleteFileName ( std::string(pathToSave) + "\\solTmpObject.sof" );
 	Path FilePath (	strCompleteFileName );
@@ -1009,7 +1035,7 @@ bool Modeler::XMLSave(bool all, const char* pathToSave)
 
 		listObj.clear();
 	}
-
+*/
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
 
@@ -1026,79 +1052,55 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 {
 	Ogre::String primType = doc.RootElement()->FirstChildElement("model")->FirstChildElement("primitive")->Attribute("Name");
 	Object3D::Type type = objectStringToType(primType);
+	TiXmlElement *XMLfile = doc.RootElement()->FirstChildElement("properties");
+    EntityUID entityUID = XmlHelpers::convertHexStringToEntityUID(XMLfile->FirstChildElement("objuid")->Attribute("Uid"));
+	String name = XMLfile->FirstChildElement("objname")->Attribute("Name");
 
 	switch (type) 
 	{
 		case Object3D::BOX :
-			createBox(pos);
+			createBox(entityUID, name, pos);
 			break;
 		case Object3D::CORNER :
-			createCorner(pos);
+			createCorner(entityUID, name, pos);
 			break;
 		case Object3D::PYRAMID :
-			createPyramid(pos);
+			createPyramid(entityUID, name, pos);
 			break;
 		case Object3D::PRISM :
-			createPrism(pos);
+			createPrism(entityUID, name, pos);
 			break;
 		case Object3D::CYLINDER :
-			createCylinder(pos);
+			createCylinder(entityUID, name, pos);
 			break;
 		case Object3D::HALF_CYLINDER :
-			createHalfCyl(pos);
+			createHalfCyl(entityUID, name, pos);
 			break;
 		case Object3D::CONE :
-			createCone(pos);
+			createCone(entityUID, name, pos);
 			break;
 		case Object3D::HALF_CONE :
-			createHalfCone(pos);
+			createHalfCone(entityUID, name, pos);
 			break;
 		case Object3D::SPHERE :
-			createSphere(pos);
+			createSphere(entityUID, name, pos);
 			break;
 		case Object3D::HALF_SPHERE :
-			createHalfSphere(pos);
+			createHalfSphere(entityUID, name, pos);
 			break;
 		case Object3D::RING :
-			createRing(pos);
+			createRing(entityUID, name, pos);
 			break;
 		case Object3D::TORUS :
-			createTorus(pos);
+			createTorus(entityUID, name, pos);
 			break;
 		case Object3D::TUBE :
-			createTube(pos);
+			createTube(entityUID, name, pos);
 			break;
 	}
 
-	Object3D * newObject ;
-	newObject = mSelection->geLastAddedObject();
-
-	//Test the name of this object :
-		//get the name of the new object
-	TiXmlElement *XMLfile = doc.RootElement()->FirstChildElement("properties");
-	String testName = XMLfile->FirstChildElement("objname")->Attribute("Name");
-		//search if an object has already this name 
-	Object3D * ObjectWithSameName = mSelection->get3DObject( testName ) ;
-	if ( ObjectWithSameName != 0 )
-	{		
-		SOLIPSISWARNING("ERROR when open file, this name already exists. The object are automaticly renamed.",testName.c_str());
-		
-		//Make a new name for the object :
-		do 
-		{
-			testName += "_" ;
-		}
-		while(mSelection->get3DObject( testName ) != 0) ;
-
-		//rename the old object : 
-		ObjectWithSameName->setName( testName );
-		//We rename the object already present in the scene, because in the XML file,
-		//	children have recover their parent with their name ! So if we change the name
-		//	of the new object, we won't assign correct children
-	}
-
+	Object3D * newObject = mSelection->geLastAddedObject();
 	newObject->loadFromFile(doc, path.c_str());
-
 
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
@@ -1107,13 +1109,19 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 }
 
 /// Dedicated callback texture loader
-TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager, Entity* entity, const String& name, const TextureExtParamsMap& textureExtParamsMap)
+TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const TextureExtParamsMap& textureExtParamsMap)
 {
     TexturePtr texture;
     if (textureExtParamsMap.empty())
         texture = TextureManager::getSingleton().load(name , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     else
     {
+        ModifiedMaterialManager* modifiedMaterialManager = object->getMaterialManager();
+        Entity* entity = object->getEntity();
+        bool objectIsLocal = true;
+        OgrePeer* ogrePeer = Navigator::getSingletonPtr()->getOgrePeerManager()->getOgrePeer(object->getEntityUID());
+        if (ogrePeer != 0)
+            objectIsLocal = ogrePeer->isLocal();
         ModifiedMaterial* modifiedMaterial = modifiedMaterialManager->getModifiedMaterial();
         String mtlName = modifiedMaterial->getOwner()->getName();
         TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("plugin");
@@ -1150,10 +1158,40 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
         else
         {
             ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
-            ExternalTextureSource* vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin);
-            for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
-                vlcExtTextSrc->setParameter(it->first, it->second);
-            vlcExtTextSrc->createDefinedTexture(mtlName);
+            ExternalTextureSource* extTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin);
+            if (plugin != "vlc")
+            {
+                for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
+                    extTextSrc->setParameter(it->first, it->second);
+            }
+            else
+            {
+                bool remoteMrlEmpty = true;
+                it = textureExtParamsMap.find("remoteMrl");
+                if (it != textureExtParamsMap.end())
+                    remoteMrlEmpty = it->second.empty();
+                if (objectIsLocal || remoteMrlEmpty)
+                {
+                    for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
+                    {
+                        if (it->first == "remoteMrl") continue;
+                        extTextSrc->setParameter(it->first, it->second);
+                    }
+                }
+                else
+                {
+                    for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
+                    {
+                        if (it->first == "mrl") continue;
+                        if (it->first == "vlc_params") continue;
+                        if (it->first == "remoteMrl")
+                            extTextSrc->setParameter("mrl", it->second);
+                        else
+                            extTextSrc->setParameter(it->first, it->second);
+                    }
+                }
+            }
+            extTextSrc->createDefinedTexture(mtlName);
         }
         // here we refresh internal variables on tech, pass, text unit because
         // the texture source plugin maybe updated them

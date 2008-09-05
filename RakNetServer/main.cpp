@@ -23,10 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "RakNetServer.h"
 #include <CTBasicThread.h>
+#include <CTLog.h>
 
+using namespace CommonTools;
 using namespace Solipsis;
 
-class ConsoleThread : public CommonTools::BasicThread
+class ConsoleThread : public BasicThread
 {
 protected:
     RakNetServer *mRakNetServer;
@@ -40,7 +42,7 @@ public:
 protected:
     virtual void run()
     {
-        printf("ConsoleThread::run()\n");
+        LOGHANDLER_LOGF(LogHandler::VL_INFO, "ConsoleThread::run()");
 
         while (!mStopRequested)
         {
@@ -49,7 +51,7 @@ protected:
             fscanf(stdin, "%s", c);
             if ((*c == 'q') || (*c == 'Q'))
             {
-                printf("Quitting.\n");
+                LOGHANDLER_LOGF(LogHandler::VL_INFO, "Quitting ...");
                 stop();
             }
         }
@@ -71,6 +73,10 @@ int main(int argc, char** argv)
 int main(int argc, char *argv[])
 #endif
 {
+    LogHandler::getLogHandler()->setLogFilename("RakNetServer.log");
+    LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Starting RakNet server");
+
     RakNetServer rakNetServer(argc, argv);
 
     ConsoleThread consoleThread(&rakNetServer);

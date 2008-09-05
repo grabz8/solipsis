@@ -23,8 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorGUI.h"
 #include "Navigator.h"
-#include "OgreHelpers.h"
 #include "DebugHelpers.h"
+#include <CTLog.h>
+#include <CTStringHelpers.h>
+#include <CTNetSocket.h>
 #include <Navi.h>
 #include <Modeler.h>
 #include <AvatarEditor.h>
@@ -34,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Avatar.h"
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 const std::string NavigatorGUI::mNavisNames[] = {
     "uilogin",
@@ -95,12 +98,12 @@ bool NavigatorGUI::startup()
     lua_State* luaState = mNavigator->getLuaState();
     if (luaL_loadfile(luaState, "lua\\defaultGUI.lua") != 0)
     {
-        OGRE_LOG("Navigator::startup() Unable to load defaultGUI.lua, error: " + String(lua_tostring(luaState, -1)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::startup() Unable to load defaultGUI.lua, error: %s", lua_tostring(luaState, -1));
         return false;
     }
     if (lua_pcall(luaState, 0, LUA_MULTRET, 0))
     {
-        OGRE_LOG("Navigator::startup() Unable to run defaultGUI.lua, error: " + String(lua_tostring(luaState, -1)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::startup() Unable to run defaultGUI.lua, error: %s", lua_tostring(luaState, -1));
         return false;
     }
 
@@ -165,7 +168,7 @@ void NavigatorGUI::inWorld()
         // Lua
         if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_CHAT].c_str()))
         {
-            OGRE_LOG("Navigator::inWorld() Unable to create GUI called " + mNavisNames[NAVI_CHAT]);
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::inWorld() Unable to create GUI called %s", mNavisNames[NAVI_CHAT].c_str());
             return;
         }
 #ifdef UIDEBUG
@@ -186,7 +189,7 @@ void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& 
     // Lua
     if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", mNavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
     {
-        OGRE_LOG("Navigator::contextShow() Unable to create GUI called " + mNavisNames[ctxtPanel]);
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", mNavisNames[ctxtPanel].c_str());
         return;
     }
     mNavisStates[ctxtPanel] = NSCreated;
@@ -329,8 +332,14 @@ void NavigatorGUI::modelerPropShow()
 {
 	if (mNavisStates[NAVI_MODELERPROP] == NSNotCreated)
 	{
+        // Reset the remoteMRL on local IP address with UDP
+        CommonTools::NetSocket::IPAddressVector myIPAddesses;
+        if (!CommonTools::NetSocket::getMyIP(myIPAddesses))
+            myIPAddesses.push_back("");
+        std::string firstLocalIP = myIPAddesses.front();
+
 		// Create Navi UI modeler
-		NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERPROP], "local://uimdlrprop.html", NaviPosition(TopRight), 512, 512);
+		NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERPROP], "local://uimdlrprop.html?localIP=" + firstLocalIP, NaviPosition(TopRight), 512, 512);
 		navi->setMovable(true);
 		navi->hide();
 		navi->setMask("uimdlrprop.png");//Eliminate the black shadow at the margin of the menu
@@ -983,6 +992,43 @@ void NavigatorGUI::modelerUpdateTextures()
 	text += "\"";
 	navi->evaluateJS(text);
 
+    // Update WWW/VLC/VNC panels
+    navi->evaluateJS("resetWWWVLCVNCtabs()");
+    TextureExtParamsMap* textureExtParamsMap = obj->getCurrentTextureExtParamsMap();
+    if ((textureExtParamsMap != 0) && !textureExtParamsMap->empty())
+    {
+        String plugin = (*textureExtParamsMap)["plugin"];
+        if (plugin == "www")
+        {
+            navi->evaluateJS("$('MaterialWWWUrl').value = '" + (*textureExtParamsMap)["url"] + "'");
+            navi->evaluateJS("$('MaterialWWWWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
+            navi->evaluateJS("$('MaterialWWWHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
+            navi->evaluateJS("$('MaterialWWWFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
+        }
+        else if (plugin == "vlc")
+        {
+            navi->evaluateJS("$('MaterialVLCMrl').value = '" + (*textureExtParamsMap)["mrl"] + "'");
+            navi->evaluateJS("$('MaterialVLCWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
+            navi->evaluateJS("$('MaterialVLCHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
+            navi->evaluateJS("$('MaterialVLCFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
+            navi->evaluateJS("$('MaterialVLCParams').value = '" + (*textureExtParamsMap)["vlc_params"] + "'");
+            navi->evaluateJS("$('MaterialVLCRemoteMrl').value = '" + (*textureExtParamsMap)["remoteMrl"] + "'");
+        }
+        else if (plugin == "vnc")
+        {
+            String address = (*textureExtParamsMap)["address"];
+            String password = (*textureExtParamsMap)["password"];
+            String host, port;
+            CommonTools::StringHelpers::getURLHostPort(address, host, port);
+            String::size_type p = password.find_first_of(":");
+            if (p != String::npos)
+                password = password.substr(p + 1);
+            navi->evaluateJS("$('MaterialVNCHost').value = '" + address + "'");
+            navi->evaluateJS("$('MaterialVNCPort').value = '" + port + "'");
+            navi->evaluateJS("$('MaterialVNCPwd').value = '" + password + "'");
+        }
+    }
+
 	// Go back to the main directory
 	_chdir(modeler->mExecPath.c_str());
 }
@@ -1253,7 +1299,7 @@ void NavigatorGUI::switchDebug()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugRefreshUrl()
 {
-    OGRE_LOG("NavigatorGUI::debugRefreshUrl()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshUrl()");
 
     if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
 
@@ -1276,7 +1322,7 @@ void NavigatorGUI::debugRefreshUrl()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::addChatText(const String& message)
 {
-    OGRE_LOG("NavigatorGUI::addChatText()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
     std::string jsStr = "$('textChat').value += '" + message + "\\n'";
@@ -1287,7 +1333,7 @@ void NavigatorGUI::addChatText(const String& message)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::debugPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
 
     // Refresh url
     debugRefreshUrl();
@@ -1303,7 +1349,7 @@ void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::debugRefreshTree()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshTree()");
 
     if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
     if (!mTreeDirty) return;
@@ -1331,7 +1377,7 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 {
     char txt[256];
 
-    OGRE_LOG("NavigatorGUI::loginPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::loginPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
@@ -1402,7 +1448,7 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::loginSelectAvatar(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::selectAvatar()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::selectAvatar()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 	std::string item( naviData["item"].str() );
 	
@@ -1413,14 +1459,14 @@ void NavigatorGUI::connect(const NaviData& naviData)
 {
     char txt[256];
 
-    OGRE_LOG("NavigatorGUI::connect()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connect()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
     // Get login name
 	std::string login;
     login = naviData["login"].str();
-    OGRE_LOG("login=" + login);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "login=%s", login.c_str());
 
     // Check
     static std::string validLoginExtrasChars = "$-_.@+!*'(),";
@@ -1452,7 +1498,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::options(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::options()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::options()");
 
     // Hide previous Navi UI
     hidePreviousNavi();
@@ -1483,7 +1529,7 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 {
     char txt[256];
 
-    OGRE_LOG("NavigatorGUI::optionsPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
 
@@ -1536,7 +1582,7 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::quit(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::quit()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::quit()");
 
     mNavigator->quit();
 }
@@ -1544,7 +1590,7 @@ void NavigatorGUI::quit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsOk(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::optionsOk()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsOk()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
 
@@ -1557,7 +1603,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     udpPort = naviData["udpPort"].toInt();
     host = naviData["host"].str();
     port = naviData["port"].toInt();
-    OGRE_LOG("radioNode=" + radioNode + ", udpPort=" + StringConverter::toString(udpPort) + ", host=" + host + ", port=" + StringConverter::toString(port));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioNode=%s, udpPort=%d, host=%s, port=%d", radioNode.c_str(), udpPort, host.c_str(), port);
     std::string radioProxyType;
 	std::string proxyHttpHost;
     int proxyHttpPort;
@@ -1566,7 +1612,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     proxyHttpHost = naviData["proxyHttpHost"].str();
     proxyHttpPort = naviData["proxyHttpPort"].toInt();
     proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
-    OGRE_LOG("radioProxyType=" + radioProxyType + ", proxyHttpHost=" + proxyHttpHost + ", proxyHttpPort=" + StringConverter::toString(proxyHttpPort) + ", proxyAutoconfUrl=" + proxyAutoconfUrl);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioProxyType=%s, proxyHttpHost=%s, proxyHttpPort=%d, proxyAutoconfUrl=%s", radioProxyType.c_str(), proxyHttpHost.c_str(), proxyHttpPort, proxyAutoconfUrl.c_str());
 
     // Check
     bool valid_options = true;
@@ -1657,7 +1703,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsBack(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::optionsBack()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsBack()");
 
     // Return to Navi UI login
     login();
@@ -1666,7 +1712,7 @@ void NavigatorGUI::optionsBack(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::chatPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::chatPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
 
@@ -1682,7 +1728,7 @@ void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileImport(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainFileImport()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileImport()");
 	
 	mNavigator->mdlrXMLImport();
 }
@@ -1690,7 +1736,7 @@ void NavigatorGUI::modelerMainFileImport(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileSave(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainFileSave()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileSave()");
 	
 	//modelerMainUnload();
 	mNavigator->mdlrXMLSave();
@@ -1699,7 +1745,7 @@ void NavigatorGUI::modelerMainFileSave(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainFileExit()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileExit()");
 	
     modelerMainUnload();
 }
@@ -1707,7 +1753,7 @@ void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreatePlane(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::modelerMainCreatePlane()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePlane()");
 	//mNavigator->startModeling();
 	mNavigator->createPlane();
 }
@@ -1715,7 +1761,7 @@ void NavigatorGUI::modelerMainCreatePlane(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateBox(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateBox()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateBox()");
 	//mNavigator->startModeling();
 	mNavigator->createBox();
 }
@@ -1723,7 +1769,7 @@ void NavigatorGUI::modelerMainCreateBox(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateCorner(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateCorner()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCorner()");
 	//mNavigator->startModeling();
 	mNavigator->createCorner();
 }
@@ -1731,7 +1777,7 @@ void NavigatorGUI::modelerMainCreateCorner(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreatePyramid(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreatePyramid()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePyramid()");
 	//mNavigator->startModeling();
 	mNavigator->createPyramid();
 }
@@ -1739,7 +1785,7 @@ void NavigatorGUI::modelerMainCreatePyramid(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreatePrism(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreatePrism()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePrism()");
 	//mNavigator->startModeling();
 	mNavigator->createPrism();
 }
@@ -1747,7 +1793,7 @@ void NavigatorGUI::modelerMainCreatePrism(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateCylinder(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateCylinder()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCylinder()");
 	//mNavigator->startModeling();
 	mNavigator->createCylinder();
 }
@@ -1755,7 +1801,7 @@ void NavigatorGUI::modelerMainCreateCylinder(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfCylinder(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateHalfCylinder()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfCylinder()");
 	//mNavigator->startModeling();
 	mNavigator->createHalfCyl();
 }
@@ -1763,7 +1809,7 @@ void NavigatorGUI::modelerMainCreateHalfCylinder(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateCone(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateCone()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCone()");
 	//mNavigator->startModeling();
 	mNavigator->createCone();
 }
@@ -1771,7 +1817,7 @@ void NavigatorGUI::modelerMainCreateCone(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfCone(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateHalfCone()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfCone()");
 	//mNavigator->startModeling();
 	mNavigator->createHalfCone();
 }
@@ -1779,7 +1825,7 @@ void NavigatorGUI::modelerMainCreateHalfCone(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateSphere(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateSphere()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateSphere()");
 	//mNavigator->startModeling();
 	mNavigator->createSphere();
 }
@@ -1787,7 +1833,7 @@ void NavigatorGUI::modelerMainCreateSphere(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateHalfSphere(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateHalfSphere()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfSphere()");
 	//mNavigator->startModeling();
 	mNavigator->createHalfSphere();
 }
@@ -1795,7 +1841,7 @@ void NavigatorGUI::modelerMainCreateHalfSphere(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateTorus(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateTorus()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTorus()");
 	//mNavigator->startModeling();
 	mNavigator->createTorus();
 }
@@ -1803,7 +1849,7 @@ void NavigatorGUI::modelerMainCreateTorus(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateTube(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateTube()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTube()");
 	//mNavigator->startModeling();
 	mNavigator->createTube();
 }
@@ -1811,7 +1857,7 @@ void NavigatorGUI::modelerMainCreateTube(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerMainCreateRing()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateRing()");
 	//mNavigator->startModeling();
 	mNavigator->createRing();
 }
@@ -1819,7 +1865,7 @@ void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::modelerActionDelete()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerActionDelete()");
 
     Modeler *modeler = mNavigator->getModeler();
 	if (modeler)
@@ -1933,7 +1979,7 @@ void NavigatorGUI::modelerActionScale(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::modelerActionLink()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerActionLink()");
 
     Modeler *modeler = mNavigator->getModeler();
 	if (!modeler->isSelectionEmpty())
@@ -1949,7 +1995,7 @@ void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::modelerActionProperties()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerActionProperties()");
 
 	// Test if an Object3D has ever been created before
     Modeler *modeler = mNavigator->getModeler();
@@ -1972,7 +2018,7 @@ void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionUndo(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::modelerActionUndo()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerActionUndo()");
 
 	//mNavigator->undo();
     Modeler *modeler = mNavigator->getModeler();
@@ -1985,7 +2031,7 @@ void NavigatorGUI::modelerActionUndo(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::modelerPropPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerPropPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 
@@ -2570,6 +2616,24 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 	{
 		Object3D * obj = modeler->getSelected();
 
+        // only 1 WWW per modifiedMaterial for instance ... TODO
+        ModifiedMaterialManager* modifiedMaterialManager = obj->getMaterialManager();
+        TexturePtr texture;
+        TextureVectorIterator tvIter = modifiedMaterialManager->getTextureIterator();
+        while (tvIter.hasMoreElements())
+        {
+            texture = tvIter.getNext();
+            TextureExtParamsMap* textureExtParamsMap = modifiedMaterialManager->getTextureExtParamsMap(texture);
+            if (textureExtParamsMap == 0) continue;
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap->find("plugin");
+            if (it == textureExtParamsMap->end()) continue;
+            if (it->second == "www")
+            {
+                obj->deleteTexture(texture);
+                break;
+            }
+        }
+
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string urlStr = navi->evaluateJS("$('MaterialWWWUrl').value");
 	    std::string widthStr = navi->evaluateJS("$('MaterialWWWWidth').value");
@@ -2586,7 +2650,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -2609,12 +2673,31 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 	{
 		Object3D * obj = modeler->getSelected();
 
+        // only 1 VLC per modifiedMaterial for instance ... TODO
+        ModifiedMaterialManager* modifiedMaterialManager = obj->getMaterialManager();
+        TexturePtr texture;
+        TextureVectorIterator tvIter = modifiedMaterialManager->getTextureIterator();
+        while (tvIter.hasMoreElements())
+        {
+            texture = tvIter.getNext();
+            TextureExtParamsMap* textureExtParamsMap = modifiedMaterialManager->getTextureExtParamsMap(texture);
+            if (textureExtParamsMap == 0) continue;
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap->find("plugin");
+            if (it == textureExtParamsMap->end()) continue;
+            if (it->second == "vlc")
+            {
+                obj->deleteTexture(texture);
+                break;
+            }
+        }
+
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string mrlStr = navi->evaluateJS("$('MaterialVLCMrl').value");
 	    std::string widthStr = navi->evaluateJS("$('MaterialVLCWidth').value");
 	    std::string heightStr = navi->evaluateJS("$('MaterialVLCHeight').value");
 	    std::string fpsStr = navi->evaluateJS("$('MaterialVLCFps').value");
         std::string paramsStr = navi->evaluateJS("$('MaterialVLCParams').value");
+        std::string remoteMrlStr = navi->evaluateJS("$('MaterialVLCRemoteMrl').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
@@ -2627,7 +2710,8 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
         textureExtParamsMap["vlc_params"] = paramsStr;
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+        textureExtParamsMap["remoteMrl"] = remoteMrlStr;
+        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -2650,6 +2734,24 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 	{
 		Object3D * obj = modeler->getSelected();
 
+        // only 1 VNC per modifiedMaterial for instance ... TODO
+        ModifiedMaterialManager* modifiedMaterialManager = obj->getMaterialManager();
+        TexturePtr texture;
+        TextureVectorIterator tvIter = modifiedMaterialManager->getTextureIterator();
+        while (tvIter.hasMoreElements())
+        {
+            texture = tvIter.getNext();
+            TextureExtParamsMap* textureExtParamsMap = modifiedMaterialManager->getTextureExtParamsMap(texture);
+            if (textureExtParamsMap == 0) continue;
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap->find("plugin");
+            if (it == textureExtParamsMap->end()) continue;
+            if (it->second == "vnc")
+            {
+                obj->deleteTexture(texture);
+                break;
+            }
+        }
+
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
 	    std::string hostStr = navi->evaluateJS("$('MaterialVNCHost').value");
 	    std::string portStr = navi->evaluateJS("$('MaterialVNCPort').value");
@@ -2663,7 +2765,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVNCPanel);
         textureExtParamsMap["address"] = address;
         textureExtParamsMap["password"] = password;
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), obj->getEntity(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -2811,7 +2913,7 @@ void NavigatorGUI::modelerPropGravity(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 
@@ -2855,13 +2957,13 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileOpen(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainFileOpen()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileOpen()");
     mNavigator->avatarXMLLoad();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileEdit(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainFileEdit()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileEdit()");
 
 	// Hide the main modeler panel
 	avatarMainHide();
@@ -2871,25 +2973,25 @@ void NavigatorGUI::avatarMainFileEdit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileSave(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarMainFileSave()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileSave()");
     mNavigator->avatarXMLSave();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileSaveAs(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarMainFileSaveAs()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileSaveAs()");
     mNavigator->avatarXMLSaveAs();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainFileExit()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileExit()");
     avatarMainUnload();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainSelectPrev()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelectPrev()");
     Avatar* userAvatar = mNavigator->getUserAvatar();
     userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setPrevAsCurrent();
@@ -2903,7 +3005,7 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarMainSelectNext()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelectNext()");
     Avatar* userAvatar = mNavigator->getUserAvatar();
     userAvatar->detachFromSceneNode();
 	AvatarEditor::getSingletonPtr()->setNextAsCurrent();
@@ -2917,7 +3019,7 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarMainSelected()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelected()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
 	std::string item( naviData["item"].str() );
 	
@@ -2937,7 +3039,7 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::avatarPropPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropPageLoaded()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -2951,7 +3053,7 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAnimPlayPause()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPlayPause()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
@@ -2978,7 +3080,7 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAnimStop()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimStop()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
@@ -2991,7 +3093,7 @@ void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAnimNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
@@ -3011,7 +3113,7 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAnimPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
@@ -3031,7 +3133,7 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAnimPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3048,7 +3150,7 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBonePrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBonePrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3083,7 +3185,7 @@ void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBoneNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBoneNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3118,7 +3220,7 @@ void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3154,7 +3256,7 @@ void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3190,7 +3292,7 @@ void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPMPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3223,7 +3325,7 @@ void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPMNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3256,7 +3358,7 @@ void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPMEdit()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMEdit()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3267,14 +3369,14 @@ void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBPMRemove(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropBPMRemove()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMRemove()");
 	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3311,7 +3413,7 @@ void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3348,7 +3450,7 @@ void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttMPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3380,7 +3482,7 @@ void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttMNext()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3412,7 +3514,7 @@ void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttMEdit()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMEdit()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 
@@ -3423,14 +3525,14 @@ void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttMRemove(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropAttMRemove()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMRemove()");
 	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropSliders()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
@@ -3605,7 +3707,7 @@ void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropReset(const NaviData& naviData)
 {
-	OGRE_LOG("NavigatorGUI::avatarPropSliders()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropSliders()");
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 
@@ -4123,14 +4225,14 @@ void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::debugCommand(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::debugCommand()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
 
     // Get message to send
     std::string cmd;
     std::string params;
     cmd = naviData["cmd"].str();
     params = naviData["params"].str();
-    OGRE_LOG("cmd=" + cmd + ", params=" + params);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
 
     // Push debug command
     DebugHelpers::debugCommands[String(cmd)] = String(params);
@@ -4139,12 +4241,12 @@ void NavigatorGUI::debugCommand(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::navCommand(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::navCommand()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::navCommand()");
 
     // Get command
     std::string cmd;
     cmd = naviData["cmd"].str();
-    OGRE_LOG("cmd=" + cmd);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s", cmd.c_str());
 
 #ifdef DEMO_NAVI2
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
@@ -4176,12 +4278,12 @@ NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 {
-    OGRE_LOG("NavigatorGUI::naviToShowPageLoaded()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::naviToShowPageLoaded()");
 
     std::string naviName;
     naviName = naviData["naviName"].str();
     NaviPanel naviPanel = getNaviPanel(naviName);
-    OGRE_LOG("naviName=" + naviName + ", naviPanel=" + StringConverter::toString(naviPanel));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "naviName=%s, naviPanel=%d", naviName.c_str(), naviPanel);
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)

@@ -75,6 +75,7 @@ namespace NaviLibrary
 		bool isMaterial;
 // BEGIN GREG
         std::string mtlName;
+        bool internalMtl;
 // END GREG
 		std::vector<NaviEventListener*> eventListeners;
 		std::multimap<std::string, NaviDelegate> delegateMap;

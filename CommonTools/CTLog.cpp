@@ -22,10 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "CTLog.h"
-#include "CTScopedMutexLock.h"
 
 #include <iostream>
 #include <stdarg.h>
+#include <time.h>
 
 #if defined(_WINDOWS)
 #define WIN32_LEAN_AND_MEAN
@@ -36,44 +36,103 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace CommonTools {
 
+const char* LogHandler::ms_TrueStr = "true";
+const char* LogHandler::ms_FalseStr = "false";
+
 // Default log handler
 static class DefaultLogHandler : public LogHandler
 {
+protected:
+    /// Log file
+    FILE* mLogFile;
+
 public:
+    DefaultLogHandler() :
+        mLogFile(0)
+    {
+    }
+
+    DefaultLogHandler::~DefaultLogHandler()
+    {
+        if (mLogFile != 0)
+            fclose(mLogFile);
+    }
+
+    void setLogFilename(const std::string& filename)
+    {
+        ScopedMutexLock lock(mMutex);
+        LogHandler::setLogFilename(filename);
+        if (mLogFile != 0)
+            fclose(mLogFile);
+        mLogFile = fopen(mLogFilename.c_str(), "w");
+    }
+
     void log(int level, const char* msg)
     { 
+        if (level > mVerbosity) return;
+
+        char timeBuf[16];
+        _strtime_s(timeBuf, 16);
+        char log[256];
+        _snprintf(log, sizeof(log) - 1, "%s: %s\n", timeBuf, msg);
+
 #ifdef USE_WINDOWS_DEBUG
-        if (level <= ms_Verbosity) { OutputDebugString(msg); OutputDebugString("\n"); }
+        OutputDebugString(log);
 #else
-        if (level <= ms_Verbosity) std::cout << msg << std::endl; 
-#endif  
+        std::cout << log; 
+#endif
+
+        if (mLogFile != 0)
+        {
+            fwrite(log, 1 , strlen(log), mLogFile);
+            fflush(mLogFile);
+        }
     }
 } defaultLogHandler;
 
-// Message log singleton
+// Singleton
 LogHandler* LogHandler::ms_LogHandler = &defaultLogHandler;
 
-// Default verbosity level
-LogHandler::VerbosityLevel LogHandler::ms_Verbosity = VL_NONE;
+//-------------------------------------------------------------------------------------
+LogHandler::LogHandler() :
+    mMutex(PTHREAD_MUTEX_INITIALIZER),
+    mVerbosity(VL_NONE),
+    mLogFilename("")
+{
+}
 
-// Variable args mutex
-pthread_mutex_t ms_LogMutex(PTHREAD_MUTEX_INITIALIZER);
+//-------------------------------------------------------------------------------------
+LogHandler::~LogHandler()
+{
+    if (ms_LogHandler == this)
+        ms_LogHandler = &defaultLogHandler;
+}
+
+//-------------------------------------------------------------------------------------
+std::string LogHandler::getLogFilename()
+{
+    ScopedMutexLock lock(mMutex);
+    return mLogFilename;
+}
+
+//-------------------------------------------------------------------------------------
+void LogHandler::setLogFilename(const std::string& filename)
+{
+    mLogFilename = filename;
+}
 
 //-------------------------------------------------------------------------------------
 void LogHandler::logf(int level, const char* fmt, ...)
 {
-    if (level <= LogHandler::getVerbosityLevel())
+    char buf[256];
     {
-        char buf[1024];
-        {
-            ScopedMutexLock lock(ms_LogMutex);
-            va_list va;
-            va_start(va, fmt);
-            _vsnprintf(buf, sizeof(buf)-1, fmt, va);
-            buf[sizeof(buf) - 1] = 0;
-        }
-        LogHandler::getLogHandler()->log(level, buf);
+        ScopedMutexLock lock(mMutex);
+        va_list va;
+        va_start(va, fmt);
+        _vsnprintf(buf, sizeof(buf)-1, fmt, va);
+        buf[sizeof(buf) - 1] = 0;
     }
+    log(level, buf);
 }
 
 //-------------------------------------------------------------------------------------

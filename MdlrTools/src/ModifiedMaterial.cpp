@@ -104,7 +104,7 @@ void ModifiedMaterial::refreshTechPassTextUnit()
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-MaterialPtr ModifiedMaterial::getOwner()
+const MaterialPtr& ModifiedMaterial::getOwner()
 {
 	return mMaterial;
 }

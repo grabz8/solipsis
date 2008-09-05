@@ -23,30 +23,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AvatarNode.h"
 #include "Peer.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace Ogre;
+using namespace CommonTools;
 
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 AvatarNode::AvatarNode() :
     RakNetAvatarNode(),
-    Node()
+    Node(),
+    mAvatarEntity(0)
 {
-    OGRE_LOG("AvatarNode::AvatarNode()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
 }
 
 //-------------------------------------------------------------------------------------
 AvatarNode::~AvatarNode()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::~AvatarNode()");
+
     pthread_mutex_lock(&mMutex);
 
     if (!mFrozen)
         Peer::getSingleton().removeTimeListener(this);
 
     pthread_mutex_unlock(&mMutex);
+
+    if (mAvatarEntity != 0)
+        delete mAvatarEntity;
 }
 
 //-------------------------------------------------------------------------------------
@@ -54,8 +61,14 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
 {
     if (entity->getXmlEntity()->getOwner() == mNodeId)
     {
-        OGRE_LOG("AvatarNode::onNewEntity() new owned entity uid:" + entity->getXmlEntity()->getUidString() + " by me with mNodeId:" + mNodeId);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new owned entity uid:%s by me with mNodeId:%s", entity->getXmlEntity()->getUidString().c_str(), mNodeId.c_str());
+        pthread_mutex_lock(&mMutex);
         mOwnedEntities[entity->getXmlEntity()->getUid()] = entity;
+        pthread_mutex_unlock(&mMutex);
+
+        // My avatar entity ?
+        if (entity->getXmlEntity()->getType() == ETAvatar)
+            mAvatarEntity = entity;
 
         // Entity can now be updated by our avatar node and serialized
         entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
@@ -73,7 +86,7 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
         pthread_mutex_lock(&mMutex);
 #ifdef PHYSICSPLUGINS
         // create physics of the entity
-        OGRE_LOG("AvatarNode::onNewEntity() creating physics of entity uid:" + entity->getXmlEntity()->getUidString());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
         entity->createPhysics(Peer::getSingleton().getPhysicsScene());
         entity->applyGravity(true);
 #endif
@@ -94,6 +107,10 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
         mEvtsToHandleList.push_back(xmlEvt);
         pthread_mutex_unlock(&mEvtsMutex);
     }
+
+    // Unfreeze avatar node
+    if (mIsLocal && (mAvatarEntity != 0))
+        freeze(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -101,7 +118,7 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
 {
     if (entity->getLastDeserializedDefinedAttributes() == XmlEntity::DAUid)
     {
-//        OGRE_LOG("AvatarNode::onUpdatedEntity() only DAUid so no ETUpdatedEntity evt sent to navigator !");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() only DAUid so no ETUpdatedEntity evt sent to navigator !");
         return;
     }
 #ifdef POOL
@@ -124,8 +141,9 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
 }
 
 //-------------------------------------------------------------------------------------
-void AvatarNode::onLostEntity(Entity* entity)
+void AvatarNode::onLostEntity(Entity* entity, bool sendLostEvt)
 {
+    if (!sendLostEvt) return;
 #ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETLostEntity);
@@ -192,11 +210,9 @@ void AvatarNode::Deserialize(BitStream *bitStream, SerializationType serializati
 
     if (mIsLocal && mNodeId.empty())
     {
-        OGRE_LOG("AvatarNode::Deserialize() assigning nodeId and name");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::Deserialize() assigning nodeId and name");
         mNodeId = Peer::getSingleton().getNodeId();
         mName = Peer::getSingleton().getName();
-        // Setup FileListTransfer by allowing the server to send us files
-        mFileListTransferSetID = RakNetConnection::getSingleton()->mFileListTransfer.SetupReceive(&mFileListTransferCallback, false, sender);
         Peer::getSingleton().getNodeManager()->addNode(mNodeId, this);
         BroadcastSerialize();
 
@@ -208,10 +224,6 @@ void AvatarNode::Deserialize(BitStream *bitStream, SerializationType serializati
             onNewEntity(entity, true);
         }
      }
-
-    // Unfreeze avatar node
-    if (mIsLocal && (mEntity != 0))
-        freeze(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -220,22 +232,12 @@ bool AvatarNode::QueryIsSerializationAuthority(void) const
 	// Client can update its local avatar node, otherwise only server can do it.
     bool authorized = mIsLocal; // Uid set and has serialization authority
 #ifdef LOGRAKNET
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "AvatarNode::QueryIsSerializationAuthority() mNodeId:%s, returning %s", mNodeId.c_str(), authorized ? "true" : "false");
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "AvatarNode::QueryIsSerializationAuthority() mNodeId:%s, returning %s",
+        mNodeId.c_str(),
+        LOGHANDLER_LOGBOOL(authorized));
 #endif
 	return authorized;
-}
-
-//-------------------------------------------------------------------------------------
-bool AvatarNode::FileListTransferCallback::OnFile(OnFileStruct *onFileStruct)
-{
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-void AvatarNode::FileListTransferCallback::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength)
-{
 }
 
 //-------------------------------------------------------------------------------------
@@ -253,7 +255,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
     if (n - l > 10000)
     {
         Real fr = (Real)c/10.0f;
-        OGRE_LOG("AvatarNode::processEvt() fr=" + StringConverter::toString(fr));
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::processEvt() fr=%.2f", fr);
         l = n; c = 0;
     }
 
@@ -269,12 +271,12 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             xmlRespStr = "No entity found in event !";
             return false;
         }
-        Entity* entity = (Entity*)mEntity;
-        if (entity == 0)
-            return true;
-        pthread_mutex_lock(&mMutex);
-        if (entity->getXmlEntity()->getType() == ETAvatar)
+        if (xmlEntity->getType() == ETAvatar)
         {
+            Entity* entity = (Entity*)mAvatarEntity;
+            if (entity == 0)
+                return true;
+            pthread_mutex_lock(&mMutex);
             XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
             if (definedAttributes & XmlEntity::DAFlags)
             {
@@ -301,14 +303,32 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             {
                 entity->getXmlEntity()->setContent(xmlEntity->getContent());
                 entity->addLastDeserializedDefinedAttributes(XmlEntity::DAContent);
+                // add new files into the cache manager
+                entity->addFilesInCacheManager();
             }
 #ifdef LOGSNDRCV
             String log = "RCV uid:" + xmlEntity->getUidString();
             if (definedAttributes & XmlEntity::DADisplacement) log += " d:" + StringConverter::toString(xmlEntity->getDisplacement());
-            OGRE_LOG(log);
+            LOGHANDLER_LOG(LogHandler::VL_DEBUG, log.c_str());
 #endif
+            pthread_mutex_unlock(&mMutex);
         }
-        pthread_mutex_unlock(&mMutex);
+        else if (xmlEntity->getType() == ETObject)
+        {
+            Entity::EntityMap& entities = Entity::getEntities();
+            Entity* entity = entities[xmlEntity->getUid()];
+            if (entity == 0)
+                return true;
+            XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
+            if (definedAttributes & XmlEntity::DAContent)
+            {
+                entity->getXmlEntity()->setContent(xmlEntity->getContent());
+                entity->addLastDeserializedDefinedAttributes(XmlEntity::DAContent);
+                // add new files into the cache manager
+                entity->addFilesInCacheManager();
+                entity->BroadcastSerialize();
+            }
+        }
     }
     else if (xmlEvt->getType() == ETNewEntity)
     {
@@ -328,19 +348,45 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             xmlRespStr = "Only object entity can be added !";
             return false;
         }
-        // Create object node
-        xmlEntity->setOwner(mNodeId);
-//        ObjectNode* objectNode = Peer::getSingleton().getNodeManager()->createObjectNode(xmlEntity);
+        // Create object entity
+//        xmlEntity->setOwner(mNodeId);
         Entity* entity = new Entity();
         entity->setXmlEntity(xmlEntity);
+        // add new files into the cache manager
+        entity->addFilesInCacheManager();
         Entity::addEntity(entity, false);
         // In order to use any networked member functions of Replica2, you must first call SetReplicaManager
-        entity->SetReplicaManager(&RakNetConnection::getSingleton()->mReplicaManager);
-        // Tell the user to automatically serialize our data members every 100 milliseconds (if changed)
-        // This way if we change the system address or the Soldier* we don't have to call user->BroadcastSerialize();
-        //    entity->AddAutoSerializeTimer(1000);
+        entity->SetReplicaManager(&RakNetConnection::getSingletonPtr()->mReplicaManager);
         // Send out this new user to all systems. Unlike the old system (ReplicaManager) all sends are done immediately.
         entity->BroadcastConstruction();
+    }
+    else if (xmlEvt->getType() == ETLostEntity)
+    {
+        // Entity was deleted
+#ifdef POOL
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas().get();
+#else
+        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
+#endif
+        if (xmlEntity == 0)
+        {
+            xmlRespStr = "No entity found in event !";
+            return false;
+        }
+        if (xmlEntity->getType() == ETObject)
+        {
+            Entity::EntityMap& entities = Entity::getEntities();
+            Entity* entity = entities[xmlEntity->getUid()];
+            if (entity == 0)
+                return true;
+            Entity::removeEntity(entity, false);
+            pthread_mutex_lock(&mMutex);
+            mOwnedEntities.erase(entity->getXmlEntity()->getUid());
+            pthread_mutex_unlock(&mMutex);
+            // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
+            entity->BroadcastDestruction();
+            delete entity;
+        }
     }
     else if (xmlEvt->getType() == ETActionOnEntity)
     {
@@ -361,7 +407,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         bitStream.Write(xmlAction->getTargetEntityUid());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getDesc());
         // Send the action to the server, it will look at source/target to broadcast/send to target(s)
-        RakNetConnection::getSingleton()->mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, RakNetConnection::getSingleton()->mServerSystemAddress, false);
+        RakNetConnection::getSingletonPtr()->mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, RakNetConnection::getSingletonPtr()->mServerSystemAddress, false);
     }
 
     return true;
@@ -375,7 +421,7 @@ bool AvatarNode::freeEvt(XmlEvt* xmlEvt)
 #endif
 {
     pthread_mutex_lock(&mEvtsMutex);
-    Entity* entity = (Entity*)mEntity;
+    Entity* entity = (Entity*)mAvatarEntity;
     if (entity != 0)
     {
 #ifdef POOL
@@ -397,7 +443,7 @@ bool AvatarNode::freeze(bool frozen)
     pthread_mutex_lock(&mMutex);
     if (frozen != mFrozen)
     {
-        OGRE_LOG("AvatarNode::freeze() " + String(frozen ? "freezing" : "unfreezing"));
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::freeze() frozen:%s", LOGHANDLER_LOGBOOL(frozen));
         if (frozen)
             Peer::getSingleton().removeTimeListener(this);
         else
@@ -420,7 +466,7 @@ bool AvatarNode::tick(Real timeSinceLastTick)
 
 //    pthread_mutex_unlock(&mMutex);
 
-    Entity* entity = (Entity*)mEntity;
+    Entity* entity = (Entity*)mAvatarEntity;
 static int c=0;
 c++;
     if (entity->mDirty && ((c % 3) == 0)) // 20 ups
@@ -435,7 +481,7 @@ c++;
             entity->mUpdatedXmlEntity->setUid(entity->getXmlEntity()->getUid());
             entity->mUpdatedXmlEntity->setPosition(entity->getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + entity->getXmlEntity()->getUidString() + " p:" + StringConverter::toString(entity->getXmlEntity()->getPosition()));
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s p:%s", entity->getXmlEntity()->getUidString().c_str(), StringConverter::toString(entity->getXmlEntity()->getPosition()).c_str());
 #endif
             xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->mUpdatedXmlEntity));
 #else
@@ -445,7 +491,7 @@ c++;
             entity->mUpdatedXmlEntity.setUid(entity->getXmlEntity()->getUid());
             entity->mUpdatedXmlEntity.setPosition(entity->getXmlEntity()->getPosition());
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + entity->getXmlEntity()->getUidString() + " p:" + StringConverter::toString(entity->getXmlEntity()->getPosition()));
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s p:", entity->getXmlEntity()->getUidString().c_str(), StringConverter::toString(entity->getXmlEntity()->getPosition()).c_str());
 #endif
             xmlEvt->setDatas(&entity->mUpdatedXmlEntity);
 #endif

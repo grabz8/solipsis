@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Ogre.h>
 #include "ModifiedMaterialManager.h"
 
+#include <XmlDatas.h>
+
 using namespace Ogre;
 using namespace std;
 
@@ -103,7 +105,7 @@ public:
 
 public:
 	/// brief Constructor
-	Object3D(String name, SceneNode* node);
+	Object3D(const EntityUID& entityUID, const String& name, SceneNode* node);
 	/// brief Destructor
 	~Object3D();
 
@@ -116,6 +118,10 @@ public:
 	int		saveToFile(const char* fileName);
 
 
+	/// brief ...
+	void setEntityUID(const EntityUID& entityUID);
+	/// brief
+	const EntityUID& getEntityUID();
 	/// brief ...
 	void setName(String name);
 	/// brief
@@ -408,7 +414,8 @@ protected:
 	Vector3 mCornerMax;							/// brief ...
 	vector<Object3D*>* mChildren;				/// brief The list of the sub objects / children
 	Object3D* mParent;							/// brief The parent
-	
+
+    EntityUID mEntityUID;                       /// brief ...
 	Ogre::String mName;							/// brief ...
 	Type mType;									/// brief ...
  
@@ -504,7 +511,7 @@ static Object3D::Type objectStringToType(Ogre::String &toFind)
 class Object3DPlane : public Object3D
 {
 public:
-	Object3DPlane(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DPlane(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = PLANE;
 	}
@@ -514,7 +521,7 @@ public:
 class Object3DBox : public Object3D
 {
 public:
-	Object3DBox(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DBox(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = BOX;
 	}
@@ -524,7 +531,7 @@ public:
 class Object3DCorner : public Object3D
 {
 public:
-	Object3DCorner(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DCorner(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = CORNER;
 
@@ -546,7 +553,7 @@ public:
 class Object3DPyramid : public Object3D
 {
 public:
-	Object3DPyramid(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DPyramid(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = PYRAMID;
 
@@ -567,7 +574,7 @@ public:
 class Object3DPrism : public Object3D
 {
 public:
-	Object3DPrism(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DPrism(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = PRISM;
 
@@ -588,7 +595,7 @@ public:
 class Object3DCylinder : public Object3D
 {
 public:
-	Object3DCylinder(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DCylinder(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = CYLINDER;
 	}
@@ -598,7 +605,7 @@ public:
 class Object3DHalfCylinder : public Object3D
 {
 public:
-	Object3DHalfCylinder(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DHalfCylinder(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = HALF_CYLINDER;
 
@@ -619,7 +626,7 @@ public:
 class Object3DCone : public Object3D
 {
 public:
-	Object3DCone(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DCone(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = CONE;
 		mTaperX = 1;
@@ -642,7 +649,7 @@ public:
 class Object3DHalfCone : public Object3D
 {
 public:
-	Object3DHalfCone(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DHalfCone(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = HALF_CONE;
 
@@ -668,7 +675,7 @@ public:
 class Object3DSphere : public Object3D
 {
 public:
-	Object3DSphere(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DSphere(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = SPHERE;
 	}
@@ -678,7 +685,7 @@ public:
 class Object3DHalfSphere : public Object3D
 {
 public:
-	Object3DHalfSphere(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DHalfSphere(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = HALF_SPHERE;
 
@@ -701,7 +708,7 @@ public:
 class Object3DTorus : public Object3D
 {
 public:
-	Object3DTorus(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DTorus(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = TORUS;
 		mHoleSizeX = 1;
@@ -719,7 +726,7 @@ public:
 class Object3DTube : public Object3D
 {
 public:
-	Object3DTube(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DTube(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = TUBE;
 		mHoleSizeX = 1;
@@ -738,7 +745,7 @@ public:
 class Object3DRing: public Object3D
 {
 public:
-	Object3DRing(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DRing(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = RING;
 		mHoleSizeX = 1;
@@ -756,7 +763,7 @@ public:
 class Object3DOther: public Object3D
 {
 public:
-	Object3DOther(String pName, SceneNode* pNode) : Object3D(pName, pNode)
+	Object3DOther(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = OTHER;
 	}

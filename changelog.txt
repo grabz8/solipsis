@@ -630,3 +630,14 @@ add the plugin for the skp format.The source code is in ../plugin_skp.
 change the correspond .bat files.
 
 ---------------------------
+05/09/08
+
+File transfer added between Peer & RakNet server
+Cache management of Media/cache directory
+All files are now in Media/cache
+Objects creation/update/destruction managed on network
+RemoteMrl added into VLC params to play streamed media on distant clients
+Local IP is auto set in the VLC params
+New logger class added into CommonTools
+
+---------------------------

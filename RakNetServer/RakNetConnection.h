@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __RakNetConnection_h__
 
 #include <string>
+
 #include <RakPeerInterface.h>
 #include <RakNetworkFactory.h>
 #include <RakSleep.h>
@@ -33,19 +34,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <NetworkIDManager.h>
 #include <ReplicaManager2.h>
 #include <FileListTransfer.h>
-#include <FileListTransferCBInterface.h>
+
 #include <Ogre.h>
 
+#include <CTLog.h>
+
+#include <CacheManager.h>
 #include "RM2Connection.h"
 
 namespace Solipsis {
 
-/** This class provide logging capacities interface.
- */
-class IRakNetConnectionLogger {
-public:
-    virtual void logMessage(const std::string& message) = 0;
-};
+/// Default value in bytes between each progress notification for big file transfer
+#define RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES 1024*1024
 
 /** This class manages 1 RakNet connection.
 */
@@ -53,7 +53,8 @@ class RakNetConnection {
 public:
     /// Application message identifiers
     enum MessageId {
-        ID_ACTION_ON_ENTITY = ID_USER_PACKET_ENUM
+        ID_ACTION_ON_ENTITY = ID_USER_PACKET_ENUM,
+        ID_REQUESTING_FILETRANSFER
     };
 
 public:
@@ -73,8 +74,8 @@ public:
     RM2ConnectionFactory mConnectionFactory;
     /// FileListTransfer plugin
     FileListTransfer mFileListTransfer;
-    /// Logger
-    IRakNetConnectionLogger *mLogger;
+    /// Cache manager
+    CacheManager mCacheManager;
 
 private:
     /// Singleton instance
@@ -85,7 +86,7 @@ public:
         mRakPeer(0) { ms_Singleton = this; }
     ~RakNetConnection() { ms_Singleton = 0; }
 
-    static RakNetConnection* getSingleton() { return ms_Singleton; }
+    static RakNetConnection* getSingletonPtr() { return ms_Singleton; }
 
     static void SerializeString(RakNet::BitStream *bitStream, const std::string &str);
     static void SerializeVector3(RakNet::BitStream *bitStream, const Ogre::Vector3 &v);
@@ -93,8 +94,6 @@ public:
     static void DeserializeString(RakNet::BitStream *bitStream, std::string &str);
     static void DeserializeVector3(RakNet::BitStream *bitStream, Ogre::Vector3 &v);
     static void DeserializeQuaternion(RakNet::BitStream *bitStream, Ogre::Quaternion &q);
-
-    void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
 };
 
 } // namespace Solipsis

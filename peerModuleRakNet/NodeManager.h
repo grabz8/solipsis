@@ -52,7 +52,7 @@ public:
 
     void onNewEntity(Entity* entity, bool sendNewEvt);
     void onUpdatedEntity(Entity* entity);
-    void onLostEntity(Entity* entity);
+    void onLostEntity(Entity* entity, bool sendLostEvt);
 
     void onActionOnEntity(RakNet::BitStream *bitStream);
 

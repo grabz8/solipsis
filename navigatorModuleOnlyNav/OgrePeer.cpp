@@ -22,9 +22,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "OgrePeer.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
@@ -36,7 +37,7 @@ OgrePeer::OgrePeer(XmlEntity* xmlEntity, bool isLocal) :
     mIsLocal(isLocal),
     mLod(0)
 {
-    OGRE_LOG("OgrePeer::OgrePeer() mIsLocal=" + StringConverter::toString((int)isLocal));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "OgrePeer::OgrePeer() mIsLocal=%s", LOGHANDLER_LOGBOOL(isLocal));
 }
 
 //-------------------------------------------------------------------------------------

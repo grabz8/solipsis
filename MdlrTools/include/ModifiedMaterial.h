@@ -52,7 +52,7 @@ public:
 
 	///brief Return the owner material
 	///return the owner material
-	MaterialPtr getOwner();
+	const MaterialPtr& getOwner();
 
 	///brief Return the shininess  of the material
 	///return the shininess  of the material

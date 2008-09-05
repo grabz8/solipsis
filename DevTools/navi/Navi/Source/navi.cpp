@@ -65,6 +65,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	isMaterial = false;
 // BEGIN GREG
     mtlName = "";
+    internalMtl = false;
 // END GREG
 	okayToDelete = false;
 	isVisible = true;
@@ -122,6 +123,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	isMaterial = true;
 // BEGIN GREG
     this->mtlName = mtlName;
+    internalMtl = false;
 // END GREG
     okayToDelete = false;
 	isVisible = true;
@@ -161,7 +163,8 @@ Navi::~Navi()
 
 // BEGIN GREG
 //	MaterialManager::getSingletonPtr()->remove(naviName + "Material");
-	MaterialManager::getSingletonPtr()->remove(mtlName);
+    if (internalMtl)
+        MaterialManager::getSingletonPtr()->remove(mtlName);
 //END GREG
 	TextureManager::getSingletonPtr()->remove(naviName + "Texture");
 	if(usingMask) TextureManager::getSingletonPtr()->remove(naviName + "MaskTexture");
@@ -261,11 +264,13 @@ void Navi::createMaterial(Ogre::FilterOptions texFiltering)
         mtlName = naviName + "Material";
 	    material = MaterialManager::getSingleton().create(mtlName, 
 		    ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        internalMtl = true;
     }
     else
     {
         material = MaterialManager::getSingleton().getByName(mtlName);
         material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+        internalMtl = false;
     }
 // END GREG
 	material->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);

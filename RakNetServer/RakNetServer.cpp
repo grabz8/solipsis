@@ -28,8 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Entity.h"
 #include <CTSystem.h>
 #include <CTIO.h>
+#include <CTLog.h>
 #include <Ogre.h>
 
+using namespace CommonTools;
 using namespace RakNet;
 
 namespace Solipsis {
@@ -84,11 +86,10 @@ RakNetServer::RakNetServer(int argc, char** argv) :
 //-------------------------------------------------------------------------------------
 void RakNetServer::initialize()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::initialize()");
+
     // We are the server
     mRakNetConnection.mServer = true;
-    // Set logger
-    mRakNetConnection.mLogger = &mRakNetConnectionLogger;
-    mRakNetConnection.logMessage("RakNetServer::initialize()");
     // Get 1 instance of the RakNet peer interface
     mRakNetConnection.mRakPeer = RakNetworkFactory::GetRakPeerInterface();
     // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
@@ -101,7 +102,7 @@ void RakNetServer::initialize()
     mRakNetConnection.mSocketDescriptor.port = mPort;
     mRakNetConnection.mRakPeer->Startup(mMaxIncomingConnections, 100, &mRakNetConnection.mSocketDescriptor, 1);
     mRakNetConnection.mServerSystemAddress = mRakNetConnection.mRakPeer->GetInternalID();
-    mRakNetConnection.logMessage("RakNetServer::initialize() Server started on " + std::string(mRakNetConnection.mServerSystemAddress.ToString()));
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "RakNetServer::initialize() Server started on %s", mRakNetConnection.mServerSystemAddress.ToString());
     // Attach the ReplicaManager2 plugin
     mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mReplicaManager);
     // Register our custom connection factory
@@ -119,6 +120,9 @@ void RakNetServer::initialize()
 	StringTable::Instance()->AddString("AvatarNode", false);
 	StringTable::Instance()->AddString("SiteNode", false);
 	StringTable::Instance()->AddString("Entity", false);
+
+    // Initializing the cache
+    mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
 
     // Create the site node
     bool sceneLoaded = false;
@@ -204,6 +208,7 @@ void RakNetServer::initialize()
         xmlSiteDoc.Parse(xmlSiteStr.c_str());
         Entity* sceneEntity = new Entity();
         sceneEntity->getXmlEntity()->fromXmlElt(xmlSiteDoc.RootElement());
+        sceneEntity->addFilesInCacheManager();
         onNewEntity(*sceneEntity);
         /// Server can serialize
         sceneEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
@@ -212,7 +217,7 @@ void RakNetServer::initialize()
         // Send out this new entity to all systems
         sceneEntity->BroadcastConstruction();
 
-        mRakNetConnection.logMessage("RakNetServer::initialize() initializing simulation site node name:" + sceneEntity->getXmlEntity()->getName());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::initialize() initializing simulation site node name:%s", sceneEntity->getXmlEntity()->getName().c_str());
         SiteNode* siteNode = new SiteNode();
         siteNode->setEntity(sceneEntity);
         siteNode->setNodeId(mSiteNodeId);
@@ -229,7 +234,7 @@ void RakNetServer::run()
 {
     Packet *packet;
 
-    mRakNetConnection.logMessage("RakNetServer::run()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run()");
 
     while (!mQuit)
     {
@@ -239,20 +244,21 @@ void RakNetServer::run()
             switch (packet->data[0])
             {
             case ID_CONNECTION_ATTEMPT_FAILED:
-                mRakNetConnection.logMessage("RakNetServer::run() ID_CONNECTION_ATTEMPT_FAILED");
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_ATTEMPT_FAILED");
                 mQuit = true;
                 break;
             case ID_NO_FREE_INCOMING_CONNECTIONS:
-                mRakNetConnection.logMessage("RakNetServer::run() ID_NO_FREE_INCOMING_CONNECTIONS");
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NO_FREE_INCOMING_CONNECTIONS");
                 mQuit = true;
                 break;
             case ID_CONNECTION_REQUEST_ACCEPTED:
-                mRakNetConnection.logMessage("RakNetServer::run() ID_CONNECTION_REQUEST_ACCEPTED");
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_REQUEST_ACCEPTED");
                 break;
             case ID_NEW_INCOMING_CONNECTION:
                 {
-                    mRakNetConnection.logMessage("RakNetServer::run() ID_NEW_INCOMING_CONNECTION from " + std::string(packet->systemAddress.ToString()));
-
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NEW_INCOMING_CONNECTION from %s", packet->systemAddress.ToString());
+                    // Set notifications interval for big file transfer
+                    mRakNetConnection.mRakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/mRakNetConnection.mRakPeer->GetMTUSize(packet->systemAddress));
                     AvatarNode* avatarNode = new AvatarNode();
                     avatarNode->setSystemAddress(packet->systemAddress);
                     // Node managed by the Replica2 plugin
@@ -262,40 +268,56 @@ void RakNetServer::run()
                 }
                 break;
             case ID_DISCONNECTION_NOTIFICATION:
-                mRakNetConnection.logMessage("RakNetServer::run() ID_DISCONNECTION_NOTIFICATION");
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_DISCONNECTION_NOTIFICATION");
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetAvatarNode::deleteByAddress(packet->systemAddress);
                 break;
             case ID_CONNECTION_LOST:
-                mRakNetConnection.logMessage("RakNetServer::run() ID_CONNECTION_LOST");
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_LOST");
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetAvatarNode::deleteByAddress(packet->systemAddress);
                 break;
-            case RakNetConnection::ID_ACTION_ON_ENTITY:
-                mRakNetConnection.logMessage("RakNetServer::run() RakNetConnection::ID_ACTION from " + std::string(packet->systemAddress.ToString()));
-                BitStream bitStream(packet->data, packet->length, false);
-                bitStream.IgnoreBytes(1);
-                ActionType actionType;
-                bitStream.Read(actionType);
-                EntityUID sourceEntityUid;
-                bitStream.Read(sourceEntityUid);
-                EntityUID targetEntityUid;
-                bitStream.Read(targetEntityUid);
-                std::string desc;
-                RakNetConnection::DeserializeString(&bitStream, desc);
-                if (sourceEntityUid == targetEntityUid)
+            case RakNetConnection::ID_REQUESTING_FILETRANSFER:
                 {
-                    // Broadcast
-                    mRakNetConnection.mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_REQUESTING_FILETRANSFER from %s", packet->systemAddress.ToString());
+                    BitStream bitStream(packet->data, packet->length, false);
+                    bitStream.IgnoreBytes(1);
+                    unsigned short fileListTransferSetID;
+                    bitStream.Read(fileListTransferSetID);
+                    std::string filename;
+                    RakNetConnection::DeserializeString(&bitStream, filename);
+                    FileVersion version;
+                    bitStream.Read(version);
+                    mRakNetConnection.mCacheManager.sendFile(packet->systemAddress, fileListTransferSetID, filename, version);
                 }
-                else
+                break;
+            case RakNetConnection::ID_ACTION_ON_ENTITY:
                 {
-                    // Send to target node
-                    AvatarNode *targetAvatarNode = getAvatarNodeOfEntity(targetEntityUid);
-                    if (targetAvatarNode == 0)
-                        mRakNetConnection.logMessage("RakNetServer::run() RakNetConnection::ID_ACTION unable to find avatar node with entity uid:" + std::string(XmlHelpers::convertEntityUIDToHexString(targetEntityUid)));
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
+                    BitStream bitStream(packet->data, packet->length, false);
+                    bitStream.IgnoreBytes(1);
+                    ActionType actionType;
+                    bitStream.Read(actionType);
+                    EntityUID sourceEntityUid;
+                    bitStream.Read(sourceEntityUid);
+                    EntityUID targetEntityUid;
+                    bitStream.Read(targetEntityUid);
+                    std::string desc;
+                    RakNetConnection::DeserializeString(&bitStream, desc);
+                    if (sourceEntityUid == targetEntityUid)
+                    {
+                        // Broadcast
+                        mRakNetConnection.mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);
+                    }
                     else
-                        mRakNetConnection.mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, targetAvatarNode->getSystemAddress(), false);
+                    {
+                        // Send to target node
+                        AvatarNode *targetAvatarNode = getAvatarNodeOfEntity(targetEntityUid);
+                        if (targetAvatarNode == 0)
+                            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION unable to find avatar node with entity uid:%s", XmlHelpers::convertEntityUIDToHexString(targetEntityUid).c_str());
+                        else
+                            mRakNetConnection.mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, targetAvatarNode->getSystemAddress(), false);
+                    }
                 }
                 break;
             }
@@ -308,18 +330,21 @@ void RakNetServer::run()
 //-------------------------------------------------------------------------------------
 void RakNetServer::finalize()
 {
-    mRakNetConnection.logMessage("RakNetServer::finalize()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::finalize()");
 
     // Destroy nodes
     for (NodeMap::const_iterator it = mNodes.begin(); it != mNodes.end(); it = mNodes.begin())
     {
         RakNetNode *node = it->second;
-        mRakNetConnection.logMessage("RakNetServer::finalize() Destroying node with nodeId " + node->getNodeId());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::finalize() Destroying node with nodeId %s", node->getNodeId().c_str());
         delete node;
     }
 
     mRakNetConnection.mRakPeer->Shutdown(100, 0);
     RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
+
+    // Finalizing the cache
+    mRakNetConnection.mCacheManager.finalize();
 }
 
 //-------------------------------------------------------------------------------------
@@ -341,7 +366,9 @@ void RakNetServer::onNewEntity(Entity& entity)
         if (siteNode != 0)
         {
             RefCntPoolPtr<XmlSceneContent> xmlSceneContent = siteNode->getEntity()->getXmlEntity()->getContent()->getDatas();
-            xmlEntity->setPosition(xmlSceneContent->getEntryGate().mPosition);
+            // Randomize position
+            int rand = time(NULL)%9;
+            xmlEntity->setPosition(xmlSceneContent->getEntryGate().mPosition + Ogre::Vector3(rand/3 - 1, 0, rand%3 - 1));
             if (xmlSceneContent->getEntryGate().mGravity)
                 xmlEntity->setFlags(xmlEntity->getFlags() | EFGravity);
             else
@@ -360,7 +387,7 @@ void RakNetServer::onNewEntity(Entity& entity)
 //-------------------------------------------------------------------------------------
 void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
 {
-    mRakNetConnection.logMessage("RakNetServer::onAvatarNodeIdInitialized() avatarNodeId:" + avatarNode->getNodeId());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onAvatarNodeIdInitialized() avatarNodeId:%s", avatarNode->getNodeId().c_str());
 
     NodeId avatarNodeId = avatarNode->getNodeId();
     // Load the avatar node
@@ -373,7 +400,7 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
         AvatarEntityUid <<= 16;
         // Randomize the character
         CommonTools::IO::FilenameVector filenames;
-        CommonTools::IO::getFilenames(mMediaCachePath + "\\models", filenames);
+        CommonTools::IO::getFilenames(mMediaCachePath, filenames);
         CommonTools::IO::FilenameVector safFilenames;
         for (CommonTools::IO::FilenameVector::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
             if (it->find(".saf") == it->length() - 4)
@@ -392,7 +419,6 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
   <lod level=\"0\">\
    <files>\
     <file name=\"" + safFilenames[safIdx] + "\" version=\"00000000\" />\
-    <file name=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + ".sif\" version=\"00000000\" />\
    </files>\
   </lod>\
  </content>\
@@ -402,6 +428,7 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
         xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
         Entity* avatarEntity = new Entity();
         avatarEntity->getXmlEntity()->fromXmlElt(xmlAvatarDoc.RootElement());
+        avatarEntity->addFilesInCacheManager();
         onNewEntity(*avatarEntity);
         /// Server can serialize
         avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
@@ -410,7 +437,7 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
         // Send out this new entity to all systems
         avatarEntity->BroadcastConstruction();
 
-        mRakNetConnection.logMessage("RakNetServer::onAvatarNodeIdInitialized() initializing simulation avatar node name:" + avatarEntity->getXmlEntity()->getName());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onAvatarNodeIdInitialized() initializing simulation avatar node name:%s", avatarEntity->getXmlEntity()->getName().c_str());
         avatarNode->setEntity(avatarEntity);
         mNodes[avatarNodeId] = avatarNode;
         avatarNode->BroadcastSerialize();
@@ -420,11 +447,11 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
 //-------------------------------------------------------------------------------------
 void RakNetServer::onAvatarNodeDestroyed(AvatarNode* avatarNode)
 {
-    mRakNetConnection.logMessage("RakNetServer::onAvatarNodeDestroyed() nodeId:" + avatarNode->getNodeId());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onAvatarNodeDestroyed() nodeId:%s", avatarNode->getNodeId().c_str());
 
     // Save this avatar node
     if (!saveNodeIdFile(avatarNode->getNodeId()))
-        mRakNetConnection.logMessage("RakNetServer::onAvatarNodeDestroyed() Unable to save node with nodeId:" + avatarNode->getNodeId() + " !");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onAvatarNodeDestroyed() Unable to save node with nodeId:%s !", avatarNode->getNodeId().c_str());
 
     NodeMap::iterator it = mNodes.find(avatarNode->getNodeId());
     if (it != mNodes.end())
@@ -434,11 +461,11 @@ void RakNetServer::onAvatarNodeDestroyed(AvatarNode* avatarNode)
 //-------------------------------------------------------------------------------------
 void RakNetServer::onSiteNodeDestroyed(SiteNode* siteNode)
 {
-    mRakNetConnection.logMessage("RakNetServer::onSiteNodeDestroyed() nodeId:" + siteNode->getNodeId());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onSiteNodeDestroyed() nodeId:%s", siteNode->getNodeId().c_str());
 
     // Save the site node
     if (!saveNodeIdFile(siteNode->getNodeId()))
-        mRakNetConnection.logMessage("RakNetServer::onSiteNodeDestroyed() Unable to save node with nodeId:" + siteNode->getNodeId() + " !");
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onSiteNodeDestroyed() Unable to save node with nodeId:%s !", siteNode->getNodeId().c_str());
 
     NodeMap::iterator it = mNodes.find(siteNode->getNodeId());
     if (it != mNodes.end())
@@ -448,13 +475,13 @@ void RakNetServer::onSiteNodeDestroyed(SiteNode* siteNode)
 //-------------------------------------------------------------------------------------
 void RakNetServer::onEntityDestroyed(Entity* entity)
 {
-    mRakNetConnection.logMessage("RakNetServer::onEntityDestroyed() entity uid:" + entity->getXmlEntity()->getUidString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onEntityDestroyed() entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
 
     if (entity->getXmlEntity()->getType() == ETObject)
     {
         // Get the site node
         SiteNode* siteNode = (SiteNode*)mNodes[mSiteNodeId];
-        // Add this object in the site
+        // Remove this object from the site
         siteNode->removePresentEntity(entity);
     }
 }
@@ -474,6 +501,13 @@ AvatarNode* RakNetServer::getAvatarNodeOfEntity(const EntityUID& entityUID)
 }
 
 //-------------------------------------------------------------------------------------
+SiteNode* RakNetServer::getSiteNode()
+{
+    // Get the site node
+    return (SiteNode*)mNodes[mSiteNodeId];
+}
+
+//-------------------------------------------------------------------------------------
 Entity* RakNetServer::loadEntity(TiXmlElement* entityElt)
 {
     Entity* entity = new Entity();
@@ -483,6 +517,7 @@ Entity* RakNetServer::loadEntity(TiXmlElement* entityElt)
     XmlEntity* xmlEntity = entity->getXmlEntity();
 #endif
     xmlEntity->fromXmlElt(entityElt);
+    entity->addFilesInCacheManager();
     onNewEntity(*entity);
     /// Server can serialize
     entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
@@ -502,7 +537,7 @@ bool RakNetServer::loadNodeIdFile(const NodeId& nodeId, RakNetNode* node)
     if (!xmlNodeIdFileDoc.LoadFile())
         return false;
 
-    mRakNetConnection.logMessage("RakNetServer::loadNodeIdFile() loading node with nodeId:" + nodeId + " from " + nodeIdFilename);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::loadNodeIdFile() loading node with nodeId:%s from %s", nodeId.c_str(), nodeIdFilename.c_str());
 
     TiXmlElement* nodeElt = xmlNodeIdFileDoc.FirstChildElement("node");
     if (nodeElt == 0)
@@ -577,7 +612,7 @@ bool RakNetServer::saveNodeIdFile(const NodeId& nodeId)
     std::string nodeIdFilename = mMediaCachePath + "\\" + nodeId + ".xml";
     TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
 
-    mRakNetConnection.logMessage("RakNetServer::saveNodeIdFile() saving node with nodeId:" + nodeId + " into " + nodeIdFilename);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::saveNodeIdFile() saving node with nodeId:%s into %s", nodeId.c_str(), nodeIdFilename.c_str());
 
     RakNetNode* node = mNodes[nodeId];
     if (node == 0)
@@ -589,14 +624,6 @@ bool RakNetServer::saveNodeIdFile(const NodeId& nodeId)
     xmlNodeIdFileDoc.SaveFile();
 
     return true;
-}
-
-//-------------------------------------------------------------------------------------
-void RakNetServer::RakNetConnectionLogger::logMessage(const std::string& message)
-{
-    char timeBuf[128];
-    _strtime_s(timeBuf, 128);
-    printf("%s: %s\n", timeBuf, message.c_str());
 }
 
 //-------------------------------------------------------------------------------------

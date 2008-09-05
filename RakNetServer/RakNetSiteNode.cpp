@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <StringCompressor.h>
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -37,19 +38,19 @@ RakNetSiteNode::RakNetSiteNode() :
     RakNetNode("site"),
     mEntity(0)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::RakNetSiteNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::RakNetSiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 RakNetSiteNode::~RakNetSiteNode()
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::~RakNetSiteNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::~RakNetSiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 bool RakNetSiteNode::SerializeConstruction(BitStream *bitStream, SerializationContext *serializationContext)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::SerializeConstruction()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::SerializeConstruction()");
 
     StringTable::Instance()->EncodeString("SiteNode", 128, bitStream);
 
@@ -59,11 +60,11 @@ bool RakNetSiteNode::SerializeConstruction(BitStream *bitStream, SerializationCo
 //-------------------------------------------------------------------------------------
 bool RakNetSiteNode::Serialize(BitStream *bitStream, SerializationContext *serializationContext)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::Serialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Serialize()");
 
     bitStream->Write(mSystemAddress);
     stringCompressor->EncodeString(mNodeId.c_str(), 16, bitStream);
-    if (RakNetConnection::getSingleton()->mServer)
+    if (RakNetConnection::getSingletonPtr()->mServer)
     {
         if (mEntity)
             bitStream->Write(mEntity->GetNetworkID());
@@ -71,9 +72,11 @@ bool RakNetSiteNode::Serialize(BitStream *bitStream, SerializationContext *seria
             bitStream->Write(UNASSIGNED_NETWORK_ID);
     }
 
-/*    char entityPtrStr[16];
-    sprintf(entityPtrStr, "0x%08x", mEntity);
-    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::Serialize() mNodeId:" + mNodeId + ", mEntity:" + std::string(entityPtrStr) + "(" + (mEntity ? std::string(mEntity->GetNetworkID().systemAddress.ToString()) : ""));
+/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetSiteNode::Serialize() mNodeId:%s, mEntity:0x%08x(%s)",
+        mNodeId.c_str(),
+        mEntity,
+        (mEntity ? mEntity->GetNetworkID().systemAddress.ToString() : ""));
 */
     return true;
 }
@@ -81,23 +84,25 @@ bool RakNetSiteNode::Serialize(BitStream *bitStream, SerializationContext *seria
 //-------------------------------------------------------------------------------------
 void RakNetSiteNode::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetSiteNode::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Deserialize()");
 
 	bitStream->Read(mSystemAddress);
     char output[16];
     stringCompressor->DecodeString(output, 16, bitStream);
     mNodeId = output;
 
-    if (!RakNetConnection::getSingleton()->mServer)
+    if (!RakNetConnection::getSingletonPtr()->mServer)
     {
         NetworkID entityNetworkId;
         bitStream->Read(entityNetworkId);
-        mEntity = (RakNetEntity*)RakNetConnection::getSingleton()->mNetworkIdManager.GET_OBJECT_FROM_ID(entityNetworkId);
+        mEntity = (RakNetEntity*)RakNetConnection::getSingletonPtr()->mNetworkIdManager.GET_OBJECT_FROM_ID(entityNetworkId);
     }
 
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetSiteNode::Deserialize() mSystemAddress:%s, mNodeId:%s, mEntity:0x%08x", mSystemAddress.ToString(), mNodeId.c_str(), (unsigned int)mEntity);
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetSiteNode::Deserialize() mSystemAddress:%s, mNodeId:%s, mEntity:0x%08x",
+        mSystemAddress.ToString(),
+        mNodeId.c_str(),
+        (unsigned int)mEntity);
 }
 
 //-------------------------------------------------------------------------------------

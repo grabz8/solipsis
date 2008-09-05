@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterInstance.h>
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 String Avatar::mDefaultStateAnimName[ASAvatarAnimCount] = {
     "",
@@ -275,33 +276,40 @@ void Avatar::detachFromSceneNode()
 }
 
 //-------------------------------------------------------------------------------------
-void Avatar::OnAvatarSave()
+void Avatar::onAvatarSave()
 {
     assert(isLocal());
 
     String safFilename = mCharacterInstance->getCharacter()->getPath()->getLastFileName(true);
     String sifFilename = mCharacterInstance->getUidPath()->getLastFileName(true);
 
-    // Get the scene content for LOD 0
+    // Get the content for LOD 0
     XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
+    XmlLodContent::LodContentFileList& lodContent0FileList = contentLodMap[0]->getLodContentFileList();
     XmlLodContent::LodContentFileList::iterator lodContent0File;
-    for(lodContent0File = contentLodMap[0]->getLodContentFileList().begin();lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-        if (lodContent0File->filename.find(".saf") == lodContent0File->filename.length() - 4)
+    for (lodContent0File = lodContent0FileList.begin(); lodContent0File != lodContent0FileList.end(); ++lodContent0File)
+        if (lodContent0File->mFilename.find(".saf") == lodContent0File->mFilename.length() - 4)
         {
-            lodContent0File->filename = safFilename;
+            lodContent0File->mFilename = safFilename;
             break;
         }
-    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .saf avatar file found !", "Avatar::OnAvatarSave");
-    for(lodContent0File = contentLodMap[0]->getLodContentFileList().begin();lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-        if (lodContent0File->filename.find(".sif") == lodContent0File->filename.length() - 4)
+    if (lodContent0File == lodContent0FileList.end())
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .saf avatar file found !", "Avatar::onAvatarSave");
+
+    for (lodContent0File = lodContent0FileList.begin(); lodContent0File != lodContent0FileList.end(); ++lodContent0File)
+        if (lodContent0File->mFilename.find(".sif") == lodContent0File->mFilename.length() - 4)
         {
-            lodContent0File->filename = sifFilename;
-            lodContent0File->version++;
+            lodContent0File->mFilename = sifFilename;
+            lodContent0File->mVersion++;
             break;
         }
-    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .sif avatar file found !", "Avatar::OnAvatarSave");
+    if (lodContent0File == lodContent0FileList.end())
+    {
+        LodContentFileStruct lodContent0FileSif;
+        lodContent0FileSif.mFilename = sifFilename;
+        lodContent0FileSif.mVersion = 0;
+        lodContent0FileList.push_back(lodContent0FileSif);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -313,7 +321,7 @@ void Avatar::setNameVisibility(bool visible)
 //-------------------------------------------------------------------------------------
 void Avatar::setState(Solipsis::AnimationState state)
 {
-//    OGRE_LOG("Avatar::setState()" + StringConverter::toString((int)state));
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::setState() state:%d", (int)state);
     if (mStateAnimName[mState].length() > 0)
         stopAnimation();
     if (mStateAnimName[state].length() > 0)
@@ -380,7 +388,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (n - l > 10000)
     {
         Real fr = (Real)c/10.0f;
-        OGRE_LOG("Avatar::update() fr=" + StringConverter::toString(fr));
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() fr=%.2f", fr);
         l = n; c = 0;
     }
 
@@ -402,11 +410,15 @@ bool Avatar::update(XmlEntity* xmlEntity)
     }
     if (definedAttributes & XmlEntity::DAContent)
     {
-        OGRE_LOG("Avatar::update() Destroy/Load new character of avatar uid:" + mXmlEntity->getUidString());
-        std::string uidStr = xmlEntity->getUidString();
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUidString().c_str());
         detachFromSceneNode();
         CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
-        CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, "");
+        String defaultCharacterName = "";
+        XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
+        for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
+            if (it->mFilename.find(".saf") == it->mFilename.length() - 4)
+                defaultCharacterName = it->mFilename.substr(0, it->mFilename.length() - 4);
+        CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUidString(), defaultCharacterName);
         if (characterInstance == 0)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::update");
         setCharacterInstance(characterInstance);
@@ -416,7 +428,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     String log = "RCV uid:" + xmlEntity->getUidString();
     if (definedAttributes & XmlEntity::DAPosition) log += " p:" + StringConverter::toString(mLastRealPosition);
     if (definedAttributes & XmlEntity::DAOrientation) log += " o:" + StringConverter::toString(mLastRealOrientation);
-    OGRE_LOG(log);
+    LOGHANDLER_LOG(LogHandler::VL_DEBUG, log);
 #endif
 
     return true;
@@ -554,7 +566,7 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             mUpdatedXmlEntity->setDisplacement(d);
 #ifdef LOGSNDRCV
-            OGRE_LOG("SND uid:" + mUpdatedXmlEntity->getUidString() + " d:" + StringConverter::toString(mUpdatedXmlEntity->getDisplacement()));
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s d:%s", mUpdatedXmlEntity->getUidString().c_str(), StringConverter::toString(mUpdatedXmlEntity->getDisplacement()).c_str());
 #endif
         }
     }

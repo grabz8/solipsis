@@ -138,7 +138,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetServer", "RakNetServe
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "plugin_skp\Plugin_skp.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "plugin_skp\Plugin_skp_vc8.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "peerModuleRakNet", "peerModuleRakNet\peerModuleRakNet_vc8.vcproj", "{12E3DE4B-827E-4785-A8AF-16D1A945F3D6}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -389,6 +389,14 @@ Global
 		{12E3DE4B-827E-4785-A8AF-16D1A945F3D6}.Release|Win32.Build.0 = Release|Win32
 		{12E3DE4B-827E-4785-A8AF-16D1A945F3D6}.ReleaseNCS|Win32.ActiveCfg = ReleaseNCS|Win32
 		{12E3DE4B-827E-4785-A8AF-16D1A945F3D6}.ReleaseNCS|Win32.Build.0 = ReleaseNCS|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.Debug|Win32.Build.0 = Debug|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.DebugNCS|Win32.ActiveCfg = Debug|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.DebugNCS|Win32.Build.0 = Debug|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.Release|Win32.ActiveCfg = Release|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.Release|Win32.Build.0 = Release|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.ReleaseNCS|Win32.ActiveCfg = Release|Win32
+		{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}.ReleaseNCS|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

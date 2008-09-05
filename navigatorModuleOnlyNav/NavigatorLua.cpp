@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorLua.h"
 #include "Navigator.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 #include <OgreExternalTextureSourceManager.h>
 #include "ExternalTextureSourceEx.h"
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 const char NavigatorLua::className[] = "NavigatorLua";
 
@@ -58,7 +59,7 @@ NavigatorLua::~NavigatorLua()
 //-------------------------------------------------------------------------------------
 int NavigatorLua::bind(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::bind()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::bind()");
 
     mNavigator = Navigator::getSingletonPtr();
     mNavigator->setNavigatorLua(this);
@@ -70,7 +71,7 @@ int NavigatorLua::bind(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::setNameValueVariable(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::setNameValueVariable()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::setNameValueVariable()");
 
     // Set default values
     String varName, varValue;
@@ -86,7 +87,7 @@ int NavigatorLua::setNameValueVariable(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::setConnectionParams(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::setConnectionParams()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::setConnectionParams()");
 
     // Set default values
     if (lua_isstring(mLuaState, 1))
@@ -103,7 +104,7 @@ int NavigatorLua::setConnectionParams(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::getRenderWinMetrics(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::getScreenExtents()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::getScreenExtents()");
 
     // Get metrics
     unsigned int width, height, colourDepth;
@@ -121,7 +122,7 @@ int NavigatorLua::getRenderWinMetrics(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::sendMessage(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::sendMessage()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::sendMessage()");
 
     // Get message to send
     std::string msg = luaL_checkstring(luaState, 1);
@@ -135,7 +136,7 @@ int NavigatorLua::sendMessage(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::contextItemSelected(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::contextItemSelected()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::contextItemSelected()");
 
     // Get item selected
     std::string item = luaL_checkstring(luaState, 1);
@@ -149,7 +150,7 @@ int NavigatorLua::contextItemSelected(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::hideNavi(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::hideNavi()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::hideNavi()");
 
     // Get navi name
     std::string naviName = luaL_checkstring(luaState, 1);
@@ -163,7 +164,7 @@ int NavigatorLua::hideNavi(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int NavigatorLua::extTextSrcExHandleEvt(lua_State* luaState)
 {
-    OGRE_LOG("NavigatorLua::extTextSrcExHandleEvt()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::extTextSrcExHandleEvt()");
 
     // Get parameters
     std::string extTextSrcExPlugin = luaL_checkstring(luaState, 1);
@@ -190,18 +191,18 @@ int NavigatorLua::call(const char* method, const char *fmt, ...)
     va_end(argp);
     if (nparams < 0)
     {
-        OGRE_LOG("NavigatorLua:" + String(method) + "() Unable to parse parameters format: " + String(fmt));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:%s() Unable to parse parameters format: %s", method, fmt);
         return false;
     }
     if (Lunar<NavigatorLua>::call(mLuaState, method, nparams, 1) == -1)
     {
-        OGRE_LOG("NavigatorLua:" + String(method) + "() error, " + String(lua_tolstring(mLuaState, -1, NULL)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:%s() error, %s", method, lua_tolstring(mLuaState, -1, NULL));
         return false;
     }
     if (!lua_isboolean(mLuaState, -1))
     {
 //        luaL_error(mLuaState, "NavigatorLua:%s() boolean result expected", method);
-        OGRE_LOG("NavigatorLua:" + String(method) + "() boolean result expected");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:%s() boolean result expected", method);
         return false;
     }
     return lua_toboolean(mLuaState, -1);
@@ -219,18 +220,18 @@ int NavigatorLua::handleEvent(const char* evt, const char *fmt, ...)
     va_end(argp);
     if (nparams < 0)
     {
-        OGRE_LOG("NavigatorLua:handleEvent() Unable to parse parameters format: " + String(fmt));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:handleEvent() Unable to parse parameters format: %s", fmt);
         return false;
     }
     if (Lunar<NavigatorLua>::call(mLuaState, "handleEvent", nparams, 1) == -1)
     {
-        OGRE_LOG("NavigatorLua:handleEvent() error, " + String(lua_tolstring(mLuaState, -1, NULL)));
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:handleEvent() error, ", lua_tolstring(mLuaState, -1, NULL));
         return false;
     }
     if (!lua_isboolean(mLuaState, -1))
     {
 //        luaL_error(mLuaState, "NavigatorLua:%s() boolean result expected", method);
-        OGRE_LOG("NavigatorLua:handleEvent() boolean result expected");
+        LOGHANDLER_LOG(LogHandler::VL_ERROR, "NavigatorLua:handleEvent() boolean result expected");
         return false;
     }
     return lua_toboolean(mLuaState, -1);

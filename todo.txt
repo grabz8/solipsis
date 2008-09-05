@@ -1,3 +1,7 @@
+[All]
+- migrate XML datas from .sof, .sif into the Xml entity descriptor, updates will be simpler,
+  only binary datas files are zipped into .s*f like textures, mesh, skeleton, shaders, ...
+
 [MdlrTools]
 - Manage FrameListener to be able to pick axes for moving 
 - Manage drag'n drop

@@ -34,10 +34,10 @@ class IOgrePeerManagerCallbacks
 {
 public:
 	// Called when an avatar should be created
-    virtual bool OnAvatarNodeCreate(OgrePeer* ogrePeer) { return true; };
+    virtual bool onAvatarNodeCreate(OgrePeer* ogrePeer) { return true; }
 
 	// Called when a scene should be created
-	virtual bool OnSceneNodeCreate(OgrePeer* ogrePeer) { return true; };
+	virtual bool onSceneNodeCreate(OgrePeer* ogrePeer) { return true; }
 };
 
 } // namespace Solipsis

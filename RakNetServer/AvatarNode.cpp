@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetServer.h"
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -33,13 +34,13 @@ namespace Solipsis {
 AvatarNode::AvatarNode() :
     RakNetAvatarNode()
 {
-    RakNetConnection::getSingleton()->logMessage("AvatarNode::AvatarNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
 }
 
 //-------------------------------------------------------------------------------------
 AvatarNode::~AvatarNode()
 {
-    RakNetConnection::getSingleton()->logMessage("AvatarNode::~AvatarNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::~AvatarNode()");
 
     RakNetServer::getSingleton().onAvatarNodeDestroyed(this);
 }
@@ -47,20 +48,20 @@ AvatarNode::~AvatarNode()
 //-------------------------------------------------------------------------------------
 void AvatarNode::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
-//    RakNetConnection::getSingleton()->logMessage("AvatarNode::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::Deserialize()");
 
     bool nodeIdNotYetInitialized = mNodeId.empty();
     RakNetAvatarNode::Deserialize(bitStream, serializationType, sender, timestamp);
     if (nodeIdNotYetInitialized && !mNodeId.empty())
         RakNetServer::getSingleton().onAvatarNodeIdInitialized(this);
 
-    RakNetConnection::getSingleton()->logMessage("AvatarNode::Deserialize() mSystemAddress:" + std::string(mSystemAddress.ToString()) + ", mNodeId:" + mNodeId);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::Deserialize() mSystemAddress:%s, mNodeId:%s", mSystemAddress.ToString(), mNodeId.c_str());
 }
 
 //-------------------------------------------------------------------------------------
 TiXmlElement* AvatarNode::getSavedElt()
 {
-    RakNetConnection::getSingleton()->logMessage("AvatarNode::getSavedElt() saving entity of avatar node with nodeId:" + mNodeId);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::getSavedElt() saving entity of avatar node with nodeId:%s", mNodeId.c_str());
 
     // Get root node
     TiXmlElement* nodeElt = RakNetNode::getSavedElt();

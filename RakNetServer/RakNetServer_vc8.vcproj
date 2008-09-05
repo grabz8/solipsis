@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CacheManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Entity.cpp"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			>
 			<File
 				RelativePath=".\AvatarNode.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CacheManager.h"
 				>
 			</File>
 			<File

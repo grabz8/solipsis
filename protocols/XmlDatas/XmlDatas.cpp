@@ -121,13 +121,6 @@ std::ostream& XmlHelpers::ostreamVector3(std::ostream& o, const Ogre::Vector3& v
 }
 
 //-------------------------------------------------------------------------------------
-std::ostream& XmlHelpers::ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q)
-{
-    o << "x=\"" << q.x << "\" y=\"" << q.y << "\" z=\"" << q.z << "\" w=\"" << q.w << "\"";
-    return o;
-}
-
-//-------------------------------------------------------------------------------------
 TiXmlElement* XmlHelpers::toXmlEltVector3(const std::string& eltName, const Ogre::Vector3& v)
 {
     TiXmlElement* vector3Elt = new TiXmlElement(eltName.c_str());
@@ -148,6 +141,13 @@ bool XmlHelpers::fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v)
     if (!getAttribute(xmlElt, "z", attr)) return false;
     v.z = atof(attr);
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::ostream& XmlHelpers::ostreamQuaternion(std::ostream& o, const Ogre::Quaternion& q)
+{
+    o << "x=\"" << q.x << "\" y=\"" << q.y << "\" z=\"" << q.z << "\" w=\"" << q.w << "\"";
+    return o;
 }
 
 //-------------------------------------------------------------------------------------
@@ -173,6 +173,48 @@ bool XmlHelpers::fromXmlEltQuaternion(TiXmlElement* xmlElt, Ogre::Quaternion& q)
     q.z = atof(attr);
     if (!getAttribute(xmlElt, "w", attr)) return false;
     q.w = atof(attr);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+TiXmlElement* XmlHelpers::toXmlEltLodContentFileStruct(const std::string& eltName, const LodContentFileStruct& s)
+{
+    TiXmlElement* lodContentFileStructElt = new TiXmlElement(eltName.c_str());
+    lodContentFileStructElt->SetAttribute("name", s.mFilename.c_str());
+    lodContentFileStructElt->SetAttribute("version", XmlHelpers::convertFileVersionToHexString(s.mVersion).c_str());
+    return lodContentFileStructElt;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlHelpers::fromXmlEltLodContentFileStruct(TiXmlElement* xmlElt, LodContentFileStruct& s)
+{
+    const char* attr = 0;
+    if (!getAttribute(xmlElt, "name", attr)) return false;
+    s.mFilename = std::string(attr);
+    if (!getAttribute(xmlElt, "version", attr)) return false;
+    s.mVersion = XmlHelpers::convertHexStringToFileVersion(attr);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+TiXmlElement* XmlHelpers::toXmlEltEntryGateStruct(const std::string& eltName, const EntryGateStruct& s)
+{
+    TiXmlElement* entryGateStructElt = new TiXmlElement(eltName.c_str());
+    entryGateStructElt->SetAttribute("gravity", XmlHelpers::convertBoolToString(s.mGravity).c_str());
+    entryGateStructElt->LinkEndChild(XmlHelpers::toXmlEltVector3("position", s.mPosition));
+    return entryGateStructElt;
+}
+
+//-------------------------------------------------------------------------------------
+bool XmlHelpers::fromXmlEltEntryGateStruct(TiXmlElement* xmlElt, EntryGateStruct& s)
+{
+    const char* attr = 0;
+    if (!getAttribute(xmlElt, "gravity", attr)) return false;
+    s.mGravity = XmlHelpers::convertStringToBool(attr);
+    TiXmlElement* subElt;
+    if ((subElt = xmlElt->FirstChildElement("position")) == 0)
+        return false;
+    XmlHelpers::fromXmlEltVector3(subElt, s.mPosition);
     return true;
 }
 
@@ -294,7 +336,7 @@ std::string XmlLodContent::toXmlString() const
     s << "<files>";
     for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
-        s << "<file name=\"" << file->filename << "\" version=\"" + XmlHelpers::convertEntityVersionToHexString(file->version) + "\" />";
+        s << "<file name=\"" << file->mFilename << "\" version=\"" << XmlHelpers::convertFileVersionToHexString(file->mVersion) << "\" />";
     }
     s << "</files>";
     s << "</lod>";
@@ -314,9 +356,7 @@ bool XmlLodContent::toXmlElt(TiXmlElement& xmlElt) const
     TiXmlElement* filesElt = new TiXmlElement("files");
     for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
-        TiXmlElement* fileElt = new TiXmlElement("file");
-        fileElt->SetAttribute("name", file->filename.c_str());
-        fileElt->SetAttribute("version", XmlHelpers::convertEntityVersionToHexString(file->version).c_str());
+        TiXmlElement* fileElt = XmlHelpers::toXmlEltLodContentFileStruct("file", *file);
         filesElt->LinkEndChild(fileElt);
     }
     lodElt->LinkEndChild(filesElt);
@@ -359,10 +399,8 @@ bool XmlLodContent::fromXmlElt(TiXmlElement* xmlElt)
     for (TiXmlElement* fileElt = elt->FirstChildElement("file"); fileElt != 0; fileElt = fileElt->NextSiblingElement("file"))
     {
         LodContentFileStruct lodContentFileStruct;
-        if (!XmlHelpers::getAttribute(fileElt, "name", attr)) return false;
-        lodContentFileStruct.filename = std::string(attr);
-        if (!XmlHelpers::getAttribute(fileElt, "version", attr)) return false;
-        lodContentFileStruct.version = XmlHelpers::convertHexStringToFileVersion(attr);
+        if (!XmlHelpers::fromXmlEltLodContentFileStruct(fileElt, lodContentFileStruct))
+            return false;
         mLodContentFileList.push_back(lodContentFileStruct);
     }
 
@@ -487,9 +525,7 @@ std::string XmlSceneContent::toXmlString() const
 bool XmlSceneContent::toXmlElt(TiXmlElement& xmlElt) const
 {
     TiXmlElement* sceneLodContentElt = new TiXmlElement("sceneContent");
-    TiXmlElement* entryGateElt = new TiXmlElement("entryGate");
-    entryGateElt->SetAttribute("gravity", XmlHelpers::convertBoolToString(mEntryGate.mGravity).c_str());
-    entryGateElt->LinkEndChild(XmlHelpers::toXmlEltVector3("position", mEntryGate.mPosition));
+    TiXmlElement* entryGateElt = XmlHelpers::toXmlEltEntryGateStruct("entryGate", mEntryGate);
     sceneLodContentElt->LinkEndChild(entryGateElt);
     xmlElt.LinkEndChild(sceneLodContentElt);
     return true;
@@ -503,12 +539,8 @@ bool XmlSceneContent::fromXmlElt(TiXmlElement* xmlElt)
 
     if ((elt = xmlElt->FirstChildElement("entryGate")) == 0)
         return false;
-    if (!XmlHelpers::getAttribute(elt, "gravity", attr)) return false;
-    mEntryGate.mGravity = XmlHelpers::convertStringToBool(attr);
-    TiXmlElement* subElt;
-    if ((subElt = elt->FirstChildElement("position")) == 0)
+    if (!XmlHelpers::fromXmlEltEntryGateStruct(elt, mEntryGate))
         return false;
-    XmlHelpers::fromXmlEltVector3(subElt, mEntryGate.mPosition);
 
     return true;
 }

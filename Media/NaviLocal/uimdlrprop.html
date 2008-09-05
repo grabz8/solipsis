@@ -2,57 +2,63 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 		<title>uimdlrprop</title>
+		<script type="text/javascript" src="SolipsisHelpers.js"></script>
 		<script type="text/javascript" src="Navi.js"></script>
+
 		<!-- <script type="text/javascript" src="mootools.js"></script> -->
 <!--
         <link rel="stylesheet" href="selector/selector.css" type="text/css">
         <script type="text/javascript" src="selector/selector.js"></script>
 -->
+
 		<!-- TABBERS BEGIN -->
 		<link rel="stylesheet" href="tabber/tabber.css" TYPE="text/css" MEDIA="screen">
-			<script type="text/javascript">
-			/* Optional: Temporarily hide the "tabber" class so it does not "flash"
-			on the page as plain HTML. After tabber runs, the class is changed
-			to "tabberlive" and it will appear. */
-			document.write('<style type="text/css">.tabber{display:block;}<\/style>');
-			</script>
-			<script type="text/javascript" src="tabber/tabber.js"></script>
-			<!-- TABBERS END -->
-			<!-- SLIDERS BEGIN -->
-			<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
-				<script type="text/javascript" src="slider/range.js"></script>
-				<script type="text/javascript" src="slider/timer.js"></script>
-				<script type="text/javascript" src="slider/slider.js"></script>
-				<!-- SLIDERS END -->
-				<!-- COLOR PICKING BEGIN -->
-				<link rel="stylesheet" href="color/color.css" TYPE="text/css">
-					<script type="text/javascript" src="color/color.js"></script>
-					<!-- COLOR PICKING END -->
-					<script type="text/javascript">
+		<script type="text/javascript">
+		/* Optional: Temporarily hide the "tabber" class so it does not "flash"
+		on the page as plain HTML. After tabber runs, the class is changed
+		to "tabberlive" and it will appear. */
+		document.write('<style type="text/css">.tabber{display:block;}<\/style>');
+		</script>
+		<script type="text/javascript" src="tabber/tabber.js"></script>
+		<!-- TABBERS END -->
+
+		<!-- SLIDERS BEGIN -->
+		<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
+	    <script type="text/javascript" src="slider/range.js"></script>
+	    <script type="text/javascript" src="slider/timer.js"></script>
+	    <script type="text/javascript" src="slider/slider.js"></script>
+	    <!-- SLIDERS END -->
+
+	    <!-- COLOR PICKING BEGIN -->
+	    <link rel="stylesheet" href="color/color.css" TYPE="text/css">
+	    <script type="text/javascript" src="color/color.js"></script>
+	    <!-- COLOR PICKING END -->
+
+	    <script type="text/javascript">
             function pageLoaded()
-            {	
-				/* TABBERS */
+            {
+                /* TABBERS */
                 //tabberAutomaticOnLoad();
                 tabberAutomatic(); 
                 
-               	/* COLOR */
-				loadSV();
-				$S('plugin').display='none';
-				$S('SVslide').top=(80/100*170-7)+'px';
-				//HSVupdate([255,0,0]);
-				//HSVupdate();
-				//$S('pAmbient').background='#FFFFFF';
-				//$S('pDiffuse').background='#FFFFFF';
-				//$S('pSpecular').background='#FFFFFF';
+                /* COLOR */
+                loadSV();
+                $S('plugin').display='none';
+                $S('SVslide').top=(80/100*170-7)+'px';
+                //HSVupdate([255,0,0]);
+                //HSVupdate();
+                //$S('pAmbient').background='#FFFFFF';
+                //$S('pDiffuse').background='#FFFFFF';
+                //$S('pSpecular').background='#FFFFFF';
 				
-				// textures
-				//document.getElementById('texture').src="color/blank.bmp";
-				//document.images['textureName'].src='file:///D:/5.png';
-				//document.images['textureName'].src='./color/blank.jpg';
-				//document.getElementById('divTexture').innerHTML="<div style='height: 132px; overflow: auto'><img src='./color/blank.jpg' width=128 height=128/></div>";
+                // textures
+                //document.getElementById('texture').src="color/blank.bmp";
+                //document.images['textureName'].src='file:///D:/5.png';
+                //document.images['textureName'].src='./color/blank.jpg';
+                //document.getElementById('divTexture').innerHTML="<div style='height: 132px; overflow: auto'><img src='./color/blank.jpg' width=128 height=128/></div>";
 				
-				new NaviData('pageLoaded').add({naviName:'uimdlrprop'}).send();
-			}
+                new NaviData('pageLoaded').add({naviName:'uimdlrprop'}).send();
+            }
             
             function elementClicked(elementName)
             {
@@ -61,8 +67,8 @@
             
             function sendMessage(message)
             {
-				//alert(message);
-				new NaviData('sendMessage').add({msg:message}).send();
+                //alert(message);
+                new NaviData('sendMessage').add({msg:message}).send();
             }  
             
             function decToHex(dec) 
@@ -83,9 +89,31 @@
             {
                 return parseInt(hex,16);
             }
+            function resetWWWVLCVNCtabs()
+            {
+                document.getElementById('MaterialWWWUrl').value = 'http://www.solipsis.org';
+                document.getElementById('MaterialWWWWidth').value = '512';
+                document.getElementById('MaterialWWWHeight').value = '512';
+                document.getElementById('MaterialWWWFps').value = '0';
+                document.getElementById('MaterialVLCMrlHelpers').options[0].selected = 'true';
+                document.getElementById('MaterialVLCWidth').value = '256';
+                document.getElementById('MaterialVLCHeight').value = '256';
+                document.getElementById('MaterialVLCFps').value = '25';
+                document.getElementById('MaterialVLCParamsHelpers').options[0].selected = 'true';
+                document.getElementById('MaterialVLCRemoteMrlHelpers').options[0].selected = 'true';
+                var localIP = getURLParam('localIP');
+                <!-- Assign the local IP address for http streaming -->
+                document.getElementById('MaterialVLCParamsHelpers').options[2].value = '--sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=' + localIP + ':8080}}';
+                document.getElementById('MaterialVLCParamsHelpers').options[4].value = '--sout #transcode{vcodec=mp2v,acodec=mpga}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=' + localIP + ':8080}}';
+                <!-- Assign the local IP address for received streams -->
+                document.getElementById('MaterialVLCRemoteMrlHelpers').options[1].value = 'udp://@' + localIP + ':1234}}';
+                document.getElementById('MaterialVLCRemoteMrlHelpers').options[2].value = 'http://' + localIP + ':8080}}';
+                document.getElementById('MaterialVNCHost').value = 'localhost';
+                document.getElementById('MaterialVNCPort').value = '5900';
+                document.getElementById('MaterialVNCPwd').value = 'secret';
+            }
         </script>
-		
-		
+
 		<style type="text/css">
             body
             {
@@ -404,13 +432,13 @@
 		                        <!-- WWW -->
 		                        <h2>WWW</h2>
 						        <table>
-                                    <tr><td>URL</td><td><input type="text" size="50" id="MaterialWWWUrl" value="http://www.solipsis.org"/></td></tr>
+                                    <tr><td>URL</td><td><input type="text" size="50" id="MaterialWWWUrl" value=""/></td></tr>
 						        </table>
 						        <table>
                                     <tr>
-                                        <td>Width</td><td><input type="text" size="10" id="MaterialWWWWidth" value="512"/></td>
-                                        <td>Height</td><td><input type="text" size="10" id="MaterialWWWHeight" value="512"/></td>
-                                        <td>Fps</td><td><input type="text" size="10" id="MaterialWWWFps" value="0"/></td>
+                                        <td>Width</td><td><input type="text" size="6" id="MaterialWWWWidth" value=""/></td>
+                                        <td>Height</td><td><input type="text" size="6" id="MaterialWWWHeight" value=""/></td>
+                                        <td>Fps</td><td><input type="text" size="6" id="MaterialWWWFps" value=""/></td>
                                     </tr>
 						        </table>
 						        <table>
@@ -426,24 +454,25 @@
                                         <td><input type="text" size="50" id="MaterialVLCMrl" value=""/></td>
                                         <td>
                                             <select onchange="document.getElementById('MaterialVLCMrl').value=this.options[this.selectedIndex].value" id="MaterialVLCMrlHelpers">
-                                                <option selected="selected" value="">file</option>
+                                                <option selected="selected" value="">File</option>
                                                 <option value='dvd://D:@0:0  :sub-track=0  :audio-track=0'>DVD(menus)</option>
                                                 <option value='dvdsimple://D:@0:0  :sub-track=0  :audio-track=0'>DVD</option>
                                                 <option value='vcd://D:'>VCD</option>
                                                 <option value='cdda://D:'>CD audio</option>
                                                 <option value='udp://@'>udp</option>
                                                 <option value='http://'>http</option>
+                                                <option value='http://fg.impek.tv:80'>FG Dj Radio</option>
                                                 <option value='rtsp://'>rtp</option>
-                                                <option value='dshow:// :dshow-vdev="" :dshow-adev="" :dshow-size=""'>webcam</option>
+                                                <option value='dshow:// :dshow-vdev="" :dshow-adev="" :dshow-size=""'>Webcam</option>
                                             </select>
                                         </td>
                                     </tr>
 						        </table>
                                 <table>
                                     <tr>
-                                        <td>Width</td><td><input type="text" size="10" id="MaterialVLCWidth" value="256"/></td>
-                                        <td>Height</td><td><input type="text" size="10" id="MaterialVLCHeight" value="256"/></td>
-                                        <td>Fps</td><td><input type="text" size="10" id="MaterialVLCFps" value="25"/></td>
+                                        <td>Width</td><td><input type="text" size="6" id="MaterialVLCWidth" value=""/></td>
+                                        <td>Height</td><td><input type="text" size="6" id="MaterialVLCHeight" value=""/></td>
+                                        <td>Fps</td><td><input type="text" size="6" id="MaterialVLCFps" value=""/></td>
                                     </tr>
                                 </table>
 						        <table>
@@ -463,7 +492,7 @@
                 </div>
 -->
                                             <select onchange="document.getElementById('MaterialVLCParams').value=this.options[this.selectedIndex].value" id="MaterialVLCParamsHelpers">
-                                                <option selected="selected" value="">none</option>
+                                                <option selected="selected" value="">None</option>
                                                 <option value='--sout #duplicate{dst=display{vmem},dst=std{access=udp,mux=ts,dst=127.0.0.1:1234}}'>S udp</option>
                                                 <option value='--sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}'>S http</option>
                                                 <option value='--sout #transcode{vcodec=mp2v,acodec=mpga}:duplicate{dst=display{vmem},dst=std{access=udp,mux=ts,dst=127.0.0.1:1234}}'>T+S udp</option>
@@ -473,6 +502,19 @@
                                     </tr>
                                 </table>
 						        <table>
+                                    <tr>
+                                        <td>RemoteMRL</td>
+                                        <td><input type="text" size="51" id="MaterialVLCRemoteMrl" value=""/></td>
+                                        <td>
+                                            <select onchange="document.getElementById('MaterialVLCRemoteMrl').value=this.options[this.selectedIndex].value" id="MaterialVLCRemoteMrlHelpers">
+                                                <option selected="selected" value="">None</option>
+                                                <option value="udp://@">udp</option>
+                                                <option value='http://'>http</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+						        </table>
+						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVLCTexture')"/></td></tr>
 						        </table>
  	                        </div>
@@ -480,9 +522,13 @@
 		                        <!-- VNC -->
 		                        <h2>VNC</h2>
 						        <table>
-                                    <tr><td>Host</td><td><input type="text" size="20" id="MaterialVNCHost" value="localhost"/></td></tr>
-                                    <tr><td>Port</td><td><input type="text" size="10" id="MaterialVNCPort" value="5900"/></td></tr>
-                                    <tr><td>Password</td><td><input type="text" size="20" id="MaterialVNCPwd" value="secret"/></td></tr>
+                                    <tr>
+                                        <td>Host</td><td><input type="text" size="50" id="MaterialVNCHost" value=""/></td>
+                                        <td>Port</td><td><input type="text" size="6" id="MaterialVNCPort" value=""/></td>
+                                    </tr>
+						        </table>
+						        <table>
+                                    <tr><td>Password</td><td><input type="text" size="20" id="MaterialVNCPwd" value=""/></td></tr>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVNCTexture')"/></td></tr>
 						        </table>
  	                        </div>

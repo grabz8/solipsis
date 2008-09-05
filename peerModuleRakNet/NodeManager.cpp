@@ -65,12 +65,12 @@ void NodeManager::onUpdatedEntity(Entity* entity)
 }
 
 //-------------------------------------------------------------------------------------
-void NodeManager::onLostEntity(Entity* entity)
+void NodeManager::onLostEntity(Entity* entity, bool sendLostEvt)
 {
     const NodeId& avatarNodeId = Peer::getSingleton().getNodeId();
     AvatarNode* avatarNode = (AvatarNode*)mNodes[avatarNodeId];
     if (avatarNode != 0)
-        avatarNode->onLostEntity(entity);
+        avatarNode->onLostEntity(entity, sendLostEvt);
 }
 
 //-------------------------------------------------------------------------------------

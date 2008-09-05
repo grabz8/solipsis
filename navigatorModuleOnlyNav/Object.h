@@ -36,21 +36,21 @@ namespace Solipsis {
 class Object : public OgrePeer
 {
 protected:
-    /// Modeler Object3D list
-    Object3DPtrList mObject3DList;
+    /// Modeler Object3D
+    Object3D* mObject3D;
 
 public:
     /** Constructor. */
 #ifdef POOL
-    Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, const Object3DPtrList& object3DList);
+    Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D = 0);
 #else
-    Object(XmlEntity* xmlEntity, bool isLocal, const Object3DPtrList& object3DList);
+    Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D = 0);
 #endif
     /** Destructor. */
     virtual ~Object();
 
-    /** Get the Object3D list. */
-    const Object3DPtrList& getObject3DList() { return mObject3DList; }
+	/** Called when the object was saved. */
+	void onObjectSave();
 
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);

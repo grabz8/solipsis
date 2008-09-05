@@ -27,13 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Object.h"
 #include "OgreOSMScene.h"
 #include "Navigator.h"
-#include "OgreHelpers.h"
 #include <Modeler.h>
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
+#include <CTLog.h>
 #include <CTIO.h>
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 // this internal OSM-loader callbacks class is used to force OFF shadows casting of entities
 class OgrePeerManagerOSMSceneCallbacks : public OSMSceneCallbacks
@@ -90,7 +91,12 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
     if (newOgrePeer != 0)
         mOgrePeersMap[xmlEntity->getUid()] = newOgrePeer;
     else
-        OGRE_LOG("OgrePeerManager::load() Unable to load node type:" + xmlEntity->getTypeRepr() + ", uid:" + xmlEntity->getUidString());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "OgrePeerManager::load() Unable to load node type:%s, uid:%s", xmlEntity->getTypeRepr().c_str(), xmlEntity->getUidString().c_str());
+    // update the object now to force loading of content, load is performed after registering into mOgrePeersMap
+    // in order the loadTexture can retrieve this object is local (VLC textures)
+    // TODO: OgrePeer should register itself in manager on constr then load is performed according its internal state
+    if (xmlEntity->getType() == ETObject)
+        newOgrePeer->update(xmlEntity);
 
     return true;
 }
@@ -117,7 +123,7 @@ bool OgrePeerManager::remove(const EntityUID& entity, bool local)
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::removeAll(bool local)
+void OgrePeerManager::removeAll(bool local)
 {
     bool loopAgain;
 
@@ -138,8 +144,6 @@ bool OgrePeerManager::removeAll(bool local)
             break;
         }
     }
-
-    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -227,25 +231,144 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object3DPtrList& object3DList)
+EntityUID OgrePeerManager::getNewEntityUID()
 {
     static EntityUID nextEntityUID = 0x00000001; // hmhm Entities UID management TODO
+
     EntityUID objectEntityUid;
     const char *m = mNodeId.c_str();
     sscanf(mNodeId.c_str(), "%08X", &objectEntityUid);
     objectEntityUid <<= 16;
-    objectEntityUid |= nextEntityUID;
+    while (true)
+    {
+        objectEntityUid |= nextEntityUID;
+        OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(objectEntityUid);
+        OgrePeersMap::iterator ogrePeerReserved = mReservedOgrePeersMap.find(objectEntityUid);
+        if ((ogrePeer == mOgrePeersMap.end()) && (ogrePeerReserved == mReservedOgrePeersMap.end()))
+            break;
+        objectEntityUid &= 0xFFFF0000;
+        nextEntityUID++;
+    }
 
-    // Rename the sof file
-    String::size_type dotPos = sofPathname.find_last_of(".");
-    String::size_type filenamePos = sofPathname.find_last_of("/\\");
-    if (filenamePos == String::npos)
-        filenamePos = 0;
+    mReservedOgrePeersMap[objectEntityUid] = 0;
+    return objectEntityUid;
+}
+
+//-------------------------------------------------------------------------------------
+OgrePeer* OgrePeerManager::getOgrePeer(const EntityUID& entityUID)
+{
+    OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(entityUID);
+    if (ogrePeer == mOgrePeersMap.end())
+        return 0;
+    return ogrePeer->second;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object3D)
+{
+    // Object updated or new object ?
+    OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(object3D->getEntityUID());
+    if (ogrePeer == mOgrePeersMap.end())
+    {
+        // New object entity
+        mReservedOgrePeersMap.erase(object3D->getEntityUID());
+
+        // Create the Xml entity
+#ifdef POOL
+        RefCntPoolPtr<XmlEntity> xmlEntity;
+#else
+        XmlEntity* xmlEntity = new XmlEntity();
+#endif
+        xmlEntity->setDefinedAttributes(XmlEntity::DANone);
+        xmlEntity->setUid(object3D->getEntityUID());
+        xmlEntity->setOwner(mNodeId);
+        xmlEntity->setType(ETObject);
+        xmlEntity->setName(object3D->getName());
+        xmlEntity->setVersion(0);
+        xmlEntity->setFlags(EFNone);
+        xmlEntity->setPosition(Vector3::ZERO);
+        xmlEntity->setOrientation(Quaternion::IDENTITY);
+#ifdef POOL
+        RefCntPoolPtr<XmlContent> xmlContent;
+        RefCntPoolPtr<XmlLodContent> xmlLodContent0;
+#else
+        XmlContent* xmlContent = new XmlContent();
+        XmlLodContent* xmlLodContent0 = new XmlLodContent();
+#endif
+        xmlLodContent0->setLevel(0);
+        LodContentFileStruct lodContent0File;
+        lodContent0File.mFilename = sofFilename;
+        // here we are maybe creating 1 new object with 1 uid previously assigned to a deleted object
+        // so we have to take care files in cache manager are well replaced by new ones
+        // ideally we should use the local cacheManager (of navigator) to detect this case, get old version, increment it and purge this entry
+        // for instance (no cache manager in navigator) we will simply set the current date into the version
+        time_t now;
+        time(&now);
+        lodContent0File.mVersion = now;
+        xmlLodContent0->getLodContentFileList().push_back(lodContent0File);
+        xmlContent->getContentLodMap()[xmlLodContent0->getLevel()] = xmlLodContent0;
+        xmlEntity->setContent(xmlContent);
+
+        // Create the object
+        Object* peerObject = new Object(xmlEntity, true, object3D);
+
+        // Store it
+        mOgrePeersMap[xmlEntity->getUid()] = peerObject;
+
+        // Send new entity event
+#ifdef POOL
+        RefCntPoolPtr<XmlEvt> xmlEvt;
+        xmlEvt->setType(ETNewEntity);
+        xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
+#else
+        XmlEvt xmlEvt(ETNewEntity);
+        xmlEvt.setDatas(xmlEntity);
+#endif
+        mEvtsList.push_back(xmlEvt);
+    }
     else
-        filenamePos++;
-    String dstSofFilename = XmlHelpers::convertEntityUIDToHexString(objectEntityUid) + sofPathname.substr(dotPos, sofPathname.length() - dotPos);
-    String dstSofPathname = sofPathname.substr(0, filenamePos) + dstSofFilename;
-    CommonTools::IO::renameFile(std::string(sofPathname), std::string(dstSofPathname));
+    {
+        // Updated object
+
+        Object *object = (Object*)ogrePeer->second;
+        object->onObjectSave();
+
+        // Create the Xml entity
+#ifdef POOL
+        RefCntPoolPtr<XmlEntity> xmlEntity;
+#else
+        XmlEntity* xmlEntity = new XmlEntity();
+#endif
+        xmlEntity->setDefinedAttributes(XmlEntity::DANone);
+        xmlEntity->setUid(object->getXmlEntity()->getUid());
+        xmlEntity->setType(object->getXmlEntity()->getType());
+        xmlEntity->setVersion(object->getXmlEntity()->getVersion());
+        xmlEntity->setContent(object->getXmlEntity()->getContent());
+
+        // Send updated entity event
+#ifdef POOL
+        RefCntPoolPtr<XmlEvt> xmlEvt;
+        xmlEvt->setType(ETUpdatedEntity);
+        xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
+#else
+        XmlEvt xmlEvt(ETUpdatedEntity);
+        xmlEvt.setDatas(xmlEntity);
+#endif
+        mEvtsList.push_back(xmlEvt);
+    }
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgrePeerManager::onObject3DDelete(Object3D* object3D)
+{
+    // Object exists or not yet saved ?
+    OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(object3D->getEntityUID());
+    if (ogrePeer == mOgrePeersMap.end())
+        return false;
+
+    Object *object = (Object*)ogrePeer->second;
 
     // Create the Xml entity
 #ifdef POOL
@@ -254,56 +377,43 @@ bool OgrePeerManager::OnObject3DListSave(const String& sofPathname, const Object
     XmlEntity* xmlEntity = new XmlEntity();
 #endif
     xmlEntity->setDefinedAttributes(XmlEntity::DANone);
-    xmlEntity->setUid(objectEntityUid);
-    xmlEntity->setType(ETObject);
-    xmlEntity->setName(xmlEntity->getUidString());
-    xmlEntity->setVersion(0);
-    xmlEntity->setFlags(EFNone);
-    xmlEntity->setPosition(Vector3::ZERO);
-    xmlEntity->setOrientation(Quaternion::IDENTITY);
-#ifdef POOL
-    RefCntPoolPtr<XmlContent> xmlContent;
-    RefCntPoolPtr<XmlLodContent> xmlLodContent0;
-#else
-    XmlContent* xmlContent = new XmlContent();
-    XmlLodContent* xmlLodContent0 = new XmlLodContent();
-#endif
-    xmlLodContent0->setLevel(0);
-    XmlLodContent::LodContentFileStruct lodContent0File;
-    lodContent0File.filename = dstSofFilename;
-    lodContent0File.version = 0;
-    xmlLodContent0->getLodContentFileList().push_back(lodContent0File);
-    xmlContent->getContentLodMap()[xmlLodContent0->getLevel()] = xmlLodContent0;
-    xmlEntity->setContent(xmlContent);
+    xmlEntity->setUid(object->getXmlEntity()->getUid());
+    xmlEntity->setType(object->getXmlEntity()->getType());
 
-    // Create the object
-    Object* peerObject = new Object(xmlEntity, true, object3DList);
-
-    // Store it
-    mOgrePeersMap[xmlEntity->getUid()] = peerObject;
-
-    // Send new entity event
+    // Send lost entity event
 #ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
-    xmlEvt->setType(ETNewEntity);
+    xmlEvt->setType(ETLostEntity);
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
 #else
-    XmlEvt xmlEvt(ETNewEntity);
+    XmlEvt xmlEvt(ETLostEntity);
     xmlEvt.setDatas(xmlEntity);
 #endif
     mEvtsList.push_back(xmlEvt);
 
-    // hmhm next entity UID ??!??
-    nextEntityUID++;
+    mOgrePeersMap.erase(ogrePeer);
+    delete object;
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::OnUserAvatarSave()
+bool OgrePeerManager::isObject3DOwned(Object3D* object3D)
+{
+    // Object exists or not yet saved ?
+    OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(object3D->getEntityUID());
+    if (ogrePeer == mOgrePeersMap.end())
+        return true;
+
+    Object *object = (Object*)ogrePeer->second;
+    return (object->getXmlEntity()->getOwner() == mNodeId);
+}
+
+//-------------------------------------------------------------------------------------
+bool OgrePeerManager::onUserAvatarSave()
 {
     Avatar *userAvatar = (Avatar*)mUserAvatar;
-    userAvatar->OnAvatarSave();
+    userAvatar->onAvatarSave();
 
     // Create the Xml entity
 #ifdef POOL
@@ -341,15 +451,14 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     if (mSceneMgr == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateAvatarNode");
 
-    std::string uidStr = xmlEntity->getUidString();
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
     String defaultCharacterName = "";
     XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
     for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
-        if (it->filename.find(".saf") == it->filename.length() - 4)
-            defaultCharacterName = it->filename.substr(0, it->filename.length() - 4);
-    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(uidStr, defaultCharacterName);
+        if (it->mFilename.find(".saf") == it->mFilename.length() - 4)
+            defaultCharacterName = it->mFilename.substr(0, it->mFilename.length() - 4);
+    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUidString(), defaultCharacterName);
     if (characterInstance == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "OgrePeerManager::CreateAvatarNode");
     if (isLocal)
@@ -377,7 +486,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     }
 
     if (mCallbacks != 0)
-        if (!mCallbacks->OnAvatarNodeCreate(peerAvatar))
+        if (!mCallbacks->onAvatarNodeCreate(peerAvatar))
         {
             delete peerAvatar;
             return 0;
@@ -403,16 +512,15 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
     // Find .ssf file
     XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
     for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-        if (lodContent0File->filename.find(".ssf") == lodContent0File->filename.length() - 4)
+        if (lodContent0File->mFilename.find(".ssf") == lodContent0File->mFilename.length() - 4)
             break;
     if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "OgrePeerManager::CreateSceneNode");
 
     // Create the resource group
-    String mediaCacheScenePath = Navigator::getSingletonPtr()->getMediaCachePath() + "\\scenes";
     String resourceGroup = xmlEntity->getUidString() + "Resources";
     ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-    ResourceGroupManager::getSingleton().addResourceLocation(mediaCacheScenePath + "\\" + lodContent0File->filename, "Zip", resourceGroup);
+    ResourceGroupManager::getSingleton().addResourceLocation(Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
     ResourceGroupManager::getSingleton().initialiseResourceGroup(resourceGroup);
 
     // Create the scene node
@@ -444,7 +552,7 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
     Scene* peerScene = new Scene(xmlEntity, isLocal, node);
 
     if (mCallbacks != 0)
-        if (!mCallbacks->OnSceneNodeCreate(peerScene))
+        if (!mCallbacks->onSceneNodeCreate(peerScene))
         {
             delete peerScene;
             return 0;
@@ -465,28 +573,8 @@ OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
 
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
-    // Get the scene content for LOD 0
-    XmlContent::ContentLodMap& contentLodMap = xmlEntity->getContent()->getContentLodMap();
-    RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
-
-    // Find .sof file
-    XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
-    for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-        if (lodContent0File->filename.find(".sof") == lodContent0File->filename.length() - 4)
-            break;
-    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .sof object file found !", "OgrePeerManager::CreateObjectNode");
-
-    String mediaCacheModelsPath = Navigator::getSingletonPtr()->getMediaCachePath() + "\\models";
-    String pathname = mediaCacheModelsPath + "\\" + lodContent0File->filename;
-
-    Modeler* modeler = Modeler::getSingletonPtr();
-    Object3DPtrList newObjects;
-    if (!modeler->XMLLoad(pathname, newObjects))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "OgrePeerManager::CreateObjectNode");
-
     // Create the object
-    Object* peerObject = new Object(xmlEntity, isLocal, newObjects);
+    Object* peerObject = new Object(xmlEntity, isLocal);
 
     return peerObject;
 }

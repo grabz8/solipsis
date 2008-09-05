@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Navigator_h__
 
 #include "Instance.h"
+#include <CTLog.h>
 #include "NavigatorXMLRPCClient.h"
 #include "NodeEventListener.h"
 #include "Avatar.h"
@@ -106,10 +107,10 @@ protected:
     Real mMaxVNCPickingDistance;
     RaySceneQuery* mRaySceneQuery;
     MovableObject* mPickedMovable;
-    Real closestDistance;
-    Vector3 closestHitPoint;
-    Vector2 closestUV;
-    Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+    Real mClosestDistance;
+    Vector3 mClosestHitPoint;
+    Vector2 mClosestUV;
+    Vector2 mClosestTriUV0, mClosestTriUV1, mClosestTriUV2;
 
     lua_State* mLuaState;
     NavigatorLua* mNavigatorLua;
@@ -217,9 +218,9 @@ public:
     void sendEvents();
 
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool OnAvatarNodeCreate(OgrePeer* ogrePeer);
+    virtual bool onAvatarNodeCreate(OgrePeer* ogrePeer);
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool OnSceneNodeCreate(OgrePeer* ogrePeer);
+    virtual bool onSceneNodeCreate(OgrePeer* ogrePeer);
 
     // Modeler part
 
@@ -296,6 +297,14 @@ protected:
     virtual bool createGUI();
 
     virtual bool setWindow(IWindow* w);
+
+    class OgreLogger : public CommonTools::LogHandler
+    {
+    public:
+        /** See CommonTools::LogHandler. */
+        void log(int level, const char* msg);
+    };
+    OgreLogger mOgreLogger;
 
     // Locals
     void setNodeStatus(String& nodeStatusString);

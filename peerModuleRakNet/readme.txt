@@ -28,7 +28,7 @@ Peer.exe is taking 3 optional args:
 -h <IPaddr:str>         : IP address (default: localhost)
 -p <port:int>           : port (default: 8550)
 -v <verbosity:int>      : verbosity level (0..2)
--m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator, its Peer and the RakNet Server)
+-m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator and its Peer)
 -rh <IPaddr:str>        : IP address of the RakNet server (default: localhost)
 -rp <port:int>          : port of the RakNet server (default: 8660)
 -id <avatarNodeId:str>  : Unique avatar node identifier, hex string of 8 digits (default: 00000001), check each peer has 1 different id !

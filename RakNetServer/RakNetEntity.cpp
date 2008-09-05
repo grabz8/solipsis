@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <StringTable.h>
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -35,13 +36,13 @@ RakNetEntity::RakNetEntity() :
     mReplicaFlags(RFNone),
     mLastDeserializedDefinedAttributes(XmlEntity::DANone)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetEntity::RakNetEntity()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::RakNetEntity()");
 }
 
 //-------------------------------------------------------------------------------------
 RakNetEntity::~RakNetEntity()
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetEntity::~RakNetEntity()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::~RakNetEntity()");
 
 #ifdef POOL
 #else
@@ -52,11 +53,11 @@ RakNetEntity::~RakNetEntity()
 //-------------------------------------------------------------------------------------
 bool RakNetEntity::SerializeConstruction(BitStream *bitStream, SerializationContext *serializationContext)
 {
-    RakNetConnection::getSingleton()->logMessage("RakNetEntity::SerializeConstruction()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::SerializeConstruction()");
 
     StringTable::Instance()->EncodeString("Entity", 128, bitStream);
 
-//    RakNetConnection::getSingleton()->mFileListTransfer.Send(fileList, RakNetConnection::getSingleton()->mRakPeer, serializationContext->recipientAddress, , , false);
+//    RakNetConnection::getSingletonPtr()->mFileListTransfer.Send(fileList, RakNetConnection::getSingletonPtr()->mRakPeer, serializationContext->recipientAddress, , , false);
 
     return true;
 }
@@ -64,24 +65,32 @@ bool RakNetEntity::SerializeConstruction(BitStream *bitStream, SerializationCont
 //-------------------------------------------------------------------------------------
 bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *serializationContext)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetEntity::Serialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::Serialize()");
 
     // case 1 : client serialize updated attributes, server relay them
     // case 2 : server serialize all defined attributes when it is not a relay (eg. construction)
     // case 3 : client serialize all defined attributes when it has just created the entity (eg. broadcast serialization to system)
     XmlEntity::DefinedAttributes definedAttributes = mLastDeserializedDefinedAttributes;
-    if ((RakNetConnection::getSingleton()->mServer && (serializationContext->serializationType != RELAY_SERIALIZATION_TO_SYSTEMS)) || 
-        (!RakNetConnection::getSingleton()->mServer && (serializationContext->serializationType == BROADCAST_SERIALIZATION_GENERIC_TO_SYSTEM)))
+    if ((RakNetConnection::getSingletonPtr()->mServer && (serializationContext->serializationType != RELAY_SERIALIZATION_TO_SYSTEMS)) || 
+        (!RakNetConnection::getSingletonPtr()->mServer && (serializationContext->serializationType == BROADCAST_SERIALIZATION_GENERIC_TO_SYSTEM)))
         definedAttributes = mXmlEntity->getDefinedAttributes();
 
     // client is resetting the defined/updated attributes for next updates
-    if (!RakNetConnection::getSingleton()->mServer)
+    if (!RakNetConnection::getSingletonPtr()->mServer)
         mLastDeserializedDefinedAttributes = XmlEntity::DAUid;
 
 #ifdef LOGRAKNET
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetEntity::Serialize() uid:0x%08x, name:%s, owner:%s, defAttr:0x%08x, ctxType:%d, recip@:%s, pos(%.2f,%.2f,%.2f)", mXmlEntity->getUid(), mXmlEntity->getName().c_str(), mXmlEntity->getOwner().c_str(), definedAttributes, serializationContext->serializationType, serializationContext->recipientAddress.ToString(), (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1, (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1, (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetEntity::Serialize() uid:%s, name:%s, owner:%s, defAttr:0x%08x, ctxType:%d, recip@:%s, pos(%.2f,%.2f,%.2f)",
+        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getName().c_str(),
+        mXmlEntity->getOwner().c_str(),
+        definedAttributes,
+        serializationContext->serializationType,
+        serializationContext->recipientAddress.ToString(),
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
 #endif
 
     bitStream->Write(definedAttributes);
@@ -112,13 +121,10 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
     }
 #ifdef POOL
     RefCntPoolPtr<XmlContent> xmlContent = mXmlEntity->getContent();
-    bool hasContent = (xmlContent != RefCntPoolPtr<XmlContent>::nullPtr);
 #else
     XmlContent* xmlContent = mXmlEntity->getContent();
-    bool hasContent = (xmlContent != 0);
 #endif
-    bitStream->Write(hasContent);
-    if (hasContent)
+    if (definedAttributes & XmlEntity::DAContent)
     {
 #ifdef POOL
         RefCntPoolPtr<XmlData> xmlContentDatas = xmlContent->getDatas();
@@ -172,8 +178,8 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
             bitStream->Write((unsigned int)lodContentFileList.size());
             for(XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
             {
-                RakNetConnection::SerializeString(bitStream, itf->filename);
-                bitStream->Write(itf->version);
+                RakNetConnection::SerializeString(bitStream, itf->mFilename);
+                bitStream->Write(itf->mVersion);
             }
         }
     }
@@ -184,7 +190,7 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
 //-------------------------------------------------------------------------------------
 void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
-//    RakNetConnection::getSingleton()->logMessage("RakNetEntity::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::Deserialize()");
 
     // get defined/serialized attributes
     XmlEntity::DefinedAttributes definedAttributes;
@@ -197,7 +203,7 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
         bitStream->Read(uid);
         mXmlEntity->setUid(uid);
         /// Server can serialize
-        if (RakNetConnection::getSingleton()->mServer)
+        if (RakNetConnection::getSingletonPtr()->mServer)
             mReplicaFlags |= RFSerializationAuthorized;
     }
     if (definedAttributes & XmlEntity::DAOwner)
@@ -263,9 +269,7 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
         Ogre::AxisAlignedBox AABoundingBox(min, max);
         mXmlEntity->setAABoundingBox(AABoundingBox);
     }
-    bool hasContent;
-    bitStream->Read(hasContent);
-    if (hasContent)
+    if (definedAttributes & XmlEntity::DAContent)
     {
 #ifdef POOL
         RefCntPoolPtr<XmlContent> xmlContent;
@@ -282,7 +286,7 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
 #else
                 XmlSceneContent* xmlSceneContent = new XmlSceneContent();
 #endif
-                XmlSceneContent::EntryGateStruct entryGate;
+                EntryGateStruct entryGate;
                 bitStream->Read(entryGate.mGravity);
                 RakNetConnection::DeserializeVector3(bitStream, entryGate.mPosition);
                 xmlSceneContent->setEntryGate(entryGate);
@@ -331,33 +335,125 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
             bitStream->Read(lodContentFileListSize);
             for (;lodContentFileListSize > 0; --lodContentFileListSize)
             {
-                XmlLodContent::LodContentFileStruct lodContentFileStruct;
-                RakNetConnection::DeserializeString(bitStream, lodContentFileStruct.filename);
-                bitStream->Read(lodContentFileStruct.version);
+                LodContentFileStruct lodContentFileStruct;
+                RakNetConnection::DeserializeString(bitStream, lodContentFileStruct.mFilename);
+                bitStream->Read(lodContentFileStruct.mVersion);
                 lodContentFileList.push_back(lodContentFileStruct);
             }
             contentLodMap[xmlLodContent->getLevel()] = xmlLodContent;
         }
 
         mXmlEntity->setContent(xmlContent);
+
+        requestFilesFromCacheManager(sender);
     }
 
 #ifdef LOGRAKNET
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetEntity::Deserialize() uid:0x%08x, name:%s, owner:%s, lastDeserAttr:0x%08x, pos(%.2f,%.2f,%.2f)", mXmlEntity->getUid(), mXmlEntity->getName().c_str(), mXmlEntity->getOwner().c_str(), mLastDeserializedDefinedAttributes, (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1, (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1, (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetEntity::Deserialize() uid:%s, name:%s, owner:%s, lastDeserAttr:0x%08x, pos(%.2f,%.2f,%.2f)",
+        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getName().c_str(),
+        mXmlEntity->getOwner().c_str(),
+        mLastDeserializedDefinedAttributes,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
 #endif
+}
+
+//-------------------------------------------------------------------------------------
+bool RakNetEntity::QueryIsDestructionAuthority(void) const
+{
+#ifdef LOGRAKNET
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetEntity::QueryIsDestructionAuthority() uid:%s, returning %s",
+        mXmlEntity->getUidString().c_str(),
+        LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
+#endif
+	return mReplicaFlags & RFSerializationAuthorized;
 }
 
 //-------------------------------------------------------------------------------------
 bool RakNetEntity::QueryIsSerializationAuthority(void) const
 {
 #ifdef LOGRAKNET
-    char logStr[256];
-    _snprintf(logStr, sizeof(logStr)-1, "RakNetEntity::QueryIsSerializationAuthority() uid:0x%08x, returning %s", mXmlEntity->getUid(), (mReplicaFlags & RFSerializationAuthorized) ? "true" : "false");
-    RakNetConnection::getSingleton()->logMessage(std::string(logStr));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetEntity::QueryIsSerializationAuthority() uid:%s, returning %s",
+        mXmlEntity->getUidString().c_str(),
+        LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
 #endif
 	return mReplicaFlags & RFSerializationAuthorized;
+}
+
+//-------------------------------------------------------------------------------------
+void RakNetEntity::addFilesInCacheManager()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::addFilesInCacheManager()");
+
+#ifdef POOL
+    RefCntPoolPtr<XmlContent> xmlContent = mXmlEntity->getContent();
+#else
+    XmlContent* xmlContent = mXmlEntity->getContent();
+#endif
+    if (!(mXmlEntity->getDefinedAttributes() & XmlEntity::DAContent))
+        return;
+    XmlContent::ContentLodMap& contentLodMap = xmlContent->getContentLodMap();
+    for(XmlContent::ContentLodMap::const_iterator itl = contentLodMap.begin(); itl != contentLodMap.end(); ++itl)
+    {
+#ifdef POOL
+        RefCntPoolPtr<XmlLodContent> xmlLodContent = itl->second;
+#else
+        XmlLodContent* xmlLodContent = itl->second;
+#endif
+        XmlLodContent::LodContentFileList& lodContentFileList = xmlLodContent->getLodContentFileList();
+        for(XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::addFilesInCacheManager() adding file %s", itf->mFilename.c_str());
+            RakNetConnection::getSingletonPtr()->mCacheManager.addFile(itf->mFilename, itf->mVersion);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void RakNetEntity::requestFilesFromCacheManager(const SystemAddress& sender)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::requestFilesFromCacheManager()");
+
+#ifdef POOL
+    RefCntPoolPtr<XmlContent> xmlContent = mXmlEntity->getContent();
+#else
+    XmlContent* xmlContent = mXmlEntity->getContent();
+#endif
+    if (!(mXmlEntity->getDefinedAttributes() & XmlEntity::DAContent))
+        return;
+    XmlContent::ContentLodMap& contentLodMap = xmlContent->getContentLodMap();
+    for(XmlContent::ContentLodMap::const_iterator itl = contentLodMap.begin(); itl != contentLodMap.end(); ++itl)
+    {
+#ifdef POOL
+        RefCntPoolPtr<XmlLodContent> xmlLodContent = itl->second;
+#else
+        XmlLodContent* xmlLodContent = itl->second;
+#endif
+        XmlLodContent::LodContentFileList& lodContentFileList = xmlLodContent->getLodContentFileList();
+        for (XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
+            mMissingFiles.push_back(*itf);
+        for (XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::requestFilesFromCacheManager() requesting file %s", itf->mFilename.c_str());
+            RakNetConnection::getSingletonPtr()->mCacheManager.requestFile(sender, itf->mFilename, itf->mVersion, this);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void RakNetEntity::onTransferComplete(const std::string& filename)
+{
+    for (XmlLodContent::LodContentFileList::iterator it = mMissingFiles.begin(); it != mMissingFiles.end(); ++it)
+        if (it->mFilename == filename)
+        {
+            mMissingFiles.erase(it);
+            return;
+        }
 }
 
 //-------------------------------------------------------------------------------------

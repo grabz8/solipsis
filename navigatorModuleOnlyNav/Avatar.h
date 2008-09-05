@@ -152,7 +152,7 @@ public:
     void detachFromSceneNode();
 
 	/** Called when the avatar was saved. */
-	void OnAvatarSave();
+	void onAvatarSave();
 
     /** Set whether the name is visible or not. */
     void setNameVisibility(bool visible);

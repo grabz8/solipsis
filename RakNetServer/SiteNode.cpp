@@ -24,19 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SiteNode.h"
 #include "RakNetServer.h"
 
+using namespace CommonTools;
+
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 SiteNode::SiteNode() :
     RakNetSiteNode()
 {
-    RakNetConnection::getSingleton()->logMessage("SiteNode::SiteNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::SiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 SiteNode::~SiteNode()
 {
-    RakNetConnection::getSingleton()->logMessage("SiteNode::~SiteNode()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::~SiteNode()");
 
     RakNetServer::getSingleton().onSiteNodeDestroyed(this);
 }
@@ -50,7 +52,7 @@ Entity::EntityMap& SiteNode::getPresentEntities()
 //-------------------------------------------------------------------------------------
 void SiteNode::addPresentEntity(Entity* entity)
 {
-    RakNetConnection::getSingleton()->logMessage("SiteNode::addPresentEntity() uid:" + mEntity->getXmlEntity()->getUidString() + " adding entity uid:" + entity->getXmlEntity()->getUidString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::addPresentEntity() uid:%s adding entity uid:%s", mEntity->getXmlEntity()->getUidString().c_str(), entity->getXmlEntity()->getUidString().c_str());
 
     mPresentEntities[entity->getXmlEntity()->getUid()] = entity;
 }
@@ -58,7 +60,7 @@ void SiteNode::addPresentEntity(Entity* entity)
 //-------------------------------------------------------------------------------------
 void SiteNode::removePresentEntity(Entity* entity)
 {
-    RakNetConnection::getSingleton()->logMessage("SiteNode::removePresentEntity() uid:" + mEntity->getXmlEntity()->getUidString() + " removing entity uid:" + entity->getXmlEntity()->getUidString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::removePresentEntity() uid:%s removing entity uid:%s", mEntity->getXmlEntity()->getUidString().c_str(), entity->getXmlEntity()->getUidString().c_str());
 
     mPresentEntities.erase(entity->getXmlEntity()->getUid());
 }
@@ -84,7 +86,7 @@ bool SiteNode::loadFromElt(TiXmlElement* nodeElt)
 //-------------------------------------------------------------------------------------
 TiXmlElement* SiteNode::getSavedElt()
 {
-    RakNetConnection::getSingleton()->logMessage("SiteNode::getSavedElt() saving entity of site node with nodeId:" + mNodeId);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::getSavedElt() saving entity of site node with nodeId:%s", mNodeId.c_str());
 
     // Get root node
     TiXmlElement* nodeElt = RakNetNode::getSavedElt();

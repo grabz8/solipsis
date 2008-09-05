@@ -92,15 +92,23 @@ You can build:
 - the Navigator application with the Peer embedded (DebugNCS/ReleaseNCS configs, NCS stands for NullClientServer)
 
 
-To run the Peer application you currently have to specify host, port and verbosity of the Peer/Navigator XMLRPC server,
+To run the Peer application you can specify host, port and verbosity of the Peer/Navigator XMLRPC server,
 additionally you have to specify host, port of the RakNet server, in DebugNCS/ReleaseNCS configs those parameters should be passed to the Navigator application:
 -h <IPaddr:str>         : IP address (default: localhost)
 -p <port:int>           : port (default: 8550)
 -v <verbosity:int>      : verbosity level (0..2)
--m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator, its Peer and the RakNet Server)
+-m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator and its Peer)
 -rh <IPaddr:str>        : IP address of the RakNet server (default: localhost)
 -rp <port:int>          : port of the RakNet server (default: 8660)
 -id <avatarNodeId:str>  : Unique avatar node identifier, hex string of 8 digits (default: 00000001), check each peer has 1 different id !
+
+
+To run the RakNet Server you can specify the port, max connections and simulated scene
+If you launch it from the same system than navigator then you have to change the Media/cache directory (eg. copy the default Media/cache directory into Media/cacheServer)
+-p <port:int>                   : port (default: 8660)
+-c <maxIncomingConnections:int> : maximum incoming connections (default: 32)
+-s <sceneName:str>              : Scene name loaded by the simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
+-m <mediaCachePath:str>         : Pathname to Media/cache directory
 
 
 --------------------------------------------------------------------------------

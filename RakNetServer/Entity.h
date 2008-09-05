@@ -42,6 +42,9 @@ public:
     /** Destructor. */
     virtual ~Entity();
 
+    /** See Replica2::DeserializeDestruction. */
+	virtual void DeserializeDestruction(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+
     /** See Replica2::Deserialize. */
 	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
 };

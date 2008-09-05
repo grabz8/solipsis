@@ -84,11 +84,19 @@ public:
 
 	/** Add 1 new entity. */
     static void addEntity(Entity* entity, bool sendNewEvt);
+	/** Remove 1 entity. */
+    static void removeEntity(Entity* entity, bool sendLostEvt);
 	/** Helper function to get entities. */
     static EntityMap& getEntities() { return entities; }
 
+    /** See Replica2::DeserializeDestruction. */
+	virtual void DeserializeDestruction(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+
     /** See Replica2::Deserialize. */
 	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+
+    /** See CacheManagerCallback::onTransferComplete. */
+    virtual void onTransferComplete(const std::string& filename);
 
     /** Apply or not the gravity. */
     void applyGravity(bool enabled);

@@ -100,6 +100,8 @@ public:
 
     /** Retrieve the avatar node according to its entity UID */
     AvatarNode* getAvatarNodeOfEntity(const EntityUID& entityUID);
+    /** Retrieve the site node */
+    SiteNode* getSiteNode();
 
     /** Load 1 entity */
     Entity* loadEntity(TiXmlElement* entityElt);
@@ -107,13 +109,6 @@ public:
     bool loadNodeIdFile(const NodeId& nodeId, RakNetNode* node = 0);
     /** Save/Update entities of a nodeId */
     bool saveNodeIdFile(const NodeId& nodeId);
-
-protected:
-    class RakNetConnectionLogger : public IRakNetConnectionLogger {
-        /** See IRakNetConnectionLogger. */
-        virtual void logMessage(const std::string& message);
-    };
-    RakNetConnectionLogger mRakNetConnectionLogger;
 };
 
 } // namespace Solipsis

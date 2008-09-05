@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <ReplicaManager2.h>
 #include <XmlDatas.h>
+#include <RakNetConnection.h>
 
 namespace Solipsis {
 
@@ -33,9 +34,10 @@ class AvatarNode;
 
 /** This class manages 1 avatar node.
 */
-class RakNetEntity : public RakNet::Replica2
+class RakNetEntity : public RakNet::Replica2, public CacheManagerCallback
 {
 public:
+    /// Flags of replication
     typedef unsigned int ReplicaFlags;
     static const ReplicaFlags RFNone = (ReplicaFlags)0;
     static const ReplicaFlags RFSerializationAuthorized = (ReplicaFlags)1;
@@ -53,6 +55,9 @@ protected:
 
     /// Last deserialized defined attributes (updated attr sent to server)
     XmlEntity::DefinedAttributes mLastDeserializedDefinedAttributes;
+
+    /// List of missing files
+    XmlLodContent::LodContentFileList mMissingFiles;
 
 public:
     /** Constructor. */
@@ -92,8 +97,18 @@ public:
 	/** See Replica2::Deserialize. */
 	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
 
+	/** See Replica2::QueryIsDestructionAuthority. */
+	virtual bool QueryIsDestructionAuthority(void) const;
 	/** See Replica2::QueryIsSerializationAuthority. */
 	virtual bool QueryIsSerializationAuthority(void) const;
+
+    /** Add files in the cache manager. */
+    void addFilesInCacheManager();
+    /** Request files (of a sender system) from the cache manager. */
+    void requestFilesFromCacheManager(const SystemAddress& sender);
+
+    /** See CacheManagerCallback::onTransferComplete. */
+    virtual void onTransferComplete(const std::string& filename);
 };
 
 } // namespace Solipsis

@@ -24,6 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __CTLog_h__
 #define __CTLog_h__
 
+#include <string>
+#include "CTScopedMutexLock.h"
+
 namespace CommonTools {
 
 /** This static class contains several helper methods for logging.
@@ -43,32 +46,55 @@ public:
         VL_COUNT
     };
 
+    /// True string
+    static const char* ms_TrueStr;
+    /// False string
+    static const char* ms_FalseStr;
+
+protected:
+    /// Current log handler
+    static LogHandler* ms_LogHandler;
+
+    /// Mutex
+    pthread_mutex_t mMutex;
+
+    /// Verbosity level
+    VerbosityLevel mVerbosity;
+
+    /// Log filename
+    std::string mLogFilename;
+
 public:
+    /// Constructor
+    LogHandler();
+    /// Destructor
+    ~LogHandler();
+
     /// Returns a pointer to the currently installed log handler
     static LogHandler* getLogHandler() { return ms_LogHandler; }
-
     /// Set the log handler
     static void setLogHandler(LogHandler* logHandler) { if (logHandler != 0) ms_LogHandler = logHandler; }
 
     /// Returns the current verbosity level
-    static VerbosityLevel getVerbosityLevel() { return ms_Verbosity; }
-
+    VerbosityLevel getVerbosityLevel() { return mVerbosity; }
     /// Set the verbosity level
-    static void setVerbosityLevel(VerbosityLevel verbosityLevel) { ms_Verbosity = verbosityLevel; }
+    void setVerbosityLevel(VerbosityLevel verbosityLevel) { mVerbosity = verbosityLevel; }
+
+    /// Returns the current log filename
+    std::string getLogFilename();
+    /// Set the log filename
+    virtual void setLogFilename(const std::string& filename);
 
     /// Log method to define
     virtual void log(int level, const char* msg) = 0;
-
-    /// Helper log method
-    static void logf(int level, const char* fmt, ...);
-
-protected:
-    /// Log handler
-    static LogHandler* ms_LogHandler;
-
-    /// Verbosity level
-    static VerbosityLevel ms_Verbosity;
+    /// Log method with variable arguments
+    void logf(int level, const char* fmt, ...);
 };
+
+#define LOGHANDLER_LOGBOOL(boolean) (boolean ? CommonTools::LogHandler::ms_TrueStr : CommonTools::LogHandler::ms_FalseStr)
+
+#define LOGHANDLER_LOG(level, msg) CommonTools::LogHandler::getLogHandler()->log(level, msg)
+#define LOGHANDLER_LOGF(level, fmt, ...) CommonTools::LogHandler::getLogHandler()->logf(level, fmt, __VA_ARGS__)
 
 } // namespace CommonTools
 

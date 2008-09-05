@@ -25,8 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgreHelpers.h"
 #include "Navigator.h"
+#include <CTLog.h>
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 #ifdef UIDEBUG
 std::map<String,String> DebugHelpers::debugCommands;
@@ -168,7 +170,7 @@ bool DebugHelpers::initLua(lua_State* luaState)
 //-------------------------------------------------------------------------------------
 int DebugHelpers::luaLogMessage(lua_State *L)
 {
-    OGRE_LOG("luaLog> " + String(luaL_checkstring(L, 1)));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "luaLog> %s", luaL_checkstring(L, 1));
 	return 0;
 }
 
