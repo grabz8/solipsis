@@ -66,6 +66,7 @@ public:
 protected:
     bool mInitialized;
     Ogre::String mAppPath;
+    IPeerRenderSystemLock* mRenderSystemLock;
 
     std::string mHost;
     int mPort;
@@ -120,7 +121,7 @@ public:
     /** See IPeer. */
     static IPeer* createPeer(const char* appPath, int argc, char** argv);
     /** See IPeer. */
-    virtual bool initialize();
+    virtual bool initialize(IPeerRenderSystemLock* renderSystemLock);
     /** See IPeer. */
     virtual bool destroy();
 
@@ -139,6 +140,7 @@ public:
 
     NodeManager* getNodeManager() { return mNodeManager; }
     std::string& getMediaCachePath() { return mMediaCachePath; }
+    IPeerRenderSystemLock* getRenderSystemLock() { return mRenderSystemLock; }
 
     const NodeId& getNodeId() { return mNodeId; }
     const std::string& getName() { return mName; }

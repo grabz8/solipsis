@@ -203,10 +203,10 @@ void BodyPartInstance::setDefaultBodyPartModelAsCurrent()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void BodyPartInstance::resetCouplesOfPoses()
 {
-	CouplesOfPosesIterator couplesOfPosesIterator = getCouplesOfPosesIterator();
-	while(couplesOfPosesIterator.hasMoreElements())
+	CouplesOfPosesMapIterator couplesOfPosesMapIterator = getCouplesOfPosesMapIterator();
+	while(couplesOfPosesMapIterator.hasMoreElements())
 	{
-		CoupleOfPoses* coupleOfPoses = couplesOfPosesIterator.getNext();
+		CoupleOfPoses* coupleOfPoses = couplesOfPosesMapIterator.getNext();
 		coupleOfPoses->setPosition(0.5f);
 	}
 }
@@ -230,6 +230,25 @@ mName(name), mOwner(owner), mCanHaveNoBodyPartModel(false)
 	addBodyPartModel(defaultBodyPartModelSubEntityName,defaultBodyPartModelCompleteName);
 
 	mDefaultBodyPartModelIterator = mBodyPartModels.begin();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+BodyPart::~BodyPart()
+{
+    BodyPartModelsMapIterator bodyPartModelsMapIterator(mBodyPartModels.begin(), mBodyPartModels.end());
+    while (bodyPartModelsMapIterator.hasMoreElements())
+    {
+        BodyPartModel* bodyPartModel = bodyPartModelsMapIterator.getNext();
+        delete bodyPartModel;
+    }
+    mBodyPartModels.clear();
+    CouplesOfPosesMapIterator couplesOfPosesMapIterator(mCouplesOfPoses.begin(), mCouplesOfPoses.end());
+    while (couplesOfPosesMapIterator.hasMoreElements())
+    {
+        CoupleOfPoses* coupleOfPoses = couplesOfPosesMapIterator.getNext();
+        delete coupleOfPoses;
+    }
+    mCouplesOfPoses.clear();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const String& BodyPart::getName()
@@ -301,7 +320,7 @@ CoupleOfPoses* BodyPart::getCoupleOfPoses(const String& name)
 	return mCouplesOfPoses[name];
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-CouplesOfPosesIterator BodyPart::getCouplesOfPosesIterator()
+CouplesOfPosesMapIterator BodyPart::getCouplesOfPosesMapIterator()
 {
 	return MapIterator<CouplesOfPosesMap>(mCouplesOfPoses.begin(),mCouplesOfPoses.end());
 }

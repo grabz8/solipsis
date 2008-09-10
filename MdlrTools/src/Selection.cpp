@@ -44,7 +44,8 @@ Selection::Selection(SceneNode * pCentreRotation, SceneNode * pCentreObject)
 Selection::~Selection()
 {
 	mListNode.clear();
-	delete mTransformation ;
+    clearObjects();
+	delete mTransformation;
 }
 
 //-------------------------------------------------------------------------------------
@@ -243,8 +244,8 @@ void Selection::add3DObject(Object3D *pObj,bool selectionnable)
 Object3D* Selection::geLastAddedObject()
 {	
 	// last iterator should not be valid
-	std::list<Object3D *>::iterator itObj = mObjectList.end();
-	itObj --;
+	Object3DPtrList::iterator itObj = mObjectList.end();
+	itObj--;
 	return (*itObj);
 }
 
@@ -253,76 +254,55 @@ Object3D* Selection::geLastAddedObject()
 void Selection::remove3DObject(Object3D *pObj)
 {
 	// First remove object from selectionnable list
-	std::list<Object3D *>::iterator itObj = mObjectList.begin();
-	while (itObj != mObjectList.end())
-	{
+    for (Object3DPtrList::iterator itObj = mObjectList.begin(); itObj != mObjectList.end(); ++itObj)
 		if ((*itObj) == pObj)
 		{
 			// Delete the object		
 			delete (*itObj);
 			// Found it we can erase the element and go out
-			itObj = mObjectList.erase(itObj);
+			mObjectList.erase(itObj);
 			break;
 		}
-		itObj++;
-	}
 
 	// Second => Remove it from current selection list
-	itObj = mListNode.begin();
-	while (itObj != mListNode.end())
-	{
+    for (Object3DPtrList::iterator itObj = mListNode.begin(); itObj != mListNode.end(); ++itObj)
 		if ((*itObj) == pObj)
 		{
 			// Found it we can erase the element and go out
-			itObj = mListNode.erase(itObj);
+			mListNode.erase(itObj);
 			mCurrentObject = mListNode.begin();
-			return;
+			break;
 		}
-		itObj++;
-	}
-
 }
 
 //-------------------------------------------------------------------------------------
 Object3D* Selection::get3DObject(Entity *pEnt)
 {
-	std::list<Object3D *>::iterator itObj = mObjectList.begin();
-	while (itObj != mObjectList.end())
-	{
+    for (Object3DPtrList::iterator itObj = mObjectList.begin(); itObj != mObjectList.end(); ++itObj)
 		if ((*itObj)->getEntity() == pEnt)
-		{
 			return (*itObj);
-		}
-		itObj++;
-	}
-	return NULL;
+
+    return NULL;
 }
 //-------------------------------------------------------------------------------------
-Object3D* Selection::get3DObject(const String pName)
+Object3D* Selection::get3DObject(const String& pName)
 {
-	std::list<Object3D *>::iterator itObj = mObjectList.begin();
-	while (itObj != mObjectList.end())
-	{
-		if (strcmp ( (*itObj)->getName().c_str() , pName.c_str()) == 0 )
-		{
+    for (Object3DPtrList::iterator itObj = mObjectList.begin(); itObj != mObjectList.end(); ++itObj)
+		if ((*itObj)->getName() == pName)
 			return (*itObj);
-		}
-		itObj++;
-	}
+
 	return NULL;
 }
 //-------------------------------------------------------------------------------------
 void Selection::clearObjects()
 {
-	std::list<Object3D *>::iterator itObj = mObjectList.begin();
-	while (itObj != mObjectList.end())
-	{
-		// Delete the object		
+	// Delete objects
+    while (!mObjectList.empty())
+    {
+        Object3DPtrList::iterator itObj = mObjectList.begin();
 		delete (*itObj);
-		// Found it we can erase the element and go out
-		itObj = mObjectList.erase(itObj);
-		itObj++;
-	}
+		mObjectList.erase(itObj);
+    }
 }
 //-------------------------------------------------------------------------------------
 Object3D* Selection::getFirstSelectedObject()

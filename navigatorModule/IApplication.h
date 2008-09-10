@@ -54,6 +54,14 @@ public:
     */
     virtual bool destroy() = 0;
 
+    /** This method lock access to the render system
+    */
+    virtual void lock() = 0;
+
+    /** This method unlock access to the render system
+    */
+    virtual void unlock() = 0;
+
     /** This method creates a new instance of application
     @remarks	
         A client can create many instances of application

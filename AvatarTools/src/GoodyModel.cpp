@@ -45,7 +45,10 @@ mGoodyModel(goodyModel), mOwner(owner)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 GoodyModelInstance::~GoodyModelInstance()
 {
-    mEntity->getSubEntity(0)->setMaterialName(mGoodyModel->mEntity->getSubEntity(0)->getMaterial()->getName());
+//    mEntity->getSubEntity(0)->setMaterialName(mGoodyModel->mEntity->getSubEntity(0)->getMaterial()->getName());
+    // Cloned material should be freed when no more referenced
+/*    const MaterialPtr& clonedMaterial = mGoodyModel->mEntity->getSubEntity(0)->getMaterial();
+    MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);*/
     mOwner->getOwner()->getSceneMgr()->destroyEntity(mEntity);
 }
 

@@ -32,11 +32,18 @@ Transformations::Transformations(void)
 
 	mAxeClicked = AxeClicked::NONE ;
 	mPlaneClicked = AxeClicked::NONE ;
+
+	// Create the resource group
+    mResourceGroup = "TransformationsResources";
+	ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
+	ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
 }
 
 //-------------------------------------------------------------------------------------
 Transformations::~Transformations(void)
 {
+    // Destroy the resource group
+	ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
 }
 
 //-------------------------------------------------------------------------------------
@@ -319,27 +326,63 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	MovablePlane * movPlane ;
 	movPlane = new MovablePlane("dummy_plane_x");
 	movPlane->normal = Vector3::UNIT_Y;
-	MeshManager::getSingleton().createPlane("dummy_plane_x",ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_X);
+	MeshManager::getSingleton().createPlane("dummy_plane_x", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_X);
 	mPlaneX = pSceneMgr->createEntity( "dummy_plane_x", "dummy_plane_x" );
 	mPlaneX->setVisible(false);
 
 	movPlane = new MovablePlane("dummy_plane_y");
 	movPlane->normal = Vector3::UNIT_Z;
-	MeshManager::getSingleton().createPlane("dummy_plane_y",ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
+	MeshManager::getSingleton().createPlane("dummy_plane_y", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
 	mPlaneY = pSceneMgr->createEntity( "dummy_plane_y", "dummy_plane_y" );
 	mPlaneY->setVisible(false);
 
 	movPlane = new MovablePlane("dummy_plane_z");
 	movPlane->normal = Vector3::UNIT_X;
-	MeshManager::getSingleton().createPlane("dummy_plane_z",ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Z);
+	MeshManager::getSingleton().createPlane("dummy_plane_z", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Z);
 	mPlaneZ = pSceneMgr->createEntity( "dummy_plane_z", "dummy_plane_z" );
 	mPlaneZ->setVisible(false);
 }
 
 //-------------------------------------------------------------------------------------
+void Transformations::destroyGizmos(SceneManager * pSceneMgr)
+{
+    pSceneMgr->destroyEntity("AxeTest");
+    pSceneMgr->destroyEntity("dummy_plane_x");
+    pSceneMgr->destroyEntity("dummy_plane_y");
+    pSceneMgr->destroyEntity("dummy_plane_z");
+    pSceneMgr->destroyEntity("moveX");
+    pSceneMgr->destroyEntity("moveY");
+    pSceneMgr->destroyEntity("moveZ");
+    pSceneMgr->destroyEntity("scaleX");
+    pSceneMgr->destroyEntity("scaleY");
+    pSceneMgr->destroyEntity("scaleZ");
+    pSceneMgr->destroyEntity("rotateX");
+    pSceneMgr->destroyEntity("rotateY");
+    pSceneMgr->destroyEntity("rotateZ");
+    // Meshes should be freed when no more referenced
+/*    MeshManager::getSingleton().remove("axes.mesh");
+    MeshManager::getSingleton().remove("dummy_plane_x");
+    MeshManager::getSingleton().remove("dummy_plane_y");
+    MeshManager::getSingleton().remove("dummy_plane_z");
+    MeshManager::getSingleton().remove("axe_move_x.mesh");
+    MeshManager::getSingleton().remove("axe_move_y.mesh");
+    MeshManager::getSingleton().remove("axe_move_z.mesh");
+    MeshManager::getSingleton().remove("axe_scale_x.mesh");
+    MeshManager::getSingleton().remove("axe_scale_y.mesh");
+    MeshManager::getSingleton().remove("axe_scale_z.mesh");
+    MeshManager::getSingleton().remove("axe_rotate_x.mesh");
+    MeshManager::getSingleton().remove("axe_rotate_y.mesh");
+    MeshManager::getSingleton().remove("axe_rotate_z.mesh");*/
+    // Cloned materials should be freed when no more referenced
+/*    MaterialManager::getSingleton().remove("MaterialGizmosX");
+    MaterialManager::getSingleton().remove("MaterialGizmosY");
+    MaterialManager::getSingleton().remove("MaterialGizmosZ");*/
+}
+
+//-------------------------------------------------------------------------------------
 void Transformations::createGizmosMove(SceneManager * pSceneMgr)
 {
-	Entity* OgreAxes = pSceneMgr->createEntity( "AxeTest", "axes.mesh"  );
+	Entity* OgreAxes = pSceneMgr->createEntity( "AxeTest", "axes.mesh" );
 	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosX");
 	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosY");
 	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosZ");
@@ -396,7 +439,6 @@ void Transformations::createGizmosRotate(SceneManager * pSceneMgr)
 {
 	m_rotateX = pSceneMgr->createEntity( "rotateX", "axe_rotate_x.mesh"  );
 	m_rotateX->getSubEntity(0)->setMaterialName("MaterialGizmosX");
-
 
 	m_rotateY = pSceneMgr->createEntity( "rotateY", "axe_rotate_y.mesh"  );
 	m_rotateY->getSubEntity(0)->setMaterialName("MaterialGizmosY");

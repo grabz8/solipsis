@@ -490,10 +490,10 @@ void CharacterInstance::saveModified()
 
 #if 0 //GREG
 		//Creating couples of poses for the BodyPart
-		CouplesOfPosesIterator couplesOfPosesIterator = bodyPart->getCouplesOfPosesIterator();
-		while(couplesOfPosesIterator.hasMoreElements())
+		CouplesOfPosesMapIterator couplesOfPosesMapIterator = bodyPart->getCouplesOfPosesMapIterator();
+		while(couplesOfPosesMapIterator.hasMoreElements())
 		{
-			CoupleOfPoses* coupleOfPoses = couplesOfPosesIterator.getNext();
+			CoupleOfPoses* coupleOfPoses = couplesOfPosesMapIterator.getNext();
 			
 			TiXmlElement coupleOfPosesElement("CoupleOfPoses");
 			coupleOfPosesElement.SetAttribute("name",coupleOfPoses->getName().c_str());
@@ -605,10 +605,10 @@ void CharacterInstance::saveModified()
 	while(bodyPartIterator.hasMoreElements())
 	{
 		BodyPart* bodyPart = bodyPartIterator.getNext();
-		CouplesOfPosesIterator couplesOfPosesIterator = bodyPart->getCouplesOfPosesIterator();
-		while(couplesOfPosesIterator.hasMoreElements())
+		CouplesOfPosesMapIterator couplesOfPosesMapIterator = bodyPart->getCouplesOfPosesMapIterator();
+		while(couplesOfPosesMapIterator.hasMoreElements())
 		{
-			CoupleOfPoses* coupleOfPoses = couplesOfPosesIterator.getNext();
+			CoupleOfPoses* coupleOfPoses = couplesOfPosesMapIterator.getNext();
 
 			//Modifying SubMesh according to left pose
 			Pose* leftPose = mesh->getPose(coupleOfPoses->getLeftPoseIndex());

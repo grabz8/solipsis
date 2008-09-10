@@ -33,7 +33,14 @@ using namespace Ogre;
 namespace Solipsis {
 
 // secure logMessage macro
-#define OGRE_LOG(message) if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
+#ifdef USE_WINDOWS_DEBUG
+    #define OGRE_LOG(message) { \
+        if (Solipsis::OgreHelpers::getSingletonPtr() != 0)  Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message); \
+        OutputDebugString((message + String("\n")).c_str()); \
+    }
+#else
+    #define OGRE_LOG(message)  if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
+#endif
 
 /** This static class contains several helper methods above Ogre.
  */
@@ -63,6 +70,11 @@ public:
 
     static OgreHelpers* getSingletonPtr() { return &mSingleton; }
     static OgreHelpers& getSingleton() { return mSingleton; }
+
+    // Add resource locations from resources.cfg file
+    static void addResourceLocations();
+    // Remove resource locations from resources.cfg file
+    static void removeResourceLocations();
 
     // Retrieve recursively from 1 scene node all movable objects of 1 type
     static void getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList);

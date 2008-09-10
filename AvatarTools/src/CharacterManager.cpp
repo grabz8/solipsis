@@ -42,7 +42,16 @@ CharacterManager::CharacterManager(String pPath, SceneManager* pSceneMgr) :
     mDefaultCharacterName = "";
 }
 //-------------------------------------------------------------------------------------
-CharacterManager::~CharacterManager() {}
+CharacterManager::~CharacterManager()
+{
+    CharactersIterator charactersIterator(mCharacters.begin(), mCharacters.end());
+    while (charactersIterator.hasMoreElements())
+    {
+        Character* character = charactersIterator.getNext();
+        delete character;
+    }
+    mCharacters.clear();
+}
 //-------------------------------------------------------------------------------------
 CharacterManager* CharacterManager::getSingletonPtr()
 {

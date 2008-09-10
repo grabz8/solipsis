@@ -38,6 +38,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
+#ifdef NULLCLIENTSERVER
+/** This class implements the IPeerRenderSystemLock interface to avoid concurrent
+    render system calls between Peer thread and Navigator thread.
+*/
+class PeerOgreRenderSystemLock : public IPeerRenderSystemLock
+{
+public:
+    /// Constructor
+    PeerOgreRenderSystemLock(IApplication* application) :
+      mApplication(application)
+      {}
+    /// See IPeerRenderSystemLock::lock()
+    virtual void lock() { mApplication->lock(); }
+    /// See IPeerRenderSystemLock::unlock()
+    virtual void unlock() { mApplication->unlock(); }
+private:
+    /// Application
+    IApplication* mApplication;
+};
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -71,7 +92,8 @@ int main(int argc, char *argv[])
 
 #ifdef NULLCLIENTSERVER
         // Initialize the Peer application
-        bool initialized = peer->initialize();
+        PeerOgreRenderSystemLock peerOgreRenderSystemLock(application);
+        bool initialized = peer->initialize(&peerOgreRenderSystemLock);
         if (!initialized)
             throw std::string("Unable to initialize the peer !");
 #endif

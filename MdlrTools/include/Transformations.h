@@ -84,7 +84,8 @@ public:
  *
 */
 	void createGizmos(SceneNode* pGizmosParentNode, SceneManager * pSceneMgr, Camera* pCamera);
-									
+	void destroyGizmos(SceneManager * pSceneMgr);
+				
 	///brief Events set mode
 	void eventSelection();
 	void eventMove();
@@ -134,6 +135,8 @@ private :
 	void createGizmosScale(SceneManager * pSceneMgr);
 	///brief Create Rotate Gizmos and hide them
 	void createGizmosRotate(SceneManager * pSceneMgr);
+
+    String mResourceGroup;
 
 	///brief main node for manage gismos. It may be a child of the selection Node
 	SceneNode* m_GizmosAxesNode;

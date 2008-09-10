@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Avatar.h"
 #include "Scene.h"
 #include "Object.h"
-#include "OgreOSMScene.h"
 #include "Navigator.h"
+#include "OgreHelpers.h"
 #include <Modeler.h>
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
@@ -35,19 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-
-// this internal OSM-loader callbacks class is used to force OFF shadows casting of entities
-class OgrePeerManagerOSMSceneCallbacks : public OSMSceneCallbacks
-{
-    virtual void OnLightCreate(Light *pLight, TiXmlElement* pLightDesc)
-    {
-        pLight->setCastShadows(false);
-    }
-    virtual void OnEntityCreate(Entity *pEntity, TiXmlElement* pEntityDesc)
-    {
-        pEntity->setCastShadows(false);
-    }
-};
 
 //-------------------------------------------------------------------------------------
 OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbacks* callbacks) :
@@ -95,7 +82,7 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
     // update the object now to force loading of content, load is performed after registering into mOgrePeersMap
     // in order the loadTexture can retrieve this object is local (VLC textures)
     // TODO: OgrePeer should register itself in manager on constr then load is performed according its internal state
-    if (xmlEntity->getType() == ETObject)
+    if (xmlEntity->getType() != ETAvatar)
         newOgrePeer->update(xmlEntity);
 
     return true;
@@ -233,12 +220,11 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 //-------------------------------------------------------------------------------------
 EntityUID OgrePeerManager::getNewEntityUID()
 {
-    static EntityUID nextEntityUID = 0x00000001; // hmhm Entities UID management TODO
-
     EntityUID objectEntityUid;
     const char *m = mNodeId.c_str();
     sscanf(mNodeId.c_str(), "%08X", &objectEntityUid);
     objectEntityUid <<= 16;
+    EntityUID nextEntityUID = 0x00000001;
     while (true)
     {
         objectEntityUid |= nextEntityUID;
@@ -366,7 +352,10 @@ bool OgrePeerManager::onObject3DDelete(Object3D* object3D)
     // Object exists or not yet saved ?
     OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(object3D->getEntityUID());
     if (ogrePeer == mOgrePeersMap.end())
+    {
+        mReservedOgrePeersMap.erase(object3D->getEntityUID());
         return false;
+    }
 
     Object *object = (Object*)ogrePeer->second;
 
@@ -486,11 +475,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     }
 
     if (mCallbacks != 0)
-        if (!mCallbacks->onAvatarNodeCreate(peerAvatar))
-        {
-            delete peerAvatar;
-            return 0;
-        }
+        mCallbacks->onAvatarNodeCreate(peerAvatar);
 
     return peerAvatar;
 }
@@ -502,61 +487,11 @@ OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
 #endif
 {
-    if (mSceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateSceneNode");
-
-    // Get the scene content for LOD 0
-    XmlContent::ContentLodMap& contentLodMap = xmlEntity->getContent()->getContentLodMap();
-    RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
-
-    // Find .ssf file
-    XmlLodContent::LodContentFileList::const_iterator lodContent0File = contentLodMap[0]->getLodContentFileList().begin();
-    for(;lodContent0File!=contentLodMap[0]->getLodContentFileList().end();++lodContent0File)
-        if (lodContent0File->mFilename.find(".ssf") == lodContent0File->mFilename.length() - 4)
-            break;
-    if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "OgrePeerManager::CreateSceneNode");
-
-    // Create the resource group
-    String resourceGroup = xmlEntity->getUidString() + "Resources";
-    ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-    ResourceGroupManager::getSingleton().addResourceLocation(Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
-    ResourceGroupManager::getSingleton().initialiseResourceGroup(resourceGroup);
-
-    // Create the scene node
-    SceneNode* node = mSceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUidString() + "Scene");
-
-    // Load from the .osm
-    OSMScene osmScene(mSceneMgr);
-    OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
-    if (!osmScene.initialise(xmlSceneLodContent0->getMainFilename().c_str(), &osmSceneCallbacks))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "OgrePeerManager::createSceneNode");
-    osmScene.declareResources();
-    if (!osmScene.createScene(node))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "OgrePeerManager::createSceneNode");
-
-#ifdef SHADOWS
-    mSceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
-    mSceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
-    Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
-    mSceneMgr->setShadowCameraSetup(shadowCameraSetup);
-#endif
-
-    node->setPosition(xmlEntity->getPosition());
-
-    // Destroy the scene collision mesh
-    if (!xmlSceneLodContent0->getCollision().empty())
-        mSceneMgr->destroySceneNode(xmlSceneLodContent0->getCollision());
-
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
-    Scene* peerScene = new Scene(xmlEntity, isLocal, node);
+    Scene* peerScene = new Scene(xmlEntity, isLocal);
 
     if (mCallbacks != 0)
-        if (!mCallbacks->onSceneNodeCreate(peerScene))
-        {
-            delete peerScene;
-            return 0;
-        }
+        mCallbacks->onSceneNodeCreate(peerScene);
 
     return peerScene;
 }
@@ -568,9 +503,6 @@ OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
 #endif
 {
-    if (mSceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateObjectNode");
-
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
 
     // Create the object

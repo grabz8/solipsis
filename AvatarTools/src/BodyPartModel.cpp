@@ -45,7 +45,10 @@ mBodyPartModel(bodyPartModel), mOwner(owner)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPartModelInstance::~BodyPartModelInstance()
 {
-    mSubEntity->setMaterialName(mBodyPartModel->mSubEntity->getMaterial()->getName());
+//    mSubEntity->setMaterialName(mBodyPartModel->mSubEntity->getMaterial()->getName());
+    // Cloned material should be freed when no more referenced
+/*    const MaterialPtr& clonedMaterial = mBodyPartModel->mSubEntity->getMaterial();
+    MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);*/
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

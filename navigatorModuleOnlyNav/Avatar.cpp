@@ -116,6 +116,9 @@ Avatar::~Avatar()
     if (mCharacterInstance == 0) return;
     if (getSceneNode() == 0) return;
 
+    if (mCamerasSceneNode != 0)
+        getSceneNode()->removeAndDestroyChild(mCamerasSceneNode->getName());
+
     if (mSelectionObject != 0)
     {
         getSceneNode()->detachObject(mSelectionObject);

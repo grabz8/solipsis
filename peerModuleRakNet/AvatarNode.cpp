@@ -59,6 +59,8 @@ AvatarNode::~AvatarNode()
 //-------------------------------------------------------------------------------------
 void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new entity uid:%s sendNewEvt:%s", entity->getXmlEntity()->getUidString().c_str(), LOGHANDLER_LOGBOOL(sendNewEvt));
+
     if (entity->getXmlEntity()->getOwner() == mNodeId)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new owned entity uid:%s by me with mNodeId:%s", entity->getXmlEntity()->getUidString().c_str(), mNodeId.c_str());
@@ -95,6 +97,7 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
 
     if (sendNewEvt)
     {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() sending ETNewEntity for entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
 #ifdef POOL
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);

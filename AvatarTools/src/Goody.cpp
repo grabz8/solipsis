@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "Goody.h"
+#include "AvatarEditor.h"
 #include "Character.h"
 #include "CharacterInstance.h"
 
@@ -71,7 +72,7 @@ void GoodyInstance::setColour(const ColourValue&	colour)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 bool GoodyInstance::isTextureModifiable()
 {
-	return ((mCurrentGoodyModelIterator->second != NULL)&&(mCurrentGoodyModelIterator->second->isTextureModifiable()));
+	return ((mCurrentGoodyModelIterator->second != 0) && (mCurrentGoodyModelIterator->second->isTextureModifiable()));
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -307,7 +308,7 @@ void GoodyInstance::setCurrentGoodyModel(const String& goodyModelName)
 {
 	Entity* characterEntity = mOwner->getEntity();
 
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->detachObjectFromBone(goodyModelEntity);
@@ -317,11 +318,11 @@ void GoodyInstance::setCurrentGoodyModel(const String& goodyModelName)
 
 	if (goodyModelName != "None")
 	{
-		assert( (mGoody->mGoodyModels[goodyModelName] != NULL) && "GoodyModel not found !");
+		assert( (mGoody->mGoodyModels[goodyModelName] != 0) && "GoodyModel not found !");
 	}
 	mCurrentGoodyModelIterator = mGoody->mGoodyModels.find(goodyModelName);
 
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
@@ -335,7 +336,7 @@ void GoodyInstance::setPreviousGoodyModelAsCurrent()
 	Entity* characterEntity = mOwner->getEntity();
 
 	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->detachObjectFromBone(goodyModelEntity);
@@ -348,7 +349,7 @@ void GoodyInstance::setPreviousGoodyModelAsCurrent()
 	mCurrentGoodyModelIterator--;
 
 	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
@@ -362,7 +363,7 @@ void GoodyInstance::setNextGoodyModelAsCurrent()
 	Entity* characterEntity = mOwner->getEntity();
 
 	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->detachObjectFromBone(goodyModelEntity);
@@ -375,7 +376,7 @@ void GoodyInstance::setNextGoodyModelAsCurrent()
 	if (mCurrentGoodyModelIterator == mGoody->mGoodyModels.end()) mCurrentGoodyModelIterator = mGoody->mGoodyModels.begin();
 
 	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
@@ -389,7 +390,7 @@ void GoodyInstance::setDefaultGoodyModelAsCurrent()
 	Entity* characterEntity = mOwner->getEntity();
 
 	//hiding the old current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->detachObjectFromBone(goodyModelEntity);
@@ -401,7 +402,7 @@ void GoodyInstance::setDefaultGoodyModelAsCurrent()
 	mCurrentGoodyModelIterator = mGoody->mDefaultGoodyModelIterator;
 
 	//displaying the new current GoodyModel
-	if (mCurrentGoodyModelIterator->second != NULL)
+	if (mCurrentGoodyModelIterator->second != 0)
 	{
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
@@ -433,8 +434,24 @@ Goody::Goody(const String& name,
 	mMinPosition(minPosition), mDefaultPosition(defaultPosition), mMaxPosition(maxPosition),
 	mOwner(owner)
 {
-	mGoodyModels["None"] = NULL;
+	mGoodyModels["None"] = 0;
 	mDefaultGoodyModelIterator = mGoodyModels.begin();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+Goody::~Goody()
+{
+    GoodyModelsMapIterator goodyModelsMapIterator(mGoodyModels.begin(), mGoodyModels.end());
+    while (goodyModelsMapIterator.hasMoreElements())
+    {
+        GoodyModel* goodyModel = goodyModelsMapIterator.getNext();
+        if (goodyModel == 0) continue;
+        Entity* goodyModelEntity = goodyModel->getEntity();
+//        MeshManager::getSingleton().remove(goodyModelEntity->getMesh());
+        AvatarEditor::getSingletonPtr()->getSceneManager()->destroyEntity(goodyModelEntity);
+        delete goodyModel;
+    }
+    mGoodyModels.clear();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -468,7 +485,7 @@ GoodyModel* Goody::getDefaultGoodyModel()
 GoodyModel* Goody::getGoodyModel(const String& name)
 {
 	GoodyModel* bodyPartModel = mGoodyModels[name];
-	if ((bodyPartModel == NULL)&&(name != "None")) mGoodyModels.erase(name);
+	if ((bodyPartModel == 0) && (name != "None")) mGoodyModels.erase(name);
 	return bodyPartModel;
 }
 
@@ -483,7 +500,7 @@ void Goody::setDefaultGoodyModel(const String& goodyModelName)
 {
 	if (goodyModelName != "None")
 	{
-		assert( (getGoodyModel(goodyModelName) != NULL) && "GoodyModel not found !");
+		assert( (getGoodyModel(goodyModelName) != 0) && "GoodyModel not found !");
 	}
 	mDefaultGoodyModelIterator = mGoodyModels.find(goodyModelName);
 }
@@ -491,10 +508,10 @@ void Goody::setDefaultGoodyModel(const String& goodyModelName)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void Goody::addGoodyModel(const String& meshName,const String& name, SceneManager* sceneMgr)
 {
-	assert((getGoodyModel(name) == NULL)&&"GoodyModel already present in body part !");
+	assert((getGoodyModel(name) == 0)&&"GoodyModel already present in body part !");
 
-	Entity* entity = sceneMgr->createEntity(name,meshName);	
-	mGoodyModels[name] = new GoodyModel(name,entity,this);
+	Entity* goodyModelEntity = sceneMgr->createEntity(name,meshName);	
+	mGoodyModels[name] = new GoodyModel(name, goodyModelEntity, this);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

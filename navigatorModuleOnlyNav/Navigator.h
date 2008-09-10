@@ -218,9 +218,9 @@ public:
     void sendEvents();
 
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool onAvatarNodeCreate(OgrePeer* ogrePeer);
+    virtual void onAvatarNodeCreate(OgrePeer* ogrePeer);
     /** See IOgrePeerManagerCallbacks. */
-    virtual bool onSceneNodeCreate(OgrePeer* ogrePeer);
+    virtual void onSceneNodeCreate(OgrePeer* ogrePeer);
 
     // Modeler part
 

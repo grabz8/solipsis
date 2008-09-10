@@ -48,6 +48,14 @@ void OgreHelpers::getMovableObjectsList(SceneNode* node, const String& movableTy
 //-------------------------------------------------------------------------------------
 void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
 {
+    while (true)
+    {
+        Node::ChildNodeIterator childNodeIterator = node->getChildIterator();
+        if (!childNodeIterator.hasMoreElements()) break;
+        Node* childNode = childNodeIterator.getNext();
+        removeAndDestroySceneNode((SceneNode*)childNode);
+    }
+
     std::list<MovableObject*> movableObjectsList;
     OgreHelpers::getMovableObjectsList(node, "", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
@@ -331,6 +339,58 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
     delete[] indices;
 
     return newClosestFound;
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::addResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().addResourceLocation(
+                archName, typeName, secName);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::removeResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().removeResourceLocation(
+                archName, secName);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------

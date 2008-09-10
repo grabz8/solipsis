@@ -46,8 +46,8 @@ using namespace std;
 class Object3D;
 class Transformations ;
 
-typedef  std::list<Object3D *> Object3DPtrList;
-typedef	 std::list<Object3D *>::iterator Object3DPtrListIterator;
+typedef std::list<Object3D*> Object3DPtrList;
+typedef	std::list<Object3D*>::iterator Object3DPtrListIterator;
 
 class Selection
 {
@@ -242,7 +242,7 @@ public:
  *	\return a pointer of Objetc3D corresponding with pEnt
  *
 */
-	Object3D* get3DObject(const String pName);
+	Object3D* get3DObject(const String& pName);
 
 
 /*

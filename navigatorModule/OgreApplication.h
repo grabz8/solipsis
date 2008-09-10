@@ -54,7 +54,6 @@ public:
     virtual bool finalize();
 
     virtual void createResourceListener(); 
-    virtual void addResourceLocations(); 
     virtual void initResources(); 
 };
 

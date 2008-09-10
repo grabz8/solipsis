@@ -52,9 +52,8 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
 Modeler::~Modeler(void)
 {
 	// Delete our materials : lests assume that Ogre will do it alone
-	// Free our Center scene node
-	mSceneManager->getRootSceneNode()->removeAndDestroyChild("NodeCentreRotation");
 	// Free our primitives
+    mSceneManager->destroyEntity(mGenericPlane);
 	mSceneManager->destroyEntity(mGenericBox);
 	mSceneManager->destroyEntity(mGenericPrism);
 	mSceneManager->destroyEntity(mGenericCylinder);
@@ -62,20 +61,31 @@ Modeler::~Modeler(void)
 	mSceneManager->destroyEntity(mGenericTorus);
 	mSceneManager->destroyEntity(mGenericTube);
 	mSceneManager->destroyEntity(mGenericRing);
+    // Meshed should be freed when no more referenced
+/*    MeshManager::getSingleton().remove("Plane.mesh");
+    MeshManager::getSingleton().remove("Box.mesh");
+    MeshManager::getSingleton().remove("Prism.mesh");
+    MeshManager::getSingleton().remove("Cylinder.mesh");
+    MeshManager::getSingleton().remove("Sphere.mesh");
+    MeshManager::getSingleton().remove("Torus.mesh");
+    MeshManager::getSingleton().remove("Tube.mesh");
+    MeshManager::getSingleton().remove("Ring.mesh");*/
+
+	mSelection->mTransformation->destroyGizmos(mSceneManager);	
+
+	// Destroy our scene nodes
+	mSceneManager->getRootSceneNode()->removeAndDestroyChild("NodeSelection");
+	mSceneManager->getRootSceneNode()->removeAndDestroyChild("NodeCentreRotation");
 
 	// delete the selection manager
 	delete mSelection;
-	mSelection = 0;
-
 }
 
-Modeler* Modeler::getSingletonPtr(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* modelerCallbacks)
+Modeler* Modeler::getSingletonPtr()
 {
-	if(!ms_singletonPtr)
-		ms_singletonPtr = new Modeler(pSceneMgr, pCamera, modelerCallbacks);
-
     return ms_singletonPtr;
 }
+
 bool Modeler::init(const String& pPath)
 {
 	static bool init = false;
@@ -139,7 +149,7 @@ bool Modeler::init(const String& pPath)
 	//create and put gizmos in the centre of selection
 	node = mSceneManager->getRootSceneNode()->createChildSceneNode("NodeSelection");	//for find all objects selected
 	//node = mSceneManager->getSceneNode("NodeSelection");
-	mSelection->mTransformation->createGizmos( node , mSceneManager, mCamera );	
+	mSelection->mTransformation->createGizmos(node, mSceneManager, mCamera );	
 
 	// Init generic primitives to clone when the creation will be called
 	mGenericPlane = mSceneManager->createEntity( "GenericPlane", "Plane.mesh" );
@@ -493,12 +503,13 @@ Object3D* Modeler::getSelected()
 /// ...
 bool Modeler::selectNode(Entity* pEnt)
 {
-	if( mSelection )
-    {
-        Object3D * obj = mSelection->get3DObject( pEnt );
-        if (mModelerCallbacks->isObject3DOwned(obj))
-            return mSelection->clickNode( pEnt );
-    }
+	if (mSelection == 0)
+        return false;
+    Object3D* obj = mSelection->get3DObject(pEnt);
+    if (obj == 0)
+        return false;
+    if (mModelerCallbacks->isObject3DOwned(obj))
+        return mSelection->clickNode(pEnt);
 
 	return false;
 }

@@ -207,8 +207,9 @@ void Peer::removeTimeListener(TimeListener* oldListener)
 }
 
 //-------------------------------------------------------------------------------------
-bool Peer::initialize()
+bool Peer::initialize(IPeerRenderSystemLock* renderSystemLock)
 {
+    mRenderSystemLock = renderSystemLock;
     return _initialize();
 }
 

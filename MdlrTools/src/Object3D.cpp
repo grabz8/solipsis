@@ -125,9 +125,15 @@ Object3D::~Object3D()
 	while (mModifiedMaterialManager->getNbTexture() > 1)
         mModifiedMaterialManager->deleteTexture(mModifiedMaterialManager->getTexture(mModifiedMaterialManager->getNbTexture() - 1));
 
+    // Cloned material should be freed when no more referenced
+    // but here we will remove it from resources list in order to free
+    // the resource name right now
     const MaterialPtr& clonedMaterial = mModifiedMaterialManager->getModifiedMaterial()->getOwner();
     MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);
 
+    // Cloned mesh should be freed when no more referenced
+    // but here we will remove it from resources list in order to free
+    // the resource name right now
     const MeshPtr& clonedMesh = mEntity->getMesh();
 	MeshManager::getSingleton().remove((ResourcePtr&)clonedMesh);
     mNode->detachObject(mEntity);

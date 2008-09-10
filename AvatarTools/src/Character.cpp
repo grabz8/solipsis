@@ -604,6 +604,13 @@ Character::~Character()
 
     mMesh->removeAnimation(mName + "_CustomizationAnimation");
 
+    // Mesh should be freed when no more referenced
+/*	MeshManager::getSingleton().remove((ResourcePtr&)mMesh);*/
+
+    // Destroy zip file as resource location
+	ResourceGroupManager::getSingleton().removeResourceLocation(mPath->getUniversalPath(), mResourceGroup);
+	ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+
     delete mPath;
 }
 

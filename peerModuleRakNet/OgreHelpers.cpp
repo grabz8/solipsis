@@ -36,28 +36,21 @@ bool OgreHelpers::_initialize()
     mRootAllocated = false;
     if (mRoot != 0)
     {
+        // Ogre Root instance already allocated so we are embedded in the Navigator application
+        // we will just create the MeshSerializer, the HardwareBufferManager was created by
+        // the loaded RenderSystem plugin
         mMeshSerializer = new MeshSerializer();
         return true;
     }
 
+    // Here we are in standalone config, so we have to create the minimal Ogre instances
+    // the MeshSerializer and the DefaultHardwareBufferManager to deal with vertices/indices
     mRoot = new Root();
     if (mRoot == 0)
         return false;
     mRootAllocated = true;
     mMeshSerializer = new MeshSerializer();
     mHWBufferManager = new DefaultHardwareBufferManager(); // needed because we don't have a rendersystem
-/*    mLogManager = new LogManager();
-    mLogManager->createLog("Ogre.log", true);
-    mResourceGroupManager = new ResourceGroupManager();
-    mMath = new Math();
-    mMaterialManager = new MaterialManager();
-    mMaterialManager->initialise();
-    mSkeletonManager = new SkeletonManager();
-    mMeshSerializer = new MeshSerializer();
-    mSkeletonSerializer = new SkeletonSerializer();
-    mHWBufferManager = new DefaultHardwareBufferManager(); // needed because we don't have a rendersystem
-    mMeshManager = new MeshManager();
-    mTimer = new Timer();*/
 
     addResourceLocations();
 
@@ -68,19 +61,15 @@ bool OgreHelpers::_initialize()
 void OgreHelpers::_shutdown()
 {
     delete mMeshSerializer;
+
     if (mRootAllocated)
+    {
+//        removeResourceLocations();
+//        ResourceGroupManager::getSingleton().destroyResourceGroup("General");
         delete mRoot;
+    }
+
     delete mHWBufferManager;
-/*    delete mTimer;
-    delete mMeshManager;
-    delete mHWBufferManager;
-    delete mSkeletonSerializer;
-    delete mMeshSerializer;
-    delete mSkeletonManager;
-    delete mMaterialManager;
-    delete mMath;
-    delete mResourceGroupManager;
-    delete mLogManager;*/
 }
 
 //-------------------------------------------------------------------------------------
@@ -108,23 +97,10 @@ Timer* OgreHelpers::getTimer()
 //-------------------------------------------------------------------------------------
 Mesh* OgreHelpers::loadMesh(const String& filename)
 {
-/*    struct stat tagStat;
-
-    FILE* file = fopen(filename.c_str(), "rb");
-    if (!file)
-    {
-	    OGRE_EXCEPT(Exception::ERR_FILE_NOT_FOUND,
-            "File " + filename + " not found.", "OgreHelpers::loadMesh");
-    }
-    stat(filename.c_str(), &tagStat);
-    MemoryDataStream* memstream = new MemoryDataStream(filename, tagStat.st_size, true);
-    fread((void*)memstream->getPtr(), tagStat.st_size, 1, file);
-    fclose(file);*/
 	DataStreamPtr dataStream = ResourceGroupManager::getSingleton().openResource(filename);
 	if (!dataStream->size())
         return 0;
 
-//    Mesh* mesh = new Mesh(mMeshManager, filename, 0, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     Mesh* mesh = new Mesh(Root::getSingleton().getMeshManager(), filename, 0, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
     DataStreamPtr stream(dataStream);
@@ -276,6 +252,32 @@ void OgreHelpers::addResourceLocations()
             archName = i->second;
             ResourceGroupManager::getSingleton().addResourceLocation(
                 archName, typeName, secName);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::removeResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().removeResourceLocation(
+                archName, secName);
         }
     }
 }

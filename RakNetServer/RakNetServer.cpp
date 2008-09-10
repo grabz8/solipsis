@@ -144,7 +144,7 @@ void RakNetServer::initialize()
  <content>\
   <sceneContent>\
    <entryGate gravity=\"true\" >\
-    <position x=\"170.0\" y=\"-60.0\" z=\"450.0\" />\
+    <position x=\"170.0\" y=\"-60.0\" z=\"445.0\" />\
    </entryGate>\
   </sceneContent>\
   <lod level=\"0\">\

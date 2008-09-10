@@ -39,7 +39,7 @@ class Character;
 class CharacterInstance;
 
 typedef std::map<String,CoupleOfPoses*> CouplesOfPosesMap;
-typedef MapIterator<CouplesOfPosesMap> CouplesOfPosesIterator;
+typedef MapIterator<CouplesOfPosesMap> CouplesOfPosesMapIterator;
 
 typedef std::map<String,BodyPartModel*> BodyPartModelsMap;
 typedef MapIterator<BodyPartModelsMap> BodyPartModelsMapIterator;
@@ -152,7 +152,8 @@ public:
 	///param defaultBodyPartModelCompleteName Complete name of the default BodyPartModel, "Clown's noze" for example.
 	///param owner character to which the BodyPart belongs.
 	BodyPart(const String& name, const String& defaultBodyPartModelSubEntityName, const String& defaultBodyPartModelCompleteName, Character* owner);
-
+	///brief Destructor
+	~BodyPart();
 
 
 
@@ -198,7 +199,7 @@ public:
 
 	///brief Method witch returns an Ogre MapIterator on the CouplesOfPoses of the BodyPart.
 	///return An Ogre MapIterator on the CouplesOfPoses of the BodyPart.
-	CouplesOfPosesIterator getCouplesOfPosesIterator();
+	CouplesOfPosesMapIterator getCouplesOfPosesMapIterator();
 
 	///brief Method which add a couple of poses to the bodypart.
 	///param name Complete name of the Couple of Poses, it could be "Noze'size" for example.

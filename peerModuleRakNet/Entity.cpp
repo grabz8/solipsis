@@ -221,12 +221,22 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         if (scaleElem)
             XmlHelpers::fromXmlEltVector3(scaleElem, scale);
 
+        IPeerRenderSystemLock* renderSystemLock = Peer::getSingleton().getRenderSystemLock();
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::createPhysics() loading mesh%s", (renderSystemLock != 0) ? " locking" : "");
+        if (renderSystemLock != 0)
+            renderSystemLock->lock();
         Mesh* collisionMesh = OgreHelpers::getSingleton().loadMesh(mCollisionMeshFilename);
         MeshPtr collisionMeshPtr(collisionMesh);
         mPhysicsScene->setTerrainMesh(collisionMeshPtr, getXmlEntity()->getPosition() + position, getXmlEntity()->getOrientation()*rotation, scale);
 
+        // Mesh should be freed when no more referenced
+/*        MeshManager::getSingleton().remove(collisionMeshPtr->getHandle());*/
+
         // Destroy the resource group
         ResourceGroupManager::getSingleton().destroyResourceGroup(resourceGroup);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::createPhysics() mesh loaded%s", (renderSystemLock != 0) ? " unlocking" : "");
+        if (renderSystemLock != 0)
+            renderSystemLock->unlock();
     }
     else
     {

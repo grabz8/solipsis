@@ -36,7 +36,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Solipsis {
 
 // secure logMessage macro
-#define OGRE_LOG(message) if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
+#ifdef USE_WINDOWS_DEBUG
+    #define OGRE_LOG(message) { \
+        if (Solipsis::OgreHelpers::getSingletonPtr() != 0)  Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message); \
+        OutputDebugString((message + String("\n")).c_str()); \
+    }
+#else
+    #define OGRE_LOG(message)  if (Solipsis::OgreHelpers::getSingletonPtr() != 0) Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message);
+#endif
 
 /** This static class contains several helper methods above Ogre.
  */
@@ -105,6 +112,11 @@ public:
     static OgreHelpers* getSingletonPtr() { return mSingleton; }
     static OgreHelpers& getSingleton() { return *mSingleton; }
 
+    // Add resource locations from resources.cfg file
+    static void addResourceLocations();
+    // Remove resource locations from resources.cfg file
+    static void removeResourceLocations();
+
     Ogre::Timer* getTimer();
 
     Ogre::Mesh* loadMesh(const Ogre::String& filename);
@@ -119,9 +131,6 @@ public:
         const Ogre::Vector3& position,
         const Ogre::Quaternion& orientation,
         const Ogre::Vector3& scale);
-
-protected:
-    void addResourceLocations();
 };
 
 } // namespace Solipsis

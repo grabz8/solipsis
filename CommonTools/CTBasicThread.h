@@ -50,9 +50,9 @@ protected:
     /// mutex to synchronize state change
     pthread_mutex_t mMutex;
     /// current state
-    State mState;
+    volatile State mState;
     /// true if stop is requested
-    bool mStopRequested;
+    volatile bool mStopRequested;
     /// timeout to stop the thread until it is killed
     unsigned int mStopTimeoutSec;
 

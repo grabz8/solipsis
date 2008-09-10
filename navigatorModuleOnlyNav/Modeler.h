@@ -68,7 +68,7 @@ public:
 	/// Default destructor
 	~Modeler(void);
 
-	static Modeler* getSingletonPtr(SceneManager* pSceneMgr = 0, Camera* pCamera = 0, IModelerCallbacks* modelerCallbacks = 0);
+	static Modeler* getSingletonPtr();
 
 	/// Init the modeler mode
 	bool	init(const String& pPath);

@@ -68,6 +68,8 @@ public:
 	void setPrevAsCurrent();
 
 	/** */
+	SceneManager* getSceneManager();
+	/** */
 	SceneNode* getSceneNode();
 	/** */
 	Entity* getEntity();

@@ -234,6 +234,8 @@ public:
 		const Vector3& minRotationsAngles, const Vector3& defaultRotationsAngles, const Vector3& maxRotationsAngles,
 		const Vector3& minPosition, const Vector3& defaultPosition, const Vector3& maxPosition,
 		Character* owner); 
+	///brief Destructor
+	~Goody();
 
 	///brief Method which gives the name of the Goody.
 	///return The name of the Goody	

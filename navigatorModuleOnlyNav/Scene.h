@@ -35,20 +35,20 @@ namespace Solipsis {
 class Scene : public OgrePeer
 {
 protected:
-    SceneNode* mSceneNode;
+    /// Resource group name
+    String mResourceGroup;
+    /// Resource location
+    String mResourceLocation;
+    /// Converted static geometry (optimized scene geometry)
     StaticGeometry* mStaticGeometry;
-    RaySceneQuery* mRaySceneQuery;
 
 public:
 #ifdef POOL
-    Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
+    Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal);
 #else
-    Scene(XmlEntity* xmlEntity, bool isLocal, SceneNode* sceneNode, RaySceneQuery* raySceneQuery = 0);
+    Scene(XmlEntity* xmlEntity, bool isLocal);
 #endif
     virtual ~Scene();
-
-    // Set and get
-    SceneNode* getSceneNode();
 
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
@@ -67,8 +67,7 @@ public:
 
 protected:
     void destroy();
-    void convertToStaticGeometry();
-    void getMovableObjectsList(SceneNode* node, const String movableType, std::list<MovableObject*> &movableObjectsList);
+    void convertToStaticGeometry(SceneNode* sceneNode);
 };
 
 } // namespace Solipsis

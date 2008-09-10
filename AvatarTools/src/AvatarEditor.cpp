@@ -165,6 +165,11 @@ String AvatarEditor::getSkeletonName()
     return mSkeletonFilename;
 }
 //-------------------------------------------------------------------------------------
+SceneManager* AvatarEditor::getSceneManager()
+{
+	return mSceneMgr;
+}
+//-------------------------------------------------------------------------------------
 SceneNode* AvatarEditor::getSceneNode()
 {
 	return mSceneNode;

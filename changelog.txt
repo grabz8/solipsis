@@ -641,3 +641,22 @@ Local IP is auto set in the VLC params
 New logger class added into CommonTools
 
 ---------------------------
+10/09/08
+
+Workaround for the fullscreen bug in NCS configs, bug was due to concurrent rendersystem-level calls (D3D)
+between PeerModuleRakNet (physics mesh file loading) and Navigator (rendering calls), workaround consists in
+locking (in NCS mode) rendersystem-level calls meanwhile PeerModule thread is loading the physics mesh
+Some memory leaks (D3D Debug warnings) fixed
+Movables now destroyed on shutdown:
+ Modeled objects not saved
+ Transformations gizmos
+ Avatar cameras nodes
+GoodyModels are now destroyed on Goody destruction
+BodyPartModels and CoupleOfPoses are now destroyed on BodyPart destruction
+Characters are now destroyed on CharacterManager destruction
+Character resource group is now destroyed
+Scene resource group is now destroyed
+Scene loading moved into Scene class
+OutputDebugString support added
+
+---------------------------

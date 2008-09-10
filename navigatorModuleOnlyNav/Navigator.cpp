@@ -93,15 +93,22 @@ Navigator::~Navigator()
     // Destroy OgrePeer manager
     delete mOgrePeerManager;
 
-    // Destroy the ray scene query
     if (mSceneMgr)
+    {
+        // Destroy the ray scene query
         mSceneMgr->destroyQuery(mRaySceneQuery);
+        // destroy the sun light
+        mSceneMgr->destroyLight("SunLight");
+    }
 
     // Destroy the GUI
     delete mNavigatorGUI;
 
-    // Destroy avatar editor
+    // Destroy the avatar editor
     delete mAvatarEditor;
+
+    // Destroy the modeler
+    delete mModeler;
 
     // Lua finalization
     lua_close(mLuaState);
@@ -967,8 +974,8 @@ void Navigator::createScene()
     // Create OgrePeer manager
     mOgrePeerManager = new OgrePeerManager(mSceneMgr, this);
 
-	// Init the Modeler 
-	mModeler = Modeler::getSingletonPtr(mSceneMgr, mCamera, mOgrePeerManager);
+	// Create the Modeler 
+    mModeler = new Modeler(mSceneMgr, mCamera, mOgrePeerManager);
 	mModeler->init(mMediaCachePath);
 
     // Create the avatar editor
@@ -1266,7 +1273,7 @@ void Navigator::sendEvents()
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
+void Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
 {
     // User Avatar ?
     if (ogrePeer->isLocal())
@@ -1276,12 +1283,10 @@ bool Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
         // set Third person camera
         ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);
     }
-
-    return true;
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
+void Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
 {
     // create the sun light
     Light *sunLight = mSceneMgr->createLight("SunLight");
@@ -1294,8 +1299,6 @@ bool Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
 #ifdef SHADOWS
     sunLight->setCastShadows(true);
 #endif
-
-    return true;
 }
 
 //-------------------------------------------------------------------------------------

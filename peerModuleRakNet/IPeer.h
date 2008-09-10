@@ -28,6 +28,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+/** This interface should be implemented if calls to render system must be synchronized.
+ */
+class IPeerRenderSystemLock
+{
+public:
+    /// This method lock access to the render system
+    virtual void lock() = 0;
+    /// This method unlock access to the render system
+    virtual void unlock() = 0;
+};
+
 /** This class represents an application managing a Solipsis Peer.
  */
 class PEERMODULE_EXPORT IPeer
@@ -51,8 +62,9 @@ public:
     /** Initialize the peer application object
     @remarks
 	    Returns false if application cannot be initialized
+    @param[in] renderSystemLock The optional render system locking implementation.
     */
-    virtual bool initialize() = 0;
+    virtual bool initialize(IPeerRenderSystemLock* renderSystemLock = 0) = 0;
 
     /** A client should call this last
     @remarks
