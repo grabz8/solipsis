@@ -9,8 +9,8 @@
 
  4- Install Solipsis from Solipsis\Setup.exe
 
- 5- Launch the RakNet server
-    "Program Files"\Solipsis\Common\bin\RakNetServer\Release\RakNetServer.exe"
+ 5- Launch the RakNet server with 1 dedicated Media/cache directory
+    "Program Files"\Solipsis\Common\bin\RakNetServer\Release\RakNetServer.exe" -m <MediaCacheDirectory>
     See readme.txt for additional arguments
 
  6- Launch the Peer with cmd.exe
