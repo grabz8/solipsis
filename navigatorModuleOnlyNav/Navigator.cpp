@@ -101,14 +101,14 @@ Navigator::~Navigator()
         mSceneMgr->destroyLight("SunLight");
     }
 
-    // Destroy the GUI
-    delete mNavigatorGUI;
-
     // Destroy the avatar editor
     delete mAvatarEditor;
 
     // Destroy the modeler
     delete mModeler;
+
+    // Destroy the GUI
+    delete mNavigatorGUI;
 
     // Lua finalization
     lua_close(mLuaState);
