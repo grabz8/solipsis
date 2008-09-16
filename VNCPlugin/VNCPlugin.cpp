@@ -80,8 +80,15 @@ void VNCPlugin::shutdown()
     Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNCPlugin::shutdown() deleting texture system");
 // GREG END
     mConnByID.clear();
-    delete mTextureSystem;
-    mTextureSystem = 0;
+// GREG BEGIN
+/*    delete mTextureSystem;
+    mTextureSystem = 0;*/
+    if (mTextureSystem != 0)
+    {
+        delete mTextureSystem;
+        mTextureSystem = 0;
+    }
+// GREG END
 // GREG BEGIN
     Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL, "VNCPlugin::shutdown() end");
 // GREG END
