@@ -64,9 +64,12 @@ void VLCPlugin::initialise()
 //-------------------------------------------------------------------------------------
 void VLCPlugin::shutdown()
 {
-    mVLCTextureSource->clearInstances();
-    delete mVLCTextureSource;
-    mVLCTextureSource = 0;
+    if (mVLCTextureSource != 0)
+    {
+        mVLCTextureSource->clearInstances();
+        delete mVLCTextureSource;
+        mVLCTextureSource = 0;
+    }
 }
 
 //-------------------------------------------------------------------------------------
