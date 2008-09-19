@@ -66,7 +66,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     mUserAvatar(0),
     mNavigatorSound(0),
     mModeler(0),
-    isOnLeftCTRL(false)
+    isOnLeftCTRL(false),
+	isOnGizmo(false)
 {
     ms_singletonPtr = this;
 
@@ -617,6 +618,8 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     mClosestDistance = -1.0f;
     mPickedMovable = 0;
     String movablesList;
+	isOnGizmo = false;
+
     for (RaySceneQueryResult::iterator it = queryResult.begin(); it != queryResult.end(); ++it )
     {
         if (it->movable && (it->distance > 0))
@@ -639,11 +642,40 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     ((it->movable->getMovableType().compare("Entity") == 0) ||
                     (it->movable->getMovableType().compare("ManualObject") == 0)))
                 {
-                    if (it->movable->getQueryFlags() & QFAvatar)
+					if (it->movable->getQueryFlags() & QFAvatar)
                         continue;
 
-                    //if (it->movable->getMovableType().compare("Entity") == 0)
-                    if (it->movable->getQueryFlags() & QFObject)
+					// Gizmo ?
+					else if (mModeler->isOnGizmo())
+					{
+						mModeler->getSelection()->mTransformation->releasedClickForTransformation();
+//						mModeler->getSelection()->mTransformation->mDragNDrop = Vector3::ZERO;
+
+						//mModeler->getSelection()->mTransformation->getMode();
+						//mModeler->deselectNode();
+
+						string name = it->movable->getName();
+						if( name.substr(0,4) == "move")
+						{
+							isOnGizmo = true;
+							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "moveX","moveY","moveZ" );
+							break;
+						}
+						else if( name.substr(0,6) == "rotate")
+						{
+							isOnGizmo = true;
+							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "rotateX","rotateY","rotateZ" );
+							break;
+						}
+						else if( name.substr(0,5) == "scale")
+						{
+							isOnGizmo = true;
+							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "scaleX","scaleY","scaleZ" );
+							break;
+						}
+					}
+
+                    else if (it->movable->getQueryFlags() & QFObject)
                     {
                         if( mModeler && !mModeler->isSelectionLocked() )
                         {
@@ -666,14 +698,6 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                                     mModeler->getSelection()->getFirstSelectedObject()->showBoundingBox(true);
                                     mModeler->lockLinkMode(false);
                                 }
-                            }
-
-                            // Gizmo ?
-                            else if (mModeler->isOnGizmo())
-                            {
-                                // ...
-                                //isOnGizmo = false;
-                                //mModeler->deselectNode();
                             }
 
                             // Object3D ?
@@ -1645,39 +1669,31 @@ bool Navigator::endAvatarEdit()
 //-------------------------------------------------------------------------------------
 void Navigator::onMouseMoved(const MouseEvt& evt)
 {
-	if (mModeler)
-		if (!mModeler->isSelectionEmpty())
-		{
-			//mModeler->getSelection()->mTransformation->drapNdrop(...);
-		}
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::onMousePressed(const MouseEvt& evt)
 {
-	if (mModeler)
-		if (!mModeler->isSelectionEmpty())
-		{
-			//mModeler->getSelection()->mTransformation->firstClickForTransformation(...);
-		}
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::onMouseReleased(const MouseEvt& evt)
 {
-	if (mModeler)
-		if (!mModeler->isSelectionEmpty())
+	if (mModeler && !mModeler->isSelectionEmpty())
+	{
+		if (mModeler->isOnGizmo())
 		{
-			//mModeler->getSelection()->mTransformation->releasedClickForTransformation();
-			//isOnGizmo = false; // a deplacer dans le mousePressed lorsque l'on click sur autre chose qu'un GIZMO
+			if(isOnGizmo) 
+				isOnGizmo = false;
 		}
+	}
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::MdlrModifGizmo(Vector3 dep)
 {
 	SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
-	static Vector3 scale = Vector3(1,1,1);
+	Vector3 vec;
 
 	switch (mModeler->getSelection()->mTransformation->getMode())
 	{
@@ -1688,13 +1704,20 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 		break;
 	case Transformations::ROTATE:
 		mModeler->updateCommand( Object3D::ROTATE, mModeler->getSelected() );
-		dep *= 10;
-		mModeler->getSelection()->rotate(dep.x, dep.y, dep.z);
+		dep *= 10.;
+		vec = mModeler->getSelected()->getRotate();
+		vec += dep;
+		mModeler->getSelection()->rotate(vec.x, vec.y, vec.z);
 		break;
 	case Transformations::SCALE:
 		mModeler->updateCommand( Object3D::SCALE, mModeler->getSelected() );
-		scale += dep;
-		mModeler->getSelection()->scale(scale.x, scale.y, scale.z);
+
+		vec = mModeler->getSelected()->getScale();
+		//vec = Vector3::UNIT_SCALE;
+
+		vec += dep;
+		//mModeler->getSelection()->scaleTo(vec.x, vec.y, vec.z);
+		mModeler->getSelection()->scale(vec.x, vec.y, vec.z);
 		break;
 	case Transformations::SELECT:
 		break;

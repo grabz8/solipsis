@@ -112,6 +112,27 @@ public:
 	void showGizmosScale(bool pShow);
 	void showGizmosRotate(bool pShow);
 
+	///brief Give the mouse position (relative to the good dummy plane)
+	///return Mouse Position in the scene 
+	Vector3 getMousePosOnDummyPlane (const OIS::MouseEvent &e) ;
+	Vector3 getMousePosOnDummyPlane (Ray mouseRay) ;
+
+/*
+ *
+ *	\brief 
+ *		When the user click on an axe (X, Y or Z), this function detect this axe and
+ *			put result in mAxeClicked
+ *
+ *	\param pNameAxe = Name of axes attach on the move_Widget_
+ *						(moveX, scaleX, RotateX, ...)
+ *
+*/
+	void onClickToTransformObject(const OIS::MouseEvent &e, const String pNameAxeX,
+								const String pNameAxeY, const String pNameAxeZ );	
+	void onClickToTransformObject(RaySceneQueryResult &result, const String pNameAxeX,
+								const String pNameAxeY, const String pNameAxeZ );
+
+
 	enum Mode {
 		SELECT,
 		MOVE,
@@ -179,20 +200,6 @@ private :
 	///brief Dummy plane Z :
 	Entity * mPlaneZ;
 
-/*
- *
- *	\brief 
- *		When the user click on an axe (X, Y or Z), this function detect this axe and
- *			put result in mAxeClicked
- *
- *	\param pNameAxe = Name of axes attach on the move_Widget_
- *						(moveX, scaleX, RotateX, ...)
- *
-*/
-	void onClickToTransformObject(const OIS::MouseEvent &e, const String pNameAxeX,
-								const String pNameAxeY, const String pNameAxeZ );	
-	void onClickToTransformObject(RaySceneQueryResult &result, const String pNameAxeX,
-								const String pNameAxeY, const String pNameAxeZ );
 
 	///biref Make a ray trace
 	///return the result of the ray trace
@@ -200,11 +207,6 @@ private :
 	RaySceneQueryResult& raySceneQuery( Ray mouseRay );
 	///brief The ray scene query pointer
 	RaySceneQuery *mRaySceneQuery;	
-
-	///brief Give the mouse position (relative to the good dummy plane)
-	///return Mouse Position in the scene 
-	Vector3 getMousePosOnDummyPlane (const OIS::MouseEvent &e) ;
-	Vector3 getMousePosOnDummyPlane (Ray mouseRay) ;
 
 
 	///brief For remember the first axe clicked by the user

@@ -275,6 +275,7 @@ public:
     bool avatarXMLSaveAs();
 
     bool isOnLeftCTRL;
+	bool isOnGizmo;
 
     void onMouseMoved(const MouseEvt& evt);
     void onMousePressed(const MouseEvt& evt);

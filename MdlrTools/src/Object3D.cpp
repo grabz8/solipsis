@@ -815,13 +815,13 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			Real s1 = p1;
 			Real s2 = p2;
 			Real s3 = p3;
-			if( p1 != 1 ) { s2 = mScaleY; s3 = mScaleZ; }
+//			if( p1 != 1 ) { s2 = mScaleY; s3 = mScaleZ; }
 //			else if( p2 != 1 ) { s1 = mScaleX; s3 = mScaleZ; }
 //			else if( p3 != 1 ) { s1 = mScaleX; s2 = mScaleY; }
 
-			if( p1 == 1 ) s1 = mScaleX;
-			if( p2 == 1 ) s2 = mScaleY;
-			if( p3 == 1 ) s3 = mScaleZ;
+			//if( p1 == 1. ) s1 = mScaleX;
+			//if( p2 == 1. ) s2 = mScaleY;
+			//if( p3 == 1. ) s3 = mScaleZ;
 
 			setScale( s1, s2, s3 );
 

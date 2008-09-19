@@ -524,16 +524,49 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
             mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
             mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
         }
-
-        //TODO : move / rotate / scale
+		
+		//TODO : move / rotate / scale
         //if (mNavigator->isOnGizmo) mNavigator->onMouseMoved(evt);
-        return true;
-    }
+		if (getCameraMode() == CM1stPersonWithMouse ||
+			getCameraMode() == CM3rdPerson)
+		{
+			Modeler* modeler = Modeler::getSingletonPtr();
+			Selection* selection = modeler->getSelection();
+			Vector3 dragNdrop;
+
+			if( mNavigator->isOnGizmo )//&& !selection->isEmpty() )
+			//if( modeler->isOnGizmo() )
+			{
+				//Calculate drag and drop :
+				Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+				dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );
+				if( dragNdrop != Vector3::ZERO )
+				{
+					//Apply the transformation
+					switch( selection->mTransformation->getMode() )
+					{
+					case Transformations::Mode::MOVE :	//Move objects
+						mNavigator->MdlrModifGizmo( dragNdrop );
+						break;
+					case Transformations::Mode::ROTATE :	//Rotate objects
+						mNavigator->MdlrModifGizmo( dragNdrop * 10. );
+						break;
+					case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
+						dragNdrop -= Vector3::UNIT_SCALE;
+						mNavigator->MdlrModifGizmo( dragNdrop * 100. );
+						break;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
 
 	if (mNavigator->getState() != Navigator::SInWorld && mNavigator->getState() != Navigator::SAvatarEdit)
-        return true;
+		return true;
 
-    // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
+	// if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
         return true;
 
@@ -682,18 +715,12 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
         else if ((mNavigator->getState() == Navigator::SModeling) &&
                 !NaviManager::Get().isAnyNaviFocused())
         {
-            // the mouse is out of a naviPanel
-
-            //TODO : move / rotate / scale
-            //if (mNavigator->isOnGizmo) mNavigator->onMousePressed(evt);
-            //else
-            {
-                // normalize (x, y) on 0..1 and get the ray emitted from the camera
-                Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-                // compute the picking
-                mNavigator->computeMousePicking(mouseRay);
-            }
-        }
+			// the mouse is out of a naviPanel
+			// normalize (x, y) on 0..1 and get the ray emitted from the camera
+			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+			// compute the picking
+			mNavigator->computeMousePicking(mouseRay);
+		}
         else
         {
             // the mouse is on a naviPanel
@@ -773,7 +800,8 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                 !NaviManager::Get().isAnyNaviFocused())
         {
             //TODO : move / rotate / scale
-            //if (mNavigator->getModeler()->isOnGizmo()) mNavigator->onMouseReleased(evt);
+            if (mNavigator->getModeler()->isOnGizmo()) 
+				mNavigator->onMouseReleased(evt);
         }
         else
             NaviManager::Get().injectMouseUp(buttonsId);
