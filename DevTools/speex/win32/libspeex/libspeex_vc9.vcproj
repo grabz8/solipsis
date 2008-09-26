@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libspeex"
 	ProjectGUID="{40B5BFB6-29B2-455B-8A5F-5331657D4F93}"
 	RootNamespace="libspeex"
@@ -88,7 +88,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\..\Dependencies\speex\include\speex&quot; mkdir &quot;..\..\..\..\Dependencies\speex\include\speex&quot;&#x0D;&#x0A;xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include&quot; /y&#x0D;&#x0A;xcopy &quot;..\..\include\speex\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include\speex&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\speex\include\speex&quot; mkdir &quot;..\..\..\..\Dependencies\speex\include\speex&quot;&#x0D;&#x0A;xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include&quot; /y&#x0D;&#x0A;xcopy &quot;..\..\include\speex\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include\speex&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -129,6 +129,7 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -163,7 +164,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\..\Dependencies\speex\include\speex&quot; mkdir &quot;..\..\..\..\Dependencies\speex\include\speex&quot;&#x0D;&#x0A;xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include&quot; /y&#x0D;&#x0A;xcopy &quot;..\..\include\speex\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include\speex&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\speex\include\speex&quot; mkdir &quot;..\..\..\..\Dependencies\speex\include\speex&quot;&#x0D;&#x0A;xcopy &quot;..\..\include\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include&quot; /y&#x0D;&#x0A;xcopy &quot;..\..\include\speex\*.h&quot; &quot;..\..\..\..\Dependencies\speex\include\speex&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

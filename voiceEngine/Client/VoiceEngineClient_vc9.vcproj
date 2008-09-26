@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="VoiceEngineClient"
 	ProjectGUID="{2A3E611F-0793-48D8-8DAD-C4CA926EF3CF}"
 	RootNamespace="VoiceEngineClient"
@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\VoiceEngineClient\include&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\VoiceEngineClient\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;"
+				CommandLine="if not exist &quot;..\..\Dependencies\VoiceEngineClient\include&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\VoiceEngineClient\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -113,7 +113,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -142,7 +142,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\VoiceEngineClient\include&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\VoiceEngineClient\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;"
+				CommandLine="if not exist &quot;..\..\Dependencies\VoiceEngineClient\include&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\VoiceEngineClient\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
