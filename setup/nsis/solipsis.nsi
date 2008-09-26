@@ -58,8 +58,8 @@ Section "PeerRakNet" SEC02
   SetOutPath "$INSTDIR\peerRakNet"
   File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
   File "resources.cfg"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8550 -v 0"
-  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8550 -v 0"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-p 8550 -v 0"
+  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-p 8550 -v 0"
 SectionEnd
 
 Section "RakNetServer" SEC03

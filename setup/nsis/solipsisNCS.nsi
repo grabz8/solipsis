@@ -57,8 +57,8 @@ SectionEnd
 Section "RakNetServer" SEC02
   SetOutPath "$INSTDIR\raknetserver"
   File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
-  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s Deltastation1"
+  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s Deltastation1"
 SectionEnd
 
 Section "Media" SEC03
