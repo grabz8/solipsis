@@ -1,0 +1,23 @@
+<node>
+    <entity uid="11112222" owner="00000001" type="1" name="Deltastation1" version="00000000">
+        <position x="18" y="-58" z="133" />
+        <orientation x="0" y="0" z="0" w="1" />
+        <aabb>
+            <min x="0" y="0" z="0" />
+            <max x="0" y="0" z="0" />
+        </aabb>
+        <content>
+            <sceneContent>
+                <entryGate gravity="true">
+                    <position x="17" y="-50" z="115" />
+                </entryGate>
+            </sceneContent>
+            <lod level="0">
+                <sceneLodContent mainFilename="Deltastation1.osm" collision="Delta_COLLISION" />
+                <files>
+                    <file name="11112222.ssf" version="00000000" />
+                </files>
+            </lod>
+        </content>
+    </entity>
+</node>

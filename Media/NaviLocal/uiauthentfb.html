@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uiauthentfb</title>
+		<script type="text/javascript" src="SolipsisHelpers.js"></script>
+        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageLoaded').add({naviName:'uiauthentfb'}).send();
+            }
+            function buttonPressed(buttonName)
+            {
+                var naviData = new NaviData(buttonName);
+                naviData.send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFFFF;
+            }
+            li { color: Black; }
+            #container
+            {
+	            background-image: url('uiauthentfb.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 128px;
+            }
+            #msgText
+            {
+	            position: absolute;
+	            left: 5px;
+	            top: 50px;
+	            width: 246px;
+	            height: 24px;
+	            font-size: 12px;
+	            font-style: italic;
+	            font-weight: bold;
+	            text-align: center;
+	            color: #FFFF33;
+            }
+            .button
+            {
+	            position: absolute;
+	            top: 95px;
+	            width: 110px;
+	            height: 30px;
+            }
+            #okButton { left: 10px; z-index: 0;}
+            #cancelButton { left: 135px; z-index: 0;}
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="msgText"></div>
+            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
+            <div id="cancelButton" class="button" onclick="buttonPressed('cancel')"></div>
+        </div>
+    </body>
+</html>
