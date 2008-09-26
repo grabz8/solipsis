@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Event_h__
 #define __Event_h__
 
-#include "time.h"
+#include <time.h>
 
 namespace Solipsis {
 

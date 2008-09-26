@@ -277,10 +277,13 @@ bool Instance::finalize()
     // Destroy the scene
     destroyScene();
 
-    // Destroy the camera
-    mSceneMgr->destroyCamera("UserCam");
-
-    mSceneMgr->clearScene();
+    if (mSceneMgr != 0)
+    {
+        // Destroy the camera
+        if (mCamera != 0)
+            mSceneMgr->destroyCamera("UserCam");
+        mSceneMgr->clearScene();
+    }
 //    MeshManager::getSingleton().unloadAll(); // To look for unfreed meshes resources
 
     if (!mAutoCreatedWindow)
