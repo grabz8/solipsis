@@ -73,6 +73,7 @@ public:
         // however, code may  just be a warning or information.
         char reportLog[256];
         _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::reportError() error %d, %s", code, message);
+        reportLog[sizeof(reportLog) - 1] = '\0';
         logMessage(reportLog);
 //        exit(1);
     }
@@ -82,6 +83,7 @@ public:
         // this should not get hit by a properly debugged SDK!
         char reportLog[256];
         _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::reportAssertViolation() %s", message);
+        reportLog[sizeof(reportLog) - 1] = '\0';
         logMessage(reportLog),
         assert(0);
         return NX_AR_CONTINUE;
@@ -92,6 +94,7 @@ public:
         // just a information message
         char reportLog[256];
         _snprintf(reportLog, sizeof(reportLog) - 1, "PhysXEngine::OutputStream::print() %s", message);
+        reportLog[sizeof(reportLog) - 1] = '\0';
         logMessage(reportLog);
     }
 };
