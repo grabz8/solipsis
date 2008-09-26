@@ -152,7 +152,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	Ogre::String extractedAttribute;
 
 	TiXmlElement *e = doc.RootElement()->FirstChildElement("properties");
-    mEntityUID = XmlHelpers::convertHexStringToEntityUID(e->FirstChildElement("objuid")->Attribute("Uid"));
+    mEntityUID = e->FirstChildElement("objuid")->Attribute("Uid");
 	mName = e->FirstChildElement("objname")->Attribute("Name");
 	mTags = e->FirstChildElement("objtags")->Attribute("Name");
 	mDesc = e->FirstChildElement("objdesc")->Attribute("Name");
@@ -402,7 +402,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "<SOLObject>" << endl;
 	toSave << "\t<properties>" << endl;
 	toSave << "\t\t<modelerversion Name=\"" << SOLMODVERSION << "\" />" << endl;
-    toSave << "\t\t<objuid Uid=\"" << XmlHelpers::convertEntityUIDToHexString(mEntityUID) << "\" />" << endl;
+    toSave << "\t\t<objuid Uid=\"" << mEntityUID << "\" />" << endl;
 	toSave << "\t\t<objname Name=\"" << mName << "\" />" << endl;
 
 	// TODO : See how to save / restore TAGS without carriarge returns => The XML would be more human readable
