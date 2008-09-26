@@ -161,12 +161,11 @@ void Avatar::onSceneNodeChanged()
     AxisAlignedBox entityBbox = getEntity()->getBoundingBox();
     Vector3 avatarSize = entityBbox.getSize();
     Vector3 avatarHalfSize = entityBbox.getHalfSize();
-    String uidString = mXmlEntity->getUidString();
 
     // Name Label
     if (mNameLabel == 0)
     {
-        mNameLabel = new MovableText(uidString + "Label", mXmlEntity->getName().substr(0, 16), false);
+        mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false);
         mNameLabel->setScale(0.1f);
         mNameLabel->setCharacterHeight(1);
         mNameLabel->setColor(ColourValue::White);
@@ -178,7 +177,7 @@ void Avatar::onSceneNodeChanged()
 	// Chat Label
     if (mChatLabel == 0)
     {
-        mChatLabel = new MovableText(uidString + "ChatLabel", " ", false);
+        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false);
         mChatLabel->setScale(0.15f);
         mChatLabel->setCharacterHeight(1);
 		mChatLabel->setSpaceWidth(1);
@@ -199,7 +198,7 @@ void Avatar::onSceneNodeChanged()
 //    getEntity()->setQueryFlags(Navigator::QFAvatar);
     if (mSelectionObject == 0)
     {
-        mSelectionObject = new ManualObject(uidString + "Sel");
+        mSelectionObject = new ManualObject(mXmlEntity->getUid() + "Sel");
         mSelectionObject->setQueryFlags(Navigator::QFAvatar);
     }
     AxisAlignedBox selectionBbox;
@@ -217,7 +216,7 @@ void Avatar::onSceneNodeChanged()
         if (mCamerasSceneNode == 0)
         {
             // Create camera node/pitch nodes
-            mCamerasSceneNode = getSceneNode()->createChildSceneNode(uidString + "CamerasNode");
+            mCamerasSceneNode = getSceneNode()->createChildSceneNode(mXmlEntity->getUid() + "CamerasNode");
 
             // Create First person camera node/pitch node
             firstPersonCamNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode");
@@ -413,7 +412,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     }
     if (definedAttributes & XmlEntity::DAContent)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUidString().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUid().c_str());
         detachFromSceneNode();
         CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
         String defaultCharacterName = "";
@@ -421,7 +420,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
         for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
             if (it->mFilename.find(".saf") == it->mFilename.length() - 4)
                 defaultCharacterName = it->mFilename.substr(0, it->mFilename.length() - 4);
-        CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUidString(), defaultCharacterName);
+        CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUid(), defaultCharacterName);
         if (characterInstance == 0)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::update");
         setCharacterInstance(characterInstance);

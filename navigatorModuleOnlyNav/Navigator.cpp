@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "DebugHelpers.h"
+#include <CTSystem.h>
+#include <CTStringHelpers.h>
 #include <CTIO.h>
 #include "Navi.h"
 #include "NaviLua.h"
@@ -46,12 +48,19 @@ Navigator::Navigator(const String name, IApplication* application) :
     NodeEventListener(mXmlRpcClient),
     mFakeTerrain(false),
     mState(SLogin),
-    mConnectionMode(CMExistingNode),
-    mNodeStatus(NSUnavailable),
-    mUdpPort(6010),
-    mHost("localhost"),
-    mPort(8550),
+    mPeerAddress("localhost:8880"),
+    mLocalWorldAddress("localhost:8660"),
+    mWorldAddress(""),
+    mWorldServerAddress("localhost:8550"),
+    mWorldServerTimeoutSec(8),
     mLogin("me"),
+    mAuthentType(ATSolipsis),
+    mFacebookApiKey(""),
+    mFacebookSecret("695a02e3645bed085e1802c7e9952d73"), // for api key "8d81e4c64ac0039b209c4a53b21ba220"
+    mFacebookServer("api.facebook.com/restserver.php"),
+    mFacebookLoginUrl("http://api.facebook.com/login.php"),
+    mFixedNodeId(""),
+    mNodeId(""),
     mXmlRpcClient(0),
     mOgrePeerManager(0),
     mNavigatorGUI(0),
@@ -71,8 +80,8 @@ Navigator::Navigator(const String name, IApplication* application) :
 {
     ms_singletonPtr = this;
 
-    CommonTools::LogHandler::setLogHandler(&mOgreLogger);
-    CommonTools::LogHandler::getLogHandler()->setVerbosityLevel(CommonTools::LogHandler::VL_DEBUG);
+    LogHandler::setLogHandler(&mOgreLogger);
+    LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
 
     // Lua initialization
     mLuaState = lua_open();
@@ -141,74 +150,187 @@ Navigator::State Navigator::getState()
 }
 
 //-------------------------------------------------------------------------------------
-Navigator::ConnectionMode Navigator::getConnectionMode()
+void Navigator::setState(State newState)
 {
-    return mConnectionMode;
+    mState = newState;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionMode(Navigator::ConnectionMode connectionMode)
+const String& Navigator::getPeerAddress()
 {
-    mConnectionMode = connectionMode;
+    return mPeerAddress;
 }
 
 //-------------------------------------------------------------------------------------
-Navigator::NodeStatus Navigator::getNodeStatus()
+void Navigator::setPeerAddress(const String& address)
 {
-    return mNodeStatus;
+    mPeerAddress = address;
 }
 
 //-------------------------------------------------------------------------------------
-int Navigator::getConnectionUdpPort()
+const String& Navigator::getLocalWorldAddress()
 {
-    return mUdpPort;
+    return mLocalWorldAddress;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionUdpPort(int udpPort)
+void Navigator::setLocalWorldAddress(const String& address)
 {
-    mUdpPort = udpPort;
+    mLocalWorldAddress = address;
 }
 
 //-------------------------------------------------------------------------------------
-String& Navigator::getConnectionHost()
+const String& Navigator::getWorldAddress()
 {
-    return mHost;
+    return mWorldAddress;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionHost(String& host)
+void Navigator::setWorldAddress(const String& address)
 {
-    mHost = host;
+    mWorldAddress = address;
 }
 
 //-------------------------------------------------------------------------------------
-int Navigator::getConnectionPort()
+const String& Navigator::getWorldServerAddress()
 {
-    return mPort;
+    return mWorldServerAddress;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionPort(int port)
+void Navigator::setWorldServerAddress(const String& address)
 {
-    mPort = port;
+    mWorldServerAddress = address;
 }
 
 //-------------------------------------------------------------------------------------
-String& Navigator::getConnectionLogin()
+unsigned short Navigator::getWorldServerTimeout()
+{
+    return mWorldServerTimeoutSec;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setWorldServerTimeout(unsigned short timeoutSec)
+{
+    mWorldServerTimeoutSec = timeoutSec;
+}
+
+//-------------------------------------------------------------------------------------
+const String& Navigator::getLogin()
 {
     return mLogin;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setConnectionLogin(String& login)
+void Navigator::setLogin(const String& login)
 {
     mLogin = login;
 }
 
 //-------------------------------------------------------------------------------------
+AuthentType Navigator::getAuthentType()
+{
+    return mAuthentType;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setAuthentType(AuthentType authentType)
+{
+    mAuthentType = authentType;
+}
+
+//-------------------------------------------------------------------------------------
+const NodeId& Navigator::getFixedNodeId()
+{
+    return mFixedNodeId;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setFixedNodeId(const NodeId& nodeId)
+{
+    mFixedNodeId = nodeId;
+}
+
+//-------------------------------------------------------------------------------------
+const NodeId& Navigator::getNodeId()
+{
+    return mNodeId;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setNodeId(const NodeId& nodeId)
+{
+    mNodeId = nodeId;
+}
+
+//-------------------------------------------------------------------------------------
+const String& Navigator::getMediaCachePath()
+{
+    return mMediaCachePath;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setMediaCachePath(const String& mediaCachePath)
+{
+    mMediaCachePath = mediaCachePath;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::setNameValueVariable(const String& varName, const String& varValue)
 {
+    if (varName == "PeerAddress")
+    {
+        mPeerAddress = varValue;
+        return true;
+    }
+    if (varName == "LocalWorldAddress")
+    {
+        mLocalWorldAddress = varValue;
+        if (mWorldAddress.empty())
+            mWorldAddress = mLocalWorldAddress;
+        return true;
+    }
+    if (varName == "WorldServerAddress")
+    {
+        mWorldServerAddress = varValue;
+        return true;
+    }
+    if (varName == "WorldServerTimeout")
+    {
+        mWorldServerTimeoutSec = StringConverter::parseInt(varValue);
+        return true;
+    }
+    if (varName == "Login")
+    {
+        mLogin = varValue;
+        return true;
+    }
+    if (varName == "FixedNodeId")
+    {
+        mFixedNodeId = varValue;
+        mAuthentType = ATFixed;
+        return true;
+    }
+    if (varName == "FacebookApiKey")
+    {
+        mFacebookApiKey = varValue;
+        return true;
+    }
+    if (varName == "FacebookSecret")
+    {
+        mFacebookSecret = varValue;
+        return true;
+    }
+    if (varName == "FacebookServer")
+    {
+        mFacebookServer = varValue;
+        return true;
+    }
+    if (varName == "FacebookLoginUrl")
+    {
+        mFacebookLoginUrl = varValue;
+        return true;
+    }
     if (varName == "MediaCachePath")
     {
         mMediaCachePath = varValue;
@@ -514,7 +636,7 @@ void Navigator::demoVoice(const String params)
     {
         // connection to the voice server
         String voiceServerHost("localhost");
-        int voiceServerPort = 30000;
+        unsigned short voiceServerPort = 30000;
         std::string::size_type strPos;
         strPos = params.find_first_of(":");
         if (strPos == std::string::npos)
@@ -529,7 +651,9 @@ void Navigator::demoVoice(const String params)
         if (voiceEngine->isRecording())
             voiceEngine->stopRecording();
         // connect to voice server
-        voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, mUserAvatar->getXmlEntity()->getUid());
+        time_t id;
+        time(&id);
+        voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, id);
     }
 }
 #endif
@@ -888,7 +1012,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
             if ((avatar == mUserAvatar) && (((NavigatorFrameListener*)mFrameListener)->getCameraMode() == NavigatorFrameListener::CM1stPersonWithMouse)) continue;
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUidString().c_str(), avatar->getEntity()->getName().c_str());
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
             return true;
         }
     }
@@ -968,7 +1092,7 @@ bool Navigator::initPostOgreCore()
 
     // Retrieve Media/Cache path (either set by lua either found from cwd)
     if (mMediaCachePath.empty())
-        mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+        mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     return true;
 }
@@ -1052,21 +1176,31 @@ bool Navigator::quit()
 //-------------------------------------------------------------------------------------
 bool Navigator::connect()
 {
-    mXmlRpcClient = new NavigatorXMLRPCClient(mHost, mPort, 0, "nattempts=2");
+    if (mLogin.empty() || mNodeId.empty() || mWorldAddress.empty())
+        return false;
+
+    std::string peerHost;
+    unsigned short peerPort;
+    StringHelpers::getURLHostPort(mPeerAddress, peerHost, peerPort);
+    mXmlRpcClient = new NavigatorXMLRPCClient(peerHost, peerPort, 0, "nattempts=2");
 
     //Try connection
 #ifdef POOL
     RefCntPoolPtr<XmlLogin> xmlLogin;
-    xmlLogin->setUsername(getConnectionLogin());
-    xmlLogin->setPwd("demo");
+    xmlLogin->setUsername(mLogin);
+    std::string worldHost;
+    unsigned short worldPort;
+    StringHelpers::getURLHostPort(mWorldAddress, worldHost, worldPort);
+    xmlLogin->setWorldHost(worldHost);
+    xmlLogin->setWorldPort(worldPort);
+    xmlLogin->setNodeId(mNodeId);
 #else
-    XmlLogin xmlLogin(getConnectionLogin(), "demo");
+    XmlLogin xmlLogin(mLogin, mWorldHost, mWorldPort, mNodeId);
 #endif
-    NodeId nodeId;
 #ifdef POOL
-    bool nodeResponse = mXmlRpcClient->login(*xmlLogin, nodeId);
+    bool nodeResponse = mXmlRpcClient->login(*xmlLogin, mNodeId);
 #else
-    bool nodeResponse = mXmlRpcClient->login(xmlLogin, nodeId);
+    bool nodeResponse = mXmlRpcClient->login(xmlLogin, mNodeId);
 #endif
 
     if (!nodeResponse)
@@ -1076,10 +1210,10 @@ bool Navigator::connect()
     }
     else
     {
-        // Set my node identifier
-        mOgrePeerManager->setNodeId(nodeId);
-
         // Connected !
+
+        // Set my node identifier
+        mOgrePeerManager->setNodeId(mNodeId);
 
         // Stop the node events listener thread
         NodeEventListener::stop();
@@ -1144,19 +1278,6 @@ bool Navigator::contextItemSelected(const String& item)
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setNodeStatus(String& nodeStatusString)
-{
-    if (nodeStatusString.compare("READY") == 0)
-        mNodeStatus = NSReady;
-    else if (nodeStatusString.compare("BUSY") == 0)
-        mNodeStatus = NSBusy;
-    else if (nodeStatusString.compare("UNAVAILABLE") == 0)
-        mNodeStatus = NSUnavailable;
-    else
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unknown node status : " + nodeStatusString, "Navigator::setNodeStatus");
-}
-
-//-------------------------------------------------------------------------------------
 void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
 {
     if (mOgrePeerManager == 0)
@@ -1174,7 +1295,7 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerNew(XmlEntity* xmlEntity)
 #endif
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUid().c_str());
 
 #ifdef UIDEBUG
     if (mNavigatorGUI != 0)
@@ -1191,7 +1312,7 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 void Navigator::onPeerLost(XmlEntity* xmlEntity)
 #endif
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUid().c_str());
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
@@ -1362,8 +1483,7 @@ bool Navigator::createPlane()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createPlane(entityUID, name, plpos + dep);
+	return mModeler->createPlane(entityUID, entityUID, plpos + dep);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1383,10 +1503,8 @@ bool Navigator::createBox()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createBox(entityUID, name, plpos + dep);
+	return mModeler->createBox(entityUID, entityUID, plpos + dep);
 }
-
 
 //-------------------------------------------------------------------------------------
 bool Navigator::createCorner()
@@ -1405,9 +1523,9 @@ bool Navigator::createCorner()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createCorner(entityUID, name, plpos + dep);
+	return mModeler->createCorner(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createPyramid()
 {
@@ -1425,9 +1543,9 @@ bool Navigator::createPyramid()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createPyramid(entityUID, name, plpos + dep);
+	return mModeler->createPyramid(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createPrism()
 {
@@ -1445,9 +1563,9 @@ bool Navigator::createPrism()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createPrism(entityUID, name, plpos + dep);
+	return mModeler->createPrism(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createCylinder()
 {
@@ -1465,9 +1583,9 @@ bool Navigator::createCylinder()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createCylinder(entityUID, name, plpos + dep);
+	return mModeler->createCylinder(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCyl()
 {
@@ -1485,9 +1603,9 @@ bool Navigator::createHalfCyl()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createHalfCyl(entityUID, name, plpos + dep);
+	return mModeler->createHalfCyl(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createCone()
 {
@@ -1505,9 +1623,9 @@ bool Navigator::createCone()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createCone(entityUID, name, plpos + dep);
+	return mModeler->createCone(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfCone()
 {
@@ -1525,9 +1643,9 @@ bool Navigator::createHalfCone()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createHalfCone(entityUID, name, plpos + dep);
+	return mModeler->createHalfCone(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createSphere()
 {
@@ -1545,9 +1663,9 @@ bool Navigator::createSphere()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createSphere(entityUID, name, plpos + dep);
+	return mModeler->createSphere(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createHalfSphere()
 {
@@ -1565,9 +1683,9 @@ bool Navigator::createHalfSphere()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createHalfSphere(entityUID, name, plpos + dep);
+	return mModeler->createHalfSphere(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createTorus()
 {
@@ -1585,9 +1703,9 @@ bool Navigator::createTorus()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createTorus(entityUID, name, plpos + dep);
+	return mModeler->createTorus(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createTube()
 {
@@ -1605,9 +1723,9 @@ bool Navigator::createTube()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createTube(entityUID, name, plpos + dep);
+	return mModeler->createTube(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createRing()
 {
@@ -1625,9 +1743,9 @@ bool Navigator::createRing()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createRing(entityUID, name, plpos + dep);
+	return mModeler->createRing(entityUID, entityUID, plpos + dep);
 }
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
 {
@@ -1645,8 +1763,7 @@ bool Navigator::createMesh()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-	return mModeler->createMesh(entityUID, name, plpos + dep);
+	return mModeler->createMesh(entityUID, entityUID, plpos + dep);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1742,8 +1859,7 @@ bool Navigator::mdlrXMLImport()
 		dep.x = x;
 
         EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-        String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
-		return mModeler->XMLImport(entityUID, name, "", mUserAvatar->getSceneNode()->getPosition() + dep );
+		return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep );
 	}
 
 	return false;
@@ -1757,7 +1873,11 @@ bool Navigator::mdlrXMLSave(bool all)
             return mModeler->XMLSave(all);
 		else
 #ifdef WIN32
-			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+        {
+            System::setMouseCursorVisibility(true);
+            System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+            System::setMouseCursorVisibility(false);
+        }
 #else
 			std::cerr << " You have to select an object3D " << std::endl;
 #endif

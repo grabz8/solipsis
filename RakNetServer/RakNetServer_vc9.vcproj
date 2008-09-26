@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib ws2_32.lib RakNetDLLDebug.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib RakNetDLLDebug.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib"
 				GenerateDebugInformation="true"
@@ -139,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib ws2_32.lib RakNetDLL.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib RakNetDLL.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib"
 				GenerateDebugInformation="true"
@@ -284,6 +284,10 @@
 			Name="Fichiers de ressources"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			>
+			<File
+				RelativePath=".\readme.txt"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

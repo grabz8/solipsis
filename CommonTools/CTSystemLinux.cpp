@@ -46,5 +46,17 @@ void System::setMouseCursorVisibility(bool visible)
 }
 
 //-------------------------------------------------------------------------------------
+void System::showMessageBox(const std::string& text, const std::string& caption, bool okButton, bool okCancelButton, bool iconAsterisk, bool iconExclamation, bool iconHand)
+{
+//    MessageBox(NULL, text.c_str(), caption.c_str(), (okButton?MB_OK:0) | (okCancelButton?MB_OKCANCEL:0) | (iconAsterisk?MB_ICONASTERISK:0) | (iconExclamation?MB_ICONEXCLAMATION:0) | (iconHand?MB_ICONHAND:0));
+}
+
+//-------------------------------------------------------------------------------------
+void System::runExternalWebBrowser(const std::string& url)
+{
+//    ShellExecute(0, "open", url.c_str(), 0, 0, SW_SHOWNORMAL); ?linux?
+}
+
+//-------------------------------------------------------------------------------------
 
 }

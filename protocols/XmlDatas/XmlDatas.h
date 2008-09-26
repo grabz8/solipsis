@@ -39,6 +39,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+enum AuthentType {
+    ATFacebook = 'F',   // User is authenticated by facebook site on external browser
+    ATSolipsis = 'S',   // User is authenticated by the Solipsis Worlds server
+	ATFixed = 'f'       // User specified its own nodeId into boot.lua (no authentication)
+};
+
+#define SOLIPSIS_MAX_NODEID_LEN 64
 typedef std::string NodeId;
 
 enum EventType {
@@ -73,7 +80,7 @@ enum ShapeType {
     STPolygonVolume = 200   /// Volume
 };
 
-typedef unsigned int EntityUID;
+typedef std::string EntityUID;
 typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
 typedef unsigned int FileVersion;
@@ -119,6 +126,7 @@ public:
     static TiXmlElement* toXmlEltEntryGateStruct(const std::string& eltName, const EntryGateStruct& s);
     static bool fromXmlEltEntryGateStruct(TiXmlElement* xmlElt, EntryGateStruct& s);
 
+    static std::string convertAuthentTypeToRepr(const AuthentType& authentType);
     static const std::string& convertEventTypeToRepr(const EventType& evtType);
     static inline void convertDecStringToEventType(const char* str, EventType& evtType) { evtType = (EventType)atoi(str); }
     static const std::string& convertEntityTypeToRepr(const EntityType& entityType);
@@ -130,8 +138,6 @@ public:
     static inline EntityFlags convertHexStringToEntityFlags(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
     static const std::string& convertShapeTypeToRepr(const ShapeType& shapeType);
     static inline void convertDecStringToShapeType(const char* str, ShapeType& shapeType) { shapeType = (ShapeType)atoi(str); }
-    static inline std::string convertEntityUIDToHexString(const EntityUID& entityUID) { return XmlHelpers::convertUIntToHexString(entityUID); }
-    static inline EntityUID convertHexStringToEntityUID(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
     static inline std::string convertEntityVersionToHexString(const EntityVersion& entityVersion) { return XmlHelpers::convertUIntToHexString(entityVersion); }
     static inline EntityVersion convertHexStringToEntityVersion(const char* str) { return XmlHelpers::convertHexStringToUInt(str); }
     static inline void convertDecStringToLod(const char* str, Lod& lod) { lod = (Lod)atoi(str); }
@@ -332,14 +338,18 @@ protected:
 
 protected:
     std::string mUsername;
-    std::string mPwd;
+    std::string mWorldHost;
+    unsigned short mWorldPort;
+    NodeId mNodeId;
 
 public:
     XmlLogin()
     {}
-    XmlLogin(const std::string& username, const std::string& pwd) :
+    XmlLogin(const std::string& username, const std::string& worldHost, unsigned short worldPort, const NodeId& nodeId) :
       mUsername(username),
-      mPwd(pwd)
+      mWorldHost(worldHost),
+      mWorldPort(worldPort),
+      mNodeId(nodeId)
     {}
 
 #ifdef POOL
@@ -347,7 +357,9 @@ public:
     virtual Pool& getPool() const;
     virtual void clear() {
         mUsername.clear();
-        mPwd.clear();
+        mWorldHost.clear();
+        mWorldPort = 0;
+        mNodeId.clear();
     }
 #endif
 
@@ -358,8 +370,14 @@ public:
     void setUsername(const std::string& username) { mUsername = username; }
     const std::string& getUsername() { return mUsername; }
 
-    void setPwd(const std::string& pwd) { mPwd = pwd; }
-    const std::string& getPwd() { return mPwd; }
+    void setWorldHost(const std::string& worldHost) { mWorldHost = worldHost; }
+    const std::string& getWorldHost() { return mWorldHost; }
+
+    void setWorldPort(unsigned short worldPort) { mWorldPort = worldPort; }
+    unsigned short getWorldPort() { return mWorldPort; }
+
+    void setNodeId(const NodeId& nodeId) { mNodeId = nodeId; }
+    const NodeId& getNodeId() { return mNodeId; }
 };
 
 class XMLDATAS_EXPORT XmlLodContent : public XmlData
@@ -591,7 +609,7 @@ protected:
 public:
     XmlEntity() :
       mDefinedAttributes(DANone),
-      mUid(0),
+      mUid(""),
       mOwner(""),
       mType(ETAvatar),
       mName(""),
@@ -635,7 +653,7 @@ public:
     virtual Pool& getPool() const;
     virtual void clear() {
         mDefinedAttributes = DANone;
-        mUid = 0;
+        mUid.clear();
         mOwner.clear();
         mType = ETAvatar;
         mName.clear();
@@ -661,7 +679,6 @@ public:
 
     void setUid(const EntityUID& uid) { mUid = uid; mDefinedAttributes |= DAUid; }
     const EntityUID& getUid() { return mUid; }
-    std::string getUidString() { return XmlHelpers::convertEntityUIDToHexString(mUid); }
 
     void setOwner(const NodeId& owner) { mOwner = owner; mDefinedAttributes |= DAOwner; }
     const NodeId& getOwner() { return mOwner; }
@@ -722,8 +739,8 @@ protected:
 public:
     XmlAction() :
       mType(ATNone),
-      mSourceEntityUid(0),
-      mTargetEntityUid(0),
+      mSourceEntityUid(""),
+      mTargetEntityUid(""),
       mDesc("")
     {}
 
@@ -732,8 +749,8 @@ public:
     virtual Pool& getPool() const;
     virtual void clear() {
         mType = ATNone;
-        mSourceEntityUid = 0;
-        mTargetEntityUid = 0;
+        mSourceEntityUid.clear();
+        mTargetEntityUid.clear();
         mDesc.clear();
     }
 #endif
@@ -748,11 +765,9 @@ public:
 
     void setSourceEntityUid(const EntityUID& sourceEntityUid) { mSourceEntityUid = sourceEntityUid; }
     const EntityUID& getSourceEntityUid() { return mSourceEntityUid; }
-    std::string getSourceEntityUidString() { return XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid); }
 
     void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
     const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
-    std::string getTargetEntityUidString() { return XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid); }
 
     void setDesc(const std::string& desc) { mDesc = desc; }
     const std::string& getDesc() { return mDesc; }

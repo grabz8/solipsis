@@ -51,25 +51,22 @@ protected:
     /// Server address
     std::string mHost;
     /// Server port
-    int mPort;
+    unsigned short mPort;
     /// Maximum incoming connections
     int mMaxIncomingConnections;
+    /// Node identifier of the site node
+    NodeId mSiteNodeId;
+    /// Media cache path
+    std::string mMediaCachePath;
 
     /// RakNetConnection
     RakNetConnection mRakNetConnection;
 
     /// Map of nodes
     NodeMap mNodes;
-    /// Node identifier of the site node
-    NodeId mSiteNodeId;
 
     /// Flag to quit
     bool mQuit;
-
-    /// Scene loaded
-    std::string mSceneDemoLoaded;
-    /// Media cache path
-    std::string mMediaCachePath;
 
 public:
     /** Constructor. */

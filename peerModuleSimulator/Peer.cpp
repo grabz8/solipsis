@@ -69,7 +69,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     BasicThread("Peer"),
     mInitialized(false),
     mHost("localhost"),
-    mPort(8550),
+    mPort(8880),
     mSceneDemoLoaded(""),
     mMediaCachePath(""),
     mVerbosity(0),

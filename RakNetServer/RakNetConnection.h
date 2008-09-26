@@ -37,8 +37,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <Ogre.h>
 
-#include <CTLog.h>
-
 #include <CacheManager.h>
 #include "RM2Connection.h"
 
@@ -58,7 +56,7 @@ public:
     };
 
 public:
-    /// Server of client ?
+    /// Server or client ?
     bool mServer;
     /// RakNet peer interface
     RakPeerInterface *mRakPeer;
@@ -66,7 +64,7 @@ public:
     SystemAddress mServerSystemAddress;
     /// Socket descriptor
     SocketDescriptor mSocketDescriptor;
-    /// ReplicaManager2 requires NetworkIDManager to lookup pointers from numerical.
+    /// ReplicaManager2 requires NetworkIDManager to lookup pointers from numerical
     NetworkIDManager mNetworkIdManager;
     /// ReplicaManager2 plugin
     RakNet::ReplicaManager2 mReplicaManager;

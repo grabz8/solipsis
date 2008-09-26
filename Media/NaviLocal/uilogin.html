@@ -3,10 +3,6 @@
     <head>
         <title>uilogin</title>
         <script type="text/javascript" src="Navi.js"></script>
-        <!-- SELECTOR BEGIN -->
-        <link rel="stylesheet" href="selector/selector.css" type="text/css">
-        <script type="text/javascript" src="selector/selector.js"></script>
-        <!-- SELECTOR END -->
         <script type="text/javascript">
             function pageLoaded()
             { 
@@ -21,14 +17,7 @@
                     naviData.add({login:document.getElementById("inputLogin").value});
                 naviData.send();
             }
-            function select(value)
-            {
-                $('avatarSelectItem').style.display='none';
-                $('avatarSelectTitre').innerHTML = ""+value;
-                new NaviData('selectAvatar').add({item:value}).send();
-            }
         </script>
-        
         <style type="text/css">
             body
             {
@@ -53,31 +42,45 @@
             {
 	            position: absolute;
 	            left: 50px;
-	            top: 105px;
+	            top: 110px;
             }
             #loginInput
             {
 	            position: absolute;
-	            left: 110px;
-	            top: 105px;
+	            left: 100px;
+	            top: 110px;
             }
             .inputText
             {
                 background-color: #FFFFFF;
                 color: #000000;
             }
-
-            #avatarText
+            .buttonWorld
             {
-	            position: absolute;
-	            left: 50px;
-	            top: 130px;
+	            position: relative;
+	            left: 20px;
+                top: 140px;
+                width: 64px;
+                height: 24px;
             }
-            #avatarSelect
+            #worldText
             {
 	            position: absolute;
-	            left: 106px;
-	            top: 128px;
+	            left: 100px;
+	            top: 145px;
+            }
+            #infosText
+            {
+	            position: absolute;
+	            left: 20px;
+	            top: 175px;
+	            width: 360px;
+	            height: 24px;
+	            font-size: 14px;
+	            font-style: italic;
+	            font-weight: bold;
+	            text-align: right;
+	            color: #FFFF33;
             }
             .button
             {
@@ -89,19 +92,6 @@
             #connectButton { left: 20px; z-index: 0;}
             #optionsButton { left: 144px; z-index: 0;}
             #quitButton { left: 270px; z-index: 0;}
-            #infosText
-            {
-	            position: absolute;
-	            left: 20px;
-	            top: 160px;
-	            width: 300px;
-	            height: 30px;
-	            font-size: 14px;
-	            font-style: italic;
-	            font-weight: bold;
-	            text-align: left;
-	            color: #FFFF33;
-            }
         </style>
     </head>
 
@@ -113,24 +103,12 @@
                     <input id="inputLogin" class="inputText" name="inputLogin" value="me" type="text" size="35" />
                 </div>
             </form>
+            <button id="worldButton" class="buttonWorld" name="buttonWorld" value="buttonWorld" type="button" onclick="buttonPressed('world')">World</button>
+            <div id="worldText"></div>
             <div id="infosText"></div>
             <div id="connectButton" class="button" onclick="buttonPressed('connect')"></div>
             <div id="optionsButton" class="button" onclick="buttonPressed('options')"></div>
             <div id="quitButton" class="button" onclick="buttonPressed('quit')"></div>
-            
-            <div id="avatarText" style="display:none">Avatar</div>
-            <!--<div class="conteneurMenu">-->
-                <div class="menu" id="avatarSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="display:none">
-                    <div class="titreMenu itemOut" id="avatarSelectTitre">???</div>
-                    <div class="contenuMenu menuOverflow" id="avatarSelectItem">
-                        <!--
-                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
-                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
-                        <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
-                        -->
-                    </div>
-                </div>
-            <!--</div>-->
         </div>
     </body>
 </html>

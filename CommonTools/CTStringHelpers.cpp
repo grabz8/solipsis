@@ -45,11 +45,20 @@ void StringHelpers::tokenize(const string& str, const string& delimiter, vector<
 }
 
 //-------------------------------------------------------------------------------------
+string StringHelpers::getURL(const string& host, unsigned short port)
+{
+    char portStr[5 + 1];
+    _snprintf(portStr, sizeof(portStr) - 1, "%d", port);
+    portStr[sizeof(portStr) - 1] = '\0';
+    return host + ":" + portStr;
+}
+
+//-------------------------------------------------------------------------------------
 void StringHelpers::getURLHostPort(const string& url, string& host, string& port)
 {
     host.clear();
     port.clear();
-    string::size_type p = url.find_first_of("://");
+    string::size_type p = url.find("://");
     if (p != string::npos)
         host = url.substr(p + 3);
     else
@@ -60,6 +69,14 @@ void StringHelpers::getURLHostPort(const string& url, string& host, string& port
         port = host.substr(p + 1);
         host = host.substr(0, p);
     }
+}
+
+//-------------------------------------------------------------------------------------
+void StringHelpers::getURLHostPort(const string& url, string& host, unsigned short& port)
+{
+    std::string portStr;
+    getURLHostPort(url, host, portStr);
+    port = atoi(portStr.c_str());
 }
 
 //-------------------------------------------------------------------------------------

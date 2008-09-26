@@ -64,9 +64,10 @@ if exist "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" xcopy "..\Dependenc
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
 if not exist "%dst%\NaviLocal\Navi.js" xcopy "..\Dependencies\navi\Javascript\*.*" "%dst%\NaviLocal" /y
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
-xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
+if not exist "%dst%\fmodex.dll" xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds.dll" xcopy "..\Dependencies\plugin_3ds\lib\plugin_3ds.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_skp.dll" xcopy "..\Dependencies\plugin_skp\include\Release\*.dll" "%dst%" /s /y
+if not exist "%dst%\libcurl.dll" xcopy "..\Dependencies\curl\lib\ReleaseDLL\libcurl.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%dst%" /s /y

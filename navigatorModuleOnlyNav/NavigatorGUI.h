@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __NavigatorGUI_h__
 #define __NavigatorGUI_h__
 
+#include <Facebook.h>
 #include "NaviManager.h"
 #include "Modeler.h"
 #include "ModifiableMaterialObject.h"
@@ -47,7 +48,10 @@ public:
 
     enum NaviPanel {
         NAVI_LOGIN = 0,
+        NAVI_WORLDS,
         NAVI_OPTIONS,
+        NAVI_AUTHENTFB,
+        NAVI_AUTHENTWS,
         NAVI_CHAT,
         NAVI_CTXTAVATAR,
         NAVI_CTXTWWW,
@@ -70,6 +74,9 @@ protected:
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
     int mCurrentCtxtPanel;
+    time_t mCurrentNaviCreationDate;
+    std::string mLoginInfosText;
+    Facebook *mFacebook;
 #ifdef UIDEBUG
     bool mTreeDirty;
 #endif
@@ -80,6 +87,8 @@ public:
 
     // Start up GUI
     bool startup();
+    // Update
+    void update();
 
     // Mouse
     void SetMouseVisibility(bool visible);
@@ -118,6 +127,8 @@ public:
     void avatarPropHide();
     void avatarPropUnload();
 
+    void setLoginInfosText(const std::string& infosText);
+
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
@@ -130,13 +141,38 @@ protected:
     // Handlers
     // Login/Options/InWorld callbacks
     void loginPageLoaded(const NaviData& naviData);
-	void loginSelectAvatar(const NaviData& naviData);
+    void loginWorld(const NaviData& naviData);
     void connect(const NaviData& naviData);
     void options(const NaviData& naviData);
-    void optionsPageLoaded(const NaviData& naviData);
     void quit(const NaviData& naviData);
+
+    class WorldServerEventListener : public NaviEventListener
+    {
+    private:
+        NavigatorGUI *mNavigatorGUI;
+	public:
+        WorldServerEventListener(NavigatorGUI *navigatorGUI) : mNavigatorGUI(navigatorGUI) {}
+        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
+		virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+        virtual void onLocationChange(Navi *caller, const std::string &url) {}
+		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
+    };
+    WorldServerEventListener mWorldServerEventListener;
+    void worldOk(const NaviData& naviData);
+    void worldCancel(const NaviData& naviData);
+
+    void optionsPageLoaded(const NaviData& naviData);
     void optionsOk(const NaviData& naviData);
     void optionsBack(const NaviData& naviData);
+
+    void authentFacebook();
+    void authentFacebookPageLoaded(const NaviData& naviData);
+    void authentFacebookOk(const NaviData& naviData);
+    void authentFacebookCancel(const NaviData& naviData);
+
+    void authentWorldsServer();
+    void authentWorldsServerOk(const NaviData& naviData);
+
     void chatPageLoaded(const NaviData& naviData);
 
     // Modeler page callbacks

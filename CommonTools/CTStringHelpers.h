@@ -36,8 +36,12 @@ class StringHelpers
 public:
     /// Tokenize function
     static void tokenize(const std::string& str, const std::string& delimiter, std::vector<std::string>& tokens);
+    /// Concatenate host and port to form 1 url
+    static std::string getURL(const std::string& host, unsigned short port);
     /// Retrieve host and port of 1 url
     static void getURLHostPort(const std::string& url, std::string& host, std::string& port);
+    /// Retrieve host and decimal port of 1 url
+    static void getURLHostPort(const std::string& url, std::string& host, unsigned short& port);
 };
 
 } // namespace CommonTools

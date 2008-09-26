@@ -171,7 +171,7 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
             return;
 
         // Create the resource group
-        String resourceGroup = mXmlEntity->getUidString() + "Resources";
+        String resourceGroup = mXmlEntity->getUid() + "Resources";
         ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
         ResourceGroupManager::getSingleton().addResourceLocation(Peer::getSingleton().getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
 

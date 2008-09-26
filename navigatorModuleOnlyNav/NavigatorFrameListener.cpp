@@ -59,6 +59,10 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
     DebugHelpers::frameStarted(evt, mNavigator, mSceneMgr);
 #endif
 
+    // Updating GUI
+    if (mNavigator->getNavigatorGUI() != 0)
+        mNavigator->getNavigatorGUI()->update();
+
     // Updating Navi
     if (mNavigator->isNaviSupported())
         NaviManager::Get().Update();

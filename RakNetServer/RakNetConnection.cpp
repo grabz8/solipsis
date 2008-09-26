@@ -29,6 +29,8 @@ using namespace RakNet;
 
 namespace Solipsis {
 
+RakNetConnection *RakNetConnection::ms_Singleton = 0;
+
 //-------------------------------------------------------------------------------------
 void RakNetConnection::SerializeString(BitStream *bitStream, const std::string &str)
 {

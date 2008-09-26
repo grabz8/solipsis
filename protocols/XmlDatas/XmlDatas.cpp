@@ -69,7 +69,7 @@ bool XmlHelpers::getAttribute(TiXmlElement* elt, const char* attrName, const cha
 std::string XmlHelpers::convertUCharToHexString(unsigned char value)
 {
     char valueStr[3];
-    _snprintf(valueStr, 8, "%02X", value);
+    _snprintf(valueStr, sizeof(valueStr) - 1, "%02X", value);
     valueStr[2] = '\0';
     return valueStr;
 }
@@ -86,7 +86,7 @@ unsigned char XmlHelpers::convertHexStringToUChar(const char* str)
 std::string XmlHelpers::convertUIntToHexString(unsigned int value)
 {
     char valueStr[9];
-    _snprintf(valueStr, 8, "%08X", value);
+    _snprintf(valueStr, sizeof(valueStr) - 1, "%08X", value);
     valueStr[8] = '\0';
     return valueStr;
 }
@@ -219,6 +219,15 @@ bool XmlHelpers::fromXmlEltEntryGateStruct(TiXmlElement* xmlElt, EntryGateStruct
 }
 
 //-------------------------------------------------------------------------------------
+std::string XmlHelpers::convertAuthentTypeToRepr(const AuthentType& authentType)
+{
+    char prefix[2];
+    prefix[0] = authentType;
+    prefix[1] = '\0';
+    return std::string(prefix);
+}
+
+//-------------------------------------------------------------------------------------
 const std::string& XmlHelpers::convertEventTypeToRepr(const EventType& evtType)
 {
     static std::string EventTypeRepr[] = {
@@ -284,7 +293,9 @@ std::string XmlLogin::toXmlString() const
 {
     std::stringstream s;
     s << "<username>" << mUsername << "</username>";
-    s << "<pwd>" << mPwd << "</pwd>";
+    s << "<worldHost>" << mWorldHost << "</worldHost>";
+    s << "<worldPort>" << mWorldPort << "</worldPort>";
+    s << "<nodeId>" << mNodeId << "</nodeId>";
     s << "<ctxt>";
     s << "<cnxMode>";
     s << "0";
@@ -296,8 +307,22 @@ std::string XmlLogin::toXmlString() const
 //-------------------------------------------------------------------------------------
 bool XmlLogin::toXmlElt(TiXmlElement& xmlElt) const
 {
-    xmlElt.SetAttribute("username", mUsername.c_str());
-    xmlElt.SetAttribute("pwd", mPwd.c_str());
+    TiXmlElement* usernameElt = new TiXmlElement("username");
+    TiXmlText* username = new TiXmlText(mUsername.c_str());
+    usernameElt->LinkEndChild(username);
+    xmlElt.LinkEndChild(usernameElt);
+    TiXmlElement* worldHostElt = new TiXmlElement("worldHost");
+    TiXmlText* worldHost = new TiXmlText(mWorldHost.c_str());
+    worldHostElt->LinkEndChild(worldHost);
+    xmlElt.LinkEndChild(worldHostElt);
+    TiXmlElement* worldPortElt = new TiXmlElement("worldPort");
+    TiXmlText* worldPort = new TiXmlText(Ogre::StringConverter::toString(mWorldPort).c_str());
+    worldPortElt->LinkEndChild(worldPort);
+    xmlElt.LinkEndChild(worldPortElt);
+    TiXmlElement* nodeIdElt = new TiXmlElement("nodeId");
+    TiXmlText* nodeId = new TiXmlText(mNodeId.c_str());
+    nodeIdElt->LinkEndChild(nodeId);
+    xmlElt.LinkEndChild(nodeIdElt);
     TiXmlElement* ctxtElt = new TiXmlElement("ctxt");
     TiXmlText* ctxt = new TiXmlText("0");
     ctxtElt->LinkEndChild(ctxt);
@@ -316,9 +341,17 @@ bool XmlLogin::fromXmlElt(TiXmlElement* xmlElt)
         return false;
     mUsername = elt->GetText();
 
-    if ((elt = xmlElt->FirstChildElement("pwd")) == 0)
+    if ((elt = xmlElt->FirstChildElement("worldHost")) == 0)
         return false;
-    mPwd = elt->GetText();
+    mWorldHost = elt->GetText();
+
+    if ((elt = xmlElt->FirstChildElement("worldPort")) == 0)
+        return false;
+    mWorldPort = atoi(elt->GetText());
+
+    if ((elt = xmlElt->FirstChildElement("nodeId")) == 0)
+        return false;
+    mNodeId = elt->GetText();
 
     return true;
 }
@@ -550,7 +583,7 @@ std::string XmlEntity::toXmlString() const
 {
     std::stringstream s;
     if (!mDefinedAttributes & DAUid) return s.str();
-    s << "<entity uid=\"" << XmlHelpers::convertEntityUIDToHexString(mUid) << "\"";
+    s << "<entity uid=\"" << mUid << "\"";
     if (mDefinedAttributes & DAOwner) s << " owner=\"" << mOwner << "\"";
     if (mDefinedAttributes & DAType) s << " type=\"" << mType << "\"";
     if (mDefinedAttributes & DAName) s << " name=\"" << mName << "\"";
@@ -584,7 +617,7 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
 {
     if (!mDefinedAttributes & DAUid) return false;
     TiXmlElement* entityElt = new TiXmlElement("entity");
-    entityElt->SetAttribute("uid", XmlHelpers::convertEntityUIDToHexString(mUid).c_str());
+    entityElt->SetAttribute("uid", mUid.c_str());
     if (mDefinedAttributes & DAOwner) entityElt->SetAttribute("owner", mOwner.c_str());
     if (mDefinedAttributes & DAType) entityElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
     if (mDefinedAttributes & DAName) entityElt->SetAttribute("name", mName.c_str());
@@ -642,7 +675,7 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     const char* attr = 0;
 
     if (!XmlHelpers::getAttribute(xmlElt, "uid", attr)) return false;
-    mUid = XmlHelpers::convertHexStringToEntityUID(attr);
+    mUid = attr;
     mDefinedAttributes |= DAUid;
     if (XmlHelpers::getAttribute(xmlElt, "owner", attr))
     {
@@ -746,8 +779,8 @@ std::string XmlAction::toXmlString() const
 {
     std::stringstream s;
     s << "<action type=\"" << mType << "\"";
-    s << " sourceEntityUid=\"" << XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid) << "\"";
-    s << " targetEntityUid=\"" << XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid) << "\"";
+    s << " sourceEntityUid=\"" << mSourceEntityUid << "\"";
+    s << " targetEntityUid=\"" << mTargetEntityUid << "\"";
     s << " desc=\"" << mDesc << "\"";
     s << " />";
     return s.str();
@@ -758,8 +791,8 @@ bool XmlAction::toXmlElt(TiXmlElement& xmlElt) const
 {
     TiXmlElement* actionElt = new TiXmlElement("action");
     actionElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
-    actionElt->SetAttribute("sourceEntityUid", XmlHelpers::convertEntityUIDToHexString(mSourceEntityUid).c_str());
-    actionElt->SetAttribute("targetEntityUid", XmlHelpers::convertEntityUIDToHexString(mTargetEntityUid).c_str());
+    actionElt->SetAttribute("sourceEntityUid", mSourceEntityUid.c_str());
+    actionElt->SetAttribute("targetEntityUid", mTargetEntityUid.c_str());
     actionElt->SetAttribute("desc", mDesc.c_str());
     xmlElt.LinkEndChild(actionElt);
     return true;
@@ -773,9 +806,9 @@ bool XmlAction::fromXmlElt(TiXmlElement* xmlElt)
     if (!XmlHelpers::getAttribute(xmlElt, "type", attr)) return false;
     XmlHelpers::convertDecStringToActionType(attr, mType);
     if (!XmlHelpers::getAttribute(xmlElt, "sourceEntityUid", attr)) return false;
-    mSourceEntityUid = XmlHelpers::convertHexStringToEntityUID(attr);
+    mSourceEntityUid = attr;
     if (!XmlHelpers::getAttribute(xmlElt, "targetEntityUid", attr)) return false;
-    mTargetEntityUid = XmlHelpers::convertHexStringToEntityUID(attr);
+    mTargetEntityUid = attr;
     if (!XmlHelpers::getAttribute(xmlElt, "desc", attr)) return false;
     mDesc = attr;
 

@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __CTSystem_h__
 #define __CTSystem_h__
 
+#include <string>
+
 namespace CommonTools {
 
 /** This static class contains several helper methods above system.
@@ -36,6 +38,12 @@ public:
 
     /// Set mouse cursor visibility
     static void setMouseCursorVisibility(bool visible);
+
+    /// Display a modal message box
+    static void showMessageBox(const std::string& text, const std::string& caption, bool okButton, bool okCancelButton, bool iconAsterisk, bool iconExclamation, bool iconHand);
+
+    /// Run the external Web browser on the system displaying the specified url
+    static void runExternalWebBrowser(const std::string& url);
 };
 
 } // namespace CommonTools

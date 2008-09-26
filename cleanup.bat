@@ -66,6 +66,9 @@ rmdir Dependencies\vlc /S /Q
 rmdir Dependencies\plugin_3ds /S /Q
 rmdir Dependencies\plugin_skp /S /Q
 rmdir Dependencies\RakNet /S /Q
+rmdir Dependencies\curl /S /Q
+rmdir Dependencies\md5wrapper /S /Q
+rmdir Dependencies\authentFB /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -136,6 +139,10 @@ rmdir DevTools\speex\win32\libspeex\Release /S /Q
 rmdir DevTools\RakNet\Lib\DLL\Debug /S /Q
 rmdir DevTools\RakNet\Lib\DLL\Release /S /Q
 del DevTools\RakNet\Lib\*.* /Q
+rmdir DevTools\curl\lib\Debug /S /Q
+rmdir DevTools\curl\lib\Release /S /Q
+rmdir DevTools\md5wrapper\Debug /S /Q
+rmdir DevTools\md5wrapper\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
@@ -261,6 +268,9 @@ rmdir RakNetServer\Release /S /Q
 
 rmdir VLCPlugin\Debug /S /Q
 rmdir VLCPlugin\Release /S /Q
+
+rmdir authentFB\Debug /S /Q
+rmdir authentFB\Release /S /Q
 
 del setup\nsis\Setup.exe
 

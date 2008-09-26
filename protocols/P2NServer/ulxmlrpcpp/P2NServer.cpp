@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-IP2NServer* IP2NServer::createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, int port, int verbosity, const std::string& extras)
+IP2NServer* IP2NServer::createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, unsigned short port, int verbosity, const std::string& extras)
 {
     return new P2NServer(requestsHandler, host, port, verbosity, extras);
 }
@@ -42,7 +42,7 @@ bool IP2NServer::destroyServer(IP2NServer* server)
 }
 
 //-------------------------------------------------------------------------------------
-P2NServer::P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, int port, int verbosity, const std::string& extras) :
+P2NServer::P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, unsigned short port, int verbosity, const std::string& extras) :
     mRequestsHandler(requestsHandler),
     mHost(host),
     mPort(port),

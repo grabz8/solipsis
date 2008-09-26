@@ -31,7 +31,7 @@ using namespace Solipsis;
 using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
-NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, int port, int verbosity, const std::string& extras)
+NavigatorXMLRPCClient::NavigatorXMLRPCClient(const std::string& host, unsigned short port, int verbosity, const std::string& extras)
 {
     mP2NClient = IP2NClient::createClient(host, port, verbosity, extras);
     mP2NClient->setLogger(this);

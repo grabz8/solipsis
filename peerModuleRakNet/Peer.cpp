@@ -33,8 +33,6 @@ using namespace CommonTools;
 
 namespace Solipsis {
 
-RakNetConnection *RakNetConnection::ms_Singleton = 0;
-
 //-------------------------------------------------------------------------------------
 // this is a simple C stub so that dll can be loaded dynamically
 // and the static method createPeer can be called
@@ -75,14 +73,12 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     BasicThread("Peer"),
     mInitialized(false),
     mHost("localhost"),
-    mPort(8550),
+    mPort(8880),
     mMediaCachePath(""),
     mVerbosity(0),
     mP2NServer(0),
     mPhysicsScene(0),
-    mNodeId("00000001"),
-    mRakNetHost("localhost"),
-    mRakNetPort(8660),
+    mNodeId(""),
     mRakNetMutex(PTHREAD_MUTEX_INITIALIZER),
     mEvtsToProcessMutex(PTHREAD_MUTEX_INITIALIZER)
 {
@@ -118,24 +114,6 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
         {
             iarg++;
             mMediaCachePath = argv[iarg];
-            continue;
-        }
-        if ((strstr(argv[iarg], "-rh") != 0) && (argc > iarg+1))
-        {
-            iarg++;
-            mRakNetHost = argv[iarg];
-            continue;
-        }
-        if ((strstr(argv[iarg], "-rp") != 0) && (argc > iarg+1))
-        {
-            iarg++;
-            mRakNetPort = atoi(argv[iarg]);
-            continue;
-        }
-        if ((strstr(argv[iarg], "-id") != 0) && (argc > iarg+1))
-        {
-            iarg++;
-            mNodeId = argv[iarg];
             continue;
         }
     }
@@ -348,8 +326,17 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
         return IP2NClient::RCError;
     }
 
-    nodeId = mNodeId;
     mName = xmlLogin.getUsername();
+    mNodeId = xmlLogin.getNodeId();
+    nodeId = mNodeId;
+    std::string worldHost = xmlLogin.getWorldHost();
+    unsigned short worldPort = xmlLogin.getWorldPort();
+
+    if (mName.empty() || mNodeId.empty() || worldHost.empty())
+    {
+        xmlRespStr = "Invalid parameters !";
+        return IP2NClient::RCError;
+    }
 
     pthread_mutex_lock(&mRakNetMutex);
 
@@ -386,8 +373,8 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
     mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Initializing cache manager");
 
-    mRakNetConnection.mRakPeer->Connect(mRakNetHost.c_str(), mRakNetPort, 0, 0, 0);
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Connecting ...");
+    mRakNetConnection.mRakPeer->Connect(worldHost.c_str(), worldPort, 0, 0, 0);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Connecting on %s:%d ...", worldHost.c_str(), worldPort);
 
     pthread_mutex_unlock(&mRakNetMutex);
 
@@ -398,9 +385,12 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
 IP2NClient::RetCode Peer::logout(NodeId& nodeId)
 {
     pthread_mutex_lock(&mRakNetMutex);
-    mRakNetConnection.mRakPeer->Shutdown(100, 0);
-    RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
-    mRakNetConnection.mRakPeer = 0;
+    if (mRakNetConnection.mRakPeer != 0)
+    {
+        mRakNetConnection.mRakPeer->Shutdown(100, 0);
+        RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
+        mRakNetConnection.mRakPeer = 0;
+    }
     pthread_mutex_unlock(&mRakNetMutex);
 
     mNodeManager->onLostNode(mNodeId);

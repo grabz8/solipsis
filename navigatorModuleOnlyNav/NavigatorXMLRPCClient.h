@@ -42,7 +42,7 @@ protected:
     IP2NClient* mSharedCnx;
 
 public:
-    NavigatorXMLRPCClient(const std::string& host, int port, int verbosity, const std::string& extras);
+    NavigatorXMLRPCClient(const std::string& host, unsigned short port, int verbosity, const std::string& extras);
     NavigatorXMLRPCClient(NavigatorXMLRPCClient& sharedCnx);
     ~NavigatorXMLRPCClient();
 

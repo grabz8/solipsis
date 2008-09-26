@@ -34,7 +34,7 @@ const char ULXMLRPCPPP2NClient::RESPONSE_TAG[] = "response";
 const char ULXMLRPCPPP2NClient::NODEID_TAG[] = "nodeId";
 
 //-------------------------------------------------------------------------------------
-IP2NClient* IP2NClient::createClient(const std::string& host, int port, int verbosity, const std::string& extras)
+IP2NClient* IP2NClient::createClient(const std::string& host, unsigned short port, int verbosity, const std::string& extras)
 {
     return new ULXMLRPCPPP2NClient(host, port, verbosity, extras);
 }
@@ -48,7 +48,7 @@ bool IP2NClient::destroyClient(IP2NClient* client)
 }
 
 //-------------------------------------------------------------------------------------
-ULXMLRPCPPP2NClient::ULXMLRPCPPP2NClient(const std::string& host, int port, int verbosity, const std::string& extras) :
+ULXMLRPCPPP2NClient::ULXMLRPCPPP2NClient(const std::string& host, unsigned short port, int verbosity, const std::string& extras) :
     mHost(host),
     mPort(port),
     mVerbosity(verbosity),

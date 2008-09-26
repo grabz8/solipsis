@@ -69,7 +69,7 @@ protected:
     IPeerRenderSystemLock* mRenderSystemLock;
 
     std::string mHost;
-    int mPort;
+    unsigned short mPort;
     int mVerbosity;
 
 	IP2NServer* mP2NServer;
@@ -85,10 +85,6 @@ protected:
     NodeId mNodeId;
     /// Node name
     std::string mName;
-    /// RakNet server address
-    std::string mRakNetHost;
-    /// RakNet server port
-    int mRakNetPort;
 
     /// RakNetConnection
     RakNetConnection mRakNetConnection;
@@ -125,16 +121,6 @@ public:
     /** See IPeer. */
     virtual bool destroy();
 
-    /** See BasicThread. */
-    virtual void stop(unsigned int stopTimeoutSec = 5)
-    {
-        // call inherited
-        BasicThread::stop();
-        // Stop the peer
-//        if (mState == SRunning)
-//            ;
-    }
-
     static Peer* getSingletonPtr() { return ms_Singleton; }
     static Peer& getSingleton() { return *ms_Singleton; }
 
@@ -170,8 +156,8 @@ public:
     void removeTimeListener(TimeListener* oldListener);
 
 protected:
-    /** See BasicThread. */
-    virtual void BasicThread::run();
+    /** See BasicThread::run. */
+    virtual void run();
 
     class P2NServerLogger : public IP2NServerLogger {
         /** See IP2NServerLogger. */

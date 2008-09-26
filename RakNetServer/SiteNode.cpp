@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "SiteNode.h"
 #include "RakNetServer.h"
+#include <CTLog.h>
 
 using namespace CommonTools;
 
@@ -52,7 +53,7 @@ Entity::EntityMap& SiteNode::getPresentEntities()
 //-------------------------------------------------------------------------------------
 void SiteNode::addPresentEntity(Entity* entity)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::addPresentEntity() uid:%s adding entity uid:%s", mEntity->getXmlEntity()->getUidString().c_str(), entity->getXmlEntity()->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::addPresentEntity() uid:%s adding entity uid:%s", mEntity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getUid().c_str());
 
     mPresentEntities[entity->getXmlEntity()->getUid()] = entity;
 }
@@ -60,7 +61,7 @@ void SiteNode::addPresentEntity(Entity* entity)
 //-------------------------------------------------------------------------------------
 void SiteNode::removePresentEntity(Entity* entity)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::removePresentEntity() uid:%s removing entity uid:%s", mEntity->getXmlEntity()->getUidString().c_str(), entity->getXmlEntity()->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::removePresentEntity() uid:%s removing entity uid:%s", mEntity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getUid().c_str());
 
     mPresentEntities.erase(entity->getXmlEntity()->getUid());
 }

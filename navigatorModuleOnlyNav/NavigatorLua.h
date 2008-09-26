@@ -62,11 +62,6 @@ public:
     // returns boolean
     int setNameValueVariable(lua_State* luaState);
 
-    // set connection parameters
-    // params (connectionHost:string, connectionPort:int)
-    // returns boolean
-    int setConnectionParams(lua_State* luaState);
-
     // get render window metrics
     // returns (width:int, height:int, colourDepth:int, left:int, top:int)
     int getRenderWinMetrics(lua_State* luaState);

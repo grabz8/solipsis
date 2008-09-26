@@ -660,3 +660,17 @@ Scene loading moved into Scene class
 OutputDebugString support added
 
 ---------------------------
+26/09/08
+
+WorldsServer added with port 8550
+CommonTools updated with showMessageBox, runExternalWebBrowser
+Authentication added ('F'acebook, 'S'olipsis with WorldsServer or 'f'ixed), uilogin/uioptions panels updated
+curl+md5wrapper libs added
+Facebook authentication lib added
+EntityUID updated from unsigned int to string
+NodeId format with 1 authent prefix char + authent id
+EntityUID format with <NodeId:str>_<ObjId:ushort><SubObjId:ushort>
+RakNetServer -s arg now specify the loaded scene EntityUID
+PeerModuleRakNet default port updated from 8550 to 8880
+
+---------------------------

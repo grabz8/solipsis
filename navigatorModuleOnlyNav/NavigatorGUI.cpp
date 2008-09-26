@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 #include <CTStringHelpers.h>
 #include <CTNetSocket.h>
+#include <CTSystem.h>
 #include <Navi.h>
 #include <Modeler.h>
 #include <AvatarEditor.h>
@@ -34,13 +35,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Character.h>
 #include <CharacterInstance.h>
 #include "Avatar.h"
+#include <Facebook.h>
+
+#ifdef _MSC_VER
+ #pragma warning (disable:4355)
+#endif // _MSC_VER
 
 using namespace Solipsis;
 using namespace CommonTools;
 
 const std::string NavigatorGUI::mNavisNames[] = {
     "uilogin",
+    "uiworlds",
     "uioptions",
+    "uiauthentfb",
+    "uiauthentws",
     "uichat",
     "uictxtavatar",
     "uictxtwww",
@@ -59,7 +68,11 @@ const std::string NavigatorGUI::mNavisNames[] = {
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
     mCurrentNavi(-1),
-    mCurrentCtxtPanel(-1)
+    mCurrentCtxtPanel(-1),
+    mCurrentNaviCreationDate(0),
+    mLoginInfosText(""),
+    mFacebook(0),
+    mWorldServerEventListener(this)
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
@@ -111,6 +124,23 @@ bool NavigatorGUI::startup()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::update()
+{
+    time_t now;
+    time(&now);
+
+    // Worlds server page loaded ?
+    if ((mCurrentNavi == NAVI_WORLDS) &&
+        (mCurrentNaviCreationDate != 0) &&
+        (now - mCurrentNaviCreationDate > mNavigator->getWorldServerTimeout()))
+    {
+        setLoginInfosText("Unable to contact Worlds server ...");
+        // Return to Navi UI login
+        login();
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::SetMouseVisibility(bool visible)
 {
     if (visible)
@@ -142,10 +172,10 @@ void NavigatorGUI::login()
         navi->setMask("uilogin.png");
         navi->setOpacity(0.75f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
+	    navi->bind("world", NaviDelegate(this, &NavigatorGUI::loginWorld));
 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
 	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
 	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
-		navi->bind("selectAvatar", NaviDelegate(this, &NavigatorGUI::loginSelectAvatar));
 #ifdef UIDEBUG
         navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
@@ -154,6 +184,7 @@ void NavigatorGUI::login()
 
     // Set next Navi UI
     mCurrentNavi = NAVI_LOGIN;
+    mCurrentNaviCreationDate = 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1018,7 +1049,7 @@ void NavigatorGUI::modelerUpdateTextures()
         {
             String address = (*textureExtParamsMap)["address"];
             String password = (*textureExtParamsMap)["password"];
-            String host, port;
+            std::string host, port;
             CommonTools::StringHelpers::getURLHostPort(address, host, port);
             String::size_type p = password.find_first_of(":");
             if (p != String::npos)
@@ -1263,6 +1294,18 @@ void NavigatorGUI::modelerTabberSave()
 	*/
 }
 
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::setLoginInfosText(const std::string& infosText)
+{
+    mLoginInfosText = infosText; 
+
+    if (mNavisStates[NAVI_LOGIN] != NSCreated) return;
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+    if (navi == 0) return;
+    navi->evaluateJS("$('infosText').innerHTML = '" + mLoginInfosText + "'");
+    mLoginInfosText.clear();
+}
+
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::switchDebug()
@@ -1382,78 +1425,93 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
     // Set current values
-    sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getConnectionLogin().c_str());
+    sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getLogin().c_str());
     navi->evaluateJS(txt);
-
-    // Set network config into informations text
-    std::string infosText;
-    switch (mNavigator->getConnectionMode())
-    {
-    case (Navigator::CMStartNewNode):
-        sprintf(txt, "%d", mNavigator->getConnectionUdpPort());
-        infosText = "Create a new node (UDP port " + String(txt) + ")";
-        break;
-    case (Navigator::CMExistingNode):
-        sprintf(txt, "%d", mNavigator->getConnectionPort());
-        infosText = "Connect to " + mNavigator->getConnectionHost() + " (port " + String(txt) + ")";
-        break;
-    };
-    navi->evaluateJS("$('infosText').innerHTML = '" + infosText + "'");
-
-	// Setup the avatar name list
-	std::string text("");
-	vector<String>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
-	vector<String>::iterator iter = list->begin();
-	int id = 0;
-/*	while(iter!=list->end())
-	{
-		text += "<li>";
-		text += (*iter).data();
-		text += "</li>";
-		iter++;
-	}
-	navi->evaluateJS("$('myComboBox').innerHTML = '" + text + "'");
-//	navi->evaluateJS("initAvatarList();");
-
-	// Select the avatar from the user.xml // avatarName
-	text = "default avatar: ???";
-	navi->evaluateJS("combobox.comboHead.setHTML(" + text + ")");
-*/
-	while(iter!=list->end())
-	{
-		text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
-		text += (*iter).data();
-		text += "')>";
-		text += (*iter).data();
-		text += "</a></div>";
-		iter++;
-	}
-	navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
-
-	// Select the avatar from the user.xml // avatarName
-	//text = AvatarEditor::getSingletonPtr()->getName();
-	//navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
-	size_t nbItem = list->size();
-	if( nbItem < 7 )
-	{
-		sprintf(txt, "%ipx'", nbItem*16);
-		text = txt;
-		navi->evaluateJS("$('avatarSelectItem').style.height = '" + text);
-	}
+    std::string world = mNavigator->getWorldAddress();
+    sprintf(txt, "$('worldText').innerHTML = '%s'", world.empty() ? "Choose a world ..." : world.c_str());
+    navi->evaluateJS(txt);
+    // Disable World button if no world server specified
+    sprintf(txt, "$('worldButton').disabled = %s", mNavigator->getWorldServerAddress().empty() ? "'disabled'" : "null");
+    navi->evaluateJS(txt);
+    // Set the information text
+    setLoginInfosText(mLoginInfosText);
 
 	// Show Navi UI login
     if (mNavisStates[NAVI_LOGIN] == NSCreated)
         navi->show(true);
 }
+
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::loginSelectAvatar(const NaviData& naviData)
+void NavigatorGUI::loginWorld(const NaviData& naviData)
 {
-	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::selectAvatar()");
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
-	std::string item( naviData["item"].str() );
-	
-	//AvatarEditor::getSingletonPtr()->setCurrentByName( item );
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::loginWorld()");
+
+    // Hide previous Navi UI
+    hidePreviousNavi();
+
+    if (mNavisStates[NAVI_WORLDS] == NSNotCreated)
+    {
+        // Create Navi UI worlds
+        // Prepare the url to the world server uiworlds.html page
+        std::string uiworldsUrl = "http://" + mNavigator->getWorldServerAddress() + "/uiworlds.html";
+        std::string localWorldHost = mNavigator->getLocalWorldAddress();
+        // Add the local world ?
+        if (!mNavigator->getLocalWorldAddress().empty())
+            uiworldsUrl += "?localWorld=" + mNavigator->getLocalWorldAddress();
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_WORLDS], "", NaviPosition(Center), 256, 256);
+        navi->setMovable(false);
+        navi->hide();
+        navi->setOpacity(0.75f);
+	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::worldOk));
+	    navi->bind("cancel", NaviDelegate(this, &NavigatorGUI::worldCancel));
+        // Add 1 event listener to detect network errors
+        navi->addEventListener(&mWorldServerEventListener);
+        navi->navigateTo(uiworldsUrl);
+        mNavisStates[NAVI_WORLDS] = NSCreated;
+    }
+
+    // Set next Navi UI
+    mCurrentNavi = NAVI_WORLDS;
+    time(&mCurrentNaviCreationDate);
 }
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::WorldServerEventListener::onNavigateComplete(Navi *caller, const std::string &url, int responseCode)
+{
+    if (responseCode >= 400 && responseCode < 600)
+    {
+        mNavigatorGUI->setLoginInfosText("Unable to contact Worlds server ...");
+        // Return to Navi UI login
+        mNavigatorGUI->login();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::worldOk(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
+
+    std::string world = naviData["world"].str();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
+    std::string worldHost, worldPort;
+    CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
+    mNavigator->setWorldAddress(world);
+
+    // Return to Navi UI login
+    login();
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::worldCancel(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_WORLDS]);
+
+    // Return to Navi UI login
+    login();
+}
+
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)
 {
@@ -1464,13 +1522,11 @@ void NavigatorGUI::connect(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
     // Get login name
-	std::string login;
-    login = naviData["login"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "login=%s", login.c_str());
+    std::string login = naviData["login"].str();
 
     // Check
     static std::string validLoginExtrasChars = "$-_.@+!*'(),";
-    bool validLogin = ((login.length() > 2) && (login.compare("null") != 0));
+    bool validLogin = ((login.length() > 2) && (login != "null"));
     for(int i=0;i<(int)login.length();i++)
     {
         if (!validLogin)
@@ -1481,13 +1537,41 @@ void NavigatorGUI::connect(const NaviData& naviData)
             (validLoginExtrasChars.find_first_of(login[i]) != std::string::npos));
     }
     if (!validLogin)
+    {
         // Malformed login
         navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid login ...'");
+        return;
+    }
+    if (mNavigator->getWorldAddress().empty())
+    {
+        // Malformed login
+        navi->evaluateJS("$('infosText').innerHTML = 'Select a valid world ...'");
+        return;
+    }
+
+    // Valid login
+    if (login != mNavigator->getLogin())
+        mNavigator->setNodeId("");
+    mNavigator->setLogin(login);
+
+    // Authentication
+    if (mNavigator->getAuthentType() == ATFixed)
+        mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATFixed) + mNavigator->getFixedNodeId());
+    if (mNavigator->getNodeId().empty())
+    {
+        navi->evaluateJS("$('infosText').innerHTML = 'Authenticating ...'");
+        switch (mNavigator->getAuthentType())
+        {
+        case ATFacebook:
+            authentFacebook();
+            break;
+        case ATSolipsis:
+            authentWorldsServer();
+            break;
+        }
+    }
     else
     {
-        mNavigator->setConnectionLogin(login);
-        // Valid login
-        navi->evaluateJS("$('infosText').innerHTML = 'Connecting ...'");
         // Call connect
         bool connected = mNavigator->connect();
         sprintf(txt, "$('infosText').innerHTML = 'Connection %s ...'", (connected) ? "succeeded" : "failed");
@@ -1522,6 +1606,15 @@ void NavigatorGUI::options(const NaviData& naviData)
 
     // Set next Navi UI
     mCurrentNavi = NAVI_OPTIONS;
+    mCurrentNaviCreationDate = 0;
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::quit(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::quit()");
+
+    mNavigator->quit();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1534,15 +1627,22 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
 
     // Set current values
-    if (mNavigator->getConnectionMode() == Navigator::CMStartNewNode)
-        navi->evaluateJS("$('radioNewNode').checked = 'checked'");
-    else
-        navi->evaluateJS("$('radioExistingNode').checked = 'checked'");
-    sprintf(txt, "$('inputUdpPort').value = '%d'", mNavigator->getConnectionUdpPort());
+    bool facebookAvailable = (
+        !mNavigator->getFacebookApiKey().empty() &&
+        !mNavigator->getFacebookSecret().empty() &&
+        !mNavigator->getFacebookServer().empty() &&
+        !mNavigator->getFacebookLoginUrl().empty());
+    sprintf(txt, "setRadioState('radioIdAuthentTypeFacebook', %s, %s)", !facebookAvailable ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFacebook) ? "'checked'" : "null");
     navi->evaluateJS(txt);
-    sprintf(txt, "$('inputHost').value = '%s'", mNavigator->getConnectionHost().c_str());
+    sprintf(txt, "setRadioState('radioIdAuthentTypeSolipsis', %s, %s)", mNavigator->getWorldServerAddress().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATSolipsis) ? "'checked'" : "null");
     navi->evaluateJS(txt);
-    sprintf(txt, "$('inputPort').value = '%d'", mNavigator->getConnectionPort());
+    sprintf(txt, "setRadioState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
+    navi->evaluateJS(txt);
+    std::string peerHost, peerPort;
+    CommonTools::StringHelpers::getURLHostPort(mNavigator->getPeerAddress(), peerHost, peerPort);
+    sprintf(txt, "$('inputPeerHost').value = '%s'", peerHost.c_str());
+    navi->evaluateJS(txt);
+    sprintf(txt, "$('inputPeerPort').value = '%s'", peerPort.c_str());
     navi->evaluateJS(txt);
     navi->evaluateJS("$('infosText').innerHTML = ''");
     std::string proxyAutoconfUrl;
@@ -1551,21 +1651,14 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     int proxyType;
     if (mNaviMgr->getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
     {
-        switch (proxyType)
-        {
-        case 0: // 0 for direct connection, no proxy
-            navi->evaluateJS("$('radioProxyTypeDirect').checked = 'checked'");
-            break;
-        case 4: // 4 for auto-detect proxy settings
-            navi->evaluateJS("$('radioProxyTypeAutodetect').checked = 'checked'");
-            break;
-        case 1: // 1 for manual proxy configuration
-            navi->evaluateJS("$('radioProxyTypeManual').checked = 'checked'");
-            break;
-        default: // 2 for proxy auto-conf (PAC)
-            navi->evaluateJS("$('radioProxyTypeAutoconf').checked = 'checked'");
-            break;
-        }
+        sprintf(txt, "setRadioState('radioProxyTypeDirect', null, %s)", (proxyType == 0) ? "'checked'" : "null");
+        navi->evaluateJS(txt);
+        sprintf(txt, "setRadioState('radioProxyTypeAutodetect', null, %s)", (proxyType == 4) ? "'checked'" : "null");
+        navi->evaluateJS(txt);
+        sprintf(txt, "setRadioState('radioProxyTypeManual', null, %s)", (proxyType == 1) ? "'checked'" : "null");
+        navi->evaluateJS(txt);
+        sprintf(txt, "setRadioState('radioProxyTypeAutoconf', null, %s)", (proxyType == 2) ? "'checked'" : "null");
+        navi->evaluateJS(txt);
         sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
         navi->evaluateJS(txt);
         sprintf(txt, "$('inputProxyHttpPort').value = '%d'", proxyHttpPort);
@@ -1580,14 +1673,6 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::quit(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::quit()");
-
-    mNavigator->quit();
-}
-
-//-------------------------------------------------------------------------------------
 void NavigatorGUI::optionsOk(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsOk()");
@@ -1595,15 +1680,13 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
 
     // Get options
-    std::string radioNode;
-    int udpPort;
-	std::string host;
-    int port;
-    radioNode = naviData["radioNode"].str();
-    udpPort = naviData["udpPort"].toInt();
-    host = naviData["host"].str();
-    port = naviData["port"].toInt();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioNode=%s, udpPort=%d, host=%s, port=%d", radioNode.c_str(), udpPort, host.c_str(), port);
+    std::string radioIdAuthentType;
+    radioIdAuthentType = naviData["radioIdAuthentType"].str();
+	std::string peerHost;
+    unsigned short peerPort;
+    peerHost = naviData["peerHost"].str();
+    peerPort = naviData["peerPort"].toInt();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "peerHost=%s, peerPort=%d", peerHost.c_str(), peerPort);
     std::string radioProxyType;
 	std::string proxyHttpHost;
     int proxyHttpPort;
@@ -1615,48 +1698,36 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioProxyType=%s, proxyHttpHost=%s, proxyHttpPort=%d, proxyAutoconfUrl=%s", radioProxyType.c_str(), proxyHttpHost.c_str(), proxyHttpPort, proxyAutoconfUrl.c_str());
 
     // Check
+    AuthentType authentType = (AuthentType)radioIdAuthentType.c_str()[0];
     bool valid_options = true;
-    Navigator::ConnectionMode connectionMode = (radioNode.compare("newNode") == 0) ? Navigator::CMStartNewNode : Navigator::CMExistingNode;
-    if (connectionMode == Navigator::CMStartNewNode)
-    {
-        if (udpPort < 0)
-        {
-            // Bad UDP port
-            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid UDP Port ...'");
-            valid_options = false;
-        }
+    if (peerHost.length() < 2)
+     {
+       // Bad hostname
+        navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid peer hostname ...'");
+        valid_options = false;
     }
-    else
+    if (peerPort < 0)
     {
-        if (host.length() < 2)
-         {
-           // Bad hostname
-            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid hostname ...'");
-            valid_options = false;
-        }
-        if (port < 0)
-        {
-            // Bad port
-            navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid Port ...'");
-            valid_options = false;
-        }
+        // Bad port
+        navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid peer port ...'");
+        valid_options = false;
     }
     int proxyType;
-    if (radioProxyType.compare("direct") == 0)
+    if (radioProxyType == "direct")
     {
         proxyType = 0;
         proxyAutoconfUrl = "";
         proxyHttpHost = "";
         proxyHttpPort = 0;
     }
-    else if (radioProxyType.compare("autodetect") == 0)
+    else if (radioProxyType == "autodetect")
     {
         proxyType = 4;
         proxyAutoconfUrl = "";
         proxyHttpHost = "";
         proxyHttpPort = 0;
     }
-    else if (radioProxyType.compare("manual") == 0)
+    else if (radioProxyType == "manual")
     {
         proxyType = 1;
         proxyAutoconfUrl = "";
@@ -1687,13 +1758,13 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     // Valid options ?
     if (valid_options)
     {
-        mNavigator->setConnectionMode(connectionMode);
-        mNavigator->setConnectionUdpPort(udpPort);
-        mNavigator->setConnectionHost(host);
-        mNavigator->setConnectionPort(port);
-        navi->evaluateJS("$('infosText').innerHTML = ''");
-
+        if (authentType!= mNavigator->getAuthentType())
+            mNavigator->setNodeId("");
+        mNavigator->setAuthentType(authentType);
+        mNavigator->setPeerAddress(CommonTools::StringHelpers::getURL(peerHost, peerPort));
         mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
+
+        navi->evaluateJS("$('infosText').innerHTML = ''");
 
         // Return to Navi UI login
         login();
@@ -1705,6 +1776,155 @@ void NavigatorGUI::optionsBack(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsBack()");
 
+    // Return to Navi UI login
+    login();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentFacebook()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebook()");
+
+    // Hide previous Navi UI
+    hidePreviousNavi();
+
+    if (mNavisStates[NAVI_AUTHENTFB] == NSNotCreated)
+    {
+        // Create Navi UI authentication on Facebook
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AUTHENTFB], "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
+        navi->setMovable(false);
+        navi->hide();
+        navi->setOpacity(0.75f);
+	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::authentFacebookPageLoaded));
+	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::authentFacebookOk));
+	    navi->bind("cancel", NaviDelegate(this, &NavigatorGUI::authentFacebookCancel));
+        mNavisStates[NAVI_AUTHENTFB] = NSCreated;
+    }
+
+    // Set next Navi UI
+    mCurrentNavi = NAVI_AUTHENTFB;
+    mCurrentNaviCreationDate = 0;
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentFacebookPageLoaded(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AUTHENTFB]);
+
+    // Create the Facebook instance
+    if (mFacebook != 0)
+        delete mFacebook;
+    mFacebook = new Facebook(mNavigator->getFacebookApiKey(), mNavigator->getFacebookSecret(), mNavigator->getFacebookServer());
+    // Grab a token from the server.
+    if ((mFacebook == 0) || !mFacebook->authenticate())
+    {
+        // Destroy Facebook instance
+        if (mFacebook != 0)
+        {
+            delete mFacebook;
+            mFacebook = 0;
+        }
+        setLoginInfosText("Unable to contact Facebook ...");
+        // Return to Navi UI login
+        login();
+    }
+    navi->evaluateJS("$('msgText').innerHTML = 'Use browser to log on Facebook ... then press Ok'");
+    // Run external Web browser on the login URL
+    CommonTools::System::runExternalWebBrowser(mFacebook->getLoginUrl(mNavigator->getFacebookLoginUrl()).c_str());
+
+	// Show Navi UI login
+    if (mNavisStates[NAVI_AUTHENTFB] == NSCreated)
+        navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentFacebookOk(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AUTHENTFB]);
+
+    // Session ?
+    if (!mFacebook->getSession())
+    {
+        navi->evaluateJS("$('msgText').innerHTML = 'Unable to get session ... Are you logged ?'");
+        return;
+    }
+    // Get uid
+    NodeId nodeId = mFacebook->getUid();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk() nodeId=%s", nodeId.c_str());
+    mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATFacebook) + nodeId);
+
+    // Destroy Facebook instance
+    if (mFacebook != 0)
+    {
+        delete mFacebook;
+        mFacebook = 0;
+    }
+
+    setLoginInfosText("Authenticated");
+    // Return to Navi UI login
+    login();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentFacebookCancel(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookCancel()");
+
+    // Destroy Facebook instance
+    if (mFacebook != 0)
+    {
+        delete mFacebook;
+        mFacebook = 0;
+    }
+
+    // Return to Navi UI login
+    login();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentWorldsServer()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServer()");
+
+    // Hide previous Navi UI
+    hidePreviousNavi();
+
+    if (mNavisStates[NAVI_AUTHENTWS] == NSNotCreated)
+    {
+        // Create Navi UI authentication on Worlds server
+        // Prepare the url to the world server uiauthentws.html page
+        std::string uiauthentwsUrl = "http://" + mNavigator->getWorldServerAddress() + "/uiauthentws.html?login=" + mNavigator->getLogin();
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AUTHENTWS], "", NaviPosition(Center), 256, 128);
+        navi->setMovable(false);
+        navi->hide();
+        navi->setOpacity(0.75f);
+	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
+	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::authentWorldsServerOk));
+        // Add 1 event listener to detect network errors
+        navi->addEventListener(&mWorldServerEventListener);
+        navi->navigateTo(uiauthentwsUrl);
+        mNavisStates[NAVI_AUTHENTWS] = NSCreated;
+    }
+
+    // Set next Navi UI
+    mCurrentNavi = NAVI_AUTHENTWS;
+    time(&mCurrentNaviCreationDate);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk()");
+
+    NodeId nodeId = naviData["nodeId"].str();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() nodeId=%s", nodeId.c_str());
+    mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
+
+    setLoginInfosText("Authenticated");
     // Return to Navi UI login
     login();
 }
@@ -1883,7 +2103,11 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
         }
 		else
 #ifdef WIN32
-			MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+        {
+            CommonTools::System::setMouseCursorVisibility(true);
+            CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+            CommonTools::System::setMouseCursorVisibility(false);
+        }
 #else
 			std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -1894,25 +2118,29 @@ void NavigatorGUI::modelerActionMove(const NaviData& naviData)
 {
     Modeler *modeler = mNavigator->getModeler();
 	if (!modeler->isSelectionEmpty())
-		{
-			static bool active = false;
+	{
+		static bool active = false;
 
-			if (!active)
-			{
-				active = true;
-				modeler->eventMove();
-				modeler->lockGizmo(active);
-			}
-			else
-			{
-				active = false;
-				modeler->lockGizmo(active);
-				modeler->getSelection()->mTransformation->eventSelection();
-			}
+		if (!active)
+		{
+			active = true;
+			modeler->eventMove();
+			modeler->lockGizmo(active);
 		}
+		else
+		{
+			active = false;
+			modeler->lockGizmo(active);
+			modeler->getSelection()->mTransformation->eventSelection();
+		}
+	}
 	else
 #ifdef WIN32
-		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+    {
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
+    }
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -1941,7 +2169,11 @@ void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
 	}
 	else
 #ifdef WIN32
-		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+    {
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
+    }
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -1970,7 +2202,11 @@ void NavigatorGUI::modelerActionScale(const NaviData& naviData)
 	}
 	else
 #ifdef WIN32
-		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+    {
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
+    }
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -1986,7 +2222,11 @@ void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 		modeler->lockLinkMode(true);
 	else
 #ifdef WIN32
-		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+    {
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
+    }
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -2009,7 +2249,11 @@ void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 		}
 	else
 #ifdef WIN32
-		MessageBox(NULL,"You have to select an object3D","Information",MB_OK | MB_ICONINFORMATION); 
+    {
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
+    }
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -2561,7 +2805,9 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+            CommonTools::System::setMouseCursorVisibility(true);
+            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
+            CommonTools::System::setMouseCursorVisibility(false);
 			return;
 		}
 
@@ -2655,7 +2901,9 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+            CommonTools::System::setMouseCursorVisibility(true);
+            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
+            CommonTools::System::setMouseCursorVisibility(false);
 			return;
 		}
 
@@ -2716,7 +2964,9 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+            CommonTools::System::setMouseCursorVisibility(true);
+            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
+            CommonTools::System::setMouseCursorVisibility(false);
 			return;
 		}
 
@@ -2756,7 +3006,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 	    std::string hostStr = navi->evaluateJS("$('MaterialVNCHost').value");
 	    std::string portStr = navi->evaluateJS("$('MaterialVNCPort').value");
 	    std::string pwdStr = navi->evaluateJS("$('MaterialVNCPwd').value");
-        int port = atoi(portStr.c_str());
+        unsigned short port = atoi(portStr.c_str());
         std::string address = "vnc://" + hostStr + ":" + StringConverter::toString(port);
         std::string password = "vncpwd:" + pwdStr;
 
@@ -2770,7 +3020,9 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-			MessageBox(NULL,"This Texture is already open","Error",MB_OK|MB_ICONEXCLAMATION);
+            CommonTools::System::setMouseCursorVisibility(true);
+            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
+            CommonTools::System::setMouseCursorVisibility(false);
 			return;
 		}
 
@@ -4252,13 +4504,13 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
-    if (cmd.compare("back") == 0)
+    if (cmd == "back")
         naviDemoNavi2->navigateBack();
-    else if (cmd.compare("forward") == 0)
+    else if (cmd == "forward")
         naviDemoNavi2->navigateForward();
-    else if (cmd.compare("stop") == 0)
+    else if (cmd == "stop")
         naviDemoNavi2->navigateStop();
-    else if (cmd.compare("go") == 0)
+    else if (cmd == "go")
     {
     	std::string url = navi->evaluateJS("$('inputUrl').value");
         naviDemoNavi2->navigateTo(url);
@@ -4270,7 +4522,7 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
 NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
 {
     for (int n=0; n < NAVI_COUNT; ++n)
-        if (mNavisNames[n].compare(naviName) == 0) return (NaviPanel)n;
+        if (mNavisNames[n] == naviName) return (NaviPanel)n;
 
     return (NaviPanel)-1;
 }
@@ -4288,6 +4540,8 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)
         mNaviMgr->getNavi(mNavisNames[naviPanel])->show(true);
+
+    mCurrentNaviCreationDate = 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -4300,6 +4554,7 @@ void NavigatorGUI::hidePreviousNavi()
         mNaviMgr->destroyNavi(navi);
         mNavisStates[mCurrentNavi] = NSNotCreated;
         mCurrentNavi = -1;
+        mCurrentNaviCreationDate = 0;
     }
 }
 
@@ -4315,6 +4570,7 @@ bool NavigatorGUI::hideNavi(const std::string& naviName)
     navi->hide();
     if (mCurrentNavi == panel) mCurrentNavi = -1;
     if (mCurrentCtxtPanel == panel) mCurrentCtxtPanel = -1;
+    if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
     return true;
 }
 

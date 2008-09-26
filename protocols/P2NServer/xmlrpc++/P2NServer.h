@@ -44,7 +44,7 @@ private:
     /** Host */
     std::string mHost;
     /** Port Number */
-    int mPort;
+    unsigned short mPort;
     /** Additional informations */
     std::string mExtras;
 
@@ -66,7 +66,7 @@ private:
 
 public:
     /** Constructor */
-    P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host = "localhost", int port = 8550, int verbosity = 0, const std::string& extras = "");
+    P2NServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host = "localhost", unsigned short port = 8550, int verbosity = 0, const std::string& extras = "");
 
     /** Destructor */
     virtual ~P2NServer();

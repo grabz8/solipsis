@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <shellapi.h>
 
 namespace CommonTools {
 
@@ -40,6 +41,18 @@ void System::sleep(unsigned long durationMs)
 void System::setMouseCursorVisibility(bool visible)
 {
 	ShowCursor((BOOL)visible);
+}
+
+//-------------------------------------------------------------------------------------
+void System::showMessageBox(const std::string& text, const std::string& caption, bool okButton, bool okCancelButton, bool iconAsterisk, bool iconExclamation, bool iconHand)
+{
+    MessageBox(NULL, text.c_str(), caption.c_str(), (okButton?MB_OK:0) | (okCancelButton?MB_OKCANCEL:0) | (iconAsterisk?MB_ICONASTERISK:0) | (iconExclamation?MB_ICONEXCLAMATION:0) | (iconHand?MB_ICONHAND:0));
+}
+
+//-------------------------------------------------------------------------------------
+void System::runExternalWebBrowser(const std::string& url)
+{
+    ShellExecute(0, "open", url.c_str(), 0, 0, SW_SHOWNORMAL);
 }
 
 //-------------------------------------------------------------------------------------

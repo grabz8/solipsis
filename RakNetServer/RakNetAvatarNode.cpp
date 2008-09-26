@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetServer.h"
 #include <StringTable.h>
 #include <StringCompressor.h>
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace CommonTools;
@@ -140,8 +141,8 @@ bool RakNetAvatarNode::Serialize(BitStream *bitStream, SerializationContext *ser
     // Client side
     else if (mIsLocal)
     {
-        stringCompressor->EncodeString(mNodeId.c_str(), 16, bitStream);
-        stringCompressor->EncodeString(mName.c_str(), 16, bitStream);
+        RakNetConnection::SerializeString(bitStream, mNodeId);
+        RakNetConnection::SerializeString(bitStream, mName);
     }
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
@@ -176,11 +177,8 @@ void RakNetAvatarNode::Deserialize(BitStream *bitStream, SerializationType seria
         bool isLocalOnSender = (sender == mSystemAddress);
         if (isLocalOnSender)
         {
-            char output[16];
-            stringCompressor->DecodeString(output, 16, bitStream);
-            mNodeId = output;
-            stringCompressor->DecodeString(output, 16, bitStream);
-            mName = output;
+            RakNetConnection::DeserializeString(bitStream, mNodeId);
+            RakNetConnection::DeserializeString(bitStream, mName);
         }
     }
 

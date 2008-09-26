@@ -35,7 +35,6 @@ const char NavigatorLua::className[] = "NavigatorLua";
 Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, bind),
     LunarMethod(NavigatorLua, setNameValueVariable),
-    LunarMethod(NavigatorLua, setConnectionParams),
     LunarMethod(NavigatorLua, getRenderWinMetrics),
     LunarMethod(NavigatorLua, sendMessage),
     LunarMethod(NavigatorLua, contextItemSelected),
@@ -81,23 +80,6 @@ int NavigatorLua::setNameValueVariable(lua_State* luaState)
         varValue = (String)luaL_checkstring(luaState, 2);
 
     lua_pushboolean(luaState, mNavigator->setNameValueVariable(varName, varValue));
-    return 1;
-}
-
-//-------------------------------------------------------------------------------------
-int NavigatorLua::setConnectionParams(lua_State* luaState)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::setConnectionParams()");
-
-    // Set default values
-    if (lua_isstring(mLuaState, 1))
-        mNavigator->setConnectionHost((String)luaL_checkstring(luaState, 1));
-    if (lua_isnumber(mLuaState, 2))
-        mNavigator->setConnectionPort(luaL_checkint(luaState, 2));
-    if (lua_isstring(mLuaState, 3))
-        mNavigator->setConnectionLogin((String)luaL_checkstring(luaState, 3));
-
-    lua_pushboolean(luaState, true);
     return 1;
 }
 

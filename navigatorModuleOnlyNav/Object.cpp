@@ -95,7 +95,7 @@ bool Object::update(XmlEntity* xmlEntity)
 
     if (definedAttributes & XmlEntity::DAContent)
     {
-        OGRE_LOG("Avatar::update() Destroy/Load new object uid:" + mXmlEntity->getUidString());
+        OGRE_LOG("Avatar::update() Destroy/Load new object uid:" + mXmlEntity->getUid());
 
         Modeler* modeler = Modeler::getSingletonPtr();
         if (mObject3D != 0)

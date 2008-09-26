@@ -75,6 +75,8 @@ public:
     OgrePeerManager(SceneManager* sceneMgr = 0, IOgrePeerManagerCallbacks* callbacks = 0);
     ~OgrePeerManager();
 
+    // Get my node identifier
+    const NodeId& getNodeId();
     // Set my node identifier
     void setNodeId(const NodeId& nodeId);
 

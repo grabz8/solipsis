@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         {
             IP2NClient* P2NClient = 0;
             P2NClientLogger P2NClientLogger;
-            P2NClient = IP2NClient::createClient("localhost", 8550, 2, "");
+            P2NClient = IP2NClient::createClient("localhost", 8880, 2, "");
             P2NClient->setLogger(&P2NClientLogger);
             IP2NClient::RetCode retCode;
 

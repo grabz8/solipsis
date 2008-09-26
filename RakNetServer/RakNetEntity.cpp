@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetAvatarNode.h"
 #include "RakNetConnection.h"
 #include <StringTable.h>
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace CommonTools;
@@ -82,7 +83,7 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
 #ifdef LOGRAKNET
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
         "RakNetEntity::Serialize() uid:%s, name:%s, owner:%s, defAttr:0x%08x, ctxType:%d, recip@:%s, pos(%.2f,%.2f,%.2f)",
-        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getUid().c_str(),
         mXmlEntity->getName().c_str(),
         mXmlEntity->getOwner().c_str(),
         definedAttributes,
@@ -95,7 +96,7 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
 
     bitStream->Write(definedAttributes);
     if (definedAttributes & XmlEntity::DAUid)
-        bitStream->Write(mXmlEntity->getUid());
+        RakNetConnection::SerializeString(bitStream, mXmlEntity->getUid());
     if (definedAttributes & XmlEntity::DAOwner)
         RakNetConnection::SerializeString(bitStream, mXmlEntity->getOwner());
     if (definedAttributes & XmlEntity::DAType)
@@ -200,7 +201,7 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
     if (definedAttributes & XmlEntity::DAUid)
     {
         EntityUID uid;
-        bitStream->Read(uid);
+        RakNetConnection::DeserializeString(bitStream, uid);
         mXmlEntity->setUid(uid);
         /// Server can serialize
         if (RakNetConnection::getSingletonPtr()->mServer)
@@ -351,7 +352,7 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
 #ifdef LOGRAKNET
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
         "RakNetEntity::Deserialize() uid:%s, name:%s, owner:%s, lastDeserAttr:0x%08x, pos(%.2f,%.2f,%.2f)",
-        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getUid().c_str(),
         mXmlEntity->getName().c_str(),
         mXmlEntity->getOwner().c_str(),
         mLastDeserializedDefinedAttributes,
@@ -367,7 +368,7 @@ bool RakNetEntity::QueryIsDestructionAuthority(void) const
 #ifdef LOGRAKNET
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
         "RakNetEntity::QueryIsDestructionAuthority() uid:%s, returning %s",
-        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getUid().c_str(),
         LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
 #endif
 	return mReplicaFlags & RFSerializationAuthorized;
@@ -379,7 +380,8 @@ bool RakNetEntity::QueryIsSerializationAuthority(void) const
 #ifdef LOGRAKNET
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
         "RakNetEntity::QueryIsSerializationAuthority() uid:%s, returning %s",
-        mXmlEntity->getUidString().c_str(),
+//        mXmlEntity->getUidString().c_str(),
+        mXmlEntity->getUid().c_str(),
         LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
 #endif
 	return mReplicaFlags & RFSerializationAuthorized;

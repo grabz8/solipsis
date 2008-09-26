@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetServer.h"
 #include <StringTable.h>
 #include <StringCompressor.h>
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace CommonTools;
@@ -63,7 +64,7 @@ bool RakNetSiteNode::Serialize(BitStream *bitStream, SerializationContext *seria
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Serialize()");
 
     bitStream->Write(mSystemAddress);
-    stringCompressor->EncodeString(mNodeId.c_str(), 16, bitStream);
+    RakNetConnection::SerializeString(bitStream, mNodeId);
     if (RakNetConnection::getSingletonPtr()->mServer)
     {
         if (mEntity)
@@ -87,9 +88,7 @@ void RakNetSiteNode::Deserialize(BitStream *bitStream, SerializationType seriali
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Deserialize()");
 
 	bitStream->Read(mSystemAddress);
-    char output[16];
-    stringCompressor->DecodeString(output, 16, bitStream);
-    mNodeId = output;
+    RakNetConnection::DeserializeString(bitStream, mNodeId);
 
     if (!RakNetConnection::getSingletonPtr()->mServer)
     {

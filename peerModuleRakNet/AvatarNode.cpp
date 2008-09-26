@@ -59,11 +59,11 @@ AvatarNode::~AvatarNode()
 //-------------------------------------------------------------------------------------
 void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new entity uid:%s sendNewEvt:%s", entity->getXmlEntity()->getUidString().c_str(), LOGHANDLER_LOGBOOL(sendNewEvt));
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new entity uid:%s sendNewEvt:%s", entity->getXmlEntity()->getUid().c_str(), LOGHANDLER_LOGBOOL(sendNewEvt));
 
     if (entity->getXmlEntity()->getOwner() == mNodeId)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new owned entity uid:%s by me with mNodeId:%s", entity->getXmlEntity()->getUidString().c_str(), mNodeId.c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() new owned entity uid:%s by me with mNodeId:%s", entity->getXmlEntity()->getUid().c_str(), mNodeId.c_str());
         pthread_mutex_lock(&mMutex);
         mOwnedEntities[entity->getXmlEntity()->getUid()] = entity;
         pthread_mutex_unlock(&mMutex);
@@ -88,7 +88,7 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
         pthread_mutex_lock(&mMutex);
 #ifdef PHYSICSPLUGINS
         // create physics of the entity
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
         entity->createPhysics(Peer::getSingleton().getPhysicsScene());
         entity->applyGravity(true);
 #endif
@@ -97,7 +97,7 @@ void AvatarNode::onNewEntity(Entity* entity, bool sendNewEvt)
 
     if (sendNewEvt)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() sending ETNewEntity for entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() sending ETNewEntity for entity uid:%s", entity->getXmlEntity()->getUid().c_str());
 #ifdef POOL
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);

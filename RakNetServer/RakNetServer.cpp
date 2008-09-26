@@ -37,15 +37,13 @@ using namespace RakNet;
 namespace Solipsis {
 
 RakNetServer* RakNetServer::ms_Singleton = 0;
-RakNetConnection *RakNetConnection::ms_Singleton = 0;
 
 //-------------------------------------------------------------------------------------
 RakNetServer::RakNetServer(int argc, char** argv) :
     mPort(8660),
     mMaxIncomingConnections(32),
-    mSceneDemoLoaded(""),
     mMediaCachePath(""),
-    mSiteNodeId("00000010"),
+    mSiteNodeId("11112222"),
     mQuit(false)
 {
     for (int iarg=1; iarg < argc; iarg++)
@@ -65,7 +63,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
         if ((strstr(argv[iarg], "-s") != 0) && (argc > iarg+1))
         {
             iarg++;
-            mSceneDemoLoaded = argv[iarg];
+            mSiteNodeId = argv[iarg];
             continue;
         }
         if ((strstr(argv[iarg], "-m") != 0) && (argc > iarg+1))
@@ -124,109 +122,11 @@ void RakNetServer::initialize()
     // Initializing the cache
     mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
 
-    // Create the site node
-    bool sceneLoaded = false;
-    if (mSceneDemoLoaded.empty())
-        sceneLoaded = loadNodeIdFile(mSiteNodeId);
-    // Simulate the scene around the avatar
-    if (!sceneLoaded)
-    {
-        std::string xmlSiteStr;
-        if (mSceneDemoLoaded.compare("Ile") == 0)
-            xmlSiteStr = "\
-<entity uid=\"11112223\" owner=\"00000001\" type=\"1\" name=\"Ile\" version=\"00000000\">\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <sceneContent>\
-   <entryGate gravity=\"true\" >\
-    <position x=\"170.0\" y=\"-60.0\" z=\"445.0\" />\
-   </entryGate>\
-  </sceneContent>\
-  <lod level=\"0\">\
-   <sceneLodContent mainFilename=\"Ile.osm\" collision=\"Ile_COLLISION\" />\
-   <files>\
-    <file name=\"11112223.ssf\" version=\"00000000\" />\
-   </files>\
-  </lod>\
- </content>\
-</entity>\
-";
-        else if (mSceneDemoLoaded.compare("DigitalOcean1") == 0)
-            xmlSiteStr = "\
-<entity uid=\"11112224\" owner=\"00000001\" type=\"1\" name=\"DigitalOcean1\" version=\"00000000\">\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <sceneContent>\
-   <entryGate gravity=\"false\" >\
-    <position x=\"30.0\" y=\"-26.0\" z=\"68.0\" />\
-   </entryGate>\
-  </sceneContent>\
-  <lod level=\"0\">\
-   <sceneLodContent mainFilename=\"DigitalOcean1.osm\" />\
-   <files>\
-    <file name=\"11112224.ssf\" version=\"00000000\" />\
-   </files>\
-  </lod>\
- </content>\
-</entity>\
-";
-        else
-            xmlSiteStr = "\
-<entity uid=\"11112222\" owner=\"00000001\" type=\"1\" name=\"Deltastation1\" version=\"00000000\" >\
- <position x=\"18.0\" y=\"-58.0\" z=\"133.0\" />\
- <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
- <aabb>\
-  <min x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
-  <max x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
- </aabb>\
- <content>\
-  <sceneContent>\
-   <entryGate gravity=\"true\" >\
-    <position x=\"17.0\" y=\"-50.0\" z=\"115.0\" />\
-   </entryGate>\
-  </sceneContent>\
-  <lod level=\"0\">\
-   <sceneLodContent mainFilename=\"Deltastation1.osm\" collision=\"Delta_COLLISION\" />\
-   <files>\
-    <file name=\"11112222.ssf\" version=\"00000000\" />\
-   </files>\
-  </lod>\
- </content>\
-</entity>\
-";
-        TiXmlDocument xmlSiteDoc;
-        xmlSiteDoc.Parse(xmlSiteStr.c_str());
-        Entity* sceneEntity = new Entity();
-        sceneEntity->getXmlEntity()->fromXmlElt(xmlSiteDoc.RootElement());
-        sceneEntity->addFilesInCacheManager();
-        onNewEntity(*sceneEntity);
-        /// Server can serialize
-        sceneEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
-        // Entity managed by the Replica2 plugin
-        sceneEntity->SetReplicaManager(&mRakNetConnection.mReplicaManager);
-        // Send out this new entity to all systems
-        sceneEntity->BroadcastConstruction();
-
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::initialize() initializing simulation site node name:%s", sceneEntity->getXmlEntity()->getName().c_str());
-        SiteNode* siteNode = new SiteNode();
-        siteNode->setEntity(sceneEntity);
-        siteNode->setNodeId(mSiteNodeId);
-        mNodes[mSiteNodeId] = siteNode;
-        // Node managed by the Replica2 plugin
-        siteNode->SetReplicaManager(&mRakNetConnection.mReplicaManager);
-        // Send out this new node to all systems
-        siteNode->BroadcastConstruction();
-    }
+    // Load the site node
+    if (loadNodeIdFile(mSiteNodeId))
+        LOGHANDLER_LOGF(LogHandler::VL_INFO, "RakNetServer::initialize() scene nodeId:%s loaded", mSiteNodeId.c_str());
+    else
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "RakNetServer::initialize() unable to load scene nodeId:%s !", mSiteNodeId.c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -314,7 +214,7 @@ void RakNetServer::run()
                         // Send to target node
                         AvatarNode *targetAvatarNode = getAvatarNodeOfEntity(targetEntityUid);
                         if (targetAvatarNode == 0)
-                            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION unable to find avatar node with entity uid:%s", XmlHelpers::convertEntityUIDToHexString(targetEntityUid).c_str());
+                            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION unable to find avatar node with entity uid:%s", targetEntityUid.c_str());
                         else
                             mRakNetConnection.mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, targetAvatarNode->getSystemAddress(), false);
                     }
@@ -340,8 +240,12 @@ void RakNetServer::finalize()
         delete node;
     }
 
-    mRakNetConnection.mRakPeer->Shutdown(100, 0);
-    RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
+    if (mRakNetConnection.mRakPeer != 0)
+    {
+        mRakNetConnection.mRakPeer->Shutdown(100, 0);
+        RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
+        mRakNetConnection.mRakPeer = 0;
+    }
 
     // Finalizing the cache
     mRakNetConnection.mCacheManager.finalize();
@@ -396,8 +300,7 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
     {
         // Create the avatar node
         EntityUID AvatarEntityUid;
-        sscanf(avatarNodeId.c_str(), "%08X", &AvatarEntityUid);
-        AvatarEntityUid <<= 16;
+        AvatarEntityUid = avatarNodeId + "_00000000";
         // Randomize the character
         CommonTools::IO::FilenameVector filenames;
         CommonTools::IO::getFilenames(mMediaCachePath, filenames);
@@ -407,7 +310,7 @@ void RakNetServer::onAvatarNodeIdInitialized(AvatarNode* avatarNode)
                 safFilenames.push_back(*it);
         int safIdx = time(NULL)%(int)safFilenames.size();
         std::string xmlAvatarStr = "\
-<entity uid=\"" + XmlHelpers::convertEntityUIDToHexString(AvatarEntityUid) + "\" owner=\"" + avatarNodeId + "\" type=\"0\" name=\"" + avatarNode->getName() + "\" version=\"00000000\">\
+<entity uid=\"" + AvatarEntityUid + "\" owner=\"" + avatarNodeId + "\" type=\"0\" name=\"" + avatarNode->getName() + "\" version=\"00000000\">\
  <flags bitmask=\"" + XmlHelpers::convertEntityFlagsToHexString(EFNone) + "\" />\
  <position x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
  <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
@@ -475,7 +378,7 @@ void RakNetServer::onSiteNodeDestroyed(SiteNode* siteNode)
 //-------------------------------------------------------------------------------------
 void RakNetServer::onEntityDestroyed(Entity* entity)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onEntityDestroyed() entity uid:%s", entity->getXmlEntity()->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::onEntityDestroyed() entity uid:%s", entity->getXmlEntity()->getUid().c_str());
 
     if (entity->getXmlEntity()->getType() == ETObject)
     {

@@ -75,7 +75,7 @@ bool Scene::update(XmlEntity* xmlEntity)
 
     if (definedAttributes & XmlEntity::DAContent)
     {
-        OGRE_LOG("Scene::update() Destroy/Load new scene uid:" + mXmlEntity->getUidString());
+        OGRE_LOG("Scene::update() Destroy/Load new scene uid:" + mXmlEntity->getUid());
 
         destroy();
 
@@ -96,14 +96,14 @@ bool Scene::update(XmlEntity* xmlEntity)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "Scene::update");
 
         // Create the resource group
-        mResourceGroup = xmlEntity->getUidString() + "Resources";
+        mResourceGroup = xmlEntity->getUid() + "Resources";
         mResourceLocation = Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + lodContent0File->mFilename;
         ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
         ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
         ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
 
         // Create the scene node
-        SceneNode* sceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUidString() + "Scene");
+        SceneNode* sceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUid() + "Scene");
 
         // Load from the .osm
         OSMScene osmScene(sceneMgr);
@@ -171,7 +171,7 @@ void Scene::destroy()
 //-------------------------------------------------------------------------------------
 void Scene::convertToStaticGeometry(SceneNode* sceneNode)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene uid:%s converting into static geometry", mXmlEntity->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene uid:%s converting into static geometry", mXmlEntity->getUid().c_str());
 
     destroy();
 
@@ -196,9 +196,9 @@ void Scene::convertToStaticGeometry(SceneNode* sceneNode)
                 sceneNode->_getDerivedScale());
     }
 
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene:%s building static geometry", mXmlEntity->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene:%s building static geometry", mXmlEntity->getUid().c_str());
     mStaticGeometry->build();
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene:%s static geometry built", mXmlEntity->getUidString().c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene:%s static geometry built", mXmlEntity->getUid().c_str());
 
 /*    SceneNode::ObjectIterator objectIterator = sceneNode->getAttachedObjectIterator();
     while (objectIterator.hasMoreElements())

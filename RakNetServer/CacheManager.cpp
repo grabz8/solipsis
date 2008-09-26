@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <RakNetConnection.h>
 #include <FileList.h>
 #include <FileOperations.h>
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace CommonTools;

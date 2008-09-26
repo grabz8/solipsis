@@ -95,7 +95,7 @@ class P2NSERVER_EXPORT IP2NServer
 public:
     /** Creates a server.
     */
-    static IP2NServer* createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, int port, int verbosity, const std::string& extras);
+    static IP2NServer* createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, unsigned short port, int verbosity, const std::string& extras);
 
     /** Destroys a server.
     */

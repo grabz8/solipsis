@@ -32,12 +32,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterManager.h>
 #include <CTLog.h>
 #include <CTIO.h>
+#include <time.h>
 
 using namespace Solipsis;
 using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
 OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbacks* callbacks) :
+    mNodeId(""),
     mSceneMgr(sceneMgr),
     mCallbacks(callbacks)
 {
@@ -47,6 +49,12 @@ OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbac
 //-------------------------------------------------------------------------------------
 OgrePeerManager::~OgrePeerManager()
 {
+}
+
+//-------------------------------------------------------------------------------------
+const NodeId& OgrePeerManager::getNodeId()
+{
+    return mNodeId;
 }
 
 //-------------------------------------------------------------------------------------
@@ -78,7 +86,7 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
     if (newOgrePeer != 0)
         mOgrePeersMap[xmlEntity->getUid()] = newOgrePeer;
     else
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "OgrePeerManager::load() Unable to load node type:%s, uid:%s", xmlEntity->getTypeRepr().c_str(), xmlEntity->getUidString().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "OgrePeerManager::load() Unable to load node type:%s, uid:%s", xmlEntity->getTypeRepr().c_str(), xmlEntity->getUid().c_str());
     // update the object now to force loading of content, load is performed after registering into mOgrePeersMap
     // in order the loadTexture can retrieve this object is local (VLC textures)
     // TODO: OgrePeer should register itself in manager on constr then load is performed according its internal state
@@ -221,20 +229,19 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
 EntityUID OgrePeerManager::getNewEntityUID()
 {
     EntityUID objectEntityUid;
-    const char *m = mNodeId.c_str();
-    sscanf(mNodeId.c_str(), "%08X", &objectEntityUid);
-    objectEntityUid <<= 16;
-    EntityUID nextEntityUID = 0x00000001;
-    while (true)
+    unsigned short objectId = 0x0001;
+    unsigned short subObjectId = 0x0000;
+    while (objectId != 0x0000)
     {
-        objectEntityUid |= nextEntityUID;
+        objectEntityUid = mNodeId + "_" + XmlHelpers::convertUIntToHexString(((unsigned int)objectId) << 16 | (unsigned int)subObjectId);
         OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(objectEntityUid);
         OgrePeersMap::iterator ogrePeerReserved = mReservedOgrePeersMap.find(objectEntityUid);
         if ((ogrePeer == mOgrePeersMap.end()) && (ogrePeerReserved == mReservedOgrePeersMap.end()))
             break;
-        objectEntityUid &= 0xFFFF0000;
-        nextEntityUID++;
+        objectId++;
     }
+    if (objectId == 0x0000)
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No free object id found !", "OgrePeerManager::getNewEntityUID");
 
     mReservedOgrePeersMap[objectEntityUid] = 0;
     return objectEntityUid;
@@ -447,7 +454,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
     for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
         if (it->mFilename.find(".saf") == it->mFilename.length() - 4)
             defaultCharacterName = it->mFilename.substr(0, it->mFilename.length() - 4);
-    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUidString(), defaultCharacterName);
+    CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUid(), defaultCharacterName);
     if (characterInstance == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "OgrePeerManager::CreateAvatarNode");
     if (isLocal)

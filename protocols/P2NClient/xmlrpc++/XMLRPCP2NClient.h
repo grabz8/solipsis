@@ -44,7 +44,7 @@ protected:
     /// Host
     std::string mHost;
     /// Port
-    int mPort;
+    unsigned short mPort;
     /// Verbosity
     int mVerbosity;
     /// Additional informations
@@ -63,13 +63,13 @@ private:
     IP2NClientLogger* mLogger;
 
 public:
-    XMLRPCP2NClient(const std::string& host, int port, int verbosity, const std::string& extras = "");
+    XMLRPCP2NClient(const std::string& host, unsigned short port, int verbosity, const std::string& extras = "");
     virtual ~XMLRPCP2NClient();
 
     /// @copydoc IP2NClient::getHost
     virtual const std::string& getHost() { return mHost; }
     /// @copydoc IP2NClient::getPort
-    virtual int getPort() { return mPort; }
+    virtual unsigned short getPort() { return mPort; }
     /// @copydoc IP2NClient::getVerbosity
     virtual int getVerbosity() { return mVerbosity; }
     /// @copydoc IP2NClient::getExtras

@@ -78,7 +78,7 @@ F12      Toggle bounding-boxes display
 Demos Tips/Tricks:
 into Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment line under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
 into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update the position of the demoNavi2 panel
-into Media\lua\boot.lua, you can tune default connection params into the line navigator:setConnectionParams("localhost", 8550, "me")
+into Media\lua\boot.lua, you can tune default connection params into the line navigator:setConnectionParams("localhost", 8880, "me")
 
 
 About HTTP proxy, you can now define it into the options panel, the resulting config
@@ -95,20 +95,21 @@ You can build:
 To run the Peer application you can specify host, port and verbosity of the Peer/Navigator XMLRPC server,
 additionally you have to specify host, port of the RakNet server, in DebugNCS/ReleaseNCS configs those parameters should be passed to the Navigator application:
 -h <IPaddr:str>         : IP address (default: localhost)
--p <port:int>           : port (default: 8550)
+-p <port:int>           : port (default: 8880)
 -v <verbosity:int>      : verbosity level (0..2)
 -m <mediaCachePath:str> : Pathname to Media/cache directory (usefull to share same network directory between the Navigator and its Peer)
--rh <IPaddr:str>        : IP address of the RakNet server (default: localhost)
--rp <port:int>          : port of the RakNet server (default: 8660)
--id <avatarNodeId:str>  : Unique avatar node identifier, hex string of 8 digits (default: 00000001), check each peer has 1 different id !
 
 
 To run the RakNet Server you can specify the port, max connections and simulated scene
 If you launch it from the same system than navigator then you have to change the Media/cache directory (eg. copy the default Media/cache directory into Media/cacheServer)
 -p <port:int>                   : port (default: 8660)
 -c <maxIncomingConnections:int> : maximum incoming connections (default: 32)
--s <sceneName:str>              : Scene name loaded by the simulator (eg. Deltastation1, Ile, ...), look into the .xml file to update some presets
+-s <sceneNodeId:str>            : Scene nodeId loaded by the simulator (eg. 11112222 for Deltastation1, 11112223 Ile, ...), look into the .xml file to update some presets
 -m <mediaCachePath:str>         : Pathname to Media/cache directory
+
+
+To run the Worlds Server, check you got python installed and launch WorldsServer.py
+Update internal host:port if you want to change default values localhost:8550
 
 
 --------------------------------------------------------------------------------

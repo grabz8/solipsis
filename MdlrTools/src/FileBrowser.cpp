@@ -89,11 +89,11 @@ namespace FileBrowser
 			LPVOID lpMsgBuf;
 			if (!FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &lpMsgBuf,0,NULL ))
 			{
-				MessageBox(NULL,"Unknown Error","Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox("Unknown Error", "Error", true, false, false, true, false);
 				return NULL;
 			}
 			if (lpMsgBuf)
-				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox(lpMsgBuf, "Error", true, false, false, true, false);
 			*/
             CommonTools::System::setMouseCursorVisibility(false);
 			return NULL ;
@@ -138,11 +138,11 @@ namespace FileBrowser
 			LPVOID lpMsgBuf;
 			if (!FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &lpMsgBuf,0,NULL ))
 			{
-				MessageBox(NULL,"Unknown Error","Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox("Unknown Error", "Error", true, false, false, true, false);
 				return NULL;
 			}
 			if (lpMsgBuf)
-				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox(lpMsgBuf, "Error", true, false, false, true, false);
 			*/
             CommonTools::System::setMouseCursorVisibility(false);
 			return NULL ;
@@ -185,12 +185,12 @@ namespace FileBrowser
 			LPVOID lpMsgBuf;
 			if (!FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),(LPTSTR) &lpMsgBuf,0,NULL ))
 			{
-				MessageBox(NULL,"Unknown Error","Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox("Unknown Error", "Error", true, false, false, true, false);
                 CommonTools::System::setMouseCursorVisibility(false);
 				return NULL;
 			}
 			if (lpMsgBuf)
-				MessageBox(NULL,(LPCSTR)lpMsgBuf,"Error",MB_OK|MB_ICONEXCLAMATION);
+                CommonTools::System::showMessageBox((char*)lpMsgBuf, "Error", true, false, false, true, false);
 		}
 	
 		char* path = new char[strlen(buffer)];
@@ -206,9 +206,9 @@ namespace FileBrowser
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	void displayMessageWindow(const char* title, const char* message)
 	{
-        CommonTools::System::setMouseCursorVisibility(true);
 #ifdef WIN32
-		MessageBox(NULL,message,title,MB_OK|MB_ICONEXCLAMATION);
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox(message, title, true, false, false, true, false);
         CommonTools::System::setMouseCursorVisibility(false);
 #else
 	return NULL;

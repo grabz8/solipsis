@@ -56,15 +56,6 @@ public:
 		SModeling,      // GUI displayed when user is modeling an object
 		SAvatarEdit     // GUI displayed when user is editing his avatar
     };
-    enum ConnectionMode {
-        CMExistingNode, // Use an existing node
-        CMStartNewNode  // Start a new node for this session
-    };
-    enum NodeStatus {
-        NSReady,         // Node is connected to the Solipsis world
-        NSBusy,          // Node is an unstable state w.r.t. the Solipsis network: it is either trying to connect or to repair its connectivity
-        NSUnavailable    // Node is not connected to the Solipsis world
-    };
     enum QueryFlags
     {
         QFNaviPanel = 1<<0,
@@ -80,12 +71,19 @@ private:
 
 protected:
     State mState;
-    ConnectionMode mConnectionMode;
-    NodeStatus mNodeStatus;
-    int mUdpPort;
-    String mHost;
-    int mPort;
+    String mPeerAddress;
+    String mLocalWorldAddress;
+    String mWorldAddress;
+    String mWorldServerAddress;
+    unsigned short mWorldServerTimeoutSec;
     String mLogin;
+    AuthentType mAuthentType;
+    String mFacebookApiKey;
+    String mFacebookSecret;
+    String mFacebookServer;
+    String mFacebookLoginUrl;
+    NodeId mFixedNodeId;
+    NodeId mNodeId;
     String mMediaCachePath;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
@@ -130,20 +128,36 @@ public:
 
     // Get and set
     State getState();
-	void setState(State newState) {mState = newState;};
-    ConnectionMode getConnectionMode();
-    void setConnectionMode(ConnectionMode connectionMode);
-    NodeStatus getNodeStatus();
-    int getConnectionUdpPort();
-    void setConnectionUdpPort(int udpPort);
-    String& getConnectionHost();
-    void setConnectionHost(String& host);
-    int getConnectionPort();
-    void setConnectionPort(int port);
-    String& getConnectionLogin();
-    void setConnectionLogin(String& login);
+	void setState(State newState);
+    const String& getPeerAddress();
+    void setPeerAddress(const String& address);
+    const String& getLocalWorldAddress();
+    void setLocalWorldAddress(const String& address);
+    const String& getWorldAddress();
+    void setWorldAddress(const String& address);
+    const String& getWorldServerAddress();
+    void setWorldServerAddress(const String& address);
+    unsigned short getWorldServerTimeout();
+    void setWorldServerTimeout(unsigned short timeoutSec);
+    const String& getLogin();
+    void setLogin(const String& login);
+    AuthentType getAuthentType();
+    void setAuthentType(AuthentType authentType);
+    const String& getFacebookApiKey() { return mFacebookApiKey; }
+    void setFacebookApiKey(const String& apiKey) { mFacebookApiKey = apiKey; }
+    const String& getFacebookSecret() { return mFacebookSecret; }
+    void setFacebookSecret(const String& secret) { mFacebookSecret = secret; }
+    const String& getFacebookServer() { return mFacebookServer; }
+    void setFacebookServer(const String& server) { mFacebookServer = server; }
+    const String& getFacebookLoginUrl() { return mFacebookLoginUrl; }
+    void setFacebookLoginUrl(const String& loginUrl) { mFacebookLoginUrl = loginUrl; }
+    const NodeId& getFixedNodeId();
+    void setFixedNodeId(const NodeId& fixedNodeId);
+    const NodeId& getNodeId();
+    void setNodeId(const NodeId& nodeId);
+    const String& getMediaCachePath();
+    void setMediaCachePath(const String& mediaCachePath);
     bool setNameValueVariable(const String& varName, const String& varValue);
-    const String& getMediaCachePath() { return mMediaCachePath; }
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
@@ -217,9 +231,9 @@ public:
     // send events to node
     void sendEvents();
 
-    /** See IOgrePeerManagerCallbacks. */
+    /** See IOgrePeerManagerCallbacks::onAvatarNodeCreate. */
     virtual void onAvatarNodeCreate(OgrePeer* ogrePeer);
-    /** See IOgrePeerManagerCallbacks. */
+    /** See IOgrePeerManagerCallbacks::onSceneNodeCreate. */
     virtual void onSceneNodeCreate(OgrePeer* ogrePeer);
 
     // Modeler part
@@ -306,9 +320,6 @@ protected:
         void log(int level, const char* msg);
     };
     OgreLogger mOgreLogger;
-
-    // Locals
-    void setNodeStatus(String& nodeStatusString);
 
     void cleanUpPeers(bool cleanUpLocalPeers);
 

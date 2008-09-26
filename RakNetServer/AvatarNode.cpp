@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarNode.h"
 #include "Entity.h"
 #include "RakNetServer.h"
+#include <CTLog.h>
 
 using namespace RakNet;
 using namespace CommonTools;

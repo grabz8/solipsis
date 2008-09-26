@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Navigator.h"
 #include <OgreExternalTextureSourceManager.h>
 #include <Navi.h>
+#include <CTSystem.h>
 #include <CTIO.h>
 #include <Plugin_3ds.h>
 #include <Plugin_skp.h>
@@ -756,7 +757,9 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 		std::string fileName = "File not found [";
 		fileName += filename;
 		fileName += "]";
-		MessageBox(NULL,fileName.c_str(),"Information",MB_OK | MB_ICONINFORMATION); 
+        CommonTools::System::setMouseCursorVisibility(true);
+        CommonTools::System::showMessageBox(fileName, "Information", true, false, true, false, false);
+        CommonTools::System::setMouseCursorVisibility(false);
 #else
 		std::cerr << " You have to select an object3D " << std::endl;
 #endif
@@ -849,8 +852,7 @@ bool Modeler::XMLSave(bool all)
         while (obj != 0)
         {
             EntityUID entityUID = obj->getEntityUID();
-            Ogre::String entityUIDstr = Ogre::String(XmlHelpers::convertEntityUIDToHexString(entityUID));
-            Ogre::String fileZipToSave = entityUIDstr + Ogre::String(".sof"); 
+            Ogre::String fileZipToSave = Ogre::String(entityUID) + Ogre::String(".sof"); 
             Ogre::String pathZipToSave = mPath + Ogre::String("\\") + fileZipToSave; 
 		    zz = new MyZipArchive(pathZipToSave.c_str());
 
@@ -1051,7 +1053,9 @@ bool Modeler::XMLSave(bool all)
 	_chdir(mExecPath.c_str());
 
 //#ifdef WIN32
-//	MessageBox(NULL,"Handle File SAVE","Information",MB_OK | MB_ICONINFORMATION); 
+//	CommonTools::System::setMouseCursorVisibility(true);
+//	CommonTools::System::showMessageBox("Handle File SAVE", "Information", true, false, true, false, false);
+//	CommonTools::System::setMouseCursorVisibility(false);
 //#else
 //	std::cerr << " Handle File SAVE " << std::endl;
 //#endif
@@ -1064,7 +1068,7 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 	Ogre::String primType = doc.RootElement()->FirstChildElement("model")->FirstChildElement("primitive")->Attribute("Name");
 	Object3D::Type type = objectStringToType(primType);
 	TiXmlElement *XMLfile = doc.RootElement()->FirstChildElement("properties");
-    EntityUID entityUID = XmlHelpers::convertHexStringToEntityUID(XMLfile->FirstChildElement("objuid")->Attribute("Uid"));
+    EntityUID entityUID = XMLfile->FirstChildElement("objuid")->Attribute("Uid");
 	String name = XMLfile->FirstChildElement("objname")->Attribute("Name");
 
 	switch (type) 

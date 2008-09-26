@@ -28,7 +28,7 @@ namespace Solipsis {
 P2NNullServer* P2NNullServer::ms_singletonPtr = 0;
 
 //-------------------------------------------------------------------------------------
-IP2NServer* IP2NServer::createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, int port, int verbosity, const std::string& extras)
+IP2NServer* IP2NServer::createServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, unsigned short port, int verbosity, const std::string& extras)
 {
     return new P2NNullServer(requestsHandler, host, port, verbosity, extras);
 }
@@ -42,7 +42,7 @@ bool IP2NServer::destroyServer(IP2NServer* server)
 }
 
 //-------------------------------------------------------------------------------------
-P2NNullServer::P2NNullServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, int port, int verbosity, const std::string& extras) :
+P2NNullServer::P2NNullServer(IP2NServerRequestsHandler* requestsHandler, const std::string& host, unsigned short port, int verbosity, const std::string& extras) :
     mRequestsHandler(requestsHandler),
     mHost(host),
     mPort(port),
