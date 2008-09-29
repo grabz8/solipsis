@@ -102,7 +102,7 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
     mRoot->initialise(configManagedByOgre, windowTitle);
 
     OgreHelpers::addResourceLocations();
-    ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+//    ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     // Create any resource listeners (for loading screens)
     createResourceListener();
