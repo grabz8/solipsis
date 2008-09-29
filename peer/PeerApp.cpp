@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
             P2NClient->setLogger(&P2NClientLogger);
             IP2NClient::RetCode retCode;
 
-            XmlLogin xmlLogin("user", "demo");
+            XmlLogin xmlLogin("user", "localhost", 8660, "f00000001");
             std::string xmlParams;
             xmlParams.append("<solipsis>").append(xmlLogin.toXmlString()).append("</solipsis>");
             std::string xmlResp;
