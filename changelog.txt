@@ -674,3 +674,11 @@ RakNetServer -s arg now specify the loaded scene EntityUID
 PeerModuleRakNet default port updated from 8550 to 8880
 
 ---------------------------
+29/09/08
+
+some fixes on last updates for Navigator plugin (Mozilla & IE)
+Navi still not supported so
+- object with Navi mtls are resetted with default_texture
+- no Navi panels so there is 1 automatic login with the fixedNodeId initialized in boot.lua
+
+---------------------------
