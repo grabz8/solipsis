@@ -27,15 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Ogre;
 
-namespace Solipsis {
-
-PhysXPlugin* _PhysXPlugin;
+Solipsis::PhysXPlugin* _PhysXPlugin;
 
 //-----------------------------------------------------------------------
 extern "C" _PeerPhysXPluginExport void dllStartPlugin(void)
 {
     // Create new plugin
-    _PhysXPlugin = new PhysXPlugin();
+    _PhysXPlugin = new Solipsis::PhysXPlugin();
 
     // Register
     Root::getSingleton().installPlugin(_PhysXPlugin);
@@ -50,5 +48,3 @@ extern "C" _PeerPhysXPluginExport void dllStopPlugin(void)
     // Destroy plugin
     delete _PhysXPlugin;
 }
-
-} // namespace Solipsis
