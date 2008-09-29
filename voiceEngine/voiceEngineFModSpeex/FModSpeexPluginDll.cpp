@@ -27,15 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Ogre;
 
-namespace Solipsis {
-
-FModSpeexPlugin* _FModSpeexPlugin;
+Solipsis::FModSpeexPlugin* _FModSpeexPlugin;
 
 //-----------------------------------------------------------------------
 extern "C" _FModSpeexPluginExport void dllStartPlugin(void)
 {
     // Create new plugin
-    _FModSpeexPlugin = new FModSpeexPlugin();
+    _FModSpeexPlugin = new Solipsis::FModSpeexPlugin();
 
     // Register
     Root::getSingleton().installPlugin(_FModSpeexPlugin);
@@ -50,5 +48,3 @@ extern "C" _FModSpeexPluginExport void dllStopPlugin(void)
     // Destroy plugin
     delete _FModSpeexPlugin;
 }
-
-} // namespace Solipsis
