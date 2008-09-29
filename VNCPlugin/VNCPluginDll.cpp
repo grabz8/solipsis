@@ -27,15 +27,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Ogre;
 
-namespace Solipsis {
-
-VNCPlugin* _VNCPlugin;
+Solipsis::VNCPlugin* _VNCPlugin;
 
 //-----------------------------------------------------------------------
 extern "C" _VNCPluginExport void dllStartPlugin(void)
 {
     // Create new plugin
-    _VNCPlugin = new VNCPlugin();
+    _VNCPlugin = new Solipsis::VNCPlugin();
 
     // Register
     Root::getSingleton().installPlugin(_VNCPlugin);
@@ -50,5 +48,3 @@ extern "C" _VNCPluginExport void dllStopPlugin(void)
     // Destroy plugin
     delete _VNCPlugin;
 }
-
-} // namespace Solipsis
