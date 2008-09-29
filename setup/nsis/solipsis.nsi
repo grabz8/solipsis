@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.2"
+!define PRODUCT_VERSION "1.0.3"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -58,18 +58,25 @@ Section "PeerRakNet" SEC02
   SetOutPath "$INSTDIR\peerRakNet"
   File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
   File "resources.cfg"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-p 8550 -v 0"
-  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-p 8550 -v 0"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8880 -v 0"
+  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8880 -v 0"
 SectionEnd
 
 Section "RakNetServer" SEC03
   SetOutPath "$INSTDIR\raknetserver"
   File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
-  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-h localhost -p 8660 -s Deltastation1"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112222"
+  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112222"
 SectionEnd
 
-Section "Media" SEC04
+Section "WorldsServer" SEC04
+  SetOutPath "$INSTDIR\WorldsServer"
+  File /r /x .svn /x *.pdn "..\..\WorldsServer\*.*"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
+  CreateShortCut "$DESKTOP\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
+SectionEnd
+
+Section "Media" SEC05
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
 SectionEnd
@@ -111,17 +118,20 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
+  Delete "$DESKTOP\Solipsis Worlds Server.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk"
   Delete "$DESKTOP\Solipsis RakNet Server.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk"
-  Delete "$DESKTOP\Solipsis PeerSimulator.lnk"
-  Delete "$SMPROGRAMS\Solipsis\Solipsis PeerSimulator.lnk"
+  Delete "$DESKTOP\Solipsis PeerRakNet.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Navigator.lnk"
 
   RMDir "$SMPROGRAMS\Solipsis"
   RMDir /r "$INSTDIR\Media"
+  RMDir /r "$INSTDIR\WorldsServer"
   RMDir /r "$INSTDIR\raknetserver"
-  RMDir /r "$INSTDIR\peerSimulator"
+  RMDir /r "$INSTDIR\peerRakNet"
   RMDir /r "$INSTDIR\navigator"
   RMDir "$INSTDIR"
 
