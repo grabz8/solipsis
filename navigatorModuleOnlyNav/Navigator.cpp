@@ -1054,6 +1054,7 @@ bool Navigator::initialize()
     if (!mNaviSupported)
     {
         // Call connect
+        mNodeId = XmlHelpers::convertAuthentTypeToRepr(ATFixed) + mFixedNodeId;
         return connect();
     }
 

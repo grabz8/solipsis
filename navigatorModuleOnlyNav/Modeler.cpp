@@ -1164,6 +1164,9 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
             if (it == textureExtParamsMap.end())
                 return texture;
             fps = atoi(it->second.c_str());
+            // Navi supported ?
+            if (!Navigator::getSingletonPtr()->isNaviSupported())
+                return TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
             NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + entity->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
