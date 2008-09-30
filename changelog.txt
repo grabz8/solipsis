@@ -682,3 +682,10 @@ Navi still not supported so
 - no Navi panels so there is 1 automatic login with the fixedNodeId initialized in boot.lua
 
 ---------------------------
+30/09/08
+
+Python slow HTTP responses were due to DNS resolving through call to gethostbyaddr()
+into SimpleHTTPRequestHandler::address_string(), now the address_string surcharge disable this lookup
+and speed up response time
+
+---------------------------
