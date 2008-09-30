@@ -145,6 +145,13 @@ class TimeoutHTTPRequestHandler(SimpleHTTPRequestHandler):
         self.request.settimeout(self.timeoutSec)
         SimpleHTTPRequestHandler.setup(self)
 
+    def address_string(self):
+        """Base method return the client address formatted for logging by looking up the full hostname
+        using gethostbyaddr() but some network configs slow down the DNS lookup so this version avoid
+        call to gethostbyaddr()
+        """
+        return self.client_address
+
 
 class WSRequestHandler(TimeoutHTTPRequestHandler):
     """
