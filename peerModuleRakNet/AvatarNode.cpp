@@ -170,9 +170,9 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     ActionType actionType;
     bitStream->Read(actionType);
     EntityUID sourceEntityUid;
-    bitStream->Read(sourceEntityUid);
+    RakNetConnection::DeserializeString(bitStream, sourceEntityUid);
     EntityUID targetEntityUid;
-    bitStream->Read(targetEntityUid);
+    RakNetConnection::DeserializeString(bitStream, targetEntityUid);
     std::string desc;
     RakNetConnection::DeserializeString(bitStream, desc);
 #ifdef POOL
@@ -406,8 +406,8 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         BitStream bitStream;
         bitStream.Write((MessageID)RakNetConnection::ID_ACTION_ON_ENTITY);
         bitStream.Write(xmlAction->getType());
-        bitStream.Write(xmlAction->getSourceEntityUid());
-        bitStream.Write(xmlAction->getTargetEntityUid());
+        RakNetConnection::SerializeString(&bitStream, xmlAction->getSourceEntityUid());
+        RakNetConnection::SerializeString(&bitStream, xmlAction->getTargetEntityUid());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getDesc());
         // Send the action to the server, it will look at source/target to broadcast/send to target(s)
         RakNetConnection::getSingletonPtr()->mRakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, RakNetConnection::getSingletonPtr()->mServerSystemAddress, false);

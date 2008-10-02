@@ -44,6 +44,9 @@ TightVNCTextureSystem::TightVNCTextureSystem(VNCPlugin *plugin)
 {
     mDictionaryName = "vnc";
     mParamDictName = "vnc";
+// GREG BEGIN
+    mPlugInName = "VNC texture source plugin";
+// END BEGIN
     Ogre::ExternalTextureSourceManager::getSingleton().setExternalTextureSource("vnc", this);
 
 // GREG BEGIN

@@ -2,17 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <title>uichat</title>
-        <script type="text/javascript" src="Navi.js"></script>
+        <script type="text/javascript" src="Navi-yui.js"></script>
         <script type="text/javascript">
             function pageLoaded()
             {
                 new NaviData('pageLoaded').send();
-                // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
-                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg'}).send();
-                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg;(17, -108, 96.5)'}).send();
-                // USE (17, -108, 96.5) in the scene Deltastation1
-                // USE (17, -118, 96.5) in the scene Ile
-                // new NaviData('debugCommand').add({cmd:'demoVNC'}).add({params:'localhost:5900'}).send();
             }
             function sendMessage(message)
             {

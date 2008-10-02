@@ -49,7 +49,10 @@ const std::string NavigatorGUI::mNavisNames[] = {
     "uioptions",
     "uiauthentfb",
     "uiauthentws",
+    "uimainmenu",
     "uichat",
+    "uiabout",
+    "uicommands",
     "uictxtavatar",
     "uictxtwww",
     "uictxtvlc",
@@ -175,9 +178,6 @@ void NavigatorGUI::login()
 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
 	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
 	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
-#ifdef UIDEBUG
-        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
-#endif
         mNavisStates[NAVI_LOGIN] = NSCreated;
 	}
 
@@ -192,22 +192,35 @@ void NavigatorGUI::inWorld()
     // Hide previous Navi UI
     hidePreviousNavi();
 
-    if (mNavisStates[NAVI_CHAT] == NSNotCreated)
+    switchLuaNavi(NAVI_MAINMENU);
+    if (mNavisStates[NAVI_MAINMENU] == NSNotCreated)
     {
-        // Create Navi UI chat
+        // Create Navi UI main menu
         // Lua
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_CHAT].c_str()))
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_MAINMENU].c_str()))
         {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::inWorld() Unable to create GUI called %s", mNavisNames[NAVI_CHAT].c_str());
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::inWorld() Unable to create GUI called %s", mNavisNames[NAVI_MAINMENU].c_str());
             return;
         }
 #ifdef UIDEBUG
-        mNaviMgr->getNavi(mNavisNames[NAVI_CHAT])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+        mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
-        mNavisStates[NAVI_CHAT] = NSCreated;
+        mNavisStates[NAVI_MAINMENU] = NSCreated;
     }
     else
-        mNaviMgr->getNavi(mNavisNames[NAVI_CHAT])->show(true);
+        mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::setLoginInfosText(const std::string& infosText)
+{
+    mLoginInfosText = infosText; 
+
+    if (mNavisStates[NAVI_LOGIN] != NSCreated) return;
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+    if (navi == 0) return;
+    navi->evaluateJS("$('infosText').innerHTML = '" + mLoginInfosText + "'");
+    mLoginInfosText.clear();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1293,18 +1306,6 @@ void NavigatorGUI::modelerTabberSave()
 	*/
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::setLoginInfosText(const std::string& infosText)
-{
-    mLoginInfosText = infosText; 
-
-    if (mNavisStates[NAVI_LOGIN] != NSCreated) return;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
-    if (navi == 0) return;
-    navi->evaluateJS("$('infosText').innerHTML = '" + mLoginInfosText + "'");
-    mLoginInfosText.clear();
-}
-
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::switchDebug()
@@ -1597,9 +1598,6 @@ void NavigatorGUI::options(const NaviData& naviData)
 	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::optionsPageLoaded));
 	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::optionsOk));
 	    navi->bind("back", NaviDelegate(this, &NavigatorGUI::optionsBack));
-#ifdef UIDEBUG
-        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
-#endif
         mNavisStates[NAVI_OPTIONS] = NSCreated;
     }
 
@@ -1926,22 +1924,6 @@ void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
     setLoginInfosText("Authenticated");
     // Return to Navi UI login
     login();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::chatPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::chatPageLoaded()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
-
-    // Set current values
-    navi->evaluateJS("$('textChat').value = ''");
-    navi->evaluateJS("$('inputChat').value = ''");
-
-    // Show Navi UI chat
-    if (mNavisStates[NAVI_CHAT] == NSCreated)
-        navi->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -4558,7 +4540,13 @@ void NavigatorGUI::hidePreviousNavi()
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorGUI::hideNavi(const std::string& naviName)
+const std::string& NavigatorGUI::getNaviName(NaviPanel naviPanel)
+{
+    return mNavisNames[naviPanel];
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::setNaviVisibility(const std::string& naviName, bool show)
 {
     // Hide 1 Navi UI
     NaviPanel panel = getNaviPanel(naviName);
@@ -4566,11 +4554,54 @@ bool NavigatorGUI::hideNavi(const std::string& naviName)
     if (mNavisStates[panel] == NSNotCreated) return false;
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(naviName);
     if (navi == 0) return false;
-    navi->hide();
-    if (mCurrentNavi == panel) mCurrentNavi = -1;
-    if (mCurrentCtxtPanel == panel) mCurrentCtxtPanel = -1;
-    if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
+    if (show)
+    {
+        if (navi->getVisibility()) return true;
+        navi->show(true);
+        mCurrentNavi = panel;
+    }
+    else
+    {
+        if (!navi->getVisibility()) return true;
+        navi->hide(true);
+        if (mCurrentNavi == panel) mCurrentNavi = -1;
+        if (mCurrentCtxtPanel == panel) mCurrentCtxtPanel = -1;
+        if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
+    }
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
+{
+    if (mNavisStates[naviPanel] == NSNotCreated)
+    {
+        // Create Navi panel
+        // Lua
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[naviPanel].c_str()))
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mNavisNames[naviPanel].c_str());
+            return;
+        }
+        mNavisStates[naviPanel] = NSCreated;
+    }
+    else
+    {
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+        if (!navi->getVisibility())
+            navi->show(true);
+        else
+        {
+            if (!createDestroy)
+                navi->hide(true);
+            else
+            {
+                mNaviMgr->destroyNavi(navi);
+                mNavisStates[naviPanel] = NSNotCreated;
+                mCurrentCtxtPanel = -1;
+            }
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------

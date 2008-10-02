@@ -367,6 +367,16 @@ LuaGlue(_naviSetPosition)
 	return 0;
 }
 
+LuaGlue(_naviSetIgnoreBounds)
+{
+	int argNum = 1;
+	const char *pName = luaL_checkstring(L, argNum++);
+	bool bIgnoringBounds = lua_toboolean(L, argNum++) != 0;
+
+	NaviLibrary::NaviManager::Get().getNavi(pName)->setIgnoreBounds(bIgnoringBounds);
+	return 0;
+}
+
 LuaGlue(_naviSetIgnoreTransparent)
 {
 	int argNum = 1;
@@ -621,6 +631,7 @@ luaDef NaviGlue[] =
 	{"naviNavigateForward",			_naviNavigateForward},
 	{"naviNavigateStop",			_naviNavigateStop},
 	{"naviSetBackgroundColor",		_naviSetBackgroundColor},
+	{"naviSetIgnoreBounds",			_naviSetIgnoreBounds},
 	{"naviSetIgnoreTransparent",	_naviSetIgnoreTransparent},
 	{"naviMgrIsAnyNaviFocused",		_naviMgrIsAnyNaviFocused},
 	{"naviMgrGetFocusedNaviName",	_naviMgrGetFocusedNaviName},

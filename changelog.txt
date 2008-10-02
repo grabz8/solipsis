@@ -608,6 +608,9 @@ NSIS setup improved (webpage visit with icon, vista start shortcuts not deleted 
 media/cache files saved into the setup)
 
 ---------------------------
+RELEASE 1.0.0
+
+---------------------------
 28/07/08
 
 RakNet integration : on login, owned entities list no more sent (the owner attribute is compared to the nodeId returned on login)
@@ -621,6 +624,9 @@ Avatar network interpolation
  mvt smoothing improved (20 updates/sec between P&N and P&RakNet server)
  animation state passed on the network
  orientation now smoothed
+
+---------------------------
+RELEASE 1.0.1
 
 ---------------------------
 01/09/08
@@ -660,6 +666,9 @@ Scene loading moved into Scene class
 OutputDebugString support added
 
 ---------------------------
+RELEASE 1.0.2
+
+---------------------------
 26/09/08
 
 WorldsServer added with port 8550
@@ -682,10 +691,23 @@ Navi still not supported so
 - no Navi panels so there is 1 automatic login with the fixedNodeId initialized in boot.lua
 
 ---------------------------
+RELEASE 1.0.3
+
+---------------------------
 30/09/08
 
 Python slow HTTP responses were due to DNS resolving through call to gethostbyaddr()
 into SimpleHTTPRequestHandler::address_string(), now the address_string surcharge disable this lookup
 and speed up response time
+
+---------------------------
+02/10/08
+
+chat bugs fixed:
+- bad deserialization of entityUID caused Peer crash
+- special characters (ie not ASCII) are now converted from string to wstring before assigning to MovableText
+- text is now centered + Z onTop + appears during 10sec with fading
+Navi.js compressed with YUIcompressor to optimize datas size of web pages served by the WorldsServer
+main menu bar, about, commands panels added
 
 ---------------------------

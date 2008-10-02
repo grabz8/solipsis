@@ -36,8 +36,9 @@ Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, bind),
     LunarMethod(NavigatorLua, setNameValueVariable),
     LunarMethod(NavigatorLua, getRenderWinMetrics),
-    LunarMethod(NavigatorLua, sendMessage),
+    LunarMethod(NavigatorLua, mainMenuClick),
     LunarMethod(NavigatorLua, contextItemSelected),
+    LunarMethod(NavigatorLua, sendMessage),
     LunarMethod(NavigatorLua, hideNavi),
     LunarMethod(NavigatorLua, extTextSrcExHandleEvt),
     {0, 0}
@@ -102,6 +103,20 @@ int NavigatorLua::getRenderWinMetrics(lua_State* luaState)
 }
 
 //-------------------------------------------------------------------------------------
+int NavigatorLua::mainMenuClick(lua_State* luaState)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::mainMenuClick()");
+
+    // Get item selected
+    std::string item = luaL_checkstring(luaState, 1);
+    // Perform action
+    int rc = mNavigator->mainMenuClick(String(item));
+
+    lua_pushboolean(luaState, rc);
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------
 int NavigatorLua::sendMessage(lua_State* luaState)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::sendMessage()");
@@ -137,7 +152,7 @@ int NavigatorLua::hideNavi(lua_State* luaState)
     // Get navi name
     std::string naviName = luaL_checkstring(luaState, 1);
     // Perform action
-    int rc = mNavigator->getNavigatorGUI()->hideNavi(naviName);
+    int rc = mNavigator->getNavigatorGUI()->setNaviVisibility(naviName, false);
 
     lua_pushboolean(luaState, rc);
     return 1;

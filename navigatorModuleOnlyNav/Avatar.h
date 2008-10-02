@@ -76,6 +76,8 @@ protected:
     MovableText* mNameLabel;
 	/// Chat label
     MovableText* mChatLabel;
+	/// Chat label alpha timer
+    Real mChatLabelAlphaTimer;
     /// Selection object
     ManualObject* mSelectionObject;
     /// Whether to apply the gravity

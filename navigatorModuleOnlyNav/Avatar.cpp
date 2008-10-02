@@ -168,8 +168,10 @@ void Avatar::onSceneNodeChanged()
         mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false);
         mNameLabel->setScale(0.1f);
         mNameLabel->setCharacterHeight(1);
+		mNameLabel->setSpaceWidth(1);
         mNameLabel->setColor(ColourValue::White);
-        mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
+        mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+        mNameLabel->showOnTop(true);
     }
     mNameLabel->setAdditionalHeight(avatarSize.y);
     getSceneNode()->attachObject(mNameLabel);
@@ -178,13 +180,15 @@ void Avatar::onSceneNodeChanged()
     if (mChatLabel == 0)
     {
         mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false);
-        mChatLabel->setScale(0.15f);
+        mChatLabel->setScale(0.12f);
         mChatLabel->setCharacterHeight(1);
 		mChatLabel->setSpaceWidth(1);
-        mChatLabel->setColor(ColourValue(.8,1,.8,1));
-        mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE); // Center horizontally and display above the node
+        mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, 0.0f));
+        mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+        mChatLabel->showOnTop(true);
+        mChatLabelAlphaTimer = 0.0f;
     }
-	mChatLabel->setAdditionalHeight(avatarSize.y + .2);
+	mChatLabel->setAdditionalHeight(avatarSize.y + 0.2f);
 	getSceneNode()->attachObject(mChatLabel);
 
     // Picking
@@ -373,6 +377,20 @@ bool Avatar::isGravityEnabled()
 void Avatar::update(Real timeSinceLastFrame)
 {
     animate(timeSinceLastFrame);
+
+    if (mChatLabelAlphaTimer > 0.0f)
+    {
+        float smoothAngle = -1.0f;
+        if (mChatLabelAlphaTimer <= 1.0f)
+            smoothAngle = (1.0f - mChatLabelAlphaTimer)*Math::HALF_PI;
+        else if (mChatLabelAlphaTimer >= 9.0f)
+            smoothAngle = (mChatLabelAlphaTimer - 9.0f)*Math::HALF_PI;
+        if (smoothAngle > 0.0f)
+            mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
+        mChatLabelAlphaTimer -= timeSinceLastFrame;
+        if (mChatLabelAlphaTimer < 0.0f)
+            mChatLabelAlphaTimer = 0.0f;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -445,7 +463,14 @@ bool Avatar::action(XmlAction* xmlAction)
 {
 	String label = xmlAction->getDesc();
 	if( label.size() < 1 ) label = " ";
-	mChatLabel->setCaption( label );
+    // Add CR every 30 chars
+    for (int nl = 0; nl < (int)label.size()/30; ++nl)
+        label.insert((nl + 1)*30, "\x0D");
+    // Convert to UTF
+    std::wstring wlabel;
+    wlabel.assign(label.begin(), label.end());
+	mChatLabel->setCaption(wlabel);
+    mChatLabelAlphaTimer = 10.0f;
 
     return true;
 }

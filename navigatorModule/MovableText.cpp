@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <OgreFontManager.h>
 #include <OgrePrerequisites.h>
+#include <OgreTimer.h>
 
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
@@ -47,7 +48,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 MovableText::MovableText(const Ogre::String & name, const Ogre::UTFString & caption, bool applyParentScale,
                          const Ogre::String & fontName, int charHeight, const Ogre::ColourValue & color)
 : mpCam(NULL)
-, mpWin(NULL)
 , mpFont(NULL)
 , mName(name)
 , mCaption(caption)
@@ -55,8 +55,6 @@ MovableText::MovableText(const Ogre::String & name, const Ogre::UTFString & capt
 , mFontName(fontName)
 , mCharHeight(charHeight)
 , mColor(color)
-, mType("MovableText")
-, mTimeUntilNextToggle(0)
 , mSpaceWidth(0)
 , mUpdateColors(true)
 , mOnTop(false)
@@ -255,9 +253,11 @@ void MovableText::_setupGeometry()
     size_t charlen = mCaption.size();
     float *pVert = static_cast<float*>(ptbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
-    float largestWidth = 0;
-    float left = 0 * 2.0 - 1.0;
-    float top = -((0 * 2.0) - 1.0);
+    float *pVertBuf = pVert;
+    float left = -1.0;
+    float top = 1.0;
+    float captionLeft = left;
+    float captionWidth = 0;
 
     // Derive space width from a capital A
     if (mSpaceWidth == 0)
@@ -280,7 +280,9 @@ void MovableText::_setupGeometry()
         top += mCharHeight;
         for (i = mCaption.begin(); i != iend; ++i)
         {
-            if (*i == '\n')
+            Ogre::Font::CodePoint character = i.getCharacter();
+            if (character == 0x000D // CR
+                || character == 0x0085) // NL
                 top += mCharHeight * 2.0;
         }
     }
@@ -296,7 +298,7 @@ void MovableText::_setupGeometry()
                 {
                     Ogre::Font::CodePoint character = j.getCharacter();
                     if (character == 0x000D // CR
-                        || character == 0x0085) // NEL
+                        || character == 0x0085) // NL
                     {
                         break;
                     }
@@ -310,19 +312,14 @@ void MovableText::_setupGeometry()
                     }
                 }
 
-                /*if( mAlignment == Right )
-                    left -= len;
-                else if( mAlignment == Center )
-                    left -= len * 0.5;*/
-
                 newLine = false;
             }
 
             Ogre::Font::CodePoint character = i.getCharacter();
             if (character == 0x000D // CR
-                || character == 0x0085) // NEL
+                || character == 0x0085) // NL
             {
-                left = /*_getDerivedLeft() * 2.0*/ - 1.0;
+                left = captionLeft;
                 top -= mCharHeight * 2.0;
                 newLine = true;
                 // Also reduce tri count
@@ -333,6 +330,7 @@ void MovableText::_setupGeometry()
             {
                 // Just leave a gap, no tris
                 left += mSpaceWidth;
+                captionWidth = (left - captionLeft > captionWidth) ? left - captionLeft : captionWidth;
                 // Also reduce tri count
                 mRenderOp.vertexData->vertexCount -= 6;
                 continue;
@@ -405,12 +403,18 @@ void MovableText::_setupGeometry()
             // Go back up with top
             top += mCharHeight * 2.0;
 
-            float currentWidth = (left + 1)/2 /*- _getDerivedLeft()*/;
-            if (currentWidth > largestWidth)
-            {
-                largestWidth = currentWidth;
-
-            }
+            captionWidth = (left - captionLeft > captionWidth) ? left - captionLeft : captionWidth;
+        }
+        if (mHorizontalAlignment == H_CENTER)
+        {
+            pVert = pVertBuf;
+            float leftShift = captionWidth*0.5f;
+            for (i = mCaption.begin(); i != iend; ++i)
+                for (int v = 0; v < 6; ++v)
+                {
+                    *pVert -= leftShift;
+                    pVert += 5;
+                }
         }
     #else
         for (i = mCaption.begin(); i != iend; ++i)

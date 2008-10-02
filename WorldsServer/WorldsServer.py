@@ -38,7 +38,7 @@ class UsersManager:
 
     # specific base64 alphabet to ensure result can be used as filename
     # the / character of original base64 alphabet was replaced by the - character
-    sbase64alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-"
+    sbase64alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-'
     sbase64revalphabet = {}
     i = 0
     for c in sbase64alphabet:
@@ -165,7 +165,11 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
         if t[len(t) - 1] in ['html', 'png', 'js']:
             if o.path == '/uiauthentws.html':
                 query = parse_qs(o.query)
-                login = query["login"][0]
+                if not 'login' in query:
+                    # login param is missing !
+                    self.send_error(404, 'Malformed url ...')
+                    return
+                login = query['login'][0]
                 nodeId = usersManager.authenticate(login)
                 loginHtmlFile = open('uiauthentws.html', 'r')
                 loginHtmlFileContent = loginHtmlFile.read()
@@ -177,7 +181,7 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                 SimpleHTTPRequestHandler.do_GET(self)
         else:
             # url not supported !
-            self.send_error(404)
+            self.send_error(404, 'Malformed url ...')
 
 
 class ThreadedHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):

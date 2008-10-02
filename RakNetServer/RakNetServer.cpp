@@ -199,9 +199,9 @@ void RakNetServer::run()
                     ActionType actionType;
                     bitStream.Read(actionType);
                     EntityUID sourceEntityUid;
-                    bitStream.Read(sourceEntityUid);
+                    RakNetConnection::DeserializeString(&bitStream, sourceEntityUid);
                     EntityUID targetEntityUid;
-                    bitStream.Read(targetEntityUid);
+                    RakNetConnection::DeserializeString(&bitStream, targetEntityUid);
                     std::string desc;
                     RakNetConnection::DeserializeString(&bitStream, desc);
                     if (sourceEntityUid == targetEntityUid)

@@ -223,8 +223,9 @@ public:
 
     bool quit();
     bool connect();
-    bool sendMessage(const String& message);
+    bool mainMenuClick(const String& item);
     bool contextItemSelected(const String& item);
+    bool sendMessage(const String& message);
 
     // process events received by node
     void processEvents();

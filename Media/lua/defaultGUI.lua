@@ -21,17 +21,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 
+-- uimainmenu listener
+function uimainmenuListener(eventType, naviName, naviDataName, param)
+	if eventType == "Data" then
+		if naviDataName == "pageLoaded" then
+			naviShow(naviName)
+		elseif naviDataName == "menuClick" then
+			navigator:mainMenuClick(param["item"])
+		end
+	end
+end
+
 -- uichat listener
 function uichatListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
 		if naviDataName == "pageLoaded" then
 			naviShow(naviName)
-		end
-		if naviDataName == "sendMessage" then
+		elseif naviDataName == "sendMessage" then
 			-- Reset input
 			naviEvaluateJS(naviName, "$('inputChat').value = ''")
 			-- Send the message
 			navigator:sendMessage(param["msg"])
+		end
+	end
+end
+
+-- uicommands listener
+function uicommandsListener(eventType, naviName, naviDataName, param)
+	if eventType == "Data" then
+		if naviDataName == "pageLoaded" then
+			naviShow(naviName)
 		end
 	end
 end
@@ -41,8 +60,7 @@ function uictxtavatarListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
 		if naviDataName == "pageLoaded" then
 			naviShow(naviName)
-		end
-		if naviDataName == "contextItemSelected" then
+		elseif naviDataName == "contextItemSelected" then
 			-- Perform action associated to item selected
 			logMessage("contextItemSelected")
 			navigator:contextItemSelected(param["item"])
@@ -132,11 +150,28 @@ end
 function NavigatorLua:createGUI(guiName, ...)
 	logMessage(string.format("NavigatorLua:createGUI(%s)", guiName))
 
-	if guiName == "uichat" then
+	if guiName == "uimainmenu" then
+		-- Create Navi UI main menu
+		naviMgrCreateNavi("uimainmenu", "local://uimainmenu.html", "TopLeft", 0, 0, 512, 16, false, false)
+		naviSetIgnoreBounds("uimainmenu", true)
+		naviAddEventListener("uimainmenu", "uimainmenuListener")
+		return true
+	elseif guiName == "uichat" then
 		-- Create Navi UI chat
-		naviMgrCreateNavi("uichat", "local://uichat.html", "TopLeft", 0, 0, 512, 128, true, false)
+		naviMgrCreateNavi("uichat", "local://uichat.html", "BottomLeft", 0, 0, 512, 128, true, false)
 		naviSetOpacity("uichat", 0.75)
 		naviAddEventListener("uichat", "uichatListener")
+		return true
+	elseif guiName == "uiabout" then
+		-- Create Navi UI about
+		naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, 512, 256, true, true)
+		naviSetOpacity("uiabout", 0.75)
+		return true
+	elseif guiName == "uicommands" then
+		-- Create Navi UI commands
+		naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
+		naviSetOpacity("uicommands", 0.75)
+		naviAddEventListener("uicommands", "uicommandsListener")
 		return true
 	elseif guiName == "uictxtavatar" then
 		-- Create Navi UI context about avatar

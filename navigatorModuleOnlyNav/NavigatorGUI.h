@@ -52,7 +52,10 @@ public:
         NAVI_OPTIONS,
         NAVI_AUTHENTFB,
         NAVI_AUTHENTWS,
+        NAVI_MAINMENU,
         NAVI_CHAT,
+        NAVI_ABOUT,
+        NAVI_COMMANDS,
         NAVI_CTXTAVATAR,
         NAVI_CTXTWWW,
         NAVI_CTXTVLC,
@@ -98,6 +101,15 @@ public:
     void login();
     void inWorld();
 
+    // Informations text below login panel
+    void setLoginInfosText(const std::string& infosText);
+
+    // Main menu panel
+    void mainmenuSwitch();
+
+    // Chat panel
+    void addChatText(const String& message);
+
     // Contextual panel
     void contextShow(int x, int y, NaviPanel ctxtPanel, const String& params);
     bool isContextVisible();
@@ -127,15 +139,11 @@ public:
     void avatarPropHide();
     void avatarPropUnload();
 
-    void setLoginInfosText(const std::string& infosText);
-
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
     void debugRefreshUrl();
 #endif
-
-    void addChatText(const String& message);
 
 protected:
     // Handlers
@@ -172,8 +180,6 @@ protected:
 
     void authentWorldsServer();
     void authentWorldsServerOk(const NaviData& naviData);
-
-    void chatPageLoaded(const NaviData& naviData);
 
     // Modeler page callbacks
     void modelerMainFileOpen(const NaviData& naviData);
@@ -337,6 +343,7 @@ public:
 	// Avatar properties updates
 	void avatarTabberLoad(unsigned pTab);
     void avatarTabberSave();
+
 protected:
     // Update the command -> backup if the command is different from the last used
     void modelerUpdateCommand(Object3D::Command pCommand, Object3D* pObject);
@@ -371,7 +378,9 @@ protected:
     void hidePreviousNavi();
 
 public:
-    bool hideNavi(const std::string& naviName);
+    const std::string& getNaviName(NaviPanel naviPanel);
+    bool setNaviVisibility(const std::string& naviName, bool show);
+    void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
 };
 
 } // namespace Solipsis

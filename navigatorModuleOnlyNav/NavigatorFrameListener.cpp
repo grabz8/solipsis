@@ -117,6 +117,15 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         }
     }
 
+    // hide chat panel ?
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    {
+        NaviLibrary::Navi* navi = NaviManager::Get().getFocusedNavi();
+        if (!navi->isMaterialOnly())
+            if ((evt.mKey == KC_F7) && (navi->getName() == navigatorGUI->getNaviName(NavigatorGUI::NAVI_CHAT)))
+                navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+    }
+
 	// is modeling ?
     if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
     {
@@ -288,6 +297,10 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         break;
     case KC_F6:
         mNavigator->fakeSurroundingArea(0);
+        break;
+
+    case KC_F7:
+        navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
         break;
 
     case KC_F8:
@@ -858,8 +871,12 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
+    {
         //navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
         navigatorGUI->SetMouseVisibility(mode != CM1stPerson && mode != CMAroundPerson);
+        navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson && mode != CMAroundPerson);
+        NaviManager::Get().deFocusAllNavis();
+    }
 // GILLES end
     mCameraMode = mode;
 }

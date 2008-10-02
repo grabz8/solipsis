@@ -308,7 +308,8 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
     if (varName == "FixedNodeId")
     {
         mFixedNodeId = varValue;
-        mAuthentType = ATFixed;
+        if (!mFixedNodeId.empty())
+            mAuthentType = ATFixed;
         return true;
     }
     if (varName == "FacebookApiKey")
@@ -1236,6 +1237,68 @@ bool Navigator::connect()
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::mainMenuClick(const String& item)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::mainMenuClick() item=%s", item.c_str());
+
+    if (mNavigatorGUI == 0) return true;
+
+    mNavigatorGUI->contextHide();
+
+    // Perform action associated to item selected
+    // Submenu File
+    if (item == "Exit")
+        quit();
+    // Submenu View
+    else if (item == "1stPerson")
+        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM1stPerson);
+    else if (item == "1stPersonMouse")
+        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM1stPersonWithMouse);
+    else if (item == "3rdPerson")
+        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);
+    else if (item == "Orbit")
+        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CMAroundPerson);
+    // Submenu Panels
+    else if (item == "Chat")
+        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+    else if (item == "Avatar")
+    {
+        if (mState == SInWorld)
+            mNavigatorGUI->avatarMainShow();
+        else if (mState == SAvatarEdit)
+            mNavigatorGUI->avatarMainUnload();
+    }
+    else if (item == "Modeler")
+    {
+        if (mState == SInWorld)
+            mNavigatorGUI->modelerMainShow();
+        else if (mState == SModeling)
+            mNavigatorGUI->modelerMainUnload();
+    }
+    // Submenu Help
+    else if (item == "About")
+        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_ABOUT, true);
+    else if (item == "Commands")
+        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_COMMANDS, true);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::contextItemSelected(const String& item)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::contextItemSelected() item=%s", item.c_str());
+
+    if (mNavigatorGUI == 0) return true;
+
+    mNavigatorGUI->contextHide();
+
+    // Perform action associated to item selected
+    // TODO
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::sendMessage(const String& message)
 {
     if (mXmlRpcClient == 0)
@@ -1261,21 +1324,6 @@ bool Navigator::sendMessage(const String& message)
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 #endif
-}
-
-//-------------------------------------------------------------------------------------
-bool Navigator::contextItemSelected(const String& item)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::contextItemSelected()");
-
-    if (mNavigatorGUI == 0) return true;
-
-    mNavigatorGUI->contextHide();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::contextItemSelected() item=%s", item.c_str());
-
-    // Perform action associated to item selected
-    // TODO
-    return true;
 }
 
 //-------------------------------------------------------------------------------------

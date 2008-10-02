@@ -44,16 +44,15 @@ public:
 
 protected:
     Ogre::String            mFontName;
-    Ogre::String            mType;
     Ogre::String            mName;
-    Ogre::UTFString            mCaption;
-    HorizontalAlignment        mHorizontalAlignment;
-    VerticalAlignment        mVerticalAlignment;
+    Ogre::UTFString         mCaption;
+    HorizontalAlignment     mHorizontalAlignment;
+    VerticalAlignment       mVerticalAlignment;
 
-    Ogre::ColourValue        mColor;
-    Ogre::RenderOperation    mRenderOp;
+    Ogre::ColourValue       mColor;
+    Ogre::RenderOperation   mRenderOp;
     Ogre::AxisAlignedBox    mAABB;
-    Ogre::LightList            mLList;
+    Ogre::LightList         mLList;
 
     unsigned int            mCharHeight;
     unsigned int            mSpaceWidth;
@@ -62,18 +61,15 @@ protected:
     bool                    mUpdateColors;
     bool                    mOnTop;
 
-    float                    mTimeUntilNextToggle;
-    float                    mRadius;
-    float                    mAdditionalHeight;
+    float                   mRadius;
+    float                   mAdditionalHeight;
 
-    Ogre::Camera          * mpCam;
-    Ogre::RenderWindow      * mpWin;
-    Ogre::Font              * mpFont;
-    Ogre::MaterialPtr        mpMaterial;
-    Ogre::MaterialPtr        mpBackgroundMaterial;
+    Ogre::Camera            *mpCam;
+    Ogre::Font              *mpFont;
+    Ogre::MaterialPtr       mpMaterial;
 
-    bool                     mApplyParentScale;
-    float                    mScale;
+    bool                    mApplyParentScale;
+    float                   mScale;
 
     /******************************** public methods ******************************/
 public:
@@ -97,11 +93,11 @@ public:
     // Get settings
     const   Ogre::String        & getFontName() const {return mFontName;}
     const   Ogre::UTFString     & getCaption() const {return mCaption;}
-    const   Ogre::ColourValue    & getColor() const {return mColor;}
+    const   Ogre::ColourValue   & getColor() const {return mColor;}
     
     unsigned int                getCharacterHeight() const {return mCharHeight;}
     unsigned int                getSpaceWidth() const {return mSpaceWidth;}
-    float                        getAdditionalHeight() const {return mAdditionalHeight;}
+    float                       getAdditionalHeight() const {return mAdditionalHeight;}
     bool                        getShowOnTop() const {return mOnTop;}
     Ogre::AxisAlignedBox        GetAABB(void) { return mAABB; }
 

@@ -290,6 +290,14 @@ bool NaviManager::injectMouseMove(int xPos, int yPos)
 					if(!(iter->second->isPointOverMe(xPos, yPos) && iter->second->panel->getZOrder() < top->panel->getZOrder()))
 						iter->second->injectMouseMove(iter->second->getRelativeX(xPos), iter->second->getRelativeY(yPos));
 		}
+// BEGIN GREG
+        else
+        {
+			for(iter = activeNavis.begin(); iter != activeNavis.end(); ++iter)
+				if(iter->second->ignoringBounds)
+					iter->second->injectMouseMove(iter->second->getRelativeX(xPos), iter->second->getRelativeY(yPos));
+        }
+// END GREG
 	}
 
 	mouseXPos = xPos;
