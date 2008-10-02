@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uimainmenu</title>
+        <script type="text/javascript" src="Navi-yui.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                $ND('pageLoaded').add({naviName:'uimainmenu'}).send();
+                menuClick('Main');
+                // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
+                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg'}).send();
+                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg;(17, -108, 96.5)'}).send();
+                // USE (17, -108, 96.5) in the scene Deltastation1
+                // USE (17, -118, 96.5) in the scene Ile
+                // new NaviData('debugCommand').add({cmd:'demoVNC'}).add({params:'localhost:5900'}).send();
+            }
+            function menuClick(menu)
+            {
+                mainmenuText = document.getElementById('mainmenuText');
+                if (menu == 'Main')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="fileMenu" class="menuText" onclick="menuClick(\'File\')">File</div>';
+                    mainmenuText.innerHTML += '<div id="viewMenu" class="menuText" onclick="menuClick(\'View\')">View</div>';
+                    mainmenuText.innerHTML += '<div id="panelsMenu" class="menuText" onclick="menuClick(\'Panels\')">Panels</div>';
+                    mainmenuText.innerHTML += '<div id="helpMenu" class="menuText" onclick="menuClick(\'Help\')">Help</div>';
+                }
+                else if (menu == 'File')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">File > </div>';
+                    mainmenuText.innerHTML += '<div id="exitMenu" class="menuText" onclick="menuClick(\'Exit\')">Exit</div>';
+                }
+                else if (menu == 'View')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">View > </div>';
+                    mainmenuText.innerHTML += '<div id="1stPersonMenu" class="menuText" onclick="menuClick(\'1stPerson\')">1stPerson</div>';
+                    mainmenuText.innerHTML += '<div id="1stPersonMouseMenu" class="menuText" onclick="menuClick(\'1stPersonMouse\')">1stPersonMouse</div>';
+                    mainmenuText.innerHTML += '<div id="3rdPersonMenu" class="menuText" onclick="menuClick(\'3rdPerson\')">3rdPerson</div>';
+                    mainmenuText.innerHTML += '<div id="OrbitMenu" class="menuText" onclick="menuClick(\'Orbit\')">Orbit</div>';
+                }
+                else if (menu == 'Panels')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">Panels > </div>';
+                    mainmenuText.innerHTML += '<div id="chatMenu" class="menuText" onclick="menuClick(\'Chat\')">Chat</div>';
+                    mainmenuText.innerHTML += '<div id="avatarMenu" class="menuText" onclick="menuClick(\'Avatar\')">Avatar</div>';
+                    mainmenuText.innerHTML += '<div id="modelerMenu" class="menuText" onclick="menuClick(\'Modeler\')">Modeler</div>';
+                }
+                else if (menu == 'Help')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">Help > </div>';
+                    mainmenuText.innerHTML += '<div id="aboutMenu" class="menuText" onclick="menuClick(\'About\')">About</div>';
+                    mainmenuText.innerHTML += '<div id="commandsMenu" class="menuText" onclick="menuClick(\'Commands\')">Commands</div>';
+                }
+                else
+                    $ND('menuClick').add({item:menu}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #FFFFFF;
+	            color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: 75%;
+            }
+            #container
+            {
+	            position: absolute;
+	            left: 1px;
+	            top: 1px;
+	            width: 512px;
+	            height: 16px;
+            }
+            #mainmenuText
+            {
+	            position: relative;
+            }
+            .menuText
+            {
+                background-color: #FFFFFF;
+                display : inline;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            .menuText:hover
+            {
+                background-color: #5959FF;
+            }
+        </style>
+    </head>
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="mainmenuText">
+            </div>
+        </div>
+    </body>
+</html>
