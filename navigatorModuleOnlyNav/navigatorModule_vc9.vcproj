@@ -693,6 +693,30 @@
 				RelativePath="..\Media\NaviLocal\uioptions.html"
 				>
 			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uicommands.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uimainmenu.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uiauthentfb.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtavatar.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtwww.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtvlc.html"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
