@@ -3,8 +3,6 @@
   only binary datas files are zipped into .s*f like textures, mesh, skeleton, shaders, ...
 
 [MdlrTools]
-- Manage FrameListener to be able to pick axes for moving 
-- Manage drag'n drop
 - Manage a full undo function
 - Rebuild correctly primitive's normals and UV maps coords when applying a transformation	
 
