@@ -61,6 +61,7 @@ ESC              Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...
 
 Debug commands:
 F1 .. F4 SkyDome choice
+F7       Toggle CHAT panel
 F8       Toggle AVATAR main panel
 F9       Toggle MODELER main panel
 F10      Toggle physics contacts display (if supported by the physics plugin) (NavDemo only)
