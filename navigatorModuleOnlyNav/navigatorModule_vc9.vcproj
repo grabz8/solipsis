@@ -128,7 +128,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -658,6 +658,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Media\NaviLocal\uiauthentfb.html"
+				>
+			</File>
+			<File
 				RelativePath="..\Media\NaviLocal\uiavatarmain.html"
 				>
 			</File>
@@ -670,7 +674,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Media\NaviLocal\uicommands.html"
+				>
+			</File>
+			<File
 				RelativePath="..\Media\NaviLocal\uicontext.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtavatar.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtvlc.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtwww.html"
 				>
 			</File>
 			<File
@@ -679,6 +699,10 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uilogin.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uimainmenu.html"
 				>
 			</File>
 			<File
@@ -691,30 +715,6 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uioptions.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uicommands.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uimainmenu.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uiauthentfb.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtavatar.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtwww.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtvlc.html"
 				>
 			</File>
 		</Filter>

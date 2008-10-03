@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="curllib"
 	ProjectGUID="{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
 	RootNamespace="curllib"
@@ -62,7 +62,7 @@
 				BrowseInformation="1"
 				WarningLevel="0"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
