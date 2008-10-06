@@ -799,7 +799,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
 							break;
 						}
 					}
-
+					// Object3D
                     else if (it->movable->getQueryFlags() & QFObject)
                     {
                         if( mModeler && !mModeler->isSelectionLocked() )

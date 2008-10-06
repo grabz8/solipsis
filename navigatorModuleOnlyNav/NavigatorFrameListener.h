@@ -50,6 +50,7 @@ protected:
     CameraMode mSavedCameraMode;
     int mEscapeHitsB4CancellingFocus;
     unsigned long mLastEscapeHitTimer;
+	bool mMouseMiddlePressed;
 
 public:
     NavigatorFrameListener(Navigator* navigator);

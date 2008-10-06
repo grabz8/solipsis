@@ -217,6 +217,7 @@ void Avatar::onSceneNodeChanged()
         SceneNode* thirdPersonCamNode = 0;
         SceneNode* turnAroundPersonCamNode = 0;
         SceneNode* turnAroundPersonCamPitchNode = 0;
+		SceneNode* turnAroundPersonCamDistNode = 0;
         if (mCamerasSceneNode == 0)
         {
             // Create camera node/pitch nodes
@@ -232,12 +233,12 @@ void Avatar::onSceneNodeChanged()
             thirdPersonCamNode->yaw(Radian(-Math::HALF_PI));
             pitchCamNode = thirdPersonCamNode->createChildSceneNode("ThirdPersonCamPitchNode");
 
-        // GILLES begin
 	        // Create the Fourth camera node/pitch node
             turnAroundPersonCamNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = turnAroundPersonCamNode->createChildSceneNode("TurnAroundPersonCamPitchNode");
-            //pitchCamNode->yaw(Radian(Math::PI));
-        // GILLES end
+			turnAroundPersonCamDistNode = turnAroundPersonCamPitchNode->createChildSceneNode("TurnAroundPersonCamDistNode");
+			turnAroundPersonCamDistNode->yaw(Radian(Math::HALF_PI));
+			turnAroundPersonCamPitchNode->roll(Degree(25.));
         }
         else
         {
@@ -245,6 +246,7 @@ void Avatar::onSceneNodeChanged()
             thirdPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("ThirdPersonCamNode");
             turnAroundPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = (SceneNode*)turnAroundPersonCamNode->getChild("TurnAroundPersonCamPitchNode");
+			turnAroundPersonCamDistNode = (SceneNode*)turnAroundPersonCamPitchNode->getChild("TurnAroundPersonCamDistNode");
             getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
         }
 
@@ -252,8 +254,7 @@ void Avatar::onSceneNodeChanged()
         mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
         firstPersonCamNode->setPosition(Vector3(0, 0.95, 0)*avatarSize);
         thirdPersonCamNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize.y);
-        turnAroundPersonCamNode->setPosition(Vector3(0, 1.1, 0)*avatarSize);
-        turnAroundPersonCamPitchNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize);
+		turnAroundPersonCamDistNode->setPosition(Vector3(4, 0.5, 0)*avatarSize.y);
     }
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
