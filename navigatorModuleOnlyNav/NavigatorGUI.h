@@ -213,6 +213,7 @@ protected:
 
     // Modeler properties page callbacks
     void modelerPropPageLoaded(const NaviData& naviData);
+    void modelerPropPageClosed(const NaviData& naviData);
     // Modeler properties callbacks
     void modelerPropObjectName(const NaviData& naviData);
     void modelerPropCreator(const NaviData& naviData);
@@ -289,6 +290,7 @@ protected:
 	void avatarMainSelected(const NaviData& naviData);
     // Avatar properties page callbacks
     void avatarPropPageLoaded(const NaviData& naviData);
+    void avatarPropPageClosed(const NaviData& naviData);
 	// Avatar animation page callbaks
 	void avatarPropAnimPlayPause(const NaviData& naviData);
 	void avatarPropAnimStop(const NaviData& naviData);
@@ -369,6 +371,7 @@ protected:
     void debugCommand(const NaviData& naviData);
     void navCommand(const NaviData& naviData);
     void debugPageLoaded(const NaviData& naviData);
+    void debugPageClosed(const NaviData& naviData);
     void debugRefreshTree(const NaviData& naviData);
 #endif
 

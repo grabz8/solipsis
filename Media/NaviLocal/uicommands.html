@@ -8,6 +8,10 @@
             {
                 new NaviData('pageLoaded').add({naviName:'uicommands'}).send();
             }
+            function pageClosed()
+            {
+                new NaviData('pageClosed').send();
+            }
         </script>
         <style type="text/css">
             body
@@ -24,9 +28,24 @@
 	            width: 512px;
 	            height: 256px;
             }
+            .closeIcon
+            {
+                background-image: url(closeIcon.png);
+                background-repeat: no-repeat;
+                position: absolute;
+	            top: 2px;
+                left: 497px;
+                float: left;
+                width: 16px;
+                height: 16px;
+                background-position: 0px 0px;
+            }
+            .closeIcon:hover { background-position: 0px -16px; }
         </style>
     </head>
     <body onload="pageLoaded()">
-        <div id="container" />
+        <div id="container">
+            <span id="mTbIconClose" class="closeIcon" onclick="pageClosed()"></span>
+        </div>
     </body>
 </html>

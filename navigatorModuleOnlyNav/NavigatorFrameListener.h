@@ -47,6 +47,7 @@ protected:
     Overlay* mStandardOverlay;
     bool mBoundingBoxesShows;
     CameraMode mCameraMode;
+    CameraMode mLastCameraMode;
     CameraMode mSavedCameraMode;
     int mEscapeHitsB4CancellingFocus;
     unsigned long mLastEscapeHitTimer;
@@ -72,6 +73,8 @@ public:
 
     void setCameraMode(CameraMode mode);
     CameraMode getCameraMode();
+    void saveLastCameraMode() { mLastCameraMode = mCameraMode; }
+    CameraMode getLastCameraMode() { return mLastCameraMode; }
     void detachCamera();
     void attachCamera();
 };

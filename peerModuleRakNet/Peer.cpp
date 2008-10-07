@@ -338,45 +338,8 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
         return IP2NClient::RCError;
     }
 
-    pthread_mutex_lock(&mRakNetMutex);
-
-    // We are the client
-    mRakNetConnection.mServer = false;
-    // Get 1 instance of the RakNet peer interface
-    mRakNetConnection.mRakPeer = RakNetworkFactory::GetRakPeerInterface();
-    // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
-    mRakNetConnection.mRakPeer->SetNetworkIDManager(&mRakNetConnection.mNetworkIdManager);
-    // The network ID authority is the system that creates the common numerical identifier used to lookup pointers.
-    // For client/server this is the server
-    // For peer to peer this would be true on every system, and you would also have call NetworkID::peerToPeerMode=true;
-    mRakNetConnection.mNetworkIdManager.SetIsNetworkIDAuthority(mRakNetConnection.mServer);
-    // Start RakNet
-    mRakNetConnection.mSocketDescriptor.port = 0;
-    mRakNetConnection.mRakPeer->Startup(1, 100, &mRakNetConnection.mSocketDescriptor, 1);
-    // Attach the ReplicaManager2 plugin
-    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mReplicaManager);
-    // Register our custom connection factory
-    mRakNetConnection.mReplicaManager.SetConnectionFactory(&mRakNetConnection.mConnectionFactory);
-    // Attach the FileListTransfer plugin
-    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mFileListTransfer);
-
-	// Here I use the string table class to efficiently send strings I know in advance.
-	// The encoding is used in in Replica2::SerializeConstruct
-	// The decoding is used in in Connection_RM2::Construct
-	// The stringTable class will also send strings that weren't registered but this just falls back to the stringCompressor and wastes 1 extra bit on top of that
-	// 2nd parameter of false means a static string so it's not necessary to copy it
-	StringTable::Instance()->AddString("AvatarNode", false);
-	StringTable::Instance()->AddString("SiteNode", false);
-	StringTable::Instance()->AddString("Entity", false);
-
-    // Initializing the cache
-    mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Initializing cache manager");
-
-    mRakNetConnection.mRakPeer->Connect(worldHost.c_str(), worldPort, 0, 0, 0);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Connecting on %s:%d ...", worldHost.c_str(), worldPort);
-
-    pthread_mutex_unlock(&mRakNetMutex);
+    mRakNetConnection.mRakPeer->Connect(worldHost.c_str(), worldPort, 0, 0, 0);
 
     return IP2NClient::RCOk;
 }
@@ -384,19 +347,13 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
 //-------------------------------------------------------------------------------------
 IP2NClient::RetCode Peer::logout(NodeId& nodeId)
 {
-    pthread_mutex_lock(&mRakNetMutex);
-    if (mRakNetConnection.mRakPeer != 0)
-    {
-        mRakNetConnection.mRakPeer->Shutdown(100, 0);
-        RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
-        mRakNetConnection.mRakPeer = 0;
-    }
-    pthread_mutex_unlock(&mRakNetMutex);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout()");
 
-    mNodeManager->onLostNode(mNodeId);
+    mNodeManager->cleanUpNodes();
+    Entity::cleanUpEntities();
 
-    // Finalizing the cache
-    mRakNetConnection.mCacheManager.finalize();
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.mServerSystemAddress.ToString());
+    mRakNetConnection.mRakPeer->CloseConnection(mRakNetConnection.mServerSystemAddress, true);
 
     return IP2NClient::RCOk;
 }
@@ -499,6 +456,41 @@ bool Peer::_initialize()
         return false;
     }
 
+    pthread_mutex_lock(&mRakNetMutex);
+    // We are the client
+    mRakNetConnection.mServer = false;
+    // Get 1 instance of the RakNet peer interface
+    mRakNetConnection.mRakPeer = RakNetworkFactory::GetRakPeerInterface();
+    // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
+    mRakNetConnection.mRakPeer->SetNetworkIDManager(&mRakNetConnection.mNetworkIdManager);
+    // The network ID authority is the system that creates the common numerical identifier used to lookup pointers.
+    // For client/server this is the server
+    // For peer to peer this would be true on every system, and you would also have call NetworkID::peerToPeerMode=true;
+    mRakNetConnection.mNetworkIdManager.SetIsNetworkIDAuthority(mRakNetConnection.mServer);
+    // Start RakNet
+    mRakNetConnection.mSocketDescriptor.port = 0;
+    mRakNetConnection.mRakPeer->Startup(1, 100, &mRakNetConnection.mSocketDescriptor, 1);
+    // Attach the ReplicaManager2 plugin
+    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mReplicaManager);
+    // Register our custom connection factory
+    mRakNetConnection.mReplicaManager.SetConnectionFactory(&mRakNetConnection.mConnectionFactory);
+    // Attach the FileListTransfer plugin
+    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mFileListTransfer);
+
+	// Here I use the string table class to efficiently send strings I know in advance.
+	// The encoding is used in in Replica2::SerializeConstruct
+	// The decoding is used in in Connection_RM2::Construct
+	// The stringTable class will also send strings that weren't registered but this just falls back to the stringCompressor and wastes 1 extra bit on top of that
+	// 2nd parameter of false means a static string so it's not necessary to copy it
+	StringTable::Instance()->AddString("AvatarNode", false);
+	StringTable::Instance()->AddString("SiteNode", false);
+	StringTable::Instance()->AddString("Entity", false);
+
+    // Initializing the cache
+    mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Initializing cache manager");
+    pthread_mutex_unlock(&mRakNetMutex);
+
     mInitialized = true;
 
     // start this thread
@@ -524,6 +516,17 @@ void Peer::_finalize()
 #endif
 
     OgreHelpers::shutdown();
+
+    pthread_mutex_lock(&mRakNetMutex);
+    if (mRakNetConnection.mRakPeer != 0)
+    {
+        mRakNetConnection.mRakPeer->Shutdown(100, 0);
+        RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
+        mRakNetConnection.mRakPeer = 0;
+    }
+    // Finalizing the cache
+    mRakNetConnection.mCacheManager.finalize();
+    pthread_mutex_unlock(&mRakNetMutex);
 
     mInitialized = false;
 }

@@ -1,6 +1,6 @@
 /*
 This source file is part of Solipsis
-(Solipsis is an opensource decentralized Metaverse platform)
+    (Solipsis is an opensource decentralized Metaverse platform)
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
@@ -39,919 +39,916 @@ using namespace Solipsis;
 
 //-------------------------------------------------------------------------------------
 NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
-OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),
-mNavigator(navigator),
-mBoundingBoxesShows(false),
-mCameraMode(CMDetached),
-mSavedCameraMode(CMDetached),
-mEscapeHitsB4CancellingFocus(0),
-mLastEscapeHitTimer(0),
-mMouseMiddlePressed(false)
+    OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),
+    mNavigator(navigator),
+    mBoundingBoxesShows(false),
+    mCameraMode(CMDetached),
+    mLastCameraMode(CMDetached),
+    mSavedCameraMode(CMDetached),
+    mEscapeHitsB4CancellingFocus(0),
+    mLastEscapeHitTimer(0),
+    mMouseMiddlePressed(false)
 {
-	mStandardOverlay = OverlayManager::getSingleton().getByName("Solipsis/StandardOverlay");
-	if (mStandardOverlay != 0)
-		mStandardOverlay->show();
+    mStandardOverlay = OverlayManager::getSingleton().getByName("Solipsis/StandardOverlay");
+    if (mStandardOverlay != 0)
+        mStandardOverlay->show();
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
 {
 #ifdef UIDEBUG
-	DebugHelpers::frameStarted(evt, mNavigator, mSceneMgr);
+    DebugHelpers::frameStarted(evt, mNavigator, mSceneMgr);
 #endif
 
-	// Updating GUI
-	if (mNavigator->getNavigatorGUI() != 0)
-		mNavigator->getNavigatorGUI()->update();
+    // Updating GUI
+    if (mNavigator->getNavigatorGUI() != 0)
+        mNavigator->getNavigatorGUI()->update();
 
-	// Updating Navi
-	if (mNavigator->isNaviSupported())
-		NaviManager::Get().Update();
+    // Updating Navi
+    if (mNavigator->isNaviSupported())
+        NaviManager::Get().Update();
 
-	if (mNavigator->isConnected()) {
-		// Process received events
-		mNavigator->processEvents();
+    if (mNavigator->isConnected()) {
+        // Process received events
+        mNavigator->processEvents();
 
-		// Update peers
-		mNavigator->getOgrePeerManager()->frameStarted(evt);
+        // Update peers
+        mNavigator->getOgrePeerManager()->frameStarted(evt);
 
-		// Send events
-		mNavigator->sendEvents();
-	}
+        // Send events
+        mNavigator->sendEvents();
+    }
 
-	// Updating sound
-	if (mNavigator->getNavigatorSound() != 0)
-		mNavigator->getNavigatorSound()->update();
+    // Updating sound
+    if (mNavigator->getNavigatorSound() != 0)
+        mNavigator->getNavigatorSound()->update();
 
-	return OgreFrameListener::frameStarted(evt);
+    return OgreFrameListener::frameStarted(evt);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 { 
-	NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-	Modeler* modeler = mNavigator->getModeler();
-	AvatarEditor* avatarEditor = mNavigator->getAvatarEditor();
-	static CameraMode lastCameraMode = getCameraMode();
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    Modeler* modeler = mNavigator->getModeler();
+    AvatarEditor* avatarEditor = mNavigator->getAvatarEditor();
 
-	// Escape hits count to cancel focus Navi/VNC/...
-	if (evt.mKey == KC_ESCAPE)
-	{
-		unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
-		if (mEscapeHitsB4CancellingFocus == 0)
-			mLastEscapeHitTimer = now;
-		if (now - mLastEscapeHitTimer < ESCAPE_HITS_CANCEL_FOCUS_DURATION)
-			mEscapeHitsB4CancellingFocus++;
-		else
-			mEscapeHitsB4CancellingFocus = 1;
-		mLastEscapeHitTimer = now;
-	}
+    // Escape hits count to cancel focus Navi/VNC/...
+    if (evt.mKey == KC_ESCAPE)
+    {
+        unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
+        if (mEscapeHitsB4CancellingFocus == 0)
+            mLastEscapeHitTimer = now;
+        if (now - mLastEscapeHitTimer < ESCAPE_HITS_CANCEL_FOCUS_DURATION)
+            mEscapeHitsB4CancellingFocus++;
+        else
+            mEscapeHitsB4CancellingFocus = 1;
+        mLastEscapeHitTimer = now;
+    }
 
-	// Cancel focus on Navi ?
-	if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
-	{
-		if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
-		{
-			mEscapeHitsB4CancellingFocus = 0;
-			mNavigator->resetMousePicking();
-			NaviManager::Get().deFocusAllNavis();
-			return true;
-		}
-	}
+    // Cancel focus on Navi ?
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            NaviManager::Get().deFocusAllNavis();
+            return true;
+        }
+    }
 
-	// hide chat panel ?
-	if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
-	{
-		NaviLibrary::Navi* navi = NaviManager::Get().getFocusedNavi();
-		if (!navi->isMaterialOnly())
-			if ((evt.mKey == KC_F7) && (navi->getName() == navigatorGUI->getNaviName(NavigatorGUI::NAVI_CHAT)))
-				navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
-	}
+    // hide chat panel ?
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    {
+        NaviLibrary::Navi* navi = NaviManager::Get().getFocusedNavi();
+        if (!navi->isMaterialOnly())
+            if ((evt.mKey == KC_F7) && (navi->getName() == navigatorGUI->getNaviName(NavigatorGUI::NAVI_CHAT)))
+                navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+    }
 
-	// is modeling ?
-	if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
-	{
-		if (modeler->isOnGizmo())
-		{
-			switch (evt.mKey)
-			{
-			case KC_F9:
-				modeler->lockGizmo(false);
-				if (navigatorGUI != 0)
-				{
-					navigatorGUI->modelerMainUnload();
-					setCameraMode( lastCameraMode );
-				}
-				return OgreFrameListener::keyPressed(evt);
+    // is modeling ?
+    if (mNavigator->getState() == Navigator::SModeling && modeler != 0)
+    {
+        if (modeler->isOnGizmo())
+        {
+            switch (evt.mKey)
+            {
+            case KC_F9:
+                modeler->lockGizmo(false);
+                if (navigatorGUI != 0)
+                {
+                    navigatorGUI->modelerMainUnload();
+                    setCameraMode(getLastCameraMode());
+                }
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_UP:
-			case KC_W:
-				if (mNavigator->isOnLeftCTRL)
-				{
-					//mNavigator->undo();
-					if( !modeler->isSelectionEmpty() )
-						modeler->getSelected()->undo();
-				}
-				else
-					mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
-				return OgreFrameListener::keyPressed(evt);
+            case KC_UP:
+            case KC_W:
+                if (mNavigator->isOnLeftCTRL)
+                {
+                    //mNavigator->undo();
+                    if( !modeler->isSelectionEmpty() )
+                        modeler->getSelected()->undo();
+                }
+                else
+                    mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_DOWN:
-			case KC_S:
-				mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
-				return OgreFrameListener::keyPressed(evt);
+            case KC_DOWN:
+            case KC_S:
+                mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_LEFT:
-			case KC_A:
-				mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
-				return OgreFrameListener::keyPressed(evt);
+            case KC_LEFT:
+            case KC_A:
+                mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_RIGHT:
-			case KC_D:
-				mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
-				return OgreFrameListener::keyPressed(evt);
+            case KC_RIGHT:
+            case KC_D:
+                mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_PGUP:
-			case KC_E:
-				mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
-				return OgreFrameListener::keyPressed(evt);
+            case KC_PGUP:
+            case KC_E:
+                mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
+                return OgreFrameListener::keyPressed(evt);
 
-			case KC_PGDOWN:
-			case KC_C:
-				mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
-				return OgreFrameListener::keyPressed(evt);
-			}
-		}
+            case KC_PGDOWN:
+            case KC_C:
+                mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
+                return OgreFrameListener::keyPressed(evt);
+            }
+        }
 
 
-		switch (evt.mKey)
-		{
-		case KC_F9:
-			if (modeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
-			{
-				navigatorGUI->modelerPropHide();
-				navigatorGUI->modelerMainShow();
-			}
-			else 
-			{
-				navigatorGUI->modelerMainUnload();
-				setCameraMode( lastCameraMode );
-			}
-			return OgreFrameListener::keyPressed(evt);
+        switch (evt.mKey)
+        {
+        case KC_F9:
+            if (modeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
+            {
+                navigatorGUI->modelerPropHide();
+                navigatorGUI->modelerMainShow();
+            }
+            else 
+            {
+                navigatorGUI->modelerMainUnload();
+                setCameraMode(getLastCameraMode());
+            }
+            return OgreFrameListener::keyPressed(evt);
 
-		case KC_LCONTROL:
-			modeler->getSelection()->set_lock( true );
-			mNavigator->isOnLeftCTRL = true;
-			return OgreFrameListener::keyPressed(evt);
+        case KC_LCONTROL:
+            modeler->getSelection()->set_lock( true );
+            mNavigator->isOnLeftCTRL = true;
+            return OgreFrameListener::keyPressed(evt);
 
-		case KC_DELETE:
-			//mNavigator->suppr();
-			if( !modeler->isSelectionEmpty() )
-			{
-				// remove the current selection
-				modeler->removeSelection();
+        case KC_DELETE:
+            //mNavigator->suppr();
+            if( !modeler->isSelectionEmpty() )
+            {
+                // remove the current selection
+                modeler->removeSelection();
 
-				// hide the gizmos axes
-				modeler->getSelection()->mTransformation->showGizmosMove(false);
-				modeler->getSelection()->mTransformation->showGizmosRotate(false);
-				modeler->getSelection()->mTransformation->showGizmosScale(false);
-			}
-			if (modeler->isSelectionLocked())
-			{
-				navigatorGUI->modelerPropUnload();
-				navigatorGUI->modelerMainShow();
-			}    
+                // hide the gizmos axes
+                modeler->getSelection()->mTransformation->showGizmosMove(false);
+                modeler->getSelection()->mTransformation->showGizmosRotate(false);
+                modeler->getSelection()->mTransformation->showGizmosScale(false);
+            }
+            if (modeler->isSelectionLocked())
+            {
+                navigatorGUI->modelerPropUnload();
+                navigatorGUI->modelerMainShow();
+            }    
 
-			return OgreFrameListener::keyPressed(evt);
+            return OgreFrameListener::keyPressed(evt);
 
-		case KC_W:
-			if (mNavigator->isOnLeftCTRL) 
-			{
-				//mNavigator->undo();
-				if( !modeler->isSelectionEmpty() )
-					modeler->getSelected()->undo();
-			}
-			return OgreFrameListener::keyPressed(evt);
-		}
-	}
+        case KC_W:
+            if (mNavigator->isOnLeftCTRL) 
+            {
+                //mNavigator->undo();
+                if( !modeler->isSelectionEmpty() )
+                    modeler->getSelected()->undo();
+            }
+            return OgreFrameListener::keyPressed(evt);
+        }
+    }
 
-	// is editing the avatar ?
-	else if (mNavigator->getState() == Navigator::SAvatarEdit && avatarEditor != 0)
-	{
-		switch (evt.mKey)
-		{
-		case KC_F8:
-			if (/*modeler->isSelectionLocked() &&*/ !navigatorGUI->isAvatarMainVisible())
-			{
-				navigatorGUI->avatarPropHide();
-				navigatorGUI->avatarMainShow();
-			}
-			else 
-			{
-				navigatorGUI->avatarMainUnload();
-				setCameraMode( lastCameraMode );
-			}
-			return OgreFrameListener::keyPressed(evt);
-		}
-	}
+    // is editing the avatar ?
+    else if (mNavigator->getState() == Navigator::SAvatarEdit && avatarEditor != 0)
+    {
+        switch (evt.mKey)
+        {
+        case KC_F8:
+            if (/*modeler->isSelectionLocked() &&*/ !navigatorGUI->isAvatarMainVisible())
+            {
+                navigatorGUI->avatarPropHide();
+                navigatorGUI->avatarMainShow();
+            }
+            else 
+            {
+                navigatorGUI->avatarMainUnload();
+                setCameraMode(getLastCameraMode());
+            }
+            return OgreFrameListener::keyPressed(evt);
+        }
+    }
 
-	// Navi focused -> key processed by the navi
-	if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
-		return true;
+    // Navi focused -> key processed by the navi
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+        return true;
 
-	if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
-		navigatorGUI->contextHide();
+    if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
+        navigatorGUI->contextHide();
 
-	// VNC panel ?
-	if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
-	{
-		if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
-		{
-			mEscapeHitsB4CancellingFocus = 0;
-			mNavigator->resetMousePicking();
-			return true;
-		}
-		MovableObject* vncMovableObj = mNavigator->getPickedMovable();
-		Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-		String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-		ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-		ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-		Evt vncEvt;
-		vncEvt.mKeyboard = evt;
-		vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
-		return true;
-	}
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            return true;
+        }
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+        ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+        Evt vncEvt;
+        vncEvt.mKeyboard = evt;
+        vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        return true;
+    }
 
-	switch (evt.mKey)
-	{
+    switch (evt.mKey)
+    {
+    case KC_ESCAPE:
+        if (mNavigator->getState() == Navigator::SInWorld)
+        {
+            mNavigator->disconnect();
+            return true;
+        }
+        break;
 #ifdef UIDEBUG
-	case KC_PAUSE: // Show/Hide debug panel
-		if (navigatorGUI != 0)
-			navigatorGUI->switchDebug();
-		break;
+    case KC_PAUSE: // Show/Hide debug panel
+        if (navigatorGUI != 0)
+            navigatorGUI->switchDebug();
+        break;
 #endif
 
-	case KC_F1:
-		mNavigator->fakeSurroundingArea(1);
-		break;
-	case KC_F2:
-		mNavigator->fakeSurroundingArea(2);
-		break;
-	case KC_F3:
-		mNavigator->fakeSurroundingArea(3);
-		break;
-	case KC_F4:
-		mNavigator->fakeSurroundingArea(4);
-		break;
-	case KC_F5:
-		mNavigator->fakeSurroundingArea(5);
-		break;
-	case KC_F6:
-		mNavigator->fakeSurroundingArea(0);
-		break;
+    case KC_F1:
+        mNavigator->fakeSurroundingArea(1);
+        break;
+    case KC_F2:
+        mNavigator->fakeSurroundingArea(2);
+        break;
+    case KC_F3:
+        mNavigator->fakeSurroundingArea(3);
+        break;
+    case KC_F4:
+        mNavigator->fakeSurroundingArea(4);
+        break;
+    case KC_F5:
+        mNavigator->fakeSurroundingArea(5);
+        break;
+    case KC_F6:
+        mNavigator->fakeSurroundingArea(0);
+        break;
 
-	case KC_F7:
-		navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
-		break;
+    case KC_F7:
+        navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+        break;
 
-	case KC_F8:
-		if (navigatorGUI != 0)
-			if(mNavigator->getState() == Navigator::SInWorld)
-			{
-				lastCameraMode = getCameraMode();
-				setCameraMode( CMAroundPerson );
-				//if (!navigatorGUI->isAvatarMainVisible())
-				navigatorGUI->avatarMainShow();
-			}
-			//else if(mNavigator->getState() == Navigator::SAvatarEdit)
-			//{
-			//	navigatorGUI->avatarMainUnload();
-			//	setCameraMode( lastCameraMode );
-			//}
-			break;
+    case KC_F8:
+        if (navigatorGUI != 0)
+            if(mNavigator->getState() == Navigator::SInWorld)
+            {
+                saveLastCameraMode();
+                setCameraMode(CMAroundPerson);
+                navigatorGUI->avatarMainShow();
+            }
+            break;
 
-	case KC_F9:
-		if (navigatorGUI != 0)
-			if(mNavigator->getState() == Navigator::SInWorld)
-			{
-				lastCameraMode = getCameraMode();
-				setCameraMode( CMAroundPerson );
-				//if (!navigatorGUI->isModelerMainVisible())
-				navigatorGUI->modelerMainShow();
-			}
-			//else if(mNavigator->getState() == Navigator::SModeling)
-			//{
-			//	navigatorGUI->modelerMainUnload();
-			//	setCameraMode( lastCameraMode );
-			//}
-			break;
+    case KC_F9:
+        if (navigatorGUI != 0)
+            if(mNavigator->getState() == Navigator::SInWorld)
+            {
+                saveLastCameraMode();
+                setCameraMode(CMAroundPerson);
+                navigatorGUI->modelerMainShow();
+            }
+            break;
 
-	case KC_F12:
-		mBoundingBoxesShows = !mBoundingBoxesShows;
-		mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
-		break;
-	}
+    case KC_F12:
+        mBoundingBoxesShows = !mBoundingBoxesShows;
+        mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
+        break;
+    }
 
-	Avatar* userAvatar = mNavigator->getUserAvatar();
-	if (userAvatar != 0)
-	{
-		switch (evt.mKey)
-		{
-		case KC_1: // Switch to 1st person camera
-			setCameraMode(CM1stPerson);
-			break;
-		case KC_2: // Switch to 1st person camera with mouse
-			setCameraMode(CM1stPersonWithMouse);
-			break;
-		case KC_3: // Switch to 3rd person camera
-			setCameraMode(CM3rdPerson);
-			break;
-		case KC_4: // Switch to TrunAround person camera
-			setCameraMode(CMAroundPerson);
-			break;
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+    if (userAvatar != 0)
+    {
+        switch (evt.mKey)
+        {
+        case KC_1: // Switch to 1st person camera
+            setCameraMode(CM1stPerson);
+            break;
+        case KC_2: // Switch to 1st person camera with mouse
+            setCameraMode(CM1stPersonWithMouse);
+            break;
+        case KC_3: // Switch to 3rd person camera
+            setCameraMode(CM3rdPerson);
+            break;
+        case KC_4: // Switch to TrunAround person camera
+            setCameraMode(CMAroundPerson);
+            break;
 
-		case KC_UP:
-		case KC_W:
-			userAvatar->movementKeyPressed(KC_UP);
-			break;
+        case KC_UP:
+        case KC_W:
+            userAvatar->movementKeyPressed(KC_UP);
+            break;
 
-		case KC_DOWN:
-		case KC_S:
-			userAvatar->movementKeyPressed(KC_DOWN);
-			break;
+        case KC_DOWN:
+        case KC_S:
+            userAvatar->movementKeyPressed(KC_DOWN);
+            break;
 
-		case KC_LEFT:
-		case KC_A:
-			userAvatar->movementKeyPressed(KC_LEFT);
-			break;
+        case KC_LEFT:
+        case KC_A:
+            userAvatar->movementKeyPressed(KC_LEFT);
+            break;
 
-		case KC_RIGHT:
-		case KC_D:
-			userAvatar->movementKeyPressed(KC_RIGHT);
-			break;
+        case KC_RIGHT:
+        case KC_D:
+            userAvatar->movementKeyPressed(KC_RIGHT);
+            break;
 
-		case KC_PGUP:
-		case KC_E:
-			userAvatar->movementKeyPressed(KC_PGUP);
-			break;
+        case KC_PGUP:
+        case KC_E:
+            userAvatar->movementKeyPressed(KC_PGUP);
+            break;
 
-		case KC_PGDOWN:
-		case KC_C:
-			userAvatar->movementKeyPressed(KC_PGDOWN);
-			break;
+        case KC_PGDOWN:
+        case KC_C:
+            userAvatar->movementKeyPressed(KC_PGDOWN);
+            break;
 
-		case KC_END:
-			userAvatar->movementKeyPressed(KC_END);
-			break;
-		}
-	}
+        case KC_END:
+            userAvatar->movementKeyPressed(KC_END);
+            break;
+        }
+    }
 
-	return OgreFrameListener::keyPressed(evt);
+    return OgreFrameListener::keyPressed(evt);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 { 
-	NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
 
-	// In modeler ?
-	if (mNavigator->getState() == Navigator::SModeling)
-	{
-		switch (evt.mKey) 
-		{
-		case KC_LCONTROL:
-			mNavigator->isOnLeftCTRL = false;
-			mNavigator->getModeler()->getSelection()->set_lock( false );
-			//return OgreFrameListener::keyReleased(evt);
-			break;
-		}
-	}
+    // In modeler ?
+    if (mNavigator->getState() == Navigator::SModeling)
+    {
+        switch (evt.mKey) 
+        {
+        case KC_LCONTROL:
+            mNavigator->isOnLeftCTRL = false;
+            mNavigator->getModeler()->getSelection()->set_lock( false );
+            //return OgreFrameListener::keyReleased(evt);
+            break;
+        }
+    }
 
-	// Navi focused -> key processed by the navi
-	if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
-		return true;
+    // Navi focused -> key processed by the navi
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState() != Navigator::SAvatarEdit) 
+        return true;
 
-	// VNC panel ?
-	if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
-	{
-		MovableObject* vncMovableObj = mNavigator->getPickedMovable();
-		Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-		String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-		ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-		ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-		Evt vncEvt;
-		vncEvt.mKeyboard = evt;
-		vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
-		return true;
-	}
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
+    {
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+        ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+        Evt vncEvt;
+        vncEvt.mKeyboard = evt;
+        vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        return true;
+    }
 
-	Avatar* userAvatar = mNavigator->getUserAvatar();
-	if (userAvatar != 0)
-	{
-		switch (evt.mKey)
-		{
-		case KC_UP:
-		case KC_W:
-			userAvatar->movementKeyReleased(KC_UP);
-			break;
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+    if (userAvatar != 0)
+    {
+        switch (evt.mKey)
+        {
+        case KC_UP:
+        case KC_W:
+            userAvatar->movementKeyReleased(KC_UP);
+            break;
 
-		case KC_DOWN:
-		case KC_S:
-			userAvatar->movementKeyReleased(KC_DOWN);
-			break;
+        case KC_DOWN:
+        case KC_S:
+            userAvatar->movementKeyReleased(KC_DOWN);
+            break;
 
-		case KC_LEFT:
-		case KC_A:
-			userAvatar->movementKeyReleased(KC_LEFT);
-			break;
+        case KC_LEFT:
+        case KC_A:
+            userAvatar->movementKeyReleased(KC_LEFT);
+            break;
 
-		case KC_RIGHT:
-		case KC_D:
-			userAvatar->movementKeyReleased(KC_RIGHT);
-			break;
+        case KC_RIGHT:
+        case KC_D:
+            userAvatar->movementKeyReleased(KC_RIGHT);
+            break;
 
-		case KC_PGUP:
-		case KC_E:
-			userAvatar->movementKeyReleased(KC_PGUP);
-			break;
+        case KC_PGUP:
+        case KC_E:
+            userAvatar->movementKeyReleased(KC_PGUP);
+            break;
 
-		case KC_PGDOWN:
-		case KC_C:
-			userAvatar->movementKeyReleased(KC_PGDOWN);
-			break;
-		}
-	}
+        case KC_PGDOWN:
+        case KC_C:
+            userAvatar->movementKeyReleased(KC_PGDOWN);
+            break;
+        }
+    }
 
-	return OgreFrameListener::keyReleased(evt);
+    return OgreFrameListener::keyReleased(evt);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 {
-	// Updating Navi with the mouse motion
-	// 3D picking of Navi panels if any NaviMaterial focused
-	if (mNavigator->isNaviSupported())
-	{
-		if ((mNavigator->getState() == Navigator::SInWorld) &&
-			NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
-			&& (mCameraMode != CM1stPerson))
-		{
-			std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
-			if (evt.mState.mZrel != 0) NaviManager::Get().getFocusedNavi()->injectMouseWheel(evt.mState.mZrel);
-			// normalize (x, y) on 0..1 and get the ray emitted from the camera
-			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-			// Compute Navi panel mouse location
-			Real closestDistance = -1.0f;
-			Vector2 closestUV;
-			Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
-			int naviX, naviY;
-			if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
-				closestDistance,
-				closestUV,
-				closestTriUV0, closestTriUV1, closestTriUV2))
-			{
-				// compute texture coordinates of the hit
-				mNavigator->computeNaviHit(focusedNavi,
-					closestUV,
-					closestTriUV0, closestTriUV1, closestTriUV2,
-					naviX, naviY);
-				NaviManager::Get().getFocusedNavi()->injectMouseMove(naviX, naviY);
-			}
-		}
-		else
-			if (evt.mState.mZrel != 0) NaviManager::Get().injectMouseWheel(evt.mState.mZrel);
+    // Updating Navi with the mouse motion
+    // 3D picking of Navi panels if any NaviMaterial focused
+    if (mNavigator->isNaviSupported())
+    {
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
+            && (mCameraMode != CM1stPerson))
+        {
+            std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
+            if (evt.mState.mZrel != 0) NaviManager::Get().getFocusedNavi()->injectMouseWheel(evt.mState.mZrel);
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute Navi panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            int naviX, naviY;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
+                closestDistance,
+                closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeNaviHit(focusedNavi,
+                    closestUV,
+                    closestTriUV0, closestTriUV1, closestTriUV2,
+                    naviX, naviY);
+                NaviManager::Get().getFocusedNavi()->injectMouseMove(naviX, naviY);
+            }
+        }
+        else
+            if (evt.mState.mZrel != 0) NaviManager::Get().injectMouseWheel(evt.mState.mZrel);
 
-		// Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
-		NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
-	}
+        // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
+        NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
+    }
 
-	// VNC panel ?
-	if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
-	{
-		MovableObject* vncMovableObj = mNavigator->getPickedMovable();
-		Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-		// normalize (x, y) on 0..1 and get the ray emitted from the camera
-		Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-		// Compute VNC panel mouse location
-		Real closestDistance = -1.0f;
-		Vector2 closestUV;
-		Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
-		Vector2 vncXY;
-		if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
-			closestDistance,
-			closestUV,
-			closestTriUV0, closestTriUV1, closestTriUV2))
-		{
-			// compute texture coordinates of the hit
-			mNavigator->computeVncHit(closestUV,
-				closestTriUV0, closestTriUV1, closestTriUV2,
-				vncXY);
-			String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-			ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-			ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-			Evt vncEvt;
-			vncEvt.mType = evt.mType;
-			vncEvt.mMouse.mState = evt.mState;
-			vncEvt.mMouse.mState.mXreal = vncXY.x;
-			vncEvt.mMouse.mState.mYreal = vncXY.y;
-			vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
-		}
-	}
+    // VNC panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
+    {
+        MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+        // normalize (x, y) on 0..1 and get the ray emitted from the camera
+        Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+        // Compute VNC panel mouse location
+        Real closestDistance = -1.0f;
+        Vector2 closestUV;
+        Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+        Vector2 vncXY;
+        if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+            closestDistance,
+            closestUV,
+            closestTriUV0, closestTriUV1, closestTriUV2))
+        {
+            // compute texture coordinates of the hit
+            mNavigator->computeVncHit(closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2,
+                vncXY);
+            String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+            ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+            Evt vncEvt;
+            vncEvt.mType = evt.mType;
+            vncEvt.mMouse.mState = evt.mState;
+            vncEvt.mMouse.mState.mXreal = vncXY.x;
+            vncEvt.mMouse.mState.mYreal = vncXY.y;
+            vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        }
+    }
 
-	// zoom and orbit camera in Modeling or AvatarEdit Mode
-	Real mouseWheel = evt.mState.mZrel;
-	if(!NaviManager::Get().isAnyNaviFocused() && 
-		//(mNavigator->getState() == Navigator::SModeling || mNavigator->getState() == Navigator::SAvatarEdit) && 
-		getCameraMode() == CMAroundPerson)
-	{
-		/*
-		// zoom camera when the wheel mouse has changed
-		if (!Ogre::Math::RealEqual(mouseWheel, 0))
-		{
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
-			Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
-			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
+    // zoom and orbit camera in Modeling or AvatarEdit Mode
+    Real mouseWheel = evt.mState.mZrel;
+    if(!NaviManager::Get().isAnyNaviFocused() && 
+        //(mNavigator->getState() == Navigator::SModeling || mNavigator->getState() == Navigator::SAvatarEdit) && 
+        getCameraMode() == CMAroundPerson)
+    {
+        /*
+        // zoom camera when the wheel mouse has changed
+        if (!Ogre::Math::RealEqual(mouseWheel, 0))
+        {
+        Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
+        Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
+        Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
-			size.x /=2;
-			size.y *=-1;
-			size.z = 0;
-			//move 3rd person camera toward avatar
-			mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size)); 
+        size.x /=2;
+        size.y *=-1;
+        size.z = 0;
+        //move 3rd person camera toward avatar
+        mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size)); 
 
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
-			Vector3 camAbs = mCamera->getWorldPosition();
-			if (posAbs.squaredDistance(camAbs) >= 2.5 && getCameraMode() == CMAroundPerson)
-				mCamNode->translate(Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
-			else
-				mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
-		}
-		*/
+        Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+        Vector3 camAbs = mCamera->getWorldPosition();
+        if (posAbs.squaredDistance(camAbs) >= 2.5 && getCameraMode() == CMAroundPerson)
+        mCamNode->translate(Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+        else
+        mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+        }
+        */
 
-		// orbit camera when the rigth click is pressed 
-		if (mMouseMiddlePressed)
-		{
-			SceneNode* camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
-			SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
+        // orbit camera when the rigth click is pressed 
+        if (mMouseMiddlePressed)
+        {
+            SceneNode* camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
+            SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
 
-			//apply the rotation around the avatar
-			static Real yaw = 0;
-			static Real pitch = 0;
-			yaw = -mRotate*evt.mState.mXrel;
-			pitch = mRotate*evt.mState.mYrel * .5;
+            //apply the rotation around the avatar
+            static Real yaw = 0;
+            static Real pitch = 0;
+            yaw = -mRotate*evt.mState.mXrel;
+            pitch = mRotate*evt.mState.mYrel * .5;
 
-			camNode->yaw(Degree(yaw));
-			camPitchNode->roll(Degree(pitch));
+            camNode->yaw(Degree(yaw));
+            camPitchNode->roll(Degree(pitch));
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	// modeling mode
-	if (mNavigator->getState() == Navigator::SModeling &&
-		!NaviManager::Get().isAnyNaviFocused())
-	{
-		if (getCameraMode() == CM1stPerson)
-		{
-			mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
-			mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
-		}
+    // modeling mode
+    if (mNavigator->getState() == Navigator::SModeling &&
+        !NaviManager::Get().isAnyNaviFocused())
+    {
+        if (getCameraMode() == CM1stPerson)
+        {
+            mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
+            mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
+        }
 
-		{
-			Modeler* modeler = Modeler::getSingletonPtr();
-			Selection* selection = modeler->getSelection();
-			Vector3 dragNdrop;
+        {
+            Modeler* modeler = Modeler::getSingletonPtr();
+            Selection* selection = modeler->getSelection();
+            Vector3 dragNdrop;
 
-			if( mNavigator->isOnGizmo )//&& !selection->isEmpty() )
-			{
-				//Calculate drag and drop :
-				Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-				dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );
-				if( dragNdrop != Vector3::ZERO )
-				{
-					//Apply the transformation
-					switch( selection->mTransformation->getMode() )
-					{
-					case Transformations::Mode::MOVE :	//Move objects
-						mNavigator->MdlrModifGizmo( dragNdrop );
-						break;
-					case Transformations::Mode::ROTATE :	//Rotate objects
-						mNavigator->MdlrModifGizmo( dragNdrop * 10. );
-						break;
-					case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
-						dragNdrop -= Vector3::UNIT_SCALE;
-						mNavigator->MdlrModifGizmo( dragNdrop * 100. );
-						break;
-					}
-				}
-			}
-		}
+            if( mNavigator->isOnGizmo )//&& !selection->isEmpty() )
+            {
+                //Calculate drag and drop :
+                Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+                dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );
+                if( dragNdrop != Vector3::ZERO )
+                {
+                    //Apply the transformation
+                    switch( selection->mTransformation->getMode() )
+                    {
+                    case Transformations::Mode::MOVE :	//Move objects
+                        mNavigator->MdlrModifGizmo( dragNdrop );
+                        break;
+                    case Transformations::Mode::ROTATE :	//Rotate objects
+                        mNavigator->MdlrModifGizmo( dragNdrop * 10. );
+                        break;
+                    case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
+                        dragNdrop -= Vector3::UNIT_SCALE;
+                        mNavigator->MdlrModifGizmo( dragNdrop * 100. );
+                        break;
+                    }
+                }
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	if (mNavigator->getState() != Navigator::SInWorld)// && mNavigator->getState() != Navigator::SAvatarEdit)
-		return true;
+    if (mNavigator->getState() != Navigator::SInWorld)// && mNavigator->getState() != Navigator::SAvatarEdit)
+        return true;
 
-	// if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
-	if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
-		return true;
+    // if 1 NaviMaterial got focus then mouse wheel is not applied on camera 
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
+        return true;
 
-	// zoom with the wheel mouse
-	if (!Ogre::Math::RealEqual(mouseWheel, 0))
-	{
-		if (getCameraMode() == CM1stPerson&&mouseWheel < 0.0f)
-		{
-			setCameraMode(CM3rdPerson);
-			mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));//To be sure to go away from the avatar
-		}
-		if (getCameraMode() != CMAroundPerson&&getCameraMode() != CM1stPerson)
-		{
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
-			Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
-			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
+    // zoom with the wheel mouse
+    if (!Ogre::Math::RealEqual(mouseWheel, 0))
+    {
+        if (getCameraMode() == CM1stPerson&&mouseWheel < 0.0f)
+        {
+            setCameraMode(CM3rdPerson);
+            mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));//To be sure to go away from the avatar
+        }
+        if (getCameraMode() != CMAroundPerson&&getCameraMode() != CM1stPerson)
+        {
+            Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
+            Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
+            Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
-			size.x /=2;
-			size.y *=-1;
-			size.z = 0;
-			//move 3rd person camera toward avatar
-			mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size)); 
-			//mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+            size.x /=2;
+            size.y *=-1;
+            size.z = 0;
+            //move 3rd person camera toward avatar
+            mCamera->lookAt(pos - (mNavigator->getUserAvatar()->getSceneNode()->getOrientation() * size)); 
+            //mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
 
-			//Switch to 1st person camera if close to avatar
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
-			//Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
-			Vector3 camAbs = mCamera->getWorldPosition();
-			//Vector3 camAbs = mCamera->getPosition();  Attention:getWorldPosition() instead of getPosition() to use the same coordinate. 
-			if (posAbs.squaredDistance(camAbs) >= 2.5 && getCameraMode() == CMAroundPerson)
-			{
-				mCamNode->translate(Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
-			}
-			else if (posAbs.squaredDistance(camAbs) < (size.x)*(size.x) )
-			{
-				if (getCameraMode() == CM3rdPerson)
-				{
-					mCamNode->translate(Vector3(-1*mouseWheel*MOUSE_WHEEL_FACTOR,0,0));// Revise the position of 3rd person camera
-					setCameraMode(CM1stPerson);
-				}
-			}
-			else
-				mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
-		}
-	}
+            //Switch to 1st person camera if close to avatar
+            Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+            //Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getPosition() - (mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation() * size);
+            Vector3 camAbs = mCamera->getWorldPosition();
+            //Vector3 camAbs = mCamera->getPosition();  Attention:getWorldPosition() instead of getPosition() to use the same coordinate. 
+            if (posAbs.squaredDistance(camAbs) >= 2.5 && getCameraMode() == CMAroundPerson)
+            {
+                mCamNode->translate(Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+            }
+            else if (posAbs.squaredDistance(camAbs) < (size.x)*(size.x) )
+            {
+                if (getCameraMode() == CM3rdPerson)
+                {
+                    mCamNode->translate(Vector3(-1*mouseWheel*MOUSE_WHEEL_FACTOR,0,0));// Revise the position of 3rd person camera
+                    setCameraMode(CM1stPerson);
+                }
+            }
+            else
+                mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+        }
+    }
 
-	if (getCameraMode() == CM1stPerson)
-	{
-		mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
-		mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
-	}
+    if (getCameraMode() == CM1stPerson)
+    {
+        mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
+        mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+    }
 
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
 {
-	NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-	if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
-	{
-		int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    {
+        int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
-		// Updating Navi with the mouse pressed
-		NaviManager::Get().injectMouseDown(buttonsId);
+        // Updating Navi with the mouse pressed
+        NaviManager::Get().injectMouseDown(buttonsId);
 
-		// 3D picking of Navi panels if no 2D panel focused
-		mNavigator->resetMousePicking();
-		if ((mNavigator->getState() == Navigator::SInWorld) &&
-			!NaviManager::Get().isAnyNaviFocused())
-		{
-			// normalize (x, y) on 0..1 and get the ray emitted from the camera
-			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-			// compute the picking
-			mNavigator->computeMousePicking(mouseRay);
-			// Navi panel ?
-			String naviName;
-			int naviX, naviY;
-			Avatar* avatar;
-			MovableObject* vncMovableObj = 0;
-			Vector2 vncXY;
-			if (navigatorGUI->isContextVisible())
-				navigatorGUI->contextHide();
-			else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
-			{
-				MovableObject* vlcMovableObj = 0;
-				if (mNavigator->is1AvatarHitByMouse(avatar))
-					navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
-				else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
-					navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
-				else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
-				{
-					Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
-					String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-					navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
-				}
-			}
-			else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
-			{
-				NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
-				NaviManager::Get().focusNavi(navi);
-				navi->injectMouseDown(naviX, naviY);
-			}
-			// VNC panel ?
-			else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
-			{
-				Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-				String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-				ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-				ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-				Evt vncEvt;
-				vncEvt.mType = evt.mType;
-				vncEvt.mMouse.mState = evt.mState;
-				vncEvt.mMouse.mState.mXreal = vncXY.x;
-				vncEvt.mMouse.mState.mYreal = vncXY.y;
-				vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
-			}
-		}
-		else if (!NaviManager::Get().isAnyNaviFocused() &&
-			((mNavigator->getState() == Navigator::SModeling) ||
-			(mNavigator->getState() == Navigator::SAvatarEdit))
-			)
-		{
-			// the mouse is out of a naviPanel
-			// normalize (x, y) on 0..1 and get the ray emitted from the camera
-			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-			// compute the picking
-			mNavigator->computeMousePicking(mouseRay);
-		}
-		else
-		{
-			// the mouse is on a naviPanel
-			return OgreFrameListener::mousePressed(evt);
-		}
-	}
+        // 3D picking of Navi panels if no 2D panel focused
+        mNavigator->resetMousePicking();
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            !NaviManager::Get().isAnyNaviFocused())
+        {
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // compute the picking
+            mNavigator->computeMousePicking(mouseRay);
+            // Navi panel ?
+            String naviName;
+            int naviX, naviY;
+            Avatar* avatar;
+            MovableObject* vncMovableObj = 0;
+            Vector2 vncXY;
+            if (navigatorGUI->isContextVisible())
+                navigatorGUI->contextHide();
+            else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
+            {
+                MovableObject* vlcMovableObj = 0;
+                if (mNavigator->is1AvatarHitByMouse(avatar))
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
+                else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
+                else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
+                {
+                    Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
+                    String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                }
+            }
+            else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+            {
+                NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
+                NaviManager::Get().focusNavi(navi);
+                navi->injectMouseDown(naviX, naviY);
+            }
+            // VNC panel ?
+            else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
+            {
+                Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+                ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+                Evt vncEvt;
+                vncEvt.mType = evt.mType;
+                vncEvt.mMouse.mState = evt.mState;
+                vncEvt.mMouse.mState.mXreal = vncXY.x;
+                vncEvt.mMouse.mState.mYreal = vncXY.y;
+                vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+            }
+        }
+        else if (!NaviManager::Get().isAnyNaviFocused() &&
+            ((mNavigator->getState() == Navigator::SModeling) ||
+            (mNavigator->getState() == Navigator::SAvatarEdit))
+            )
+        {
+            // the mouse is out of a naviPanel
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // compute the picking
+            mNavigator->computeMousePicking(mouseRay);
+        }
+        else
+        {
+            // the mouse is on a naviPanel
+            return OgreFrameListener::mousePressed(evt);
+        }
+    }
 
-	if (evt.mState.mButtons & MBMiddle)
-		mMouseMiddlePressed = true;
+    if (evt.mState.mButtons & MBMiddle)
+        mMouseMiddlePressed = true;
 
-	return OgreFrameListener::mousePressed(evt);
+    return OgreFrameListener::mousePressed(evt);
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
 {
-	NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-	if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
-	{
-		int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    {
+        int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
-		// Updating Navi with the mouse released
-		// 3D picking of Navi panels if any NaviMaterial focused
-		if ((mNavigator->getState() == Navigator::SInWorld) &&
-			NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
-		{
-			std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
-			// normalize (x, y) on 0..1 and get the ray emitted from the camera
-			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-			// Compute Navi panel mouse location
-			Real closestDistance = -1.0f;
-			Vector2 closestUV;
-			Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
-			int naviX = 0, naviY = 0;
-			if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
-				closestDistance,
-				closestUV,
-				closestTriUV0, closestTriUV1, closestTriUV2))
-			{
-				// compute texture coordinates of the hit
-				mNavigator->computeNaviHit(focusedNavi,
-					closestUV,
-					closestTriUV0, closestTriUV1, closestTriUV2,
-					naviX, naviY);
-			}
-			NaviManager::Get().getFocusedNavi()->injectMouseUp(naviX, naviY);
-		}
-		// VNC panel ?
-		else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
-		{
-			MovableObject* vncMovableObj = mNavigator->getPickedMovable();
-			Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-			// normalize (x, y) on 0..1 and get the ray emitted from the camera
-			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-			// Compute VNC panel mouse location
-			Real closestDistance = -1.0f;
-			Vector2 closestUV;
-			Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
-			Vector2 vncXY;
-			if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
-				closestDistance,
-				closestUV,
-				closestTriUV0, closestTriUV1, closestTriUV2))
-			{
-				// compute texture coordinates of the hit
-				mNavigator->computeVncHit(closestUV,
-					closestTriUV0, closestTriUV1, closestTriUV2,
-					vncXY);
-				String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-				ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-				ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-				Evt vncEvt;
-				vncEvt.mType = evt.mType;
-				vncEvt.mMouse.mState = evt.mState;
-				vncEvt.mMouse.mState.mXreal = vncXY.x;
-				vncEvt.mMouse.mState.mYreal = vncXY.y;
-				vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
-			}
-		}
-		else if (!NaviManager::Get().isAnyNaviFocused() &&
-			((mNavigator->getState() == Navigator::SModeling) ||
-			(mNavigator->getState() == Navigator::SAvatarEdit))
-			)
-		{
-			if (mNavigator->getModeler()->isOnGizmo()) 
-				mNavigator->onMouseReleased(evt);
-		}
-		else
-			NaviManager::Get().injectMouseUp(buttonsId);
-	}
+        // Updating Navi with the mouse released
+        // 3D picking of Navi panels if any NaviMaterial focused
+        if ((mNavigator->getState() == Navigator::SInWorld) &&
+            NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly())
+        {
+            std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute Navi panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            int naviX = 0, naviY = 0;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, mNavigator->getNaviEntity(focusedNavi),
+                closestDistance,
+                closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeNaviHit(focusedNavi,
+                    closestUV,
+                    closestTriUV0, closestTriUV1, closestTriUV2,
+                    naviX, naviY);
+            }
+            NaviManager::Get().getFocusedNavi()->injectMouseUp(naviX, naviY);
+        }
+        // VNC panel ?
+        else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
+        {
+            MovableObject* vncMovableObj = mNavigator->getPickedMovable();
+            Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute VNC panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            Vector2 vncXY;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+                closestDistance,
+                closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeVncHit(closestUV,
+                    closestTriUV0, closestTriUV1, closestTriUV2,
+                    vncXY);
+                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+                ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+                Evt vncEvt;
+                vncEvt.mType = evt.mType;
+                vncEvt.mMouse.mState = evt.mState;
+                vncEvt.mMouse.mState.mXreal = vncXY.x;
+                vncEvt.mMouse.mState.mYreal = vncXY.y;
+                vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+            }
+        }
+        else if (!NaviManager::Get().isAnyNaviFocused() &&
+            ((mNavigator->getState() == Navigator::SModeling) ||
+            (mNavigator->getState() == Navigator::SAvatarEdit))
+            )
+        {
+            if (mNavigator->getModeler()->isOnGizmo()) 
+                mNavigator->onMouseReleased(evt);
+        }
+        else
+            NaviManager::Get().injectMouseUp(buttonsId);
+    }
 
-	mMouseMiddlePressed = false;
+    mMouseMiddlePressed = false;
 
-	return OgreFrameListener::mouseReleased(evt);
+    return OgreFrameListener::mouseReleased(evt);
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
-	if (mode == mCameraMode) return;
+    if (mode == mCameraMode) return;
+    mCameraMode = mode;
 
-	if ((mNavigator->getState() == Navigator::SAvatarEdit ||
-		mNavigator->getState() == Navigator::SModeling) &&
-		getCameraMode() == CMAroundPerson) return;
+    if ((mNavigator->getState() == Navigator::SAvatarEdit ||
+        mNavigator->getState() == Navigator::SModeling) &&
+        getCameraMode() == CMAroundPerson) return;
 
-	Avatar* userAvatar = mNavigator->getUserAvatar();
+    Avatar* userAvatar = mNavigator->getUserAvatar();
+    if (userAvatar == 0) return;
 
-	if (mCamera->getParentSceneNode() != 0)
-		mCamera->getParentSceneNode()->detachObject(mCamera);
+    if (mCamera->getParentSceneNode() != 0)
+        mCamera->getParentSceneNode()->detachObject(mCamera);
 
-	switch (mode)
-	{
-	case CMDetached:
-		break;
-	case CM1stPerson:
-	case CM1stPersonWithMouse:
-		mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
-		mCamNode->setOrientation(Quaternion::IDENTITY);
-		mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
-		mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
-		userAvatar->setMvtType(Avatar::MT1stPerson);
-		break;
-	case CM3rdPerson:
-		mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
-		mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
-		userAvatar->setMvtType(Avatar::MT3rdPerson);
-		break;
-	case CMAroundPerson:
-		mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
-		//mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode")->attachObject(mCamera);
-		mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode")->attachObject(mCamera);
-		userAvatar->setMvtType(Avatar::MTArountPerson);
-		break;
-	}
-	userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
-	userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
-	NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-	if (navigatorGUI != 0)
-	{
-		//navigatorGUI->SetMouseVisibility(mode != CM1stPerson && mode != CMAroundPerson);
-		navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
-		//navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson && mode != CMAroundPerson);
-		navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
-		NaviManager::Get().deFocusAllNavis();
-	}
-	mCameraMode = mode;
+    switch (mode)
+    {
+    case CMDetached:
+        break;
+    case CM1stPerson:
+    case CM1stPersonWithMouse:
+        mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
+        mCamNode->setOrientation(Quaternion::IDENTITY);
+        mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
+        mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
+        userAvatar->setMvtType(Avatar::MT1stPerson);
+        break;
+    case CM3rdPerson:
+        mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
+        mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
+        userAvatar->setMvtType(Avatar::MT3rdPerson);
+        break;
+    case CMAroundPerson:
+        mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
+        //mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode")->attachObject(mCamera);
+        mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode")->attachObject(mCamera);
+        userAvatar->setMvtType(Avatar::MTArountPerson);
+        break;
+    }
+    userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
+    userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
+    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
+    if (navigatorGUI != 0)
+    {
+        //navigatorGUI->SetMouseVisibility(mode != CM1stPerson && mode != CMAroundPerson);
+        navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
+        //navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson && mode != CMAroundPerson);
+        navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
+        NaviManager::Get().deFocusAllNavis();
+    }
+    mCameraMode = mode;
 }
 
 //-------------------------------------------------------------------------------------
 NavigatorFrameListener::CameraMode NavigatorFrameListener::getCameraMode()
 {
-	return mCameraMode;
+    return mCameraMode;
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorFrameListener::detachCamera()
 {
-	if (mSavedCameraMode != CMDetached)
-		return;
-	mSavedCameraMode = getCameraMode();
-	setCameraMode(CMDetached);
+    if (mSavedCameraMode != CMDetached)
+        return;
+    mSavedCameraMode = getCameraMode();
+    setCameraMode(CMDetached);
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorFrameListener::attachCamera()
 {
-	if (mSavedCameraMode == CMDetached)
-		return;
-	setCameraMode(mSavedCameraMode);
-	mSavedCameraMode = CMDetached;
+    if (mSavedCameraMode == CMDetached)
+        return;
+    setCameraMode(mSavedCameraMode);
+    mSavedCameraMode = CMDetached;
 }
 
 //-------------------------------------------------------------------------------------

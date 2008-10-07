@@ -86,6 +86,8 @@ public:
     static void addEntity(Entity* entity, bool sendNewEvt);
 	/** Remove 1 entity. */
     static void removeEntity(Entity* entity, bool sendLostEvt);
+	/** Clean up entities. */
+    static void cleanUpEntities();
 	/** Helper function to get entities. */
     static EntityMap& getEntities() { return entities; }
 

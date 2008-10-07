@@ -56,7 +56,7 @@ public:
 
     void onActionOnEntity(RakNet::BitStream *bitStream);
 
-    void onLostNode(const NodeId& nodeId);
+    void cleanUpNodes();
 
     void addNode(const NodeId& nodeId, Node* node) { mNodes[nodeId] = node; }
 

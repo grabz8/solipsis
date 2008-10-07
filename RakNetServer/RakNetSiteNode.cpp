@@ -39,13 +39,13 @@ RakNetSiteNode::RakNetSiteNode() :
     RakNetNode("site"),
     mEntity(0)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::RakNetSiteNode()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::RakNetSiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 RakNetSiteNode::~RakNetSiteNode()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::~RakNetSiteNode()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::~RakNetSiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ bool RakNetSiteNode::SerializeConstruction(BitStream *bitStream, SerializationCo
 //-------------------------------------------------------------------------------------
 bool RakNetSiteNode::Serialize(BitStream *bitStream, SerializationContext *serializationContext)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Serialize()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetSiteNode::Serialize()");
 
     bitStream->Write(mSystemAddress);
     RakNetConnection::SerializeString(bitStream, mNodeId);

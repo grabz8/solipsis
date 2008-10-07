@@ -42,13 +42,14 @@ NodeEventListener::NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient) :
 //-------------------------------------------------------------------------------------
 NodeEventListener::~NodeEventListener()
 {
-    delete mXmlRpcClientAsync;
+    if (mXmlRpcClientAsync != 0)
+        delete mXmlRpcClientAsync;
 }
 
 //-------------------------------------------------------------------------------------
 void NodeEventListener::run()
 {
-    delete mXmlRpcClientAsync;
+    assert(mXmlRpcClientAsync == 0);
     mXmlRpcClientAsync = new NavigatorXMLRPCClient(*mXmlRpcClient);
 
     // receive new events
@@ -74,6 +75,12 @@ void NodeEventListener::run()
         else
             CommonTools::System::sleep(10);
     }
+
+    delete mXmlRpcClientAsync;
+    mXmlRpcClientAsync = 0;
+
+    mNodeEventsList1.clear();
+    mNodeEventsList2.clear();
 }
 
 //-------------------------------------------------------------------------------------

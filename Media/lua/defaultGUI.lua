@@ -37,6 +37,8 @@ function uichatListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
 		if naviDataName == "pageLoaded" then
 			naviShow(naviName)
+		elseif naviDataName == "pageClosed" then
+			navigator:mainMenuClick("Chat")
 		elseif naviDataName == "sendMessage" then
 			-- Reset input
 			naviEvaluateJS(naviName, "$('inputChat').value = ''")
@@ -51,6 +53,8 @@ function uicommandsListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
 		if naviDataName == "pageLoaded" then
 			naviShow(naviName)
+		elseif naviDataName == "pageClosed" then
+			navigator:mainMenuClick("Commands")
 		end
 	end
 end

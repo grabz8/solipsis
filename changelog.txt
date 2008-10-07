@@ -711,3 +711,9 @@ Navi.js compressed with YUIcompressor to optimize datas size of web pages served
 main menu bar, about, commands panels added
 
 ---------------------------
+07/10/08
+
+close icon added to panels
+now user return to login panel after exiting from 1 scene
+
+---------------------------

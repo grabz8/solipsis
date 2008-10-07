@@ -38,12 +38,7 @@ NodeManager::NodeManager()
 NodeManager::~NodeManager()
 {
     // Destroy nodes
-    for(NodeMap::const_iterator it=mNodes.begin();it!=mNodes.end();it=mNodes.begin())
-    {
-        Node *node = it->second;
-        mNodes.erase(it->first);
-        delete node;
-    }
+    cleanUpNodes();
 }
 
 //-------------------------------------------------------------------------------------
@@ -83,10 +78,9 @@ void NodeManager::onActionOnEntity(RakNet::BitStream *bitStream)
 }
 
 //-------------------------------------------------------------------------------------
-void NodeManager::onLostNode(const NodeId& nodeId)
+void NodeManager::cleanUpNodes()
 {
-    NodeMap::const_iterator it = mNodes.find(nodeId);
-    if (it != mNodes.end())
+    for(NodeMap::const_iterator it=mNodes.begin();it!=mNodes.end();it=mNodes.begin())
     {
         Node *node = it->second;
         mNodes.erase(it->first);

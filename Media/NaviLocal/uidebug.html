@@ -18,6 +18,10 @@
             {
                 new NaviData('pageLoaded').add({naviName:'uidebug'}).send();
             }
+            function pageClosed()
+            {
+                new NaviData('pageClosed').send();
+            }
             function debugCommand(command, parameters)
             {
                 new NaviData('debugCommand').add({cmd:command}).add({params:parameters}).send();
@@ -142,6 +146,19 @@
                 top: 150px;
             }
             #demoPhysics1Button { left: 0px; top: 180px; }
+            .closeIcon
+            {
+                background-image: url(closeIcon.png);
+                background-repeat: no-repeat;
+                position: absolute;
+	            top: 8px;
+                left: 255px;
+                float: left;
+                width: 16px;
+                height: 16px;
+                background-position: 0px 0px;
+            }
+            .closeIcon:hover { background-position: 0px -16px; }
         </style>
     </head>
 
@@ -207,6 +224,7 @@
 				    </div>
 			    </div>
             </div>
+            <span id="mTbIconClose" class="closeIcon" onclick="pageClosed()"></span>
         </div>
     </body>
 </html>

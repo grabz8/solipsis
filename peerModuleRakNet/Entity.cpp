@@ -76,6 +76,16 @@ void Entity::removeEntity(Entity* entity, bool sendLostEvt)
 }
 
 //-------------------------------------------------------------------------------------
+void Entity::cleanUpEntities()
+{
+    for(EntityMap::const_iterator it=entities.begin();it!=entities.end();it=entities.begin())
+    {
+        Entity *entity = it->second;
+        delete entity;
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void Entity::DeserializeDestruction(RakNet::BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::DeserializeDestruction()");

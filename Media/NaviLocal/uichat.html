@@ -8,6 +8,10 @@
             {
                 new NaviData('pageLoaded').send();
             }
+            function pageClosed()
+            {
+                new NaviData('pageClosed').send();
+            }
             function sendMessage(message)
             {
                 new NaviData('sendMessage').add({msg:message}).send();
@@ -48,6 +52,19 @@
 	            left: 0px;
 	            top: 20px;
             }
+            .closeIcon
+            {
+                background-image: url(closeIcon.png);
+                background-repeat: no-repeat;
+                position: absolute;
+	            top: 2px;
+                left: 497px;
+                float: left;
+                width: 16px;
+                height: 16px;
+                background-position: 0px 0px;
+            }
+            .closeIcon:hover { background-position: 0px -16px; }
         </style>
     </head>
 
@@ -62,9 +79,10 @@
             </div>
             <form id="chatForm" action="" visible="false" onsubmit="sendMessage(document.getElementById('inputChat').value);return false;">
                 <div id="chatInput">
-                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="81" />
+                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="78" />
                 </div>
             </form>
+            <span id="mTbIconClose" class="closeIcon" onclick="pageClosed()"></span>
         </div>
     </body>
 </html>

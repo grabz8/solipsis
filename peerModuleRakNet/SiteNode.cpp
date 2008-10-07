@@ -23,9 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "SiteNode.h"
 #include "Peer.h"
-#include "OgreHelpers.h"
+#include <CTLog.h>
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -34,11 +35,13 @@ SiteNode::SiteNode() :
     RakNetSiteNode(),
     Node()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::SiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 SiteNode::~SiteNode()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::~SiteNode()");
 }
 
 //-------------------------------------------------------------------------------------

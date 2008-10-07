@@ -129,6 +129,7 @@ public:
 */
 
     OgreApplication* getOgreApplication() { return mOgreApplication; }
+    OgreFrameListener* getFrameListener() { return mFrameListener; }
     SceneManager* getSceneMgrPtr();
     RenderWindow* getRenderWindowPtr();
     Camera* getCameraPtr();

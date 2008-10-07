@@ -223,6 +223,7 @@ public:
 
     bool quit();
     bool connect();
+    bool disconnect();
     bool mainMenuClick(const String& item);
     bool contextItemSelected(const String& item);
     bool sendMessage(const String& message);

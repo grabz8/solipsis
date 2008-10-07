@@ -1237,6 +1237,42 @@ bool Navigator::connect()
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::disconnect()
+{
+    if (mXmlRpcClient == 0)
+        return false;
+
+    // Stop the node events listener thread
+    NodeEventListener::stop();
+    NodeEventListener::finalize();
+
+    // Destroy XMLRPC client
+    delete mXmlRpcClient;
+    mXmlRpcClient = 0;
+
+    // reset the camera mode
+    ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CMDetached);
+
+    // Clean up allocated peers datas
+    cleanUpPeers(true);
+    mUserAvatar = 0;
+
+    if (mSceneMgr)
+    {
+        // destroy the sun light
+        mSceneMgr->destroyLight("SunLight");
+    }
+
+    // Reset node identifier
+    mOgrePeerManager->setNodeId("");
+
+    mState = SLogin;
+    mNavigatorGUI->login();
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::mainMenuClick(const String& item)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::mainMenuClick() item=%s", item.c_str());
@@ -1245,35 +1281,51 @@ bool Navigator::mainMenuClick(const String& item)
 
     mNavigatorGUI->contextHide();
 
+    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
+
     // Perform action associated to item selected
     // Submenu File
     if (item == "Exit")
-        quit();
+        disconnect();
     // Submenu View
     else if (item == "1stPerson")
-        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM1stPerson);
+        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM1stPerson);
     else if (item == "1stPersonMouse")
-        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM1stPersonWithMouse);
+        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM1stPersonWithMouse);
     else if (item == "3rdPerson")
-        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);
+        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM3rdPerson);
     else if (item == "Orbit")
-        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CMAroundPerson);
+        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
     // Submenu Panels
     else if (item == "Chat")
         mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
     else if (item == "Avatar")
     {
         if (mState == SInWorld)
+        {
+            navigatorFrameListener->saveLastCameraMode();
+            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
             mNavigatorGUI->avatarMainShow();
+        }
         else if (mState == SAvatarEdit)
+        {
+            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
             mNavigatorGUI->avatarMainUnload();
+        }
     }
     else if (item == "Modeler")
     {
         if (mState == SInWorld)
+        {
+            navigatorFrameListener->saveLastCameraMode();
+            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
             mNavigatorGUI->modelerMainShow();
+        }
         else if (mState == SModeling)
+        {
+            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
             mNavigatorGUI->modelerMainUnload();
+        }
     }
     // Submenu Help
     else if (item == "About")

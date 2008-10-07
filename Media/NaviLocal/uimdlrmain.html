@@ -89,6 +89,19 @@
 	            width: 240px;
 	            height: 472px;
             }
+            .closeIcon
+            {
+                background-image: url(closeIcon.png);
+                background-repeat: no-repeat;
+                position: absolute;
+	            top: 10px;
+                left: 233px;
+                float: left;
+                width: 16px;
+                height: 16px;
+                background-position: 0px 0px;
+            }
+            .closeIcon:hover { background-position: 0px -16px; }
         </style>
     </head>
 
@@ -158,6 +171,7 @@
                 
             </div>
             
+            <span id="mTbIconClose" class="closeIcon" onclick="elementClicked('FileExit')"></span>
         </div>
     </body>
 </html>

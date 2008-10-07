@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorGUI.h"
 #include "Navigator.h"
+#include "NavigatorFrameListener.h"
 #include "DebugHelpers.h"
 #include <CTLog.h>
 #include <CTStringHelpers.h>
@@ -209,6 +210,10 @@ void NavigatorGUI::inWorld()
     }
     else
         mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->show(true);
+
+    // Set next Navi UI
+    mCurrentNavi = NAVI_MAINMENU;
+    mCurrentNaviCreationDate = 0;
 }
 
 //-------------------------------------------------------------------------------------
@@ -390,6 +395,7 @@ void NavigatorGUI::modelerPropShow()
 
 		// page loaded
 		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::modelerPropPageLoaded));
+        navi->bind("pageClosed", NaviDelegate(this, &NavigatorGUI::modelerPropPageClosed));
 
 		// generic function for all the binds
 		//navi->bind("MdlrProperties", NaviDelegate(this, &NavigatorGUI::modelerProperties));
@@ -611,6 +617,7 @@ void NavigatorGUI::avatarPropShow()
 
 		// page loaded
 		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::avatarPropPageLoaded));
+        navi->bind("pageClosed", NaviDelegate(this, &NavigatorGUI::avatarPropPageClosed));
 
 		// detect a changement on the properties tabber
 		navi->bind("ClickOnTabber", NaviDelegate(this, &NavigatorGUI::avatarTabberChange));
@@ -1321,6 +1328,7 @@ void NavigatorGUI::switchDebug()
         navi->setMask("uidebug.png");
         navi->setOpacity(0.50f);
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
+        navi->bind("pageClosed", NaviDelegate(this, &NavigatorGUI::debugPageClosed));
         navi->bind("debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
         navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
         navi->bind("navCommand", NaviDelegate(this, &NavigatorGUI::navCommand));
@@ -1387,6 +1395,14 @@ void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
     // Show Navi UI debug
     if (mNavisStates[NAVI_DEBUG] == NSCreated)
         mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG])->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::debugPageClosed(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageClosed()");
+
+    switchDebug();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1947,7 +1963,9 @@ void NavigatorGUI::modelerMainFileSave(const NaviData& naviData)
 void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileExit()");
-	
+
+    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
+    navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
     modelerMainUnload();
 }
 
@@ -2266,6 +2284,20 @@ void NavigatorGUI::modelerPropPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (mNavisStates[NAVI_MODELERPROP] == NSCreated)
         navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropPageClosed(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerPropPageClosed()");
+
+    if (mNavigator->getModeler()->isSelectionLocked() && !isModelerMainVisible())
+    {
+        modelerPropHide();
+        modelerMainShow();
+    }
+    else 
+        modelerMainUnload();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3219,6 +3251,9 @@ void NavigatorGUI::avatarMainFileSaveAs(const NaviData& naviData)
 void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileExit()");
+
+    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
+    navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
     avatarMainUnload();
 }
 //-------------------------------------------------------------------------------------
@@ -3282,6 +3317,20 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (mNavisStates[NAVI_AVATARPROP] == NSCreated)
         navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropPageClosed(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropPageClosed()");
+
+	if (!isAvatarMainVisible())
+	{
+		avatarPropHide();
+		avatarMainShow();
+	}
+	else 
+		avatarMainUnload();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
