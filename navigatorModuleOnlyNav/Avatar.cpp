@@ -165,7 +165,7 @@ void Avatar::onSceneNodeChanged()
     // Name Label
     if (mNameLabel == 0)
     {
-        mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false);
+        mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false, "BerlinSans32");
         mNameLabel->setScale(0.1f);
         mNameLabel->setCharacterHeight(1);
 		mNameLabel->setSpaceWidth(1);
@@ -179,7 +179,7 @@ void Avatar::onSceneNodeChanged()
 	// Chat Label
     if (mChatLabel == 0)
     {
-        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false);
+        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
         mChatLabel->setScale(0.12f);
         mChatLabel->setCharacterHeight(1);
 		mChatLabel->setSpaceWidth(1);
