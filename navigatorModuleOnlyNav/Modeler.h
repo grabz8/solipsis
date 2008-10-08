@@ -73,6 +73,9 @@ public:
 	/// Init the modeler mode
 	bool	init(const String& pPath);
 
+    /// Clean up
+    void cleanUp();
+
 	/// Create a plane 
 	bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
 	/// Create a box 

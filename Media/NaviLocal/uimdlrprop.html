@@ -106,8 +106,8 @@
                 document.getElementById('MaterialVLCParamsHelpers').options[2].value = '--sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=' + localIP + ':8080}}';
                 document.getElementById('MaterialVLCParamsHelpers').options[4].value = '--sout #transcode{vcodec=mp2v,acodec=mpga}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=' + localIP + ':8080}}';
                 <!-- Assign the local IP address for received streams -->
-                document.getElementById('MaterialVLCRemoteMrlHelpers').options[1].value = 'udp://@' + localIP + ':1234}}';
-                document.getElementById('MaterialVLCRemoteMrlHelpers').options[2].value = 'http://' + localIP + ':8080}}';
+                document.getElementById('MaterialVLCRemoteMrlHelpers').options[1].value = 'udp://@' + localIP + ':1234';
+                document.getElementById('MaterialVLCRemoteMrlHelpers').options[2].value = 'http://' + localIP + ':8080';
                 document.getElementById('MaterialVNCHost').value = 'localhost';
                 document.getElementById('MaterialVNCPort').value = '5900';
                 document.getElementById('MaterialVNCPwd').value = 'secret';

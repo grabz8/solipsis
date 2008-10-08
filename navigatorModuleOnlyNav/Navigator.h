@@ -323,8 +323,6 @@ protected:
     };
     OgreLogger mOgreLogger;
 
-    void cleanUpPeers(bool cleanUpLocalPeers);
-
 #ifdef POOL
     virtual void onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity);
     virtual void onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity);

@@ -62,7 +62,7 @@ Modeler::~Modeler(void)
 	mSceneManager->destroyEntity(mGenericTorus);
 	mSceneManager->destroyEntity(mGenericTube);
 	mSceneManager->destroyEntity(mGenericRing);
-    // Meshed should be freed when no more referenced
+    // Meshes should be freed when no more referenced
 /*    MeshManager::getSingleton().remove("Plane.mesh");
     MeshManager::getSingleton().remove("Box.mesh");
     MeshManager::getSingleton().remove("Prism.mesh");
@@ -175,6 +175,13 @@ bool Modeler::init(const String& pPath)
 
 	init = true;
 	return true; // Success
+}
+
+/// Create a plane.
+void Modeler::cleanUp()
+{
+    mSelection->deselect_all();
+    mSelection->clearObjects();
 }
 
 /// Create a plane.

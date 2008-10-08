@@ -303,7 +303,10 @@ void Navi::loadResource(Resource* resource)
 void Navi::update()
 {
 	if(!isWinFocused) return;
-	if(!isVisible) return;
+// BEGIN GREG
+//	if(!isVisible) return;
+    if(!isVisible && !fadingOut) return;
+// END GREG
 
 // BEGIN GREG
 //	if(forceMax || fadingIn || fadingOut)
@@ -393,7 +396,10 @@ void Navi::update()
 	{
 		if(fadingOutEnd < timer.getMilliseconds())
 		{
-			fadingOutStart = fadingOutEnd = fadeMod = fadingOut = isVisible = 0;
+// BEGIN GREG
+//			fadingOutStart = fadingOutEnd = fadeMod = fadingOut = isVisible = 0;
+			fadingOutStart = fadingOutEnd = fadeMod = fadingOut = 0;
+// END GREG
 
 			if(!isMaterial)
 				overlay->hide();
@@ -924,8 +930,13 @@ Navi* Navi::hide(bool fade, unsigned short fadeDurationMS)
 	else
 	{
 		if(!isMaterial) overlay->hide();
-		isVisible = false;
+// BEGIN GREG
+//		isVisible = false;
+// END GREG
 	}
+// BEGIN GREG
+	isVisible = false;
+// END GREG
 
 	return this;
 }

@@ -98,8 +98,6 @@ Navigator::~Navigator()
     // Destroy XMLRPC client
     delete mXmlRpcClient;
 
-    // Clean up allocated peers datas
-    cleanUpPeers(true);
     // Destroy OgrePeer manager
     delete mOgrePeerManager;
 
@@ -1254,17 +1252,17 @@ bool Navigator::disconnect()
     ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CMDetached);
 
     // Clean up allocated peers datas
-    cleanUpPeers(true);
+    mOgrePeerManager->cleanUp();
     mUserAvatar = 0;
+
+    // Clean up modeler
+    mModeler->cleanUp();
 
     if (mSceneMgr)
     {
         // destroy the sun light
         mSceneMgr->destroyLight("SunLight");
     }
-
-    // Reset node identifier
-    mOgrePeerManager->setNodeId("");
 
     mState = SLogin;
     mNavigatorGUI->login();
@@ -1278,8 +1276,6 @@ bool Navigator::mainMenuClick(const String& item)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::mainMenuClick() item=%s", item.c_str());
 
     if (mNavigatorGUI == 0) return true;
-
-    mNavigatorGUI->contextHide();
 
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
 
@@ -1376,17 +1372,6 @@ bool Navigator::sendMessage(const String& message)
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 #endif
-}
-
-//-------------------------------------------------------------------------------------
-void Navigator::cleanUpPeers(bool cleanUpLocalPeers)
-{
-    if (mOgrePeerManager == 0)
-        return;
-
-    mOgrePeerManager->removeAll(false);
-    if (cleanUpLocalPeers)
-        mOgrePeerManager->removeAll(true);
 }
 
 //-------------------------------------------------------------------------------------

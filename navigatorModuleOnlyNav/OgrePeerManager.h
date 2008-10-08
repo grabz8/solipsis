@@ -95,6 +95,8 @@ public:
 
     // Remove all peers (locals or networked)
     void removeAll(bool local);
+    // Clean up
+    void cleanUp();
 
 	// Update
 #ifdef POOL

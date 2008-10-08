@@ -717,3 +717,13 @@ close icon added to panels
 now user return to login panel after exiting from 1 scene
 
 ---------------------------
+08/10/08
+
+status bar added
+mainmenu + statusbar alpha mask added
+cleanup added into OgrePeerManager, Modeler
+WorldsServer web pages are now displayed by navigator only after bg image loaded
+remotemrl input final extra chars removed
+suppr key in modeler prop panel does not del current object (because used in HTML inputs)
+
+---------------------------

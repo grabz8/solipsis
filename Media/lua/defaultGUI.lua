@@ -157,8 +157,15 @@ function NavigatorLua:createGUI(guiName, ...)
 	if guiName == "uimainmenu" then
 		-- Create Navi UI main menu
 		naviMgrCreateNavi("uimainmenu", "local://uimainmenu.html", "TopLeft", 0, 0, 512, 16, false, false)
+		naviSetMask("uimainmenu", "alphafade512x16.png")
 		naviSetIgnoreBounds("uimainmenu", true)
 		naviAddEventListener("uimainmenu", "uimainmenuListener")
+		return true
+	elseif guiName == "uistatusbar" then
+		-- Create Navi UI status bar
+		naviMgrCreateNavi("uistatusbar", "local://uistatusbar.html", "BottomLeft", 0, 0, 512, 16, false, false)
+		naviSetMask("uistatusbar", "alphafade512x16.png")
+		naviSetIgnoreBounds("uistatusbar", true)
 		return true
 	elseif guiName == "uichat" then
 		-- Create Navi UI chat

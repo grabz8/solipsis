@@ -53,6 +53,7 @@ public:
         NAVI_AUTHENTFB,
         NAVI_AUTHENTWS,
         NAVI_MAINMENU,
+        NAVI_STATUSBAR,
         NAVI_CHAT,
         NAVI_ABOUT,
         NAVI_COMMANDS,
@@ -77,7 +78,8 @@ protected:
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
     int mCurrentCtxtPanel;
-    time_t mCurrentNaviCreationDate;
+    unsigned long mCurrentNaviCreationDate;
+    unsigned long mStatusBarDisplayDate;
     std::string mLoginInfosText;
     Facebook *mFacebook;
 #ifdef UIDEBUG
@@ -104,6 +106,9 @@ public:
     // Informations text below login panel
     void setLoginInfosText(const std::string& infosText);
 
+    // Set text in status bar + display it for a while
+    void setStatusBarText(const std::string& statusText);
+
     // Main menu panel
     void mainmenuSwitch();
 
@@ -113,6 +118,7 @@ public:
     // Contextual panel
     void contextShow(int x, int y, NaviPanel ctxtPanel, const String& params);
     bool isContextVisible();
+    bool isContextFocused();
     void contextHide();
     void contextDestroy();
 
@@ -379,6 +385,7 @@ protected:
     NaviPanel getNaviPanel(const std::string& naviName);
     void naviToShowPageLoaded(const NaviData& naviData);
     void hidePreviousNavi();
+    void destroyNavi(NaviPanel naviPanel);
 
 public:
     const std::string& getNaviName(NaviPanel naviPanel);

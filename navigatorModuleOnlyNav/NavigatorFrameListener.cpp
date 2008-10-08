@@ -119,13 +119,20 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         }
     }
 
-    // hide chat panel ?
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    // Switching panels
+    if ((navigatorGUI != 0) && (mNavigator->getState()!= Navigator::SLogin))
     {
-        NaviLibrary::Navi* navi = NaviManager::Get().getFocusedNavi();
-        if (!navi->isMaterialOnly())
-            if ((evt.mKey == KC_F7) && (navi->getName() == navigatorGUI->getNaviName(NavigatorGUI::NAVI_CHAT)))
-                navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+        switch (evt.mKey)
+        {
+        case KC_F7: // Show/Hide chat panel
+            navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+            break;
+#ifdef UIDEBUG
+        case KC_PAUSE: // Show/Hide debug panel
+            navigatorGUI->switchDebug();
+            break;
+#endif
+        }
     }
 
     // is modeling ?
@@ -148,7 +155,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             case KC_W:
                 if (mNavigator->isOnLeftCTRL)
                 {
-                    //mNavigator->undo();
                     if( !modeler->isSelectionEmpty() )
                         modeler->getSelected()->undo();
                 }
@@ -183,7 +189,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             }
         }
 
-
         switch (evt.mKey)
         {
         case KC_F9:
@@ -205,31 +210,34 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             return OgreFrameListener::keyPressed(evt);
 
         case KC_DELETE:
-            //mNavigator->suppr();
-            if( !modeler->isSelectionEmpty() )
+            if (!navigatorGUI->isModelerPropVisible())
             {
-                // remove the current selection
-                modeler->removeSelection();
+                if( !modeler->isSelectionEmpty() )
+                {
+                    // remove the current selection
+                    modeler->removeSelection();
 
-                // hide the gizmos axes
-                modeler->getSelection()->mTransformation->showGizmosMove(false);
-                modeler->getSelection()->mTransformation->showGizmosRotate(false);
-                modeler->getSelection()->mTransformation->showGizmosScale(false);
+                    // hide the gizmos axes
+                    modeler->getSelection()->mTransformation->showGizmosMove(false);
+                    modeler->getSelection()->mTransformation->showGizmosRotate(false);
+                    modeler->getSelection()->mTransformation->showGizmosScale(false);
+                }
+                if (modeler->isSelectionLocked())
+                {
+                    navigatorGUI->modelerPropUnload();
+                    navigatorGUI->modelerMainShow();
+                }    
             }
-            if (modeler->isSelectionLocked())
-            {
-                navigatorGUI->modelerPropUnload();
-                navigatorGUI->modelerMainShow();
-            }    
-
             return OgreFrameListener::keyPressed(evt);
 
         case KC_W:
-            if (mNavigator->isOnLeftCTRL) 
+            if (!navigatorGUI->isModelerPropVisible())
             {
-                //mNavigator->undo();
-                if( !modeler->isSelectionEmpty() )
-                    modeler->getSelected()->undo();
+                if (mNavigator->isOnLeftCTRL) 
+                {
+                    if( !modeler->isSelectionEmpty() )
+                        modeler->getSelected()->undo();
+                }
             }
             return OgreFrameListener::keyPressed(evt);
         }
@@ -285,18 +293,12 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     switch (evt.mKey)
     {
     case KC_ESCAPE:
-        if (mNavigator->getState() == Navigator::SInWorld)
+        if (mNavigator->getState() != Navigator::SLogin)
         {
             mNavigator->disconnect();
             return true;
         }
         break;
-#ifdef UIDEBUG
-    case KC_PAUSE: // Show/Hide debug panel
-        if (navigatorGUI != 0)
-            navigatorGUI->switchDebug();
-        break;
-#endif
 
     case KC_F1:
         mNavigator->fakeSurroundingArea(1);
@@ -315,10 +317,6 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         break;
     case KC_F6:
         mNavigator->fakeSurroundingArea(0);
-        break;
-
-    case KC_F7:
-        navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
         break;
 
     case KC_F8:
@@ -714,6 +712,9 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
         // Updating Navi with the mouse pressed
         NaviManager::Get().injectMouseDown(buttonsId);
 
+        if (navigatorGUI->isContextVisible() && !navigatorGUI->isContextFocused())
+            navigatorGUI->contextHide();
+
         // 3D picking of Navi panels if no 2D panel focused
         mNavigator->resetMousePicking();
         if ((mNavigator->getState() == Navigator::SInWorld) &&
@@ -729,9 +730,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             Avatar* avatar;
             MovableObject* vncMovableObj = 0;
             Vector2 vncXY;
-            if (navigatorGUI->isContextVisible())
-                navigatorGUI->contextHide();
-            else if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
+            if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
             {
                 MovableObject* vlcMovableObj = 0;
                 if (mNavigator->is1AvatarHitByMouse(avatar))
@@ -877,11 +876,12 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
 void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
     if (mode == mCameraMode) return;
-    mCameraMode = mode;
 
     if ((mNavigator->getState() == Navigator::SAvatarEdit ||
         mNavigator->getState() == Navigator::SModeling) &&
         getCameraMode() == CMAroundPerson) return;
+
+    mCameraMode = mode;
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar == 0) return;
@@ -918,11 +918,13 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
     {
-        //navigatorGUI->SetMouseVisibility(mode != CM1stPerson && mode != CMAroundPerson);
         navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
-        //navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson && mode != CMAroundPerson);
         navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
         NaviManager::Get().deFocusAllNavis();
+        if (mode == CM1stPerson)
+            navigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
+        else if (mode == CMAroundPerson)
+            navigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
     }
     mCameraMode = mode;
 }

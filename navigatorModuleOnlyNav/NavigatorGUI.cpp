@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "DebugHelpers.h"
+#include <OgreTimer.h>
 #include <CTLog.h>
 #include <CTStringHelpers.h>
 #include <CTNetSocket.h>
@@ -51,6 +52,7 @@ const std::string NavigatorGUI::mNavisNames[] = {
     "uiauthentfb",
     "uiauthentws",
     "uimainmenu",
+    "uistatusbar",
     "uichat",
     "uiabout",
     "uicommands",
@@ -73,6 +75,7 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mCurrentNavi(-1),
     mCurrentCtxtPanel(-1),
     mCurrentNaviCreationDate(0),
+    mStatusBarDisplayDate(0),
     mLoginInfosText(""),
     mFacebook(0),
     mWorldServerEventListener(this)
@@ -89,9 +92,6 @@ NavigatorGUI::~NavigatorGUI()
 {
     // Hide previous Navi UI
     hidePreviousNavi();
-
-    // Destroy context Navi UI panel
-    contextDestroy();
 
     // Finalizing Navi
     delete mNaviMgr;
@@ -129,17 +129,25 @@ bool NavigatorGUI::startup()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::update()
 {
-    time_t now;
-    time(&now);
+    unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 
     // Worlds server page loaded ?
-    if ((mCurrentNavi == NAVI_WORLDS) &&
+    if (((mCurrentNavi == NAVI_WORLDS) || (mCurrentNavi == NAVI_AUTHENTWS)) &&
         (mCurrentNaviCreationDate != 0) &&
-        (now - mCurrentNaviCreationDate > mNavigator->getWorldServerTimeout()))
+        (now - mCurrentNaviCreationDate > (unsigned long)mNavigator->getWorldServerTimeout()*1000))
     {
         setLoginInfosText("Unable to contact Worlds server ...");
         // Return to Navi UI login
         login();
+    }
+    // Status bar update
+    if ((mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
+    {
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_STATUSBAR]);
+        if (navi == 0) return;
+        if (navi->getVisibility())
+            navi->hide(true);
+        mStatusBarDisplayDate = 0;
     }
 }
 
@@ -163,6 +171,36 @@ void NavigatorGUI::login()
 {
     // Hide previous Navi UI
     hidePreviousNavi();
+
+    // Destroy context Navi UI panel
+    contextDestroy();
+    destroyNavi(NAVI_CTXTAVATAR);
+    destroyNavi(NAVI_CTXTWWW);
+    destroyNavi(NAVI_CTXTVLC);
+    destroyNavi(NAVI_CTXTVNC);
+
+    // Destroy Navi UI status bar
+    mStatusBarDisplayDate = 0;
+    destroyNavi(NAVI_STATUSBAR);
+
+    // Destroy Navi UI chat panel
+    destroyNavi(NAVI_CHAT);
+
+    // Destroy Navi UI about panel
+    destroyNavi(NAVI_ABOUT);
+
+    // Destroy Navi UI commands
+    destroyNavi(NAVI_COMMANDS);
+
+	// Hide the modeler panels
+	modelerMainUnload();
+	// Hide the avatar panels
+	avatarMainUnload();
+
+#ifdef UIDEBUG
+    // Destroy UI debug
+    destroyNavi(NAVI_DEBUG);
+#endif
 
     if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
     {
@@ -194,22 +232,18 @@ void NavigatorGUI::inWorld()
     hidePreviousNavi();
 
     switchLuaNavi(NAVI_MAINMENU);
-    if (mNavisStates[NAVI_MAINMENU] == NSNotCreated)
-    {
-        // Create Navi UI main menu
-        // Lua
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_MAINMENU].c_str()))
-        {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::inWorld() Unable to create GUI called %s", mNavisNames[NAVI_MAINMENU].c_str());
-            return;
-        }
 #ifdef UIDEBUG
-        mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+    mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
-        mNavisStates[NAVI_MAINMENU] = NSCreated;
+
+    // Create Navi UI status bar
+    // Lua
+    if (mNavisStates[NAVI_STATUSBAR] == NSNotCreated)
+    {
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_STATUSBAR].c_str()))
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + mNavisNames[NAVI_STATUSBAR], "NavigatorGUI::inWorld()"); 
+        mNavisStates[NAVI_STATUSBAR] = NSCreated;
     }
-    else
-        mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->show(true);
 
     // Set next Navi UI
     mCurrentNavi = NAVI_MAINMENU;
@@ -226,6 +260,27 @@ void NavigatorGUI::setLoginInfosText(const std::string& infosText)
     if (navi == 0) return;
     navi->evaluateJS("$('infosText').innerHTML = '" + mLoginInfosText + "'");
     mLoginInfosText.clear();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::setStatusBarText(const std::string& statusText)
+{
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_STATUSBAR]);
+    navi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
+    mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
+    if (!navi->getVisibility())
+        navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::addChatText(const String& message)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
+    std::string jsStr = "$('textChat').value += '" + message + "\\n'";
+    navi->evaluateJS(jsStr);
+    navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
 
 //-------------------------------------------------------------------------------------
@@ -253,16 +308,23 @@ bool NavigatorGUI::isContextVisible()
 }
 
 //-------------------------------------------------------------------------------------
+bool NavigatorGUI::isContextFocused()
+{
+    if (mCurrentCtxtPanel == -1) return false;
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    return ((navi != 0) && (navi == mNaviMgr->getFocusedNavi()));
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::contextHide()
 {
     if (mCurrentCtxtPanel == -1) return;
-    if (mNavisStates[mCurrentCtxtPanel] != NSNotCreated)
-    {
-        // Hide Navi UI context
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
-        navi->hide();
-        mCurrentCtxtPanel = -1;
-    }
+    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
+
+    // Hide Navi UI context
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    navi->hide();
+    mCurrentCtxtPanel = -1;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1371,17 +1433,6 @@ void NavigatorGUI::debugRefreshUrl()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::addChatText(const String& message)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
-    std::string jsStr = "$('textChat').value += '" + message + "\\n'";
-    navi->evaluateJS(jsStr);
-    navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
-}
-
-//-------------------------------------------------------------------------------------
 void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
@@ -1489,7 +1540,7 @@ void NavigatorGUI::loginWorld(const NaviData& naviData)
 
     // Set next Navi UI
     mCurrentNavi = NAVI_WORLDS;
-    time(&mCurrentNaviCreationDate);
+    mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 }
 
 //-------------------------------------------------------------------------------------
@@ -1925,7 +1976,7 @@ void NavigatorGUI::authentWorldsServer()
 
     // Set next Navi UI
     mCurrentNavi = NAVI_AUTHENTWS;
-    time(&mCurrentNaviCreationDate);
+    mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 }
 
 //-------------------------------------------------------------------------------------
@@ -4589,6 +4640,18 @@ void NavigatorGUI::hidePreviousNavi()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::destroyNavi(NaviPanel naviPanel)
+{
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+    if (navi == 0) return;
+    mNaviMgr->destroyNavi(navi);
+    mNavisStates[naviPanel] = NSNotCreated;
+    if (mCurrentNavi == naviPanel) mCurrentNavi = -1;
+    if (mCurrentCtxtPanel == naviPanel) mCurrentCtxtPanel = -1;
+    if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
+}
+
+//-------------------------------------------------------------------------------------
 const std::string& NavigatorGUI::getNaviName(NaviPanel naviPanel)
 {
     return mNavisNames[naviPanel];
@@ -4642,12 +4705,14 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
         else
         {
             if (!createDestroy)
+            {
                 navi->hide(true);
+                NaviManager::Get().deFocusAllNavis();
+            }
             else
             {
                 mNaviMgr->destroyNavi(navi);
                 mNavisStates[naviPanel] = NSNotCreated;
-                mCurrentCtxtPanel = -1;
             }
         }
     }

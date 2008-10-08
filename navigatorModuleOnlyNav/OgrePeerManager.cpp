@@ -40,10 +40,12 @@ using namespace CommonTools;
 //-------------------------------------------------------------------------------------
 OgrePeerManager::OgrePeerManager(SceneManager* sceneMgr, IOgrePeerManagerCallbacks* callbacks) :
     mNodeId(""),
+    mUserAvatar(0),
     mSceneMgr(sceneMgr),
     mCallbacks(callbacks)
 {
     mOgrePeersMap.clear();
+    mReservedOgrePeersMap.clear();
 }
 
 //-------------------------------------------------------------------------------------
@@ -139,6 +141,21 @@ void OgrePeerManager::removeAll(bool local)
             break;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------
+void OgrePeerManager::cleanUp()
+{
+    removeAll(false);
+    removeAll(true);
+
+    mOgrePeersMap.clear();
+    mReservedOgrePeersMap.clear();
+
+    mNodeId = "";
+    mUserAvatar = 0;
+
+    mEvtsList.clear();
 }
 
 //-------------------------------------------------------------------------------------
