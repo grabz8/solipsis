@@ -2015,9 +2015,9 @@ void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileExit()");
 
+    modelerMainUnload();
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
     navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
-    modelerMainUnload();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3303,9 +3303,9 @@ void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileExit()");
 
+    avatarMainUnload();
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
     navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
-    avatarMainUnload();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)

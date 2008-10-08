@@ -1305,8 +1305,8 @@ bool Navigator::mainMenuClick(const String& item)
         }
         else if (mState == SAvatarEdit)
         {
-            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
             mNavigatorGUI->avatarMainUnload();
+            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
         }
     }
     else if (item == "Modeler")
@@ -1319,8 +1319,8 @@ bool Navigator::mainMenuClick(const String& item)
         }
         else if (mState == SModeling)
         {
-            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
             mNavigatorGUI->modelerMainUnload();
+            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
         }
     }
     // Submenu Help
