@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uistatusbar</title>
+        <script type="text/javascript" src="Navi-yui.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                $ND('pageLoaded').add({naviName:'uistatusbar'}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #000000;
+	            color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: 75%;
+            }
+            #container
+            {
+	            background-image: url('alphafade512x16.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 512px;
+	            height: 16px;
+            }
+            #statusbarText
+            {
+	            position: relative;
+	            left: 1px;
+	            top: 1px;
+            }
+            .statusText
+            {
+                background-color: #FFFFFF;
+                display : inline;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+<!--            .statusText:hover
+            {
+                background-color: #5959FF;
+            }-->
+        </style>
+    </head>
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="statusbarText" class="statusText">
+            </div>
+        </div>
+    </body>
+</html>
