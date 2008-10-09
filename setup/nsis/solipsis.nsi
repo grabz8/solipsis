@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.3"
+!define PRODUCT_VERSION "1.0.4"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -71,7 +71,7 @@ SectionEnd
 
 Section "WorldsServer" SEC04
   SetOutPath "$INSTDIR\WorldsServer"
-  File /r /x .svn /x *.pdn "..\..\WorldsServer\*.*"
+  File /r /x .svn /x *.pdn /x users.xml "..\..\WorldsServer\*.*"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
   CreateShortCut "$DESKTOP\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
 SectionEnd
