@@ -727,3 +727,6 @@ remotemrl input final extra chars removed
 suppr key in modeler prop panel does not del current object (because used in HTML inputs)
 
 ---------------------------
+RELEASE 1.0.4
+
+---------------------------
