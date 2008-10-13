@@ -578,7 +578,7 @@ bool Peer::_fireTick(Real timeSinceLastTick)
             pthread_mutex_unlock(&mPhysicsMutex);
 #endif
             return false;
-        {
+        }
     }
 
 #ifdef PHYSICSPLUGINS
