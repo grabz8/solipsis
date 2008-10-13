@@ -89,6 +89,8 @@ public:
                                 const Vector3& position,
                                 const Quaternion& orientation,
                                 const Vector3& scale);
+    /// @copydoc IPhysicsScene::unsetTerrainMesh
+    virtual void unsetTerrainMesh();
 
     /// @copydoc IPhysicsScene::createBody
     virtual IPhysicsBody* createBody();

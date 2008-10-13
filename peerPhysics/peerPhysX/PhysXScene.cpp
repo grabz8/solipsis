@@ -190,6 +190,14 @@ bool PhysXScene::setTerrainMesh(const MeshPtr mesh,
 }
 
 //-------------------------------------------------------------------------------------
+void PhysXScene::unsetTerrainMesh()
+{
+    if (mNxActor == 0) return;
+    mNxScene->releaseActor(*mNxActor);
+    mNxActor = 0;
+}
+
+//-------------------------------------------------------------------------------------
 IPhysicsBody* PhysXScene::createBody()
 {
     return new PhysXBody(this);

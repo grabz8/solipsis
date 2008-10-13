@@ -79,6 +79,8 @@ protected:
 #ifdef PHYSICSPLUGINS
     /// Physics scene
     IPhysicsScene* mPhysicsScene;
+    /// Mutex physics
+    pthread_mutex_t mPhysicsMutex;
 #endif
 
     /// Node identifier

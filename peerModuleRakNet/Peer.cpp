@@ -78,6 +78,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mVerbosity(0),
     mP2NServer(0),
     mPhysicsScene(0),
+    mPhysicsMutex(PTHREAD_MUTEX_INITIALIZER),
     mNodeId(""),
     mRakNetMutex(PTHREAD_MUTEX_INITIALIZER),
     mEvtsToProcessMutex(PTHREAD_MUTEX_INITIALIZER)
@@ -141,23 +142,29 @@ Peer::~Peer()
 IPhysicsScene* Peer::getPhysicsScene()
 {
 #ifdef PHYSICSPLUGINS
+    pthread_mutex_lock(&mPhysicsMutex);
     if (mPhysicsScene == 0)
     {
         IPhysicsEngine* engine = PhysicsEngineManager::getSingleton().getSelectedEngine();
         if (engine == 0)
+        {
+            pthread_mutex_unlock(&mPhysicsMutex);
             throw Exception(Exception::ERR_INTERNAL_ERROR,
             "No physics engine selected !",
             "Peer::getPhysicsScene");
+        }
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::getPhysicsScene() creating physics scene with engine:%s", engine->getName().c_str());
         // Create the physical scene
         mPhysicsScene = engine->createScene();
         if (!mPhysicsScene->create())
         {
+            pthread_mutex_unlock(&mPhysicsMutex);
             throw Exception(Exception::ERR_INTERNAL_ERROR,
             "Unable to create the PhysX scene !",
             "Peer::getPhysicsScene");
         }
     }
+    pthread_mutex_unlock(&mPhysicsMutex);
 #endif
 
     return mPhysicsScene;
@@ -352,6 +359,17 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
     mNodeManager->cleanUpNodes();
     Entity::cleanUpEntities();
 
+#ifdef PHYSICSPLUGINS
+    pthread_mutex_lock(&mPhysicsMutex);
+    if (mPhysicsScene != 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::logout() destroying physics scene");
+        PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
+        mPhysicsScene = 0;
+    }
+    pthread_mutex_unlock(&mPhysicsMutex);
+#endif
+
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.mServerSystemAddress.ToString());
     mRakNetConnection.mRakPeer->CloseConnection(mRakNetConnection.mServerSystemAddress, true);
 
@@ -508,10 +526,12 @@ void Peer::_finalize()
     delete mP2NServer;
 
 #ifdef PHYSICSPLUGINS
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::_finalize() destroying physics scene");
     if (mPhysicsScene != 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::_finalize() destroying physics scene");
         PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
-    mPhysicsScene = 0;
+        mPhysicsScene = 0;
+    }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->shutdown();
 #endif
 
@@ -543,6 +563,7 @@ bool Peer::_fireTick(Real timeSinceLastTick)
     mRemovedTimeListeners.clear();
 
 #ifdef PHYSICSPLUGINS
+    pthread_mutex_lock(&mPhysicsMutex);
     // Step physics part 1
     if (mPhysicsScene != 0)
         mPhysicsScene->preStep(timeSinceLastTick);
@@ -552,13 +573,19 @@ bool Peer::_fireTick(Real timeSinceLastTick)
     for (i= mTimeListeners.begin(); i != mTimeListeners.end(); ++i)
     {
         if (!(*i)->tick(timeSinceLastTick))
+        {
+#ifdef PHYSICSPLUGINS
+            pthread_mutex_unlock(&mPhysicsMutex);
+#endif
             return false;
+        {
     }
 
 #ifdef PHYSICSPLUGINS
     // Step physics part 2
     if (mPhysicsScene != 0)
         mPhysicsScene->postStep();
+    pthread_mutex_unlock(&mPhysicsMutex);
 #endif
 
     return true;

@@ -115,7 +115,7 @@ protected:
 
     Avatar* mUserAvatar;
 
-    bool mFakeTerrain;
+//    bool mFakeTerrain;
 
     NavigatorSound* mNavigatorSound;
 

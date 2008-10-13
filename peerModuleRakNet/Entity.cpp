@@ -270,7 +270,12 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
 //-------------------------------------------------------------------------------------
 void Entity::destroyPhysics()
 {
-    if (mXmlEntity->getType() == ETAvatar)
+    if (mXmlEntity->getType() == ETSite)
+    {
+        if (mPhysicsScene != 0)
+            mPhysicsScene->unsetTerrainMesh();
+    }
+    else
     {
         if ((mPhysicsScene != 0) && (mPhysicsCharacter != 0))
             mPhysicsScene->destroyCharacter(mPhysicsCharacter);

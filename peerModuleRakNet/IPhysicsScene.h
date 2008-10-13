@@ -114,6 +114,10 @@ public:
                                 const Ogre::Vector3& position,
                                 const Ogre::Quaternion& orientation,
                                 const Ogre::Vector3& scale) = 0;
+    /** Unset the collision mesh of the terrain.
+    @remarks An implementation must be supplied for this method.
+    */
+    virtual void unsetTerrainMesh() = 0;
 
     /** Create 1 body.
     @remarks An implementation must be supplied for this method.

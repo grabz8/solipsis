@@ -730,3 +730,9 @@ suppr key in modeler prop panel does not del current object (because used in HTM
 RELEASE 1.0.4
 
 ---------------------------
+10/10/08
+
+skybox now disabled on disconnect
+physics terrain now removed on disconnect
+
+---------------------------
