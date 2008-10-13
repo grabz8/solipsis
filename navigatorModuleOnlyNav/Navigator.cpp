@@ -104,9 +104,8 @@ Navigator::~Navigator()
     if (mSceneMgr)
     {
         // Destroy the ray scene query
-        mSceneMgr->destroyQuery(mRaySceneQuery);
-        // destroy the sun light
-        mSceneMgr->destroyLight("SunLight");
+        if (mRaySceneQuery != 0)
+            mSceneMgr->destroyQuery(mRaySceneQuery);
     }
 
     // Destroy the avatar editor
@@ -1263,7 +1262,8 @@ bool Navigator::disconnect()
     if (mSceneMgr)
     {
         // destroy the sun light
-        mSceneMgr->destroyLight("SunLight");
+        if (mSceneMgr->hasLight("SunLight"))
+            mSceneMgr->destroyLight("SunLight");
         // destroy the skybox
         fakeSurroundingArea(0);
     }

@@ -106,6 +106,8 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
         debugCommands.erase(dbgCmd);
         rotateSunLight = !rotateSunLight;
     }
+    if (!sceneMgr->hasLight("SunLight"))
+        rotateSunLight = false;
     if (rotateSunLight)
     {
         Light* light = sceneMgr->getLight("SunLight");
