@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "CTSystem.h"
 
+#include <sys/types.h>
 #include <unistd.h>
 
 namespace CommonTools {
@@ -55,6 +56,12 @@ void System::showMessageBox(const std::string& text, const std::string& caption,
 void System::runExternalWebBrowser(const std::string& url)
 {
 //    ShellExecute(0, "open", url.c_str(), 0, 0, SW_SHOWNORMAL); ?linux?
+}
+
+//-------------------------------------------------------------------------------------
+int System::getPID()
+{
+    return getpid();
 }
 
 //-------------------------------------------------------------------------------------

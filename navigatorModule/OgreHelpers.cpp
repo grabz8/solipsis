@@ -67,6 +67,21 @@ void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
 }
 
 //-------------------------------------------------------------------------------------
+void OgreHelpers::removeAndDestroyMovableObjects(SceneNode* node, std::list<MovableObject*> &movableObjectsList)
+{
+    for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
+    {
+        SceneNode* node = (*movableObject)->getParentSceneNode();
+        node->detachObject(*movableObject);
+        node->getCreator()->destroyMovableObject(*movableObject);
+        // destroy the scene node if no more movable is attached to
+        Node::ChildNodeIterator childNodeIterator = node->getChildIterator();
+        if (!childNodeIterator.hasMoreElements())
+            node->getCreator()->destroySceneNode(node->getName());
+    }
+}
+
+//-------------------------------------------------------------------------------------
 bool OgreHelpers::convertString2Real(const String& real, Real& r)
 {
     Real result = 0;

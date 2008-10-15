@@ -736,3 +736,10 @@ skybox now disabled on disconnect
 physics terrain now removed on disconnect
 
 ---------------------------
+15/10/08
+
+new scene Rennes added
+now only entities converted into static geometry are destroyed (with their scene nodes) in order to keep lights/cameras/... of original scene
+now log files are post-fixed with pid + date + time
+
+---------------------------

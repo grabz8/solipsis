@@ -23,9 +23,97 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "CTStringHelpers.h"
 
+#include <sstream>
+
 using namespace std;
 
 namespace CommonTools {
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(float val, unsigned short precision, unsigned short width, char fill, std::ios::fmtflags flags)
+{
+    std::ostringstream stream;
+    stream.precision(precision);
+    stream.width(width);
+    stream.fill(fill);
+    if (flags)
+        stream.setf(flags);
+    stream << val;
+    return stream.str();
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(int val, unsigned short width, char fill, std::ios::fmtflags flags)
+{
+    std::ostringstream stream;
+	stream.width(width);
+    stream.fill(fill);
+    if (flags)
+        stream.setf(flags);
+    stream << val;
+    return stream.str();
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
+{
+    std::ostringstream stream;
+    stream.width(width);
+    stream.fill(fill);
+    if (flags)
+        stream.setf(flags);
+    stream << val;
+    return stream.str();
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(long val, unsigned short width, char fill, std::ios::fmtflags flags)
+{
+    std::ostringstream stream;
+	stream.width(width);
+    stream.fill(fill);
+    if (flags)
+        stream.setf(flags);
+    stream << val;
+    return stream.str();
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
+{
+    std::ostringstream stream;
+	stream.width(width);
+    stream.fill(fill);
+    if (flags)
+        stream.setf(flags);
+    stream << val;
+    return stream.str();
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::toString(bool val, bool yesNo)
+{
+    if (val)
+    {
+        if (yesNo)
+        {
+            return "yes";
+        }
+        else
+        {
+            return "true";
+        }
+    }
+    else
+        if (yesNo)
+        {
+            return "no";
+        }
+        else
+        {
+            return "false";
+        }
+}
 
 //-------------------------------------------------------------------------------------
 void StringHelpers::tokenize(const string& str, const string& delimiter, vector<string>& tokens)

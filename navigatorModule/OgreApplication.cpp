@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreApplication.h"
 #include "OgreHelpers.h"
 #include "NaviManager.h"
+#include <CTSystem.h>
+#include <CTStringHelpers.h>
 
 #define RESSOURCE_FILE_NAME "resources.cfg"
 
@@ -56,7 +58,7 @@ void OgreApplication::unlock()
 //-------------------------------------------------------------------------------------
 bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
 {
-    mRoot = new Root();
+    mRoot = new Root("plugins.cfg", "ogre.cfg", "Ogre_" + CommonTools::StringHelpers::toString(CommonTools::System::getPID()) + "_" + CommonTools::System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     if (mRoot == 0)
         return false;
 

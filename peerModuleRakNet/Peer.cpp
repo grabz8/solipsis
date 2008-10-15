@@ -594,7 +594,7 @@ bool Peer::_fireTick(Real timeSinceLastTick)
 //-----------------------------------------------------------------------
 bool Peer::_fireTick()
 {
-    unsigned long now = OgreHelpers::getSingleton().getTimer()->getMilliseconds();
+    unsigned long now = Root::getSingleton().getTimer()->getMilliseconds();
     if (mResetTime)
     {
         mLastTickTime = now;

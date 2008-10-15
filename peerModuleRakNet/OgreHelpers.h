@@ -70,7 +70,7 @@ protected:
     Ogre::Timer* mTimer;*/
 
 private:
-    // No instanciation
+    /// No instanciation
     OgreHelpers() :
         mLogsMutex(PTHREAD_MUTEX_INITIALIZER),
         mRoot(0),
@@ -112,16 +112,15 @@ public:
     static OgreHelpers* getSingletonPtr() { return mSingleton; }
     static OgreHelpers& getSingleton() { return *mSingleton; }
 
-    // Add resource locations from resources.cfg file
+    /// Add resource locations from resources.cfg file
     static void addResourceLocations();
-    // Remove resource locations from resources.cfg file
+    /// Remove resource locations from resources.cfg file
     static void removeResourceLocations();
 
-    Ogre::Timer* getTimer();
-
+    /// Load 1 mesh file
     Ogre::Mesh* loadMesh(const Ogre::String& filename);
 
-    // Retrieve mesh informations
+    /// Retrieve mesh informations
     void getMeshInformation(Ogre::Mesh* mesh,
         size_t &vertex_count,
         Ogre::Vector3*& vertices,

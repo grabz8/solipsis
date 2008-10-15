@@ -34,6 +34,18 @@ namespace CommonTools {
 class StringHelpers
 {
 public:
+    /// Converts a float to a string
+    static std::string toString(float val, unsigned short precision = 6, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
+    /// Converts an int to a string
+    static std::string toString(int val, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
+    /// Converts an unsigned int to a string
+    static std::string toString(unsigned int val, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
+    /// Converts a long to a string
+    static std::string toString(long val, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
+    /// Converts an unsigned long to a string
+    static std::string toString(unsigned long val, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
+    /// Converts a boolean to a string
+    static std::string toString(bool val, bool yesNo = false);
     /// Tokenize function
     static void tokenize(const std::string& str, const std::string& delimiter, std::vector<std::string>& tokens);
     /// Concatenate host and port to form 1 url

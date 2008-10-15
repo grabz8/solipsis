@@ -51,7 +51,7 @@ private:
     pthread_mutex_t mLogsMutex;
 
 private:
-    // No instanciation
+    /// No instanciation
     OgreHelpers() :
         mLogsMutex(PTHREAD_MUTEX_INITIALIZER)
     {
@@ -71,22 +71,24 @@ public:
     static OgreHelpers* getSingletonPtr() { return &mSingleton; }
     static OgreHelpers& getSingleton() { return mSingleton; }
 
-    // Add resource locations from resources.cfg file
+    /// Add resource locations from resources.cfg file
     static void addResourceLocations();
-    // Remove resource locations from resources.cfg file
+    /// Remove resource locations from resources.cfg file
     static void removeResourceLocations();
 
-    // Retrieve recursively from 1 scene node all movable objects of 1 type
+    /// Retrieve recursively from 1 scene node all movable objects of 1 type
     static void getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList);
-    // Remove and destroy 1 scene node and recursively all of its movable objects
+    /// Remove and destroy 1 scene node and recursively all of its movable objects
     static void removeAndDestroySceneNode(SceneNode* node);
+    /// Remove and destroy 1 list of movables + empty scene nodes
+    static void removeAndDestroyMovableObjects(SceneNode* node, std::list<MovableObject*> &movableObjectsList);
 
-    // Convert 1 string representation of Real into 1 Real
+    /// Convert 1 string representation of Real into 1 Real
     static bool convertString2Real(const String& real, Real& r);
-    // Convert 1 string representation of Vector3 (ie. x, y, z) into 1 Vector3
+    /// Convert 1 string representation of Vector3 (ie. x, y, z) into 1 Vector3
     static bool convertString2Vector3(const String& vector, Vector3& v);
 
-    // Retrieve mesh informations
+    /// Retrieve mesh informations
     static void getMeshInformation(const MeshPtr mesh,
         size_t &vertex_count,
         Vector3*& vertices,
@@ -96,15 +98,16 @@ public:
         const Vector3& position,
         const Quaternion& orientation,
         const Vector3& scale);
-    // Ray/triangle intersection return boolean result, distance and barycentric u,v
-    // to compute texture coordinates
+    /** Ray/triangle intersection return boolean result, distance and barycentric u,v
+        to compute texture coordinates
+     */
     static bool getIntersection(const Ray& ray,
         const Vector3& a,
         const Vector3& b,
         const Vector3& c,
         Real& distance,
         Vector2& uv);
-    // Ray/entity intersection return boolean result
+    /// Ray/entity intersection return boolean result
     static bool isEntityHitByMouse(const Ray& ray, Entity* entity,
         Real& closestDistance,
         Vector2& closestUV,

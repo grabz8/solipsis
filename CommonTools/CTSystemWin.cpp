@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #  define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+#include <process.h>
 #include <shellapi.h>
 
 namespace CommonTools {
@@ -53,6 +54,12 @@ void System::showMessageBox(const std::string& text, const std::string& caption,
 void System::runExternalWebBrowser(const std::string& url)
 {
     ShellExecute(0, "open", url.c_str(), 0, 0, SW_SHOWNORMAL);
+}
+
+//-------------------------------------------------------------------------------------
+int System::getPID()
+{
+    return _getpid();
 }
 
 //-------------------------------------------------------------------------------------

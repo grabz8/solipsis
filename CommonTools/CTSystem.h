@@ -44,6 +44,12 @@ public:
 
     /// Run the external Web browser on the system displaying the specified url
     static void runExternalWebBrowser(const std::string& url);
+
+    /// Returns the current process identifier
+    static int getPID();
+
+    /// Returns the current date/time formatted like "YYYYMMDDHHMMSS"
+    static std::string getDateTimeYYYYMMDDHHMMSS();
 };
 
 } // namespace CommonTools

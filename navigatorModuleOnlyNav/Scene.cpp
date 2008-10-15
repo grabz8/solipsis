@@ -49,6 +49,7 @@ Scene::Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
 Scene::Scene(XmlEntity* xmlEntity, bool isLocal) :
 #endif
     OgrePeer(xmlEntity, isLocal),
+    mSceneNode(0),
     mStaticGeometry(0)
 {
 }
@@ -166,6 +167,12 @@ void Scene::destroy()
 	    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
     }
+
+    if (mSceneNode != 0)
+    {
+        OgreHelpers::removeAndDestroySceneNode(mSceneNode);
+        mSceneNode = 0;
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -181,10 +188,12 @@ void Scene::convertToStaticGeometry(SceneNode* sceneNode)
     if (sceneMgr == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::convertToStaticGeometry");
 
+    mSceneNode = sceneNode;
+
     // Add all visible entities (1 loop because StaticGeometry::addSceneNode() add invisible entities)
-    mStaticGeometry = sceneMgr->createStaticGeometry(sceneNode->getName());
+    mStaticGeometry = sceneMgr->createStaticGeometry(mSceneNode->getName());
     std::list<MovableObject*> movableObjectsList;
-    OgreHelpers::getMovableObjectsList(sceneNode, "Entity", movableObjectsList);
+    OgreHelpers::getMovableObjectsList(mSceneNode, "Entity", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
     {
         Entity* entity = static_cast<Entity*>(*movableObject);
@@ -200,14 +209,8 @@ void Scene::convertToStaticGeometry(SceneNode* sceneNode)
     mStaticGeometry->build();
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Scene::convertToStaticGeometry() scene:%s static geometry built", mXmlEntity->getUid().c_str());
 
-/*    SceneNode::ObjectIterator objectIterator = sceneNode->getAttachedObjectIterator();
-    while (objectIterator.hasMoreElements())
-    {
-        MovableObject* m = objectIterator.getNext();
-        sceneMgr->destroyMovableObject(m);
-    }
-    sceneMgr->destroySceneNode(sceneNode->getName());*/
-    OgreHelpers::removeAndDestroySceneNode(sceneNode);
+    // Destroy all entities converted into static geometry (no more used)
+    OgreHelpers::removeAndDestroyMovableObjects(mSceneNode, movableObjectsList);
 }
 
 //-------------------------------------------------------------------------------------

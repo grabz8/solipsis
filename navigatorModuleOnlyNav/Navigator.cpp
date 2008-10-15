@@ -46,7 +46,6 @@ Navigator* Navigator::ms_singletonPtr = 0;
 Navigator::Navigator(const String name, IApplication* application) :
     Instance(name, application),
     NodeEventListener(mXmlRpcClient),
-////    mFakeTerrain(false),
     mState(SLogin),
     mPeerAddress("localhost:8880"),
     mLocalWorldAddress("localhost:8660"),
@@ -391,27 +390,19 @@ void Navigator::fakeSurroundingArea(int index)
     switch (index)
     {
         case 1:
-//           mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Solipsis/SkyBox1", 1000);
            break;
         case 2:
-//           mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Examples/SpaceSkyBox", 100, true);
            break;
         case 3:
-//           mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Solipsis/SkyBox2", 10, true);
            break;
         case 4:
-//           mUserAvatar->setGravity(mFakeTerrain);
            mSceneMgr->setSkyBox(true, "Solipsis/SkyBox3", 10, true);
            break;
         case 0:
-//           mUserAvatar->setGravity(mFakeTerrain);
-           mSceneMgr->setSkyBox(false, "Solipsis/SkyBox1");
-           mSceneMgr->setSkyBox(false, "Examples/SpaceSkyBox");
-           mSceneMgr->setSkyBox(false, "Solipsis/SkyBox2");
-           mSceneMgr->setSkyBox(false, "Solipsis/SkyBox3");
+           mSceneMgr->setSkyBox(false, "");
            break;
    }
 }

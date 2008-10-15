@@ -39,6 +39,8 @@ protected:
     String mResourceGroup;
     /// Resource location
     String mResourceLocation;
+    /// Scene node
+    SceneNode* mSceneNode;
     /// Converted static geometry (optimized scene geometry)
     StaticGeometry* mStaticGeometry;
 

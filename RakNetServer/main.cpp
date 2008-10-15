@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "RakNetServer.h"
 #include <CTBasicThread.h>
 #include <CTLog.h>
+#include <CTSystem.h>
+#include <CTStringHelpers.h>
 
 using namespace CommonTools;
 using namespace Solipsis;
@@ -73,7 +75,7 @@ int main(int argc, char** argv)
 int main(int argc, char *argv[])
 #endif
 {
-    LogHandler::getLogHandler()->setLogFilename("RakNetServer.log");
+    LogHandler::getLogHandler()->setLogFilename("RakNetServer_" + StringHelpers::toString(System::getPID()) + "_"  + System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Starting RakNet server");
 
