@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 
 //---------------------------------------------------------------------------------
-CharacterInstance::CharacterInstance(const String& pFileName, const String& pUidString, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr) :
-    mUidString(pUidString),
+CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr) :
+    mUid(pUid),
     mCharacter(0),
 	mSceneMgr(pSceneMgr),
     mCharacterManager(pCharacterMgr),
@@ -51,7 +51,7 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
     mUidZipArchive = new MyZipArchive(mUidPath->getUniversalPath());
 
     // CONF file exist ?
-	if (!mUidZipArchive->isFilePresent(Character::getEditionConfFilename(mUidString))) 
+	if (!mUidZipArchive->isFilePresent(Character::getEditionConfFilename(mUid))) 
     {
         // Load the default character
         mCharacter = pCharacterMgr->loadCharacter(pDefaultCharacterName);
@@ -59,35 +59,35 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
     else
     {
         // Parse CONF xml file
-	    FileBuffer xmlConfFile = mUidZipArchive->readFile(Character::getEditionConfFilename(mUidString));
+	    FileBuffer xmlConfFile = mUidZipArchive->readFile(Character::getEditionConfFilename(mUid));
 	    TiXmlDocument xmlDoc;
 	    xmlDoc.Parse(xmlConfFile.getBufferFormatedToText().c_str());
 	    if (xmlDoc.Error()) 
 	    {
-		    mLoadingErrorMessage = Character::getEditionConfFilename(mUidString) + "\nisn't a valid xml file !"; 
+		    mLoadingErrorMessage = Character::getEditionConfFilename(mUid) + "\nisn't a valid xml file !"; 
 		    return;
 	    }
 	    TiXmlElement* characterElement = xmlDoc.FirstChildElement("Character");
 	    if (characterElement == NULL)
 	    {
-		    mLoadingErrorMessage = Character::getEditionConfFilename(mUidString) + " :" + "\nNo Character markup found !"; 
+		    mLoadingErrorMessage = Character::getEditionConfFilename(mUid) + " :" + "\nNo Character markup found !"; 
 		    return;
 	    }
 	    const char* characterName = characterElement->Attribute("name");
 	    if (characterName == NULL)
 	    {
-		    mLoadingErrorMessage = Character::getEditionConfFilename(mUidString) + " :" + "\nNo name's attribute found !"; 
+		    mLoadingErrorMessage = Character::getEditionConfFilename(mUid) + " :" + "\nNo name's attribute found !"; 
 		    return;
 	    }
         // Load the character
         if (mCharacter == 0)
             mCharacter = pCharacterMgr->loadCharacter(characterName);
     }
-    mCharacter->addInstance(pUidString, this);
+    mCharacter->addInstance(pUid, this);
     mMesh = mCharacter->getMesh();
 
     // Add instance zip file as resource location
-    mResourceGroup = mUidString + "Resources";
+    mResourceGroup = mUid + "Resources";
 	ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
     if (mUidZipArchive->isArchivePresent())
     {
@@ -96,9 +96,9 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
     }
 
 	//Creating nodes and entities
-	mSceneNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(mUidString);
+	mSceneNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(mUid);
 
-    mEntity = mCharacter->getEntity()->clone(mUidString);
+    mEntity = mCharacter->getEntity()->clone(mUid);
 
 	mSceneNode->attachObject(mEntity);
 	//mSceneNode->scale(SCALE_CHARACTER,SCALE_CHARACTER,SCALE_CHARACTER);
@@ -144,7 +144,7 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
 //---------------------------------------------------------------------------------
 CharacterInstance::~CharacterInstance()
 {
-    mCharacter->removeInstance(mUidString);
+    mCharacter->removeInstance(mUid);
 
     // Destroy goodies instances
     for(GoodyInstancesMap::iterator it = mGoodyInstances.begin(); it != mGoodyInstances.end(); it = mGoodyInstances.begin())
@@ -162,7 +162,7 @@ CharacterInstance::~CharacterInstance()
     // Destroy entity and scene node
 	mSceneNode->detachObject(mEntity);
     mSceneMgr->destroyEntity(mEntity);
-    mSceneMgr->destroySceneNode(mUidString);
+    mSceneMgr->destroySceneNode(mUid);
 
     // Destroy instance zip file as resource location
 	ResourceGroupManager::getSingleton().removeResourceLocation(mUidPath->getUniversalPath(), mResourceGroup);
@@ -176,10 +176,10 @@ CharacterInstance::~CharacterInstance()
 void CharacterInstance::loadModified()
 {
 	//Parsing XML configuration file
-	if (!mUidZipArchive->isFilePresent(Character::getEditionConfFilename(mUidString))) 
+	if (!mUidZipArchive->isFilePresent(Character::getEditionConfFilename(mUid))) 
 		return;
 
-	FileBuffer xmlConfFile = mUidZipArchive->readFile(Character::getEditionConfFilename(mUidString));
+	FileBuffer xmlConfFile = mUidZipArchive->readFile(Character::getEditionConfFilename(mUid));
 	TiXmlDocument xmlDoc;
 	xmlDoc.Parse(xmlConfFile.getBufferFormatedToText().c_str());
 	if (xmlDoc.Error()) 
@@ -538,7 +538,7 @@ void CharacterInstance::saveModified()
 	}
 		
 
-	FileBuffer xmlNatureFile = mUidZipArchive->readFile(Character::getEditionNatureFilename(mUidString));
+	FileBuffer xmlNatureFile = mUidZipArchive->readFile(Character::getEditionNatureFilename(mUid));
 	TiXmlDocument xmlDoc;
 	xmlDoc.Parse(xmlNatureFile.getBufferFormatedToText().c_str());
 
@@ -547,24 +547,24 @@ void CharacterInstance::saveModified()
 	//Finally saving to the character archive
 	TiXmlDocument confXmlDoc; 
 	confXmlDoc.InsertEndChild(characterElement);
-	confXmlDoc.SaveFile(Character::getEditionConfFilename(mUidString).c_str());
+	confXmlDoc.SaveFile(Character::getEditionConfFilename(mUid).c_str());
 
-	FILE* confXmlFile = fopen(Character::getEditionConfFilename(mUidString).c_str(), "rb");
+	FILE* confXmlFile = fopen(Character::getEditionConfFilename(mUid).c_str(), "rb");
 
 	fseek(confXmlFile,0,SEEK_END);
 	size_t confXmlFileSize = ftell(confXmlFile);
 	fseek(confXmlFile,0,SEEK_SET);
 	void* confXmlFileData = new unsigned char[confXmlFileSize];
 	fread(confXmlFileData,confXmlFileSize,sizeof(unsigned char),confXmlFile);
-	mUidZipArchive->writeFile(Character::getEditionConfFilename(mUidString).c_str(), FileBuffer(confXmlFileData, confXmlFileSize));
+	mUidZipArchive->writeFile(Character::getEditionConfFilename(mUid).c_str(), FileBuffer(confXmlFileData, confXmlFileSize));
 
 	fclose(confXmlFile);
 
-	SOLdeleteFile(Character::getEditionConfFilename(mUidString).c_str());
+	SOLdeleteFile(Character::getEditionConfFilename(mUid).c_str());
 
 #if 0
     //Creating a mesh very easily usable for others applications (Sollipsis).
-	String modifiedMeshName(mUidString + "Modified.mesh");
+	String modifiedMeshName(mUid + "Modified.mesh");
 
 	//Creating new .mesh and .material
 	MeshPtr mesh = getMesh()->clone(modifiedMeshName, mResourceGroup);
@@ -673,21 +673,21 @@ void CharacterInstance::saveModified()
 	
 	//Saving mesh and materials to the zip archive.
 	MeshSerializer meshSerializer;
-	meshSerializer.exportMesh(mesh.get(),mUidString + ".mesh");
+	meshSerializer.exportMesh(mesh.get(),mUid + ".mesh");
 	
-	FILE* meshFile = fopen((mUidString + ".mesh").c_str(), "rb");
+	FILE* meshFile = fopen((mUid + ".mesh").c_str(), "rb");
 
 	fseek(meshFile,0,SEEK_END);
 	size_t meshFileSize = ftell(meshFile);
 	fseek(meshFile,0,SEEK_SET);
 	void* meshFileData = new unsigned char[meshFileSize];
 	fread(meshFileData,meshFileSize,sizeof(unsigned char),meshFile);
-	mUidZipArchive->writeFile((mUidString + ".mesh").c_str(), FileBuffer(meshFileData, meshFileSize));
+	mUidZipArchive->writeFile((mUid + ".mesh").c_str(), FileBuffer(meshFileData, meshFileSize));
 
 
 	fclose(meshFile);
 
-	SOLdeleteFile(Ogre::String(mUidString + ".mesh").c_str());
+	SOLdeleteFile(Ogre::String(mUid + ".mesh").c_str());
 
 
 
@@ -699,20 +699,20 @@ void CharacterInstance::saveModified()
 		emptyQueue = false;
 		materialSerializer.queueForExport(MaterialManager::getSingleton().getByName(mesh->getSubMesh(idxSubMesh)->getMaterialName()));
 	}
-	if (!emptyQueue) materialSerializer.exportQueued(mUidString + ".material");
+	if (!emptyQueue) materialSerializer.exportQueued(mUid + ".material");
 
-	FILE* materialFile = fopen((mUidString + ".material").c_str(), "rb");
+	FILE* materialFile = fopen((mUid + ".material").c_str(), "rb");
 
 	fseek(materialFile,0,SEEK_END);
 	size_t materialFileSize = ftell(materialFile);
 	fseek(materialFile,0,SEEK_SET);
 	void* materialFileData = new unsigned char[materialFileSize];
 	fread(materialFileData,materialFileSize,sizeof(unsigned char),materialFile);
-	mUidZipArchive->writeFile((mUidString + ".material").c_str(), FileBuffer(materialFileData, materialFileSize));
+	mUidZipArchive->writeFile((mUid + ".material").c_str(), FileBuffer(materialFileData, materialFileSize));
 
 	fclose(materialFile);
 
-	SOLdeleteFile(Ogre::String(mUidString + ".material").c_str());
+	SOLdeleteFile(Ogre::String(mUid + ".material").c_str());
 
 	//Unloading created mesh and removing it from the resource manager
 	mesh->unload();
@@ -723,10 +723,10 @@ void CharacterInstance::saveModified()
 //---------------------------------------------------------------------------------
 void CharacterInstance::deleteModified()
 {
-    mUidZipArchive->removeFile(Character::getEditionNatureFilename(mUidString));
-    mUidZipArchive->removeFile(Character::getEditionConfFilename(mUidString));
-    mUidZipArchive->removeFile(mUidString + ".mesh");
-    mUidZipArchive->removeFile(mUidString + ".material");
+    mUidZipArchive->removeFile(Character::getEditionNatureFilename(mUid));
+    mUidZipArchive->removeFile(Character::getEditionConfFilename(mUid));
+    mUidZipArchive->removeFile(mUid + ".mesh");
+    mUidZipArchive->removeFile(mUid + ".material");
 }
 
 //---------------------------------------------------------------------------------

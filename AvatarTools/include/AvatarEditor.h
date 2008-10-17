@@ -101,7 +101,7 @@ private:
     MyZipArchive* archive;
 	CharacterManager* mCharacters;
 
-    String mUidString;
+    String mUid;
 	String mCurrentName;
 	SceneNode* mSceneNode;
 	Entity* mEntity;

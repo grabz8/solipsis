@@ -38,7 +38,7 @@ AvatarEditor::AvatarEditor(const String& pPath, SceneManager* pSceneMgr) :
 	mSceneMgr(pSceneMgr),
     archive(0),
 	mCharacters(0),
-    mUidString(""),
+    mUid(""),
 	mCurrentName(""),
     mMeshFilename(""),
     mSkeletonFilename(""),
@@ -89,7 +89,7 @@ void AvatarEditor::buildListSAF(const String& pPathDirectory)
 //-------------------------------------------------------------------------------------
 void AvatarEditor::setCharacterInstance(CharacterInstance* pCharacterInstance)
 {
-    mUidString = pCharacterInstance->getUidString();
+    mUid = pCharacterInstance->getUid();
     mCharacters->setCurrentInstance(pCharacterInstance);
 
 	mSceneNode = mCharacters->getCurrentInstance()->getSceneNode();
@@ -115,7 +115,7 @@ void AvatarEditor::updateCurrent(const String& pName)
         mCharacters->destroyCharacterInstance(mCharacters->getCurrentInstance());
     }
 
-    CharacterInstance* characterInstance = mCharacters->loadCharacterInstance(mUidString, pName);
+    CharacterInstance* characterInstance = mCharacters->loadCharacterInstance(mUid, pName);
     mCharacters->setCurrentInstance(characterInstance);
 
 	mSceneNode = characterInstance->getSceneNode();

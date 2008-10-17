@@ -66,7 +66,7 @@ public:
 
 public:
 	///Constructor, instantiate the mesh of the Character, create an entity and a sceneNode associated to the Character and load all Goodies and BodyParts according to the nature xml file.
-	CharacterInstance(const String& pFileName, const String& pUidString, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr);
+	CharacterInstance(const String& pFileName, const String& pUid, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr);
 	///brief Destructor
 	~CharacterInstance();
 
@@ -114,7 +114,7 @@ public:
 	void resetModifications();
 
     Character* getCharacter() { return mCharacter; }
-    const String& getUidString() { return mUidString; }
+    const String& getUid() { return mUid; }
     const String& getResourceGroup() { return mResourceGroup; }
 	///brief Method that return the pathname of the Character.
 	///return Character's pathname.
@@ -162,7 +162,7 @@ public:
 	GoodyInstance* setPreviousGoodyAsCurrent();
 
 protected:
-    String mUidString;									///brief UID string.
+    String mUid;										///brief UID string.
 	Character* mCharacter;								///brief Character of our instance.
 
     CharacterManager* mCharacterManager;				///brief CharacterManager of our instance.

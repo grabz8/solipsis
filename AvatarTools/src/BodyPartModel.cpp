@@ -34,7 +34,7 @@ ModifiableMaterialObject(bodyPartModel),
 mBodyPartModel(bodyPartModel), mOwner(owner)
 {
     mSubEntity = mOwner->getOwner()->getEntity()->getSubEntity(mBodyPartModel->mSubEntityName);
-	String s = "Material" + mOwner->getOwner()->getUidString() + mBodyPartModel->mOwner->getName() + mBodyPartModel->mName;
+	String s = "Material" + mOwner->getOwner()->getUid() + mBodyPartModel->mOwner->getName() + mBodyPartModel->mName;
     MaterialPtr materialSubEntity = MaterialManager::getSingleton().getByName(s);
     if (materialSubEntity.isNull())
         materialSubEntity = mBodyPartModel->mSubEntity->getMaterial()->clone(s, true, mOwner->getOwner()->getResourceGroup());

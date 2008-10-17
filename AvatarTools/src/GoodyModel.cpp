@@ -33,8 +33,8 @@ GoodyModelInstance::GoodyModelInstance(GoodyModel* goodyModel, GoodyInstance* ow
 ModifiableMaterialObject(goodyModel),
 mGoodyModel(goodyModel), mOwner(owner)
 {
-    mEntity = mGoodyModel->mEntity->clone(mOwner->getOwner()->getUidString() + mGoodyModel->getName());
-    String s = "Material" + mOwner->getOwner()->getUidString() + mGoodyModel->mOwner->getName() + mGoodyModel->mName;
+    mEntity = mGoodyModel->mEntity->clone(mOwner->getOwner()->getUid() + mGoodyModel->getName());
+    String s = "Material" + mOwner->getOwner()->getUid() + mGoodyModel->mOwner->getName() + mGoodyModel->mName;
     MaterialPtr materialGoody = MaterialManager::getSingleton().getByName(s);
     if (materialGoody.isNull())
     	materialGoody = mGoodyModel->mEntity->getSubEntity(0)->getMaterial()->clone(s, true, mOwner->getOwner()->getResourceGroup());
