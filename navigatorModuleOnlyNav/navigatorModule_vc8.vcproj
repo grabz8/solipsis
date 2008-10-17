@@ -205,7 +205,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\Dependencies\plugin_3ds\include;..\Dependencies\plugin_skp\include\Debug;..\Dependencies\authentFB\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -287,7 +287,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".;..\navigatorModule;..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\llmozlib\include;..\Dependencies\navi\include;..\Dependencies\lua\include;..\Dependencies\CommonTools\include;..\Dependencies\MdlrTools\include;..\Dependencies\AvatarTools\include;..\navigatorModule\oSceneLoader\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\Dependencies\plugin_3ds\include;..\Dependencies\plugin_skp\include\Release;..\Dependencies\authentFB\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -657,6 +657,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Media\NaviLocal\uiauthentfb.html"
+				>
+			</File>
+			<File
 				RelativePath="..\Media\NaviLocal\uiavatarmain.html"
 				>
 			</File>
@@ -669,7 +673,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Media\NaviLocal\uicommands.html"
+				>
+			</File>
+			<File
 				RelativePath="..\Media\NaviLocal\uicontext.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtavatar.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtvlc.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uictxtwww.html"
 				>
 			</File>
 			<File
@@ -678,6 +698,10 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uilogin.html"
+				>
+			</File>
+			<File
+				RelativePath="..\Media\NaviLocal\uimainmenu.html"
 				>
 			</File>
 			<File
@@ -690,30 +714,6 @@
 			</File>
 			<File
 				RelativePath="..\Media\NaviLocal\uioptions.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uicommands.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uimainmenu.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uiauthentfb.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtavatar.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtwww.html"
-				>
-			</File>
-			<File
-				RelativePath="..\Media\NaviLocal\uictxtvlc.html"
 				>
 			</File>
 		</Filter>
