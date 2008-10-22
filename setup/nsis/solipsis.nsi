@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.4"
+!define PRODUCT_VERSION "1.0.5"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -35,6 +35,29 @@
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
 
+; Helpers
+Function GetDXVersion
+  Push $0
+  Push $1
+
+  ClearErrors
+  ReadRegStr $0 HKLM "Software\Microsoft\DirectX" "Version"
+  IfErrors NoDirectX
+
+  StrCpy $1 $0 2 5    ; get the minor version
+  StrCpy $0 $0 2 2    ; get the major version
+  IntOp $0 $0 * 100   ; $0 = major * 100 + minor
+  IntOp $0 $0 + $1
+  Goto Done
+
+  NoDirectX:
+  StrCpy $0 0
+
+  Done:
+  Pop $1
+  Exch $0
+FunctionEnd
+
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
@@ -65,8 +88,10 @@ SectionEnd
 Section "RakNetServer" SEC03
   SetOutPath "$INSTDIR\raknetserver"
   File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112222"
-  CreateShortCut "$DESKTOP\Solipsis RakNet Server.lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112222"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Children Island).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112223 -m $\"$INSTDIR\Media\cacheServerIsland$\""
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8559 -s 11112222 -m $\"$INSTDIR\Media\cacheServerDeltastation$\""
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8558 -s 11112235 -m $\"$INSTDIR\Media\cacheServerRennes$\""
+  CreateShortCut "$DESKTOP\Solipsis RakNet Server (Children Island).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112223 -m $\"$INSTDIR\Media\cacheServerIsland$\""
 SectionEnd
 
 Section "WorldsServer" SEC04
@@ -79,6 +104,12 @@ SectionEnd
 Section "Media" SEC05
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
+  CreateDirectory $INSTDIR\Media\cacheServerIsland
+  CopyFiles /SILENT $INSTDIR\Media\cache\*.* $INSTDIR\Media\cacheServerIsland
+  CreateDirectory $INSTDIR\Media\cacheServerDeltastation
+  CopyFiles /SILENT $INSTDIR\Media\cache\*.* $INSTDIR\Media\cacheServerDeltastation
+  CreateDirectory $INSTDIR\Media\cacheServerRennes
+  CopyFiles /SILENT $INSTDIR\Media\cache\*.* $INSTDIR\Media\cacheServerRennes
 SectionEnd
 
 Section -AdditionalIcons
@@ -100,6 +131,42 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
+Function .onInstSuccess
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Visual C++ 2005 Redist x86 libraries package. Do you accept VCRedistx86 installation ?" IDYES VCRedistInstall
+
+  EndOfVCRedistInstall:
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Python 2.5.2 or later. Do you accept Python installation ?" IDYES PythonInstall
+
+  EndOfPythonInstall:
+  Call GetDXVersion
+  Pop $R3
+  IntCmp $R3 900 +2 0 +2
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires DirectX 9.0 or later. Do you accept DirectX installation ?" IDYES DXInstall
+
+  EndOfDXInstall:
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Ageia PhysX drivers 7.11.13 or later. Do you accept PhysX installation ?" IDYES PhysXInstall
+
+  EndOfPhysXInstall:
+  Goto Done
+
+  VCRedistInstall:
+  Exec VCRedistx86\vs2005SP1\vcredist_x86.exe
+  Goto EndOfVCRedistInstall
+
+  PythonInstall:
+  Exec Python\python-2.5.2.msi
+  Goto EndOfPythonInstall
+
+  DXInstall:
+  Exec DXNovember2007\Redist\DXSETUP.exe
+  Goto EndOfDXInstall
+
+  PhysXInstall:
+  Exec PhysX\PhysX_7.11.13_SystemSoftware.exe
+  Goto EndOfPhysXInstall
+
+  Done:
+FunctionEnd
 
 Function un.onUninstSuccess
   HideWindow
@@ -120,8 +187,10 @@ Section Uninstall
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
   Delete "$DESKTOP\Solipsis Worlds Server.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk"
-  Delete "$DESKTOP\Solipsis RakNet Server.lnk"
-  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server.lnk"
+  Delete "$DESKTOP\Solipsis RakNet Server (Children Island).lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Children Island).lnk"
   Delete "$DESKTOP\Solipsis PeerRakNet.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"

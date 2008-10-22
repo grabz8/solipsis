@@ -31,6 +31,8 @@
                         naviData.add({radioIdAuthentType:'S'});
                     else
                         naviData.add({radioIdAuthentType:'f'});
+                    naviData.add({wsHost:document.getElementById("inputWSHost").value});
+                    naviData.add({wsPort:document.getElementById("inputWSPort").value});
                     naviData.add({peerHost:document.getElementById("inputPeerHost").value});
                     naviData.add({peerPort:document.getElementById("inputPeerPort").value});
                     if (document.getElementById("radioProxyTypeDirect").checked)
@@ -103,29 +105,35 @@
 	            width: 400px;
 	            height: 400px;
             }
-            #newNodeRadio
+            #wsText
             {
 	            position: absolute;
 	            left: 10px;
 	            top: 10px;
             }
-            #udpPortText
+            #wsHostText
             {
 	            position: absolute;
-	            left: 40px;
-	            top: 35px;
+	            left: 15px;
+	            top: 25px;
             }
-            #udpPortInput
+            #wsHostInput
             {
 	            position: absolute;
-	            left: 120px;
-	            top: 35px;
+	            left: 70px;
+	            top: 15px;
             }
-            #existingNodeRadio
+            #wsPortText
             {
 	            position: absolute;
-	            left: 10px;
-	            top: 60px;
+	            left: 225px;
+	            top: 15px;
+            }
+            #wsPortInput
+            {
+	            position: absolute;
+	            left: 265px;
+	            top: 15px;
             }
             #peerHostText
             {
@@ -247,6 +255,7 @@
 			    <div id="optTabs">
 				    <ul class="mootabs_title">
 					    <li title="ID">ID</li>
+					    <li title="Worlds">Worlds</li>
 					    <li title="Peer">Peer</li>
 					    <li title="Proxy">Proxy</li>
 				    </ul>
@@ -264,6 +273,17 @@
                             Fixed authentication (boot.lua)
                         </div>
 				    </div>
+                    <div id="Worlds" class="mootabs_panel">
+                        <div id="wsText">Server</div>
+                        <div id="wsHostText">Host</div>
+                        <div id="wsHostInput">
+                            <input id="inputWSHost" class="inputText" name="inputWSHost" value="localhost" type="text" size="20" />
+                        </div>
+                        <div id="wsPortText">Port</div>
+                        <div id="wsPortInput">
+                            <input id="inputWSPort" class="inputText" name="inputWSPort" value="8550" type="text" size="4" />
+                        </div>
+                    </div>
 				    <div id="Peer" class="mootabs_panel">
                         <div id="peerHostText">Host</div>
                         <div id="peerHostInput">
@@ -271,7 +291,7 @@
                         </div>
                         <div id="peerPortText">Port</div>
                         <div id="peerPortInput">
-                            <input id="inputPeerPort" class="inputText" name="inputPeerPort" value="8550" type="text" size="4" />
+                            <input id="inputPeerPort" class="inputText" name="inputPeerPort" value="8880" type="text" size="4" />
                         </div>
 				    </div>
 				    <div id="Proxy" class="mootabs_panel">

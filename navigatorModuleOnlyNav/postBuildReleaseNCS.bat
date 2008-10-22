@@ -78,4 +78,4 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
  if exist "%OGRE_HOME%\bin\release\quake3settings.cfg" xcopy "%OGRE_HOME%\bin\release\quake3settings.cfg" "%dst%" /s /y
 :quake3settings_exist
 xcopy "..\Media\resources.cfg" "%dst%" /s /y
-copy "..\readme.txt" "%dst%" /y
+copy "..\readmeUser.txt" "%dst%\readme.txt" /y

@@ -184,7 +184,7 @@ protected:
     void authentFacebookOk(const NaviData& naviData);
     void authentFacebookCancel(const NaviData& naviData);
 
-    void authentWorldsServer();
+    void authentWorldsServer(const std::string& pwd);
     void authentWorldsServerOk(const NaviData& naviData);
 
     // Modeler page callbacks

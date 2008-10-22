@@ -743,3 +743,16 @@ now only entities converted into static geometry are destroyed (with their scene
 now log files are post-fixed with pid + date + time
 
 ---------------------------
+22/10/08
+
+Setup updated with automatic install of VCredist, Python, DirectX and PhysX packages
+Installation Guide v1.0 added
+readmeUser.txt added
+WorldsServer host/port added in uioptions.html
+About panel now sized according to screen
+Password added into WorldsServer users registration + uilogin.html
+
+---------------------------
+RELEASE 1.0.5
+
+---------------------------

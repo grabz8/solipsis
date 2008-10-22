@@ -1491,6 +1491,11 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
+    // Show/Hide password input
+    sprintf(txt, "$('pwd').style.visibility = '%s'", (mNavigator->getAuthentType() == ATSolipsis) ? "visible" : "hidden");
+    navi->evaluateJS(txt);
+    navi->evaluateJS("$('inputPwd').value = ''");
+
     // Set current values
     sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getLogin().c_str());
     navi->evaluateJS(txt);
@@ -1588,8 +1593,9 @@ void NavigatorGUI::connect(const NaviData& naviData)
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
 
-    // Get login name
+    // Get login name / password
     std::string login = naviData["login"].str();
+    std::string pwd = naviData["pwd"].str();
 
     // Check
     static std::string validLoginExtrasChars = "$-_.@+!*'(),";
@@ -1633,7 +1639,24 @@ void NavigatorGUI::connect(const NaviData& naviData)
             authentFacebook();
             break;
         case ATSolipsis:
-            authentWorldsServer();
+            static std::string validPwdExtrasChars = "$-_.@!*'(),";
+            bool validPwd = ((pwd.length() >= 4) && (pwd != "null"));
+            for(int i=0;i<(int)pwd.length();i++)
+            {
+                if (!validPwd)
+                    break;
+                validPwd = ((pwd[i] >= '0') && (pwd[i] <= '9') ||
+                    (pwd[i] >= 'a') && (pwd[i] <= 'z') ||
+                    (pwd[i] >= 'A') && (pwd[i] <= 'Z') ||
+                    (validPwdExtrasChars.find_first_of(pwd[i]) != std::string::npos));
+            }
+            if (!validPwd)
+            {
+                // Malformed pwd
+                navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid password ...'");
+                return;
+            }
+            authentWorldsServer(pwd);
             break;
         }
     }
@@ -1702,6 +1725,12 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     navi->evaluateJS(txt);
     sprintf(txt, "setRadioState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+    std::string wsHost, wsPort;
+    CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldServerAddress(), wsHost, wsPort);
+    sprintf(txt, "$('inputWSHost').value = '%s'", wsHost.c_str());
+    navi->evaluateJS(txt);
+    sprintf(txt, "$('inputWSPort').value = '%s'", wsPort.c_str());
+    navi->evaluateJS(txt);
     std::string peerHost, peerPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getPeerAddress(), peerHost, peerPort);
     sprintf(txt, "$('inputPeerHost').value = '%s'", peerHost.c_str());
@@ -1746,6 +1775,10 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     // Get options
     std::string radioIdAuthentType;
     radioIdAuthentType = naviData["radioIdAuthentType"].str();
+	std::string wsHost;
+    unsigned short wsPort;
+    wsHost = naviData["wsHost"].str();
+    wsPort = naviData["wsPort"].toInt();
 	std::string peerHost;
     unsigned short peerPort;
     peerHost = naviData["peerHost"].str();
@@ -1764,9 +1797,21 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     // Check
     AuthentType authentType = (AuthentType)radioIdAuthentType.c_str()[0];
     bool valid_options = true;
+    if (wsHost.length() < 2)
+    {
+        // Bad hostname
+        navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid server hostname ...'");
+        valid_options = false;
+    }
+    if (wsPort < 0)
+    {
+        // Bad port
+        navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid server port ...'");
+        valid_options = false;
+    }
     if (peerHost.length() < 2)
-     {
-       // Bad hostname
+    {
+        // Bad hostname
         navi->evaluateJS("$('infosText').innerHTML = 'Enter a valid peer hostname ...'");
         valid_options = false;
     }
@@ -1825,6 +1870,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (authentType!= mNavigator->getAuthentType())
             mNavigator->setNodeId("");
         mNavigator->setAuthentType(authentType);
+        mNavigator->setWorldServerAddress(CommonTools::StringHelpers::getURL(wsHost, wsPort));
         mNavigator->setPeerAddress(CommonTools::StringHelpers::getURL(peerHost, peerPort));
         mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
 
@@ -1950,7 +1996,7 @@ void NavigatorGUI::authentFacebookCancel(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::authentWorldsServer()
+void NavigatorGUI::authentWorldsServer(const std::string& pwd)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServer()");
 
@@ -1961,7 +2007,7 @@ void NavigatorGUI::authentWorldsServer()
     {
         // Create Navi UI authentication on Worlds server
         // Prepare the url to the world server uiauthentws.html page
-        std::string uiauthentwsUrl = "http://" + mNavigator->getWorldServerAddress() + "/uiauthentws.html?login=" + mNavigator->getLogin();
+        std::string uiauthentwsUrl = "http://" + mNavigator->getWorldServerAddress() + "/uiauthentws.html?login=" + mNavigator->getLogin() + "&pwd=" + pwd;
         NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AUTHENTWS], "", NaviPosition(Center), 256, 128);
         navi->setMovable(false);
         navi->hide();
@@ -1984,11 +2030,17 @@ void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk()");
 
+    std::string result = naviData["result"].str();
     NodeId nodeId = naviData["nodeId"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() nodeId=%s", nodeId.c_str());
-    mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() result=%s, nodeId=%s", result.c_str(), nodeId.c_str());
+    if (!nodeId.empty())
+    {
+        mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
+        setLoginInfosText("Authenticated");
+    }
+    else
+        setLoginInfosText("Authentication failed ...");
 
-    setLoginInfosText("Authenticated");
     // Return to Navi UI login
     login();
 }

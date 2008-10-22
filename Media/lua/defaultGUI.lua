@@ -138,7 +138,7 @@ function uictxtvlcListener(eventType, naviName, naviDataName, param)
 	end
 end
 
--- clamping computation
+-- screen clamping computation
 function clampNaviOnScreen(x, y, w, h)
 	local cx = x - w/2
 	local cy = y - h/2
@@ -148,6 +148,18 @@ function clampNaviOnScreen(x, y, w, h)
 	if cx > (scrWidth - w) then cx = (scrWidth - w) end
 	if cy > (scrHeight - h) then cy = (scrHeight - h) end
 	return cx, cy
+end
+
+-- screen fitting computation
+function fitNaviOnScreen(w, h)
+	local scrWidth, scrHeight = navigator:getRenderWinMetrics()
+	while w > scrWidth or h > scrHeight do
+	    if w > scrWidth then w = w/2 end
+	    if h > scrHeight then h = h/2 end
+	end
+	local x = scrWidth/2 - w/2
+	local y = scrHeight/2 - h/2
+	return x, y, w, h
 end
 
 -- GUI creation
@@ -175,7 +187,8 @@ function NavigatorLua:createGUI(guiName, ...)
 		return true
 	elseif guiName == "uiabout" then
 		-- Create Navi UI about
-		naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, 512, 256, true, true)
+		x, y, w, h = fitNaviOnScreen(512, 512)
+		naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, w, h, true, true)
 		naviSetOpacity("uiabout", 0.75)
 		return true
 	elseif guiName == "uicommands" then

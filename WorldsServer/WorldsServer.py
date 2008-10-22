@@ -61,7 +61,7 @@ class UsersManager:
             usersXmlFile.close()
             userElts = usersDoc.getElementsByTagName('user')
             for userElt in userElts:
-                self.users[userElt.getAttribute('login')] = userElt.getAttribute('nodeId')
+                self.users[userElt.getAttribute('login')] = [userElt.getAttribute('pwd'), userElt.getAttribute('nodeId')]
             usersDoc.unlink()
         except IOError, errno:
             if errno == 2:
@@ -80,7 +80,8 @@ class UsersManager:
             for user in self.users.iteritems():
                 userElt = usersDoc.createElement('user')
                 userElt.setAttribute('login', user[0])
-                userElt.setAttribute('nodeId', user[1])
+                userElt.setAttribute('pwd', user[1][0])
+                userElt.setAttribute('nodeId', user[1][1])
                 usersElt.appendChild(userElt)
             usersXmlFile = open(self.xmlFilename, 'w')
             usersDoc.writexml(usersXmlFile)
@@ -106,16 +107,19 @@ class UsersManager:
             intValue |= self.sbase64revalphabet.get(sbase64Value[c])
         return intValue
 
-    def authenticate(self, login):
+    def authenticate(self, login, pwd):
         """
-        Autenticate a user from its login, return its nodeId, if login does not exist
-        a new nodeId is computed
+        Autenticate a user from its login/password, return result and its nodeId,
+        if login does not exist a new nodeId is computed
         """
-        print 'Authenticating %s ...' % (login)
+        print 'Authenticating %s/%s ...' % (login, pwd)
         self.usersMutex.acquire()
         try:
+            result = False
             if login in self.users:
-                nodeId = self.users[login]
+                user = self.users[login]
+                result = (user[0] == pwd)
+                nodeId = user[1]
             else:
                 # compute 1 new nodeId with current time
                 #nodeId = uuid.uuid4().hex
@@ -124,10 +128,11 @@ class UsersManager:
                 print 'nodeId128 in integer : ', nodeId128
                 # compress it on 22bytes sbase64 string instead of 32bytes hexa string
                 nodeId = self.convertInt2SBase64(nodeId128, 128)
-                self.users[login] = nodeId
-            print 'Authenticated %s -> %s' % (login, nodeId)
+                self.users[login] = [pwd, nodeId]
+                result = True
+            print 'Authenticated %s/%s -> %s, %s' % (login, pwd, result, nodeId)
 #            print 'Converted in integer : ', self.convertSBase642Int(nodeId)
-            return nodeId
+            return result, nodeId
         finally:
             self.usersMutex.release()
 
@@ -165,16 +170,22 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
         if t[len(t) - 1] in ['html', 'png', 'js']:
             if o.path == '/uiauthentws.html':
                 query = parse_qs(o.query)
-                if not 'login' in query:
+                try:
+                    login = query['login'][0]
+                    pwd = query['pwd'][0]
+                except:
                     # login param is missing !
                     self.send_error(404, 'Malformed url ...')
                     return
-                login = query['login'][0]
-                nodeId = usersManager.authenticate(login)
+                authenticated, nodeId = usersManager.authenticate(login, pwd)
                 loginHtmlFile = open('uiauthentws.html', 'r')
                 loginHtmlFileContent = loginHtmlFile.read()
-                loginHtmlFileContent = loginHtmlFileContent.replace('msgTextDynamicContent', 'Succeeded')
-                loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', nodeId)
+                if authenticated:
+                    loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Succeeded')
+                    loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', nodeId)
+                else:
+                    loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Failed')
+                    loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', '')
                 self.wfile.write(loginHtmlFileContent)
             else:
                 # serve simply the html file
@@ -272,7 +283,7 @@ class Console(threading.Thread):
                 print '|Login                           |Id                     |'
                 print '+--------------------------------+-----------------------+'
                 for user in usersManager.users.iteritems():
-                    print '|%-32s|%-23s|' % (user)
+                    print '|%-32s|%-23s|' % (user[0], user[1][1])
                 print '\n'
             else:
                 drawMenu = True

@@ -14,6 +14,7 @@
             function buttonPressed(buttonName)
             {
                 var naviData = new NaviData(buttonName);
+                naviData.add({result:'resultDynamicContent'});
                 naviData.add({nodeId:'nodeIdDynamicContent'});
                 naviData.send();
             }
@@ -64,7 +65,7 @@
 
     <body onload="pageLoaded()">
         <div id="container">
-            <div id="msgText">msgTextDynamicContent</div>
+            <div id="msgText">resultDynamicContent</div>
             <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
         </div>
     </body>
