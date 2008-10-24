@@ -753,6 +753,11 @@ About panel now sized according to screen
 Password added into WorldsServer users registration + uilogin.html
 
 ---------------------------
+24/10/08
+
+New UI + Setup updates
+
+---------------------------
 RELEASE 1.0.5
 
 ---------------------------
