@@ -16,8 +16,10 @@
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
+!define MUI_ICON "Solipsis.ico"
+!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\win-uninstall.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "SolipsisBanner.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "SolipsisBanner.bmp"
 
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
@@ -67,6 +69,43 @@ InstallDir "$PROGRAMFILES\Solipsis"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
+
+Section -Prerequisites
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Visual C++ 2005 Redist x86 libraries package. Do you accept VCRedistx86 installation ?" IDYES VCRedistInstall
+
+  EndOfVCRedistInstall:
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Python 2.5.2 or later. Do you accept Python installation ?" IDYES PythonInstall
+
+  EndOfPythonInstall:
+  Call GetDXVersion
+  Pop $R3
+  IntCmp $R3 900 +2 0 +2
+    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires DirectX 9.0 or later. Do you accept DirectX installation ?" IDYES DXInstall
+
+  EndOfDXInstall:
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Ageia PhysX drivers 7.11.13 or later. Do you accept PhysX installation ?" IDYES PhysXInstall
+
+  EndOfPhysXInstall:
+  Goto Done
+
+  VCRedistInstall:
+  ExecWait VCRedistx86\vs2005SP1\vcredist_x86.exe
+  Goto EndOfVCRedistInstall
+
+  PythonInstall:
+  ExecWait '"msiexec" /i "Python\python-2.5.2.msi"'
+  Goto EndOfPythonInstall
+
+  DXInstall:
+  ExecWait DXNovember2007\Redist\DXSETUP.exe
+  Goto EndOfDXInstall
+
+  PhysXInstall:
+  ExecWait PhysX\PhysX_7.11.13_SystemSoftware.exe
+  Goto EndOfPhysXInstall
+
+  Done:
+SectionEnd
 
 Section "Navigator" SEC01
   SetOutPath "$INSTDIR\navigator"
@@ -130,43 +169,6 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
-
-Function .onInstSuccess
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Visual C++ 2005 Redist x86 libraries package. Do you accept VCRedistx86 installation ?" IDYES VCRedistInstall
-
-  EndOfVCRedistInstall:
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Python 2.5.2 or later. Do you accept Python installation ?" IDYES PythonInstall
-
-  EndOfPythonInstall:
-  Call GetDXVersion
-  Pop $R3
-  IntCmp $R3 900 +2 0 +2
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires DirectX 9.0 or later. Do you accept DirectX installation ?" IDYES DXInstall
-
-  EndOfDXInstall:
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Ageia PhysX drivers 7.11.13 or later. Do you accept PhysX installation ?" IDYES PhysXInstall
-
-  EndOfPhysXInstall:
-  Goto Done
-
-  VCRedistInstall:
-  Exec VCRedistx86\vs2005SP1\vcredist_x86.exe
-  Goto EndOfVCRedistInstall
-
-  PythonInstall:
-  Exec Python\python-2.5.2.msi
-  Goto EndOfPythonInstall
-
-  DXInstall:
-  Exec DXNovember2007\Redist\DXSETUP.exe
-  Goto EndOfDXInstall
-
-  PhysXInstall:
-  Exec PhysX\PhysX_7.11.13_SystemSoftware.exe
-  Goto EndOfPhysXInstall
-
-  Done:
-FunctionEnd
 
 Function un.onUninstSuccess
   HideWindow
