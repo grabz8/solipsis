@@ -47,6 +47,7 @@ namespace NaviLibrary
 		Ogre::RenderWindow* renderWindow;
 		bool isWinFocused;
 // BEGIN GREG
+		bool isModal;
 		bool isFocused;
         bool autoUpdatedOnFocus;
         std::string currentLocation;
@@ -381,6 +382,13 @@ namespace NaviLibrary
 		Navi* setMaxUPS(unsigned int maxUPS = 0);
 
 // BEGIN GREG
+		/**
+		* Toggles whether or not this Navi is modal, focus cannot be lost.
+		*
+		* @param	isModal	Whether or not this Navi is modal.
+		*/
+		Navi* setModal(bool isModal = false);
+
 		/**
 		* Toggles whether or not this Navi must be updated when focused.
 		*
