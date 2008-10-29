@@ -9,7 +9,7 @@
         <content>
             <sceneContent>
                 <entryGate gravity="true">
-                    <position x="1030" y="5" z="580" />
+                    <position x="1050" y="5" z="580" />
                 </entryGate>
             </sceneContent>
             <lod level="0">
