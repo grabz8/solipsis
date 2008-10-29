@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.5"
+!define PRODUCT_VERSION "1.0.6"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -97,7 +97,7 @@ Section -Prerequisites
   Goto EndOfPythonInstall
 
   DXInstall:
-  ExecWait DXNovember2007\Redist\DXSETUP.exe
+  ExecWait DXMarch2008\Redist\directx_mar2008_redist.exe
   Goto EndOfDXInstall
 
   PhysXInstall:
@@ -127,9 +127,9 @@ SectionEnd
 
 Section "WorldsServer" SEC03
   SetOutPath "$INSTDIR\WorldsServer"
-  File /r /x .svn /x *.pdn /x users.xml "..\..\WorldsServer\*.*"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
-  CreateShortCut "$DESKTOP\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" ""
+  File /r /x .svn /x *.pdn /x *.bat /x setup.py /x users.xml "..\..\WorldsServer\*.*"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
+  CreateShortCut "$DESKTOP\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
 SectionEnd
 
 Section "Media" SEC04
