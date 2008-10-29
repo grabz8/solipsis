@@ -77,6 +77,7 @@ protected:
     String mWorldServerAddress;
     unsigned short mWorldServerTimeoutSec;
     String mLogin;
+    String mPwd;
     AuthentType mAuthentType;
     String mFacebookApiKey;
     String mFacebookSecret;
@@ -141,6 +142,8 @@ public:
     void setWorldServerTimeout(unsigned short timeoutSec);
     const String& getLogin();
     void setLogin(const String& login);
+    const String& getPwd();
+    void setPwd(const String& pwd);
     AuthentType getAuthentType();
     void setAuthentType(AuthentType authentType);
     const String& getFacebookApiKey() { return mFacebookApiKey; }

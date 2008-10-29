@@ -53,6 +53,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mWorldServerAddress("localhost:8550"),
     mWorldServerTimeoutSec(8),
     mLogin("me"),
+    mPwd(""),
     mAuthentType(ATSolipsis),
     mFacebookApiKey(""),
     mFacebookSecret("695a02e3645bed085e1802c7e9952d73"), // for api key "8d81e4c64ac0039b209c4a53b21ba220"
@@ -221,6 +222,18 @@ const String& Navigator::getLogin()
 void Navigator::setLogin(const String& login)
 {
     mLogin = login;
+}
+
+//-------------------------------------------------------------------------------------
+const String& Navigator::getPwd()
+{
+    return mPwd;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setPwd(const String& pwd)
+{
+    mPwd = pwd;
 }
 
 //-------------------------------------------------------------------------------------

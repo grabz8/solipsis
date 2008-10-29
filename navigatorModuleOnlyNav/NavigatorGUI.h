@@ -46,8 +46,27 @@ public:
         NSCreated       // Navi page created and not visible
     };
 
+    enum MsgBoxButtons {
+        MBB_OK = 1,
+        MBB_CANCEL = MBB_OK >> 1,
+        MBB_YESNO = MBB_CANCEL >> 1
+    };
+    enum MsgBoxIcon {
+        MBB_INFO = 0,
+        MBB_QUESTION,
+        MBB_ERROR,
+        MBB_EXCLAMATION
+    };
+    enum MsgBoxDisplayed {
+        MBD_NONE = 0,
+        MBD_WORDSSERVERERROR,
+        MBD_AUTHENTFACEBOOKERROR,
+        MBD_AUTHENTWORLDSSERVERERROR
+    };
+
     enum NaviPanel {
-        NAVI_LOGIN = 0,
+        NAVI_MSGBOX = 0,
+        NAVI_LOGIN,
         NAVI_WORLDS,
         NAVI_OPTIONS,
         NAVI_AUTHENTFB,
@@ -81,6 +100,11 @@ protected:
     unsigned long mCurrentNaviCreationDate;
     unsigned long mStatusBarDisplayDate;
     std::string mLoginInfosText;
+    MsgBoxDisplayed mMsgBoxDisplayed;
+    std::string mMsgBoxTitleText;
+    std::string mMsgBoxMsgText;
+    MsgBoxButtons mMsgBoxButtons;
+    MsgBoxIcon mMsgBoxIcon;
     Facebook *mFacebook;
 #ifdef UIDEBUG
     bool mTreeDirty;
@@ -99,12 +123,17 @@ public:
     void SetMouseVisibility(bool visible);
     bool isMouseVisible();
 
+    // Show a message box
+    void showMessageBox(const std::string& titleText, const std::string& msgText, MsgBoxButtons buttons, MsgBoxIcon icon);
+    void hideMessageBox();
+    bool isMessageBoxVisible();
+
     // Interfaces
     void login();
     void inWorld();
 
-    // Informations text below login panel
-    void setLoginInfosText(const std::string& infosText);
+    // Apply informations of login panel
+    void applyLoginDatas();
 
     // Set text in status bar + display it for a while
     void setStatusBarText(const std::string& statusText);
@@ -153,6 +182,9 @@ public:
 
 protected:
     // Handlers
+    void messageBoxPageLoaded(const NaviData& naviData);
+    void messageBoxResponse(const NaviData& naviData);
+
     // Login/Options/InWorld callbacks
     void loginPageLoaded(const NaviData& naviData);
     void loginWorld(const NaviData& naviData);
@@ -172,6 +204,7 @@ protected:
 		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
     };
     WorldServerEventListener mWorldServerEventListener;
+    void worldServerError();
     void worldOk(const NaviData& naviData);
     void worldCancel(const NaviData& naviData);
 
@@ -180,11 +213,13 @@ protected:
     void optionsBack(const NaviData& naviData);
 
     void authentFacebook();
+    void authentFacebookError();
     void authentFacebookPageLoaded(const NaviData& naviData);
     void authentFacebookOk(const NaviData& naviData);
     void authentFacebookCancel(const NaviData& naviData);
 
     void authentWorldsServer(const std::string& pwd);
+    void authentWorldsServerError();
     void authentWorldsServerOk(const NaviData& naviData);
 
     // Modeler page callbacks

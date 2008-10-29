@@ -642,6 +642,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\readmeUser.txt"
+				>
+			</File>
+			<File
 				RelativePath="..\Media\materials\scripts\Solipsis.material"
 				>
 			</File>
