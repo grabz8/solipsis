@@ -285,6 +285,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			>
 			<File
+				RelativePath=".\RakNetServer.rc"
+				>
+			</File>
+			<File
 				RelativePath=".\readme.txt"
 				>
 			</File>
