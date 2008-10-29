@@ -12,10 +12,7 @@
             }
             function buttonPressed(buttonName)
             {
-                var naviData = new NaviData(buttonName);
-                if (buttonName == 'connect')
-                    naviData.add({login:document.getElementById("inputLogin").value}).add({pwd:document.getElementById("inputPwd").value});
-                naviData.send();
+                new NaviData(buttonName).send();
             }
         </script>
         <style type="text/css">

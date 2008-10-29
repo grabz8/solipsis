@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uimsgbox</title>
+        <script type="text/javascript" src="Navi-yui.js"></script>
+        <script type="text/javascript">
+            function pageLoaded()
+            {
+                new NaviData('pageLoaded').add({naviName:'uimsgbox'}).send();
+            }
+            function buttonPressed(buttonName)
+            {
+                new NaviData('response').add({response:buttonName}).send();
+            }
+            function setButtons(buttonsMask)
+            {
+                buttons = document.getElementById('buttons');
+                if (buttonsMask == 4)
+                    buttons.innerHTML = '<div id="yesButton" class="msgBoxBtns msgBoxBtnYes" style="left:64px;" onclick="buttonPressed(\'yes\')"></div><div id="noButton" class="msgBoxBtns msgBoxBtnNo" style="left:320px;" onclick="buttonPressed(\'no\')"></div>';
+                else if (buttonsMask == 3)
+                    buttons.innerHTML = '<div id="okButton" class="msgBoxBtns msgBoxBtnOk" style="left:64px;" onclick="buttonPressed(\'ok\')"></div><div id="cancelButton" class="msgBoxBtns msgBoxBtnCancel" style="left:320px;" onclick="buttonPressed(\'cancel\')"></div>';
+                else if (buttonsMask == 1)
+                    buttons.innerHTML = '<div id="okButton" class="msgBoxBtns msgBoxBtnOk" style="left:192px;" onclick="buttonPressed(\'ok\')"></div>';
+                else
+                    buttons.innerHTML = '';
+            }
+            var icons = new Array('msgBoxIconIcon', 'msgBoxIconQuestion', 'msgBoxIconError', 'msgBoxIconExclamation');
+            function setIcon(iconIdx)
+            {
+                icon = document.getElementById('icon');
+                if (iconIdx == null || iconIdx < 0 || iconIdx > 3)
+                    icon.innerHTML = '';
+                else
+                    icon.innerHTML = '<div id="iicon" class="msgBoxIcons ' + icons[iconIdx] + '"></div>';
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+                padding-left: 11em;
+	            background-color: #000000;
+	            overflow: hidden;
+	            font-family: Verdana;
+	            font-size: small;
+	            color: #FFFFFF;
+            }
+            #container
+            {
+	            background-image: url('uimsgbox.png');
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 512px;
+	            height: 128px;
+            }
+            #titleText
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 10px;
+	            width: 512px;
+	            font-size: 16px;
+	            font-style: italic;
+	            font-weight: bold;
+	            text-align: center;
+	            color: #FFFFFF;
+            }
+            #msgText
+            {
+	            position: absolute;
+	            left: 65px;
+	            top: 35px;
+	            width: 440px;
+	            font-size: 12px;
+	            font-style: italic;
+	            font-weight: bold;
+	            text-align: left;
+	            color: #FFFF33;
+            }
+            .msgBoxIcons
+            {
+                background-image: url(msgboxIcons.png);
+                background-repeat: no-repeat;
+                width: 64px;
+                height: 64px;
+	            position: absolute;
+	            left: 0px;
+	            top: 30px;
+                z-index: 0;
+            }
+            .msgBoxIconInfo { background-position: 0px 0px; }
+            .msgBoxIconQuestion { background-position: -64px 0px; }
+            .msgBoxIconError { background-position: -128px 0px; }
+            .msgBoxIconExclamation { background-position: -192px 0px; }
+            .msgBoxBtns
+            {
+                background-image: url(msgboxBtns.png);
+                background-repeat: no-repeat;
+                width: 128px;
+                height: 24px;
+	            position: absolute;
+	            top: 100px;
+                z-index: 0;
+            }
+            .msgBoxBtnOk { background-position: 0px 0px; }
+            .msgBoxBtnCancel { background-position: 0px -24px; }
+            .msgBoxBtnYes { background-position: 0px -48px; }
+            .msgBoxBtnNo { background-position: 0px -72px; }
+            .closeIcon
+            {
+                background-image: url(closeIcon.png);
+                background-repeat: no-repeat;
+                position: absolute;
+	            top: 2px;
+                left: 495px;
+                float: left;
+                width: 16px;
+                height: 16px;
+                background-position: 0px 0px;
+            }
+            .closeIcon:hover { background-position: 0px -16px; }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="titleText"></div>
+            <div id="msgText"></div>
+            <div id="icon"></div>
+            <div id="buttons"></div>
+            <span id="mTbIconClose" class="closeIcon" onclick="buttonPressed('close')"></span>
+        </div>
+    </body>
+</html>
