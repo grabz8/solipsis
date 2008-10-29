@@ -36,7 +36,8 @@ Facebook::Facebook(string apiKey, string secret, string server) :
     mToken(""),
     mVersion("1.0"),
     mHasSession(false),
-    mCallId(0)
+    mCallId(0),
+    mCurl(0)
 {
     mMd5 = new md5wrapper();
 }
@@ -45,7 +46,8 @@ Facebook::Facebook(string apiKey, string secret, string server) :
 Facebook::~Facebook()
 {
     cleanup();
-    delete mMd5;
+    if (mMd5 != 0)
+        delete mMd5;
 }
 
 //-------------------------------------------------------------------------------------
@@ -162,7 +164,9 @@ string Facebook::getSignature(list<string> args)
 //-------------------------------------------------------------------------------------
 void Facebook::cleanup()
 {
+    if (mCurl == 0) return;
     curl_easy_cleanup(mCurl);
+    mCurl = 0;
 }
 
 //-------------------------------------------------------------------------------------
