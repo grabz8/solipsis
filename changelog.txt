@@ -761,3 +761,17 @@ New UI + Setup updates
 RELEASE 1.0.5
 
 ---------------------------
+24/10/08
+
+Rennes entry gate centered on place
+Now connect directly called after authentication success
+MessageBox Navi added (used on authentication errors + WorldsServer cnx error)
+Login panel datas are now saved
+Icons added (WorldsServer, RakNetServer, Peer)
+closeIcon hover added
+StringHelpers::isAValid login/pwd methods added
+AuthentFB destroy bug fixed
+WorldsServer exe generation added
+Setup 1.0.6 with DXMarch2008
+
+---------------------------
