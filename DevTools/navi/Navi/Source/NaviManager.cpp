@@ -370,6 +370,10 @@ struct compare { bool operator()(Navi* a, Navi* b){ return(*a > *b); }};
 
 bool NaviManager::focusNavi(int x, int y, Navi* selection)
 {
+// BEGIN GREG
+    if (focusedNavi && focusedNavi->isModal)
+        return true;
+// END GREG
 	deFocusAllNavis();
 	Navi* naviToFocus = selection? selection : getTopNavi(x, y);
 

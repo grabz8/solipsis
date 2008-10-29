@@ -39,6 +39,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	renderWindow = renderWin;
 	isWinFocused = true;
 // BEGIN GREG
+    isModal = false;
 	isFocused = false;
     autoUpdatedOnFocus = false;
     currentLocation = "";
@@ -99,6 +100,7 @@ Navi::Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage
 	renderWindow = renderWin;
 	isWinFocused = true;
 // BEGIN GREG
+    isModal = false;
 	isFocused = false;
     autoUpdatedOnFocus = false;
 // END GREG
@@ -821,6 +823,12 @@ Navi* Navi::setMaxUPS(unsigned int maxUPS)
 }
 
 // BEGIN GREG
+Navi* Navi::setModal(bool isModal)
+{
+    this->isModal = isModal;
+	return this;
+}
+
 Navi* Navi::setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus)
 {
     autoUpdatedOnFocus = isAutoUpdatedOnFocus;
