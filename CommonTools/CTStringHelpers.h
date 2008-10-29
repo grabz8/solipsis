@@ -54,6 +54,10 @@ public:
     static void getURLHostPort(const std::string& url, std::string& host, std::string& port);
     /// Retrieve host and decimal port of 1 url
     static void getURLHostPort(const std::string& url, std::string& host, unsigned short& port);
+    /// Returns true if a login is valid
+    static bool isAValidLogin(const std::string& login);
+    /// Returns true if a password is valid
+    static bool isAValidPassword(const std::string& pwd);
 };
 
 } // namespace CommonTools

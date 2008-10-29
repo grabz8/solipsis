@@ -30,9 +30,9 @@ using namespace std;
 namespace CommonTools {
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(float val, unsigned short precision, unsigned short width, char fill, std::ios::fmtflags flags)
+string StringHelpers::toString(float val, unsigned short precision, unsigned short width, char fill, ios::fmtflags flags)
 {
-    std::ostringstream stream;
+    ostringstream stream;
     stream.precision(precision);
     stream.width(width);
     stream.fill(fill);
@@ -43,9 +43,9 @@ std::string StringHelpers::toString(float val, unsigned short precision, unsigne
 }
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(int val, unsigned short width, char fill, std::ios::fmtflags flags)
+string StringHelpers::toString(int val, unsigned short width, char fill, ios::fmtflags flags)
 {
-    std::ostringstream stream;
+    ostringstream stream;
 	stream.width(width);
     stream.fill(fill);
     if (flags)
@@ -55,9 +55,9 @@ std::string StringHelpers::toString(int val, unsigned short width, char fill, st
 }
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
+string StringHelpers::toString(unsigned int val, unsigned short width, char fill, ios::fmtflags flags)
 {
-    std::ostringstream stream;
+    ostringstream stream;
     stream.width(width);
     stream.fill(fill);
     if (flags)
@@ -67,9 +67,9 @@ std::string StringHelpers::toString(unsigned int val, unsigned short width, char
 }
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(long val, unsigned short width, char fill, std::ios::fmtflags flags)
+string StringHelpers::toString(long val, unsigned short width, char fill, ios::fmtflags flags)
 {
-    std::ostringstream stream;
+    ostringstream stream;
 	stream.width(width);
     stream.fill(fill);
     if (flags)
@@ -79,9 +79,9 @@ std::string StringHelpers::toString(long val, unsigned short width, char fill, s
 }
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
+string StringHelpers::toString(unsigned long val, unsigned short width, char fill, ios::fmtflags flags)
 {
-    std::ostringstream stream;
+    ostringstream stream;
 	stream.width(width);
     stream.fill(fill);
     if (flags)
@@ -91,7 +91,7 @@ std::string StringHelpers::toString(unsigned long val, unsigned short width, cha
 }
 
 //-------------------------------------------------------------------------------------
-std::string StringHelpers::toString(bool val, bool yesNo)
+string StringHelpers::toString(bool val, bool yesNo)
 {
     if (val)
     {
@@ -162,9 +162,43 @@ void StringHelpers::getURLHostPort(const string& url, string& host, string& port
 //-------------------------------------------------------------------------------------
 void StringHelpers::getURLHostPort(const string& url, string& host, unsigned short& port)
 {
-    std::string portStr;
+    string portStr;
     getURLHostPort(url, host, portStr);
     port = atoi(portStr.c_str());
+}
+
+//-------------------------------------------------------------------------------------
+bool StringHelpers::isAValidLogin(const string& login)
+{
+    static string validLoginExtrasChars = "$-_.@+!*'(),";
+    bool validLogin = ((login.length() > 2) && (login != "null"));
+    for(int i=0;i<(int)login.length();i++)
+    {
+        if (!validLogin)
+            break;
+        validLogin = ((login[i] >= '0') && (login[i] <= '9') ||
+            (login[i] >= 'a') && (login[i] <= 'z') ||
+            (login[i] >= 'A') && (login[i] <= 'Z') ||
+            (validLoginExtrasChars.find_first_of(login[i]) != string::npos));
+    }
+    return validLogin;
+}
+
+//-------------------------------------------------------------------------------------
+bool StringHelpers::isAValidPassword(const string& pwd)
+{
+    static string validPwdExtrasChars = "$-_.@!*'(),";
+    bool validPwd = ((pwd.length() >= 4) && (pwd != "null"));
+    for(int i=0;i<(int)pwd.length();i++)
+    {
+        if (!validPwd)
+            break;
+        validPwd = ((pwd[i] >= '0') && (pwd[i] <= '9') ||
+            (pwd[i] >= 'a') && (pwd[i] <= 'z') ||
+            (pwd[i] >= 'A') && (pwd[i] <= 'Z') ||
+            (validPwdExtrasChars.find_first_of(pwd[i]) != string::npos));
+    }
+    return validPwd;
 }
 
 //-------------------------------------------------------------------------------------
