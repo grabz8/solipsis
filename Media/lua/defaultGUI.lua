@@ -166,7 +166,12 @@ end
 function NavigatorLua:createGUI(guiName, ...)
 	logMessage(string.format("NavigatorLua:createGUI(%s)", guiName))
 
-	if guiName == "uimainmenu" then
+	if guiName == "uimsgbox" then
+		-- Create Navi UI message box
+		naviMgrCreateNavi("uimsgbox", "local://uimsgbox.html", "Center", 0, 0, 512, 128, true, false)
+		naviSetMask("uimsgbox", "uimsgbox.png")
+		return true
+	elseif guiName == "uimainmenu" then
 		-- Create Navi UI main menu
 		naviMgrCreateNavi("uimainmenu", "local://uimainmenu.html", "TopLeft", 0, 0, 512, 16, false, false)
 		naviSetMask("uimainmenu", "alphafade512x16.png")
