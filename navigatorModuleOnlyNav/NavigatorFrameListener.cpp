@@ -697,8 +697,12 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
     {
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
-        // Updating Navi with the mouse pressed
-        NaviManager::Get().injectMouseDown(buttonsId);
+        if (buttonsId == MiddleMouseButton)
+            // Unfocus if middle button pressed
+            NaviManager::Get().deFocusAllNavis();
+        else
+            // Updating Navi with the mouse pressed
+            NaviManager::Get().injectMouseDown(buttonsId);
 
         if (navigatorGUI->isContextVisible() && !navigatorGUI->isContextFocused())
             navigatorGUI->contextHide();
