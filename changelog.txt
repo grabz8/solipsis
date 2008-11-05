@@ -781,5 +781,6 @@ Middle mouse button now defocus current navi
 nodes/meshs of objects in modeler use now entityUID instead of name attribute
 EntityUID of object is now displayed into properties panel
 Test if voiceengine plugin loaded otherwise it is simply not supported
+MessageBox with Navi now used in modeler
 
 ---------------------------
