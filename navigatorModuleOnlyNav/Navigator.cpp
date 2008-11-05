@@ -1966,7 +1966,7 @@ bool Navigator::mdlrXMLSave(bool all)
 		if (all || !mModeler->isSelectionEmpty())
             return mModeler->XMLSave(all);
 		else
-            mNavigatorGUI->showMessageBox("Modeler information", "You have to select an object.", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 
 	return false;
 }

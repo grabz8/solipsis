@@ -90,10 +90,17 @@ public:
         NAVI_COUNT
     };
 
+    enum ModelerError {
+        ME_NOOBJECTSELECTED,    // No object3D selected
+        ME_TEXTUREALREADYOPEN,  // Texture already open
+        ME_FILENOTFOUND
+    };
+    static const std::string ms_ModelerErrors[];
+
 protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
-    static const std::string mNavisNames[NAVI_COUNT];
+    static const std::string ms_NavisNames[NAVI_COUNT];
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
     int mCurrentCtxtPanel;
@@ -223,7 +230,6 @@ protected:
     void authentWorldsServerOk(const NaviData& naviData);
 
     // Modeler page callbacks
-    void modelerMainFileOpen(const NaviData& naviData);
     void modelerMainFileImport(const NaviData& naviData);
     void modelerMainFileSave(const NaviData& naviData);
     void modelerMainFileExit(const NaviData& naviData);

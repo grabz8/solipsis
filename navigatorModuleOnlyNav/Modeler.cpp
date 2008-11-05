@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Selection.h"
 #include "Transformations.h"
 #include "Navigator.h"
+#include "NavigatorGUI.h"
 #include <OgreExternalTextureSourceManager.h>
 #include <Navi.h>
 #include <CTSystem.h>
@@ -760,16 +761,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 	}
 	else
 	{
-#ifdef WIN32
-		std::string fileName = "File not found [";
-		fileName += filename;
-		fileName += "]";
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox(fileName, "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        Navigator::getSingletonPtr()->getNavigatorGUI()->showMessageBox("Modeler error", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_FILENOTFOUND] + " [" + filename + "].", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_ERROR);
 		return false;	
 	}
 

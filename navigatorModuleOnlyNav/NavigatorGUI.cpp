@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 using namespace CommonTools;
 
-const std::string NavigatorGUI::mNavisNames[] = {
+const std::string NavigatorGUI::ms_NavisNames[] = {
     "uimsgbox",
     "uilogin",
     "uiworlds",
@@ -68,6 +68,12 @@ const std::string NavigatorGUI::mNavisNames[] = {
 #ifdef UIDEBUG
     "uidebug"
 #endif
+};
+
+const std::string NavigatorGUI::ms_ModelerErrors[] = {
+    "You have to select an object3D.",
+    "This Texture is already open.",
+    "File not found."
 };
 
 //-------------------------------------------------------------------------------------
@@ -141,7 +147,7 @@ void NavigatorGUI::update()
     // Status bar update
     if ((mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
     {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_STATUSBAR]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_STATUSBAR]);
         if (navi == 0) return;
         if (navi->getVisibility())
             navi->hide(true);
@@ -170,7 +176,7 @@ void NavigatorGUI::showMessageBox(const std::string& titleText, const std::strin
     if (mNavisStates[NAVI_MSGBOX] != NSCreated)
         hideMessageBox();
     switchLuaNavi(NAVI_MSGBOX, true);
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MSGBOX]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
     navi->setModal(true);
     mMsgBoxTitleText = titleText;
     mMsgBoxMsgText = msgText;
@@ -191,7 +197,7 @@ void NavigatorGUI::hideMessageBox()
 bool NavigatorGUI::isMessageBoxVisible()
 {
     if (mNavisStates[NAVI_MSGBOX] != NSCreated) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MSGBOX]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
     return ((navi != 0) && navi->getVisibility());
 }
 
@@ -234,7 +240,7 @@ void NavigatorGUI::login()
     if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
     {
         // Create Navi UI login
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
         navi->setMovable(false);
         navi->setAutoUpdateOnFocus(true);
         navi->setMaxUPS(24);
@@ -262,15 +268,15 @@ void NavigatorGUI::inWorld()
 
     switchLuaNavi(NAVI_MAINMENU);
 #ifdef UIDEBUG
-    mNaviMgr->getNavi(mNavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
 
     // Create Navi UI status bar
     // Lua
     if (mNavisStates[NAVI_STATUSBAR] == NSNotCreated)
     {
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[NAVI_STATUSBAR].c_str()))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + mNavisNames[NAVI_STATUSBAR], "NavigatorGUI::inWorld()"); 
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", ms_NavisNames[NAVI_STATUSBAR].c_str()))
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + ms_NavisNames[NAVI_STATUSBAR], "NavigatorGUI::inWorld()"); 
         mNavisStates[NAVI_STATUSBAR] = NSCreated;
     }
 
@@ -282,7 +288,7 @@ void NavigatorGUI::inWorld()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::applyLoginDatas()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
     if (navi == 0) return;
 	std::string login = navi->evaluateJS("$('inputLogin').value");
 	std::string pwd = navi->evaluateJS("$('inputPwd').value");
@@ -295,7 +301,7 @@ void NavigatorGUI::applyLoginDatas()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::setStatusBarText(const std::string& statusText)
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_STATUSBAR]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_STATUSBAR]);
     navi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
     mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
     if (!navi->getVisibility())
@@ -307,7 +313,7 @@ void NavigatorGUI::addChatText(const String& message)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_CHAT]);
     if (navi == 0)
         return;
     std::string jsStr = "$('textChat').value += '" + message + "\\n'";
@@ -322,9 +328,9 @@ void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& 
         contextHide();
     // Create Navi UI context
     // Lua
-    if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", mNavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
+    if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", ms_NavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", mNavisNames[ctxtPanel].c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", ms_NavisNames[ctxtPanel].c_str());
         return;
     }
     mNavisStates[ctxtPanel] = NSCreated;
@@ -335,7 +341,7 @@ void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& 
 bool NavigatorGUI::isContextVisible()
 {
     if (mCurrentCtxtPanel == -1) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
     return ((navi != 0) && navi->getVisibility());
 }
 
@@ -343,7 +349,7 @@ bool NavigatorGUI::isContextVisible()
 bool NavigatorGUI::isContextFocused()
 {
     if (mCurrentCtxtPanel == -1) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
     return ((navi != 0) && (navi == mNaviMgr->getFocusedNavi()));
 }
 
@@ -354,7 +360,7 @@ void NavigatorGUI::contextHide()
     if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
 
     // Hide Navi UI context
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
     navi->hide();
     mCurrentCtxtPanel = -1;
 }
@@ -366,7 +372,7 @@ void NavigatorGUI::contextDestroy()
     if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
 
     // Destroy Navi UI context
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentCtxtPanel]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
     mNaviMgr->destroyNavi(navi);
     mNavisStates[mCurrentCtxtPanel] = NSNotCreated;
     mCurrentCtxtPanel = -1;
@@ -381,7 +387,7 @@ void NavigatorGUI::modelerMainShow()
     if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
     {
         // Create Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_MODELERMAIN], "local://uimdlrmain.html", NaviPosition(TopRight), 256, 512);
         navi->setMovable(true);
         navi->hide();
         navi->setMask("uimdlrmain.png");//Eliminate the black shadow at the margin of the menu
@@ -415,7 +421,7 @@ void NavigatorGUI::modelerMainShow()
 		mNavisStates[NAVI_MODELERMAIN] = NSCreated;
     }
     else
-        mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN])->show(true);
+        mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERMAIN])->show(true);
 
     mNavigator->startModeling();
 
@@ -427,7 +433,7 @@ void NavigatorGUI::modelerMainShow()
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isModelerMainVisible()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERMAIN]);
     return ((navi != 0) && navi->getVisibility());
 }
 
@@ -435,7 +441,7 @@ bool NavigatorGUI::isModelerMainVisible()
 void NavigatorGUI::modelerMainHide()
 {
     if (!isModelerMainVisible()) return;
-    mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN])->hide();
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERMAIN])->hide();
 }
 
 //-------------------------------------------------------------------------------------
@@ -444,7 +450,7 @@ void NavigatorGUI::modelerMainUnload()
     if (mNavisStates[NAVI_MODELERMAIN] != NSNotCreated)
     {
         // Destroy Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERMAIN]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERMAIN]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
@@ -481,7 +487,7 @@ void NavigatorGUI::modelerPropShow()
         std::string firstLocalIP = myIPAddesses.front();
 
 		// Create Navi UI modeler
-		NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_MODELERPROP], "local://uimdlrprop.html?localIP=" + firstLocalIP, NaviPosition(TopRight), 512, 512);
+		NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_MODELERPROP], "local://uimdlrprop.html?localIP=" + firstLocalIP, NaviPosition(TopRight), 512, 512);
 		navi->setMovable(true);
 		navi->hide();
 		navi->setMask("uimdlrprop.png");//Eliminate the black shadow at the margin of the menu
@@ -562,7 +568,7 @@ void NavigatorGUI::modelerPropShow()
 	}
 	else //if(!isModelerMainVisible())
 	{
-		mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP])->show(true);
+		mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP])->show(true);
 
 		// Update the properties panel from the selected object datas
 		modelerTabberLoad(1);
@@ -587,7 +593,7 @@ void NavigatorGUI::modelerPropShow()
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isModelerPropVisible()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
     return ((navi != 0) && navi->getVisibility());
 }
 
@@ -595,7 +601,7 @@ bool NavigatorGUI::isModelerPropVisible()
 void NavigatorGUI::modelerPropHide()
 {
     if (!isModelerPropVisible()) return;
-    mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP])->hide();
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP])->hide();
 }
 
 //-------------------------------------------------------------------------------------
@@ -604,7 +610,7 @@ void NavigatorGUI::modelerPropUnload()
     if (mNavisStates[NAVI_MODELERPROP] != NSNotCreated)
     {
         // Destroy Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_MODELERPROP] = NSNotCreated;
@@ -627,7 +633,7 @@ void NavigatorGUI::avatarMainShow()
     if (mNavisStates[NAVI_AVATARMAIN] == NSNotCreated)
     {
         // Create Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARMAIN], "local://uiavatarmain.html", NaviPosition(TopRight), 256, 512);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AVATARMAIN], "local://uiavatarmain.html", NaviPosition(TopRight), 256, 512);
         navi->setMovable(true);
         navi->hide();
         navi->setMask("uiavatarmain.png");//Eliminate the black shadow at the margin of the menu
@@ -646,7 +652,7 @@ void NavigatorGUI::avatarMainShow()
 		mNavisStates[NAVI_AVATARMAIN] = NSCreated;
     }
     else
-        mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN])->show(true);
+        mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN])->show(true);
 
     mNavigator->startAvatarEdit();
 /*
@@ -658,14 +664,14 @@ void NavigatorGUI::avatarMainShow()
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isAvatarMainVisible()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
     return ((navi != 0) && navi->getVisibility());
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainHide()
 {
     if (!isAvatarMainVisible()) return;
-    mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN])->hide();
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN])->hide();
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainUnload()
@@ -673,7 +679,7 @@ void NavigatorGUI::avatarMainUnload()
     if (mNavisStates[NAVI_AVATARMAIN] != NSNotCreated)
     {
         // Destroy Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_AVATARMAIN] = NSNotCreated;
@@ -703,7 +709,7 @@ void NavigatorGUI::avatarPropShow()
     if (mNavisStates[NAVI_AVATARPROP] == NSNotCreated)
 	{
 		// Create Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AVATARPROP], "local://uiavatarprop.html", NaviPosition(TopRight), 512, 512);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AVATARPROP], "local://uiavatarprop.html", NaviPosition(TopRight), 512, 512);
 		navi->setMovable(true);
 		navi->hide();
 		navi->setMask("uiavatarprop.png");//Eliminate the black shadow at the margin of the menu
@@ -762,7 +768,7 @@ void NavigatorGUI::avatarPropShow()
 	}
 	else //if(!isAvatarMainVisible())
 	{
-		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+		NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 				
 		// Update the properties panel from the selected object datas
 		avatarTabberLoad(1);
@@ -774,7 +780,7 @@ void NavigatorGUI::avatarPropShow()
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isAvatarPropVisible()
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
     return ((navi != 0) && navi->getVisibility());
 }
 
@@ -782,7 +788,7 @@ bool NavigatorGUI::isAvatarPropVisible()
 void NavigatorGUI::avatarPropHide()
 {
     if (!isAvatarPropVisible()) return;
-    mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP])->hide();
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP])->hide();
 }
 
 //-------------------------------------------------------------------------------------
@@ -791,7 +797,7 @@ void NavigatorGUI::avatarPropUnload()
     if (mNavisStates[NAVI_AVATARPROP] != NSNotCreated)
     {
         // Destroy Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_AVATARPROP] = NSNotCreated;
@@ -810,7 +816,7 @@ void NavigatorGUI::avatarTabberChange(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	// get the current avatar
 	CharacterInstance* avatar = mNavigator->getAvatarEditor()->getManager()->getCurrentInstance();
@@ -996,7 +1002,7 @@ void NavigatorGUI::modelerUpdateCommand(Object3D::Command pCommand, Object3D* pO
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerUpdateDeformationSliders()
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	Object3D* obj = mNavigator->getModeler()->getSelected();
 
 	// break the callback from the interface sliders
@@ -1056,7 +1062,7 @@ void NavigatorGUI::modelerUpdateDeformationSliders()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerUpdateTextures()
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 
     Modeler *modeler = mNavigator->getModeler();
 	Object3D* obj = modeler->getSelected();
@@ -1240,7 +1246,7 @@ void NavigatorGUI::modelerTabberChange(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 
 	// get the current object3D
 	Object3D* obj = mNavigator->getModeler()->getSelected();
@@ -1378,7 +1384,7 @@ void NavigatorGUI::modelerTabberSave()
 {
 	/*
 	std::string value;
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 
 	// properties tab
 	value = navi->evaluateJS("document.getElementById('objectName').value");
@@ -1415,7 +1421,7 @@ void NavigatorGUI::switchDebug()
     if (mNavisStates[NAVI_DEBUG] == NSNotCreated)
     {
         // Create Navi UI debug
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256);
         navi->setMovable(true);
         navi->setAutoUpdateOnFocus(true);
         navi->setMaxUPS(24);
@@ -1433,7 +1439,7 @@ void NavigatorGUI::switchDebug()
     else
     {
         // Hide and destroy UI debug
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
         if (navi->getVisibility()) {
             navi->hide();
             mNaviMgr->destroyNavi(navi);
@@ -1450,7 +1456,7 @@ void NavigatorGUI::debugRefreshUrl()
     if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
 
 #ifdef DEMO_NAVI2
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
     // Set current url
@@ -1478,7 +1484,7 @@ void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 
     // Show Navi UI debug
     if (mNavisStates[NAVI_DEBUG] == NSCreated)
-        mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG])->show(true);
+        mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG])->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1497,7 +1503,7 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
     if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
     if (!mTreeDirty) return;
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
 
     navi->evaluateJS("allTree.disable()");
     navi->evaluateJS("allTree.root.clear()");
@@ -1521,7 +1527,7 @@ void NavigatorGUI::messageBoxPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MSGBOX]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
 
     navi->evaluateJS("$('titleText').innerHTML = '" + mMsgBoxTitleText + "'");
     navi->evaluateJS("$('msgText').innerHTML = '" + mMsgBoxMsgText + "'");
@@ -1559,7 +1565,7 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::loginPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
 
     // Set current values
     sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getLogin().c_str());
@@ -1600,7 +1606,7 @@ void NavigatorGUI::loginWorld(const NaviData& naviData)
         // Add the local world ?
         if (!mNavigator->getLocalWorldAddress().empty())
             uiworldsUrl += "?localWorld=" + mNavigator->getLocalWorldAddress();
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_WORLDS], "", NaviPosition(Center), 256, 256);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_WORLDS], "", NaviPosition(Center), 256, 256);
         navi->setMovable(false);
         navi->hide();
         navi->setOpacity(0.75f);
@@ -1657,7 +1663,7 @@ void NavigatorGUI::worldCancel(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_WORLDS]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_WORLDS]);
 
     // Return to Navi UI login
     login();
@@ -1670,7 +1676,7 @@ void NavigatorGUI::connect(const NaviData& naviData)
 
     applyLoginDatas();
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_LOGIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
 
     // Check
     bool validLogin = StringHelpers::isAValidLogin(mNavigator->getLogin());
@@ -1729,7 +1735,7 @@ void NavigatorGUI::options(const NaviData& naviData)
     if (mNavisStates[NAVI_OPTIONS] == NSNotCreated)
     {
         // Create Navi UI options
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_OPTIONS], "local://uioptions.html", NaviPosition(Center), 400, 400);
         navi->setMovable(false);
         navi->hide();
         navi->setMask("uioptions.png");
@@ -1760,7 +1766,7 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_OPTIONS]);
 
     // Set current values
     bool facebookAvailable = (
@@ -1819,7 +1825,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsOk()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_OPTIONS]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_OPTIONS]);
 
     // Get options
     std::string radioIdAuthentType;
@@ -1970,7 +1976,7 @@ void NavigatorGUI::authentFacebook()
     if (mNavisStates[NAVI_AUTHENTFB] == NSNotCreated)
     {
         // Create Navi UI authentication on Facebook
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AUTHENTFB], "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AUTHENTFB], "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
         navi->setMovable(false);
         navi->hide();
         navi->setOpacity(0.75f);
@@ -1999,7 +2005,7 @@ void NavigatorGUI::authentFacebookPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AUTHENTFB]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AUTHENTFB]);
 
     navi->evaluateJS("$('msgText').innerHTML = 'Use browser to log on Facebook ... then press Ok'");
     // Run external Web browser on the login URL
@@ -2015,7 +2021,7 @@ void NavigatorGUI::authentFacebookOk(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AUTHENTFB]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AUTHENTFB]);
 
     // Session ?
     if (!mFacebook->getSession())
@@ -2068,7 +2074,7 @@ void NavigatorGUI::authentWorldsServer(const std::string& pwd)
         // Create Navi UI authentication on Worlds server
         // Prepare the url to the world server uiauthentws.html page
         std::string uiauthentwsUrl = "http://" + mNavigator->getWorldServerAddress() + "/uiauthentws.html?login=" + mNavigator->getLogin() + "&pwd=" + pwd;
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(mNavisNames[NAVI_AUTHENTWS], "", NaviPosition(Center), 256, 128);
+        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AUTHENTWS], "", NaviPosition(Center), 256, 128);
         navi->setMovable(false);
         navi->hide();
         navi->setOpacity(0.75f);
@@ -2274,15 +2280,7 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
             modeler->getSelection()->mTransformation->showGizmosScale(false);
         }
 		else
-#ifdef WIN32
-        {
-            CommonTools::System::setMouseCursorVisibility(true);
-            CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-            CommonTools::System::setMouseCursorVisibility(false);
-        }
-#else
-			std::cerr << " You have to select an object3D " << std::endl;
-#endif
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2307,15 +2305,7 @@ void NavigatorGUI::modelerActionMove(const NaviData& naviData)
 		}
 	}
 	else
-#ifdef WIN32
-    {
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-    }
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2340,15 +2330,7 @@ void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
 		}
 	}
 	else
-#ifdef WIN32
-    {
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-    }
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2373,15 +2355,7 @@ void NavigatorGUI::modelerActionScale(const NaviData& naviData)
 		}
 	}
 	else
-#ifdef WIN32
-    {
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-    }
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2393,15 +2367,7 @@ void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 	if (!modeler->isSelectionEmpty())
 		modeler->lockLinkMode(true);
 	else
-#ifdef WIN32
-    {
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-    }
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2420,15 +2386,7 @@ void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 			modelerPropShow();
 		}
 	else
-#ifdef WIN32
-    {
-        CommonTools::System::setMouseCursorVisibility(true);
-        CommonTools::System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-        CommonTools::System::setMouseCursorVisibility(false);
-    }
-#else
-		std::cerr << " You have to select an object3D " << std::endl;
-#endif
+        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2449,7 +2407,7 @@ void NavigatorGUI::modelerPropPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerPropPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 
     // Update the properties panel from the selected object datas
     modelerTabberLoad( 0 );
@@ -2476,7 +2434,7 @@ void NavigatorGUI::modelerPropPageClosed(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropObjectName(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('objectName').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2487,7 +2445,7 @@ void NavigatorGUI::modelerPropObjectName(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropCreator(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('creator').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2498,7 +2456,7 @@ void NavigatorGUI::modelerPropCreator(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropOwner(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('owner').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2509,7 +2467,7 @@ void NavigatorGUI::modelerPropOwner(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropGroup(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('group').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2520,7 +2478,7 @@ void NavigatorGUI::modelerPropGroup(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropDescription(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('description').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2531,7 +2489,7 @@ void NavigatorGUI::modelerPropDescription(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTags(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('tags').value");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2542,21 +2500,21 @@ void NavigatorGUI::modelerPropTags(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropModification(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('modification').checked");
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropCopy(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('copy').checked");
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTaperX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("taperX.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2570,7 +2528,7 @@ void NavigatorGUI::modelerPropTaperX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTaperY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("taperY.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2584,7 +2542,7 @@ void NavigatorGUI::modelerPropTaperY(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTopShearX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("topShearX.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2598,7 +2556,7 @@ void NavigatorGUI::modelerPropTopShearX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTopShearY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("topShearY.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2612,7 +2570,7 @@ void NavigatorGUI::modelerPropTopShearY(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTwistBegin(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("twistBegin.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2626,7 +2584,7 @@ void NavigatorGUI::modelerPropTwistBegin(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTwistEnd(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("twistEnd.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2640,7 +2598,7 @@ void NavigatorGUI::modelerPropTwistEnd(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropDimpleBegin(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("dimpleBegin.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2654,7 +2612,7 @@ void NavigatorGUI::modelerPropDimpleBegin(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropDimpleEnd(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("dimpleEnd.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2668,7 +2626,7 @@ void NavigatorGUI::modelerPropDimpleEnd(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPathCutBegin(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("pathCutBegin.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2682,7 +2640,7 @@ void NavigatorGUI::modelerPropPathCutBegin(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPathCutEnd(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("pathCutEnd.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2696,7 +2654,7 @@ void NavigatorGUI::modelerPropPathCutEnd(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropHoleSizeX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("holeSizeX.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2710,7 +2668,7 @@ void NavigatorGUI::modelerPropHoleSizeX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropHoleSizeY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("holeSizeY.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2738,7 +2696,7 @@ void NavigatorGUI::modelerPropHollowShape(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropSkew(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("skew.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2752,7 +2710,7 @@ void NavigatorGUI::modelerPropSkew(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropRevolution(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("revolution.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2766,7 +2724,7 @@ void NavigatorGUI::modelerPropRevolution(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropRadiusDelta(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("radiusDelta.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2863,14 +2821,14 @@ void NavigatorGUI::modelerColorSpecular(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerColorLockAmbientDiffuse(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("$('lockAmbientdiffuse').checked");
 	mLockAmbientDiffuse = (value == "true")?true:false;
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerDoubleSide(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("$('doubleSide').checked");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2883,7 +2841,7 @@ void NavigatorGUI::modelerDoubleSide(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropShininess(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("shininess.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2894,7 +2852,7 @@ void NavigatorGUI::modelerPropShininess(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2909,7 +2867,7 @@ void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScrollU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scrollU.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2923,7 +2881,7 @@ void NavigatorGUI::modelerPropScrollU(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScrollV(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scrollV.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2937,7 +2895,7 @@ void NavigatorGUI::modelerPropScrollV(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scaleU.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2951,7 +2909,7 @@ void NavigatorGUI::modelerPropScaleU(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleV(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("scaleV.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2965,7 +2923,7 @@ void NavigatorGUI::modelerPropScaleV(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropRotateU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("rotateU.getValue()");
 
 	Object3D *obj = mNavigator->getModeler()->getSelected();
@@ -2991,9 +2949,7 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            CommonTools::System::setMouseCursorVisibility(true);
-            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
-            CommonTools::System::setMouseCursorVisibility(false);
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 			return;
 		}
 
@@ -3066,7 +3022,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
             }
         }
 
-	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	    std::string urlStr = navi->evaluateJS("$('MaterialWWWUrl').value");
 	    std::string widthStr = navi->evaluateJS("$('MaterialWWWWidth').value");
 	    std::string heightStr = navi->evaluateJS("$('MaterialWWWHeight').value");
@@ -3087,9 +3043,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            CommonTools::System::setMouseCursorVisibility(true);
-            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
-            CommonTools::System::setMouseCursorVisibility(false);
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 			return;
 		}
 
@@ -3125,7 +3079,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
             }
         }
 
-	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	    std::string mrlStr = navi->evaluateJS("$('MaterialVLCMrl').value");
 	    std::string widthStr = navi->evaluateJS("$('MaterialVLCWidth').value");
 	    std::string heightStr = navi->evaluateJS("$('MaterialVLCHeight').value");
@@ -3150,9 +3104,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            CommonTools::System::setMouseCursorVisibility(true);
-            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
-            CommonTools::System::setMouseCursorVisibility(false);
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 			return;
 		}
 
@@ -3188,7 +3140,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
             }
         }
 
-	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	    std::string hostStr = navi->evaluateJS("$('MaterialVNCHost').value");
 	    std::string portStr = navi->evaluateJS("$('MaterialVNCPort').value");
 	    std::string pwdStr = navi->evaluateJS("$('MaterialVNCPwd').value");
@@ -3206,9 +3158,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            CommonTools::System::setMouseCursorVisibility(true);
-            CommonTools::System::showMessageBox("This Texture is already open", "Error", true, false, false, true, false);
-            CommonTools::System::setMouseCursorVisibility(false);
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 			return;
 		}
 
@@ -3244,7 +3194,7 @@ void NavigatorGUI::modelerPropTextureNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPositionX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionX').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3255,7 +3205,7 @@ void NavigatorGUI::modelerPropPositionX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPositionY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionY').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3266,7 +3216,7 @@ void NavigatorGUI::modelerPropPositionY(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropPositionZ(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('positionZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3277,7 +3227,7 @@ void NavigatorGUI::modelerPropPositionZ(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropOrientationX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationX').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3287,7 +3237,7 @@ void NavigatorGUI::modelerPropOrientationX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropOrientationY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationY').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3297,7 +3247,7 @@ void NavigatorGUI::modelerPropOrientationY(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropOrientationZ(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('orientationZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3307,7 +3257,7 @@ void NavigatorGUI::modelerPropOrientationZ(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleX(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3317,7 +3267,7 @@ void NavigatorGUI::modelerPropScaleX(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleY(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3327,7 +3277,7 @@ void NavigatorGUI::modelerPropScaleY(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleZ(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
@@ -3337,14 +3287,14 @@ void NavigatorGUI::modelerPropScaleZ(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropCollision(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('collision').checked");
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropGravity(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_MODELERPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
 	std::string value = navi->evaluateJS("document.getElementById('gravity').checked");
 }
 
@@ -3353,7 +3303,7 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 
     // Update the properties panel from the selected object datas
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -3438,7 +3388,7 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 	AvatarEditor::getSingletonPtr()->setPrevAsCurrent();
     userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
 
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
 	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
@@ -3452,7 +3402,7 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 	AvatarEditor::getSingletonPtr()->setNextAsCurrent();
     userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
 
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
 	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
@@ -3461,7 +3411,7 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelected()");
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 	std::string item( naviData["item"].str() );
 	
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -3472,7 +3422,7 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 		AvatarEditor::getSingletonPtr()->setCurrentByName(item);
         userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
 
-		NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARMAIN]);
+		NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 		std::string text( AvatarEditor::getSingletonPtr()->getName() );
 		navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	}
@@ -3482,7 +3432,7 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
     // Update the properties panel from the selected object datas
     avatarTabberLoad( 1 );
@@ -3511,7 +3461,7 @@ void NavigatorGUI::avatarPropAnimPlayPause(const NaviData& naviData)
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPlayPause()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	user->stopAnimation();
 
@@ -3538,7 +3488,7 @@ void NavigatorGUI::avatarPropAnimStop(const NaviData& naviData)
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimStop()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	navi->evaluateJS(std::string("$('AnimPlayPause').value = 'Play'"));
 	navi->evaluateJS(std::string("$('AnimTime').style = 'display: none'"));
@@ -3551,7 +3501,7 @@ void NavigatorGUI::avatarPropAnimNext(const NaviData& naviData)
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	unsigned int numAnim = avatar->getCharacter()->getNumAnimations();
 	unsigned int current = avatar->getCurrentAnimation();
@@ -3571,7 +3521,7 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	unsigned int numAnim = avatar->getCharacter()->getNumAnimations();
 	int current = avatar->getCurrentAnimation();
@@ -3590,7 +3540,7 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	float height = atoi(navi->evaluateJS("height.getValue()").data()) / 100. + 0.5;
 	float scale = height / avatar->getEntity()->getBoundingBox().getSize().y;
@@ -3607,7 +3557,7 @@ void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBonePrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	Bone* bone = avatar->setPreviousBoneAsCurrent();
 	std::string str = bone->getName();
@@ -3642,7 +3592,7 @@ void NavigatorGUI::avatarPropBoneNext(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBoneNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	Bone* bone = avatar->setNextBoneAsCurrent();
 	std::string str = bone->getName();
@@ -3677,7 +3627,7 @@ void NavigatorGUI::avatarPropBPPrev(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	BodyPartInstance* bp = avatar->setPreviousBodyPartAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
@@ -3713,7 +3663,7 @@ void NavigatorGUI::avatarPropBPNext(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	BodyPartInstance* bp = avatar->setNextBodyPartAsCurrent();
 	BodyPartModel* bpm = bp->getCurrentBodyPartModel();
@@ -3749,7 +3699,7 @@ void NavigatorGUI::avatarPropBPMPrev(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	BodyPartInstance* bp = avatar->getCurrentBodyPart();
 	bp->setPreviousBodyPartModelAsCurrent();
@@ -3782,7 +3732,7 @@ void NavigatorGUI::avatarPropBPMNext(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	BodyPartInstance* bp = avatar->getCurrentBodyPart();
 	bp->setNextBodyPartModelAsCurrent();
@@ -3815,7 +3765,7 @@ void NavigatorGUI::avatarPropBPMEdit(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMEdit()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	AvatarEditor::getSingletonPtr()->selectType = 1;
 	avatarTabberLoad(2);
@@ -3826,14 +3776,14 @@ void NavigatorGUI::avatarPropBPMRemove(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropBPMRemove()");
 	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropAttPrev(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
@@ -3870,7 +3820,7 @@ void NavigatorGUI::avatarPropAttNext(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
@@ -3907,7 +3857,7 @@ void NavigatorGUI::avatarPropAttMPrev(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMPrev()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
@@ -3939,7 +3889,7 @@ void NavigatorGUI::avatarPropAttMNext(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMNext()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	if(avatar->getCharacter()->getNumGoodies() > 0)
 	{
@@ -3971,7 +3921,7 @@ void NavigatorGUI::avatarPropAttMEdit(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMEdit()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	AvatarEditor::getSingletonPtr()->selectType = 2;
 	avatarTabberLoad(2);
@@ -3982,13 +3932,13 @@ void NavigatorGUI::avatarPropAttMRemove(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAttMRemove()");
 	//CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	//NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropSliders()");
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	Avatar* user = mNavigator->getUserAvatar();
 
@@ -4163,7 +4113,7 @@ void NavigatorGUI::avatarPropSliders(const NaviData& naviData)
 void NavigatorGUI::avatarPropReset(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropSliders()");
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 
 	std::string slider( naviData["slider"].str().c_str() );
@@ -4287,14 +4237,14 @@ void NavigatorGUI::avatarColorSpecular(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarColorLockAmbientDiffuse(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("$('lockAmbientdiffuse').checked");
 	mLockAmbientDiffuse = (value == "true")?true:false;
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarDoubleSide(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("$('doubleSide').checked");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4312,7 +4262,7 @@ void NavigatorGUI::avatarDoubleSide(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("shininess.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4331,7 +4281,7 @@ void NavigatorGUI::avatarPropShininess(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4354,7 +4304,7 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropResetColour(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("transparency.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4374,7 +4324,7 @@ void NavigatorGUI::avatarPropResetColour(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scrollU.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4396,7 +4346,7 @@ void NavigatorGUI::avatarPropScrollU(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScrollV(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scrollV.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4418,7 +4368,7 @@ void NavigatorGUI::avatarPropScrollV(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScaleU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scaleU.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4440,7 +4390,7 @@ void NavigatorGUI::avatarPropScaleU(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropScaleV(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("scaleV.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4462,7 +4412,7 @@ void NavigatorGUI::avatarPropScaleV(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropRotateU(const NaviData& naviData)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 	std::string value = navi->evaluateJS("rotateU.getValue()");
 
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -4559,7 +4509,7 @@ void NavigatorGUI::avatarPropTextureNext(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	std::string texturePath, text;
 	String str;
@@ -4630,7 +4580,7 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)
 {
-	NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_AVATARPROP]);
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
 	navi->evaluateJS("posX.onchange = function() {}");
 	navi->evaluateJS("posY.onchange = function() {}");
@@ -4704,7 +4654,7 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s", cmd.c_str());
 
 #ifdef DEMO_NAVI2
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_DEBUG]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
     if (cmd == "back")
@@ -4725,7 +4675,7 @@ void NavigatorGUI::navCommand(const NaviData& naviData)
 NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
 {
     for (int n=0; n < NAVI_COUNT; ++n)
-        if (mNavisNames[n] == naviName) return (NaviPanel)n;
+        if (ms_NavisNames[n] == naviName) return (NaviPanel)n;
 
     return (NaviPanel)-1;
 }
@@ -4742,7 +4692,7 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)
-        mNaviMgr->getNavi(mNavisNames[naviPanel])->show(true);
+        mNaviMgr->getNavi(ms_NavisNames[naviPanel])->show(true);
 
     mCurrentNaviCreationDate = 0;
 }
@@ -4752,7 +4702,7 @@ void NavigatorGUI::hidePreviousNavi()
 {
     // Hide previous Navi UI
     if (mCurrentNavi != -1) {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[mCurrentNavi]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentNavi]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[mCurrentNavi] = NSNotCreated;
@@ -4764,7 +4714,7 @@ void NavigatorGUI::hidePreviousNavi()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::destroyNavi(NaviPanel naviPanel)
 {
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
     if (navi == 0) return;
     mNaviMgr->destroyNavi(navi);
     mNavisStates[naviPanel] = NSNotCreated;
@@ -4776,7 +4726,7 @@ void NavigatorGUI::destroyNavi(NaviPanel naviPanel)
 //-------------------------------------------------------------------------------------
 const std::string& NavigatorGUI::getNaviName(NaviPanel naviPanel)
 {
-    return mNavisNames[naviPanel];
+    return ms_NavisNames[naviPanel];
 }
 
 //-------------------------------------------------------------------------------------
@@ -4812,16 +4762,16 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
     {
         // Create Navi panel
         // Lua
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", mNavisNames[naviPanel].c_str()))
+        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", ms_NavisNames[naviPanel].c_str()))
         {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mNavisNames[naviPanel].c_str());
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", ms_NavisNames[naviPanel].c_str());
             return;
         }
         mNavisStates[naviPanel] = NSCreated;
     }
     else
     {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[naviPanel]);
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
         if (!navi->getVisibility())
             navi->show(true);
         else
