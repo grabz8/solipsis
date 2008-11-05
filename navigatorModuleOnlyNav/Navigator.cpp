@@ -1966,15 +1966,7 @@ bool Navigator::mdlrXMLSave(bool all)
 		if (all || !mModeler->isSelectionEmpty())
             return mModeler->XMLSave(all);
 		else
-#ifdef WIN32
-        {
-            System::setMouseCursorVisibility(true);
-            System::showMessageBox("You have to select an object3D", "Information", true, false, true, false, false);
-            System::setMouseCursorVisibility(false);
-        }
-#else
-			std::cerr << " You have to select an object3D " << std::endl;
-#endif
+            mNavigatorGUI->showMessageBox("Modeler information", "You have to select an object.", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 
 	return false;
 }

@@ -187,9 +187,9 @@ void Modeler::cleanUp()
 /// Create a plane.
 bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(name) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -208,9 +208,9 @@ bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector
 /// Create a box.
 bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -230,10 +230,10 @@ bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 
 /// Create a corner. 
 bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	//genMeshCorner( String(name) + ".mesh", 100, 100, 100 );
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	//genMeshCorner( String(entityUID) + ".mesh", 100, 100, 100 );
+	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -251,10 +251,10 @@ bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vecto
 /// Create a pyramid. 
 bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	//genMeshPyramid( String(name) + ".mesh", 100, 100, 100 );
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	//genMeshPyramid( String(entityUID) + ".mesh", 100, 100, 100 );
+	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -272,10 +272,10 @@ bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vect
 /// Create a prism. 
 bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	//genMeshPrism( String(name) + ".mesh", 100, 100 );
-	MeshPtr mptr = mGenericPrism->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	//genMeshPrism( String(entityUID) + ".mesh", 100, 100 );
+	MeshPtr mptr = mGenericPrism->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -293,9 +293,9 @@ bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector
 /// Create a cylinder. 
 bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -313,9 +313,9 @@ bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vec
 /// Create a half cylinder. 
 bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -333,9 +333,9 @@ bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vect
 /// Create a cone. 
 bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -353,9 +353,9 @@ bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3
 /// Create a Halfcone. 
 bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -373,9 +373,9 @@ bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vec
 /// Create a sphere. 
 bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -393,9 +393,9 @@ bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vecto
 /// Create a half sphere. 
 bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -413,9 +413,9 @@ bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, V
 /// Create a torus. 
 bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericTorus->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericTorus->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -433,9 +433,9 @@ bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector
 /// Create a tube. 
 bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericTube->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericTube->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -453,9 +453,9 @@ bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3
 /// Create a ring. 
 bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericRing->getMesh()->clone( String(name) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericRing->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -473,9 +473,9 @@ bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3
 /// Create a mesh. 
 bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
 {
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(name) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
 	entity->setCastShadows(true);
 #endif
@@ -727,22 +727,22 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				else	//we test if this object has got parent
 				{
 					TiXmlElement *e = doc.RootElement()->FirstChildElement("properties");
-					String parentName ;
-					String currentObjName ;
+					EntityUID parentUid ;
+					EntityUID currentObjUid ;
 					Object3D * currentObj = 0;
 					Object3D * objParent = 0;
-					from_string(e->FirstChildElement("objparent")->Attribute("Name"),parentName);
-					from_string(e->FirstChildElement("objname")->Attribute("Name"),currentObjName);
+					from_string(e->FirstChildElement("objparent")->Attribute("Uid"),parentUid);
+					from_string(e->FirstChildElement("objuid")->Attribute("Uid"),currentObjUid);
 					
-					if(strcmp (parentName.c_str(), "NULL") != 0)	//if there is a parent 
+					if(strcmp (parentUid.c_str(), "NULL") != 0)	//if there is a parent 
 					{
-						currentObj = mSelection->get3DObject(currentObjName);
-						objParent = mSelection->get3DObject(parentName);
+						currentObj = mSelection->get3DObject(currentObjUid);
+						objParent = mSelection->get3DObject(parentUid);
 						objParent->linkObject( currentObj, mSceneManager) ;
 						objParent->showBoundingBox(false);
 					}
 
-					currentObj = mSelection->get3DObject(currentObjName);
+					currentObj = mSelection->get3DObject(currentObjUid);
 					if (currentObj) 
 					{
 						Vector3 currentPos = currentObj->getPosition(true);
@@ -821,8 +821,8 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 				entity = Plugin_skp::createEntityFromskp(entityName,filenameToLoad,mSceneManager);
 			}
 		}
-        entity = mSceneManager->getEntity(entityName)->clone(name);
-        SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+        entity = mSceneManager->getEntity(entityName)->clone(entityUID);
+        SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
         entity->setCastShadows(true);
 #endif
@@ -872,7 +872,7 @@ bool Modeler::XMLSave(bool all)
 		    updateCommand(Object3D::NONE, obj);
 
 		    // Save object in XML
-		    Ogre::String fileToSave = mPath + Ogre::String("\\") + obj->getName() + Ogre::String(".xml");
+            Ogre::String fileToSave = mPath + Ogre::String("\\") + obj->getEntityUID() + Ogre::String(".xml");
 		    obj->saveToFile(fileToSave.c_str());
 		    zz->writeFile(fileToSave);
 

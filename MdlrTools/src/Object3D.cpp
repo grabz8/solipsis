@@ -39,7 +39,7 @@ namespace Solipsis {
 Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode)
 {
 	mNode = pNode;
-	mEntity = (Entity*)pNode->getAttachedObject(pName);
+	mEntity = (Entity*)pNode->getAttachedObject(pEntityUID);
 
 	// get the size for a vertex declaration (position, normal, colour, tex_coord ...)
 	mVertexData = 
@@ -90,7 +90,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	resetParameters();
 
 	mModifiedMaterialManager = new ModifiedMaterialManager() ;
-	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material"+mName);
+	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material" + mEntityUID);
 	mEntity->getSubEntity(0)->setMaterialName( tmpMaterial->getName());
 	mModifiedMaterialManager->initialise(tmpMaterial);
 	TexturePtr PtrTexture = TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -418,10 +418,10 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<objcreator Name=\"" << mCreatorName << "\" />" << endl;
 	toSave << "\t\t<objgroup Name=\"" << mGroupName << "\" />" << endl;
 	toSave << "\t\t<objrigths mod=\"" << mCanBeModified << "\" cop=\"" << mCanBeCopied<< "\" />" << endl;
-	String parentName = "NULL" ;
+	EntityUID parentUid = "NULL" ;
 	if(mParent != NULL)
-		parentName = mParent->getName() ;
-	toSave << "\t\t<objparent Name=\"" << parentName << "\" />" << endl;
+        parentUid = mParent->getEntityUID() ;
+	toSave << "\t\t<objparent Uid=\"" << parentUid << "\" />" << endl;
 	toSave << "\t</properties>" << endl;
 
 	toSave << "\t<model>" << endl;

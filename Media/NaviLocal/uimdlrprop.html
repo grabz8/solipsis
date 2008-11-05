@@ -189,23 +189,28 @@
 						<h2>Properties</h2>
 						<p><table>
 								<tr>
-									<td width="130">Object name</td>
-									<td width="150"><input type="text" value="?" id="objectName" size="30" onchange="elementClicked('MdlrObjectName')"/></td>
-									<td width="150"></td>
+									<td width="80">UID</td>
+									<td><input type="text" value="?" id="objectUid" size="50" disabled="disabled" onchange="elementClicked('MdlrObjectUid')"/></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td>Name</td>
+									<td><input type="text" value="?" id="objectName" size="50" onchange="elementClicked('MdlrObjectName')"/></td>
+									<td></td>
 								</tr>
 								<tr>
 									<td>Creator</td>
-									<td><input type="text" value="?" id="creator" size="30" onchange="elementClicked('MdlrCreator')"/></td>
+									<td><input type="text" value="?" id="creator" size="50" onchange="elementClicked('MdlrCreator')"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Owner</td>
-									<td><input type="text" value="?" id="owner" size="30" onchange="elementClicked('MdlrOwner')"/></td>
+									<td><input type="text" value="?" id="owner" size="50" onchange="elementClicked('MdlrOwner')"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Group</td>
-									<td><input type="text" value="?" id="group" size="30" onchange="elementClicked('MdlrGroup')"/></td>
+									<td><input type="text" value="?" id="group" size="50" onchange="elementClicked('MdlrGroup')"/></td>
 									<td></td>
 								</tr>
 								<tr valign="top">
@@ -216,8 +221,10 @@
 									<td>Tags</td>
 									<td colspan="2"><textarea id="tags" rows="6" cols="40" onblur="elementClicked('MdlrTags')">...</textarea></td>
 								</tr>
+							</table>
+                            <table>
 								<tr>
-									<td>Rights</td>
+									<td width="80">Rights</td>
 									<td><input type="checkbox" id="modification" onclick="elementClicked('MdlrModification')">Modification</td>
 									<td><input type="checkbox" id="copy" onclick="elementClicked('MdlrCopy')">Copy</td>
 								</tr>

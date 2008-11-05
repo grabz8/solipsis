@@ -285,10 +285,10 @@ Object3D* Selection::get3DObject(Entity *pEnt)
     return NULL;
 }
 //-------------------------------------------------------------------------------------
-Object3D* Selection::get3DObject(const String& pName)
+Object3D* Selection::get3DObject(const EntityUID& pUid)
 {
     for (Object3DPtrList::iterator itObj = mObjectList.begin(); itObj != mObjectList.end(); ++itObj)
-		if ((*itObj)->getName() == pName)
+        if ((*itObj)->getEntityUID() == pUid)
 			return (*itObj);
 
 	return NULL;

@@ -308,6 +308,8 @@ void NavigatorGUI::addChatText(const String& message)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(mNavisNames[NAVI_CHAT]);
+    if (navi == 0)
+        return;
     std::string jsStr = "$('textChat').value += '" + message + "\\n'";
     navi->evaluateJS(jsStr);
     navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
@@ -1252,6 +1254,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 		switch( pTab )
 		{
 		case 0:	// properties tab
+            navi->evaluateJS("document.getElementById('objectUid').value = '" + obj->getEntityUID() + "'");
 			navi->evaluateJS("document.getElementById('objectName').value = '" + obj->getName() + "'");
 			navi->evaluateJS("document.getElementById('creator').value = '" + obj->getCreator() + "'");
 			navi->evaluateJS("document.getElementById('owner').value = '" + obj->getOwner() + "'");
