@@ -661,7 +661,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
             setCameraMode(CM3rdPerson);
             mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));//To be sure to go away from the avatar
         }
-        if (getCameraMode() == CM3rdPerson)
+        else if (getCameraMode() == CM3rdPerson)
         {
             //Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
             Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
