@@ -78,15 +78,13 @@ bool NavigatorSound::initialize()
     VoiceEngineManager::getSingleton().selectEngine("FMod/Speex engine");
     IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
     if (voiceEngine == 0)
-    {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not find the FMod/Speex voice engine");
-        return false;
-    }
-    if (!voiceEngine->initSoundSystem(mSoundSystem))
-    {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not initialize the voice engine");
-        return false;
-    }
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "NavigatorSound::initialize() Could not find the FMod/Speex voice engine, it won t be supported !");
+    else
+        if (!voiceEngine->initSoundSystem(mSoundSystem))
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not initialize the voice engine");
+            return false;
+        }
 
     return true;
 }
