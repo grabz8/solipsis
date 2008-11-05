@@ -775,3 +775,11 @@ WorldsServer exe generation added
 Setup 1.0.6 with DXMarch2008
 
 ---------------------------
+05/11/08
+
+Middle mouse button now defocus current navi
+nodes/meshs of objects in modeler use now entityUID instead of name attribute
+EntityUID of object is now displayed into properties panel
+Test if voiceengine plugin loaded otherwise it is simply not supported
+
+---------------------------
