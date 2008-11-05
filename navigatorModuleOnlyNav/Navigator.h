@@ -236,9 +236,9 @@ public:
     // send events to node
     void sendEvents();
 
-    /** See IOgrePeerManagerCallbacks::onAvatarNodeCreate. */
+    /** See IOgrePeerManagerCallbacks. */
     virtual void onAvatarNodeCreate(OgrePeer* ogrePeer);
-    /** See IOgrePeerManagerCallbacks::onSceneNodeCreate. */
+    /** See IOgrePeerManagerCallbacks. */
     virtual void onSceneNodeCreate(OgrePeer* ogrePeer);
 
     // Modeler part
