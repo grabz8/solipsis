@@ -784,3 +784,10 @@ Test if voiceengine plugin loaded otherwise it is simply not supported
 MessageBox with Navi now used in modeler
 
 ---------------------------
+06/11/08
+
+Reset viewport background color on disconnect
+Unload avatar/modeler panels on disconnect
+Full reset of camera nodes (pos+orientation) into Avatar::onSceneNodeChanged
+
+---------------------------

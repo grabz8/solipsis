@@ -8,6 +8,13 @@
 
 [Navigator]
 
+- if Peer cannot connect to RakNetServer, the login XMLRPC method returned OK but no evt are sent ...,
+so no error is displayed -> Nav-Peer cnx should be asynchronous with 1 CNX_ACCEPTED message
+
+- add 1 version test when connecting to RakNetServer to detect compatibility problems requiring updates
+
+- add 1 send/dontSend bug when crash is detected
+
 - still 1 bug when importing Ogre mesh from modeler tool, like demoVNCPlane.mesh, when application is stopped,
 resourceManager crashes into its destructor
 
