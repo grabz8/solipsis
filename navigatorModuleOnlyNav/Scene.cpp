@@ -107,7 +107,7 @@ bool Scene::update(XmlEntity* xmlEntity)
         SceneNode* sceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUid() + "Scene");
 
         // Load from the .osm
-        OSMScene osmScene(sceneMgr);
+        OSMScene osmScene(sceneMgr, Navigator::getSingletonPtr()->getRenderWindowPtr());
         OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
         if (!osmScene.initialise(xmlSceneLodContent0->getMainFilename().c_str(), &osmSceneCallbacks))
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
