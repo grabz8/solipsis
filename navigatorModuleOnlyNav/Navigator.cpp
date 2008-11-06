@@ -400,6 +400,7 @@ Avatar* Navigator::getUserAvatar()
 //-------------------------------------------------------------------------------------
 void Navigator::fakeSurroundingArea(int index)
 {
+    mCamera->getViewport()->setBackgroundColour(ColourValue::Black);
     switch (index)
     {
         case 1:
@@ -1245,6 +1246,19 @@ bool Navigator::disconnect()
     if (mXmlRpcClient == 0)
         return false;
 
+    // Unload avatar/modeler panels
+    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
+    if (mState == SAvatarEdit)
+    {
+        mNavigatorGUI->avatarMainUnload();
+        navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+    }
+    else if (mState == SModeling)
+    {
+        mNavigatorGUI->modelerMainUnload();
+        navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+    }
+
     // Stop the node events listener thread
     NodeEventListener::stop();
     NodeEventListener::finalize();
@@ -1254,7 +1268,7 @@ bool Navigator::disconnect()
     mXmlRpcClient = 0;
 
     // reset the camera mode
-    ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CMDetached);
+    navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMDetached);
 
     // Clean up allocated peers datas
     mOgrePeerManager->cleanUp();
