@@ -361,7 +361,7 @@ void Instance::createViewports()
 {
     // Create one viewport, entire window
     Viewport* vp = mWindow->addViewport(mCamera);
-    vp->setBackgroundColour(ColourValue(0,0,0));
+    vp->setBackgroundColour(ColourValue::Black);
 
     // Alter the camera aspect ratio to match the viewport
     mCamera->setAspectRatio(Real(vp->getActualWidth())/Real(vp->getActualHeight()));
