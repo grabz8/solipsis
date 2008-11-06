@@ -214,7 +214,9 @@ void Avatar::onSceneNodeChanged()
     if (isLocal())
     {
         SceneNode* firstPersonCamNode = 0;
+        SceneNode* firstPersonCamPitchNode = 0;
         SceneNode* thirdPersonCamNode = 0;
+        SceneNode* thirdPersonCamPitchNode = 0;
         SceneNode* turnAroundPersonCamNode = 0;
         SceneNode* turnAroundPersonCamPitchNode = 0;
 		SceneNode* turnAroundPersonCamDistNode = 0;
@@ -225,25 +227,23 @@ void Avatar::onSceneNodeChanged()
 
             // Create First person camera node/pitch node
             firstPersonCamNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode");
-            firstPersonCamNode->yaw(Radian(-Math::HALF_PI));
-            SceneNode* pitchCamNode = firstPersonCamNode->createChildSceneNode("FirstPersonCamPitchNode");
+            firstPersonCamPitchNode = firstPersonCamNode->createChildSceneNode("FirstPersonCamPitchNode");
 
             // Create the Third camera node/pitch node
             thirdPersonCamNode = mCamerasSceneNode->createChildSceneNode("ThirdPersonCamNode");
-            thirdPersonCamNode->yaw(Radian(-Math::HALF_PI));
-            pitchCamNode = thirdPersonCamNode->createChildSceneNode("ThirdPersonCamPitchNode");
+            thirdPersonCamPitchNode = thirdPersonCamNode->createChildSceneNode("ThirdPersonCamPitchNode");
 
 	        // Create the Fourth camera node/pitch node
             turnAroundPersonCamNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = turnAroundPersonCamNode->createChildSceneNode("TurnAroundPersonCamPitchNode");
 			turnAroundPersonCamDistNode = turnAroundPersonCamPitchNode->createChildSceneNode("TurnAroundPersonCamDistNode");
-			turnAroundPersonCamDistNode->yaw(Radian(Math::HALF_PI));
-			turnAroundPersonCamPitchNode->roll(Degree(25.));
         }
         else
         {
             firstPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("FirstPersonCamNode");
+            firstPersonCamPitchNode = (SceneNode*)firstPersonCamNode->getChild("FirstPersonCamPitchNode");
             thirdPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("ThirdPersonCamNode");
+            thirdPersonCamPitchNode = (SceneNode*)thirdPersonCamNode->getChild("ThirdPersonCamPitchNode");
             turnAroundPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = (SceneNode*)turnAroundPersonCamNode->getChild("TurnAroundPersonCamPitchNode");
 			turnAroundPersonCamDistNode = (SceneNode*)turnAroundPersonCamPitchNode->getChild("TurnAroundPersonCamDistNode");
@@ -253,8 +253,21 @@ void Avatar::onSceneNodeChanged()
         mCamerasSceneNode->setPosition(Vector3::ZERO);
         mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
         firstPersonCamNode->setPosition(Vector3(0, 0.95, 0)*avatarSize);
+        firstPersonCamNode->setOrientation(Quaternion::IDENTITY);
+        firstPersonCamNode->yaw(Radian(-Math::HALF_PI));
+        firstPersonCamPitchNode->setPosition(Vector3::ZERO);
+        firstPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
         thirdPersonCamNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize.y);
+        thirdPersonCamNode->setOrientation(Quaternion::IDENTITY);
+        thirdPersonCamNode->yaw(Radian(-Math::HALF_PI));
+        thirdPersonCamPitchNode->setPosition(Vector3::ZERO);
+        thirdPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
 		turnAroundPersonCamDistNode->setPosition(Vector3(4, 0.5, 0)*avatarSize.y);
+        turnAroundPersonCamDistNode->setOrientation(Quaternion::IDENTITY);
+		turnAroundPersonCamDistNode->yaw(Radian(Math::HALF_PI));
+        turnAroundPersonCamPitchNode->setPosition(Vector3::ZERO);
+        turnAroundPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
+		turnAroundPersonCamPitchNode->roll(Degree(25.));
     }
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
@@ -446,10 +459,10 @@ bool Avatar::update(XmlEntity* xmlEntity)
     }
 
 #ifdef LOGSNDRCV
-    String log = "RCV uid:" + xmlEntity->getUidString();
+    String log = "RCV uid:" + xmlEntity->getUid();
     if (definedAttributes & XmlEntity::DAPosition) log += " p:" + StringConverter::toString(mLastRealPosition);
     if (definedAttributes & XmlEntity::DAOrientation) log += " o:" + StringConverter::toString(mLastRealOrientation);
-    LOGHANDLER_LOG(LogHandler::VL_DEBUG, log);
+    LOGHANDLER_LOG(LogHandler::VL_DEBUG, log.c_str());
 #endif
 
     return true;
@@ -594,7 +607,7 @@ void Avatar::animate(Real timeSinceLastFrame)
         {
             mUpdatedXmlEntity->setDisplacement(d);
 #ifdef LOGSNDRCV
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s d:%s", mUpdatedXmlEntity->getUidString().c_str(), StringConverter::toString(mUpdatedXmlEntity->getDisplacement()).c_str());
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s d:%s", mUpdatedXmlEntity->getUid().c_str(), StringConverter::toString(mUpdatedXmlEntity->getDisplacement()).c_str());
 #endif
         }
     }
