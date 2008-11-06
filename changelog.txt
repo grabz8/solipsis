@@ -789,5 +789,6 @@ MessageBox with Navi now used in modeler
 Reset viewport background color on disconnect
 Unload avatar/modeler panels on disconnect
 Full reset of camera nodes (pos+orientation) into Avatar::onSceneNodeChanged
+scene Rennes updated
 
 ---------------------------
