@@ -548,22 +548,9 @@ void Avatar::animate(Real timeSinceLastFrame)
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
                 nextState = ASAvatarWalk;
         }
-// GILLES begin
-        else if (mMvtType == MTArountPerson)
-        {
-            // TurnAround person rotation
-            //MovableObject* movable = getSceneNode()->getAttachedObject(2);
-            //getSceneNode()->detachObject (movable);
-            getSceneNode()->yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
-            mXmlEntity->setOrientation(getSceneNode()->getOrientation());
-            //getSceneNode()->attachObject (movable);
-            if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
-                nextState = ASAvatarWalk;
-        }
-// GILLES end
         else
         {
-            // Third person rotation
+            // Third/TurnAround person rotation
             yaw(leftRightMvt*ROTATION_SPEED_RPS*timeSinceLastFrame);
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
                 nextState = ASAvatarWalk;
