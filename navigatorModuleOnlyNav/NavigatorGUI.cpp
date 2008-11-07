@@ -455,10 +455,8 @@ void NavigatorGUI::modelerMainUnload()
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_MODELERMAIN] = NSNotCreated;
 
-		mNavigator->setState(Navigator::SInWorld);	
 		mNavigator->endModeling();
 		modelerPropUnload();
-		modelerMainUnload();
 
 		// Remove temporary files & folder of the thumbnails
 		std::string path ( "NaviLocal\\solTmpTexture" );
