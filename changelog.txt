@@ -792,3 +792,12 @@ Full reset of camera nodes (pos+orientation) into Avatar::onSceneNodeChanged
 scene Rennes updated
 
 ---------------------------
+07/11/08
+
+Camera bug when connecting, no move, disconnecting, re-connecting now fixed,
+it was due to Ogre internal updateView() call of isOutOfDate() returned false
+because new connected avatar at the same pos/orient than old disconnected one
+=> reset of camera orientation force this update before call to lookat
+
+
+---------------------------
