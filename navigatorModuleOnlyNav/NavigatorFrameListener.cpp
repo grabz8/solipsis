@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace NaviLibrary;
 using namespace Solipsis;
+using namespace CommonTools;
 
 #define MOUSE_WHEEL_FACTOR (1.0f/120.0f)*0.25f
 #define ESCAPE_HITS_CANCEL_FOCUS_DURATION 1000
@@ -554,7 +555,6 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     // zoom and orbit camera in Modeling or AvatarEdit Mode
     Real mouseWheel = evt.mState.mZrel;
     if(!NaviManager::Get().isAnyNaviFocused() && 
-        //(mNavigator->getState() == Navigator::SModeling || mNavigator->getState() == Navigator::SAvatarEdit) && 
         getCameraMode() == CMAroundPerson)
     {
         SceneNode* camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
@@ -564,11 +564,11 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         // zoom camera when the wheel mouse has changed
         if (!Ogre::Math::RealEqual(mouseWheel, 0))
         {
-            //Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
             Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-            Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
             Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
+            // WARNING, here we force update of view by resetting the orientation
+            mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
 
             Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
@@ -663,11 +663,11 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         }
         else if (getCameraMode() == CM3rdPerson)
         {
-            //Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getPosition();
             Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-            Real scale = mNavigator->getUserAvatar()->getSceneNode()->getScale().y;
             Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
+            // WARNING, here we force update of view by resetting the orientation
+            mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
 
             //Switch to 1st person camera if close to avatar
@@ -867,6 +867,8 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
 //-------------------------------------------------------------------------------------
 void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorFrameListener::setCameraMode(%d)", mode);
+
     if (mode == mCameraMode && mode != CMAroundPerson) return;
 
     if ((mNavigator->getState() == Navigator::SAvatarEdit ||
@@ -875,14 +877,12 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar == 0) return;
-    Vector3 pos = userAvatar->getSceneNode()->getPosition();
+    Vector3 pos = userAvatar->getSceneNode()->getWorldPosition();
     Vector3 size = userAvatar->getEntity()->getBoundingBox().getSize();
 
     if (mCamera->getParentSceneNode() != 0)
         mCamera->getParentSceneNode()->detachObject(mCamera);
 
-    mCameraMode = mode;
-    static Vector3 zoom;
     switch (mode)
     {
     case CMDetached:
@@ -890,8 +890,6 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     case CM1stPerson:
     case CM1stPersonWithMouse:
         mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
-        mCamNode->setOrientation(Quaternion::IDENTITY);
-        mCamNode->yaw(Radian(-Ogre::Math::HALF_PI));
         mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
         userAvatar->setMvtType(Avatar::MT1stPerson);
         break;
@@ -899,18 +897,13 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
         mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
         userAvatar->setMvtType(Avatar::MT3rdPerson);
-        // store the camera zoom value
-        if (getCameraMode() == CMAroundPerson)
-            zoom = mCamNode->getPosition();
         // look at the avatar
+        // WARNING, here we force update of view by resetting the orientation
+        mCamera->setOrientation(Quaternion::IDENTITY);
         mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
         break;
     case CMAroundPerson:
         {
-            // restore the camera zoom value
-            if (getCameraMode() == CM3rdPerson)
-                mCamNode->setPosition( zoom );
-
             mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
             SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
             SceneNode* camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
@@ -923,11 +916,13 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
             // restore default orientations
             camDistNode->yaw(Radian(Math::HALF_PI));
             camPitchNode->roll(Degree(25.));
-            camDistNode->setPosition( Vector3(4, 0.5, 0)* userAvatar->getEntity()->getBoundingBox().getSize().y );
+            camDistNode->setPosition( Vector3(4, 0.5, 0)*size.y );
    
             mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode")->attachObject(mCamera);
             userAvatar->setMvtType(Avatar::MTArountPerson);
             // look at the avatar
+            // WARNING, here we force update of view by resetting the orientation
+            mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
         }
         break;
