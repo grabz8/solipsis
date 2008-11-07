@@ -319,6 +319,7 @@ void Instance::createCamera()
 
     // Position it at 500 in Z direction
     mCamera->setPosition(Vector3(0,0,0));
+    mCamera->setOrientation(Quaternion::IDENTITY);
     // Look back along -Z
     mCamera->lookAt(Vector3(0,0,-1));
     mCamera->setNearClipDistance(0.1f);
