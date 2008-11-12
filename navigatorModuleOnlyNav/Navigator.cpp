@@ -1270,6 +1270,9 @@ bool Navigator::disconnect()
     // reset the camera mode
     navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMDetached);
 
+    // reset mouse picking
+    resetMousePicking();
+
     // Clean up allocated peers datas
     mOgrePeerManager->cleanUp();
     mUserAvatar = 0;
