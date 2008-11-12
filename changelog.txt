@@ -805,5 +805,6 @@ because new connected avatar at the same pos/orient than old disconnected one
 createPlane was missing into Modeler::createObjectWithXML()
 resetMousePicking added into disconnect() to fix bug when quitting when 1 object is selected
 boot.lua updated to use our public WorldsServer + localWorldAddress/login now empty
+WorldsServer.py arguments added
 
 ---------------------------
