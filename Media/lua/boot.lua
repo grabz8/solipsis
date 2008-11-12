@@ -37,10 +37,10 @@ end
 navigator = NavigatorLua()
 navigator:bind()
 navigator:setNameValueVariable("PeerAddress", "localhost:8880")
-navigator:setNameValueVariable("LocalWorldAddress", "localhost:8660")
-navigator:setNameValueVariable("WorldServerAddress", "localhost:8550")
+navigator:setNameValueVariable("LocalWorldAddress", "")
+navigator:setNameValueVariable("WorldServerAddress", "80.13.207.29:8550")
 navigator:setNameValueVariable("WorldServerTimeout", "8")
-navigator:setNameValueVariable("Login", "me")
+navigator:setNameValueVariable("Login", "")
 navigator:setNameValueVariable("FacebookApiKey", "8d81e4c64ac0039b209c4a53b21ba220");
 navigator:setNameValueVariable("FacebookServer", "api.facebook.com/restserver.php");
 navigator:setNameValueVariable("FacebookLoginUrl", "http://api.facebook.com/login.php");
