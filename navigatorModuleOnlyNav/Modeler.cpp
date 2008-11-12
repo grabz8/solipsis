@@ -1072,6 +1072,9 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 
 	switch (type) 
 	{
+        case Object3D::PLANE :
+			createPlane(entityUID, name, pos);
+			break;
 		case Object3D::BOX :
 			createBox(entityUID, name, pos);
 			break;
