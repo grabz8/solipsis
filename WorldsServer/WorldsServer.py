@@ -10,6 +10,7 @@ __version__ = '1.0.0'
 __author__ = 'Gregory Jan'
 
 import sys
+import getopt
 import time
 import threading
 import xml.dom.minidom
@@ -25,8 +26,10 @@ from cgi import parse_qs
 stopEvent = threading.Event()
 
 usersXmlFilename = 'users.xml'
-host = 'localhost'
-port = 8550
+defaultHost = 'localhost'
+defaultPort = 8550
+host = defaultHost
+port = defaultPort
 
 usersManager = None
 
@@ -290,9 +293,40 @@ class Console(threading.Thread):
         print 'Quitting console'
 
 
-# Main entry
+def usage():
+    """
+    Command line syntax help display
+    """
+
+    print 'Usage: ', sys.argv[0], '[options]'
+    print 'Options:'
+    print '  -h, --help     Display help'
+    print '  -H, --HOST=    Server host [default:', defaultHost, ']'
+    print '  -P, --PORT=    Server port [default:', defaultPort, ']'
+
+
 def main():
+    """
+    Main entry
+    """
+
     global stopEvent, usersXmlFilename, host, port, usersManager
+
+    # process arguments
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hH:P:", ["help", "HOST=", "PORT="])
+    except getopt.GetoptError, error:
+        print str(error)
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-H", "--HOST"):
+            host = arg
+        elif opt in ("-P", "--PORT"):
+            port = int(arg)
 
     print 'Loading Users from %s' % (usersXmlFilename)
     usersManager = UsersManager(usersXmlFilename)
