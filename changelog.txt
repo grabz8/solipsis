@@ -799,5 +799,10 @@ it was due to Ogre internal updateView() call of isOutOfDate() returned false
 because new connected avatar at the same pos/orient than old disconnected one
 => reset of camera orientation force this update before call to lookat
 
+---------------------------
+12/11/08
+
+createPlane was missing into Modeler::createObjectWithXML()
+resetMousePicking added into disconnect() to fix bug when quitting when 1 object is selected
 
 ---------------------------
