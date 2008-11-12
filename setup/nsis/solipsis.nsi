@@ -37,29 +37,6 @@
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
 
-; Helpers
-Function GetDXVersion
-  Push $0
-  Push $1
-
-  ClearErrors
-  ReadRegStr $0 HKLM "Software\Microsoft\DirectX" "Version"
-  IfErrors NoDirectX
-
-  StrCpy $1 $0 2 5    ; get the minor version
-  StrCpy $0 $0 2 2    ; get the major version
-  IntOp $0 $0 * 100   ; $0 = major * 100 + minor
-  IntOp $0 $0 + $1
-  Goto Done
-
-  NoDirectX:
-  StrCpy $0 0
-
-  Done:
-  Pop $1
-  Exch $0
-FunctionEnd
-
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
@@ -77,10 +54,7 @@ Section -Prerequisites
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Python 2.5.2 or later. Do you accept Python installation ?" IDYES PythonInstall
 
   EndOfPythonInstall:
-  Call GetDXVersion
-  Pop $R3
-  IntCmp $R3 900 +2 0 +2
-    MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires DirectX 9.0 or later. Do you accept DirectX installation ?" IDYES DXInstall
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires DirectX 9.0c or later. Do you accept DirectX installation ?" IDYES DXInstall
 
   EndOfDXInstall:
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Ageia PhysX drivers 7.11.13 or later. Do you accept PhysX installation ?" IDYES PhysXInstall
@@ -97,7 +71,7 @@ Section -Prerequisites
   Goto EndOfPythonInstall
 
   DXInstall:
-  ExecWait DXMarch2008\Redist\directx_mar2008_redist.exe
+  ExecWait DirectX\directx_aug2008_redist.exe
   Goto EndOfDXInstall
 
   PhysXInstall:
