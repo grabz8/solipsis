@@ -808,3 +808,6 @@ boot.lua updated to use our public WorldsServer + localWorldAddress/login now em
 WorldsServer.py arguments added
 
 ---------------------------
+RELEASE 1.0.6
+
+---------------------------
