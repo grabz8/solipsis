@@ -116,6 +116,29 @@ string StringHelpers::toString(bool val, bool yesNo)
 }
 
 //-------------------------------------------------------------------------------------
+string StringHelpers::toHexString(unsigned int val)
+{
+    char valStr[9];
+    _snprintf(valStr, sizeof(valStr) - 1, "%08X", val);
+    valStr[8] = '\0';
+    return valStr;
+}
+
+//-------------------------------------------------------------------------------------
+unsigned int StringHelpers::convertHexStringToUInt(const string& str)
+{
+    unsigned int value;
+    sscanf(str.c_str(), "%08X", &value);
+    return value;
+}
+
+//-------------------------------------------------------------------------------------
+string StringHelpers::getVersionString(unsigned int version)
+{
+    return toString(version >> 16) + "." + toString((version & 0x0000FF00) >> 8) + "." + toString(version & 0x000000FF);
+}
+
+//-------------------------------------------------------------------------------------
 void StringHelpers::tokenize(const string& str, const string& delimiter, vector<string>& tokens)
 {
     tokens.clear();

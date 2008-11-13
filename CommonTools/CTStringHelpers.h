@@ -46,6 +46,12 @@ public:
     static std::string toString(unsigned long val, unsigned short width = 0, char fill = ' ', std::ios::fmtflags flags = std::ios::fmtflags(0));
     /// Converts a boolean to a string
     static std::string toString(bool val, bool yesNo = false);
+    /// Converts an unsigned int to an hexadecimal string
+    static std::string toHexString(unsigned int val);
+    /// Converts an hexadecimal string to an unsigned int
+    static unsigned int convertHexStringToUInt(const std::string& str);
+    /// Converts an unsigned int version to a string
+    static std::string getVersionString(unsigned int version);
     /// Tokenize function
     static void tokenize(const std::string& str, const std::string& delimiter, std::vector<std::string>& tokens);
     /// Concatenate host and port to form 1 url
