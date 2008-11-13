@@ -50,8 +50,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     mPeerAddress("localhost:8880"),
     mLocalWorldAddress("localhost:8660"),
     mWorldAddress(""),
-    mWorldServerAddress("localhost:8550"),
-    mWorldServerTimeoutSec(8),
+    mWorldsServerAddress("localhost:8550"),
+    mWorldsServerTimeoutSec(8),
     mLogin("me"),
     mPwd(""),
     mAuthentType(ATSolipsis),
@@ -135,6 +135,12 @@ Navigator* Navigator::getSingletonPtr()
 }
 
 //-------------------------------------------------------------------------------------
+unsigned int Navigator::getVersion()
+{
+    return NAVIGATOR_VERSION;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::isConnected()
 {
     return ((mXmlRpcClient != 0) && (mXmlRpcClient->isConnected()));
@@ -189,27 +195,27 @@ void Navigator::setWorldAddress(const String& address)
 }
 
 //-------------------------------------------------------------------------------------
-const String& Navigator::getWorldServerAddress()
+const String& Navigator::getWorldsServerAddress()
 {
-    return mWorldServerAddress;
+    return mWorldsServerAddress;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setWorldServerAddress(const String& address)
+void Navigator::setWorldsServerAddress(const String& address)
 {
-    mWorldServerAddress = address;
+    mWorldsServerAddress = address;
 }
 
 //-------------------------------------------------------------------------------------
-unsigned short Navigator::getWorldServerTimeout()
+unsigned short Navigator::getWorldsServerTimeout()
 {
-    return mWorldServerTimeoutSec;
+    return mWorldsServerTimeoutSec;
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setWorldServerTimeout(unsigned short timeoutSec)
+void Navigator::setWorldsServerTimeout(unsigned short timeoutSec)
 {
-    mWorldServerTimeoutSec = timeoutSec;
+    mWorldsServerTimeoutSec = timeoutSec;
 }
 
 //-------------------------------------------------------------------------------------
@@ -299,14 +305,14 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
             mWorldAddress = mLocalWorldAddress;
         return true;
     }
-    if (varName == "WorldServerAddress")
+    if (varName == "WorldsServerAddress")
     {
-        mWorldServerAddress = varValue;
+        mWorldsServerAddress = varValue;
         return true;
     }
-    if (varName == "WorldServerTimeout")
+    if (varName == "WorldsServerTimeout")
     {
-        mWorldServerTimeoutSec = StringConverter::parseInt(varValue);
+        mWorldsServerTimeoutSec = StringConverter::parseInt(varValue);
         return true;
     }
     if (varName == "Login")

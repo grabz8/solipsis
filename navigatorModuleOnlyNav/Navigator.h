@@ -42,6 +42,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+// Define Navigator version
+#define NAVIGATOR_VERSION_MAJOR 1
+#define NAVIGATOR_VERSION_MINOR 0
+#define NAVIGATOR_VERSION_PATCH 6
+#define NAVIGATOR_VERSION ((NAVIGATOR_VERSION_MAJOR << 16) | (NAVIGATOR_VERSION_MINOR << 8) | NAVIGATOR_VERSION_PATCH)
+
 class Modeler;
 class AvatarEditor;
 
@@ -74,8 +80,8 @@ protected:
     String mPeerAddress;
     String mLocalWorldAddress;
     String mWorldAddress;
-    String mWorldServerAddress;
-    unsigned short mWorldServerTimeoutSec;
+    String mWorldsServerAddress;
+    unsigned short mWorldsServerTimeoutSec;
     String mLogin;
     String mPwd;
     AuthentType mAuthentType;
@@ -124,6 +130,7 @@ public:
     Navigator(const String name, IApplication* application);
     ~Navigator();
     static Navigator* getSingletonPtr();
+    static unsigned int getVersion();
 
     bool isConnected();
 
@@ -136,10 +143,10 @@ public:
     void setLocalWorldAddress(const String& address);
     const String& getWorldAddress();
     void setWorldAddress(const String& address);
-    const String& getWorldServerAddress();
-    void setWorldServerAddress(const String& address);
-    unsigned short getWorldServerTimeout();
-    void setWorldServerTimeout(unsigned short timeoutSec);
+    const String& getWorldsServerAddress();
+    void setWorldsServerAddress(const String& address);
+    unsigned short getWorldsServerTimeout();
+    void setWorldsServerTimeout(unsigned short timeoutSec);
     const String& getLogin();
     void setLogin(const String& login);
     const String& getPwd();
