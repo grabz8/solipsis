@@ -59,15 +59,17 @@ public:
     };
     enum MsgBoxDisplayed {
         MBD_NONE = 0,
-        MBD_WORDSSERVERERROR,
-        MBD_AUTHENTFACEBOOKERROR,
-        MBD_AUTHENTWORLDSSERVERERROR
+        MBD_WORLDSSERVERERROR,
+        MBD_WORLDSSERVERCOMPATIBILITYERROR,
+        MBD_AUTHENTFBERROR,
+        MBD_AUTHENTWSERROR
     };
 
     enum NaviPanel {
         NAVI_MSGBOX = 0,
         NAVI_LOGIN,
         NAVI_WORLDS,
+        NAVI_INFOWS,
         NAVI_OPTIONS,
         NAVI_AUTHENTFB,
         NAVI_AUTHENTWS,
@@ -194,26 +196,29 @@ protected:
 
     // Login/Options/InWorld callbacks
     void loginPageLoaded(const NaviData& naviData);
-    void loginWorld(const NaviData& naviData);
+    void world(const NaviData& naviData);
     void connect(const NaviData& naviData);
     void options(const NaviData& naviData);
     void quit(const NaviData& naviData);
 
-    class WorldServerEventListener : public NaviEventListener
+    class WorldsServerEventListener : public NaviEventListener
     {
     private:
         NavigatorGUI *mNavigatorGUI;
 	public:
-        WorldServerEventListener(NavigatorGUI *navigatorGUI) : mNavigatorGUI(navigatorGUI) {}
+        WorldsServerEventListener(NavigatorGUI *navigatorGUI) : mNavigatorGUI(navigatorGUI) {}
         virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
 		virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
         virtual void onLocationChange(Navi *caller, const std::string &url) {}
 		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
     };
-    WorldServerEventListener mWorldServerEventListener;
-    void worldServerError();
+    WorldsServerEventListener mWorldsServerEventListener;
+    void worldsServerCompatibilityError();
+    void worldsServerError();
     void worldOk(const NaviData& naviData);
     void worldCancel(const NaviData& naviData);
+    void worldsServerInfo();
+    void worldsServerInfoOk(const NaviData& naviData);
 
     void optionsPageLoaded(const NaviData& naviData);
     void optionsOk(const NaviData& naviData);
