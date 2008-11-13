@@ -808,6 +808,11 @@ boot.lua updated to use our public WorldsServer + localWorldAddress/login now em
 WorldsServer.py arguments added
 
 ---------------------------
+13/11/08
+
+simple version check between Navigator and WorldsServer to ensure compatibility
+
+---------------------------
 RELEASE 1.0.6
 
 ---------------------------
