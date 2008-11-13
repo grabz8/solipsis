@@ -25,6 +25,13 @@ from cgi import parse_qs
 # event to stop the process and threads
 stopEvent = threading.Event()
 
+WSERVER_VERSION_MAJOR = 1
+WSERVER_VERSION_MINOR = 0
+WSERVER_VERSION_PATCH = 6
+WSERVER_VERSION = ((WSERVER_VERSION_MAJOR << 16) | (WSERVER_VERSION_MINOR << 8) | WSERVER_VERSION_PATCH)
+def getVersionStr(version):
+    return hex(version >> 16)[2:] + '.' + hex((version & 0x0000FF00) >> 8)[2:] + '.' + hex(version & 0x000000FF)[2:]
+
 usersXmlFilename = 'users.xml'
 defaultHost = 'localhost'
 defaultPort = 8550
@@ -166,13 +173,31 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
     A timeout HTTP request handler class raising socket timeout exception when client is not responding
     """
 
+    def isNavigatorVersionCompatible(self, navVersion):
+        return navVersion >= WSERVER_VERSION
+
+    def checkNavigatorVersion(self, query):
+        try:
+            navVersion = int(query['navVersion'][0], 16)
+        except:
+            # navVersion param is missing !
+            self.send_error(404, 'Malformed url ...')
+            return False
+        if not self.isNavigatorVersionCompatible(navVersion):
+            # incompatibility detected !
+            self.send_error(409, 'Navigator version ' + getVersionStr(navVersion) + ' not supported by server version ' + getVersionStr(WSERVER_VERSION))
+            return False
+        return True
+
     def do_GET(self):
         o = urlparse(self.path)
         print 'WSRequestHandler::do_GET() %s request from %s, url=%s' % (self.command, self.client_address, self.path)
+        query = parse_qs(o.query)
         t = o.path.split('.')
         if t[len(t) - 1] in ['html', 'png', 'js']:
             if o.path == '/uiauthentws.html':
-                query = parse_qs(o.query)
+                if not self.checkNavigatorVersion(query):
+                    return
                 try:
                     login = query['login'][0]
                     pwd = query['pwd'][0]
@@ -190,6 +215,24 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                     loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Failed')
                     loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', '')
                 self.wfile.write(loginHtmlFileContent)
+            elif o.path == '/uiworlds.html':
+                if not self.checkNavigatorVersion(query):
+                    return
+                SimpleHTTPRequestHandler.do_GET(self)
+            elif o.path == '/uiinfows.html':
+                try:
+                    navVersion = int(query['navVersion'][0], 16)
+                except:
+                    # navVersion param is missing !
+                    self.send_error(404, 'Malformed url ...')
+                    return
+                infoHtmlFile = open('uiinfows.html', 'r')
+                infoHtmlFileContent = infoHtmlFile.read()
+                infos = 'Server version : ' + getVersionStr(WSERVER_VERSION) + '<br>Navigator version : ' + getVersionStr(navVersion) + '<br>'
+                if not self.isNavigatorVersionCompatible(navVersion):
+                    infos = infos + '=> Upgrade your Navigator !'
+                infoHtmlFileContent = infoHtmlFileContent.replace('infosDynamicContent', infos)
+                self.wfile.write(infoHtmlFileContent)
             else:
                 # serve simply the html file
                 SimpleHTTPRequestHandler.do_GET(self)
@@ -332,7 +375,7 @@ def main():
     usersManager = UsersManager(usersXmlFilename)
     usersManager.load()
 
-    print 'Starting Worlds server on %s:%s' % (host, port)
+    print 'Starting Worlds server (version %d.%d.%d) on %s:%s' % (WSERVER_VERSION_MAJOR, WSERVER_VERSION_MINOR, WSERVER_VERSION_PATCH, host, port)
     print 'Press CTRL+C or CTRL+PAUSE to stop'
     server = ServerMainThread((host, port), WSRequestHandler)
     server.start()
