@@ -18,8 +18,8 @@
             }
             function select(value)
             {
-                $('avatarSelectItem').style.display='none';
-                $('avatarSelectTitre').innerHTML = ""+value;
+//                $('avatarSelectItem').style.display='none';
+//                $('avatarSelectTitre').innerHTML = ""+value;
                 new NaviData('AvatarSelected').add({item:value}).send();
             }
 		</script>
@@ -78,16 +78,16 @@
             <div id="containerMenu">
 
             <!--<div class="conteneurMenu">-->
-                <div class="menu" id="avatarSelect" onmouseout="fout(this)" onmouseover="fover(this)">
+<!--                <div class="menu" id="avatarSelect" onmouseout="fout(this)" onmouseover="fover(this)">
                     <div class="titreMenu itemOut" id="avatarSelectTitre">???</div>
-                    <div class="contenuMenu menuOverflow" id="avatarSelectItem">
+                    <div class="contenuMenu menuOverflow" id="avatarSelectItem">-->
                         <!--
                         <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick="select('item 30 selected')">Sous menu 30</a></div>
                         <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 31</a></div>
                         <div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu'>Sous menu 32</a></div>
                         -->
-                    </div>
-                </div>
+<!--                    </div>-->
+<!--                </div>-->
             <!--</div>-->
             
 			<table align="center" width="240">
@@ -107,11 +107,19 @@
 				    </td>
 				</tr>
 				<tr><td><br /><br /></td></tr>
-				<tr>
+<!--				<tr>
 					<td align="center">
 						<input type="button" value=" < " style='width: 60px' onclick="elementClicked('AvatarPrev')">
 						<input type="button" value=" > " style='width: 60px' onclick="elementClicked('AvatarNext')">
 					</td>		    
+				</tr>-->
+				<tr>
+				    <td align="center">
+				        <br><br>
+                        <div id="avatarSelect">
+                            <select id="selectAvatar" name="selectAvatar" size="5" style="width:180px" onchange="select(document.getElementById('selectAvatar').value)">
+                            </select>
+                        </div>
 				</tr>
 
 				<tr>
