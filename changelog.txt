@@ -813,6 +813,11 @@ WorldsServer.py arguments added
 simple version check between Navigator and WorldsServer to ensure compatibility
 
 ---------------------------
+14/11/08
+
+avatarSelect replaced by 1 input + clear of namesList bug fixed
+
+---------------------------
 RELEASE 1.0.6
 
 ---------------------------
