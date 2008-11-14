@@ -641,8 +641,8 @@ void NavigatorGUI::avatarMainShow()
         navi->setOpacity(0.75f);
         
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::avatarMainPageLoaded));
-		navi->bind("AvatarPrev", NaviDelegate(this, &NavigatorGUI::avatarMainSelectPrev));
-		navi->bind("AvatarNext", NaviDelegate(this, &NavigatorGUI::avatarMainSelectNext));
+//		navi->bind("AvatarPrev", NaviDelegate(this, &NavigatorGUI::avatarMainSelectPrev));
+//		navi->bind("AvatarNext", NaviDelegate(this, &NavigatorGUI::avatarMainSelectNext));
 		navi->bind("AvatarSelected", NaviDelegate(this, &NavigatorGUI::avatarMainSelected));
 	    navi->bind("FileOpen", NaviDelegate(this, &NavigatorGUI::avatarMainFileOpen));
 		navi->bind("AvatarEdit", NaviDelegate(this, &NavigatorGUI::avatarMainFileEdit));
@@ -3374,27 +3374,32 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 	navi->evaluateJS(text.data());
 
 	// Setup the avatar name list
-	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + AvatarEditor::getSingletonPtr()->getName() + "'");
+//	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + AvatarEditor::getSingletonPtr()->getName() + "'");
 	text = "";
 	vector<std::string>* list = AvatarEditor::getSingletonPtr()->getManager()->getNameList();
 	vector<std::string>::iterator iter = list->begin();
 	int id = 0;
 	while(iter!=list->end())
 	{
-		text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
+/*		text += "<div class='itemOut' onmouseout=this.className='itemOut' onmouseover=this.className='itemOver'><a href='#' class='lienMenu' onclick=select('";
 		text += (*iter).data();
 		text += "')>";
 		text += (*iter).data();
-		text += "</a></div>";
+		text += "</a></div>";*/
+        text += "<option value='" + std::string((*iter).data()) + "'";
+        if (std::string((*iter).data()) == avatar->getCharacter()->getName())
+            text += " selected='selected'";
+        text += ">" + std::string((*iter).data()) + "</option>";
 		iter++;
 	}
-	navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
+//	navi->evaluateJS("$('avatarSelectItem').innerHTML = \"" + text + "\"");
+	navi->evaluateJS("$('selectAvatar').innerHTML = \"" + text + "\"");
 
 	// Select the avatar from the user.xml // avatarName
-	size_t nbItem = list->size();
+/*	size_t nbItem = list->size();
 	if( nbItem < 7 )
 		navi->evaluateJS("$('avatarSelectItem').style.height = '" + StringConverter::toString(nbItem*16) + "px'");
-	list->clear();
+	list->clear();*/
 
     // Show Navi UI
     if (mNavisStates[NAVI_AVATARMAIN] == NSCreated)
@@ -3439,7 +3444,7 @@ void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
     navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
 }
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
+/*void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelectPrev()");
     Avatar* userAvatar = mNavigator->getUserAvatar();
@@ -3451,9 +3456,9 @@ void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
 	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
-}
+}*/
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
+/*void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainSelectNext()");
     Avatar* userAvatar = mNavigator->getUserAvatar();
@@ -3465,7 +3470,7 @@ void NavigatorGUI::avatarMainSelectNext(const NaviData& naviData)
 	std::string text( AvatarEditor::getSingletonPtr()->getName() );
 	navi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
 	navi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
-}
+}*/
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 {

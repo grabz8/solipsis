@@ -337,8 +337,8 @@ protected:
     void avatarMainFileSave(const NaviData& naviData);
     void avatarMainFileSaveAs(const NaviData& naviData);
     void avatarMainFileExit(const NaviData& naviData);
-    void avatarMainSelectPrev(const NaviData& naviData);
-	void avatarMainSelectNext(const NaviData& naviData);
+//    void avatarMainSelectPrev(const NaviData& naviData);
+//	void avatarMainSelectNext(const NaviData& naviData);
 	void avatarMainSelected(const NaviData& naviData);
     // Avatar properties page callbacks
     void avatarPropPageLoaded(const NaviData& naviData);
