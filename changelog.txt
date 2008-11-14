@@ -816,6 +816,7 @@ simple version check between Navigator and WorldsServer to ensure compatibility
 14/11/08
 
 avatarSelect replaced by 1 input + clear of namesList bug fixed
+Dxredist unzipped to get DXsetup.exe (august2008)
 
 ---------------------------
 RELEASE 1.0.6
