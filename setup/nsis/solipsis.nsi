@@ -71,7 +71,7 @@ Section -Prerequisites
   Goto EndOfPythonInstall
 
   DXInstall:
-  ExecWait DirectX\directx_aug2008_redist.exe
+  ExecWait DirectX\DXSETUP.exe
   Goto EndOfDXInstall
 
   PhysXInstall:
