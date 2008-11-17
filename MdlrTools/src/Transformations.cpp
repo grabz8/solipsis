@@ -112,19 +112,19 @@ void Transformations::releasedClickForTransformation ()
 			switch (mAxeClicked)
 			{
 				case AxeClicked::X :
-					mNode_X->detachObject(mPlaneX);
-					mNode_X->detachObject(mPlaneZ);
+mNode_X->detachObject(mPlaneX);
 					mNode_X->detachObject(mPlaneY);
+mNode_X->detachObject(mPlaneZ);
 					break ;
 				case AxeClicked::Y :
-					mNode_Y->detachObject(mPlaneX);
-					mNode_Y->detachObject(mPlaneY);
+mNode_Y->detachObject(mPlaneX);
+mNode_Y->detachObject(mPlaneY);
 					mNode_Y->detachObject(mPlaneZ);
 					break ;
 				case AxeClicked::Z :
 					mNode_Z->detachObject(mPlaneX);
-					mNode_Z->detachObject(mPlaneZ);
-					mNode_Z->detachObject(mPlaneY);
+mNode_Z->detachObject(mPlaneY);
+mNode_Z->detachObject(mPlaneZ);
 					break ;
 			}
 			break;							
@@ -150,7 +150,7 @@ void Transformations::releasedClickForTransformation ()
 		}
 	}
 
-	mAxeClicked = AxeClicked::NONE  ;
+	mAxeClicked = AxeClicked::NONE;
 	mPlaneClicked = AxeClicked::NONE;
 	mOldpos = Vector3::ZERO;	
 }
@@ -160,7 +160,7 @@ Vector3 Transformations::drapNdrop( const OIS::MouseEvent &e )
 	Vector3 newpos = getMousePosOnDummyPlane (e);
 	return drapNdrop(newpos);
 }
-
+//-------------------------------------------------------------------------------------
 Vector3 Transformations::drapNdrop( Vector3 newpos )
 {
 	//Calculate the mouse mouvement on the scene
@@ -193,13 +193,15 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 				switch (mAxeClicked )	//search axis
 				{
 					case AxeClicked::X :		//move X		
-						moving.z = newpos.z - mOldpos.z ;
+						//moving.z = newpos.z - mOldpos.z ;
+                        moving.z = newpos.x - mOldpos.x ;
 						break;
 					case AxeClicked::Y :		//move Y
 						moving.x = newpos.x - mOldpos.x ;
 						break ;
 					case AxeClicked::Z :		//move Z
-						moving.y = newpos.y - mOldpos.y ;
+						//moving.y = -(newpos.y - mOldpos.y) ;
+                        moving.y = newpos.x - mOldpos.x ;
 						break ;
 				}
 				break;
@@ -210,13 +212,13 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 				switch (mAxeClicked )	//search axis
 				{
 					case AxeClicked::X :		//move X		
-						moving.x = abs (1 + (newpos.x - mOldpos.x)/100.0) ;
+						moving.x = abs( 1 + (newpos.x - mOldpos.x)/100.0 ) ;
 						break;
 					case AxeClicked::Y :		//move Y
 						moving.y = abs( 1 + (newpos.y - mOldpos.y)/100.0 ) ;
 						break ;
 					case AxeClicked::Z :		//move Z
-						moving.z = abs (1 + (newpos.z - mOldpos.z)/100.0 ) ;
+						moving.z = abs( 1 + (newpos.z - mOldpos.z)/100.0 ) ;
 						break ;
 				}
 				break;
@@ -245,6 +247,8 @@ void Transformations::eventMove()
 	mNode_X->detachAllObjects();
 	mNode_Y->detachAllObjects();
 	mNode_Z->detachAllObjects();
+
+    //Attach the good Gizmos
 	attachMoveGizmos(true);
 
 	showGizmosMove(true) ;
@@ -327,21 +331,21 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	MovablePlane * movPlane ;
 	movPlane = new MovablePlane("dummy_plane_x");
 	movPlane->normal = Vector3::UNIT_Y;
-	MeshManager::getSingleton().createPlane("dummy_plane_x", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_X);
+	MeshManager::getSingleton().createPlane("dummy_plane_x", mResourceGroup,*movPlane, 100, 100, 1, 1, true, 1, 1, 1, Vector3::UNIT_X);
 	mPlaneX = pSceneMgr->createEntity( "dummy_plane_x", "dummy_plane_x" );
 	mPlaneX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
 	mPlaneX->setVisible(false);
 
 	movPlane = new MovablePlane("dummy_plane_y");
 	movPlane->normal = Vector3::UNIT_Z;
-	MeshManager::getSingleton().createPlane("dummy_plane_y", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
+	MeshManager::getSingleton().createPlane("dummy_plane_y", mResourceGroup,*movPlane, 100, 100, 1, 1, true, 1, 1, 1, Vector3::UNIT_Y);
 	mPlaneY = pSceneMgr->createEntity( "dummy_plane_y", "dummy_plane_y" );
 	mPlaneY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	mPlaneY->setVisible(false);
+    mPlaneY->setVisible(false);
 
 	movPlane = new MovablePlane("dummy_plane_z");
 	movPlane->normal = Vector3::UNIT_X;
-	MeshManager::getSingleton().createPlane("dummy_plane_z", mResourceGroup,*movPlane, 1000, 1000, 1, 1, true, 1, 1, 1, Vector3::UNIT_Z);
+	MeshManager::getSingleton().createPlane("dummy_plane_z", mResourceGroup,*movPlane, 100, 100, 1, 1, true, 1, 1, 1, Vector3::UNIT_Z);
 	mPlaneZ = pSceneMgr->createEntity( "dummy_plane_z", "dummy_plane_z" );
 	mPlaneZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
 	mPlaneZ->setVisible(false);
@@ -386,36 +390,36 @@ void Transformations::destroyGizmos(SceneManager * pSceneMgr)
 //-------------------------------------------------------------------------------------
 void Transformations::createGizmosMove(SceneManager * pSceneMgr)
 {
-	Entity* OgreAxes = pSceneMgr->createEntity( "AxeTest", "axes.mesh" );
-	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosX");
-	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosY");
-	OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmosZ");
+	//Entity* OgreAxes = pSceneMgr->createEntity( "AxeTest", "axes.mesh" );
+	//OgreAxes->getSubEntity(0)->getMaterial()->clone("MaterialGizmos");
+    
+    MaterialPtr material = MaterialManager::getSingletonPtr()->create( "MaterialGizmos", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
+    material->setLightingEnabled( false );
+    material->setSceneBlending( Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA );
+    material->setDepthFunction(CMPF_ALWAYS_PASS );
+    material->setDepthCheckEnabled( false );
+    material->setDepthWriteEnabled( false );
+    material->setCullingMode( Ogre::CullingMode::CULL_NONE );
+    material->setDiffuse( .8, .8, .8, .5 );
+    material->setAmbient( .5, .5, .5 );
+    material->setColourWriteEnabled( true );
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
 
 	m_moveX = pSceneMgr->createEntity( "moveX", "axe_move_x.mesh"  );
 	m_moveX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveX->getSubEntity(0)->setMaterialName("MaterialGizmosX");
-	m_moveX->getSubEntity(0)->getMaterial()->setDepthFunction(CMPF_ALWAYS_PASS );
-	m_moveX->getSubEntity(0)->getMaterial()->setAmbient( ColourValue (1,0,0,1));
-	m_moveX->getSubEntity(0)->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName("red_texture.tga");
+	m_moveX->getSubEntity(0)->setMaterialName("MaterialGizmos");
 	mNode_X->roll( Degree(-90));
 	mNode_X->yaw( Degree (90));
 
 	m_moveY = pSceneMgr->createEntity( "moveY", "axe_move_y.mesh"  );
 	m_moveY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveY->getSubEntity(0)->setMaterialName("MaterialGizmosY");
-	m_moveY->getSubEntity(0)->getMaterial()->setDepthFunction(CMPF_ALWAYS_PASS );
-	m_moveY->getSubEntity(0)->getMaterial()->setAmbient( ColourValue (0,1,0,1));
-	m_moveY->getSubEntity(0)->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName("green_texture.tga");
+	m_moveY->getSubEntity(0)->setMaterialName("MaterialGizmos");
 	mNode_Y->yaw(Degree(90));
 
 	m_moveZ = pSceneMgr->createEntity( "moveZ", "axe_move_z.mesh"  );
 	m_moveZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveZ->getSubEntity(0)->setMaterialName("MaterialGizmosZ");
-	m_moveZ->getSubEntity(0)->getMaterial()->setDepthFunction(CMPF_ALWAYS_PASS );
-	m_moveZ->getSubEntity(0)->getMaterial()->setAmbient( ColourValue (0,0,1,1));
-	m_moveZ->getSubEntity(0)->getMaterial()->getTechnique(0)->getPass(0)->getTextureUnitState(0)->setTextureName("blue_texture.tga");
+	m_moveZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
 	mNode_Z->pitch( Degree(90));
-
 	
 	//Hide objects :
 	m_moveX->setVisible(false);
@@ -429,15 +433,15 @@ void Transformations::createGizmosScale(SceneManager * pSceneMgr)
 {
 	m_scaleX = pSceneMgr->createEntity( "scaleX", "axe_scale_x.mesh"  );
 	m_scaleX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleX->getSubEntity(0)->setMaterialName("MaterialGizmosX");
+	m_scaleX->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_scaleY = pSceneMgr->createEntity( "scaleY", "axe_scale_y.mesh"  );
 	m_scaleY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleY->getSubEntity(0)->setMaterialName("MaterialGizmosY");
+	m_scaleY->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_scaleZ = pSceneMgr->createEntity( "scaleZ", "axe_scale_z.mesh"  );
 	m_scaleZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleZ->getSubEntity(0)->setMaterialName("MaterialGizmosZ");
+	m_scaleZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_scaleX->setVisible(false);
 	m_scaleY->setVisible(false);
@@ -449,15 +453,15 @@ void Transformations::createGizmosRotate(SceneManager * pSceneMgr)
 {
 	m_rotateX = pSceneMgr->createEntity( "rotateX", "axe_rotate_x.mesh"  );
 	m_rotateX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateX->getSubEntity(0)->setMaterialName("MaterialGizmosX");
+	m_rotateX->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_rotateY = pSceneMgr->createEntity( "rotateY", "axe_rotate_y.mesh"  );
 	m_rotateY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateY->getSubEntity(0)->setMaterialName("MaterialGizmosY");
+	m_rotateY->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_rotateZ = pSceneMgr->createEntity( "rotateZ", "axe_rotate_z.mesh"  );
 	m_rotateZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateZ->getSubEntity(0)->setMaterialName("MaterialGizmosZ");
+	m_rotateZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
 
 	m_rotateX->setVisible(false);
 	m_rotateY->setVisible(false);
@@ -520,7 +524,7 @@ RaySceneQueryResult& Transformations::raySceneQuery( const OIS::MouseEvent &e )
 		0.5/float(e.state.height) );
 	return raySceneQuery(mouseRay);
 }
-
+//-------------------------------------------------------------------------------------
 RaySceneQueryResult& Transformations::raySceneQuery( Ray mouseRay )
 {
 	// Setup the ray scene query, use CEGUI's mouse position
@@ -545,7 +549,7 @@ void Transformations::onClickToTransformObject(const OIS::MouseEvent &e, const S
 {
 	onClickToTransformObject(raySceneQuery(e), pNameAxeX, pNameAxeY, pNameAxeZ);
 }
-
+//-------------------------------------------------------------------------------------
 void Transformations::onClickToTransformObject(RaySceneQueryResult &result, const String pNameAxeX,
 		const String pNameAxeY, const String pNameAxeZ)
 {
@@ -603,24 +607,18 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 				{
 					if (name == pNameAxeX)
 					{
-						nodeM->getParentSceneNode()->attachObject(mPlaneX);
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::X ;
+						mAxeClicked = AxeClicked::Y ;
 					}
 					else if (name == pNameAxeY)
 					{
-						nodeM->getParentSceneNode()->attachObject(mPlaneX);
-						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Y ;
+						mAxeClicked = AxeClicked::Z ;
 					}
 					else if( name == pNameAxeZ)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneX);
-						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						mAxeClicked = AxeClicked::Z ;
+						mAxeClicked = AxeClicked::X ;
 					}		
 					//nodeM->getParentSceneNode()->attachObject(mSceneMgr->getEntity("dummy_plane_y"));
 					
@@ -663,7 +661,7 @@ Vector3 Transformations::getMousePosOnDummyPlane (const OIS::MouseEvent &e)
 		0.5/float(e.state.height) );
 	return getMousePosOnDummyPlane(mouseRay);
 }
-
+//-------------------------------------------------------------------------------------
 Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
 {
 	//ray tracing :

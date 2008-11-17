@@ -81,7 +81,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	mBufCurrent->cornerMin	= mBufBackup->cornerMin	= mBufPrim->cornerMin	= mCornerMin;
 
 	mChildren = NULL;		// TODO : must be loaded from the .XML
-	mParent = 0;		// TODO : must be loaded from the .XML
+	mParent = 0;		    // TODO : must be loaded from the .XML
 
     mEntityUID = pEntityUID;
 	mName = pName;
@@ -327,7 +327,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 		    texture = TextureManager::getSingleton().load( trans->Attribute("Name") , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
         }
 
-		addTexture (texture, textureExtParamsMap) ;
+		addTexture (texture, textureExtParamsMap);
 
 		from_string( trans->Attribute("currenttexture") , currenttexture);
 		if( strcmp (currenttexture.c_str() , "true" ) == 0 )
