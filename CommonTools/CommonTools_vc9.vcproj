@@ -155,6 +155,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTCrashReporterWin.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTException.cpp"
 				>
 			</File>
@@ -234,6 +238,10 @@
 			>
 			<File
 				RelativePath=".\CTBasicThread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTCrashReporter.h"
 				>
 			</File>
 			<File
