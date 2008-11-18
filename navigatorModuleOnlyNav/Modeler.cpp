@@ -42,6 +42,7 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
 	mSceneManager = pSceneMgr;
 	mCamera = pCamera;
     mModelerCallbacks = modelerCallbacks;
+    mOnGizmo = 0;
 
 	mExecPath = _getcwd(NULL, 0);
 	SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
@@ -146,7 +147,7 @@ bool Modeler::init(const String& pPath)
 	mSelection = new Selection (node, node2);
 
 	mLinkMode = false;
-	mOnGizmo = false;
+	mOnGizmo = 0;
 
 	//create and put gizmos in the centre of selection
 	node = mSceneManager->getRootSceneNode()->createChildSceneNode("NodeSelection");	//for find all objects selected
@@ -584,13 +585,13 @@ void Modeler::lockLinkMode(bool pLock)
 }
 
 /// Test if we've clicked on a gizmo
-bool Modeler::isOnGizmo()
+int Modeler::isOnGizmo()
 {
 	return mOnGizmo;
 }
 
 /// Lock or unlock the gizmo transformation state
-void Modeler::lockGizmo(bool pLock)
+void Modeler::lockGizmo(int pLock)
 {
 	mOnGizmo = pLock;
 }

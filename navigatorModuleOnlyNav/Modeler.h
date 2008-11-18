@@ -131,9 +131,9 @@ public:
 	void lockLinkMode(bool pLock);
 
 	/// Test if we've clicked on a gizmo tranformation
-	bool isOnGizmo();
+	int isOnGizmo();
 	/// Lock or unlock the gizmo transformation state
-	void lockGizmo(bool pLock);
+	void lockGizmo(int pLock);
 
 	/// Event for the move gizmo
 	void eventMove();
@@ -178,7 +178,7 @@ private :
 	/// Link mode
 	bool				mLinkMode;
 	/// Gizmo
-	bool				mOnGizmo;
+	int				    mOnGizmo;
 
     /// Callbacks
     IModelerCallbacks	*mModelerCallbacks;

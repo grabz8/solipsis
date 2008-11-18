@@ -2348,20 +2348,16 @@ void NavigatorGUI::modelerActionMove(const NaviData& naviData)
     Modeler *modeler = mNavigator->getModeler();
 	if (!modeler->isSelectionEmpty())
 	{
-		static bool active = false;
-
-		if (!active)
-		{
-			active = true;
-			modeler->eventMove();
-			modeler->lockGizmo(active);
-		}
-		else
-		{
-			active = false;
-			modeler->lockGizmo(active);
-			modeler->getSelection()->mTransformation->eventSelection();
-		}
+        if( modeler->isOnGizmo() == 1 )
+        {
+            modeler->lockGizmo( 0 );
+            modeler->getSelection()->mTransformation->eventSelection();
+        }
+        else
+        {
+            modeler->lockGizmo( 1 );
+            modeler->eventMove();
+        }
 	}
 	else
         showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
@@ -2373,20 +2369,16 @@ void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
     Modeler *modeler = mNavigator->getModeler();
 	if (!modeler->isSelectionEmpty())
 	{
-		static bool active = false;
-
-		if (!active)
-		{
-			active = true;
-			modeler->eventRotate();
-			modeler->lockGizmo(active);
-		}
-		else
-		{
-			active = false;
-			modeler->lockGizmo(active);
-			modeler->getSelection()->mTransformation->eventSelection();
-		}
+        if( modeler->isOnGizmo() == 2 )
+        {
+            modeler->lockGizmo( 0 );
+            modeler->getSelection()->mTransformation->eventSelection();
+        }
+        else
+        {
+            modeler->lockGizmo( 2 );
+            modeler->eventRotate();
+        }
 	}
 	else
         showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
@@ -2398,20 +2390,16 @@ void NavigatorGUI::modelerActionScale(const NaviData& naviData)
     Modeler *modeler = mNavigator->getModeler();
 	if (!modeler->isSelectionEmpty())
 	{
-		static bool active = false;
-
-		if (!active)
-		{
-			active = true;
-			modeler->eventScale();
-			modeler->lockGizmo(active);
-		}
-		else
-		{
-			active = false;
-			modeler->lockGizmo(active);
-			modeler->getSelection()->mTransformation->eventSelection();
-		}
+        if( modeler->isOnGizmo() == 3 )
+        {
+            modeler->lockGizmo( 0 );
+            modeler->getSelection()->mTransformation->eventSelection();
+        }
+        else
+        {
+            modeler->lockGizmo( 3 );
+            modeler->eventScale();
+        }
 	}
 	else
         showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
