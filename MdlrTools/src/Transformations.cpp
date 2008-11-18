@@ -395,30 +395,34 @@ void Transformations::createGizmosMove(SceneManager * pSceneMgr)
     
     MaterialPtr material = MaterialManager::getSingletonPtr()->create( "MaterialGizmos", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
     material->setLightingEnabled( false );
-    material->setSceneBlending( Ogre::SceneBlendType::SBT_TRANSPARENT_ALPHA );
-    material->setDepthFunction(CMPF_ALWAYS_PASS );
+    material->setSceneBlending( SBT_TRANSPARENT_ALPHA );
+    material->setDepthFunction( CMPF_ALWAYS_PASS );
     material->setDepthCheckEnabled( false );
-    material->setDepthWriteEnabled( false );
+    material->setDepthWriteEnabled( true );
     material->setCullingMode( Ogre::CullingMode::CULL_NONE );
-    material->setDiffuse( .8, .8, .8, .5 );
+    material->setDiffuse( ColourValue::White );
     material->setAmbient( .5, .5, .5 );
-    material->setColourWriteEnabled( true );
+    //material->setColourWriteEnabled( true );
     material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+
+    material->clone("MaterialGizmoX");
+    material->clone("MaterialGizmoY");
+    material->clone("MaterialGizmoZ");
 
 	m_moveX = pSceneMgr->createEntity( "moveX", "axe_move_x.mesh"  );
 	m_moveX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveX->getSubEntity(0)->setMaterialName("MaterialGizmos");
+    m_moveX->getSubEntity(0)->setMaterialName("MaterialGizmoX");
 	mNode_X->roll( Degree(-90));
 	mNode_X->yaw( Degree (90));
 
 	m_moveY = pSceneMgr->createEntity( "moveY", "axe_move_y.mesh"  );
 	m_moveY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveY->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_moveY->getSubEntity(0)->setMaterialName("MaterialGizmoY");
 	mNode_Y->yaw(Degree(90));
 
 	m_moveZ = pSceneMgr->createEntity( "moveZ", "axe_move_z.mesh"  );
 	m_moveZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_moveZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_moveZ->getSubEntity(0)->setMaterialName("MaterialGizmoZ");
 	mNode_Z->pitch( Degree(90));
 	
 	//Hide objects :
@@ -426,22 +430,20 @@ void Transformations::createGizmosMove(SceneManager * pSceneMgr)
 	m_moveY->setVisible(false);
 	m_moveZ->setVisible(false);
 }
-
-
 //-------------------------------------------------------------------------------------
 void Transformations::createGizmosScale(SceneManager * pSceneMgr)
 {
 	m_scaleX = pSceneMgr->createEntity( "scaleX", "axe_scale_x.mesh"  );
 	m_scaleX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleX->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_scaleX->getSubEntity(0)->setMaterialName("MaterialGizmoX");
 
 	m_scaleY = pSceneMgr->createEntity( "scaleY", "axe_scale_y.mesh"  );
 	m_scaleY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleY->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_scaleY->getSubEntity(0)->setMaterialName("MaterialGizmoY");
 
 	m_scaleZ = pSceneMgr->createEntity( "scaleZ", "axe_scale_z.mesh"  );
 	m_scaleZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_scaleZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_scaleZ->getSubEntity(0)->setMaterialName("MaterialGizmoZ");
 
 	m_scaleX->setVisible(false);
 	m_scaleY->setVisible(false);
@@ -453,15 +455,15 @@ void Transformations::createGizmosRotate(SceneManager * pSceneMgr)
 {
 	m_rotateX = pSceneMgr->createEntity( "rotateX", "axe_rotate_x.mesh"  );
 	m_rotateX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateX->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_rotateX->getSubEntity(0)->setMaterialName("MaterialGizmoX");
 
 	m_rotateY = pSceneMgr->createEntity( "rotateY", "axe_rotate_y.mesh"  );
 	m_rotateY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateY->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_rotateY->getSubEntity(0)->setMaterialName("MaterialGizmoY");
 
 	m_rotateZ = pSceneMgr->createEntity( "rotateZ", "axe_rotate_z.mesh"  );
 	m_rotateZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
-	m_rotateZ->getSubEntity(0)->setMaterialName("MaterialGizmos");
+	m_rotateZ->getSubEntity(0)->setMaterialName("MaterialGizmoZ");
 
 	m_rotateX->setVisible(false);
 	m_rotateY->setVisible(false);
@@ -557,7 +559,7 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 	
 //!!!	RaySceneQueryResult &result = raySceneQuery(e);// Execute query
 	RaySceneQueryResult::iterator itrRSQR =  result.begin( ); //+1
-
+    
 	if( ! result.empty() )
 	{
 		Ogre::String name;
@@ -578,6 +580,25 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 		{					//add planes to detect the mouse position on there
 			MovableObject * nodeM = itrRSQR->movable ;
 			String name = nodeM->getName();
+
+            // remove all glow effect on the axes's material
+            MaterialPtr material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoX");
+            material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+            material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+            material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoY");
+            material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+            material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+            material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoZ");
+            material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+            material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+
+            // update the selected axes's material (add a glow effect)
+            material = ((Entity*)nodeM)->getSubEntity(0)->getMaterial();
+            TextureUnitState* textureUnit = material->getTechnique(0)->getPass(0)->createTextureUnitState("glow");
+            //textureUnit->setAnimatedTextureName( "glow.png", 4, 0.5 );
+            textureUnit->setTextureName( "axes_selected.png" );
+            textureUnit->setScrollAnimation( 0., -0.5 );
+            textureUnit->setColourOperationEx( LBX_ADD_SIGNED, LBS_CURRENT, LBS_TEXTURE, ColourValue::White, ColourValue::White, 1. );
 
 			switch( mMode )
 			{
@@ -601,7 +622,7 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
 						mAxeClicked = AxeClicked::Z ;
 					}
-					break;
+                    break;
 				}
 				case Transformations::Mode::ROTATE :
 				{
@@ -620,8 +641,7 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 						nodeM->getParentSceneNode()->attachObject(mPlaneX);
 						mAxeClicked = AxeClicked::X ;
 					}		
-					//nodeM->getParentSceneNode()->attachObject(mSceneMgr->getEntity("dummy_plane_y"));
-					
+					//nodeM->getParentSceneNode()->attachObject(mSceneMgr->getEntity("dummy_plane_y"));				
 					break;
 				}
 				case Transformations::Mode::SCALE :
