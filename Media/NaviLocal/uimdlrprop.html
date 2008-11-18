@@ -56,6 +56,8 @@
                 //document.images['textureName'].src='file:///D:/5.png';
                 //document.images['textureName'].src='./color/blank.jpg';
                 //document.getElementById('divTexture').innerHTML="<div style='height: 132px; overflow: auto'><img src='./color/blank.jpg' width=128 height=128/></div>";
+                
+                //document.getElementById('myTabber').tabber.tabShow(3);
 				
                 new NaviData('pageLoaded').add({naviName:'uimdlrprop'}).send();
             }
@@ -183,7 +185,7 @@
 	<body onload="pageLoaded()">
 		<div id="container">
 			<div id="containerMenu">
-				<div class="tabber">
+				<div class="tabber" id="myTabber">
 					<div class="tabbertab">
 						<!-- PROPERTIES -->
 						<h2>Properties</h2>

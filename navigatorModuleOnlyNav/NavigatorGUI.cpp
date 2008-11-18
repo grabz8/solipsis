@@ -583,11 +583,15 @@ void NavigatorGUI::modelerPropShow()
 		if (!modeler->isSelectionEmpty())
 		{
 			// hide the gizmos axes
-			modeler->lockGizmo(false);
+			modeler->lockGizmo(0);
 			modeler->getSelection()->mTransformation->showGizmosMove(false);
 			modeler->getSelection()->mTransformation->showGizmosRotate(false);
 			modeler->getSelection()->mTransformation->showGizmosScale(false);
 		}
+
+        // Goto the tab 'Model' (1 on 0..6)
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
+        navi->evaluateJS("document.getElementById('myTabber').tabber.tabShow(1)");
 	}
 }
 
@@ -3305,30 +3309,42 @@ void NavigatorGUI::modelerPropOrientationZ(const NaviData& naviData)
 void NavigatorGUI::modelerPropScaleX(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
-	std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+	//std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+    std::string valueX = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+    std::string valueY = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
+    std::string valueZ = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
-	modeler->getSelection()->scaleTo(atoi(value.c_str())/10000., 1, 1);
+    //modeler->getSelection()->scaleTo(atoi(value.c_str())/10000., 1., 1. );
+    modeler->getSelection()->scaleTo(atoi(valueX.c_str())/10000., atoi(valueY.c_str())/10000., atoi(valueZ.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleY(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
-	std::string value = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
+	//std::string value = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
+    std::string valueX = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+    std::string valueY = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
+    std::string valueZ = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
-	modeler->getSelection()->scaleTo(1, atoi(value.c_str())/10000., 1);
+	//modeler->getSelection()->scaleTo(1, atoi(value.c_str())/10000., 1);
+    modeler->getSelection()->scaleTo(atoi(valueX.c_str())/10000., atoi(valueY.c_str())/10000., atoi(valueZ.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropScaleZ(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
-	std::string value = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
+	//std::string value = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
+    std::string valueX = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+    std::string valueY = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
+    std::string valueZ = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
 
     Modeler *modeler = mNavigator->getModeler();
-	modeler->getSelection()->scaleTo(1, 1, atoi(value.c_str())/10000.);
+	//modeler->getSelection()->scaleTo(1, 1, atoi(value.c_str())/10000.);
+    modeler->getSelection()->scaleTo(atoi(valueX.c_str())/10000., atoi(valueY.c_str())/10000., atoi(valueZ.c_str())/10000.);
 }
 
 //-------------------------------------------------------------------------------------

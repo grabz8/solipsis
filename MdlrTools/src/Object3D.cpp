@@ -90,6 +90,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	resetParameters();
 
 	mModifiedMaterialManager = new ModifiedMaterialManager() ;
+    // TODO 
 	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material" + mEntityUID);
 	mEntity->getSubEntity(0)->setMaterialName( tmpMaterial->getName());
 	mModifiedMaterialManager->initialise(tmpMaterial);
@@ -531,7 +532,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t<threeD>" << endl;
 	Vector3 tmp = getPosition(false);
 	toSave << "\t\t<objposition x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
-	tmp = getOrientation();
+	tmp = getRotate(); //getOrientation();
 	toSave << "\t\t<objorientation x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
 	tmp = getScale();
 	toSave << "\t\t<objscale x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
@@ -761,7 +762,7 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 
 	case ROTATE:
 		{
-			// transfomation center / axe
+            // transfomation center / axe
 			rootTrans = Vector3::ZERO; //mNode->getPosition();
 			static Real angleX,angleY,angleZ;
 			angleX = Math::DegreesToRadians( p1 ); // p1 * 0.01745329252);		// * PI / 180
@@ -769,6 +770,9 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 			angleZ = Math::DegreesToRadians( p3 );
 			Vector3 vertex, normal;
 			unsigned int id;
+
+            Vector3 rotate = getRotate();
+            setRotate( rotate.x + p1, rotate.y + p2, rotate.z + p3 );
 
 			// transformation ...
 			for(unsigned int i=0; i<mVertexCount; i++)
@@ -801,7 +805,7 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 				}
 				//vertex += rootTrans;
 
-				mBufCurrent->vertex[id] = vertex.x;			mBufCurrent->vertex[id+3] = normal.x;
+				mBufCurrent->vertex[id]   = vertex.x;		mBufCurrent->vertex[id+3] = normal.x;
 				mBufCurrent->vertex[id+1] = vertex.y;		mBufCurrent->vertex[id+4] = normal.y;
 				mBufCurrent->vertex[id+2] = vertex.z;		mBufCurrent->vertex[id+5] = normal.z;
 			}

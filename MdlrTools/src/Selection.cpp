@@ -203,10 +203,15 @@ void Selection::scaleTo (float pValueX, float pValueY, float pValueZ)
 
 		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
 		{
-			//Vector3 vec = (*itr)->getScale();
-			//get3DObject((*itr)->getEntity())->scale(pValueX, pValueY, pValueZ);		
-			(*itr)->apply( Object3D::SCALE, pValueX, pValueY, pValueZ );
-			//(*itr)->apply( Object3D::SCALE, vec.x-pValueX, vec.y-pValueY, vec.z-pValueZ );
+            //(*itr)->apply( Object3D::SCALE, pValueX, pValueY, pValueZ );
+
+
+
+			Vector3 vec = (*itr)->getScale();
+            if( abs(vec.x - pValueX) > 0 ) vec.x = pValueX;
+            if( abs(vec.y - pValueY) > 0 ) vec.y = pValueY;
+            if( abs(vec.z - pValueZ) > 0 ) vec.z = pValueZ;
+			(*itr)->apply( Object3D::SCALE, vec.x, vec.y, vec.z );
 		}
 	}
 }
