@@ -822,3 +822,13 @@ Dxredist unzipped to get DXsetup.exe (august2008)
 RELEASE 1.0.6
 
 ---------------------------
+17/11/08
+
+CTCrashReporter class added into CommonTools
+CrashReport added into Standalone navigator application
+Hotspot tuned of new cursor bitmaps
+Automatic save of dirty unsaved owned objects when closing modeling tool
+Modeler color picker move-drag deactivated
+Last tabber updated when selecting another object then returning on properties panel
+
+---------------------------

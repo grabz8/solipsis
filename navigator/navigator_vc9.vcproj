@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib"
+				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib Navigator.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -140,9 +140,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib"
+				AdditionalDependencies="pthreadVC.lib CommonTools.lib Navigator.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -199,7 +199,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NULLCLIENTSERVER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -220,9 +220,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib Peer.lib"
+				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib Navigator.lib Peer.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\NavigatorModule\lib\Debug;..\Dependencies\PeerModule\lib\Debug"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\NavigatorModule\lib\Debug;..\Dependencies\PeerModule\lib\Debug"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -279,7 +279,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NULLCLIENTSERVER"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -298,9 +298,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Navigator.lib Peer.lib"
+				AdditionalDependencies="pthreadVC.lib CommonTools.lib Navigator.lib Peer.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\NavigatorModule\lib\Release;..\Dependencies\PeerModule\lib\Release"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\CommonTools\lib\Release;..\Dependencies\NavigatorModule\lib\Release;..\Dependencies\PeerModule\lib\Release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

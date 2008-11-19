@@ -223,7 +223,7 @@ function HSVslide(d,o,e) {
 				}
 				else if(panel == 'pSpecular') new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
 			}
-			else if(d=='drag') {
+/*			else if(d=='drag') {
 				//var ds=$S(d!='drag'?d:o);
 				//var oX=parseInt(ds.left), oY=parseInt(ds.top), eX=XY(e), eY=XY(e,1);
 					 
@@ -231,7 +231,7 @@ function HSVslide(d,o,e) {
 				//ds.top=XY(e,1)+oY-eY+'px';		
 				ds.left=XY(e)+'px'; 
 				ds.top=XY(e,1)+'px';		
-			}
+			}*/
 		}
 	}
 

@@ -111,7 +111,7 @@ bool NavigatorGUI::startup()
 {
     // Startup NaviMouse and create the cursors
     NaviMouse* mouse = new NaviMouse();
-    NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 3, 2);
+    NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 1, 0);
 	defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
 	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
 	defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");

@@ -57,6 +57,12 @@ void System::runExternalWebBrowser(const std::string& url)
 }
 
 //-------------------------------------------------------------------------------------
+void System::runExternalFileBrowser(const std::string& path)
+{
+    ShellExecute(0, "open", path.c_str(), 0, 0, SW_SHOWNORMAL);
+}
+
+//-------------------------------------------------------------------------------------
 int System::getPID()
 {
     return _getpid();

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "CTCrashReporter.h"
+#include "CTSystem.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -46,7 +47,7 @@ class CrashReporterWin : public CrashReporter
 {
 public:
     /// Initialize
-    virtual void initialize(const std::string& applicationName, const std::string& minidumpFilename);
+    virtual void initialize(const std::string& applicationName, const std::string& minidumpPathname, const std::string& minidumpFilename, const std::string& message);
 
 protected:
     /// Top level filter of unhandled exceptions
@@ -57,12 +58,14 @@ CrashReporterWin ms_CrashReporterWin;
 
 CrashReporter* CrashReporter::ms_Singleton = &ms_CrashReporterWin;
 std::string CrashReporter::ms_ApplicationName;
+std::string CrashReporter::ms_MinidumpPathname;
 std::string CrashReporter::ms_MinidumpFilename;
+std::string CrashReporter::ms_Message;
 
 //-------------------------------------------------------------------------------------
-void CrashReporterWin::initialize(const std::string& applicationName, const std::string& minidumpFilename)
+void CrashReporterWin::initialize(const std::string& applicationName, const std::string& minidumpPathname, const std::string& minidumpFilename, const std::string& message)
 {
-    CrashReporter::initialize(applicationName, minidumpFilename);
+    CrashReporter::initialize(applicationName, minidumpPathname, minidumpFilename, message);
     ::SetUnhandledExceptionFilter(TopLevelFilter);
 }
 
@@ -72,15 +75,22 @@ LONG CrashReporterWin::TopLevelFilter(struct _EXCEPTION_POINTERS *pExceptionInfo
     LONG retval = EXCEPTION_CONTINUE_SEARCH;
     HWND hParent = NULL;						// find a better value for your app
 
+    // be sure the mouse is visible
+    System::setMouseCursorVisibility(true);
+
     // firstly see if dbghelp.dll is around and has the function we need
     // look next to the EXE first, as the one in System32 might be old 
     // (e.g. Windows 2000)
     HMODULE hDll = NULL;
+    char szCWDPath[_MAX_PATH];
     char szDbgHelpPath[_MAX_PATH];
+    szCWDPath[0] = '\0';
+    szDbgHelpPath[0] = '\0';
 
     // try to load dbghelp.dll from current path
-    if (GetModuleFileName(NULL, szDbgHelpPath, _MAX_PATH))
+    if (GetModuleFileName(NULL, szCWDPath, _MAX_PATH))
     {
+        _tcscpy(szDbgHelpPath, szCWDPath);
         char *pSlash = _tcsrchr(szDbgHelpPath, '\\');
         if (pSlash)
         {
@@ -93,6 +103,19 @@ LONG CrashReporterWin::TopLevelFilter(struct _EXCEPTION_POINTERS *pExceptionInfo
     if (hDll == NULL)
         hDll = ::LoadLibrary("DBGHELP.DLL");
 
+    // work out a good place for the dump file
+    char szCrashReportPath[_MAX_PATH];
+    szCrashReportPath[0] = '\0';
+    if (!ms_MinidumpPathname.empty())
+        _tcscpy(szCrashReportPath, ms_MinidumpPathname.c_str());
+    else
+    {
+        if (!GetTempPath(_MAX_PATH, szCrashReportPath))
+            _tcscpy(szCrashReportPath, szCWDPath);
+    }
+    if (szCrashReportPath[_tcslen(szCrashReportPath) - 1] != '\\')
+        _tcscat(szCrashReportPath, "\\");
+    BOOL displayFileBrowser = FALSE;
     LPCTSTR szResult = NULL;
     if (hDll)
     {
@@ -100,18 +123,18 @@ LONG CrashReporterWin::TopLevelFilter(struct _EXCEPTION_POINTERS *pExceptionInfo
         if (pDump)
         {
             char szDumpPath[_MAX_PATH];
-            char szScratch [_MAX_PATH];
+            char szScratch[_MAX_PATH];
+            szDumpPath[0] = '\0';
+            szScratch[0] = '\0';
 
-            // work out a good place for the dump file
-            if (!GetTempPath(_MAX_PATH, szDumpPath))
-                _tcscpy(szDumpPath, "c:\\");
-            _tcscat(szDumpPath, ms_MinidumpFilename.c_str());
-            _tcscat(szDumpPath, ".dmp");
+            _tcscpy(szDumpPath, szCrashReportPath);
 
             // ask the user if they want to save a dump file
-            if (::MessageBox(NULL, "Something bad happened in your program, would you like to save a diagnostic file?", ms_ApplicationName.c_str(), MB_YESNO) == IDYES)
+            if (::MessageBox(NULL, "Sorry, a crash was detected,\nwould you like to help us by sending report files ?", ms_ApplicationName.c_str(), MB_ICONEXCLAMATION | MB_YESNO) == IDYES)
             {
-                // create the file
+                // create the minidump file
+                _tcscat(szDumpPath, ms_MinidumpFilename.c_str());
+                _tcscat(szDumpPath, ".dmp");
                 HANDLE hFile = ::CreateFile(szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
                 if (hFile != INVALID_HANDLE_VALUE)
                 {
@@ -124,32 +147,44 @@ LONG CrashReporterWin::TopLevelFilter(struct _EXCEPTION_POINTERS *pExceptionInfo
                     BOOL bOK = pDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
                     if (bOK)
                     {
-                        sprintf(szScratch, "Saved dump file to '%s'", szDumpPath);
+                        sprintf(szScratch, "Dump file saved:\n%s", szDumpPath);
+                        if (!ms_Message.empty())
+                        {
+                            _tcscat(szScratch, "\n");
+                            _tcscat(szScratch, ms_Message.c_str());
+                        }
                         szResult = szScratch;
+                        displayFileBrowser = TRUE;
                         retval = EXCEPTION_EXECUTE_HANDLER;
                     }
                     else
                     {
-                        sprintf(szScratch, "Failed to save dump file to '%s' (error %d)", szDumpPath, GetLastError());
+                        sprintf(szScratch, "Failed to save dump file:\n%s\n(error %d)", szDumpPath, GetLastError());
                         szResult = szScratch;
                     }
                     ::CloseHandle(hFile);
                 }
                 else
                 {
-                    sprintf(szScratch, "Failed to create dump file '%s' (error %d)", szDumpPath, GetLastError());
+                    sprintf(szScratch, "Failed to create dump file:\n%s\n(error %d)", szDumpPath, GetLastError());
                     szResult = szScratch;
                 }
             }
+            else
+                retval = EXCEPTION_EXECUTE_HANDLER;
         }
         else
-            szResult = "DBGHELP.DLL too old";
+            szResult = "DBGHELP.DLL too old !";
     }
     else
-        szResult = "DBGHELP.DLL not found";
+        szResult = "DBGHELP.DLL not found !";
 
     if (szResult)
-        ::MessageBox(NULL, szResult, ms_ApplicationName.c_str(), MB_OK);
+    {
+        ::MessageBox(NULL, szResult, ms_ApplicationName.c_str(), MB_ICONINFORMATION | MB_OK);
+        if (displayFileBrowser)
+            System::runExternalFileBrowser(std::string(szCrashReportPath));
+    }
 
     return retval;
 }

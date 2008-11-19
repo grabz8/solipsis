@@ -845,6 +845,17 @@ bool Modeler::XMLSave(bool all)
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
 
+    if (all)
+    {
+        mSelection->deselect_all();
+        mSelection->set_lock(true);
+        const Object3DPtrList& objects = mSelection->getSelectedObjectListSinceLastSave();
+        for (Object3DPtrList::const_iterator it = objects.begin(); it != objects.end(); it++)
+            if (mModelerCallbacks->isObject3DOwned(*it))
+                mSelection->selectObject3D(*it);
+        mSelection->set_lock(false);
+    }
+
 	// Save all objects in this scene
 	if (!mSelection->isEmpty())
 	{
@@ -918,6 +929,7 @@ bool Modeler::XMLSave(bool all)
 
             delete zz;
 
+            mSelection->remove3DObjectFromListSinceLastSave(obj);
             obj = mSelection->getNextSelectedObject();
         }
     }

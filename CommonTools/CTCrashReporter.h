@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace CommonTools {
 
 /** This class implements the crash reporter.
+    Inspired from http://www.codeproject.com/KB/debug/postmortemdebug_standalone1.aspx
  */
 class CrashReporter
 {
@@ -37,8 +38,12 @@ protected:
     static CrashReporter* ms_Singleton;
     /// Application name
     static std::string ms_ApplicationName;
+    /// Minidump pathname
+    static std::string ms_MinidumpPathname;
     /// Minidump filename
     static std::string ms_MinidumpFilename;
+    /// Message to inform user what to do with dump/log files
+    static std::string ms_Message;
 
 protected:
     /// Constructor
@@ -50,10 +55,12 @@ public:
     /// Get singleton
     static CrashReporter* getSingletonPtr() { return ms_Singleton; }
     /// Initialize
-    virtual void initialize(const std::string& applicationName, const std::string& minidumpFilename)
+    virtual void initialize(const std::string& applicationName, const std::string& minidumpPathname, const std::string& minidumpFilename, const std::string& message)
     {
         ms_ApplicationName = applicationName;
+        ms_MinidumpPathname = minidumpPathname;
         ms_MinidumpFilename = minidumpFilename;
+        ms_Message = message;
     }
 };
 

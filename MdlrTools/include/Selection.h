@@ -88,6 +88,16 @@ public:
 /*
  *
  *	\brief 
+ *		Select or deselect (if it is already selected) an object3D. This function show or hide the bounding box.
+ *
+ *	\param pObj = Object3D to select/deselect
+ *	\return Always return TRUE
+*/
+    bool selectObject3D(Object3D* pObj);
+
+/*
+ *
+ *	\brief 
  *		Select or deselect (if it is already selected) an object. This function show or hide the bounding box.
  *		Call this function when user has clicked on an entity.
  *
@@ -205,6 +215,14 @@ public:
 /*
  *
  *	\brief 
+ *		clear the selection list of saved Objects 3D
+ *
+*/
+    void clearSavedObjects();
+
+/*
+ *
+ *	\brief 
  *		Add an object to the scene
  *
  *	\param pEnt = A pointer to the object to add
@@ -221,6 +239,16 @@ public:
  *
 */
 	void remove3DObject(Object3D *pObj);
+
+/*
+ *
+ *	\brief 
+ *		Remove an object from the selected objects list since last save
+ *
+ *	\param pEnt = A pointer to object to remove
+ *
+*/
+	void remove3DObjectFromListSinceLastSave(Object3D *pObj);
 
 /*
  *
@@ -268,6 +296,16 @@ public:
 /*
  *
  *	\brief 
+ *		Get the last inserted object in the list
+ *
+ *	\return a pointer of Objetc3D corresponding with the last inserted object in the list
+ *
+*/
+	Object3D* geLastAddedObject();
+
+/*
+ *
+ *	\brief 
  *		Get the number of selected objects
  *
  *	\return the number of selected objects
@@ -282,17 +320,16 @@ public:
  *
  *	\return the list of Object selected.
 */
-    const Object3DPtrList& Selection::getSelectedObjectList();
+    const Object3DPtrList& getSelectedObjectList();
 
 /*
  *
  *	\brief 
- *		Get the last inserted object in the list
+ *		Get the list of object selected since last save.
  *
- *	\return a pointer of Objetc3D corresponding with the last inserted object in the list
- *
+ *	\return the list of Object selected since last save.
 */
-	Object3D* geLastAddedObject();
+	const Object3DPtrList& getSelectedObjectListSinceLastSave();
 
 /*
  *
@@ -322,6 +359,7 @@ private:
 
 	
 	Object3DPtrList		mListNode;			/// brief The current selection list
+	Object3DPtrList		mListNodeSinceLastSave;		///	brief List of all selected objects since the last save
 	Object3DPtrList		mObjectList;		///	brief List of all selectionnable objects
 	
 	Object3DPtrListIterator	mCurrentObject;	///	biref The current selected node in the list 

@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include <sstream>
+#include <CTCrashReporter.h>
+#include <CTIO.h>
 #include <NavigatorModule.h>
 #include <IApplication.h>
 #include <IInstance.h>
@@ -70,6 +72,8 @@ int main(int argc, char *argv[])
 #endif
 {
     setlocale(LC_NUMERIC, "English");
+    std::string title = "Solipsis - StandAlone Navigator";
+    CommonTools::CrashReporter::getSingletonPtr()->initialize(title, CommonTools::IO::getCWD(), "SolipsisNavigator_minidump", "Latest log file saved:\n" + CommonTools::IO::getCWD() + "\\Ogre_XXXX_YYMMDDhhmm.log\n\nPlease send us files to solipsis.bugs@gmail.com");
     try
     {
 #ifdef NULLCLIENTSERVER
@@ -82,20 +86,20 @@ int main(int argc, char *argv[])
         IPeer* peer = IPeer::createPeer("", argc, argv);
 #endif 
         if (peer == 0)
-            throw std::string("Unable to create the peer !");
+            throw std::exception("Unable to create the peer !");
 #endif
 
         // Create application
-        IApplication* application = IApplication::createApplication("", true, "Solipsis - StandAlone Navigator");
+        IApplication* application = IApplication::createApplication("", true, title.c_str());
         if (application == 0)
-            throw std::string("Unable to create the navigator application !");
+            throw std::exception("Unable to create the navigator application !");
 
 #ifdef NULLCLIENTSERVER
         // Initialize the Peer application
         PeerOgreRenderSystemLock peerOgreRenderSystemLock(application);
         bool initialized = peer->initialize(&peerOgreRenderSystemLock);
         if (!initialized)
-            throw std::string("Unable to initialize the peer !");
+            throw std::exception("Unable to initialize the peer !");
 #endif
 
         std::string envVar;
@@ -125,21 +129,13 @@ int main(int argc, char *argv[])
         // Destroy application
         application->destroy();
     }
-    catch (std::string exceptionStr)
+    catch (std::exception& e)
     {
-        std::string msg = "Unable to run the Navigator ...\n" + exceptionStr;
+        std::string msg = "Unable to run the Navigator ...\n" + std::string(e.what());
 #ifdef WIN32
-        MessageBox(0, msg.c_str(), "An exception has occured !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+        MessageBox(0, msg.c_str(), "An exception has occurred !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 #else
-        std::cerr << "An exception has occured !\n" << msg.c_str() << std::endl;
-#endif
-    }
-    catch (...)
-    {
-#ifdef WIN32
-        MessageBox(0, "Unable to run the Navigator ...", "An exception has occured !", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-#else
-        std::cerr << "Unable to run the Navigator ... An exception has occured !" << std::endl;
+        std::cerr << "An exception has occurred !\n" << msg.c_str() << std::endl;
 #endif
     }
 

@@ -35,6 +35,7 @@ Selection::Selection(SceneNode * pCentreRotation, SceneNode * pCentreObject)
 	:mLock(false), mCentreRotation(pCentreRotation) , mCentreObject(pCentreObject) 
 {
 	mListNode.clear();
+    mListNodeSinceLastSave.clear();
 	mObjectList.clear();
 
 	mTransformation = new Transformations () ;
@@ -44,63 +45,63 @@ Selection::Selection(SceneNode * pCentreRotation, SceneNode * pCentreObject)
 Selection::~Selection()
 {
 	mListNode.clear();
+    mListNodeSinceLastSave.clear();
     clearObjects();
 	delete mTransformation;
 }
 
 //-------------------------------------------------------------------------------------
-bool Selection::clickNode(Entity* pEnt)
+bool Selection::selectObject3D(Object3D* pObj)
 {
 	Object3DPtrListIterator itr;
-	Object3D* obj = get3DObject(pEnt) ;
-	if (!obj)
+
+    if (!pObj)
 		return true;
-		
-	//test if obj is a child :
-	while(obj->getParent() != NULL )
+
+	//test if pObj is a child :
+	while(pObj->getParent() != NULL )
 	{
-		obj = obj->getParent() ;
+		pObj = pObj->getParent() ;
 	}
-	//... Obj is the parent !
+	//... pObj is the parent !
 
 	if( !mLock )
 		deselect_all();
 
-	// Show the bounding box to highlight the selected object
-	if ( !mListNode.empty() )		// some objects have already been selected
-	{
-		bool found = false;
-		// test if this object has already benn added to the list
-		for( itr = mListNode.begin(); itr != mListNode.end(); itr++ )
-		{
-			if((*itr) == obj)
-			{ 
-				found = true; 
-				break; 
-			}
-		}
-		
-		if( found )		
-		{
-			// remove this object from the list
-			obj->showBoundingBox(false) ;
-			itr = mListNode.erase(itr);
-		} 
-		else
-		{
-			// add the selected object to the selection
-			obj->showBoundingBox(true) ;
-			mListNode.push_back(obj);
-		}
-	}
-	else	// no objects have already been selected
-	{
-		// add the selected object to the selection
-		obj->showBoundingBox(true);
-		mListNode.push_back(obj);
-	}
+    // Add this object into the selected objects list
+    // Show the bounding box to highlight the selected object
+    for( itr = mListNode.begin(); itr != mListNode.end(); ++itr)
+        if ((*itr) == pObj)
+            break; 
+    if (itr == mListNode.end())
+    {
+        // add the selected object to the selection
+        pObj->showBoundingBox(true) ;
+        mListNode.push_back(pObj);
+    }
+    else
+    {
+        // remove this object from the list
+        pObj->showBoundingBox(false) ;
+        mListNode.erase(itr);
+    }
+
+    // Add this object into the selected objects list since last save
+    for( itr = mListNodeSinceLastSave.begin(); itr != mListNodeSinceLastSave.end(); ++itr)
+        if ((*itr) == pObj)
+            break; 
+    if (itr == mListNodeSinceLastSave.end())
+        mListNodeSinceLastSave.push_back(pObj);
 
 	return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Selection::clickNode(Entity* pEnt)
+{
+	Object3D* obj = get3DObject(pEnt) ;
+
+	return selectObject3D(obj);
 }
 
 //-------------------------------------------------------------------------------------
@@ -278,6 +279,21 @@ void Selection::remove3DObject(Object3D *pObj)
 			mCurrentObject = mListNode.begin();
 			break;
 		}
+
+	// Third => Remove it from selected list since last save
+    remove3DObjectFromListSinceLastSave(pObj);
+}
+
+//-------------------------------------------------------------------------------------
+void Selection::remove3DObjectFromListSinceLastSave(Object3D *pObj)
+{
+    for (Object3DPtrList::iterator itObj = mListNodeSinceLastSave.begin(); itObj != mListNodeSinceLastSave.end(); ++itObj)
+		if ((*itObj) == pObj)
+		{
+			// Found it we can erase the element and go out
+			mListNodeSinceLastSave.erase(itObj);
+			break;
+		}
 }
 
 //-------------------------------------------------------------------------------------
@@ -309,6 +325,13 @@ void Selection::clearObjects()
 		mObjectList.erase(itObj);
     }
 }
+
+//-------------------------------------------------------------------------------------
+void Selection::clearSavedObjects()
+{
+    mListNodeSinceLastSave.clear();
+}
+
 //-------------------------------------------------------------------------------------
 Object3D* Selection::getFirstSelectedObject()
 {
@@ -328,16 +351,7 @@ Object3D* Selection::getNextSelectedObject()
 		return NULL;
 	return (*mCurrentObject);
 }
-//-------------------------------------------------------------------------------------
-size_t Selection::getNumSelectedObjects()
-{
-	return mListNode.size();
-}
-//-------------------------------------------------------------------------------------
-const Object3DPtrList& Selection::getSelectedObjectList()
-{
-	return mListNode;
-}
+
 //-------------------------------------------------------------------------------------
 void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pValueY, float pValueZ, Vector3 pCentreSelection)
 {
@@ -371,6 +385,25 @@ void Selection::updateBackup()
 		}
 	}
 }
+
+//-------------------------------------------------------------------------------------
+size_t Selection::getNumSelectedObjects()
+{
+	return mListNode.size();
+}
+
+//-------------------------------------------------------------------------------------
+const Object3DPtrList& Selection::getSelectedObjectList()
+{
+	return mListNode;
+}
+
+//-------------------------------------------------------------------------------------
+const Object3DPtrList& Selection::getSelectedObjectListSinceLastSave()
+{
+	return mListNodeSinceLastSave ;
+}
+
 //-------------------------------------------------------------------------------------
 const Object3DPtrList& Selection::getObjectList()
 {

@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "DebugHelpers.h"
 #include <CTSystem.h>
 #include <CTStringHelpers.h>
+#include <CTLog.h>
 #include <CTIO.h>
 #include "Navi.h"
 #include "NaviLua.h"
@@ -82,6 +83,8 @@ Navigator::Navigator(const String name, IApplication* application) :
 
     LogHandler::setLogHandler(&mOgreLogger);
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
+    String logFilename = IO::getCWD() + "\\" + LogManager::getSingletonPtr()->getDefaultLog()->getName();
+    LogHandler::getLogHandler()->setLogFilename(logFilename);
 
     // Lua initialization
     mLuaState = lua_open();
@@ -1577,6 +1580,9 @@ bool Navigator::endModeling()
 	// Go back in world
 	mState = SInWorld;
 
+    // Save all owned objects
+	mdlrXMLSave(true);
+
 	if (mModeler)
 		mModeler->deselectNode();
 
@@ -1896,6 +1902,9 @@ bool Navigator::endAvatarEdit()
 {	
 	// Go back in world
 	mState = SInWorld;
+
+    // Save avatar
+	avatarXMLSave();
 
     return true;
 }

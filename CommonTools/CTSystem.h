@@ -45,6 +45,9 @@ public:
     /// Run the external Web browser on the system displaying the specified url
     static void runExternalWebBrowser(const std::string& url);
 
+    /// Run the external File browser on the system displaying the specified path
+    static void runExternalFileBrowser(const std::string& path);
+
     /// Returns the current process identifier
     static int getPID();
 
