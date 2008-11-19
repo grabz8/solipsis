@@ -293,6 +293,9 @@ public:
 	ColourValue getSpecular();
 	float getShininess ();
 
+    void setCullingMode( const CullingMode pMode);
+	CullingMode getCullingMode();
+
 	///brief Sets the translation offset of the texture (ie scrolls the texture) and apply on all children
 	///param pU  The amount the texture should be moved horizontally (u direction). 
 	///param pV  The amount the texture should be moved vertically (v direction). 

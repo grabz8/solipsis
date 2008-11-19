@@ -223,6 +223,16 @@ void ModifiedMaterial::setShininess(const float colour)
 	mPass->setShininess(colour) ;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+const CullingMode& ModifiedMaterial::getCullingMode()
+{
+    return mPass->getCullingMode();
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterial::setCullingMode(const CullingMode& mode)
+{
+    mPass->setCullingMode( mode );
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterial::useAddedColour(bool b)
 {
 	if (!mUseAddedColour && b) //We must create a texture unit state since before this time no added colour were used

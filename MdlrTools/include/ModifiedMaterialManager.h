@@ -113,6 +113,14 @@ public:
 	///brief Method which reset the colour of the object, i. e. the colour is set to RGBA = 0.5 0.5 0.5 1
 	void resetColour();
 
+    ///brief Method which return the culling mode of the object.
+	///return Culling mode of the object.
+	const CullingMode& getCullingMode();
+
+	///brief Method which set the culling mode of the object.
+	///param mode Culling mode to apply to the object.
+	void setCullingMode(const CullingMode& mode);
+
 
 
 	///brief Method which return whether or not the texture of the BodyPartModel is modifiable.

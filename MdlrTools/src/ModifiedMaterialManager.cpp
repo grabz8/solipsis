@@ -119,6 +119,18 @@ void ModifiedMaterialManager::resetColour()
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+const CullingMode& ModifiedMaterialManager::getCullingMode()
+{
+    return mModifiedMaterial->getCullingMode();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiedMaterialManager::setCullingMode(const CullingMode& mode)
+{
+    mModifiedMaterial->setCullingMode( mode );
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 bool ModifiedMaterialManager::isTextureModifiable()
 {
 	return (mTextures.size() > 1);

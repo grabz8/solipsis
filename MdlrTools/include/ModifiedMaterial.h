@@ -154,6 +154,14 @@ public:
 	///param blue Blue composant of the (signed) added colour of the material (between 0 and 1)
 	void setBlueAddedColour(float blue);
 
+    ///brief Method which return the culling mode of the object.
+	///return Culling mode of the object.
+	const CullingMode& getCullingMode();
+
+	///brief Method which set the culling mode of the object.
+	///param mode Culling mode to apply to the object.
+	void setCullingMode(const CullingMode& mode);
+
 
 
 	///brief Method which tells wether or not the material has a texture.

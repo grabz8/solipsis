@@ -294,6 +294,14 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	setAlpha(value);
     if (value < 1.0)
         setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+    int cullingMode;
+    TiXmlElement* element = e->FirstChildElement("matdblside");
+    if( element )
+    {
+        from_string(element->Attribute("value"),cullingMode);
+        setCullingMode( (CullingMode)cullingMode);
+    }
+
 	//texture scroll, scale and rotate :
 	Ogre::Vector2 tmpVec;
 	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
@@ -479,6 +487,8 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t\t<matshin value=\"" << value << "\" />" << endl;
 	value = mModifiedMaterialManager->getAlpha();
 	toSave << "\t\t<matopac value=\"" << value << "\" />" << endl;
+    int cullingMode = getCullingMode();
+	toSave << "\t\t<matdblside value=\"" << cullingMode << "\" />" << endl;
 	//texture scroll, scale and rotate :
 	Ogre::Vector2 tmpVec  = mModifiedMaterialManager->getTextureScroll();
 	toSave << "\t\t<texturescroll u=\"" << tmpVec.x << "\" v=\"" << tmpVec.y << "\" />" << endl;
@@ -1724,6 +1734,18 @@ ColourValue Object3D::getSpecular()
 float Object3D::getShininess()
 {
 	return mModifiedMaterialManager->getModifiedMaterial()->getShininess() ;
+}
+
+//-------------------------------------------------------------------------------------
+void Object3D::setCullingMode( const CullingMode pMode)
+{
+    mModifiedMaterialManager->getModifiedMaterial()->setCullingMode( pMode );
+}
+
+//-------------------------------------------------------------------------------------
+CullingMode Object3D::getCullingMode()
+{
+    return mModifiedMaterialManager->getModifiedMaterial()->getCullingMode();
 }
 
 //-------------------------------------------------------------------------------------
