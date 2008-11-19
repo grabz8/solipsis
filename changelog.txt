@@ -832,6 +832,12 @@ Modeler color picker move-drag deactivated
 Last tabber updated when selecting another object then returning on properties panel
 
 ---------------------------
+19/11/08
+
+axes colors updated
+alpha on chat label improved
+
+---------------------------
 RELEASE 1.0.7
 
 ---------------------------
