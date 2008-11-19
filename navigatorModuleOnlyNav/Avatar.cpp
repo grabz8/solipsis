@@ -399,11 +399,14 @@ void Avatar::update(Real timeSinceLastFrame)
             smoothAngle = (1.0f - mChatLabelAlphaTimer)*Math::HALF_PI;
         else if (mChatLabelAlphaTimer >= 9.0f)
             smoothAngle = (mChatLabelAlphaTimer - 9.0f)*Math::HALF_PI;
-        if (smoothAngle > 0.0f)
-            mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
         mChatLabelAlphaTimer -= timeSinceLastFrame;
         if (mChatLabelAlphaTimer < 0.0f)
+        {
             mChatLabelAlphaTimer = 0.0f;
+            smoothAngle = Math::HALF_PI;
+        }
+        if (smoothAngle >= 0.0f)
+            mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
     }
 }
 
