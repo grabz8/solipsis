@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.6"
+!define PRODUCT_VERSION "1.0.7"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
