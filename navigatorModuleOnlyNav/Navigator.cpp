@@ -1947,10 +1947,11 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 		break;
 	case Transformations::ROTATE:
 		mModeler->updateCommand( Object3D::ROTATE, mModeler->getSelected() );
-		dep *= 10.;
-		vec = mModeler->getSelected()->getRotate();
-		vec += dep;
-		mModeler->getSelection()->rotate(vec.x, vec.y, vec.z);
+		dep *= 5.;
+		//vec = mModeler->getSelected()->getRotate();
+		//vec += dep;
+		//mModeler->getSelection()->rotate(vec.x, vec.y, vec.z);
+        mModeler->getSelection()->rotate(dep.x, dep.y, dep.z);
 		break;
 	case Transformations::SCALE:
 		mModeler->updateCommand( Object3D::SCALE, mModeler->getSelected() );

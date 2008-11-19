@@ -149,7 +149,7 @@ public:
 	bool XMLSave(bool all = false);
 
 	/// Update the command list of the stored deformations
-	bool updateCommand(Object3D::Command pCommand, Object3D* pObject);
+	bool updateCommand(Object3D::Command pCommand, Object3D* pObject, bool pForSave = false);
 
 
 

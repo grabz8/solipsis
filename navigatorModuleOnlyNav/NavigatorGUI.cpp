@@ -1350,9 +1350,9 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("document.getElementById('positionX').value = " + StringConverter::toString(obj->getPosition().x));
 			navi->evaluateJS("document.getElementById('positionY').value = " + StringConverter::toString(obj->getPosition().y));
 			navi->evaluateJS("document.getElementById('positionZ').value = " + StringConverter::toString(obj->getPosition().z));
-			navi->evaluateJS("document.getElementById('orientationX').value = " + StringConverter::toString(obj->getOrientation().x));
-			navi->evaluateJS("document.getElementById('orientationY').value = " + StringConverter::toString(obj->getOrientation().y));
-			navi->evaluateJS("document.getElementById('orientationZ').value = " + StringConverter::toString(obj->getOrientation().z));
+			navi->evaluateJS("document.getElementById('orientationX').value = " + StringConverter::toString(obj->getRotate().x));
+			navi->evaluateJS("document.getElementById('orientationY').value = " + StringConverter::toString(obj->getRotate().y));
+			navi->evaluateJS("document.getElementById('orientationZ').value = " + StringConverter::toString(obj->getRotate().z));
 			navi->evaluateJS("document.getElementById('scaleX').value = " + StringConverter::toString(obj->getScale().x));
 			navi->evaluateJS("document.getElementById('scaleY').value = " + StringConverter::toString(obj->getScale().y));
 			navi->evaluateJS("document.getElementById('scaleZ').value = " + StringConverter::toString(obj->getScale().z));

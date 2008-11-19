@@ -195,9 +195,9 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 		from_string( trans->Attribute("valueX"),valueTransfo );
 		toAdd.second.x = atoi(valueTransfo.c_str() ) / 1000.;
 		from_string( trans->Attribute("valueY"),valueTransfo );
-		toAdd.second.y = atoi(valueTransfo.c_str() )  / 1000.;
+		toAdd.second.y = atoi(valueTransfo.c_str() ) / 1000.;
 		from_string( trans->Attribute("valueZ"),valueTransfo );
-		toAdd.second.z = atoi(valueTransfo.c_str() )  / 1000.;
+		toAdd.second.z = atoi(valueTransfo.c_str() ) / 1000.;
 
 		Vector3 v = toAdd.second;
 		switch( toAdd.first )
@@ -206,12 +206,16 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 			if( v.x || v.y || v.z ) apply( TRANSLATE, v.x, v.y, v.z );
 			break;
 		case ROTATE : 
-			if( v.x || v.y || v.z ) apply( ROTATE, v.x, v.y, v.z );
+			if( v.x || v.y || v.z ) 
+            {
+                //setRotate( v.x, v.y, v.z );
+                apply( ROTATE, v.x, v.y, v.z );
+            }
 			break;
 		case SCALE : 
 			if( v.x != 1 || v.y != 1 || v.z != 1 ) 
 			{
-				setScale( v.x, v.y, v.z );
+				//setScale( v.x, v.y, v.z );
 				apply( SCALE, v.x, v.y, v.z );
 			}
 			break;
@@ -366,13 +370,13 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	mNode->setPosition(tmp);
 	mCentreSelection = tmp;
 
-	from_string(e->FirstChildElement("objorientation")->Attribute("x"),tmp.x);
-	from_string(e->FirstChildElement("objorientation")->Attribute("y"),tmp.y);
-	from_string(e->FirstChildElement("objorientation")->Attribute("z"),tmp.z);
+	//from_string(e->FirstChildElement("objorientation")->Attribute("x"),tmp.x);
+	//from_string(e->FirstChildElement("objorientation")->Attribute("y"),tmp.y);
+	//from_string(e->FirstChildElement("objorientation")->Attribute("z"),tmp.z);
 	// TODO : Restore Orientation
-	from_string(e->FirstChildElement("objscale")->Attribute("x"),tmp.x);
-	from_string(e->FirstChildElement("objscale")->Attribute("y"),tmp.y);
-	from_string(e->FirstChildElement("objscale")->Attribute("z"),tmp.z);
+	//from_string(e->FirstChildElement("objscale")->Attribute("x"),tmp.x);
+	//from_string(e->FirstChildElement("objscale")->Attribute("y"),tmp.y);
+	//from_string(e->FirstChildElement("objscale")->Attribute("z"),tmp.z);
 	// TODO : Restore Scale
 	from_string(e->FirstChildElement("physics")->Attribute("col"),mEnableCollision);
 	from_string(e->FirstChildElement("physics")->Attribute("grav"),mEnableGravity);
@@ -595,12 +599,25 @@ void Object3D::setRotate(Real pX, Real pY, Real pZ )
 }
 
 //-------------------------------------------------------------------------------------
+Vector3 Object3D::getRotate() 
+{
+    return Vector3 (mRotateX, mRotateY, mRotateZ) ;
+};
+
+//-------------------------------------------------------------------------------------
 void Object3D::setScale(Real pX, Real pY, Real pZ )
 {
 	mScaleX = pX;
 	mScaleY = pY;
 	mScaleZ = pZ;
 }
+
+//-------------------------------------------------------------------------------------
+Vector3 Object3D::getScale() 
+{
+    return Vector3 (mScaleX, mScaleY, mScaleZ) ;
+};
+
 //-------------------------------------------------------------------------------------
 void Object3D::setPathCutBegin(Real value)
 {
@@ -701,8 +718,8 @@ void Object3D::setRadiusDelta(Real value)
 void Object3D::resetParameters()
 {
 	mTranslateX = mTranslateY = mTranslateZ = 0;
-	mRotateX = mRotateY = mRotateZ = 0;
-	mScaleX = mScaleY = mScaleZ = 1;
+mRotateX = mRotateY = mRotateZ = 0;
+mScaleX = mScaleY = mScaleZ = 1;
 
 	mTaperX = mTaperY = 0;
 	mTopShearX = mTopShearY = 0;
@@ -1809,7 +1826,7 @@ SceneBlendType Object3D::getSceneBlendType()
 	return mModifiedMaterialManager->getSceneBlendType() ;
 }
 //-------------------------------------------------------------------------------------
-bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld ) 
+bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld, bool pForSave ) 
 {
 	bool updateVertex = false;
 	bool updateVertexIndex = false;
@@ -1912,7 +1929,7 @@ bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld )
 
 	// the last command has been updated
 	// then update th evertex & index buffers of the object 3D
-	if( updateVertex || updateVertexIndex )
+	if( !pForSave && (updateVertex || updateVertexIndex) )
 	{
 		restoreBufferVertex( mBufCurrent, mBufBackup );
 		if( updateVertexIndex ) 

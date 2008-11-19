@@ -873,9 +873,9 @@ bool Modeler::XMLSave(bool all)
 				    zz->removeFile(zz->getName(f));
 
 		    // Update command list with the last called 
-		    updateCommand(Object3D::NONE, obj);
+		    updateCommand(Object3D::NONE, obj, true);
 
-		    // Save object in XML
+            // Save object in XML
             Ogre::String fileToSave = mPath + Ogre::String("\\") + obj->getEntityUID() + Ogre::String(".xml");
 		    obj->saveToFile(fileToSave.c_str());
 		    zz->writeFile(fileToSave);
@@ -1265,14 +1265,14 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
 }
 
 /// Update the command list
-bool Modeler::updateCommand(Object3D::Command pCommand, Object3D* pObject)
+bool Modeler::updateCommand(Object3D::Command pCommand, Object3D* pObject, bool pForSave)
 {
 	Object3D::TCommand cmdNew;
 	cmdNew.first = pCommand;
 	cmdNew.second = Vector3(-1,-1,-1);
 
 	Object3D::Command cmdOld;
-	return pObject->addCommand( cmdNew, cmdOld );
+	return pObject->addCommand( cmdNew, cmdOld, pForSave );
 }
 
 } // namespace Solipsis

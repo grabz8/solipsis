@@ -244,6 +244,17 @@ void Transformations::eventSelection()
 //-------------------------------------------------------------------------------------
 void Transformations::eventMove()
 {
+    // remove all glow effect on the axes's material
+    MaterialPtr material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoX");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoY");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoZ");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+
 	mNode_X->detachAllObjects();
 	mNode_Y->detachAllObjects();
 	mNode_Z->detachAllObjects();
@@ -260,6 +271,17 @@ void Transformations::eventMove()
 //-------------------------------------------------------------------------------------
 void Transformations::eventRotation()
 {
+    // remove all glow effect on the axes's material
+    MaterialPtr material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoX");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoY");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoZ");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+
 	mNode_X->detachAllObjects();
 	mNode_Y->detachAllObjects();
 	mNode_Z->detachAllObjects();
@@ -276,6 +298,17 @@ void Transformations::eventRotation()
 //-------------------------------------------------------------------------------------
 void Transformations::eventScale()
 {
+    // remove all glow effect on the axes's material
+    MaterialPtr material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoX");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoY");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+    material = MaterialManager::getSingletonPtr()->getByName("MaterialGizmoZ");
+    material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+    material->getTechnique(0)->getPass(0)->createTextureUnitState()->setTextureName("axes.png");
+
 	mNode_X->detachAllObjects();
 	mNode_Y->detachAllObjects();
 	mNode_Z->detachAllObjects();
@@ -628,16 +661,19 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 				{
 					if (name == pNameAxeX)
 					{
+                        nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						mAxeClicked = AxeClicked::Y ;
 					}
 					else if (name == pNameAxeY)
 					{
+                        nodeM->getParentSceneNode()->detachObject(mPlaneZ);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
 						mAxeClicked = AxeClicked::Z ;
 					}
 					else if( name == pNameAxeZ)
 					{
+                        nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneX);
 						mAxeClicked = AxeClicked::X ;
 					}		

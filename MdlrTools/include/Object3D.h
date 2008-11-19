@@ -134,10 +134,10 @@ public:
 	Vector3 getTranslate() {return Vector3 (mTranslateX, mTranslateY, mTranslateZ) ;};
 	/// brief set/get the rotation parameter values
 	void setRotate(Real pX, Real pY, Real pZ );
-	Vector3 getRotate() {return Vector3 (mRotateX, mRotateY, mRotateZ) ;};
+	Vector3 getRotate();
 	/// brief set/get the scale parameter values
 	void setScale(Real pX, Real pY, Real pZ );
-	Vector3 getScale() {return Vector3 (mScaleX, mScaleY, mScaleZ) ;};
+	Vector3 getScale();
 	/// brief set/get the Taper X parameter value
 	virtual void setTaperX(Real value);
 	Real getTaperX() {return mTaperX;};
@@ -341,7 +341,7 @@ public:
 
 	///brief Add a command to the list of commands and update the list of points
 	///param pCommand : command to add
-	bool addCommand(TCommand &pTCommand, Command &pOldCommand );
+	bool addCommand(TCommand &pTCommand, Command &pOldCommand, bool pForSave = false );
 	///brief Remove the last command added and re-apply all the others in the right order
 	bool undo();
 
