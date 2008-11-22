@@ -564,19 +564,32 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         // zoom camera when the wheel mouse has changed
         if (!Ogre::Math::RealEqual(mouseWheel, 0))
         {
-            Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-            Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
+#else
+			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
+#endif
+			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
             // WARNING, here we force update of view by resetting the orientation
             mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
 
-            Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
             Vector3 camAbs = mCamera->getWorldPosition();
-            if (posAbs.squaredDistance(camAbs) >= 3.5)
+#else
+			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition() + Vector3(0, 0.5*size.y, 0);
+            Vector3 camAbs = mCamera->getRealPosition();
+#endif
+			if (posAbs.squaredDistance(camAbs) >= 3.5)
             {
                 camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-                camAbs = mCamera->getWorldPosition();
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+				camAbs = mCamera->getWorldPosition();
+#else
+				camAbs = mCamera->getRealPosition();
+#endif
                 if (posAbs.squaredDistance(camAbs) < 3.5)
                     camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
             }
@@ -663,17 +676,27 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         }
         else if (getCameraMode() == CM3rdPerson)
         {
-            Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-            Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
+#else
+			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
+#endif
+			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
             // WARNING, here we force update of view by resetting the orientation
             mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
 
             //Switch to 1st person camera if close to avatar
-            Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
+ #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
             Vector3 camAbs = mCamera->getWorldPosition();
-            if (posAbs.squaredDistance(camAbs) >= 2.5 )
+#else
+			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition() + Vector3(0, 0.5*size.y, 0);
+            Vector3 camAbs = mCamera->getRealPosition();
+#endif
+			
+			if (posAbs.squaredDistance(camAbs) >= 2.5 )
                 mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
             else
                 setCameraMode(CM1stPerson);
@@ -877,7 +900,11 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar == 0) return;
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
     Vector3 pos = userAvatar->getSceneNode()->getWorldPosition();
+#else
+	Vector3 pos = userAvatar->getSceneNode()->_getDerivedPosition();
+#endif
     Vector3 size = userAvatar->getEntity()->getBoundingBox().getSize();
 
     if (mCamera->getParentSceneNode() != 0)

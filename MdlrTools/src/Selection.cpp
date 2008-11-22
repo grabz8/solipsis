@@ -360,7 +360,11 @@ void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pVa
 	mCentreObject->setPosition( mCentreObject->getInitialPosition() );
 
 	mCentreRotation->setPosition( pCentreSelection ) ;
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 	Vector3 ObjectPosition = pNode->getWorldPosition() - mCentreRotation->getWorldPosition() ;
+#else
+	Vector3 ObjectPosition = pNode->_getDerivedPosition() - mCentreRotation->_getDerivedPosition() ;
+#endif
 	mCentreObject->translate( ObjectPosition ) ;
 	//... mCentreRotation and mCentreObject are correctly positionned
 
@@ -369,7 +373,12 @@ void Selection::findRotationPosition(SceneNode * pNode, float pValueX, float pVa
 	mCentreRotation->roll(Degree(pValueZ));
 
 	//Now we put pNode on mCentreObject ...
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 	ObjectPosition = mCentreObject->getWorldPosition();
+#else
+	ObjectPosition = mCentreObject->_getDerivedPosition();
+#endif
+
 	pNode->setPosition( ObjectPosition );
 }
 

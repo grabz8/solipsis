@@ -30,8 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __MyZipArchive_h__
 #define __MyZipArchive_h__
 
+#include <OgrePrerequisites.h>
 //regular mem handler
-#include <OgreMemoryMacros.h>
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	#include <OgreMemoryMacros.h>
+#endif
 #include <Ogre.h>
 
 #include "Path.h"

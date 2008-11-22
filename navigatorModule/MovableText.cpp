@@ -698,3 +698,10 @@ void MovableText::_updateRenderQueue(Ogre::RenderQueue* queue)
         //      queue->addRenderable(this, mRenderQueueID, RENDER_QUEUE_SKIES_LATE);
     }
 }
+
+#if (OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 6)
+void MovableText::visitRenderables(Renderable::Visitor* visitor, bool debugRenderables)
+{
+	visitor->visit(this, 0, false);
+}
+#endif

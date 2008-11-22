@@ -1250,8 +1250,11 @@ void Object3D::setPosition(Vector3 pos)
 Vector3 Object3D::getPosition(bool worldPosition )
 {
 	if (worldPosition)
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 		return mNode->getWorldPosition();
-
+#else
+		return mNode->_getDerivedPosition();
+#endif
 	return mNode->getPosition();
 }
 
@@ -1265,7 +1268,11 @@ Vector3 Object3D::getOrientation()
 bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 {
 	SceneNode * pObjScenNode = pObj->getEntity()->getParentSceneNode();
-	Vector3 Wpostion = pObjScenNode->getWorldPosition() ;;
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	Vector3 Wpostion = pObjScenNode->getWorldPosition() ;
+#else
+	Vector3 Wpostion = pObjScenNode->_getDerivedPosition() ;
+#endif
 	if( isLink(pObj) )
 	{			//remove it ...
 		removeChild( pObj);			//to mChildren
@@ -1284,7 +1291,11 @@ bool Object3D::linkObject(Object3D* pObj, SceneManager* pSceneMgr)
 										//... to this current node	 
 			pSceneMgr->getRootSceneNode()->removeChild( pObjScenNode ) ;
 			mNode->addChild( pObjScenNode );
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 			pObjScenNode->setPosition( Wpostion - mNode->getWorldPosition() );
+#else
+			pObjScenNode->setPosition( Wpostion - mNode->_getDerivedPosition() );
+#endif
 			pObj->setParent( this) ;	//update pObj's parent
 		}
 		else	//if this object has a parent :
@@ -1752,7 +1763,11 @@ CullingMode Object3D::getCullingMode()
 void Object3D::rotateFromParent( float pValueX, float pValueY, float pValueZ )
 {
 	Object3D* parent = getParent();
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 	Vector3 dec = mNode->getWorldPosition() - parent->mNode->getWorldPosition();
+#else
+	Vector3 dec = mNode->_getDerivedPosition() - parent->mNode->_getDerivedPosition();
+#endif
 
 //	if( pValueX )		VectorModifier::rotateX( dec, -pValueX * Math::PI / 180 );
 //	else if( pValueY )	VectorModifier::rotateY( dec, +pValueX * Math::PI / 180 );

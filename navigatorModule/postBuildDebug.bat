@@ -29,6 +29,14 @@ if exist "%dst%\Plugin_OctreeSceneManager_d.dll" goto Plugin_OctreeSceneManager_
  if exist "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\Plugin_OctreeSceneManager_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_OctreeSceneManager_d.dll" "%dst%" /s /y
 :Plugin_OctreeSceneManager_d_exist
+if exist "%dst%\Plugin_OctreeZone_d.dll" goto Plugin_OctreeZone_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_OctreeZone_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_OctreeZone_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_OctreeZone_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_OctreeZone_d.dll" "%dst%" /s /y
+:Plugin_OctreeZone_d_exist
+if exist "%dst%\Plugin_PCZSceneManager_d.dll" goto Plugin_PCZSceneManager_d_exist
+ if exist "%OGRE_HOME%\lib\Plugin_PCZSceneManager_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_PCZSceneManager_d.dll" "%dst%" /s /y
+ if exist "%OGRE_HOME%\bin\debug\Plugin_PCZSceneManager_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_PCZSceneManager_d.dll" "%dst%" /s /y
+:Plugin_PCZSceneManager_d_exist
 if exist "%dst%\Plugin_ParticleFX_d.dll" goto Plugin_ParticleFX_d_exist
  if exist "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\lib\Plugin_ParticleFX_d.dll" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\Plugin_ParticleFX_d.dll" xcopy "%OGRE_HOME%\bin\debug\Plugin_ParticleFX_d.dll" "%dst%" /s /y

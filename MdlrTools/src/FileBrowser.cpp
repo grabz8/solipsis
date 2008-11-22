@@ -30,7 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	#warning "Code is not Linux compatible at the moment...."
 #endif
 
-#include <OgreNoMemoryMacros.h>
+#include <OgrePrerequisites.h>
+
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	#include <OgreNoMemoryMacros.h>
+#endif
 
 #include <CTSystem.h>
 

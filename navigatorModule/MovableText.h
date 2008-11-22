@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __MovableText_H__
 #define __MovableText_H__
 
+#include <OgrePrerequisites.h>
 #include <Ogre.h>
 
 class MovableText : public Ogre::MovableObject, public Ogre::Renderable
@@ -122,6 +123,10 @@ protected:
 
     void    _notifyCurrentCamera(Ogre::Camera *cam);
     void    _updateRenderQueue(Ogre::RenderQueue* queue);
+
+#if (OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 6)
+	virtual void visitRenderables(Renderable::Visitor* visitor, bool debugRenderables);
+#endif
 
     // from renderable
     void    getRenderOperation(Ogre::RenderOperation &op);

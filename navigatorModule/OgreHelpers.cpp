@@ -317,11 +317,17 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
     unsigned long *indices;
 
     // get the mesh information
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
     OgreHelpers::getMeshInformation(entity->getMesh(), vertexCount, vertices, texCoords, indexCount, indices,
                                     entity->getParentNode()->getWorldPosition(),
                                     entity->getParentNode()->getWorldOrientation(),
                                     entity->getParentNode()->getScale());
-
+#else
+	OgreHelpers::getMeshInformation(entity->getMesh(), vertexCount, vertices, texCoords, indexCount, indices,
+                                    entity->getParentNode()->_getDerivedPosition(),
+                                    entity->getParentNode()->_getDerivedOrientation(),
+                                    entity->getParentNode()->getScale());
+#endif
     // test for hitting individual triangles on the mesh
     bool newClosestFound = false;
     for (int i = 0; i < static_cast<int>(indexCount); i += 3)

@@ -82,10 +82,16 @@ void CCamera::rotateCamera(const float pX, const float pY, const Vector3 pCentre
 	mEyeArcBallNode->setPosition( mEyeArcBallNode->getInitialPosition() );
 	mPositionArcBallNode->setPosition( pCentre ) ;
 
-	mOrientationArcBallNode->setOrientation( mEyeCamNode->getWorldOrientation() );	
-	
-		//Put nodeEye on the camera position
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	mOrientationArcBallNode->setOrientation( mEyeCamNode->getWorldOrientation() );
+	//Put nodeEye on the camera position
 	Vector3 ObjectPosition = mEyeCamNode->getWorldPosition() - mPositionArcBallNode->getWorldPosition() ;
+#else
+	mOrientationArcBallNode->setOrientation( mEyeCamNode->_getDerivedOrientation() );
+	//Put nodeEye on the camera position
+	Vector3 ObjectPosition = mEyeCamNode->_getDerivedPosition() - mPositionArcBallNode->_getDerivedPosition() ;
+#endif
+	
 	mEyeArcBallNode->translate( ObjectPosition, Node::TS_WORLD);//->setPosition( ObjectPosition ) ;
 
 	//... ArcBall is correctly positionned
@@ -95,8 +101,11 @@ void CCamera::rotateCamera(const float pX, const float pY, const Vector3 pCentre
 	mOrientationArcBallNode->yaw(Degree(pX), Node::TS_PARENT);
 
 	//Now we put the camera on mEyeArcBallNode ...
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 	mEyeCamNode->setPosition(mEyeArcBallNode->getWorldPosition() - mTargetCamNode->getWorldPosition() );
-
+#else
+	mEyeCamNode->setPosition(mEyeArcBallNode->_getDerivedPosition() - mTargetCamNode->_getDerivedPosition() );
+#endif
 	//And the camera looks the scene :
 	mEyeCamNode->pitch(Degree(pY));
 	mEyeCamNode->yaw(Degree(pX ), Node::TS_PARENT);

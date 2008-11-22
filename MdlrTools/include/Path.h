@@ -31,7 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Path_h__
 
 //regular mem handler
-#include <OgreMemoryMacros.h>
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	#include <OgreMemoryMacros.h>
+#endif
 #include <Ogre.h>
 
 using namespace Ogre;

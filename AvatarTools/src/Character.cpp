@@ -162,8 +162,9 @@ Character::Character(String pName, SceneManager* pSceneMgr) :
 
 	//Creating entity
 	mEntity = mSceneMgr->createEntity(mName, getEditionMeshFilename(mName));
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 	mEntity->setNormaliseNormals(true);
-
+#endif
 	//All the subentities are insvisible, only the subentities parts of a BodyPart will be set visibles after.
 	for(unsigned int idxSubEntity = 0 ; idxSubEntity < mEntity->getNumSubEntities() ; idxSubEntity++)
 		mEntity->getSubEntity(idxSubEntity)->setVisible(false);
@@ -705,8 +706,11 @@ void Character::addSubMesh(const MeshPtr& mesh, const String& boneName, SubMesh*
 		Vector3 positionIn(point[0],point[1],point[2]);
 
 		Vector3 positionOut = (offsetOrientation*positionIn) + offsetPosition;
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 		positionOut = (bone->getWorldOrientation()*positionOut) + bone->getWorldPosition();
-
+#else
+		positionOut = (bone->_getDerivedOrientation()*positionOut) + bone->_getDerivedPosition();
+#endif
 		point[0] = positionOut.x;
 		point[1] = positionOut.y;
 		point[2] = positionOut.z;

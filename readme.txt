@@ -157,8 +157,8 @@ Download the FMOD EX package (http://www.fmod.org/index.php/download),
 
 Peer module is using Ageia PhysX:
  Download 2 packages runtime & SDK on http://devsupport.ageia.com
- Download runtime : PhysX_7.06.25_SystemSoftware.exe
- Download SDK : PhysX_2.7.2_SDK_Core.exe
+ Download runtime : PhysX_8.05.26_SystemSoftware or PhysX_8.10.29_SystemSoftware if your graphic hardware manage physics (NVidia 8Series, 9Series and CT200series) 
+ Download SDK : PhysX_2.8.1_SDK_Core.msi
  Define your PHYSX_DIR env. var. (eg. C:\Program Files\AGEIA Technologies\SDK\v2.7.3)
  After compilation, run CopyPhysXFiles.bat to copy dedicated DLLs into your Common\bin
 Last compilation performed with:

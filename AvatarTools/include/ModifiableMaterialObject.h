@@ -24,8 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __ModifiableMaterialObject_h__
 #define __ModifiableMaterialObject_h__
 
-#include <OgreNoMemoryMacros.h>
-#include <OgreMemoryMacros.h>
+#include <OgrePrerequisites.h>
+
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	#include <OgreNoMemoryMacros.h>
+	#include <OgreMemoryMacros.h>
+#endif
 #include <Ogre.h>
 
 //#include "TextureIterator.h"

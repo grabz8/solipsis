@@ -31,8 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __CharacterManager_h__
 
 #include <Ogre.h>
-#include <OgreNoMemoryMacros.h>
-#include <OgreMemoryMacros.h>
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+	#include <OgreNoMemoryMacros.h>
+	#include <OgreMemoryMacros.h>
+#endif
 
 using namespace Ogre;
 
