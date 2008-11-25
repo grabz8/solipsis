@@ -841,3 +841,12 @@ alpha on chat label improved
 RELEASE 1.0.7
 
 ---------------------------
+25/11/08
+
+Servers shortcuts removed from desktop
+New simplified RakNet library RakNetObjects added
+General option tab added to reset display configuration on restart
+Solipsis display config dialog added, default first render system + windowed mode + VSync
+WIN32 application icon of autocreated window defined on IDI_ICON1 101
+
+---------------------------
