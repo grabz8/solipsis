@@ -40,7 +40,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-RequestExecutionLevel user
+RequestExecutionLevel admin
 OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-${PRODUCT_PLATFORM}.exe"
 InstallDir "$PROGRAMFILES\Solipsis"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
