@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.7"
+!define PRODUCT_VERSION "1.0.8"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -95,7 +95,6 @@ Section "PeerRakNet" SEC02
   File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
   File "resources.cfg"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8880 -v 0"
-  CreateShortCut "$DESKTOP\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8880 -v 0"
 SectionEnd
 
 Section "RakNetServer" SEC03
@@ -104,14 +103,12 @@ Section "RakNetServer" SEC03
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Children Island).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112223 -m $\"$INSTDIR\Media\cacheServerIsland$\""
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8559 -s 11112222 -m $\"$INSTDIR\Media\cacheServerDeltastation$\""
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8558 -s 11112235 -m $\"$INSTDIR\Media\cacheServerRennes$\""
-  CreateShortCut "$DESKTOP\Solipsis RakNet Server (Children Island).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112223 -m $\"$INSTDIR\Media\cacheServerIsland$\""
 SectionEnd
 
 Section "WorldsServer" SEC04
   SetOutPath "$INSTDIR\WorldsServer"
   File /r /x .svn /x *.pdn /x *.bat /x setup.py /x users.xml "..\..\WorldsServer\*.*"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
-  CreateShortCut "$DESKTOP\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
 SectionEnd
 
 Section "Media" SEC05
@@ -161,13 +158,10 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
-  Delete "$DESKTOP\Solipsis Worlds Server.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk"
-  Delete "$DESKTOP\Solipsis RakNet Server (Children Island).lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Children Island).lnk"
-  Delete "$DESKTOP\Solipsis PeerRakNet.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk"
   Delete "$DESKTOP\Solipsis Navigator.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Navigator.lnk"
