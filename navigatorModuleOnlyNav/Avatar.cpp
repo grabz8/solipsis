@@ -431,7 +431,10 @@ bool Avatar::update(XmlEntity* xmlEntity)
 
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
     if (definedAttributes & XmlEntity::DAFlags)
+    {
         mXmlEntity->setFlags(xmlEntity->getFlags());
+        mGravity = mXmlEntity->getFlags() & EFGravity;
+    }
     if (definedAttributes & XmlEntity::DAPosition)
     {
         mLastRealPosition = xmlEntity->getPosition();
@@ -439,6 +442,11 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (definedAttributes & XmlEntity::DAOrientation)
     {
         mLastRealOrientation = xmlEntity->getOrientation();
+        if (mIsLocal)
+        {
+            mXmlEntity->setOrientation(xmlEntity->getOrientation());
+            getSceneNode()->setOrientation(xmlEntity->getOrientation());
+        }
     }
     if (definedAttributes & XmlEntity::DAAnimation)
     {
