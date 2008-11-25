@@ -354,6 +354,14 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\winres.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -362,6 +370,10 @@
 			>
 			<File
 				RelativePath=".\Navigator.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\Solipsis.ico"
 				>
 			</File>
 		</Filter>

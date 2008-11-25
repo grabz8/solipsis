@@ -1830,16 +1830,17 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_OPTIONS]);
 
     // Set current values
+    navi->evaluateJS("setInputState('checkboxGeneralResetDisplayConfig', null, null)");
     bool facebookAvailable = (
         !mNavigator->getFacebookApiKey().empty() &&
         !mNavigator->getFacebookSecret().empty() &&
         !mNavigator->getFacebookServer().empty() &&
         !mNavigator->getFacebookLoginUrl().empty());
-    sprintf(txt, "setRadioState('radioIdAuthentTypeFacebook', %s, %s)", !facebookAvailable ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFacebook) ? "'checked'" : "null");
+    sprintf(txt, "setInputState('radioIdAuthentTypeFacebook', %s, %s)", !facebookAvailable ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFacebook) ? "'checked'" : "null");
     navi->evaluateJS(txt);
-    sprintf(txt, "setRadioState('radioIdAuthentTypeSolipsis', %s, %s)", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATSolipsis) ? "'checked'" : "null");
+    sprintf(txt, "setInputState('radioIdAuthentTypeSolipsis', %s, %s)", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATSolipsis) ? "'checked'" : "null");
     navi->evaluateJS(txt);
-    sprintf(txt, "setRadioState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
+    sprintf(txt, "setInputState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
     navi->evaluateJS(txt);
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
@@ -1860,13 +1861,13 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     int proxyType;
     if (mNaviMgr->getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
     {
-        sprintf(txt, "setRadioState('radioProxyTypeDirect', null, %s)", (proxyType == 0) ? "'checked'" : "null");
+        sprintf(txt, "setInputState('radioProxyTypeDirect', null, %s)", (proxyType == 0) ? "'checked'" : "null");
         navi->evaluateJS(txt);
-        sprintf(txt, "setRadioState('radioProxyTypeAutodetect', null, %s)", (proxyType == 4) ? "'checked'" : "null");
+        sprintf(txt, "setInputState('radioProxyTypeAutodetect', null, %s)", (proxyType == 4) ? "'checked'" : "null");
         navi->evaluateJS(txt);
-        sprintf(txt, "setRadioState('radioProxyTypeManual', null, %s)", (proxyType == 1) ? "'checked'" : "null");
+        sprintf(txt, "setInputState('radioProxyTypeManual', null, %s)", (proxyType == 1) ? "'checked'" : "null");
         navi->evaluateJS(txt);
-        sprintf(txt, "setRadioState('radioProxyTypeAutoconf', null, %s)", (proxyType == 2) ? "'checked'" : "null");
+        sprintf(txt, "setInputState('radioProxyTypeAutoconf', null, %s)", (proxyType == 2) ? "'checked'" : "null");
         navi->evaluateJS(txt);
         sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
         navi->evaluateJS(txt);
@@ -1889,6 +1890,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_OPTIONS]);
 
     // Get options
+    bool generalResetDisplayConfig = naviData["generalResetDisplayConfig"].toBool();
     std::string radioIdAuthentType;
     radioIdAuthentType = naviData["radioIdAuthentType"].str();
 	std::string wsHost;
@@ -1983,6 +1985,8 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     // Valid options ?
     if (valid_options)
     {
+        if (generalResetDisplayConfig)
+            mNavigator->getOgreApplication()->resetDisplayConfig();
         if (authentType!= mNavigator->getAuthentType())
         {
             mNavigator->setNodeId("");

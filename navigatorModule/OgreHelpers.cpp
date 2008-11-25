@@ -28,6 +28,73 @@ using namespace Solipsis;
 OgreHelpers OgreHelpers::mSingleton;
 
 //-------------------------------------------------------------------------------------
+void OgreHelpers::changeConfigOption(RenderSystem& renderSystem, const String& name, const String& oldValue, const String& newValue)
+{
+    // Get options from render system
+    ConfigOptionMap opts = renderSystem.getConfigOptions();
+    // Iterate through options
+    for (ConfigOptionMap::iterator pOpt = opts.begin(); pOpt != opts.end(); ++pOpt)
+    {
+        if ((pOpt->second.name == name) && (oldValue.empty() || (pOpt->second.currentValue == oldValue)))
+            for (StringVector::iterator pPossibleVal = pOpt->second.possibleValues.begin(); pPossibleVal != pOpt->second.possibleValues.end(); ++pPossibleVal)
+                if (*pPossibleVal == newValue)
+                    renderSystem.setConfigOption(name, newValue);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::addResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().addResourceLocation(
+                archName, typeName, secName);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void OgreHelpers::removeResourceLocations()
+{
+    // Load resource paths from config file
+    ConfigFile cf;
+    cf.load("resources.cfg");
+
+    // Go through all sections & settings in the file
+    ConfigFile::SectionIterator seci = cf.getSectionIterator();
+
+    String secName, typeName, archName;
+    while (seci.hasMoreElements())
+    {
+        secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i)
+        {
+            typeName = i->first;
+            archName = i->second;
+            ResourceGroupManager::getSingleton().removeResourceLocation(
+                archName, secName);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void OgreHelpers::getMovableObjectsList(SceneNode* node, const String& movableType, std::list<MovableObject*> &movableObjectsList)
 {
     SceneNode::ObjectIterator objectIterator = node->getAttachedObjectIterator();
@@ -360,58 +427,6 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
     delete[] indices;
 
     return newClosestFound;
-}
-
-//-------------------------------------------------------------------------------------
-void OgreHelpers::addResourceLocations()
-{
-    // Load resource paths from config file
-    ConfigFile cf;
-    cf.load("resources.cfg");
-
-    // Go through all sections & settings in the file
-    ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            ResourceGroupManager::getSingleton().addResourceLocation(
-                archName, typeName, secName);
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void OgreHelpers::removeResourceLocations()
-{
-    // Load resource paths from config file
-    ConfigFile cf;
-    cf.load("resources.cfg");
-
-    // Go through all sections & settings in the file
-    ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            ResourceGroupManager::getSingleton().removeResourceLocation(
-                archName, secName);
-        }
-    }
 }
 
 //-------------------------------------------------------------------------------------

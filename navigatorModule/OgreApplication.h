@@ -53,6 +53,11 @@ public:
     virtual bool initialize(bool configManagedByOgre = false, String windowTitle = "");
     virtual bool finalize();
 
+    /** Show our display configuration dialog instead of standard Ogre dialog. */
+    bool showConfigDialog();
+    /** Reset display configuration, commonly Ogre.cfg. */
+    void resetDisplayConfig(); 
+
     virtual void createResourceListener(); 
     virtual void initResources(); 
 };

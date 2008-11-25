@@ -11,7 +11,7 @@
 		    }
 		</script>
         <script type="text/javascript">
-            function setRadioState(name, disabled, checked)
+            function setInputState(name, disabled, checked)
             {
                 document.getElementById(name).disabled = disabled;
                 document.getElementById(name).checked = checked;
@@ -25,6 +25,7 @@
                 var naviData = new NaviData(buttonName);
                 if (buttonName == 'ok')
                 {
+                    naviData.add({generalResetDisplayConfig:document.getElementById("checkboxGeneralResetDisplayConfig").checked});
                     if (document.getElementById("radioIdAuthentTypeFacebook").checked)
                         naviData.add({radioIdAuthentType:'F'});
                     else if (document.getElementById("radioIdAuthentTypeSolipsis").checked)
@@ -65,7 +66,7 @@
 	            cursor: pointer;
 	            color: #FFFFFF;
 	            font-family: Verdana;
-	            font-size: 14px;
+	            font-size: 10px;
 	            line-height: 24px;
             }
             .mootabs_title li.active {
@@ -254,11 +255,18 @@
             <div id="tabs">
 			    <div id="optTabs">
 				    <ul class="mootabs_title">
+					    <li title="General">General</li>
 					    <li title="ID">ID</li>
 					    <li title="Worlds">Worlds</li>
 					    <li title="Peer">Peer</li>
 					    <li title="Proxy">Proxy</li>
 				    </ul>
+				    <div id="General" class="mootabs_panel">
+                        <div id="generalResetDisplayConfigCheckbox">
+                            <input id="checkboxGeneralResetDisplayConfig" name="checkboxGeneralResetDisplayConfig" type="checkbox" />
+                            Reset display configuration (Restart required)
+                        </div>
+				    </div>
 				    <div id="ID" class="mootabs_panel">
                         <div id="idAuthentTypeFacebookRadio">
                             <input id="radioIdAuthentTypeFacebook" name="radioIdAuthentType" type="radio" />

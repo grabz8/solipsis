@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "AutoCreatedWindow.h"
+#include "NavigatorModule.h"
 #include "Instance.h"
 
 using namespace Solipsis;
@@ -172,6 +173,14 @@ bool AutoCreatedWindow::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButton
 void AutoCreatedWindow::initialize()
 {
     using namespace OIS;
+
+#ifdef WIN32
+    HWND hwnd = (HWND)getHandle();
+    HINSTANCE hinstance = GetModuleHandle(NULL);
+    HICON icon = LoadIcon(hinstance, MAKEINTRESOURCE(AUTOCREATEDWINDOW_ICON_INDEX));
+    SendMessage(hwnd, WM_SETICON, ICON_BIG, LPARAM(icon));
+    SendMessage(hwnd, WM_SETICON, ICON_SMALL, LPARAM(icon));
+#endif
 
     // Create the input context
     ParamList pl;

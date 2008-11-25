@@ -22,10 +22,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "OgreApplication.h"
+#include "NavigatorConfigDialog.h"
 #include "OgreHelpers.h"
 #include "NaviManager.h"
 #include <CTSystem.h>
 #include <CTStringHelpers.h>
+#include <CTIO.h>
 
 #define RESSOURCE_FILE_NAME "resources.cfg"
 
@@ -70,7 +72,7 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
         // Show the configuration dialog and initialize the system
         // You can skip this and use root.restoreConfig() to load configuration
         // settings if you were sure there are valid ones saved in ogre.cfg
-        if (mRoot->restoreConfig() || mRoot->showConfigDialog())
+        if (mRoot->restoreConfig() || showConfigDialog())
             // If returned true, user clicked OK so initialize
             ;
         else
@@ -91,7 +93,7 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
 	    if (currentRenderSystem == NULL)
             return false;
 	    // preserve the floating point precision
-	    currentRenderSystem->setConfigOption("Floating-point mode", "Consistent");
+        OgreHelpers::changeConfigOption(*currentRenderSystem, "Floating-point mode", "", "Consistent");
 	    try 
 	    {
 		    mRoot->setRenderSystem(currentRenderSystem);
@@ -121,6 +123,39 @@ bool OgreApplication::finalize()
     delete mRoot;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool OgreApplication::showConfigDialog()
+{
+    // Displays our config dialog instead of standard Ogre dialog
+    // Will use stored defaults if available
+    NavigatorConfigDialog* dlg;
+    bool isOk;
+
+    if (!mRoot->restoreConfig())
+    {
+        // On empty config, prefer the windowed modes + VSynchronizing by default
+        RenderSystemList* lstRend = Root::getSingleton().getAvailableRenderers();
+        for (RenderSystemList::iterator pRend = lstRend->begin(); pRend != lstRend->end(); ++pRend)
+        {
+            OgreHelpers::changeConfigOption(*(*pRend), "Full Screen", "", "No");
+            OgreHelpers::changeConfigOption(*(*pRend), "VSync", "", "Yes");
+        }
+    }
+
+    dlg = new NavigatorConfigDialog();
+    if ((isOk = dlg->display()))
+        mRoot->saveConfig();
+    delete dlg;
+
+    return isOk;
+}
+
+//-------------------------------------------------------------------------------------
+void OgreApplication::resetDisplayConfig()
+{
+    CommonTools::IO::deleteFile("ogre.cfg");
 }
 
 //-------------------------------------------------------------------------------------

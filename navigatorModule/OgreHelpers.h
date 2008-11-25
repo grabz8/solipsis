@@ -71,6 +71,9 @@ public:
     static OgreHelpers* getSingletonPtr() { return &mSingleton; }
     static OgreHelpers& getSingleton() { return mSingleton; }
 
+    /// Change value of a rendering system config option by another one
+    static void changeConfigOption(RenderSystem& renderSystem, const String& name, const String& oldValue, const String& newValue);
+
     /// Add resource locations from resources.cfg file
     static void addResourceLocations();
     /// Remove resource locations from resources.cfg file

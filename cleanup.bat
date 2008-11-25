@@ -69,6 +69,8 @@ rmdir Dependencies\RakNet /S /Q
 rmdir Dependencies\curl /S /Q
 rmdir Dependencies\md5wrapper /S /Q
 rmdir Dependencies\authentFB /S /Q
+rmdir Dependencies\RakNetObjects /S /Q
+rmdir Dependencies\navigatorConfigDialog /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -210,6 +212,9 @@ rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
 rmdir protocols\P2NNullClientServer\Debug /S /Q
 rmdir protocols\P2NNullClientServer\Release /S /Q
 
+rmdir RakNetObjects\Debug /S /Q
+rmdir RakNetObjects\Release /S /Q
+
 rmdir peerModuleRakNet\Debug /S /Q
 rmdir peerModuleRakNet\Release /S /Q
 rmdir peerModuleRakNet\DebugNCS /S /Q
@@ -224,6 +229,9 @@ rmdir peerPhysics\peerPhysX\Debug /S /Q
 rmdir peerPhysics\peerPhysX\Release /S /Q
 rmdir peerPhysics\peerPhysX\DebugNCS /S /Q
 rmdir peerPhysics\peerPhysX\ReleaseNCS /S /Q
+
+rmdir navigatorConfigDialog\Debug /S /Q
+rmdir navigatorConfigDialog\Release /S /Q
 
 rmdir navigatorModuleOnlyNav\Debug /S /Q
 rmdir navigatorModuleOnlyNav\Release /S /Q

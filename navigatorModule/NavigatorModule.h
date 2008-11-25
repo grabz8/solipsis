@@ -67,6 +67,9 @@ namespace Solipsis {
 
     #define CONTAINER_NAME_ENV "$CONTAINER_NAME"
     #define NAVI_SUPPORT_ENV "$NAVI_SUPPORT"
+#ifdef WIN32
+    #define AUTOCREATEDWINDOW_ICON_INDEX 101
+#endif
 
     // forward class declarations
     // this reduces cross-dependencies a lot
