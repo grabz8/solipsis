@@ -850,3 +850,6 @@ Solipsis display config dialog added, default first render system + windowed mod
 WIN32 application icon of autocreated window defined on IDI_ICON1 101
 
 ---------------------------
+RELEASE 1.0.8
+
+---------------------------
