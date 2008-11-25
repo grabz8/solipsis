@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Entity_h__
 #define __Entity_h__
 
-#include "RakNetEntity.h"
+#include <RakNetEntity.h>
 
 namespace Solipsis {
 
@@ -33,19 +33,17 @@ namespace Solipsis {
 class Entity : public RakNetEntity
 {
 public:
-    /// <EntityUID, Entity*> map
-    typedef std::map<EntityUID, Entity*> EntityMap;
-
-public:
     /** Constructor. */
     Entity();
     /** Destructor. */
     virtual ~Entity();
 
-    /** See Replica2::DeserializeDestruction. */
-	virtual void DeserializeDestruction(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+    /** See RakNetEntity. */
+    virtual void onNewEntity();
+    /** See RakNetEntity. */
+    virtual void onLostEntity();
 
-    /** See Replica2::Deserialize. */
+    /** See RakNet::Replica2. */
 	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
 };
 

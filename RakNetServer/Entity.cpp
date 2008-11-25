@@ -34,20 +34,29 @@ namespace Solipsis {
 Entity::Entity() :
     RakNetEntity()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::Entity()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::Entity()");
 }
 
 //-------------------------------------------------------------------------------------
 Entity::~Entity()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::~Entity()");
+
+    removeEntity(this);
 }
 
 //-------------------------------------------------------------------------------------
-void Entity::DeserializeDestruction(RakNet::BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+void Entity::onNewEntity()
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::DeserializeDestruction()");
-    RakNetServer::getSingleton().onEntityDestroyed(this);
+    RakNetEntity::onNewEntity();
+    RakNetServer::getSingleton().getSiteNode()->onNewEntity(this);
+}
+
+//-------------------------------------------------------------------------------------
+void Entity::onLostEntity()
+{
+    RakNetServer::getSingleton().getSiteNode()->onLostEntity(this);
+    RakNetEntity::onLostEntity();
 }
 
 //-------------------------------------------------------------------------------------
@@ -58,7 +67,7 @@ void Entity::Deserialize(BitStream *bitStream, SerializationType serializationTy
     bool uidNotYetInitialized = !(mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid);
     RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
     if (uidNotYetInitialized && (mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid))
-        RakNetServer::getSingleton().onNewEntity(*this);
+        addEntity(this);
 }
 
 //-------------------------------------------------------------------------------------

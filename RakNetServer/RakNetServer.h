@@ -24,46 +24,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __RakNetServer_h__
 #define __RakNetServer_h__
 
-#include <map>
 #include <string>
 #include <XmlDatas.h>
-#include "RakNetConnection.h"
-#include "RakNetNode.h"
+#include <RakNetConnection.h>
+#include "RM2Connection.h"
+#include "SiteNode.h"
 
 namespace Solipsis {
-
-class Entity;
-class AvatarNode;
-class SiteNode;
 
 /** This class manages 1 site node through a RakNet server.
 */
 class RakNetServer
 {
-public:
-    /// <NodeId, Node*> map
-    typedef std::map<NodeId, RakNetNode*> NodeMap;
-
-protected:
+private:
     static RakNetServer* ms_Singleton;
 
 protected:
-    /// Server address
-    std::string mHost;
-    /// Server port
-    unsigned short mPort;
-    /// Maximum incoming connections
-    int mMaxIncomingConnections;
     /// Node identifier of the site node
     NodeId mSiteNodeId;
     /// Media cache path
     std::string mMediaCachePath;
 
+    /// Instance of the class that creates the object we use to represent connections
+    RM2ConnectionFactory mConnectionFactory;
     /// RakNetConnection
     RakNetConnection mRakNetConnection;
 
-    /// Map of nodes
-    NodeMap mNodes;
+    /// Site node
+    SiteNode *mSiteNode;
 
     /// Flag to quit
     bool mQuit;
@@ -84,28 +72,17 @@ public:
     /** Finalize the server. */
     void finalize();
 
-    /** Called when 1 new entity is created, avatar entities are resetted on the entry gate */
-    void onNewEntity(Entity& entity);
-    /** Called when 1 avatar node is initialized (nodeId defined) */
-    void onAvatarNodeIdInitialized(AvatarNode* avatarNode);
-    /** Called when 1 avatar node is destroyed */
-    void onAvatarNodeDestroyed(AvatarNode* avatarNode);
-    /** Called when 1 site node is destroyed */
-    void onSiteNodeDestroyed(SiteNode* siteNode);
-    /** Called when 1 entity is destroyed */
-    void onEntityDestroyed(Entity* entity);
-
-    /** Retrieve the avatar node according to its entity UID */
-    AvatarNode* getAvatarNodeOfEntity(const EntityUID& entityUID);
-    /** Retrieve the site node */
+    /// Get the Media/cache path
+    const std::string& getMediaCachePath() { return mMediaCachePath; }
+    /// Get the site node
     SiteNode* getSiteNode();
 
     /** Load 1 entity */
     Entity* loadEntity(TiXmlElement* entityElt);
-    /** Load entities of a nodeId */
-    bool loadNodeIdFile(const NodeId& nodeId, RakNetNode* node = 0);
-    /** Save/Update entities of a nodeId */
-    bool saveNodeIdFile(const NodeId& nodeId);
+    /** Load entities of a node */
+    bool loadNode(Node* node);
+    /** Save/Update entities of a node */
+    bool saveNode(Node* node);
 };
 
 } // namespace Solipsis

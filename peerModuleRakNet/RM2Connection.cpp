@@ -22,13 +22,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "RM2Connection.h"
-#include "AvatarNode.h"
-#include "SiteNode.h"
 #include "Entity.h"
 #include <BitStream.h>
 #include <StringTable.h>
+#include <CTLog.h>
 
 using namespace RakNet;
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -42,12 +42,13 @@ Replica2* RM2Connection::Construct(BitStream *replicaData, SystemAddress sender,
 
     if (networkIDCollision) return 0;
 
-    if (strcmp(objectName, "AvatarNode") == 0)
-        return new AvatarNode();
-    if (strcmp(objectName, "SiteNode") == 0)
-        return new SiteNode();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RM2Connection::Construct() Contruction of 1 new %s from %s", objectName, sender.ToString());
     if (strcmp(objectName, "Entity") == 0)
-        return new Entity();
+    {
+        Entity* entity = new Entity();
+        entity->setSystemAddress(sender);
+        return entity;
+    }
 
     return 0;
 }

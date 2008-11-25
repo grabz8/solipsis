@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\RakNetServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLLDebug.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib;&quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\RakNetServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -140,10 +140,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLL.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLL.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;..\Dependencies\RakNet\lib;&quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -202,7 +202,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\RakNetServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -223,10 +223,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLLDebug.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\RakNet\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\RakNet\lib;..\Dependencies\RakNetObjects\lib\Debug"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -283,7 +283,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\RakNetServer"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -302,10 +302,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLL.lib"
+				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLL.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\CommonTools\lib\Release;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\RakNet\lib"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\CommonTools\lib\Release;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\RakNet\lib;..\Dependencies\RakNetObjects\lib\Release"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -352,19 +352,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\RakNetServer\CacheManager.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Entity.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Node.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NodeManager.cpp"
 				>
 			</File>
 			<File
@@ -380,31 +368,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\RakNetServer\RakNetAvatarNode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetConnection.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetEntity.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetNode.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetSiteNode.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RM2Connection.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SiteNode.cpp"
 				>
 			</File>
 		</Filter>
@@ -414,10 +378,6 @@
 			>
 			<File
 				RelativePath=".\AvatarNode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\CacheManager.h"
 				>
 			</File>
 			<File
@@ -445,14 +405,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Node.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NodeManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OgreHelpers.h"
 				>
 			</File>
@@ -469,31 +421,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\RakNetServer\RakNetAvatarNode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetConnection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetEntity.h"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetNode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\RakNetServer\RakNetSiteNode.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RM2Connection.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SiteNode.h"
 				>
 			</File>
 			<File

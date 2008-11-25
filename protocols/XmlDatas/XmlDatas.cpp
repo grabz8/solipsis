@@ -764,6 +764,8 @@ void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEnti
     XmlEntity::DefinedAttributes definedAttributes = dstXmlEntity->getDefinedAttributes();
     if (definedAttributes & XmlEntity::DAUid)
         dstXmlEntity->setUid(srcXmlEntity->getUid());
+    if (definedAttributes & XmlEntity::DAFlags)
+        dstXmlEntity->setFlags(srcXmlEntity->getFlags());
     if (definedAttributes & XmlEntity::DAPosition)
         dstXmlEntity->setPosition(srcXmlEntity->getPosition());
     if (definedAttributes & XmlEntity::DAOrientation)

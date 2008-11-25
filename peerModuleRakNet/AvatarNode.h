@@ -27,10 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <pthread.h>
 #include "Ogre.h"
-#include <RakNetAvatarNode.h>
-#include <RakNetConnection.h>
 #include <BitStream.h>
-#include "Node.h"
+#include <RakNetConnection.h>
+#include <Node.h>
 #include "Entity.h"
 #include "TimeListener.h"
 
@@ -38,15 +37,34 @@ namespace Solipsis {
 
 /** This class manages 1 avatar node.
 */
-class AvatarNode : public RakNetAvatarNode, public Node, public TimeListener
+class AvatarNode : public Node, public TimeListener
 {
+public:
+#ifdef POOL
+    typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
+#else
+    typedef std::list<XmlEvt*> XmlEvtToHandleList;
+#endif
+
+protected:
+    /// Mutex on instance
+    pthread_mutex_t mMutex;
+    /// Mutex on events
+    pthread_mutex_t mEvtsMutex;
+    /// List of events to handle
+    XmlEvtToHandleList mEvtsToHandleList;
+    /// Frozen state
+    bool mFrozen;
+
 protected:
     /// Map of owned entities
-    Entity::EntityMap mOwnedEntities;
+    RakNetEntity::RakNetEntityMap mOwnedEntities;
 
-    /// Avatar entity
-    /// ... Hm Hm should be RakNetAvatarNode::mEntity but it is initialized too late in deserialize() to unfreeze avatarNode in onNewEntity()
-    RakNetEntity *mAvatarEntity;
+    /// Entity
+    RakNetEntity *mEntity;
+
+    /// Name
+    std::string mName;
 
 public:
     /** Constructor. */
@@ -54,33 +72,47 @@ public:
     /** Destructor. */
     virtual ~AvatarNode();
 
-    void onNewEntity(Entity* entity, bool sendNewEvt);
+    /** Get entity. */
+    RakNetEntity* getEntity() { return mEntity; }
+    /** Set entity. */
+    void setEntity(RakNetEntity* entity) { mEntity = entity; }
+
+    /** Get the name. */
+    const std::string& getName() { return mName; }
+    /** Set the name. */
+    void setName(const std::string& name) { mName = name; }
+
+    /** See Solipsis::Node. */
+    virtual bool loadFromElt(TiXmlElement* nodeElt);
+    /** See Solipsis::Node. */
+    virtual TiXmlElement* getSavedElt();
+
+    void onNewEntity(Entity* entity);
     void onUpdatedEntity(Entity* entity);
-    void onLostEntity(Entity* entity, bool sendLostEvt);
+    void onLostEntity(Entity* entity);
 
     void onActionOnEntity(RakNet::BitStream *bitStream);
 
     bool isOwnedEntity(Entity* entity);
 
-    /** See Replica2::Deserialize. */
-	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
-
-	/** See Replica2::QueryIsSerializationAuthority. */
-	virtual bool QueryIsSerializationAuthority(void) const;
-
-    /** See Solipsis::Node. */
+    /** Process an event. */
 #ifdef POOL
     virtual bool processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
 #else
     virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
 #endif
-    /** See Solipsis::Node. */
 #ifdef POOL
+    /** Get next event to handle. */
+    virtual RefCntPoolPtr<XmlEvt> getNextEvtToHandle();
+    /** Free event (handled event). */
     virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
 #else
+    /** Get next event to handle. */
+    virtual XmlEvt* getNextEvtToHandle();
+    /** Free event (handled event). */
     virtual bool freeEvt(XmlEvt* xmlEvt);
 #endif
-    /** See Solipsis::Node. */
+    /** Freeze. */
     virtual bool freeze(bool frozen);
 
     /** See Solipsis::TimeListener. */

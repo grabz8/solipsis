@@ -31,44 +31,38 @@ namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 SiteNode::SiteNode() :
-    RakNetSiteNode()
+    Node("site"),
+    mEntity(0)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::SiteNode()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::SiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
 SiteNode::~SiteNode()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::~SiteNode()");
-
-    RakNetServer::getSingleton().onSiteNodeDestroyed(this);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::~SiteNode()");
 }
 
 //-------------------------------------------------------------------------------------
-Entity::EntityMap& SiteNode::getPresentEntities()
+RakNetEntity::RakNetEntityMap& SiteNode::getPresentEntities()
 {
     return mPresentEntities;
 }
 
 //-------------------------------------------------------------------------------------
-void SiteNode::addPresentEntity(Entity* entity)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::addPresentEntity() uid:%s adding entity uid:%s", mEntity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getUid().c_str());
-
-    mPresentEntities[entity->getXmlEntity()->getUid()] = entity;
-}
-
-//-------------------------------------------------------------------------------------
-void SiteNode::removePresentEntity(Entity* entity)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::removePresentEntity() uid:%s removing entity uid:%s", mEntity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getUid().c_str());
-
-    mPresentEntities.erase(entity->getXmlEntity()->getUid());
-}
-
-//-------------------------------------------------------------------------------------
 bool SiteNode::loadFromElt(TiXmlElement* nodeElt)
 {
+    // Load the entity
+    TiXmlElement* entityElt = nodeElt->FirstChildElement("entity");
+    if (entityElt == 0)
+        return false;
+    Entity* entity = RakNetServer::getSingletonPtr()->loadEntity(entityElt);
+    if (entity == 0)
+        return false;
+    if (entity->getXmlEntity()->getType() != ETSite)
+        return false;
+    mEntity = entity;
+
     // Load present entities ?
     TiXmlElement* presentEntitiesElt;
     if ((presentEntitiesElt = nodeElt->FirstChildElement("presentEntities")) != 0)
@@ -90,17 +84,37 @@ TiXmlElement* SiteNode::getSavedElt()
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::getSavedElt() saving entity of site node with nodeId:%s", mNodeId.c_str());
 
     // Get root node
-    TiXmlElement* nodeElt = RakNetNode::getSavedElt();
+    TiXmlElement* nodeElt = Node::getSavedElt();
     // Add site entity
     mEntity->getXmlEntity()->toXmlElt(*nodeElt);
 
     // Add present entities
     TiXmlElement* presentEntitiesElt = new TiXmlElement("presentEntities");
     nodeElt->LinkEndChild(presentEntitiesElt); 
-    for (Entity::EntityMap::iterator it = mPresentEntities.begin(); it != mPresentEntities.end(); ++it)
+    for (RakNetEntity::RakNetEntityMap::iterator it = mPresentEntities.begin(); it != mPresentEntities.end(); ++it)
         it->second->getXmlEntity()->toXmlElt(*presentEntitiesElt);
 
     return nodeElt;
+}
+
+//-------------------------------------------------------------------------------------
+void SiteNode::onNewEntity(RakNetEntity* entity)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::onNewEntity() adding entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+
+    // me ?
+    if (entity->getXmlEntity()->getType() == ETObject)
+        mPresentEntities[entity->getXmlEntity()->getUid()] = entity;
+}
+
+//-------------------------------------------------------------------------------------
+void SiteNode::onLostEntity(RakNetEntity* entity)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::onLostEntity() removing entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+
+    // me ?
+    if (entity->getXmlEntity()->getType() == ETObject)
+        mPresentEntities.erase(entity->getXmlEntity()->getUid());
 }
 
 //-------------------------------------------------------------------------------------

@@ -24,18 +24,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __SiteNode_h__
 #define __SiteNode_h__
 
-#include "RakNetSiteNode.h"
+#include "Node.h"
 #include "Entity.h"
 
 namespace Solipsis {
 
 /** This class manages 1 site node.
 */
-class SiteNode : public RakNetSiteNode
+class SiteNode : public Node
 {
 protected:
     /// Map of entities
-    Entity::EntityMap mPresentEntities;
+    RakNetEntity::RakNetEntityMap mPresentEntities;
+
+    /// Entity
+    RakNetEntity *mEntity;
 
 public:
     /** Constructor. */
@@ -44,16 +47,22 @@ public:
     virtual ~SiteNode();
 
     /** Get present entities. */
-    Entity::EntityMap& getPresentEntities();
-    /** Add an entity present in the site. */
-    void addPresentEntity(Entity* entity);
-    /** Remove an entity present in the site. */
-    void removePresentEntity(Entity* entity);
+    RakNetEntity::RakNetEntityMap& getPresentEntities();
 
-    /** See Solipsis::RakNetNode. */
+    /** Get entity. */
+    RakNetEntity* getEntity() { return mEntity; }
+    /** Set entity. */
+    void setEntity(RakNetEntity* entity) { mEntity = entity; }
+
+    /** See Solipsis::Node. */
     virtual bool loadFromElt(TiXmlElement* nodeElt);
-    /** See Solipsis::RakNetNode. */
+    /** See Solipsis::Node. */
     virtual TiXmlElement* getSavedElt();
+
+    /** Method called when 1 entity is created. */
+    virtual void onNewEntity(RakNetEntity* entity);
+    /** Method called when 1 entity is destroyed. */
+    virtual void onLostEntity(RakNetEntity* entity);
 };
 
 } // namespace Solipsis

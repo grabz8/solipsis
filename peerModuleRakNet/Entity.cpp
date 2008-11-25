@@ -33,8 +33,6 @@ using namespace CommonTools;
 
 namespace Solipsis {
 
-Entity::EntityMap Entity::entities;
-
 //-------------------------------------------------------------------------------------
 Entity::Entity() :
     RakNetEntity(),
@@ -45,6 +43,7 @@ Entity::Entity() :
 #ifdef PHYSICSPLUGINS
     ,mPhysicsCharacter(0)
 #endif
+    ,mDirty(true)
 {
     applyGravity(true);
 }
@@ -54,43 +53,25 @@ Entity::~Entity()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::~Entity()");
 
+    removeEntity(this);
+
 #ifdef PHYSICSPLUGINS
     destroyPhysics();
 #endif
-
-    removeEntity(this, false);
 }
 
 //-------------------------------------------------------------------------------------
-void Entity::addEntity(Entity* entity, bool sendNewEvt)
+void Entity::onNewEntity()
 {
-    entities[entity->getXmlEntity()->getUid()] = entity;
-    Peer::getSingleton().getNodeManager()->onNewEntity(entity, sendNewEvt);
+    RakNetEntity::onNewEntity();
+    Peer::getSingleton().getAvatarNode()->onNewEntity(this);
 }
 
 //-------------------------------------------------------------------------------------
-void Entity::removeEntity(Entity* entity, bool sendLostEvt)
+void Entity::onLostEntity()
 {
-    entities.erase(entity->getXmlEntity()->getUid());
-    Peer::getSingleton().getNodeManager()->onLostEntity(entity, sendLostEvt);
-}
-
-//-------------------------------------------------------------------------------------
-void Entity::cleanUpEntities()
-{
-    for(EntityMap::const_iterator it=entities.begin();it!=entities.end();it=entities.begin())
-    {
-        Entity *entity = it->second;
-        delete entity;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void Entity::DeserializeDestruction(RakNet::BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::DeserializeDestruction()");
-
-    removeEntity(this, true);
+    Peer::getSingleton().getAvatarNode()->onLostEntity(this);
+    RakNetEntity::onLostEntity();
 }
 
 //-------------------------------------------------------------------------------------
@@ -98,13 +79,13 @@ void Entity::Deserialize(BitStream *bitStream, SerializationType serializationTy
 {
     RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
 
-    EntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+    RakNetEntityMap& entities = getEntities();
+    RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
     if (it != entities.end())
     {
         // masking content updates until transfer is complete
-//        if (!mMissingFiles.empty())
-            mLastDeserializedDefinedAttributes &= ~XmlEntity::DAContent;
-        Peer::getSingleton().getNodeManager()->onUpdatedEntity(this);
+        mLastDeserializedDefinedAttributes &= ~XmlEntity::DAContent;
+        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
     }
 }
 
@@ -115,15 +96,17 @@ void Entity::onTransferComplete(const std::string& filename)
 
     if (mMissingFiles.empty())
     {
-        EntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+        RakNetEntityMap& entities = getEntities();
+        RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
         if (it == entities.end())
         {
-            addEntity(this, true);
+            mDirty = true;
+            addEntity(this);
         }
         else
         {
             mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
-            Peer::getSingleton().getNodeManager()->onUpdatedEntity(this);
+            Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
         }
     }
 }
@@ -262,8 +245,6 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         characterDesc.stepOffset = mRadius;
         mPhysicsCharacter = mPhysicsScene->createCharacter();
         mPhysicsCharacter->create(characterDesc);
-
-        mDirty = false;
     }
 }
 

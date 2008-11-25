@@ -24,24 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Peer_h__
 #define __Peer_h__
 
+#include <list>
+#include <pthread.h>
 #include <CTLog.h>
 #include <CTBasicThread.h>
 #include "IPeer.h"
 #include "PhysicsEngineManager.h"
 #include "Ogre.h"
 #include "IP2NServer.h"
-#include "NodeManager.h"
+#include "AvatarNode.h"
 #include "TimeListener.h"
 
-#include "RakNetConnection.h"
+#include <RakNetConnection.h>
+#include "RM2Connection.h"
 
 #ifdef PHYSICSPLUGINS
 #include "IPhysicsScene.h"
 #include "PhysicsEngineManager.h"
 #endif
-
-#include <list>
-#include <pthread.h>
 
 using CommonTools::BasicThread;
 
@@ -74,7 +74,6 @@ protected:
 
 	IP2NServer* mP2NServer;
     PhysicsEngineManager* mPhysicsEngineManager;
-    NodeManager* mNodeManager;
 
 #ifdef PHYSICSPLUGINS
     /// Physics scene
@@ -88,6 +87,11 @@ protected:
     /// Node name
     std::string mName;
 
+    /// Avatar node
+    AvatarNode* mAvatarNode;
+
+    /// Instance of the class that creates the object we use to represent connections
+    RM2ConnectionFactory mConnectionFactory;
     /// RakNetConnection
     RakNetConnection mRakNetConnection;
     /// Mutex on RakNet connection
@@ -126,12 +130,17 @@ public:
     static Peer* getSingletonPtr() { return ms_Singleton; }
     static Peer& getSingleton() { return *ms_Singleton; }
 
-    NodeManager* getNodeManager() { return mNodeManager; }
     std::string& getMediaCachePath() { return mMediaCachePath; }
     IPeerRenderSystemLock* getRenderSystemLock() { return mRenderSystemLock; }
 
     const NodeId& getNodeId() { return mNodeId; }
     const std::string& getName() { return mName; }
+
+    /** Retrieve the avatar node */
+    AvatarNode* getAvatarNode();
+
+    /** Load 1 entity */
+    Entity* loadEntity(TiXmlElement* entityElt);
 
 #ifdef PHYSICSPLUGINS
     IPhysicsScene* getPhysicsScene();
@@ -195,6 +204,9 @@ protected:
     void _finalize();
     bool _fireTick(Ogre::Real timeSinceLastTick);
     bool _fireTick();
+
+    /** Create the avatar node */
+    void createAvatarNode();
 };
 
 } // namespace Solipsis

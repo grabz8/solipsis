@@ -40,14 +40,7 @@ namespace Solipsis {
 */
 class Entity : public RakNetEntity
 {
-public:
-    /// <EntityUID, Entity*> map
-    typedef std::map<EntityUID, Entity*> EntityMap;
-
 protected:
-    /// Map of entities
-    static EntityMap entities;
-
     /// Whether to apply the gravity
     bool mGravity;
 #ifdef PHYSICSPLUGINS
@@ -82,22 +75,15 @@ public:
     /** Destructor. */
     virtual ~Entity();
 
-	/** Add 1 new entity. */
-    static void addEntity(Entity* entity, bool sendNewEvt);
-	/** Remove 1 entity. */
-    static void removeEntity(Entity* entity, bool sendLostEvt);
-	/** Clean up entities. */
-    static void cleanUpEntities();
-	/** Helper function to get entities. */
-    static EntityMap& getEntities() { return entities; }
+    /** See RakNetEntity. */
+    virtual void onNewEntity();
+    /** See RakNetEntity. */
+    virtual void onLostEntity();
 
-    /** See Replica2::DeserializeDestruction. */
-	virtual void DeserializeDestruction(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
-
-    /** See Replica2::Deserialize. */
+    /** See RakNet::Replica2. */
 	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
 
-    /** See CacheManagerCallback::onTransferComplete. */
+    /** See CacheManagerCallback. */
     virtual void onTransferComplete(const std::string& filename);
 
     /** Apply or not the gravity. */

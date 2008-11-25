@@ -80,6 +80,9 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
     mPhysicsScene(0),
     mPhysicsMutex(PTHREAD_MUTEX_INITIALIZER),
     mNodeId(""),
+    mName(""),
+    mAvatarNode(0),
+    mRakNetConnection(&mConnectionFactory, false, "localhost", 8660),
     mRakNetMutex(PTHREAD_MUTEX_INITIALIZER),
     mEvtsToProcessMutex(PTHREAD_MUTEX_INITIALIZER)
 {
@@ -124,7 +127,6 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
         mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     mPhysicsEngineManager = new PhysicsEngineManager();
-    mNodeManager = new NodeManager();
 }
 
 //-------------------------------------------------------------------------------------
@@ -133,7 +135,6 @@ Peer::~Peer()
     assert(Peer::ms_Singleton == this);
     Peer::ms_Singleton = 0;
 
-    delete mNodeManager;
     delete mPhysicsEngineManager;
 }
 
@@ -216,27 +217,31 @@ void Peer::run()
     while (!mStopRequested)
     {
         pthread_mutex_lock(&mRakNetMutex);
-        if (mRakNetConnection.mRakPeer != 0)
+        RakPeerInterface *RakPeer = mRakNetConnection.getRakPeer();
+        if (RakPeer != 0)
         {
             // Get received packets
             Packet *packet;
-            for (packet = mRakNetConnection.mRakPeer->Receive(); packet; mRakNetConnection.mRakPeer->DeallocatePacket(packet), packet = mRakNetConnection.mRakPeer->Receive())
+            for (packet = RakPeer->Receive(); packet; RakPeer->DeallocatePacket(packet), packet = RakPeer->Receive())
             {
                 switch (packet->data[0])
                 {
                 case ID_CONNECTION_ATTEMPT_FAILED:
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_ATTEMPT_FAILED");
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_ATTEMPT_FAILED from %s", packet->systemAddress.ToString());
                     break;
                 case ID_NO_FREE_INCOMING_CONNECTIONS:
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_NO_FREE_INCOMING_CONNECTIONS");
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_NO_FREE_INCOMING_CONNECTIONS from %s", packet->systemAddress.ToString());
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_REQUEST_ACCEPTED");
-                    // Set notifications interval for big file transfer
-                    mRakNetConnection.mRakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/mRakNetConnection.mRakPeer->GetMTUSize(packet->systemAddress));
-                    // Store the server address
-                    mRakNetConnection.mServerSystemAddress = packet->systemAddress;
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() mRakNetServerSystemAddress:%s", mRakNetConnection.mServerSystemAddress.ToString());
+                    {
+                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_REQUEST_ACCEPTED from %s", packet->systemAddress.ToString());
+                        // Set notifications interval for big file transfer
+                        RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
+                        // Store the server address
+                        mRakNetConnection.setServerSystemAddress(packet->systemAddress);
+                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ServerSystemAddress:%s", mRakNetConnection.getServerSystemAddress().ToString());
+                        createAvatarNode();
+                    }
                     break;
                 case RakNetConnection::ID_REQUESTING_FILETRANSFER:
                     {
@@ -249,13 +254,15 @@ void Peer::run()
                         RakNetConnection::DeserializeString(&bitStream, filename);
                         FileVersion version;
                         bitStream.Read(version);
-                        mRakNetConnection.mCacheManager.sendFile(packet->systemAddress, fileListTransferSetID, filename, version);
+                        mRakNetConnection.getCacheManager()->sendFile(packet->systemAddress, fileListTransferSetID, filename, version);
                     }
                     break;
                 case RakNetConnection::ID_ACTION_ON_ENTITY:
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
-                    BitStream bitStream(packet->data + 1, packet->length - 1, false);
-                    mNodeManager->onActionOnEntity(&bitStream);
+                    {
+                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
+                        BitStream bitStream(packet->data + 1, packet->length - 1, false);
+                        mAvatarNode->onActionOnEntity(&bitStream);
+                    }
                     break;
                 }
             }
@@ -275,14 +282,11 @@ void Peer::run()
             mEvtsToProcessList.pop_front();
             bool result;
             std::string xmlRespStr;
-            result = mNodeManager->processEvt(mNodeId, xmlEvt, xmlRespStr);
+            result = mAvatarNode->processEvt(xmlEvt, xmlRespStr);
         }
         pthread_mutex_unlock(&mEvtsToProcessMutex);
 
         CommonTools::System::sleep(tickDuration*1000.0f);
-
-        if (mNodeManager != 0)
-            mNodeManager->update();
 
         if (!_fireTick())
         {
@@ -346,7 +350,13 @@ IP2NClient::RetCode Peer::login(const std::string& xmlParamsStr, NodeId& nodeId,
     }
 
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Connecting on %s:%d ...", worldHost.c_str(), worldPort);
-    mRakNetConnection.mRakPeer->Connect(worldHost.c_str(), worldPort, 0, 0, 0);
+    mRakNetConnection.setHost(worldHost);
+    mRakNetConnection.setPort(worldPort);
+    if (!mRakNetConnection.connectClient())
+    {
+        xmlRespStr = "Unable to connect to world host !";
+        return IP2NClient::RCError;
+    }
 
     return IP2NClient::RCOk;
 }
@@ -356,8 +366,18 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
 {
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout()");
 
-    mNodeManager->cleanUpNodes();
+    // Save the avatar node
+    if (mAvatarNode != 0)
+        if (!mAvatarNode->saveNode(mMediaCachePath))
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::logout() Unable to save avatar node with nodeId:%s !", mAvatarNode->getNodeId().c_str());
+
     Entity::cleanUpEntities();
+  
+    if (mAvatarNode != 0)
+    {
+        delete mAvatarNode;
+        mAvatarNode = 0;
+    }
 
 #ifdef PHYSICSPLUGINS
     pthread_mutex_lock(&mPhysicsMutex);
@@ -370,8 +390,10 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
     pthread_mutex_unlock(&mPhysicsMutex);
 #endif
 
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.mServerSystemAddress.ToString());
-    mRakNetConnection.mRakPeer->CloseConnection(mRakNetConnection.mServerSystemAddress, true);
+    pthread_mutex_lock(&mRakNetMutex);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.getServerSystemAddress().ToString());
+    mRakNetConnection.getRakPeer()->CloseConnection(mRakNetConnection.getServerSystemAddress(), true);
+    pthread_mutex_unlock(&mRakNetMutex);
 
     return IP2NClient::RCOk;
 }
@@ -387,20 +409,24 @@ IP2NClient::RetCode Peer::handleEvt(const NodeId& nodeId, std::string& xmlRespSt
 #endif
 
 #ifdef POOL
-    RefCntPoolPtr<XmlEvt> xmlEvt = mNodeManager->getNextEvtToHandle(mNodeId);
+    RefCntPoolPtr<XmlEvt> xmlEvt = RefCntPoolPtr<XmlEvt>::nullPtr;
+#else
+    XmlEvt* xmlEvt = 0;
+#endif
+
+#ifdef POOL
+    if (mAvatarNode != 0)
+        xmlEvt = mAvatarNode->getNextEvtToHandle();
     if (!xmlEvt.isNull())
 #else
-    XmlEvt* xmlEvt = mNodeManager->getNextEvtToHandle(mNodeId);
+    if (mAvatarNode != 0)
+        xmlEvt = mAvatarNode->getNextEvtToHandle();
     if (xmlEvt != 0)
 #endif
     {
         std::stringstream s;
         s << "<solipsis>" << xmlEvt->toXmlString() << "</solipsis>";
-#ifdef POOL
-        mNodeManager->freeEvt(mNodeId, xmlEvt);
-#else
-        mNodeManager->freeEvt(mNodeId, xmlEvt);
-#endif
+        mAvatarNode->freeEvt(xmlEvt);
         xmlRespStr = s.str();
     }
 
@@ -474,39 +500,9 @@ bool Peer::_initialize()
         return false;
     }
 
+    // Initialize the client connection
     pthread_mutex_lock(&mRakNetMutex);
-    // We are the client
-    mRakNetConnection.mServer = false;
-    // Get 1 instance of the RakNet peer interface
-    mRakNetConnection.mRakPeer = RakNetworkFactory::GetRakPeerInterface();
-    // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
-    mRakNetConnection.mRakPeer->SetNetworkIDManager(&mRakNetConnection.mNetworkIdManager);
-    // The network ID authority is the system that creates the common numerical identifier used to lookup pointers.
-    // For client/server this is the server
-    // For peer to peer this would be true on every system, and you would also have call NetworkID::peerToPeerMode=true;
-    mRakNetConnection.mNetworkIdManager.SetIsNetworkIDAuthority(mRakNetConnection.mServer);
-    // Start RakNet
-    mRakNetConnection.mSocketDescriptor.port = 0;
-    mRakNetConnection.mRakPeer->Startup(1, 100, &mRakNetConnection.mSocketDescriptor, 1);
-    // Attach the ReplicaManager2 plugin
-    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mReplicaManager);
-    // Register our custom connection factory
-    mRakNetConnection.mReplicaManager.SetConnectionFactory(&mRakNetConnection.mConnectionFactory);
-    // Attach the FileListTransfer plugin
-    mRakNetConnection.mRakPeer->AttachPlugin(&mRakNetConnection.mFileListTransfer);
-
-	// Here I use the string table class to efficiently send strings I know in advance.
-	// The encoding is used in in Replica2::SerializeConstruct
-	// The decoding is used in in Connection_RM2::Construct
-	// The stringTable class will also send strings that weren't registered but this just falls back to the stringCompressor and wastes 1 extra bit on top of that
-	// 2nd parameter of false means a static string so it's not necessary to copy it
-	StringTable::Instance()->AddString("AvatarNode", false);
-	StringTable::Instance()->AddString("SiteNode", false);
-	StringTable::Instance()->AddString("Entity", false);
-
-    // Initializing the cache
-    mRakNetConnection.mCacheManager.initialize(mMediaCachePath);
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::login() Initializing cache manager");
+    mRakNetConnection.initialize(mMediaCachePath);
     pthread_mutex_unlock(&mRakNetMutex);
 
     mInitialized = true;
@@ -537,15 +533,9 @@ void Peer::_finalize()
 
     OgreHelpers::shutdown();
 
+    // Finalizing the connection
     pthread_mutex_lock(&mRakNetMutex);
-    if (mRakNetConnection.mRakPeer != 0)
-    {
-        mRakNetConnection.mRakPeer->Shutdown(100, 0);
-        RakNetworkFactory::DestroyRakPeerInterface(mRakNetConnection.mRakPeer);
-        mRakNetConnection.mRakPeer = 0;
-    }
-    // Finalizing the cache
-    mRakNetConnection.mCacheManager.finalize();
+    mRakNetConnection.finalize();
     pthread_mutex_unlock(&mRakNetMutex);
 
     mInitialized = false;
@@ -604,6 +594,97 @@ bool Peer::_fireTick()
     mLastTickTime = now;
 
     return _fireTick((Real)(elapsedTime)/1000.0f);
+}
+
+//-------------------------------------------------------------------------------------
+void Peer::createAvatarNode()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::createAvatarNode() avatarNodeId:%s", mNodeId.c_str());
+
+    mAvatarNode = new AvatarNode();
+    mAvatarNode->setNodeId(mNodeId);
+    mAvatarNode->setName(mName);
+
+    // Load the avatar node
+    bool avatarLoaded = mAvatarNode->loadNode(mMediaCachePath);
+    if (!avatarLoaded)
+    {
+        // Create the avatar node
+        EntityUID AvatarEntityUid;
+        AvatarEntityUid = mAvatarNode->getNodeId() + "_00000000";
+        // Randomize the character
+        CommonTools::IO::FilenameVector filenames;
+        CommonTools::IO::getFilenames(mMediaCachePath, filenames);
+        CommonTools::IO::FilenameVector safFilenames;
+        for (CommonTools::IO::FilenameVector::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
+            if (it->find(".saf") == it->length() - 4)
+                safFilenames.push_back(*it);
+        int safIdx = time(NULL)%(int)safFilenames.size();
+        std::string xmlAvatarStr = "\
+<entity uid=\"" + AvatarEntityUid + "\" owner=\"" + mAvatarNode->getNodeId() + "\" type=\"0\" name=\"" + mAvatarNode->getName() + "\" version=\"00000000\">\
+ <flags bitmask=\"" + XmlHelpers::convertEntityFlagsToHexString(EFNone) + "\" />\
+ <position x=\"0.0\" y=\"0.0\" z=\"0.0\" />\
+ <orientation x=\"0.0\" y=\"0.0\" z=\"0.0\" w=\"1.0\" />\
+ <aabb>\
+  <min x=\"-0.82447118\" y=\"-0.013709042\" z=\"-0.64538133\" />\
+  <max x=\"0.82353306\" y=\"1.4500649\" z=\"0.69156337\" />\
+ </aabb>\
+ <content>\
+  <lod level=\"0\">\
+   <files>\
+    <file name=\"" + safFilenames[safIdx] + "\" version=\"00000000\" />\
+   </files>\
+  </lod>\
+ </content>\
+</entity>\
+";
+        TiXmlDocument xmlAvatarDoc;
+        xmlAvatarDoc.Parse(xmlAvatarStr.c_str());
+        Entity* avatarEntity = new Entity();
+        avatarEntity->setSystemAddress(mRakNetConnection.getMySystemAddress());
+        avatarEntity->getXmlEntity()->fromXmlElt(xmlAvatarDoc.RootElement());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::createAvatarNode() initializing avatar node name:%s with character:%s", avatarEntity->getXmlEntity()->getName().c_str(), safFilenames[safIdx].c_str());
+        mAvatarNode->setEntity(avatarEntity);
+        avatarEntity->addFilesInCacheManager();
+        avatarEntity->mDirty = true;
+        RakNetEntity::addEntity(avatarEntity);
+        /// Client can serialize
+        avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
+        // Entity managed by the Replica2 plugin
+        avatarEntity->SetReplicaManager(mRakNetConnection.getReplicaManager());
+        // Send out this new entity to all systems
+        avatarEntity->BroadcastConstruction();
+    }
+}
+
+//-------------------------------------------------------------------------------------
+AvatarNode* Peer::getAvatarNode()
+{
+    return mAvatarNode;
+}
+
+//-------------------------------------------------------------------------------------
+Entity* Peer::loadEntity(TiXmlElement* entityElt)
+{
+    Entity* entity = new Entity();
+    entity->setSystemAddress(mRakNetConnection.getMySystemAddress());
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> xmlEntity = entity->getXmlEntity();
+#else
+    XmlEntity* xmlEntity = entity->getXmlEntity();
+#endif
+    xmlEntity->fromXmlElt(entityElt);
+    entity->addFilesInCacheManager();
+    entity->mDirty = true;
+    RakNetEntity::addEntity(entity);
+    /// Client can serialize
+    entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
+    // Entity managed by the Replica2 plugin
+    entity->SetReplicaManager(mRakNetConnection.getReplicaManager());
+    // Send out this new entity to all systems
+    entity->BroadcastConstruction();
+
+    return entity;
 }
 
 //-----------------------------------------------------------------------
