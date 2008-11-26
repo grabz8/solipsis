@@ -25,6 +25,10 @@
                 var naviData = new NaviData(buttonName);
                 if (buttonName == 'ok')
                     naviData.add({world:document.getElementById("selectWorlds").value});
+                    // extended datas associated to the world server : voice IP server, VNC server, VLC server ...
+                    // naviData.add({voipServer:'127.0.0.1:30000'});
+                    // naviData.add({vncServer:'127.0.0.1:5900'});
+                    // naviData.add({vlcServer:'127.0.0.1:8080'});
                 naviData.send();
             }
         </script>
