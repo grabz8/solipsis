@@ -335,7 +335,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
                 saveLastCameraMode();
-                setCameraMode(CMAroundPerson);
+                setCameraMode(CMModeling);
                 navigatorGUI->modelerMainShow();
             }
             break;
@@ -555,47 +555,71 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     // zoom and orbit camera in Modeling or AvatarEdit Mode
     Real mouseWheel = evt.mState.mZrel;
     if(!NaviManager::Get().isAnyNaviFocused() && 
-        getCameraMode() == CMAroundPerson)
+        ((getCameraMode() == CMAroundPerson) || (getCameraMode() == CMModeling)))
     {
-        SceneNode* camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
-        SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
-        SceneNode* camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
+		SceneNode *camNode = 0, *camPitchNode = 0, *camDistNode = 0, *camYawNode = 0;
+        if (getCameraMode() == CMAroundPerson)
+		{
+			camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
+			camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
+			camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
+		}
+		else if (getCameraMode() == CMModeling)
+		{
+			camNode = mSceneMgr->getSceneNode("ModelingCamNode");
+			camYawNode = mSceneMgr->getSceneNode("ModelingCamYawNode");
+			camPitchNode = mSceneMgr->getSceneNode("ModelingCamPitchNode");
+			camDistNode = mSceneMgr->getSceneNode("ModelingCamDistNode");
+		}
 
         // zoom camera when the wheel mouse has changed
         if (!Ogre::Math::RealEqual(mouseWheel, 0))
         {
+			Vector3 pos;
+			Quaternion orientation;
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
+			pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
+			orientation = mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation();
 #else
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
+			pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
+			orientation = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedOrientation();
 #endif
 			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
 
             // WARNING, here we force update of view by resetting the orientation
-            mCamera->setOrientation(Quaternion::IDENTITY);
-            mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
+			mCamera->setOrientation(Quaternion::IDENTITY);
+			Real DistFrontAvatar=0.0f;
+			if (getCameraMode() == CMModeling)
+				DistFrontAvatar=DIST_AVATAR_OBJECT;
+			
+			mCamera->lookAt(pos + orientation*Vector3(DistFrontAvatar , 0.5*size.y, 0.0));
 
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
+			Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
             Vector3 camAbs = mCamera->getWorldPosition();
-#else
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition() + Vector3(0, 0.5*size.y, 0);
-            Vector3 camAbs = mCamera->getRealPosition();
-#endif
 			if (posAbs.squaredDistance(camAbs) >= 3.5)
             {
                 camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 				camAbs = mCamera->getWorldPosition();
-#else
-				camAbs = mCamera->getRealPosition();
-#endif
-                if (posAbs.squaredDistance(camAbs) < 3.5)
+				if (posAbs.squaredDistance(camAbs) < 3.5)
                     camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
             }
 
-            return true;
+#else
+			Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
+            Vector3 camAbs = mCamera->getRealPosition();
+			if (posAbs.squaredDistance(camAbs) >= 3.5)
+            {
+                camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
+				camAbs = mCamera->getRealPosition();
+				if (posAbs.squaredDistance(camAbs) < 3.5)
+                    camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
+            }
+#endif
+			return true;
         }
+
+
 
         // orbit camera when the rigth click is pressed 
         if (mMouseMiddlePressed)
@@ -606,15 +630,26 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
             yaw = -mRotate*evt.mState.mXrel;
             roll = mRotate*evt.mState.mYrel * .5;
 
-            // rotate around the avatar
-            camNode->yaw(Degree(yaw));
-            // look in front of / upper the avatar
-            // limit the roll to +5° to +50°
-            Real camRoll = camPitchNode->getOrientation().getRoll().valueDegrees();
-            if( 5. <= (camRoll+roll) && (camRoll+roll) <= 50. ) 
-                camPitchNode->roll(Degree(roll));
+            // rotate around the avatar or object
+			camNode->yaw(Degree(yaw));
 
-            return true;
+			if (getCameraMode() == CMModeling)
+			{
+				Real camRoll =camYawNode->getOrientation().getRoll().valueDegrees();
+				//if( -90. <= (camRoll+roll) && (camRoll+roll) <= 90. ) 
+					camYawNode->roll(Degree(roll));
+				
+			}
+			else
+			{
+				// look in front of / upper the avatar
+				// limit the roll to +5° to +50
+				Real camRoll = camPitchNode->getOrientation().getRoll().valueDegrees();
+				if( 5. <= (camRoll+roll) && (camRoll+roll) <= 50. ) 
+					camPitchNode->roll(Degree(roll));
+			}
+			return true;
+
         }
     }
 
@@ -635,8 +670,40 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         if( mNavigator->isOnGizmo )//&& !selection->isEmpty() )
         {
             //Calculate drag and drop :
-            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-            dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );
+// Jerome
+/*			if (selection->mTransformation->getMode()==Transformations::Mode::MOVE)
+			{
+				Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+				Quaternion nodeSelectionOrientation = mNavigator->getSceneMgrPtr()->getSceneNode("NodeSelection")->_getDerivedOrientation();
+				dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay), nodeSelectionOrientation );
+			}	
+			else
+			{
+				Vector3 PosOnScreen((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight(), 0);
+				dragNdrop = selection->mTransformation->drapNdrop( PosOnScreen );
+			}
+			
+			if( dragNdrop != Vector3::ZERO )
+            {
+                //Apply the transformation
+                switch( selection->mTransformation->getMode() )
+                {
+                case Transformations::Mode::MOVE :	//Move objects
+                    mNavigator->MdlrModifGizmo( dragNdrop );
+                    break;
+                case Transformations::Mode::ROTATE :	//Rotate objects
+                    mNavigator->MdlrModifGizmo( dragNdrop *75.);
+                    break;
+                case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
+                    dragNdrop -= Vector3::UNIT_SCALE;
+                    mNavigator->MdlrModifGizmo( dragNdrop * 100. );
+                    break;
+                }
+*/
+// End Jerome
+
+			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+			dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );			
             if( dragNdrop != Vector3::ZERO )
             {
                 //Apply the transformation
@@ -892,18 +959,22 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorFrameListener::setCameraMode(%d)", mode);
 
-    if (mode == mCameraMode && mode != CMAroundPerson) return;
+    if (mode == mCameraMode && (mode != CMAroundPerson && mode != CMModeling)) return;
 
-    if ((mNavigator->getState() == Navigator::SAvatarEdit ||
-        mNavigator->getState() == Navigator::SModeling) &&
-        getCameraMode() == CMAroundPerson) return;
+    if (((mNavigator->getState() == Navigator::SAvatarEdit) && (getCameraMode() == CMAroundPerson)) ||
+        ((mNavigator->getState() == Navigator::SModeling) && (getCameraMode() == CMModeling)))
+			 return;
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar == 0) return;
+	Vector3 pos;
+	Quaternion orientation;
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-    Vector3 pos = userAvatar->getSceneNode()->getWorldPosition();
+     pos = userAvatar->getSceneNode()->getWorldPosition();
+	 orientation = userAvatar->getSceneNode()->getWorldOrientation();
 #else
-	Vector3 pos = userAvatar->getSceneNode()->_getDerivedPosition();
+	 pos = userAvatar->getSceneNode()->_getDerivedPosition();
+	 orientation = userAvatar->getSceneNode()->_getDerivedOrientation();
 #endif
     Vector3 size = userAvatar->getEntity()->getBoundingBox().getSize();
 
@@ -930,7 +1001,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
         break;
     case CMAroundPerson:
-        {
+		{
             mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
             SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
             SceneNode* camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
@@ -941,7 +1012,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
             camPitchNode->setOrientation( Quaternion::IDENTITY );
 
             // restore default orientations
-            camDistNode->yaw(Radian(Math::HALF_PI));
+			camDistNode->yaw(Radian(Math::HALF_PI)); // No need of this rotation
             camPitchNode->roll(Degree(25.));
             camDistNode->setPosition( Vector3(4, 0.5, 0)*size.y );
    
@@ -952,10 +1023,38 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
             mCamera->setOrientation(Quaternion::IDENTITY);
             mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
         }
+		break;
+	case CMModeling:
+		{
+			mCamNode = mSceneMgr->getSceneNode("ModelingCamNode");
+			SceneNode* camYawNode = mSceneMgr->getSceneNode("ModelingCamYawNode");
+            SceneNode* camPitchNode = mSceneMgr->getSceneNode("ModelingCamPitchNode");
+            SceneNode* camDistNode = mSceneMgr->getSceneNode("ModelingCamDistNode");
+
+            // reset orientations
+            mCamNode->setOrientation( Quaternion::IDENTITY );
+            camDistNode->setOrientation( Quaternion::IDENTITY );
+			camYawNode->setOrientation( Quaternion::IDENTITY);
+            camPitchNode->setOrientation( Quaternion::IDENTITY );
+
+            // restore default orientations
+			mCamNode->setPosition( Vector3(DIST_AVATAR_OBJECT, 0.5*size.y, 0)); 
+			camYawNode->yaw(Degree(-135.));
+			camPitchNode->roll(Degree(45.));
+			camDistNode->setPosition( Vector3(4, 0, 0)*size.y );
+
+   
+            mSceneMgr->getSceneNode("ModelingCamDistNode")->attachObject(mCamera);
+            userAvatar->setMvtType(Avatar::MTArountPerson);
+            // look at the avatar
+            // WARNING, here we force update of view by resetting the orientation
+            mCamera->setOrientation(Quaternion::IDENTITY);
+            mCamera->lookAt(pos + orientation*Vector3(DIST_AVATAR_OBJECT, 0.5*size.y, 0.0)); 
+		}
         break;
     }
-    userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson);
-    userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson);
+    userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
+    userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
     {
@@ -964,7 +1063,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
         NaviManager::Get().deFocusAllNavis();
         if (mode == CM1stPerson)
             navigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
-        else if (mode == CMAroundPerson)
+        else if (mode == CMAroundPerson || mode == CMModeling)
             navigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
     }
     mCameraMode = mode;

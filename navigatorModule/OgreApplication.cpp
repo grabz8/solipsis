@@ -103,7 +103,7 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
             return false;
         }
     }
-    mRoot->initialise(configManagedByOgre, windowTitle);
+	mRoot->initialise(configManagedByOgre, windowTitle);
 
     OgreHelpers::addResourceLocations();
 //    ResourceGroupManager::getSingleton().initialiseAllResourceGroups();

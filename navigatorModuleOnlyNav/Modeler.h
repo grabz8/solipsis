@@ -77,35 +77,35 @@ public:
     void cleanUp();
 
 	/// Create a plane 
-	bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a box 
-	bool createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a corner. 
-	bool createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a pyramid. 
-	bool createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a prism. 
-	bool createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a cylinder. 
-	bool createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a half cylinder. 
-	bool createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a cone. 
-	bool createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a Halfcone. 
-	bool createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a sphere. 
-	bool createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a half sphere. 
-	bool createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a torus. 
-	bool createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a tube. 
-	bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a ring. 
-	bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a mesh. 
-	bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos);
+	bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 
 	/// Test if the selection is empty
 	bool isSelectionEmpty();
@@ -144,7 +144,7 @@ public:
 
 
 	/// Load from / Save to a XML SOLIPSIS file
-	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO);
+	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO);
 	bool XMLSave(bool all = false);
 
@@ -159,7 +159,7 @@ public:
 	Ogre::String		mExecPath;
 
 private:
-	Object3D * createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos);
+	Object3D * createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos, Quaternion orientation);
 
 public:
     /// See TextureManager::loadTexture

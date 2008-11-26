@@ -112,19 +112,19 @@ void Transformations::releasedClickForTransformation ()
 			switch (mAxeClicked)
 			{
 				case AxeClicked::X :
-mNode_X->detachObject(mPlaneX);
+					mNode_X->detachObject(mPlaneX);
 					mNode_X->detachObject(mPlaneY);
-mNode_X->detachObject(mPlaneZ);
+					mNode_X->detachObject(mPlaneZ);
 					break ;
 				case AxeClicked::Y :
-mNode_Y->detachObject(mPlaneX);
-mNode_Y->detachObject(mPlaneY);
+					mNode_Y->detachObject(mPlaneX);
+					mNode_Y->detachObject(mPlaneY);
 					mNode_Y->detachObject(mPlaneZ);
 					break ;
 				case AxeClicked::Z :
 					mNode_Z->detachObject(mPlaneX);
-mNode_Z->detachObject(mPlaneY);
-mNode_Z->detachObject(mPlaneZ);
+					mNode_Z->detachObject(mPlaneY);
+					mNode_Z->detachObject(mPlaneZ);
 					break ;
 			}
 			break;							
@@ -170,6 +170,72 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 	if(mOldpos != Vector3::ZERO)
 	{
 		//Calculate transformation
+// Jerome
+/*		switch(mMode )
+		{
+			case Mode::MOVE :	//Move objects
+			{
+				Matrix3 nodeSelectionRotationMatrix;
+				nodeSelectionOrientation.ToRotationMatrix(nodeSelectionRotationMatrix);
+				//nodeSelectionRotationMatrix.Inverse();
+				Vector3 delta=newpos-mOldpos;
+				Vector3 newdelta=delta*nodeSelectionRotationMatrix;
+
+				switch (mAxeClicked )	//search axis
+				{
+					case AxeClicked::X :		//move X		
+						moving.x = newdelta.x; //newpos.x - mOldpos.x ;
+						break;
+					case AxeClicked::Y :		//move Y
+						moving.y = newdelta.y;//newpos.y - mOldpos.y ;
+						break ;
+					case AxeClicked::Z :		//move Z
+						moving.z = newdelta.z; //newpos.z - mOldpos.z ;
+						break ;
+				}
+				break;
+			}
+			case Mode::ROTATE :	//Rotate objects
+			{
+				switch (mAxeClicked )	//search axis
+				{
+					case AxeClicked::X :		//move X		
+                        //moving.z = newpos.x - mOldpos.x ;
+						moving.x =  newpos.y - mOldpos.y ;
+						break;
+					case AxeClicked::Y :		//move Y
+						//moving.x = newpos.y - mOldpos.y ;
+						moving.z = mOldpos.y - newpos.y ;
+						break ;
+					case AxeClicked::Z :		//move Z
+                        //moving.y = newpos.x - mOldpos.x ;
+						moving.y = newpos.x - mOldpos.x ;
+						break ;
+				}
+				break;
+			}
+			case Mode::SCALE :	//Scale objects, but not gizmos
+			{
+				moving = Vector3 (1, 1, 1);
+				switch (mAxeClicked )	//search axis
+				{
+					case AxeClicked::X :		//move X		
+						moving.z = abs( 1 + (newpos.x - mOldpos.x)/15.0 ) ;
+						break;
+					case AxeClicked::Y :		//move Y
+						moving.y = abs( 1 + (mOldpos.y - newpos.y )/30.0 ) ;
+						break ;
+					case AxeClicked::Z :		//move Z
+						moving.x = abs( 1 + (mOldpos.x - newpos.x )/30.0 ) ;
+						//moving.z = abs( 1 + (newpos.z - mOldpos.z)/100.0 ) ;
+
+						break ;
+				}
+				break;
+			}
+		}
+*/
+
 		switch(mMode )
 		{
 			case Mode::MOVE :	//Move objects
@@ -350,7 +416,7 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	mRaySceneQuery = pSceneMgr->createRayQuery( Ray() );
 
 	//SceneNodes :
-	m_GizmosAxesNode = pGizmosParentNode->createChildSceneNode("GizmosAxesNode"); 
+	m_GizmosAxesNode = pGizmosParentNode->createChildSceneNode("GizmosAxesNode");
 	
 	//Create sceneNodes
 	mNode_X = m_GizmosAxesNode->createChildSceneNode("move_widget_x");
@@ -364,7 +430,7 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	MovablePlane * movPlane ;
 	movPlane = new MovablePlane("dummy_plane_x");
 	movPlane->normal = Vector3::UNIT_Y;
-	MeshManager::getSingleton().createPlane("dummy_plane_x", mResourceGroup,*movPlane, 100, 100, 1, 1, true, 1, 1, 1, Vector3::UNIT_X);
+	MeshManager::getSingleton().createPlane("dummy_plane_x", mResourceGroup,*movPlane, 100, 100,1, 1, true, 1, 1, 1, Vector3::UNIT_X);
 	mPlaneX = pSceneMgr->createEntity( "dummy_plane_x", "dummy_plane_x" );
 	mPlaneX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
 	mPlaneX->setVisible(false);

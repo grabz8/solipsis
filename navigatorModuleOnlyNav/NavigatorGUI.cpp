@@ -2362,6 +2362,7 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
             modeler->getSelection()->mTransformation->showGizmosMove(false);
             modeler->getSelection()->mTransformation->showGizmosRotate(false);
             modeler->getSelection()->mTransformation->showGizmosScale(false);
+			modeler->lockGizmo(0);
         }
 		else
             showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);

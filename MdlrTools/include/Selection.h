@@ -132,7 +132,7 @@ public:
  *	\return the centre of the selection. If no object are selected, return (0,0,0).
  *
 */	
-	Vector3	getCenterPosition();			
+	Vector3	getCenterPosition();
 
 /*
  *

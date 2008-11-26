@@ -39,7 +39,8 @@ public:
         CM1stPerson,
         CM1stPersonWithMouse,
         CM3rdPerson,
-        CMAroundPerson
+        CMAroundPerson,
+		CMModeling
     };
 
 protected:

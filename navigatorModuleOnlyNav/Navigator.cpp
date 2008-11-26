@@ -1348,7 +1348,7 @@ bool Navigator::mainMenuClick(const String& item)
         if (mState == SInWorld)
         {
             navigatorFrameListener->saveLastCameraMode();
-            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
+            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMModeling);
             mNavigatorGUI->modelerMainShow();
         }
         else if (mState == SModeling)
@@ -1606,7 +1606,7 @@ bool Navigator::createPlane()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createPlane(entityUID, entityUID, plpos + dep);
+	return mModeler->createPlane(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1626,7 +1626,7 @@ bool Navigator::createBox()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createBox(entityUID, entityUID, plpos + dep);
+	return mModeler->createBox(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1646,7 +1646,7 @@ bool Navigator::createCorner()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createCorner(entityUID, entityUID, plpos + dep);
+	return mModeler->createCorner(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1666,7 +1666,7 @@ bool Navigator::createPyramid()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createPyramid(entityUID, entityUID, plpos + dep);
+	return mModeler->createPyramid(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1686,7 +1686,7 @@ bool Navigator::createPrism()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createPrism(entityUID, entityUID, plpos + dep);
+	return mModeler->createPrism(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1706,7 +1706,7 @@ bool Navigator::createCylinder()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createCylinder(entityUID, entityUID, plpos + dep);
+	return mModeler->createCylinder(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1726,7 +1726,7 @@ bool Navigator::createHalfCyl()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createHalfCyl(entityUID, entityUID, plpos + dep);
+	return mModeler->createHalfCyl(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1746,7 +1746,7 @@ bool Navigator::createCone()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createCone(entityUID, entityUID, plpos + dep);
+	return mModeler->createCone(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1766,7 +1766,7 @@ bool Navigator::createHalfCone()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createHalfCone(entityUID, entityUID, plpos + dep);
+	return mModeler->createHalfCone(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1786,7 +1786,7 @@ bool Navigator::createSphere()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createSphere(entityUID, entityUID, plpos + dep);
+	return mModeler->createSphere(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1806,7 +1806,7 @@ bool Navigator::createHalfSphere()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createHalfSphere(entityUID, entityUID, plpos + dep);
+	return mModeler->createHalfSphere(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1826,7 +1826,7 @@ bool Navigator::createTorus()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createTorus(entityUID, entityUID, plpos + dep);
+	return mModeler->createTorus(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1846,7 +1846,7 @@ bool Navigator::createTube()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createTube(entityUID, entityUID, plpos + dep);
+	return mModeler->createTube(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1866,7 +1866,7 @@ bool Navigator::createRing()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createRing(entityUID, entityUID, plpos + dep);
+	return mModeler->createRing(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
@@ -1886,7 +1886,7 @@ bool Navigator::createMesh()
 	dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createMesh(entityUID, entityUID, plpos + dep);
+	return mModeler->createMesh(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------

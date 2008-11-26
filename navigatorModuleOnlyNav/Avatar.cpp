@@ -50,6 +50,7 @@ String Avatar::mDefaultStateAnimName[ASAvatarAnimCount] = {
 #define XMLUPDATE_DISPLACEMENT_THRESHOLD 0.001f
 #define XMLUPDATE_ROTATION_THRESHOLD Radian(Math::PI*0.001f)
 
+
 //-------------------------------------------------------------------------------------
 #ifdef POOL
 Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
@@ -220,6 +221,10 @@ void Avatar::onSceneNodeChanged()
         SceneNode* turnAroundPersonCamNode = 0;
         SceneNode* turnAroundPersonCamPitchNode = 0;
 		SceneNode* turnAroundPersonCamDistNode = 0;
+		SceneNode* modelingCamNode = 0;
+		SceneNode* modelingCamYawNode = 0;
+		SceneNode* modelingCamPitchNode = 0;
+		SceneNode* modelingCamDistNode=0;
         if (mCamerasSceneNode == 0)
         {
             // Create camera node/pitch nodes
@@ -237,6 +242,12 @@ void Avatar::onSceneNodeChanged()
             turnAroundPersonCamNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = turnAroundPersonCamNode->createChildSceneNode("TurnAroundPersonCamPitchNode");
 			turnAroundPersonCamDistNode = turnAroundPersonCamPitchNode->createChildSceneNode("TurnAroundPersonCamDistNode");
+
+			// Create the Fifth camera node/pitch node
+            modelingCamNode = mCamerasSceneNode->createChildSceneNode("ModelingCamNode");
+			modelingCamYawNode = modelingCamNode->createChildSceneNode("ModelingCamYawNode");
+            modelingCamPitchNode = modelingCamYawNode->createChildSceneNode("ModelingCamPitchNode");
+			modelingCamDistNode = modelingCamPitchNode->createChildSceneNode("ModelingCamDistNode");
         }
         else
         {
@@ -247,6 +258,10 @@ void Avatar::onSceneNodeChanged()
             turnAroundPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("TurnAroundPersonCamNode");
             turnAroundPersonCamPitchNode = (SceneNode*)turnAroundPersonCamNode->getChild("TurnAroundPersonCamPitchNode");
 			turnAroundPersonCamDistNode = (SceneNode*)turnAroundPersonCamPitchNode->getChild("TurnAroundPersonCamDistNode");
+			modelingCamNode = (SceneNode*)mCamerasSceneNode->getChild("ModelingCamNode");
+			modelingCamYawNode = (SceneNode*)modelingCamNode->getChild("ModelingCamYawNode");
+            modelingCamPitchNode = (SceneNode*)modelingCamYawNode->getChild("ModelingCamPitchNode");
+			modelingCamDistNode = (SceneNode*)modelingCamPitchNode->getChild("ModelingCamDistNode");
             getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
         }
 
@@ -268,6 +283,16 @@ void Avatar::onSceneNodeChanged()
         turnAroundPersonCamPitchNode->setPosition(Vector3::ZERO);
         turnAroundPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
 		turnAroundPersonCamPitchNode->roll(Degree(25.));
+		modelingCamNode->setPosition(Vector3(DIST_AVATAR_OBJECT, 0.5*avatarSize.y, 2.0));
+		modelingCamNode->setOrientation(Quaternion::IDENTITY);
+		modelingCamYawNode->setPosition(Vector3::ZERO);
+		modelingCamYawNode->setOrientation(Quaternion::IDENTITY);
+		modelingCamYawNode->yaw(Degree(-135.));
+		modelingCamPitchNode->setPosition(Vector3::ZERO);
+		modelingCamPitchNode->setOrientation(Quaternion::IDENTITY);
+		modelingCamPitchNode->roll(Degree(-45));
+		modelingCamDistNode->setPosition(Vector3(4, 0, 0)*avatarSize.y );
+		modelingCamDistNode->setOrientation(Quaternion::IDENTITY);
     }
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());

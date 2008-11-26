@@ -187,7 +187,7 @@ void Modeler::cleanUp()
 }
 
 /// Create a plane.
-bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -203,12 +203,13 @@ bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
 
     return true;
 }
 
 /// Create a box.
-bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -224,13 +225,14 @@ bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
 
     return true;
 }
 
 
 /// Create a corner. 
-bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	//genMeshCorner( String(entityUID) + ".mesh", 100, 100, 100 );
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
@@ -247,11 +249,13 @@ bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vecto
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a pyramid. 
-bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	//genMeshPyramid( String(entityUID) + ".mesh", 100, 100, 100 );
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
@@ -268,11 +272,13 @@ bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vect
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a prism. 
-bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	//genMeshPrism( String(entityUID) + ".mesh", 100, 100 );
 	MeshPtr mptr = mGenericPrism->getMesh()->clone( String(entityUID) + ".mesh" );
@@ -289,11 +295,13 @@ bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a cylinder. 
-bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -309,11 +317,13 @@ bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vec
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a half cylinder. 
-bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -329,11 +339,13 @@ bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vect
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a cone. 
-bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -349,11 +361,13 @@ bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a Halfcone. 
-bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -369,11 +383,13 @@ bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vec
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a sphere. 
-bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -389,11 +405,13 @@ bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vecto
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a half sphere. 
-bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -409,11 +427,13 @@ bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, V
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a torus. 
-bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericTorus->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -429,11 +449,13 @@ bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a tube. 
-bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericTube->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -449,11 +471,13 @@ bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a ring. 
-bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericRing->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -469,11 +493,13 @@ bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
 /// Create a mesh. 
-bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos)
+bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
 {
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
@@ -489,6 +515,8 @@ bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3
 	obj->mCentreSelection = player_pos;
 
 	node->setPosition(player_pos);
+	node->setOrientation(orientation);
+
 	return true;
 }
 
@@ -645,7 +673,7 @@ Selection* Modeler::getSelection()
 }
 
 /// Load from a XML SOLIPSIS file (.sof)
-bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos)
+bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos, Quaternion orientation)
 {
     if (filename.empty())
         return false;
@@ -702,7 +730,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				}
 				else
                 {
-                    Object3D *newObject3D = createObjectWithXML(doc, texturepath, pos) ;
+                    Object3D *newObject3D = createObjectWithXML(doc, texturepath, pos, orientation) ;
                     loadedObjects.push_back(newObject3D);
                 }
 			}
@@ -1075,7 +1103,7 @@ bool Modeler::XMLSave(bool all)
 }
 
 /// Create a new Object3D with a file XML
-Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos)
+Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos, Quaternion orientation)
 {
 	Ogre::String primType = doc.RootElement()->FirstChildElement("model")->FirstChildElement("primitive")->Attribute("Name");
 	Object3D::Type type = objectStringToType(primType);
@@ -1086,46 +1114,46 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 	switch (type) 
 	{
         case Object3D::PLANE :
-			createPlane(entityUID, name, pos);
+			createPlane(entityUID, name, pos, orientation);
 			break;
 		case Object3D::BOX :
-			createBox(entityUID, name, pos);
+			createBox(entityUID, name, pos, orientation);
 			break;
 		case Object3D::CORNER :
-			createCorner(entityUID, name, pos);
+			createCorner(entityUID, name, pos, orientation);
 			break;
 		case Object3D::PYRAMID :
-			createPyramid(entityUID, name, pos);
+			createPyramid(entityUID, name, pos, orientation);
 			break;
 		case Object3D::PRISM :
-			createPrism(entityUID, name, pos);
+			createPrism(entityUID, name, pos, orientation);
 			break;
 		case Object3D::CYLINDER :
-			createCylinder(entityUID, name, pos);
+			createCylinder(entityUID, name, pos, orientation);
 			break;
 		case Object3D::HALF_CYLINDER :
-			createHalfCyl(entityUID, name, pos);
+			createHalfCyl(entityUID, name, pos, orientation);
 			break;
 		case Object3D::CONE :
-			createCone(entityUID, name, pos);
+			createCone(entityUID, name, pos, orientation);
 			break;
 		case Object3D::HALF_CONE :
-			createHalfCone(entityUID, name, pos);
+			createHalfCone(entityUID, name, pos, orientation);
 			break;
 		case Object3D::SPHERE :
-			createSphere(entityUID, name, pos);
+			createSphere(entityUID, name, pos, orientation);
 			break;
 		case Object3D::HALF_SPHERE :
-			createHalfSphere(entityUID, name, pos);
+			createHalfSphere(entityUID, name, pos, orientation);
 			break;
 		case Object3D::RING :
-			createRing(entityUID, name, pos);
+			createRing(entityUID, name, pos, orientation);
 			break;
 		case Object3D::TORUS :
-			createTorus(entityUID, name, pos);
+			createTorus(entityUID, name, pos, orientation);
 			break;
 		case Object3D::TUBE :
-			createTube(entityUID, name, pos);
+			createTube(entityUID, name, pos, orientation);
 			break;
 	}
 
