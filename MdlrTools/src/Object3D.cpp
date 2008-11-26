@@ -1748,7 +1748,7 @@ float Object3D::getShininess()
 }
 
 //-------------------------------------------------------------------------------------
-void Object3D::setCullingMode( const CullingMode pMode)
+void Object3D::setCullingMode( CullingMode pMode)
 {
     mModifiedMaterialManager->getModifiedMaterial()->setCullingMode( pMode );
 }

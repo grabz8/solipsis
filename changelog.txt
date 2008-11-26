@@ -851,3 +851,8 @@ WIN32 application icon of autocreated window defined on IDI_ICON1 101
 RequestExecutionLevel admin into nsis setup (Vista installation)
 
 ---------------------------
+26/11/08
+
+Modeler dblSide material bug fixed
+
+---------------------------

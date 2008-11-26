@@ -119,13 +119,13 @@ void ModifiedMaterialManager::resetColour()
 
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-const CullingMode& ModifiedMaterialManager::getCullingMode()
+CullingMode ModifiedMaterialManager::getCullingMode()
 {
     return mModifiedMaterial->getCullingMode();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiedMaterialManager::setCullingMode(const CullingMode& mode)
+void ModifiedMaterialManager::setCullingMode(CullingMode mode)
 {
     mModifiedMaterial->setCullingMode( mode );
 }

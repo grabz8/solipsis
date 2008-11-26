@@ -223,12 +223,12 @@ void ModifiedMaterial::setShininess(const float colour)
 	mPass->setShininess(colour) ;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-const CullingMode& ModifiedMaterial::getCullingMode()
+CullingMode ModifiedMaterial::getCullingMode()
 {
     return mPass->getCullingMode();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiedMaterial::setCullingMode(const CullingMode& mode)
+void ModifiedMaterial::setCullingMode(CullingMode mode)
 {
     mPass->setCullingMode( mode );
 }
