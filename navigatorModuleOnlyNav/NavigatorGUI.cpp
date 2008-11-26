@@ -1677,6 +1677,23 @@ void NavigatorGUI::worldOk(const NaviData& naviData)
     CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
     mNavigator->setWorldAddress(world);
 
+    // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
+    if (naviData.exists("voipServer"))
+    {
+        std::string voipServer = naviData["voipServer"].str();
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
+    }
+    if (naviData.exists("vncServer"))
+    {
+        std::string vncServer = naviData["vncServer"].str();
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
+    }
+    if (naviData.exists("vlcServer"))
+    {
+        std::string vlcServer = naviData["vlcServer"].str();
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
+    }
+
     // Return to Navi UI login
     login();
 }
