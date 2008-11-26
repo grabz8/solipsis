@@ -855,5 +855,6 @@ RequestExecutionLevel admin into nsis setup (Vista installation)
 
 Modeler dblSide material bug fixed
 Added extended datas associated to the world server : voice IP server, VNC server, VLC server
+Building Guide v1.0 added
 
 ---------------------------
