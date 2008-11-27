@@ -858,3 +858,8 @@ Added extended datas associated to the world server : voice IP server, VNC serve
 Building Guide v1.0 added
 
 ---------------------------
+27/11/08
+
+Mouse cursor is now exclusive only on 1st person camera mode, mouse can leave window
+
+---------------------------
