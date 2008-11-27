@@ -21,12 +21,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
-		COPYRIGHTS (c) ARTEFACTO 
-		
-			!! Licence GPL !!	
-*/
-
 #ifndef __PhonemeSequence_h__
 #define __PhonemeSequence_h__
 #include <vector>
