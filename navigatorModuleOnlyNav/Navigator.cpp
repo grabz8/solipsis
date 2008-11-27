@@ -638,7 +638,7 @@ void Navigator::demoVoice(const String params)
     if (voiceEngine == 0)
         return;
 
-    if (params.compare("speak") == 0)
+    if (params.compare("toggleVoiceRecording") == 0)
     {
         // start/stop speaking
         if (voiceEngine->isRecording())
@@ -665,9 +665,9 @@ void Navigator::demoVoice(const String params)
         if (voiceEngine->isRecording())
             voiceEngine->stopRecording();
         // connect to voice server
-        time_t id;
-        time(&id);
-        voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, id);
+		EntityUID avatarUid = this->getUserAvatar()->getCharacterInstance()->getUid();
+        bool connectionSuccess = voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, avatarUid);
+		assert( connectionSuccess );
     }
 }
 #endif

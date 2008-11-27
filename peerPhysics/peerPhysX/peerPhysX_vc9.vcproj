@@ -225,7 +225,7 @@
 				AdditionalDependencies="PhysXLoader.lib NxCooking.lib NxCharacter.lib OgreMain_d.lib Peer.lib"
 				OutputFile="$(OutDir)\PeerPlugin_PhysX_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;&quot;..\..\Dependencies\peerModule\lib\Debug&quot;"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\..\Dependencies\peerModule\lib\Debug"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -287,7 +287,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -303,7 +303,7 @@
 				AdditionalDependencies="PhysXLoader.lib NxCooking.lib NxCharacter.lib OgreMain.lib Peer.lib"
 				OutputFile="$(OutDir)\PeerPlugin_PhysX.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;&quot;..\..\Dependencies\peerModule\lib\Release&quot;"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;&quot;$(PHYSX_DIR)\SDKs\lib\win32&quot;;..\..\Dependencies\peerModule\lib\Release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

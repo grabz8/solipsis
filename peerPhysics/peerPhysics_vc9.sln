@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "peerPhysX", "peerPhysX\peerPhysX_vc9.vcproj", "{35F18913-F384-43A8-B664-624682177FBF}"
 EndProject
 Global

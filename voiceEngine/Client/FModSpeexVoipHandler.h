@@ -21,13 +21,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef VOICEENGINE_H
-#define VOICEENGINE_H
+#ifndef FModSpeexVoipHandler_H
+#define FModSpeexVoipHandler_H
 
 #include "voiceformat.h"
 #include "voicesource.h"
 #include "voicenet.h"
-#include "voiceuuid.h"
+#include "voiceheader.h"
 
 // GREG BEGIN
 /*#include <apr-1/apr_thread_proc.h>
@@ -39,6 +39,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/shared_ptr.hpp>
 
 #include <map>
+#include <Socket.h>
+#include <EntityUID.h>
 
 namespace FMOD
 {
@@ -50,10 +52,15 @@ class VoiceBuffer;
 class VoiceCodec;
 struct VoicePacketHeader;
 
+namespace Solipsis
+{
+	class IVoicePacketListener;
+}
+
 /**
  *  A singleton class for handling voip communication
  */
-class VoiceEngine
+class FModSpeexVoipHandler
 {
 public:
     typedef boost::shared_ptr<VoiceCodec> CodecPtr;
@@ -61,7 +68,7 @@ public:
     /**
      *  @return VoiceEngine singleton instance
      */
-    static VoiceEngine* getInstance();
+    static FModSpeexVoipHandler* getInstance();
 
     /**
      *  @param system External FMOD sound system or 0 if not available
@@ -70,10 +77,10 @@ public:
      *  @param bufferFrameCount The number of frames to hold in record buffer (buffer sample count = frequency * frame count)
      *  @param frequency Frequency of audio to record (affects only the default SPEEX codec)
      */
-    VoiceEngine(FMOD::System* system, size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4,
+	FModSpeexVoipHandler(FMOD::System* system, Solipsis::IVoicePacketListener* pVoicePacketListener, size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4,
                   unsigned int frequency = 16000);
 
-    ~VoiceEngine();
+    ~FModSpeexVoipHandler();
 
     /**
      *  Connects to a voice chat server
@@ -82,7 +89,7 @@ public:
      *  @param id Avatar id
      *  @return TRUE if successfully connected, FALSE otherwise
      */
-    bool connect(const char* host, int port, const VoiceUUID& id);
+	bool connect(const char* host, int port, const Solipsis::EntityUID& voiceId);
 
     /**
      *  Closes the connection to a voice server if connected
@@ -131,37 +138,55 @@ public:
 
 
     void updateListener(float* pos, float* dir, float* vel);
-    void updateAvatar(const VoiceUUID& id, float* pos, float* dir, float* vel);
+	void updateAvatar(const Solipsis::EntityUID& id, float* pos, float* dir, float* vel);
 
     void setEnabled(bool enabled);
 
 private:
-    int sendPacketHeader(char type, unsigned int size);
-    int sendLogin(const VoiceUUID& id);
+	int sendLogin(const Solipsis::EntityUID& voiceId);
     int sendRawAudio(unsigned int from, unsigned int to);
+	/**
+		@brief	sends audio data over the network
+
+		@param	from	the index of the first sample to send in the recording buffer
+		@param	to		index of the sample following the last sample to send in the recording buffer
+		@return	the number of samples sent over the network
+	*/
     int sendAudioFrames(unsigned int from, unsigned int to);
     int sendEnableVOIP(bool enabled);
 
+	/**
+		@brief	encodes a portion of the recording buffer
+
+		@param	from	the index of the first sample to encode in the recording buffer
+		@param	to		index of the sample following the last sample to encode in the recording buffer
+		@param	buffer	pointer to the buffer receiving the encoded audio data
+		@return	the encoded size in bytes
+	*/
     unsigned short encodeAudioFrame(unsigned int from, unsigned int to, char* buffer);
     unsigned short encodeAudioFrame(char* data, unsigned int from, unsigned int to, char* buffer);
 
-    int recvPacketHeader(char* type, unsigned int* size);
+	/**
+		@return	the number of bytes read from the socket
+	*/
     int recvAudioFrames(unsigned int expectedSize);
+	/**
+		@return	the number of bytes read from the socket
+	*/
     int recvVoiceHeader(VoicePacketHeader* header);
-    int recvUUID(VoiceUUID* id);
 
 // GREG BEGIN
 //    static void* APR_THREAD_FUNC receiveThread(apr_thread_t* thread, void* param);
     static void *receiveThread(void* param);
 // GREG END
 
-    VoiceBuffer* newAvatar(const VoiceUUID& id, VoiceCodec* codec);
-    void removeAvatar(const VoiceUUID& id);
+    VoiceBuffer* newAvatar(const Solipsis::EntityUID& id, VoiceCodec* codec);
+    void removeAvatar(const Solipsis::EntityUID& id);
 
-    VoiceBuffer* getAvatarVoiceBuffer(const VoiceUUID& id) const;
+	VoiceBuffer* getAvatarVoiceBuffer(const Solipsis::EntityUID& id) const;
 
 private:
-    static VoiceEngine* mInstance;
+    static FModSpeexVoipHandler* mInstance;
 
     FMOD::System* mSystem;
     FMOD::Sound* mRecordSound;
@@ -193,7 +218,7 @@ private:
     bool mUseExternalSystem;
     bool mRun;
 
-    VESocketHandle mSock;
+    Socket mSock;
 
 // GREG BEGIN
 //    apr_thread_t* mReceiveThread;
@@ -205,17 +230,17 @@ private:
     CodecMap mCodecs;
     int mSupportedFormats;
 
-    VoiceSource mSelfListener;
+    VoiceSource mSelfListener;		///< the motion state of the main avatar (ourselves). It is used to work out how we hear other sound sources (eg. are they far away ?)
 
 // GREG BEGIN
 //    apr_thread_mutex_t* mAvatarMutex;
     pthread_mutex_t mAvatarMutex;
 // GREG END
 
-    typedef std::map<VoiceUUID, VoiceBuffer*> BufferMap;
+	typedef std::map<Solipsis::EntityUID, VoiceBuffer*> BufferMap;
     BufferMap mBuffers;
 
-    typedef std::map<VoiceUUID, VoiceSource> SourceMap;
+    typedef std::map<Solipsis::EntityUID, VoiceSource> SourceMap;
     SourceMap mSources;
 
     // We need two pools because send/receive can happen at the same time
@@ -224,6 +249,8 @@ private:
 
     bool mEnabled;
 
+	Solipsis::IVoicePacketListener*	mVoicePacketListener;	///< reference to the listener that is listening for voice packets
+
 };  //  class VoiceEngine
 
-#endif  //  VOICEENGINE_H
+#endif  //  FModSpeexVoipHandler_H

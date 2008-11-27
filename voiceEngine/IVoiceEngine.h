@@ -24,11 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IVoiceEngine_h__
 #define __IVoiceEngine_h__
 
-#include "NavigatorModule.h"
-#include "OgrePrerequisites.h"
-#include "Ogre.h"
-
-using namespace Ogre;
+#include "DllExport.h"
+#include <string>
+#include <EntityUID.h>
 
 namespace FMOD
 {
@@ -36,6 +34,8 @@ namespace FMOD
 }
 
 namespace Solipsis {
+
+class IVoicePacketListener;
 
 /** This class provide logging capacities interface.
  */
@@ -47,7 +47,7 @@ public:
 
 /** This class represents a generic Voice engine.
 */
-class NAVIGATORMODULE_EXPORT IVoiceEngine
+class VOICEENGINE_EXPORT IVoiceEngine
 {
 public:
     IVoiceEngine() {}
@@ -56,7 +56,7 @@ public:
     /** Get the name of the voice engine.
     @remarks An implementation must be supplied for this method to uniquely identify the engine.
     */
-    virtual const String& getName() const = 0;
+	virtual const std::string& getName() const = 0;
 
     /** Perform the initialization. 
     @remarks An implementation must be supplied for this method.
@@ -79,9 +79,10 @@ public:
     virtual bool shutdownSoundSystem() = 0;
 
     /** Connect to a voice server.
-    @remarks An implementation must be supplied for this method.
+		@remarks An implementation must be supplied for this method.
+		@param	the id of the avatar connecting to the voice server. It is used to uniquely identify the sound sources and dispatch
     */
-    virtual bool connect(const char* host, int port, unsigned int id) = 0;
+    virtual bool connect(const char* host, int port, const EntityUID & voiceId) = 0;
 
     /** Disconnect from the voice server.
     @remarks An implementation must be supplied for this method.
@@ -107,6 +108,16 @@ public:
     @remarks An implementation must be supplied for this method.
     */
     virtual bool isRecording() = 0;
+
+	/**
+		@brief	adds a listener that will be informed when a voice packet emitted by the given talking avatar is received
+	*/
+	virtual void addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
+
+	/**
+		@brief	removes a listener for voice packets
+	*/
+	virtual void removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
 };
 
 } // namespace Solipsis

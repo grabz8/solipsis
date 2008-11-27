@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace SolipsisVoiceServer {
 
 VoiceServerSource::VoiceServerSource(int fd /*= -1*/, bool deleteOnClose /*= false*/) 
-  : _fd(fd), _deleteOnClose(deleteOnClose)
+  : mSocket(fd), _deleteOnClose(deleteOnClose)
 {
 }
 
@@ -38,17 +38,19 @@ VoiceServerSource::~VoiceServerSource()
 
 void VoiceServerSource::close()
 {
-  if (_fd != -1) {
-    VoiceServerUtil::log(2,"VoiceServerSource::close: closing socket %d.", _fd);
-    VoiceServerSocket::close(_fd);
-    VoiceServerUtil::log(2,"VoiceServerSource::close: done closing socket %d.", _fd);
-    _fd = -1;
-  }
-  if (_deleteOnClose) {
-    VoiceServerUtil::log(2,"VoiceServerSource::close: deleting this");
-    _deleteOnClose = false;
-    delete this;
-  }
+	if (mSocket.isValid())
+	{
+		Socket::Handle fd = mSocket.getHandle();
+		VoiceServerUtil::log(2,"VoiceServerSource::close: closing socket %d.", (int)fd);
+		mSocket.close();
+		VoiceServerUtil::log(2,"VoiceServerSource::close: done closing socket %d.", (int)fd);
+	}
+	if (_deleteOnClose)
+	{
+		VoiceServerUtil::log(2,"VoiceServerSource::close: deleting this");
+		_deleteOnClose = false;
+		delete this;
+	}
 }
 
 } // namespace SolipsisVoiceServer

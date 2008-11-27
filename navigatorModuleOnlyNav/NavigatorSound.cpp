@@ -22,7 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "NavigatorSound.h"
-#include "VoiceEngineManager.h"
+#include <PhonetizerManager.h>
+#include <VoiceEngineManager.h>
 #include <CTLog.h>
 #include <CTIO.h>
 
@@ -72,6 +73,18 @@ bool NavigatorSound::initialize()
     result = mSoundSystem->init(1, FMOD_INIT_NORMAL, 0);
     if (!fmodErrorCheck(result))
         return false;
+
+	// Create the Phonetizer
+	{
+		LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::initialize() Initializing the Phonetizer ...");
+		PhonetizerManager::getSingleton().selectPhonetizer("Dummy Phonetizer");
+		IPhonetizer* pPhonetizer = PhonetizerManager::getSingleton().getSelectedPhonetizer();
+		if (pPhonetizer == 0)
+		{
+			LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not find the Dummy Phonetizer");
+			return false;
+		}
+	}
 
     // Create Voice engine
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::initialize() Initializing Voice Engine ...");

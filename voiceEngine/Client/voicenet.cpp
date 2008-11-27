@@ -1,3 +1,4 @@
+#if 0
 /*
 This source file is part of Solipsis
     (Solipsis is an opensource decentralized Metaverse platform)
@@ -23,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "voicenet.h"
 #include <windows.h>
-
+#include <assert.h>
 // GREG BEGIN
 void initWinSock()
 {
@@ -56,11 +57,37 @@ void ve_destroy_socket_tcp(VESocketHandle& hSocket)
 
 bool ve_connect_socket_tcp(VESocketHandle hSocket, const char* host, int port)
 {
+	struct hostent *hostEnt = gethostbyname(host);
+	if (hostEnt == 0)
+	{
+		return false;
+	}
+	const char* hostIpAsString = inet_ntoa (*(struct in_addr *)*hostEnt->h_addr_list);
+	if(hostIpAsString == NULL)
+	{
+		return false;
+	}
+
     sockaddr_in saddr; 
     saddr.sin_family = AF_INET;
-    saddr.sin_addr.s_addr = inet_addr(host);
+    //saddr.sin_addr.s_addr = inet_addr(host);
+    //saddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	saddr.sin_addr.s_addr = inet_addr(hostIpAsString); 
+	assert( saddr.sin_addr.s_addr != INADDR_NONE );
+	if( saddr.sin_addr.s_addr == INADDR_NONE )
+	{
+		// the address of the host we are trying to connect to is not valid
+		return false;
+	}
+	
     saddr.sin_port = htons(port);
-    return (connect((SOCKET)hSocket, (SOCKADDR*)&saddr, sizeof(saddr)) == 0);
+	bool bSuccess = (connect((SOCKET)hSocket, (SOCKADDR*)&saddr, sizeof(saddr)) == 0);
+	if( !bSuccess )
+	{
+		int errorCode = WSAGetLastError();
+		int toto = errorCode;
+	}
+    return ( bSuccess );
 }
 
 int ve_send_packet_tcp(VESocketHandle hSocket, const char* sendBuffer, int size)
@@ -72,3 +99,4 @@ int ve_receive_packet_tcp(VESocketHandle hSocket, char* receiveBuffer, int size)
 {
     return recv((SOCKET)hSocket, receiveBuffer, size, 0);
 }
+#endif 0

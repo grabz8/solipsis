@@ -96,7 +96,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\Source\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDebug.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDLLDebug.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\Source\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDebug.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDLLDebug.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -132,7 +132,7 @@
 				ProgramDataBaseFileName="$(OutDir)/../../RakNet"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\Source\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNet.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDLL.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\..\Source\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNet.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\RakNetDLL.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\RakNet\lib\.&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>

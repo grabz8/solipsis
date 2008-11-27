@@ -62,7 +62,7 @@
 				BrowseInformation="1"
 				WarningLevel="0"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\include\curl\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\include\curl\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -197,7 +197,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\include\curl\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)..\include\curl\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\include\curl\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\curl\lib\$(ConfigurationName)DLL\.&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>

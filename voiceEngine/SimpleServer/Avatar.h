@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CTBasicThread.h"
 
 #include "VoiceServerConnection.h"
+#include <EntityUID.h>
 
 namespace SolipsisVoiceServer {
 
@@ -38,13 +39,13 @@ namespace SolipsisVoiceServer {
   public:
 
     //! Constructor
-    Avatar(const VoiceUUID& id, VoiceServerConnection* connection);
+    Avatar(const Solipsis::EntityUID& id, VoiceServerConnection* connection);
 
     /** See BasicThread. */
     virtual void stop(unsigned int stopTimeoutSec = 5);
 
     //! Return the unique identifier
-    VoiceUUID& getId() { return mId; }
+    const Solipsis::EntityUID& getId() const { return mId; }
 
     //! Return the connection.
     VoiceServerConnection* getConnection() const { return _connection; }
@@ -66,7 +67,7 @@ namespace SolipsisVoiceServer {
   protected:
 
     // Unique client identifier
-    VoiceUUID mId;
+    Solipsis::EntityUID mId;
 
     // The voice server connection
     VoiceServerConnection* _connection;

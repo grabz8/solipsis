@@ -24,15 +24,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __VoiceEngineManager_h__
 #define __VoiceEngineManager_h__
 
+#include "DllExport.h"
+
 #include <vector>
-#include "NavigatorModule.h"
 #include "IVoiceEngine.h"
+#include <CTSingleton.h>
 
 namespace Solipsis {
 
 /** This class manages the voice engines
  */
-class NAVIGATORMODULE_EXPORT VoiceEngineManager : public Ogre::Singleton<VoiceEngineManager>
+class VOICEENGINE_EXPORT VoiceEngineManager : public CommonTools::Singleton<VoiceEngineManager>
 {
 public:
     /// List of engines
@@ -58,7 +60,7 @@ public:
     /** Get engines. */
     EngineList& getEngines();
     /** Set current engine. */
-    void selectEngine(const Ogre::String& name);
+	void selectEngine(const std::string& name);
     /** Get current engine. */
     IVoiceEngine* getSelectedEngine();
 

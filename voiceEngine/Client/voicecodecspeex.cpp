@@ -61,7 +61,7 @@ unsigned short VoiceCodecSpeex::encode(const char* input, size_t inSize, char* o
     return (unsigned short)speex_bits_write(&mEncBits, output, (int)outSize);
 }
 
-unsigned short VoiceCodecSpeex::decode(const VoiceUUID& id, const char* input, size_t inSize, char* output, size_t outSize)
+unsigned short VoiceCodecSpeex::decode(const Solipsis::EntityUID& id, const char* input, size_t inSize, char* output, size_t outSize)
 {
     DecoderMap::const_iterator i = mDecoders.find(id);
     if (i == mDecoders.end())
@@ -100,19 +100,19 @@ int VoiceCodecSpeex::getSampleRate() const
     return mSampleRate;
 }
 
-void VoiceCodecSpeex::allocDecoder(const VoiceUUID& id)
+void VoiceCodecSpeex::allocDecoder(const Solipsis::EntityUID& id)
 {
     void* decState = speex_decoder_init(&speex_nb_mode);
     speex_decoder_ctl(decState, SPEEX_SET_SAMPLING_RATE, &mSampleRate);
     mDecoders.insert(std::make_pair(id, decState));
 }
 
-bool VoiceCodecSpeex::hasDecoder(const VoiceUUID& id)
+bool VoiceCodecSpeex::hasDecoder(const Solipsis::EntityUID& id)
 {
     return (mDecoders.find(id) != mDecoders.end());
 }
 
-void VoiceCodecSpeex::releaseDecoder(const VoiceUUID& id)
+void VoiceCodecSpeex::releaseDecoder(const Solipsis::EntityUID& id)
 {
     DecoderMap::iterator i = mDecoders.find(id);
     if (i != mDecoders.end())

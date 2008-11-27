@@ -28,11 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTBasicThread.h>
 #include "OgreApplication.h"
 #include "Instance.h"
-#include "VoiceEngineManager.h"
 
 using CommonTools::BasicThread;
 
 namespace Solipsis {
+
+class PhonetizerManager;
+class VoiceEngineManager;
 
 /** This class manages the Navigator application composed of several running instances.
  */
@@ -85,6 +87,7 @@ protected:
     std::vector<MainThread*> mThreads;
     Instance* mStandAloneInstance;
     VoiceEngineManager* mVoiceEngineManager;
+	PhonetizerManager* mPhonetizerManager;	///< manager of phonetizers (owned)
 
 protected: 
     NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle);

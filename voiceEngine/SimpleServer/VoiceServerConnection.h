@@ -43,6 +43,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/shared_ptr.hpp>
 
 #include <set>
+#include "VoiceServerSocket.h"
+#include <EntityUID.h>
 
 namespace SolipsisVoiceServer {
 
@@ -73,7 +75,8 @@ namespace SolipsisVoiceServer {
     void finalize();
 
     //! Return the file descriptor being monitored.
-    int getfd() const { return _fd; }
+	const Socket & getSocket( void ) const { return mSocket; }
+	Socket & getSocket( void ) { return mSocket; }
 
     // return true if VOIP is enabled for this client
     bool isVOIPEnabled() { return mVOIPEnabled; }
@@ -94,12 +97,11 @@ namespace SolipsisVoiceServer {
     /** See BasicThread. */
     void end();
 
-    int recvPacketHeader(char* type, unsigned int* size);
     int recvVoiceHeader(VoicePacketHeader* header);
-    int recvUUID(VoiceUUID* id);
-    int recvSupportedFormats(int* supportedFormats);
-    int rcvLogin(VoiceUUID* id, int* supportedFormats);
     int rcvEnableVOIP(bool* enabled);
+	/**
+		@param	expectedSize	expected number of remaining bytes in the packet
+	*/
     int recvAudioFrames(unsigned int expectedSize);
 
     friend AudioDatas;
@@ -110,7 +112,7 @@ namespace SolipsisVoiceServer {
   protected:
 
     // Socket. This should really be a SOCKET (an alias for unsigned int*) on windows...
-    int _fd;
+    VoiceServerSocket mSocket;
 
     // The voice server that accepted this connection
     VoiceServer* _server;

@@ -4,7 +4,7 @@ This source file is part of Solipsis
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
-Author RealXTend, updated by JAN Gregory
+Author Guillaume Raffy (Proservia)
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,44 +21,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "voiceuuid.h"
-#include <string.h>
+#ifndef __EntityUID_h__
+#define __EntityUID_h__
 
+#include <string>
 
-VoiceUUID::VoiceUUID()
+namespace Solipsis
 {
-}
+	typedef std::string EntityUID;
+};
 
-VoiceUUID::VoiceUUID(const unsigned char id[16])
-{
-    memcpy(mID, id, 16);
-}
-
-VoiceUUID::VoiceUUID(const VoiceUUID& other)
-{
-    memcpy(mID, other.mID, 16);
-}
-
-void VoiceUUID::operator = (const VoiceUUID& other)
-{
-    memcpy(mID, other.mID, 16);
-}
-
-bool VoiceUUID::operator == (const VoiceUUID& other) const
-{
-    return (memcmp(mID, other.mID, 16) == 0);
-}
-
-bool VoiceUUID::operator < (const VoiceUUID& other) const
-{
-    return (memcmp(mID, other.mID, 16) < 0);
-}
-
-// GREG BEGIN
-#include <time.h>
-void VoiceUUID::generateID()
-{
-    memset(mID, 0, sizeof(mID));
-    time((time_t*)((char*)(&mID) + sizeof(mID) - sizeof(time_t)));
-}
-// GREG END
+#endif // #ifndef __EntityUID_h__

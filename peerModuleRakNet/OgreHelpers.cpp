@@ -98,8 +98,8 @@ Mesh* OgreHelpers::loadMesh(const String& filename)
 
     Mesh* mesh = new Mesh(Root::getSingleton().getMeshManager(), filename, 0, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-    DataStreamPtr stream(dataStream);
-    mMeshSerializer->importMesh(stream, mesh);
+    //DataStreamPtr stream(dataStream);
+    mMeshSerializer->importMesh(dataStream, mesh);
 
     return mesh;
 }

@@ -264,6 +264,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTSingleton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CTStringHelpers.h"
 				>
 			</File>

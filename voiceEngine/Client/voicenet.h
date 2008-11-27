@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
+#if 0
 #ifndef VOICENET_H
 #define VOICENET_H
 
@@ -38,3 +38,4 @@ int ve_send_packet_tcp(VESocketHandle hSocket, const char* sendBuffer, int size)
 int ve_receive_packet_tcp(VESocketHandle hSocket, char* receiveBuffer, int size);
 
 #endif	//	VOICENET_H
+#endif 0

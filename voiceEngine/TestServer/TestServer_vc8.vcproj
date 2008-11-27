@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,8 +65,6 @@
 				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineSimpleServer\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -121,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -147,8 +145,6 @@
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool

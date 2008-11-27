@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tokamak", "tokamak_vc9.vcproj", "{4028E54D-5779-4FB5-B1BD-8EC3BB92EDA8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tokamakdll", "tokamakdll_vc9.vcproj", "{FDDA48B9-E566-4971-8A92-74B2CAD2173C}"

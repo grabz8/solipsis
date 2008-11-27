@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="lua_vc8"
+	Name="lua_vc9"
 	ProjectGUID="{20BC9F6A-B055-4D10-B279-0C155FC253C3}"
-	RootNamespace="lua_vc8"
+	RootNamespace="lua_vc9"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)..\bin\Debug_vc8"
-			IntermediateDirectory="$(ProjectDir)..\bin\Debug_vc8"
+			OutputDirectory="$(ProjectDir)..\bin\Debug_vc9"
+			IntermediateDirectory="$(ProjectDir)..\bin\Debug_vc9"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -65,9 +65,9 @@
 				AdditionalDependencies="lua_d.lib"
 				OutputFile="$(OutDir)/lua.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(ProjectDir)..\lib\DebugLib_vc8"
+				AdditionalLibraryDirectories="$(ProjectDir)..\lib\DebugLib_vc9"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/lua_vc8.pdb"
+				ProgramDatabaseFile="$(OutDir)/lua_vc9.pdb"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -97,8 +97,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)..\bin\Release_vc8"
-			IntermediateDirectory="$(ProjectDir)..\bin\Release_vc8"
+			OutputDirectory="$(ProjectDir)..\bin\Release_vc9"
+			IntermediateDirectory="$(ProjectDir)..\bin\Release_vc9"
 			ConfigurationType="1"
 			CharacterSet="2"
 			>
@@ -141,7 +141,7 @@
 				AdditionalDependencies="lua.lib"
 				OutputFile="$(OutDir)/lua.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(ProjectDir)..\lib\ReleaseLib_vc8"
+				AdditionalLibraryDirectories="$(ProjectDir)..\lib\ReleaseLib_vc9"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

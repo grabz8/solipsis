@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/pool/singleton_pool.hpp>
 
 #include "Avatar.h"
+#include <SimpleVoiceEngineProtocol.h>
 
 using namespace CommonTools;
 
@@ -44,7 +45,7 @@ namespace SolipsisVoiceServer {
 // The server delegates handling client requests to a serverConnection object.
 VoiceServerConnection::VoiceServerConnection(int fd, VoiceServer* server) :
     BasicThread(""),
-    _fd(fd),
+    mSocket(fd),
 	_server(server),
     mAvatar(0),
     mSendReceivePool(1, 40960),
@@ -70,10 +71,10 @@ VoiceServerConnection::~VoiceServerConnection()
 
 void VoiceServerConnection::finalize()
 {
-  BasicThread::finalize();
+	BasicThread::finalize();
 
-  VoiceServerUtil::log(4,"VoiceServerConnection::finalize: socket %d, closing connection ...", _fd);
-  close();
+	VoiceServerUtil::log(4,"VoiceServerConnection::finalize: socket %d, closing connection ...", (int)mSocket.getHandle());
+	close();
 }
 
 void VoiceServerConnection::addVSCListener(VoiceServerConnectionListener* newListener)
@@ -96,111 +97,101 @@ void VoiceServerConnection::removeVSCListener(VoiceServerConnectionListener* old
 
 void VoiceServerConnection::close()
 {
-  if (_fd != -1) {
-    VoiceServerUtil::log(2,"VoiceServerConnection::close: closing socket %d.", _fd);
-    VoiceServerSocket::close(_fd);
-    VoiceServerUtil::log(2,"VoiceServerConnection::close: done closing socket %d.", _fd);
-    _fd = -1;
-  }
+	if (mSocket.isValid())
+	{
+		Socket::Handle fd = mSocket.getHandle();
+		VoiceServerUtil::log(2,"VoiceServerConnection::close: closing socket %d.", fd);
+		mSocket.close();
+		VoiceServerUtil::log(2,"VoiceServerConnection::close: done closing socket %d.", fd);
+	}
 }
 
 void VoiceServerConnection::run()
 {
-    VoiceServerUtil::log(4,"VoiceServerConnection::run: socket %d, running ...", _fd);
+	VoiceServerUtil::log(4,"VoiceServerConnection::run: socket %d, running ...", (int)mSocket.getHandle());
 
     while (!isStopRequested())
     {
-        char packetType;
+		VoicePacketType packetType;
         unsigned int packetSize;
-        if (recvPacketHeader(&packetType, &packetSize) <= 0)
+		if (SimpleVoiceEngineProtocol::receivePacketHeader(mSocket, &packetType, &packetSize) <= 0)
         {
-            VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive packet header", _fd);
+            VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive packet header", (int)mSocket.getHandle());
             break;
         }
-        VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, new packet rcved (%s, %d)", _fd, VoicePacketTypeName[packetType], packetSize);
+        VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, new packet rcved (%s, %d)", (int)mSocket.getHandle(), VoicePacketTypeName[packetType], packetSize);
 
         bool breakOnError = false;
         switch (packetType)
         {
         case VP_LOGIN:
             {
-                VoiceUUID id;
-                if (rcvLogin(&id, &mSupportedFormats) <= 0)
+				Solipsis::EntityUID id;
+				if ( SimpleVoiceEngineProtocol::receiveLogin(mSocket, id, &mSupportedFormats) <= 0)
                 {
-                    VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive Login", _fd);
+                    VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive Login", (int)mSocket.getHandle());
                     breakOnError = true;
                 }
-                VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, rcvLogin() mSupportedFormats = %d", _fd, mSupportedFormats);
+                VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, receiveLogin() mSupportedFormats = %d", (int)mSocket.getHandle(), mSupportedFormats);
 
                 if (mAvatar != 0)
-                    VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, avatar already logged on this connection", _fd);
+                    VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, avatar already logged on this connection", (int)mSocket.getHandle());
 
                 // Create new avatar if not found
                 mAvatar = _server->getAvatar(id);
                 if (mAvatar == 0)
                 {
-                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) creation ...", _fd, id.getID().c_str());
+                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) creation ...", (int)mSocket.getHandle(), id.c_str());
                     mAvatar = _server->newAvatar(id, this);
                     if (mAvatar == 0)
-                        VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, Could not create new avatar on this connection", _fd);
-                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) starting ...", _fd, id.getID().c_str());
+                        VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, Could not create new avatar on this connection", (int)mSocket.getHandle());
+                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) starting ...", (int)mSocket.getHandle(), id.c_str());
                     if (!mAvatar->start())
                     {
-                        VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not start new avatar", _fd);
+                        VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not start new avatar", (int)mSocket.getHandle());
                         breakOnError = true;
                     }
                 }
                 else
-                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) already exists", _fd, id.getID().c_str());
+                    VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, avatar (id = %s) already exists", (int)mSocket.getHandle(), id.c_str());
                 break;
             }
         case VP_ENABLE_VOIP:
             if (rcvEnableVOIP(&mVOIPEnabled) <= 0)
             {
-                VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive EnableVOIP", _fd);
+                VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive EnableVOIP", (int)mSocket.getHandle());
                 breakOnError = true;
             }
-            VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, rcvEnableVOIP() mVOIPEnabled = %d", _fd, mVOIPEnabled);
+            VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, rcvEnableVOIP() mVOIPEnabled = %d", (int)mSocket.getHandle(), mVOIPEnabled);
             break;
         case VP_AUDIO_TO_SERVER:
             {
                 int receivedSize = recvAudioFrames(packetSize);
                 if (receivedSize <= 0)
                 {
-                    VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive AudioFrames", _fd);
+                    VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Could not receive AudioFrames", (int)mSocket.getHandle());
                     breakOnError = true;
                     break;
                 }
                 if (receivedSize != packetSize)
-                    VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, Warning: receivedSize != packetSize (%d/%d)", _fd, receivedSize, packetSize);
-                VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, recvAudioFrames() receivedSize = %d", _fd, receivedSize);
+                    VoiceServerUtil::log(2, "VoiceServerConnection::run: socket %d, Warning: receivedSize != packetSize (%d/%d)", (int)mSocket.getHandle(), receivedSize, packetSize);
+                VoiceServerUtil::log(3, "VoiceServerConnection::run: socket %d, recvAudioFrames() receivedSize = %d", (int)mSocket.getHandle(), receivedSize);
                 break;
             }
         default:
-            VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Unknown packet header received: type %d, size %d. Shutting down connection ...", _fd, packetType, packetSize);
+            VoiceServerUtil::error("VoiceServerConnection::run: socket %d, Unknown packet header received: type %d, size %d. Shutting down connection ...", (int)mSocket.getHandle(), packetType, packetSize);
             breakOnError = true;
             break;
         }
         if (breakOnError) break;
     }
 
-    VoiceServerUtil::log(4,"VoiceServerConnection::run: socket %d, end", _fd);
+    VoiceServerUtil::log(4,"VoiceServerConnection::run: socket %d, end", (int)mSocket.getHandle());
 }
 
 void VoiceServerConnection::end()
 {
     delete this;
-}
-
-int VoiceServerConnection::recvPacketHeader(char* type, unsigned int* size)
-{
-    int received = 0;
-    received = VoiceServerSocket::receive(_fd, type, sizeof(char));
-    if (received <= 0) return received;
-    received = 0;
-    while (received < sizeof(unsigned int))
-        received += VoiceServerSocket::receive(_fd, &((char*)size)[received], sizeof(unsigned int)-received);
-    return received + sizeof(char);
 }
 
 int VoiceServerConnection::recvVoiceHeader(VoicePacketHeader* header)
@@ -209,7 +200,7 @@ int VoiceServerConnection::recvVoiceHeader(VoicePacketHeader* header)
     int headerSize = sizeof(VoicePacketHeader);
     while (received < headerSize)
     {
-        int bytesReceived = VoiceServerSocket::receive(_fd, &((char*)header)[received], headerSize-received);
+		int bytesReceived = mSocket.receive( &((char*)header)[received], headerSize-received);
         received += bytesReceived;
         if (bytesReceived <= 0) return bytesReceived;
     }
@@ -217,37 +208,10 @@ int VoiceServerConnection::recvVoiceHeader(VoicePacketHeader* header)
     return received;
 }
 
-int VoiceServerConnection::recvUUID(VoiceUUID* id)
-{
-    int received = 0;
-    while (received < sizeof(VoiceUUID))
-        received += VoiceServerSocket::receive(_fd, &((char*)id)[received], sizeof(VoiceUUID)-received);
-
-    return received;
-}
-
-int VoiceServerConnection::recvSupportedFormats(int* supportedFormats)
-{
-    int received = 0;
-    while (received < sizeof(int))
-        received += VoiceServerSocket::receive(_fd, &((char*)supportedFormats)[received], sizeof(int)-received);
-
-    return received;
-}
-
-int VoiceServerConnection::rcvLogin(VoiceUUID* id, int* supportedFormats)
-{
-    int received = 0;
-    received = recvUUID(id);
-    received += recvSupportedFormats(supportedFormats);
-
-    return received;
-}
-
 int VoiceServerConnection::rcvEnableVOIP(bool* enabled)
 {
     char val;
-    int received = VoiceServerSocket::receive(_fd, &val, sizeof(val));
+	int received = mSocket.receive(&val, sizeof(val));
     *enabled = (val == 1) ? true : false;
     return received;
 }
@@ -268,7 +232,7 @@ int VoiceServerConnection::recvAudioFrames(unsigned int expectedSize)
     size += received;
     if (received <= 0)
     {
-        VoiceServerUtil::log(2, "VoiceServerConnection::recvAudioFrames: socket %d, unable to receive VoicePacketHeader", _fd);
+		VoiceServerUtil::log(2, "VoiceServerConnection::recvAudioFrames: socket %d, unable to receive VoicePacketHeader", (int)mSocket.getHandle());
         pthread_mutex_lock(&mSendReceivePoolMutex);
         mSendReceivePool.ordered_free(data, expectedSize);
         pthread_mutex_unlock(&mSendReceivePoolMutex);
@@ -279,7 +243,7 @@ int VoiceServerConnection::recvAudioFrames(unsigned int expectedSize)
     received = 0;
     while (received < (int)(expectedSize - sizeof(VoicePacketHeader)))
     {
-        int bytesReceived = VoiceServerSocket::receive(_fd, data + sizeof(VoicePacketHeader) + received, expectedSize - sizeof(VoicePacketHeader) - received);
+		int bytesReceived = mSocket.receive(data + sizeof(VoicePacketHeader) + received, expectedSize - sizeof(VoicePacketHeader) - received);
 	    received += bytesReceived;
     	size += bytesReceived;
         if (bytesReceived <= 0) return size;

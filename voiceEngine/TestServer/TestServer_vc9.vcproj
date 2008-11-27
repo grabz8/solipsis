@@ -3,9 +3,8 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="TestServer"
-	ProjectGUID="{BC3E7044-816F-4C64-B163-8394C4BDD588}"
+	ProjectGUID="{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
 	RootNamespace="TestServer"
-	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -41,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,13 +119,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngineSimpleServer\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

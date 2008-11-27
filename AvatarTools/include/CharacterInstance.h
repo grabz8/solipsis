@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <FileBrowser.h>
 #include <Path.h>
 #include <myZipArchive.h>
+#include <IVoicePacketListener.h>
 
 #include "BodyPart.h"
 #include "Goody.h"
@@ -50,11 +51,12 @@ namespace Solipsis {
 
 class CharacterManager;
 class Character;
+class IFaceController;
 
 typedef std::map<BodyPart*,BodyPartInstance*> BodyPartInstancesMap;
 typedef std::map<Goody*,GoodyInstance*> GoodyInstancesMap;
 
-class CharacterInstance
+class CharacterInstance : public IVoicePacketListener
 {
 public:
 	static const int SCALE_CHARACTER = 1;					///brief Scale applied to the character in order to adapt his size to the Camera and to avoid problems with a Near plane "too far" which will "cut" the character if this one is too small.
@@ -69,6 +71,11 @@ public:
 	CharacterInstance(const String& pFileName, const String& pUid, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr);
 	///brief Destructor
 	~CharacterInstance();
+
+	//! @name IVoicePacketListener implementation
+	//!{
+		virtual void onVoicePacketReception( VoicePacket* pVoicePacket ) ;
+	//!}
 
     SceneManager* getSceneMgr() { return mSceneMgr; }
 
@@ -161,6 +168,11 @@ public:
 	///return The newly current Goody
 	GoodyInstance* setPreviousGoodyAsCurrent();
 
+	/**
+		@brief	provides access to the character instance's face controller
+	*/
+	IFaceController* getFaceController( void ) {return mFaceController; }
+
 protected:
     String mUid;										///brief UID string.
 	Character* mCharacter;								///brief Character of our instance.
@@ -176,6 +188,7 @@ protected:
     MeshPtr mMesh;
 	Entity* mEntity;									///brief Ogre entity associated to the character.
 	SceneNode* mSceneNode;								///brief Scene node on which the entity is attached.
+	IFaceController*	mFaceController;				///brief The face controller associated with this character instance (owned)
 
     BodyPartInstancesMap mBodyPartInstances;
 	BodyPartInstance* mBodyPartInstance;

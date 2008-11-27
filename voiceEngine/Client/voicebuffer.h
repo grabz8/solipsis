@@ -39,12 +39,16 @@ public:
 
     FMOD::Sound* getSound() const;
     FMOD::Channel* getChannel();
+    const FMOD::Channel* getChannel() const;
 
     bool isPlaying() const;
     void play(FMOD::System* system);
     void stop();
 
     void setLastPosition(unsigned int pos);
+	/**
+		@brief	returns the index of the last valid audio data in the sound
+	*/
     unsigned int getLastPosition() const;
 
 private:

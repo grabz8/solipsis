@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\navigatorModule\include;..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngine\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;FMODSPEEX_EXPORTS;OGRE_FMODSPEEXPLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -59,9 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib fmodexL_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain_d.lib Navigator.lib"
+				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib fmodexL_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain_d.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib"
 				OutputFile="$(OutDir)\Plugin_FModSpeex_d.dll"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\navigatorModule\include;..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\VoiceEngine\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;FMODSPEEX_EXPORTS;OGRE_FMODSPEEXPLUGIN_EXPORTS"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -137,9 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib CommonTools.lib fmodex_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain.lib Navigator.lib"
+				AdditionalDependencies="pthreadVC.lib CommonTools.lib fmodex_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib OgreMain.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib"
 				OutputFile="$(OutDir)\Plugin_FModSpeex.dll"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;..\..\Dependencies\navigatorModule\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

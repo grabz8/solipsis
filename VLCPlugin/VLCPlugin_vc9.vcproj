@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="VLCPlugin"
-	ProjectGUID="{96E7ACC1-C6C1-4CD6-8F6C-59F91DB9B7E8}"
+	ProjectGUID="{C477314D-972B-4524-95C3-25DA9471A3C3}"
 	RootNamespace="VLCPlugin"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
@@ -131,7 +131,7 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

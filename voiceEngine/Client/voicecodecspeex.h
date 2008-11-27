@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VOICECODECSPEEX_H
 
 #include "voicecodec.h"
-#include "voiceuuid.h"
 #include <speex/speex.h>
 #include <map>
 
@@ -40,7 +39,7 @@ public:
     ~VoiceCodecSpeex();
 
     unsigned short encode(const char* input, size_t inSize, char* output, size_t outSize);
-    unsigned short decode(const VoiceUUID& id, const char* input, size_t inSize, char* output, size_t outSize);
+    unsigned short decode(const Solipsis::EntityUID& id, const char* input, size_t inSize, char* output, size_t outSize);
 
     VoiceFormat getDecodeFormat() const;
     int getEncodeFormat() const;
@@ -50,16 +49,16 @@ public:
 
     int getSampleRate() const;
 
-    void allocDecoder(const VoiceUUID& id);
-    bool hasDecoder(const VoiceUUID& id);
-    void releaseDecoder(const VoiceUUID& id);
+    void allocDecoder(const Solipsis::EntityUID& id);
+    bool hasDecoder(const Solipsis::EntityUID& id);
+    void releaseDecoder(const Solipsis::EntityUID& id);
 
 private:
     SpeexBits mEncBits, mDecBits;
     void* mEncState;
     int mSampleRate;
 
-    typedef std::map<VoiceUUID, void*> DecoderMap;
+    typedef std::map<Solipsis::EntityUID, void*> DecoderMap;
     DecoderMap mDecoders;
 
 };  //  class VoiceCodecSpeex

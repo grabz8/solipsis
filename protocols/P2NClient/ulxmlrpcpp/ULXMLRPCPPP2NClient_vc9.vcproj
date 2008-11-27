@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\ulxmlrpcpp\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;..\..\..\Dependencies\ulxmlrpcpp\include;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;ULXMLRPCPPP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,13 +123,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\ulxmlrpcpp\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;..\..\..\Dependencies\ulxmlrpcpp\include;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;ULXMLRPCPPP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

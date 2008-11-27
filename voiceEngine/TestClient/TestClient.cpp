@@ -28,7 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "fmod.hpp"
 #include "fmod_errors.h"
 
-#include "voiceengine.h"
+#include "FModSpeexVoipHandler.h"
+#include <DummyPhonetizerPlugin.h>
+#include <PhonetizerManager.h>
 
 void ERRCHECK(FMOD_RESULT result)
 {
@@ -50,9 +52,8 @@ int main(int argc, char* argv[])
     FMOD::System *system = 0;
     unsigned int version;
     FMOD_RESULT result;
-    VoiceEngine *voiceEngine = 0;
-    VoiceUUID myAvatarId;
-    myAvatarId.generateID();
+    FModSpeexVoipHandler *voiceEngine = 0;
+    Solipsis::EntityUID myAvatarId = "dummyAvatar";
 
     printf("Voice client test application\n");
     printf("=============================\n");
@@ -108,10 +109,19 @@ int main(int argc, char* argv[])
     result = system->init(1, FMOD_INIT_NORMAL, 0);
     ERRCHECK(result);
 
+    printf("Initializing Phonetizer ...\n");
+    printf("\n");
+
+	new Solipsis::PhonetizerManager();
+	Solipsis::DummyPhonetizerPlugin* pDummyPhonetizerPlugin = new Solipsis::DummyPhonetizerPlugin();
+	pDummyPhonetizerPlugin->install();
+	//Solipsis::PhonetizerManager::getSingleton().addPhonetizer(pDummyPhonetizer);
+	Solipsis::PhonetizerManager::getSingleton().selectPhonetizer( "Dummy Phonetizer" );
+
     printf("Initializing Voice Engine ...\n");
     printf("\n");
 
-    voiceEngine = new VoiceEngine(system);
+    voiceEngine = new FModSpeexVoipHandler(system, NULL);
     if (voiceEngine == 0)
     {
         printf("Error!  Could not create the voice engine\n");
@@ -164,7 +174,11 @@ int main(int argc, char* argv[])
     printf("Shutting down.\n");
 
     // Shut down
+
     delete voiceEngine;
+	pDummyPhonetizerPlugin->uninstall();
+	delete pDummyPhonetizerPlugin;
+
     result = system->close();
     ERRCHECK(result);
     result = system->release();

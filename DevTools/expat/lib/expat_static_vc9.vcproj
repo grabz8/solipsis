@@ -87,7 +87,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Debug\.&quot; /y "
 			/>
 		</Configuration>
 		<Configuration
@@ -163,7 +163,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\Release\.&quot; /y "
 			/>
 		</Configuration>
 	</Configurations>

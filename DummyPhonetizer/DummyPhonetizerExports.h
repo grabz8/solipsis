@@ -4,7 +4,7 @@ This source file is part of Solipsis
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
-Author RealXTend, updated by JAN Gregory
+Author Guillaume Raffy
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,42 +21,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef VOICEHEADER_H
-#define VOICEHEADER_H
+#ifndef __DummyPhonetizerExports_h__
+#define __DummyPhonetizerExports_h__
 
-// ---------------------------------------------------------------------------
-// Packet types
+#include "OgreException.h"
 
-enum VoicePacketType
-{
-    VP_LOGIN = 0,
-    VP_AUDIO_TO_SERVER = 1,
-    VP_AUDIO_TO_CLIENT = 2,
-    VP_ENABLE_VOIP = 3
-};
-// GREG BEGIN
-static char* VoicePacketTypeName[4] = {
-    "VP_LOGIN",
-    "VP_AUDIO_TO_SERVER",
-    "VP_AUDIO_TO_CLIENT",
-    "VP_ENABLE_VOIP"
-};
-// GREG END
+#if (OGRE_PLATFORM == OGRE_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(OGRE_STATIC_LIB)
+	#ifdef DUMMYPHONETIZER_EXPORTS
+		#define DUMMYPHONETIZER_EXPORT __declspec(dllexport)
+	#else
+		#if defined( __MINGW32__ )
+			#define DUMMYPHONETIZER_EXPORT
+		#else
+			#define DUMMYPHONETIZER_EXPORT __declspec(dllimport)
+		#endif
+	#endif
+#elif defined ( OGRE_GCC_VISIBILITY )
+	#define DUMMYPHONETIZER_EXPORT  __attribute__ ((visibility("default")))
+#else
+	#define DUMMYPHONETIZER_EXPORT
+#endif	// OGRE_WIN32
 
-// ---------------------------------------------------------------------------
-// Audio data headers
-
-struct VoicePacketHeader
-{
-    int format;
-    unsigned short audioSize;
-    unsigned short decodedAudioSize;
-    unsigned short frames;
-};  //  struct VoicePacketHeader
-
-struct VoiceFrameHeader
-{
-    unsigned short frameSize;
-};  //  struct VoiceFrameHeader
-
-#endif  //  VOICEHEADER_H
+#endif // __DummyPhonetizerExports_h__

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -93,7 +93,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="postBuildDebug.bat vc8"
+				CommandLine="postBuildDebug.bat vc9"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -173,7 +173,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="postBuildRelease.bat vc8"
+				CommandLine="postBuildRelease.bat vc9"
 			/>
 		</Configuration>
 		<Configuration
@@ -201,7 +201,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -225,7 +225,7 @@
 				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\RakNet\lib;&quot;..\Dependencies\RakNetObjects\lib\Debug&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\Dependencies\protocols\P2NNullClientServer\DebugDLL;..\Dependencies\RakNet\lib;..\Dependencies\RakNetObjects\lib\Debug"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -253,7 +253,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="postBuildDebugNCS.bat vc8"
+				CommandLine="postBuildDebugNCS.bat vc9"
 			/>
 		</Configuration>
 		<Configuration
@@ -281,13 +281,13 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -303,7 +303,7 @@
 				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLL.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\CommonTools\lib\Release;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\RakNet\lib;&quot;..\Dependencies\RakNetObjects\lib\Release&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;;..\Dependencies\CommonTools\lib\Release;..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL;..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL;..\Dependencies\RakNet\lib;..\Dependencies\RakNetObjects\lib\Release"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -333,7 +333,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="postBuildReleaseNCS.bat vc8"
+				CommandLine="postBuildReleaseNCS.bat vc9"
 			/>
 		</Configuration>
 	</Configurations>

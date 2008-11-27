@@ -55,6 +55,7 @@ public:
 
     /// @copydoc Plugin::uninstall
     void uninstall();
+
 };
 
 } // namespace Solipsis

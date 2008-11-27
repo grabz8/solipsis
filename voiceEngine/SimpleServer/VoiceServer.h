@@ -42,10 +42,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <pthread.h>
 #include <string>
 
-#include "voiceuuid.h"
+#include <EntityUID.h>
 
 #include <boost/pool/pool.hpp>
 #include <boost/shared_ptr.hpp>
+
 
 namespace SolipsisVoiceServer {
 
@@ -112,7 +113,7 @@ namespace SolipsisVoiceServer {
   //! A class to handle voIP
   class VoiceServer : public VoiceServerSource {
   public:
-    typedef std::map<VoiceUUID, Avatar*> AvatarMap;
+	  typedef std::map<Solipsis::EntityUID, Avatar*> AvatarMap;
 
   public:
     //! Create a server object.
@@ -140,13 +141,13 @@ namespace SolipsisVoiceServer {
     virtual void removeConnection(VoiceServerConnection*);
 
     //! Retrieve an avatar.
-    Avatar* getAvatar(const VoiceUUID& id);
+	Avatar* getAvatar(const Solipsis::EntityUID& id);
 
     //! Create a new avatar.
-    Avatar* newAvatar(const VoiceUUID& id, VoiceServerConnection* connection);
+    Avatar* newAvatar(const Solipsis::EntityUID& id, VoiceServerConnection* connection);
 
     //! Remove an avatar
-    void removeAvatar(const VoiceUUID& id);
+    void removeAvatar(const Solipsis::EntityUID& id);
 
   protected:
 

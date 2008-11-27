@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
-template<> VoiceEngineManager* Singleton<VoiceEngineManager>::ms_Singleton = 0;
+template<> VoiceEngineManager* CommonTools::Singleton<VoiceEngineManager>::ms_Singleton = 0;
 
 //-------------------------------------------------------------------------------------
 VoiceEngineManager* VoiceEngineManager::getSingletonPtr(void)
@@ -77,7 +77,7 @@ VoiceEngineManager::EngineList& VoiceEngineManager::getEngines()
 }
 
 //-------------------------------------------------------------------------------------
-void VoiceEngineManager::selectEngine(const String& name)
+void VoiceEngineManager::selectEngine(const std::string& name)
 {
     mSelected = 0;
     for (EngineList::iterator it=mEngines.begin(); it != mEngines.end(); ++it)

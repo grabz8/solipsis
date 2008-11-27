@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <FileBuffer.h>
 #include <SolipsisErrorHandler.h>
 #include "Character.h"
+#include "MouthFlapperCreator.h"
 
 using namespace Solipsis;
 
@@ -47,6 +48,7 @@ Character::Character(String pName, SceneManager* pSceneMgr) :
 	mName(pName),
 	mSkeletonName(""),
 	mMeshName(""),
+	mFaceControllerCreator(NULL),
 	mLoadingSuccessful(false)
 {
 	//Checking the validity of the archive, the presence of the edition.mesh and edition.material files.
@@ -580,6 +582,12 @@ Character::Character(String pName, SceneManager* pSceneMgr) :
 			iterator->rightPoseCameraCylindricCoordinates,
 			iterator->rightStateName);
 	}
+
+	#ifdef ACTIVATE_FACE_CONTROLLER
+		mFaceControllerCreator = new MouthFlapperCreator("Eric_Machoire01", Ogre::Quaternion::IDENTITY, Ogre::Quaternion( Radian(1.0), Vector3::UNIT_Z ));
+	#else
+		mFaceControllerCreator = NULL;
+	#endif
 
 	mLoadingSuccessful = true;
 }

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="AvatarTools"
-	ProjectGUID="{F4E01053-FBE5-46C0-96F0-4C4FD0635D66}"
+	ProjectGUID="{89AD7D88-16EC-4964-99FA-98E1043AC1A8}"
 	RootNamespace="MdlrTools"
 	Keyword="ManagedCProj"
 	TargetFrameworkVersion="131072"
@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zl"
 				Optimization="0"
-				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies;..\Dependencies\MdlrTools\include;..\Dependencies\tinyxml\include"
+				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies;..\Dependencies\MdlrTools\include;..\Dependencies\tinyxml\include;..\Dependencies\VoiceEngine\include;..\Dependencies\CommonTools\include;..\Dependencies\Phonetizer\include;..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -112,13 +112,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zl"
-				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies;..\Dependencies\MdlrTools\include;..\Dependencies\tinyxml\include"
+				AdditionalIncludeDirectories="include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies;..\Dependencies\MdlrTools\include;..\Dependencies\tinyxml\include;..\Dependencies\VoiceEngine\include;..\Dependencies\CommonTools\include;..\Dependencies\Phonetizer\include;..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -198,7 +198,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\IFaceController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\IFaceControllerCreator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\ModifiableMaterialObject.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\MouthFlapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\MouthFlapperCreator.cpp"
 				>
 			</File>
 		</Filter>
@@ -244,7 +260,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\IFaceController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\IFaceControllerCreator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\ModifiableMaterialObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\MouthFlapper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\MouthFlapperCreator.h"
 				>
 			</File>
 		</Filter>

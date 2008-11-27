@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\speex\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\speex\include;..\..\Dependencies\VoiceEngine\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\speex\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\speex\include;..\..\Dependencies\VoiceEngine\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -153,6 +153,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\FModSpeexVoipHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\voicebuffer.cpp"
 				>
 			</File>
@@ -161,15 +165,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\voiceengine.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\voicenet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\voiceuuid.cpp"
 				>
 			</File>
 		</Filter>
@@ -178,6 +174,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\FModSpeexVoipHandler.h"
+				>
+			</File>
 			<File
 				RelativePath=".\voicebuffer.h"
 				>
@@ -191,15 +191,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\voiceengine.h"
-				>
-			</File>
-			<File
 				RelativePath=".\voiceformat.h"
-				>
-			</File>
-			<File
-				RelativePath=".\voiceheader.h"
 				>
 			</File>
 			<File
@@ -208,10 +200,6 @@
 			</File>
 			<File
 				RelativePath=".\voicesource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\voiceuuid.h"
 				>
 			</File>
 		</Filter>

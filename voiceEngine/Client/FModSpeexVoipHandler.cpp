@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //
 // ----------------------------------------------------------------------------
 
-#include "voiceengine.h"
+#include "FModSpeexVoipHandler.h"
 #include "voicecodec.h"
 #include "voiceheader.h"
 #include "voicebuffer.h"
@@ -45,13 +45,130 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/pool/singleton_pool.hpp>
 
 #include <iostream>
+#include <VoicePacket.h>
+#include <IVoicePacketListener.h>
+#include <AudioSequence.h>
+#include <PhonetizerManager.h>
+#include <IPhonetizer.h>
+#include <PhonemeSequence.h>
+#include <SimpleVoiceEngineProtocol.h>
 
+using Solipsis::VoicePacket;
+using Solipsis::AudioSequence;
+using Solipsis::PhonetizerManager;
+using Solipsis::PhonemeSequence;
 
 // ----------------------------------------------------------------------------
 // Helper functions
 
 #define velogs std::cout << "[VOIP] "
 #define veendl std::endl
+
+using Solipsis::EntityUID;
+
+namespace Solipsis
+{
+	/**
+		@brief	class that provides access to sockets through stl stream mechanism
+
+		@note	see http://spec.winprog.org/streams/ for details
+	*/
+	class SocketStreamBuffer : public std::streambuf
+	{
+	public:
+		typedef std::char_traits<char> CharTraits;
+		SocketStreamBuffer( Socket & socket ) : mSocket (socket) {}
+	protected:
+		//! @name	streambuf interface implementation
+		//!	@{
+			/**
+				@brief	called whenever the put buffer is full
+			*/
+			virtual int_type overflow(int_type c = CharTraits::eof() )
+			{
+				if(c == CharTraits::eof())
+				{
+					return CharTraits::not_eof(c);
+				}
+				else
+				{
+					char ch = CharTraits::to_char_type(c);
+					mSocket.send( &ch, 1 );
+					return c;
+				}
+			}
+			/**
+				@brief	called whenever the get buffer is empty	
+			*/
+			virtual int_type uflow( void )
+			{
+				char c;
+				unsigned int numBytesReceived = mSocket.receive( &c, sizeof(char) );
+				assert(numBytesReceived == sizeof(char));
+				return c;
+			}
+		//!	@}
+	private:
+		
+
+		Socket & mSocket;
+	};
+
+	class SocketOStream : public std::ostream
+	{
+	public:
+		SocketOStream( Socket & socket )
+			: std::ostream(&mSocketStreamBuffer)
+			, mSocketStreamBuffer(socket)
+		{
+		}
+		virtual ~SocketOStream( void ) {}
+
+		/*
+		void writeFloat(const float & floatValue);
+		{
+			write( &floatValue, sizeof(float) );
+		}
+
+		void writeU8(const unsigned char & u8Value);
+		{
+			assert(sizeof(unsigned char) == 1);
+			write( &u8Value, sizeof(unsigned char) );
+		}
+
+		void writeU16(const unsigned short & u16Value);
+		{
+			assert(sizeof(unsigned short) == 2);
+			write( &u16Value, sizeof(unsigned short) );
+		}
+
+		void writeU32(const unsigned int & u32Value);
+		{
+			assert(sizeof(unsigned int) == 4);
+			write( &u32Value, sizeof(unsigned int) );
+		}
+		*/
+
+	private:
+		SocketStreamBuffer	mSocketStreamBuffer;
+	};
+
+	class SocketIStream : public std::istream
+	{
+	public:
+		SocketIStream( Socket & socket )
+			: std::istream(&mSocketStreamBuffer)
+			, mSocketStreamBuffer(socket)
+		{
+		}
+		virtual ~SocketIStream( void ) {}
+
+	private:
+		SocketStreamBuffer	mSocketStreamBuffer;
+	};
+
+}
+
 
 FMOD_SOUND_FORMAT voiceFormatToFmod(VoiceFormat format)
 {
@@ -81,18 +198,18 @@ unsigned short sampleSizeFromVoiceFormat(VoiceFormat format)
 // ----------------------------------------------------------------------------
 // Voice engine implementation
 
-VoiceEngine* VoiceEngine::mInstance = 0;
+FModSpeexVoipHandler* FModSpeexVoipHandler::mInstance = 0;
 
 typedef boost::singleton_pool<VoiceBuffer, sizeof(VoiceBuffer)> VoiceBufferPool;
 typedef boost::singleton_pool<VoiceFrameHeader, sizeof(VoiceFrameHeader)> FrameHeaderPool;
 
 
-VoiceEngine* VoiceEngine::getInstance()
+FModSpeexVoipHandler* FModSpeexVoipHandler::getInstance()
 {
     return mInstance;
 }
 
-VoiceEngine::VoiceEngine(FMOD::System* system, size_t networkChunkSizePCM,
+FModSpeexVoipHandler::FModSpeexVoipHandler(FMOD::System* system, Solipsis::IVoicePacketListener* pVoicePacketListener, size_t networkChunkSizePCM,
                              unsigned int bufferFrameCount, unsigned int frequency)
     : mSystem(system)
     , mRecordSound(0)
@@ -104,7 +221,7 @@ VoiceEngine::VoiceEngine(FMOD::System* system, size_t networkChunkSizePCM,
     , mUseExternalSystem(true)
     , mRun(true)
     , mLastRecordPos(0)
-    , mSock(VE_INVALID_SOCKET)
+    , mSock()
 // GREG BEGIN
 //    , mReceiveThread(0)
 //    , mAprPool(0)
@@ -114,6 +231,7 @@ VoiceEngine::VoiceEngine(FMOD::System* system, size_t networkChunkSizePCM,
     , mReceivePool(1, 40960)
     , mSendPool(1, 40960)
     , mEnabled(true)
+	, mVoicePacketListener( pVoicePacketListener )
 {
     if (mSystem == 0)
     {
@@ -154,7 +272,7 @@ VoiceEngine::VoiceEngine(FMOD::System* system, size_t networkChunkSizePCM,
     setRecordCodec(speexCodec);
 }
 
-VoiceEngine::~VoiceEngine()
+FModSpeexVoipHandler::~FModSpeexVoipHandler()
 {
     disconnect();
 
@@ -194,7 +312,7 @@ VoiceEngine::~VoiceEngine()
 // -----------------------------------------------------------------------------
 // Codec methods
 
-void VoiceEngine::addCodec(CodecPtr& codec)
+void FModSpeexVoipHandler::addCodec(CodecPtr& codec)
 {
     assert(codec.get() != 0);
     int format = codec->getEncodeFormat();
@@ -202,7 +320,7 @@ void VoiceEngine::addCodec(CodecPtr& codec)
     mSupportedFormats |= format;
 }
 
-bool VoiceEngine::setRecordCodec(CodecPtr& codec)
+bool FModSpeexVoipHandler::setRecordCodec(CodecPtr& codec)
 {
     CodecMap::const_iterator i = mCodecs.find(codec->getEncodeFormat());
     if (i == mCodecs.end())
@@ -249,7 +367,7 @@ bool VoiceEngine::setRecordCodec(CodecPtr& codec)
     return false;
 }
 
-unsigned short VoiceEngine::encodeAudioFrame(unsigned int from, unsigned int to, char* buffer)
+unsigned short FModSpeexVoipHandler::encodeAudioFrame(unsigned int from, unsigned int to, char* buffer)
 {
     unsigned short outSize1 = 0;
     unsigned short outSize2 = 0;
@@ -281,7 +399,7 @@ unsigned short VoiceEngine::encodeAudioFrame(unsigned int from, unsigned int to,
     return outSize1 + outSize2;
 }
 
-unsigned short VoiceEngine::encodeAudioFrame(char* data, unsigned int from, unsigned int to, char* buffer)
+unsigned short FModSpeexVoipHandler::encodeAudioFrame(char* data, unsigned int from, unsigned int to, char* buffer)
 {
     if (to > from)
     {
@@ -299,7 +417,7 @@ unsigned short VoiceEngine::encodeAudioFrame(char* data, unsigned int from, unsi
 // -----------------------------------------------------------------------------
 // Recording methods
 
-void VoiceEngine::startRecording()
+void FModSpeexVoipHandler::startRecording()
 {
     if (!mEnabled) return;
 
@@ -321,7 +439,7 @@ void VoiceEngine::startRecording()
     mRecording = true;
 }
 
-void VoiceEngine::stopRecording()
+void FModSpeexVoipHandler::stopRecording()
 {
     if (!mEnabled) return;
 
@@ -342,7 +460,7 @@ void VoiceEngine::stopRecording()
     mRecording = false;
 }
 
-bool VoiceEngine::isRecording() const
+bool FModSpeexVoipHandler::isRecording() const
 {
     return mRecording;
 }
@@ -350,9 +468,10 @@ bool VoiceEngine::isRecording() const
 // -----------------------------------------------------------------------------
 // Update methods
 
-void VoiceEngine::update()
+void FModSpeexVoipHandler::update()
 {
     // Update avatar voices
+	// play the sounds of the speeches of the avatars
 //     if (apr_thread_mutex_trylock(mAvatarMutex) != APR_EBUSY)
     {
 // GREG BEGIN
@@ -361,46 +480,51 @@ void VoiceEngine::update()
 // GREG END
         for (BufferMap::const_iterator i = mBuffers.begin(); i != mBuffers.end(); ++i)
         {
-            unsigned int lastpos = i->second->getLastPosition();
-            bool playing = i->second->isPlaying();
+			const Solipsis::EntityUID voiceUuid = i->first;
+			VoiceBuffer* pVoiceBuffer = i->second;
+            unsigned int lastpos = pVoiceBuffer->getLastPosition();
+            bool playing = pVoiceBuffer->isPlaying();
 
             unsigned int playbackOffset = (unsigned int)mNetworkChunkSize;
             if (playing)
             {
                 unsigned int pos = 0;
-                i->second->getChannel()->getPosition(&pos, FMOD_TIMEUNIT_PCM);
+                pVoiceBuffer->getChannel()->getPosition(&pos, FMOD_TIMEUNIT_PCM);
                 if ((pos > lastpos) && ((pos - lastpos) < playbackOffset))
                 {
+					// this means that the player is starving (doesn't receive audio data quick enough so that it arrives before we need it)
                     velogs << "Warning: No voice playback data available (pos:"
                            << pos << " lastPos:" << lastpos << " offset:" << playbackOffset << ")" << veendl;
-                    i->second->stop();
+                    pVoiceBuffer->stop();
                 }
             }
 
             if ((lastpos >= playbackOffset) && !playing)
             {
+				// we received enough data to start playing the sound
                 velogs << "Starting playback" << veendl;
-                i->second->play(mSystem);
+                pVoiceBuffer->play(mSystem);
             }
 
+			// update the way the sound is played, depending on the position (and velocity) of the speaking avatar
             if (playing)
             {
-                SourceMap::const_iterator j = mSources.find(i->first);
+                SourceMap::const_iterator j = mSources.find(voiceUuid);
                 if (j != mSources.end())
                 {
                     const VoiceSource& source = j->second;
 
                     FMOD_VECTOR pos;
                     source.getPosition(&pos.x, &pos.z, &pos.y);
-                    pos.x = -pos.x;
-                    pos.z = -pos.z;
+                    pos.x = -pos.x; // why ?
+                    pos.z = -pos.z; // why ?
 
                     FMOD_VECTOR vel;
                     source.getVelocity(&vel.x, &vel.z, &vel.y);
-                    vel.x = -vel.x;
-                    vel.z = -vel.z;
+                    vel.x = -vel.x; // why ?
+                    vel.z = -vel.z; // why ?
 
-                    i->second->getChannel()->set3DAttributes(&pos, &vel);
+                    pVoiceBuffer->getChannel()->set3DAttributes(&pos, &vel);
                 }
             }
         }
@@ -475,7 +599,7 @@ void VoiceEngine::update()
     }
 }
 
-void VoiceEngine::updateListener(float* pos, float* dir, float* vel)
+void FModSpeexVoipHandler::updateListener(float* pos, float* dir, float* vel)
 {
     mSelfListener.setPosition(pos[0], pos[1], pos[2]);
     mSelfListener.setDirection(dir[0], dir[1], dir[2]);
@@ -485,7 +609,7 @@ void VoiceEngine::updateListener(float* pos, float* dir, float* vel)
 // -----------------------------------------------------------------------------
 // Avatar methods
 
-void VoiceEngine::updateAvatar(const VoiceUUID& id, float* pos, float* dir, float* vel)
+void FModSpeexVoipHandler::updateAvatar(const EntityUID& id, float* pos, float* dir, float* vel)
 {
 // GREG BEGIN
 //    apr_thread_mutex_lock(mAvatarMutex);
@@ -512,7 +636,7 @@ void VoiceEngine::updateAvatar(const VoiceUUID& id, float* pos, float* dir, floa
 // GREG END
 }
 
-VoiceBuffer* VoiceEngine::newAvatar(const VoiceUUID& id, VoiceCodec* codec)
+VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* codec)
 {
     // Create avatar sound
 
@@ -557,7 +681,7 @@ VoiceBuffer* VoiceEngine::newAvatar(const VoiceUUID& id, VoiceCodec* codec)
     return buffer;
 }
 
-void VoiceEngine::removeAvatar(const VoiceUUID &id)
+void FModSpeexVoipHandler::removeAvatar(const Solipsis::EntityUID &id)
 {
     // Release voice buffer and source
 
@@ -598,7 +722,7 @@ void VoiceEngine::removeAvatar(const VoiceUUID &id)
     }
 }
 
-VoiceBuffer* VoiceEngine::getAvatarVoiceBuffer(const VoiceUUID& id) const
+VoiceBuffer* FModSpeexVoipHandler::getAvatarVoiceBuffer(const Solipsis::EntityUID& id) const
 {
     BufferMap::const_iterator i = mBuffers.find(id);
     if (i == mBuffers.end())
@@ -610,19 +734,19 @@ VoiceBuffer* VoiceEngine::getAvatarVoiceBuffer(const VoiceUUID& id) const
 // -----------------------------------------------------------------------------
 // Network methods
 
-bool VoiceEngine::connect(const char* host, int port, const VoiceUUID& id)
+bool FModSpeexVoipHandler::connect(const char* host, int port, const Solipsis::EntityUID & voiceId)
 {
-    if (mSock != VE_INVALID_SOCKET)
+	if (mSock.isValid())
         disconnect();
 
 // GREG BEGIN
-    initWinSock();
+	Socket::initialize();
 // GREG END
-    if (ve_create_socket_tcp(mSock))
+    if (mSock.create())
     {
-        if (ve_connect_socket_tcp(mSock, host, port))
+		if (mSock.connect(std::string(host), port))
         {
-            sendLogin(id);
+            sendLogin(voiceId);
             sendEnableVOIP(mEnabled);
             mRun = true;
 
@@ -634,15 +758,15 @@ bool VoiceEngine::connect(const char* host, int port, const VoiceUUID& id)
         }
 
         mRun = false;
-        ve_destroy_socket_tcp(mSock);
+		mSock.close();
     }
 
     return false;
 }
 
-void VoiceEngine::disconnect()
+void FModSpeexVoipHandler::disconnect()
 {
-    ve_destroy_socket_tcp(mSock);
+	mSock.close();
 
     mRun = false;
 // GREG BEGIN
@@ -666,32 +790,13 @@ void VoiceEngine::disconnect()
 // GREG END
 }
 
-int VoiceEngine::sendPacketHeader(char type, unsigned int size)
-{
-    char packet[sizeof(char)+sizeof(unsigned int)];
-    memcpy(packet, &type, sizeof(char));
-    memcpy(&packet[sizeof(char)], &size, sizeof(unsigned int));
-    return ve_send_packet_tcp(mSock, packet, sizeof(packet));
-}
-
-int VoiceEngine::recvPacketHeader(char* type, unsigned int* size)
-{
-    int received = 0;
-    received = ve_receive_packet_tcp(mSock, type, sizeof(char));
-    if (received <= 0) return received;
-    received = 0;
-    while (received < sizeof(unsigned int))
-        received += ve_receive_packet_tcp(mSock, &((char*)size)[received], sizeof(unsigned int)-received);
-    return received + sizeof(char);
-}
-
-int VoiceEngine::recvVoiceHeader(VoicePacketHeader* header)
+int FModSpeexVoipHandler::recvVoiceHeader(VoicePacketHeader* header)
 {
     int received = 0;
     int headerSize = sizeof(VoicePacketHeader);
     while (received < headerSize)
     {
-        int bytesReceived = ve_receive_packet_tcp(mSock, &((char*)header)[received], headerSize-received);
+		int bytesReceived = mSock.receive( &((char*)header)[received], headerSize-received);
         received += bytesReceived;
         if (bytesReceived <= 0) return bytesReceived;
     }
@@ -699,35 +804,31 @@ int VoiceEngine::recvVoiceHeader(VoicePacketHeader* header)
     return received;
 }
 
-int VoiceEngine::recvUUID(VoiceUUID* id)
-{
-    int received = 0;
-    while (received < sizeof(VoiceUUID))
-        received += ve_receive_packet_tcp(mSock, &((char*)id)[received], sizeof(VoiceUUID)-received);
-
-    return received;
-}
-
-int VoiceEngine::sendLogin(const VoiceUUID& id)
+int FModSpeexVoipHandler::sendLogin(const Solipsis::EntityUID & voiceId)
 {
     int sent = 0;
-    sent += sendPacketHeader(VP_LOGIN, sizeof(VoiceUUID) + sizeof(int));
-    sent += ve_send_packet_tcp(mSock, (const char*)&id, sizeof(VoiceUUID));
-    sent += ve_send_packet_tcp(mSock, (const char*)&mSupportedFormats, sizeof(mSupportedFormats));
+	int voiceIdSerializedSize = (int)voiceId.size() + sizeof(unsigned int);
+	sent += SimpleVoiceEngineProtocol::sendPacketHeader(mSock, VP_LOGIN, voiceIdSerializedSize + sizeof(int));
+	unsigned int voiceIdSize = (unsigned int)voiceId.size();
+	sent += mSock.send((const char*)&voiceIdSize, sizeof(unsigned int));
+	sent += mSock.send((const char*)voiceId.c_str(), (int)voiceIdSize);
+    sent += mSock.send((const char*)&mSupportedFormats, sizeof(mSupportedFormats));
     return sent;
 }
 
-int VoiceEngine::sendEnableVOIP(bool enabled)
+int FModSpeexVoipHandler::sendEnableVOIP(bool enabled)
 {
     int sent = 0;
-    sent += sendPacketHeader(VP_ENABLE_VOIP, sizeof(char));
+    sent += SimpleVoiceEngineProtocol::sendPacketHeader(mSock, VP_ENABLE_VOIP, sizeof(char));
     char val = enabled ? 1 : 0;
-    sent += ve_send_packet_tcp(mSock, &val, sizeof(char));
+    sent += mSock.send(&val, sizeof(char));
     return sent;
 }
 
-int VoiceEngine::sendAudioFrames(unsigned int from, unsigned int to)
+int FModSpeexVoipHandler::sendAudioFrames(unsigned int from, unsigned int to)
 {
+	printf( "FModSpeexVoipHandler::sendAudioFrames : start\n" );
+
     assert(to >= from);
 
     VoicePacketHeader header;
@@ -736,26 +837,29 @@ int VoiceEngine::sendAudioFrames(unsigned int from, unsigned int to)
     CodecMap::const_iterator i = mCodecs.find(mEncodeFormat);
     if (i != mCodecs.end())
     {
+		VoiceCodec* pCodec = i->second.get();
         // Encoded audio, encode in frames equal to codec frame size and send all available frames
         // as a chunk as big as possible
-        unsigned short frameSizePCM = i->second->getFrameSizePCM();
+        unsigned short frameSizePCM = pCodec->getFrameSizePCM();
         unsigned int chunkSize = to - from;
         if (chunkSize >= frameSizePCM)
         {
             // Calculate frame and sample count
-            unsigned short frames = chunkSize/frameSizePCM;
-            unsigned int sampleCount = frames*frameSizePCM;
+            unsigned short numFrames = chunkSize/frameSizePCM;
+            unsigned int sampleCount = numFrames*frameSizePCM;
 
-            bool constantFrameSize = i->second->isEncodedSizeConstant();
+            bool constantFrameSize = pCodec->isEncodedSizeConstant();
 
             // Allocate only one frame header if frame size is constant
-            size_t headerCount = constantFrameSize ? 1 : frames;
+            size_t headerCount = constantFrameSize ? 1 : numFrames;
             VoiceFrameHeader* frameHeaders = (VoiceFrameHeader*)FrameHeaderPool::ordered_malloc(headerCount);
 
             // Encode audio frames to a temporary buffer
 
-            size_t bufferSize = frames * frameSizePCM * mRecordSampleSize;
-            char* encBuffer = (char*)mSendPool.ordered_malloc(bufferSize);
+			// the size of the encoding buffer is made the same as the size of the raw audio to make sure we have enough room
+			size_t uncompressedAudioSize = numFrames * frameSizePCM * mRecordSampleSize;
+            size_t encodingBufferSize = uncompressedAudioSize;
+            char* encBuffer = (char*)mSendPool.ordered_malloc(encodingBufferSize);
 
             //
             // TODO: Which is faster: multiple locks/unlocks or a memcpy to a temporary buffer and only one lock/unlock?
@@ -771,71 +875,118 @@ int VoiceEngine::sendAudioFrames(unsigned int from, unsigned int to)
 //             }
 //             mRecordSound->unlock(ptr1, ptr2, len1, len2);
 
-            unsigned short size = 0;
+            unsigned short encodedSize = 0;
             unsigned int lastFrom = from;
-            unsigned int framesSkipped = 0;
-            for (int i = 0; i<frames; ++i)
+            unsigned int numFramesSkipped = 0;
+            for (int i = 0; i<numFrames; ++i)
             {
-                unsigned short encodedSize = encodeAudioFrame(lastFrom, lastFrom+frameSizePCM, &encBuffer[size]);
+                unsigned short frameEncodedSize = encodeAudioFrame(lastFrom, lastFrom+frameSizePCM, &encBuffer[encodedSize]);
 //                 unsigned short encodedSize = encodeAudioFrame(&audioBuffer[i*frameSizePCM*mRecordSampleSize],
 //                                                    lastFrom, lastFrom+frameSizePCM, &encBuffer[size]);
                 lastFrom += frameSizePCM;
-                if (encodedSize == 0)
+                if (frameEncodedSize == 0)
                 {
-                    ++framesSkipped;
+					// how can this happen ?
+                    ++numFramesSkipped;
                     continue;
                 }
 
                 if (constantFrameSize)
-                    frameHeaders->frameSize = encodedSize;
+                    frameHeaders->frameSize = frameEncodedSize;
                 else if (frameHeaders->frameSize == 0)
-                    frameHeaders[i-framesSkipped].frameSize = encodedSize;
+                    frameHeaders[i-numFramesSkipped].frameSize = frameEncodedSize;
 
-                size += encodedSize;
+                encodedSize += frameEncodedSize;
             }
 
-            frames -= framesSkipped;
+            numFrames -= numFramesSkipped;
 
-            header.frames = frames;
-            header.decodedAudioSize = frames*frameSizePCM*mRecordSampleSize;
-            header.audioSize = size;
+            header.frames = numFrames;
+            header.decodedAudioSize = numFrames*frameSizePCM*mRecordSampleSize;
+            header.audioSize = encodedSize;
 
             unsigned int frameHeadersSize = (unsigned int)sizeof(VoiceFrameHeader)*headerCount;
+
+			// generate the phone sequence from the audio
+			PhonemeSequence* pPhonemeSequence;
+			{
+				assert( mRecordSampleSize == 2 ); // make sure the raw audio data is available as PCM16 format
+
+				short* pAudioData = new short [sampleCount];
+
+				void* ptr1, *ptr2;
+				unsigned int len1, len2;
+
+				mRecordSound->lock(from * mRecordSampleSize, sampleCount * mRecordSampleSize, &ptr1, &ptr2, &len1, &len2);
+				assert((len1+len2) == sampleCount * mRecordSampleSize);
+				if (len1 > 0)
+				{
+					memcpy( pAudioData, ptr1, len1 );
+
+					if (len2 > 0)
+					{
+						memcpy( &pAudioData[len1], ptr2, len2 );
+					}
+				}
+				mRecordSound->unlock(ptr1, ptr2, len1, len2);
+
+				AudioSequence audioSequence = AudioSequence( pCodec->getSampleRate(), sampleCount, pAudioData, false );
+				pPhonemeSequence = PhonetizerManager::getSingleton().getSelectedPhonetizer()->audioToPhonemes( audioSequence );
+				delete [] pAudioData;
+			}
 
             // Send headers and audio data to server
 
             if (header.audioSize != 0)
             {
-                sendPacketHeader(VP_AUDIO_TO_SERVER, sizeof(header) + frameHeadersSize + header.audioSize);
-                ve_send_packet_tcp(mSock, (const char*)&header, sizeof(header));
-                ve_send_packet_tcp(mSock, (const char*)frameHeaders, frameHeadersSize);
-                ve_send_packet_tcp(mSock, encBuffer, header.audioSize);
+                SimpleVoiceEngineProtocol::sendPacketHeader(mSock, VP_AUDIO_TO_SERVER, sizeof(header) + frameHeadersSize + header.audioSize + pPhonemeSequence->getSerializedSize());
+                mSock.send((const char*)&header, sizeof(header));
+                mSock.send((const char*)frameHeaders, frameHeadersSize);
+                mSock.send(encBuffer, header.audioSize);
             }
+
+			// send phonemes
+			{
+				Solipsis::SocketOStream stream( mSock );
+				pPhonemeSequence->serialize( stream );
+			}
+			//std::string talkingAvatarUid = "SAmLRc8iixAu66ssbS-ke0F_00000000";
 
             // Free temporary buffers
 
             FrameHeaderPool::ordered_free(frameHeaders, headerCount);
             frameHeaders = 0;
 
-            mSendPool.ordered_free(encBuffer, bufferSize);
+            mSendPool.ordered_free(encBuffer, encodingBufferSize);
             encBuffer = 0;
 //             mSendPool.ordered_free(audioBuffer, bufferSize);
 //             audioBuffer = 0;
+			printf( "FModSpeexVoipHandler::sendAudioFrames : end\n" );
 
             return sampleCount;
         }
+		else
+		{
+			// not enough data to send (data to send is smaller than a frame)... we don't send anything for now
+		}
     }
-
+	else
+	{
+		assert(false); // unable to find the encoder
+	}
+	printf( "FModSpeexVoipHandler::sendAudioFrames : end (alternative)\n" );
     return 0;
 }
 
-int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
+int FModSpeexVoipHandler::recvAudioFrames(unsigned int expectedSize)
 {
+	printf( "FModSpeexVoipHandler::recvAudioFrames : start\n" );
+
     int size = 0;
     int received = 0;
 
-    VoiceUUID avatarId;
-    received = recvUUID(&avatarId);
+	Solipsis::EntityUID avatarId;
+	received = SimpleVoiceEngineProtocol::receiveVoiceUid(mSock, avatarId);
     size += received;
     if (received <= 0) return size;
 
@@ -849,29 +1000,30 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
     // Check for codec format and do a dummy receive if the codec is unknown
 
     received = 0;
-    CodecMap::const_iterator codec = mCodecs.find(header.format);
-    if (codec == mCodecs.end())
+    CodecMap::const_iterator codecIt = mCodecs.find(header.format);
+    if (codecIt == mCodecs.end())
     {
         velogs << "Warning: Avatar has an unknown voice codec (id:" << header.format << ")" << veendl;
         char* data = (char*)mReceivePool.ordered_malloc(expectedSize - size);
-        size += ve_receive_packet_tcp(mSock, data, expectedSize - size);
+		size += mSock.receive(data, expectedSize - size);
         mReceivePool.ordered_free(data, expectedSize - size);
         return size;
     }
+	VoiceCodec* pCodec = codecIt->second.get();
 
     // Create new avatar if not found
 
     VoiceBuffer* voice = getAvatarVoiceBuffer(avatarId);
     if (voice == 0)
     {
-        voice = newAvatar(avatarId, codec->second.get());
+        voice = newAvatar(avatarId, pCodec);
         if (!voice)
             return size;
     }
 
     // Read frame headers
 
-    bool constantFrameSize = codec->second->isEncodedSizeConstant();
+    bool constantFrameSize = pCodec->isEncodedSizeConstant();
     int headerCount = constantFrameSize ? 1 : header.frames;
     VoiceFrameHeader* frameHeaders = (VoiceFrameHeader*)FrameHeaderPool::ordered_malloc(headerCount);
 
@@ -880,7 +1032,7 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
         received = 0;
         while (received < sizeof(VoiceFrameHeader))
         {
-            int packetBytes = ve_receive_packet_tcp(mSock, &((char*)&frameHeaders[h])[received],
+			int packetBytes = mSock.receive(&((char*)&frameHeaders[h])[received],
                                                  sizeof(VoiceFrameHeader)-received);
             size += packetBytes;
             received += packetBytes;
@@ -888,17 +1040,35 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
         }
     }
 
-    // Read audio data
+	printf( "FModSpeexVoipHandler::recvAudioFrames : after reading frame headers\n" );
+
+    // Read encoded audio data
 
     received = 0;
     char* data = (char*)mReceivePool.ordered_malloc(header.audioSize);
     while (received < header.audioSize)
     {
-        int bytesReceived = ve_receive_packet_tcp(mSock, &data[received], header.audioSize-received);
+		int bytesReceived = mSock.receive(&data[received], header.audioSize-received);
         received += bytesReceived;
         size += bytesReceived;
         if (bytesReceived <= 0) return size;
     }
+
+	printf( "FModSpeexVoipHandler::recvAudioFrames : after reading encoded audio data\n" );
+	/*
+	{
+		char c;
+		unsigned int numBytesReceived = mSock.receive( &c, sizeof(char) );
+	}
+	*/
+
+	// read phonemes
+	Solipsis::SocketIStream inputStream( mSock );
+	PhonemeSequence* pPhonemeSequence = PhonemeSequence::createFromStream( inputStream );
+	printf( "FModSpeexVoipHandler::recvAudioFrames : after creation of phonemes from stream\n" );
+	assert( pPhonemeSequence );
+
+	size += pPhonemeSequence->getSerializedSize();
 
     // Decode audio data
 
@@ -915,9 +1085,9 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
 //         ad[i] = (short)(sinf((i+lastPos)/10.0f)*32767);
 //     }
 
-    unsigned short sampleSize = sampleSizeFromVoiceFormat(codec->second->getDecodeFormat());
+    unsigned short sampleSize = sampleSizeFromVoiceFormat(pCodec->getDecodeFormat());
     audioData = (char*)mReceivePool.ordered_malloc(header.decodedAudioSize);
-    unsigned short frameSizeDecoded = codec->second->getFrameSizePCM() * sampleSize;
+    unsigned short frameSizeDecoded = pCodec->getFrameSizePCM() * sampleSize;
     size_t offset = 0;
     for (unsigned short f = 0; f < header.frames; ++f)
     {
@@ -925,7 +1095,7 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
         unsigned short frameSizeEncoded = constantFrameSize ? frameHeaders->frameSize : frameHeaders[f].frameSize;
 
         // Decode encoded frame to audio buffer
-        decodedSize += codec->second->decode(avatarId, &data[offset], frameSizeEncoded,
+        decodedSize += pCodec->decode(avatarId, &data[offset], frameSizeEncoded,
                                              &audioData[f*frameSizeDecoded], frameSizeDecoded);
         offset += frameSizeEncoded;
     }
@@ -968,12 +1138,35 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
     sound->unlock(ptr1, ptr2, len1, len2);
     voice->setLastPosition(lastPos);
 
+	{
+		// send phonemes
+
+		VoicePacket* pVoicePacket = new VoicePacket( avatarId );
+
+
+		assert( (decodedSize % sampleSize) == 0 );
+		pVoicePacket->setNumAudioSamples( decodedSize / sampleSize );
+		pVoicePacket->setAudioFrequency( pCodec->getSampleRate() );
+
+		pVoicePacket->setPhonemeSequence( pPhonemeSequence );
+		if(mVoicePacketListener)
+		{
+			mVoicePacketListener->onVoicePacketReception( pVoicePacket );
+		}
+		else
+		{
+			delete pVoicePacket;
+		}
+	}
+
     // Free audio headers and data
 
     mReceivePool.ordered_free(data, header.audioSize);
     mReceivePool.ordered_free(audioData, header.decodedAudioSize);
     FrameHeaderPool::ordered_free(frameHeaders, constantFrameSize ? 1 : header.frames);
 
+
+	printf( "FModSpeexVoipHandler::recvAudioFrames : end\n" );
     return size;
 }
 
@@ -982,16 +1175,16 @@ int VoiceEngine::recvAudioFrames(unsigned int expectedSize)
 
 // GREG BEGIN
 //void* APR_THREAD_FUNC VoiceEngine::receiveThread(apr_thread_t* thread, void* param)
-void *VoiceEngine::receiveThread(void* param)
+void *FModSpeexVoipHandler::receiveThread(void* param)
 // GREG END
 {
-    VoiceEngine* ve = (VoiceEngine*)param;
+    FModSpeexVoipHandler* ve = (FModSpeexVoipHandler*)param;
 
     while (ve->mRun)
     {
-        char packetType;
+        VoicePacketType packetType;
         unsigned int packetSize;
-        if (ve->recvPacketHeader(&packetType, &packetSize) <= 0)
+		if (SimpleVoiceEngineProtocol::receivePacketHeader(ve->mSock, &packetType, &packetSize) <= 0)
             return 0;
 
         switch (packetType)
@@ -1022,9 +1215,9 @@ void *VoiceEngine::receiveThread(void* param)
 
 // ----------------------------------------------------------------------------
 
-void VoiceEngine::setEnabled(bool enabled)
+void FModSpeexVoipHandler::setEnabled(bool enabled)
 {
     mEnabled = enabled;
-    if (mSock != VE_INVALID_SOCKET)
+	if (mSock.isValid())
         sendEnableVOIP(mEnabled);
 }

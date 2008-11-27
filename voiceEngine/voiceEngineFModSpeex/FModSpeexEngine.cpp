@@ -25,14 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "fmod.hpp"
 
-#include "voiceengine.h"
+#include <FModSpeexVoipHandler.h>
+#include <VoicePacket.h>
 
 using namespace Solipsis;
 
-const String sVoiceEngineName = "FMod/Speex engine";
+const std::string sVoiceEngineName = "FMod/Speex engine";
 
 //-------------------------------------------------------------------------------------
-const String& FModSpeexEngine::getName() const
+const std::string& FModSpeexEngine::getName() const
 {
     return sVoiceEngineName;
 }
@@ -59,7 +60,7 @@ bool FModSpeexEngine::initSoundSystem(FMOD::System* system, size_t networkChunkS
     }
     mVoiceEngine = 0;
 
-    mVoiceEngine = new VoiceEngine(system);
+	mVoiceEngine = new FModSpeexVoipHandler(system, this);
     if (mVoiceEngine == 0)
     {
         logMessage("Could not create the voice engine");
@@ -85,15 +86,12 @@ bool FModSpeexEngine::shutdownSoundSystem()
 }
 
 //-------------------------------------------------------------------------------------
-bool FModSpeexEngine::connect(const char* host, int port, unsigned int id)
+bool FModSpeexEngine::connect(const char* host, int port, const Solipsis::EntityUID & voiceId)
 {
     if (mVoiceEngine == 0)
         return false;
 
-    VoiceUUID voiceUUID;
-    voiceUUID.setID((const char*)&id, sizeof(id));
-
-    return mVoiceEngine->connect(host, port, voiceUUID);
+    return mVoiceEngine->connect(host, port, voiceId);
 }
 
 //-------------------------------------------------------------------------------------
@@ -127,3 +125,24 @@ bool FModSpeexEngine::isRecording()
 }
 
 //-------------------------------------------------------------------------------------
+
+void FModSpeexEngine::addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
+{
+	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) == mAvatarUidToVoicePacketListener.end() );
+	mAvatarUidToVoicePacketListener[ talkingAvatarUid ] = pVoicePacketListener;
+}
+
+void FModSpeexEngine::removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
+{
+	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
+	mAvatarUidToVoicePacketListener.erase( talkingAvatarUid );
+}
+
+
+void FModSpeexEngine::onVoicePacketReception( VoicePacket* pVoicePacket )
+{
+	// we received a voice packet from FModSpeexVoipHandler, forward it to the listeners associated to the uid of the talking avatar
+	const std::string & talkingAvatarUid = pVoicePacket->getTalkingAvatarUid();
+	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
+	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception( pVoicePacket );
+}

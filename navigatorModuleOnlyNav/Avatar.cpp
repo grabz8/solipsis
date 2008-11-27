@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterManager.h>
 #include <Character.h>
 #include <CharacterInstance.h>
+#include <IFaceController.h>
 
 using namespace Solipsis;
 using namespace CommonTools;
@@ -623,6 +624,11 @@ void Avatar::animate(Real timeSinceLastFrame)
 
         // Move physics character
         Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
+
+		// update facial animation
+		IFaceController* pFaceController = getCharacterInstance()->getFaceController();
+		if(pFaceController)
+			pFaceController->updateFace( timeSinceLastFrame );
 
         // Update XML entity
         Vector3 d = displacement/timeSinceLastFrame;

@@ -56,6 +56,11 @@ FMOD::Channel* VoiceBuffer::getChannel()
     return mChannel;
 }
 
+const FMOD::Channel* VoiceBuffer::getChannel() const
+{
+    return mChannel;
+}
+
 void VoiceBuffer::setLastPosition(unsigned int pos)
 {
     mLastPosition = pos;

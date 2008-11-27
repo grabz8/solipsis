@@ -25,21 +25,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "VoiceServerSocket.h"
 #include "VoiceServerUtil.h"
+#include <SimpleVoiceEngineProtocol.h>
 
 namespace SolipsisVoiceServer {
 
 // The server delegates handling client requests to a serverConnection object.
-Avatar::Avatar(const VoiceUUID& id, VoiceServerConnection* connection) :
+Avatar::Avatar(const Solipsis::EntityUID& id, VoiceServerConnection* connection) :
     BasicThread(""),
 	mId(id),
 	_connection(connection),
 	mAudioDatasPtrsMutex(PTHREAD_MUTEX_INITIALIZER),
     mAudioDatasPtrsGate(PTHREAD_MUTEX_INITIALIZER)
 {
-  VoiceServerUtil::log(2,"Avatar: socket %d", connection->getfd());
+	VoiceServerUtil::log(2,"Avatar: socket %d", (int)connection->getSocket().getHandle());
 
   // set name
-  setName(std::string("Avatar") + mId.getID());
+  setName(std::string("Avatar") + mId);
 }
 
 void Avatar::stop(unsigned int stopTimeoutSec)
@@ -50,7 +51,7 @@ void Avatar::stop(unsigned int stopTimeoutSec)
 
 void Avatar::run()
 {
-    VoiceServerUtil::log(4,"Avatar::run: socket %d, running ...", _connection->getfd());
+    VoiceServerUtil::log(4,"Avatar::run: socket %d, running ...", (int)_connection->getSocket().getHandle());
 
     while (!isStopRequested())
     {
@@ -67,7 +68,7 @@ void Avatar::run()
 //        VoiceServerUtil::sleep(10);
     }
 
-    VoiceServerUtil::log(4,"Avatar::run: socket %d, end", _connection->getfd());
+    VoiceServerUtil::log(4,"Avatar::run: socket %d, end", (int)_connection->getSocket().getHandle());
 }
 
 void Avatar::end()
@@ -84,20 +85,15 @@ void Avatar::audioDatasReceived(AudioDatasPtr& audioDatasPtr)
     pthread_mutex_unlock(&mAudioDatasPtrsGate);
 }
 
-int Avatar::sendPacketHeader(char type, unsigned int size)
-{
-    char packet[sizeof(char)+sizeof(unsigned int)];
-    memcpy(packet, &type, sizeof(char));
-    memcpy(&packet[sizeof(char)], &size, sizeof(unsigned int));
-    return VoiceServerSocket::send(_connection->getfd(), packet, sizeof(packet));
-}
-
 int Avatar::sendAudioFrames(AudioDatasPtr& audioDatasPtr)
 {
     int sent = 0;
-    sent += sendPacketHeader(VP_AUDIO_TO_CLIENT, sizeof(VoiceUUID) + audioDatasPtr->mSize);
-    sent += VoiceServerSocket::send(_connection->getfd(), (const char*)&mId, sizeof(VoiceUUID));
-    sent += VoiceServerSocket::send(_connection->getfd(), (const char*)audioDatasPtr->mDatas, audioDatasPtr->mSize);
+	size_t serializedVoiceUidSize = sizeof(unsigned int) + mId.size();
+	sent += SimpleVoiceEngineProtocol::sendPacketHeader(_connection->getSocket(), VP_AUDIO_TO_CLIENT, (unsigned int)(serializedVoiceUidSize) + audioDatasPtr->mSize);
+	unsigned int numCharsInVoiceId = (unsigned int)mId.size();
+    sent += _connection->getSocket().send( (const char*)&numCharsInVoiceId, sizeof(unsigned int));
+    sent += _connection->getSocket().send( mId.c_str(), (int)mId.size());
+    sent += _connection->getSocket().send( (const char*)audioDatasPtr->mDatas, audioDatasPtr->mSize);
 
     return sent;
 }

@@ -24,6 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef VOICESOURCE_H
 #define VOICESOURCE_H
 
+/**
+	@brief	the attributes of a sound emitting device (eg avatar)
+
+	this is used to modify the way a sound is played, depending on the position of the sound emitting device in the 3d world, and also its velocity.
+*/
 class VoiceSource
 {
 public:

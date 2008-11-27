@@ -45,40 +45,38 @@ VoiceServer::~VoiceServer()
 // set it in listen mode to make it available for clients.
 bool VoiceServer::bindAndListen(int port, int backlog /*= 5*/)
 {
-  int fd = VoiceServerSocket::socket();
-  if (fd < 0)
-  {
-    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not create socket (%s).", VoiceServerSocket::getErrorMsg().c_str());
-    return false;
-  }
+	mSocket.create();
+	if(!mSocket.isValid())
+	{
+		VoiceServerUtil::error("VoiceServer::bindAndListen: Could not create socket (%s).", Socket::getLastErrorMsg().c_str());
+		return false;
+	}
 
-  this->setfd(fd);
-
-  // Allow this port to be re-bound immediately so server re-starts are not delayed
-  if ( ! VoiceServerSocket::setReuseAddr(fd))
-  {
-    this->close();
-    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not set SO_REUSEADDR socket option (%s).", VoiceServerSocket::getErrorMsg().c_str());
-    return false;
-  }
+	// Allow this port to be re-bound immediately so server re-starts are not delayed
+	if ( ! mSocket.setReuseAddr())
+	{
+		this->close();
+		VoiceServerUtil::error("VoiceServer::bindAndListen: Could not set SO_REUSEADDR socket option (%s).", Socket::getLastErrorMsg().c_str());
+		return false;
+	}
 
   // Bind to the specified port on the default interface
-  if ( ! VoiceServerSocket::bind(fd, port))
+  if ( ! mSocket.bind(port))
   {
     this->close();
-    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not bind to specified port (%s).", VoiceServerSocket::getErrorMsg().c_str());
+    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not bind to specified port (%s).", Socket::getLastErrorMsg().c_str());
     return false;
   }
 
   // Set in listening mode
-  if ( ! VoiceServerSocket::listen(fd, backlog))
+  if ( ! mSocket.listen(backlog))
   {
     this->close();
-    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not set socket in listening mode (%s).", VoiceServerSocket::getErrorMsg().c_str());
+    VoiceServerUtil::error("VoiceServer::bindAndListen: Could not set socket in listening mode (%s).", Socket::getLastErrorMsg().c_str());
     return false;
   }
 
-  VoiceServerUtil::log(2, "VoiceServer::bindAndListen: server listening on port %d fd %d", port, fd);
+  VoiceServerUtil::log(2, "VoiceServer::bindAndListen: server listening on port %d fd %d", port, (int)mSocket.getHandle());
 
   // Notify the dispatcher to listen on this source when we are in work()
   _disp.addSource(this, VoiceServerDispatch::ReadableEvent);
@@ -105,18 +103,18 @@ unsigned VoiceServer::handleEvent(unsigned mask)
 // handle method calls from the client.
 void VoiceServer::acceptConnection()
 {
-  int s = VoiceServerSocket::accept(this->getfd());
-  VoiceServerUtil::log(2, "VoiceServer::acceptConnection: socket %d", s);
-  if (s < 0)
-  {
-    this->close();
-    VoiceServerUtil::error("VoiceServer::acceptConnection: Could not accept connection (%s).", VoiceServerSocket::getErrorMsg().c_str());
-  }
-  else  // create a new connection
-  {
-    VoiceServerUtil::log(2, "VoiceServer::acceptConnection: creating a connection");
-    this->createConnection(s);
-  }
+	int s = mSocket.accept();
+	VoiceServerUtil::log(2, "VoiceServer::acceptConnection: socket %d", s);
+	if (s < 0)
+	{
+		this->close();
+		VoiceServerUtil::error("VoiceServer::acceptConnection: Could not accept connection (%s).", Socket::getLastErrorMsg().c_str());
+	}
+	else  // create a new connection
+	{
+		VoiceServerUtil::log(2, "VoiceServer::acceptConnection: creating a connection");
+		this->createConnection(s);
+	}
 }
 
 // Create a new connection object for processing requests from a specific client.
@@ -149,7 +147,7 @@ void VoiceServer::shutdown()
   _disp.clear();
 }
 
-Avatar* VoiceServer::getAvatar(const VoiceUUID& id)
+Avatar* VoiceServer::getAvatar(const Solipsis::EntityUID& id)
 {
     AvatarMap::const_iterator i = mAvatars.find(id);
     if (i == mAvatars.end())
@@ -158,7 +156,7 @@ Avatar* VoiceServer::getAvatar(const VoiceUUID& id)
     return i->second;
 }
 
-Avatar* VoiceServer::newAvatar(const VoiceUUID& id, VoiceServerConnection* connection)
+Avatar* VoiceServer::newAvatar(const Solipsis::EntityUID& id, VoiceServerConnection* connection)
 {
     // Create the avatar
     Avatar* avatar = new Avatar(id, connection);
@@ -174,16 +172,16 @@ Avatar* VoiceServer::newAvatar(const VoiceUUID& id, VoiceServerConnection* conne
 #if !defined(ENABLE_ECHO)
         if (otherAvatarIt->second == avatar) continue;
 #endif
-        VoiceServerUtil::log(2, "VoiceServer::newAvatar: avatar %s is now listening avatar %s", otherAvatarIt->second->getId().getID().c_str(), avatar->getId().getID().c_str());
+        VoiceServerUtil::log(2, "VoiceServer::newAvatar: avatar %s is now listening avatar %s", otherAvatarIt->second->getId().c_str(), avatar->getId().c_str());
         avatar->getConnection()->addVSCListener(otherAvatarIt->second);
-        VoiceServerUtil::log(2, "VoiceServer::newAvatar: avatar %s is now listening avatar %s", avatar->getId().getID().c_str(), otherAvatarIt->second->getId().getID().c_str());
+        VoiceServerUtil::log(2, "VoiceServer::newAvatar: avatar %s is now listening avatar %s", avatar->getId().c_str(), otherAvatarIt->second->getId().c_str());
         otherAvatarIt->second->getConnection()->addVSCListener(avatar);
     }
 
     return avatar;
 }
 
-void VoiceServer::removeAvatar(const VoiceUUID& id)
+void VoiceServer::removeAvatar(const Solipsis::EntityUID& id)
 {
     pthread_mutex_lock(&mAvatarMutex);
 
@@ -199,9 +197,9 @@ void VoiceServer::removeAvatar(const VoiceUUID& id)
 #if !defined(ENABLE_ECHO)
             if (otherAvatarIt->second == avatar) continue;
 #endif
-            VoiceServerUtil::log(2, "VoiceServer::removeAvatar: avatar %s is no more listening avatar %s", otherAvatarIt->second->getId().getID().c_str(), avatar->getId().getID().c_str());
+            VoiceServerUtil::log(2, "VoiceServer::removeAvatar: avatar %s is no more listening avatar %s", otherAvatarIt->second->getId().c_str(), avatar->getId().c_str());
             avatar->getConnection()->removeVSCListener(otherAvatarIt->second);
-            VoiceServerUtil::log(2, "VoiceServer::removeAvatar: avatar %s is no more listening avatar %s", avatar->getId().getID().c_str(), otherAvatarIt->second->getId().getID().c_str());
+            VoiceServerUtil::log(2, "VoiceServer::removeAvatar: avatar %s is no more listening avatar %s", avatar->getId().c_str(), otherAvatarIt->second->getId().c_str());
             otherAvatarIt->second->getConnection()->removeVSCListener(avatar);
         }
 

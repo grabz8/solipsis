@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __VoiceServerSource_h__
 #define __VoiceServerSource_h__
 
+#include <Socket.h>
+
 #if defined(_MSC_VER)
 # pragma warning(disable:4786)    // identifier was truncated in debug info
 #endif
@@ -42,9 +44,10 @@ namespace SolipsisVoiceServer {
     virtual ~VoiceServerSource();
 
     //! Return the file descriptor being monitored.
-    int getfd() const { return _fd; }
+    const Socket & getSocket() const { return mSocket; }
+    Socket & getSocket() { return mSocket; }
     //! Specify the file descriptor to monitor.
-    void setfd(int fd) { _fd = fd; }
+//    void setfd(int fd) { _fd = fd; }
 
     //! Close the owned fd. If deleteOnClose was specified at construction, the object is deleted.
     virtual void close();
@@ -52,11 +55,12 @@ namespace SolipsisVoiceServer {
     //! Return true to continue monitoring this source
     virtual unsigned handleEvent(unsigned eventType) = 0;
 
-  private:
+  protected:
 
     // Socket. This should really be a SOCKET (an alias for unsigned int*) on windows...
-    int _fd;
+	Socket	mSocket;
 
+  private:
     // In the server, a new source (VoiceServerConnection) is created
     // for each connected client. When each connection is closed, the
     // corresponding source object is deleted.

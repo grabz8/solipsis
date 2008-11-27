@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "XmlDatasPrerequisites.h"
 #include <Ogre.h>
 #include <tinyxml.h>
+#include <EntityUID.h>
 
 #define POOL
 #ifdef POOL
@@ -80,7 +81,6 @@ enum ShapeType {
     STPolygonVolume = 200   /// Volume
 };
 
-typedef std::string EntityUID;
 typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
 typedef unsigned int FileVersion;
@@ -562,6 +562,9 @@ public:
     const EntryGateStruct& getEntryGate() { return mEntryGate; }
 };
 
+/**
+	@brief	A serializable (in xml form) structure containing the state of an entity (avatar, object, ....)
+*/
 class XMLDATAS_EXPORT XmlEntity : public XmlData
 {
 #ifdef POOL

@@ -50,6 +50,7 @@ namespace Solipsis {
 
 class MyZipArchive;
 class CharacterInstance;
+class IFaceControllerCreator;
 
 typedef std::map<String,BodyPart*> BodyPartsMap;
 typedef MapIterator<BodyPartsMap> BodyPartsIterator;
@@ -121,7 +122,7 @@ public:
 	///param offsetOrientation Offset orientation to set to the subMesh one time attached to the bone.
 	void addSubMesh(const MeshPtr& mesh, const String& boneName, SubMesh* subMesh, const String& subMeshName, const Vector3 &offsetPosition = Vector3::ZERO, const Quaternion &offsetOrientation = Quaternion::IDENTITY);
 
-	///hrief Method which return the number of animations of the entity. Usefull in order to know if the character is animated (<=> getNumAnimation() > 0).
+	///brief Method which return the number of animations of the entity. Usefull in order to know if the character is animated (<=> getNumAnimation() > 0).
 	///return The number of animations of the entity.
 	unsigned short getNumAnimations();
 
@@ -171,6 +172,12 @@ public:
 		const Vector3& minRotations, const Vector3& defaultRotations, const Vector3& maxRotations,
 		const Vector3& minPosition, const Vector3& defaultPosition, const Vector3& maxPosition); 
 
+	/**
+		@brief	gets access to the face controller creator associated with this character
+	*/
+	const IFaceControllerCreator*	getFaceControllerCreator( void ) const { return mFaceControllerCreator; }
+	IFaceControllerCreator*	getFaceControllerCreator( void ) { return mFaceControllerCreator; }
+
 protected:
 	Path* mPath;										///brief Path informing us where is placed the character on the disks.
 	MyZipArchive* mZipArchive;							///brief Zip archive containing our character.
@@ -192,6 +199,7 @@ protected:
 
 	BodyPartsMap mBodyParts;							///brief Map of all the BodyParts of the character (For example "Head","Arms","Legs",...).
 	GoodiesMap mGoodies;								///brief Map of all the Goodies of the character (For example "Watch","Hat"...).
+	IFaceControllerCreator* mFaceControllerCreator;		///brief The creator that is used to create the face controller for this character's instances
 
 	bool mLoadingSuccessful;							///brief Boolean telling whether or not te loading of the character has been successful.
 	String mLoadingErrorMessage;						///brief Description of the problem which has avoided the character to load correctly.

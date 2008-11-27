@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9.00"
 	Name="tokamak"
 	ProjectGUID="{4028E54D-5779-4FB5-B1BD-8EC3BB92EDA8}"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

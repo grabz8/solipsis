@@ -109,12 +109,13 @@ VoiceServerDispatch::work(double timeout)
 
     int maxFd = -1;     // Not used on windows
     SourceList::iterator it;
-    for (it=_sources.begin(); it!=_sources.end(); ++it) {
-      int fd = it->getSource()->getfd();
-      if (it->getMask() & ReadableEvent) FD_SET(fd, &inFd);
-      if (it->getMask() & WritableEvent) FD_SET(fd, &outFd);
-      if (it->getMask() & Exception)     FD_SET(fd, &excFd);
-      if (it->getMask() && fd > maxFd)   maxFd = fd;
+    for (it=_sources.begin(); it!=_sources.end(); ++it)
+	{
+		Socket::Handle fd = it->getSource()->getSocket().getHandle();
+		if (it->getMask() & ReadableEvent) FD_SET(fd, &inFd);
+		if (it->getMask() & WritableEvent) FD_SET(fd, &outFd);
+		if (it->getMask() & Exception)     FD_SET(fd, &excFd);
+		if (it->getMask() && (int)fd > maxFd)   maxFd = (int)fd;
     }
 
     // Check for events
@@ -141,9 +142,10 @@ VoiceServerDispatch::work(double timeout)
     {
       SourceList::iterator thisIt = it++;
       VoiceServerSource* src = thisIt->getSource();
-      int fd = src->getfd();
+	  Socket::Handle fd = src->getSocket().getHandle();
       unsigned newMask = (unsigned) -1;
-      if (fd <= maxFd) {
+      if ((int)fd <= maxFd)
+	  {
         // If you select on multiple event types this could be ambiguous
         if (FD_ISSET(fd, &inFd))
           newMask &= src->handleEvent(ReadableEvent);

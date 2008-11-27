@@ -26,6 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "CharacterInstance.h"
 #include "CharacterManager.h"
 #include "Character.h"
+#include "IFaceControllerCreator.h"
+#include "IFaceController.h"
+#include <VoiceEngineManager.h>
 
 using namespace Solipsis;
 
@@ -39,6 +42,7 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
     mUidZipArchive(NULL),
 	mEntity(NULL),
 	mSceneNode(NULL),
+	mFaceController(NULL),
 	mCurrentAnimationState(NULL),
 	mCustomizationAnimationState(NULL),
  	mCustomizationKeyFrame(NULL),
@@ -114,6 +118,11 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
         bodyPartInst->setDefaultBodyPartModelAsCurrent();
     }
 
+	// create the face controller
+	#ifdef ACTIVATE_FACE_CONTROLLER
+		mFaceController = mCharacter->getFaceControllerCreator()->createFaceController( this );
+	#endif
+
 	//Creating the object necessary to the Couples of poses.
     mCustomizationKeyFrame = mCharacter->getAnimationTrack()->createVertexPoseKeyFrame(0);
 
@@ -133,18 +142,24 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
 		setAnimationMode(ANIMATION_MODE_NO_ANIMATION);
 
 	//loading the configuration saved in a precedent execution of the program
-	loadModified();	
+	loadModified();
 
 #if 0
 	//re-save the mesh ready to use for the solipsis application.
 	saveModified();
 #endif
+
+	// register ourselves to receive voice packets
+	VoiceEngineManager::getSingleton().getSelectedEngine()->addVoicePacketListener( mUid, this );
 }
 
 //---------------------------------------------------------------------------------
 CharacterInstance::~CharacterInstance()
 {
-    mCharacter->removeInstance(mUid);
+	// unregister ourselves to no longer receive voice packets
+	VoiceEngineManager::getSingleton().getSelectedEngine()->removeVoicePacketListener( mUid, this );
+
+	mCharacter->removeInstance(mUid);
 
     // Destroy goodies instances
     for(GoodyInstancesMap::iterator it = mGoodyInstances.begin(); it != mGoodyInstances.end(); it = mGoodyInstances.begin())
@@ -159,6 +174,12 @@ CharacterInstance::~CharacterInstance()
         mBodyPartInstances.erase(it);
     }
 
+	// destroy the face controller
+	if(mFaceController)
+	{
+		delete mFaceController;
+	}
+
     // Destroy entity and scene node
 	mSceneNode->detachObject(mEntity);
     mSceneMgr->destroyEntity(mEntity);
@@ -171,6 +192,15 @@ CharacterInstance::~CharacterInstance()
     delete mUidZipArchive;
     delete mUidPath;
 }
+
+void CharacterInstance::onVoicePacketReception( VoicePacket* pVoicePacket )
+{
+	#ifdef ACTIVATE_FACE_CONTROLLER
+		assert( mFaceController );
+		mFaceController->onVoicePacketReception( pVoicePacket );
+	#endif
+}
+
 
 //---------------------------------------------------------------------------------
 void CharacterInstance::loadModified()

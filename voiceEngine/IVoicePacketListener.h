@@ -4,7 +4,7 @@ This source file is part of Solipsis
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
-Author RealXTend, updated by JAN Gregory
+Author JAN Gregory
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,34 +21,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef VOICEUUID_H
-#define VOICEUUID_H
+#ifndef __IVoicePacketListener_h__
+#define __IVoicePacketListener_h__
 
-// GREG BEGIN
-#include <stdio.h>
-#include <string>
-// GREG END
+#include "DllExport.h"
 
-class VoiceUUID
+namespace Solipsis
 {
-public:
-    VoiceUUID();
-    VoiceUUID(const unsigned char id[16]);
-	VoiceUUID(const VoiceUUID& other);
+	class VoicePacket;
 
-    void operator = (const VoiceUUID& other);
+	/**
+		@brief	interface for objects that need to do something when a voice packet is received
+	*/
+	class VOICEENGINE_EXPORT IVoicePacketListener
+	{
+	public:
+		IVoicePacketListener() {}
+		virtual ~IVoicePacketListener() {}
 
-    bool operator == (const VoiceUUID& other) const;
-    bool operator < (const VoiceUUID& other) const;
+		/**
+			@brief	action to perform when a voice packet is received
 
-    unsigned char mID[16];
+			@param	pVoicePacket	the voice packet that has just been received and that this method needs to handle
+									From now on, the life of this voice packet is under the responsability of this method
+									(this method needs to ensure its deletion at some point)
+		*/
+		virtual void onVoicePacketReception( VoicePacket* pVoicePacket ) = 0 ;
+	};
 
-// GREG BEGIN
-    void generateID();
-    void setID(const char* buf, int size) { memset(mID, 0, sizeof(mID)); memcpy(mID + sizeof(mID) - size, buf, size); }
-    std::string getID() { char mIDString[32+1]; for(int i=0;i<16;i++) sprintf(mIDString+i*2, "%02x", mID[i]); return mIDString; }
-// GREG END
+} // namespace Solipsis
 
-};	//	class VoiceUUID
-
-#endif	//	VOICEUUID_H
+#endif // #ifndef __IVoicePacketListener_h__

@@ -106,7 +106,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\DebugDLL\.&quot; /y "
 			/>
 		</Configuration>
 		<Configuration
@@ -154,7 +154,6 @@
 				ProgramDataBaseFileName=".\..\win32\tmp\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -201,7 +200,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\expat\lib\ReleaseDLL\.&quot; /y "
 			/>
 		</Configuration>
 	</Configurations>
