@@ -863,3 +863,8 @@ Building Guide v1.0 added
 Mouse cursor is now exclusive only on 1st person camera mode, mouse can leave window
 
 ---------------------------
+27/11/08
+
+Added a facial animation system that allows the lips of the avatars to move when the user contolling them is talking.
+
+---------------------------
