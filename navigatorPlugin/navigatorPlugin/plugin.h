@@ -91,6 +91,7 @@ public:
 
     // overridden from Solipsis::IWindow
     virtual void * getHandle() { return mhWnd; }
+    virtual bool isFullscreen() { return false; }
     virtual unsigned int getWidth() { return mWidth; }
     virtual unsigned int getHeight() { return mHeight; }
     virtual void setMouseExclusive(bool exclusive) {}
