@@ -93,6 +93,7 @@ public:
     virtual void * getHandle() { return mhWnd; }
     virtual unsigned int getWidth() { return mWidth; }
     virtual unsigned int getHeight() { return mHeight; }
+    virtual void setMouseExclusive(bool exclusive) {}
     // end overridden
 
   // locals
