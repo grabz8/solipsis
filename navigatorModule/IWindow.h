@@ -44,6 +44,10 @@ public:
     /** get height of the window
     */
     virtual unsigned int getHeight()=0;
+
+    /** set mouse exclusive mode
+    */
+    virtual void setMouseExclusive(bool exclusive)=0;
 };
 
 } // namespace Solipsis

@@ -56,6 +56,9 @@ protected:
     /// OIS Joystick device
     OIS::JoyStick* mJoy;
 
+    /// True if mouse is exclusive to this window
+    bool mMouseExclusive;
+
 public:
     /** Constructor, not to be used directly (use Instance::setWindow()).
     */
@@ -73,6 +76,8 @@ public:
     virtual unsigned int getWidth() { return mInstance->getRenderWindowPtr()->getWidth(); }
     /** See IWindow. */
     virtual unsigned int getHeight() { return mInstance->getRenderWindowPtr()->getHeight(); }
+    /** See IWindow. */
+    virtual void setMouseExclusive(bool exclusive);
 
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
@@ -94,9 +99,14 @@ public:
     /** See OIS::MouseListener. */
     virtual bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
 
-    /** Initialize bindings to manage this auto-created window.
-    */
+    /** Initialize bindings to manage this auto-created window. */
     void initialize();
+
+protected:
+    /** Initialize OIS (input context, devices, listeners). */
+    void initializeOIS();
+    /** Finalize OIS. */
+    void finalizeOIS();
 };
 
 } // namespace Solipsis

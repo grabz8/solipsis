@@ -30,7 +30,8 @@ using namespace Solipsis;
 //-------------------------------------------------------------------------------------
 AutoCreatedWindow::AutoCreatedWindow(Instance* instance) :
     mInstance(instance),
-    mInputManager(0), mMouse(0), mKeyboard(0), mJoy(0)
+    mInputManager(0), mMouse(0), mKeyboard(0), mJoy(0),
+    mMouseExclusive(false)
 {
 }
 
@@ -40,6 +41,17 @@ AutoCreatedWindow::~AutoCreatedWindow()
     // Remove ourself as a Window listener
     WindowEventUtilities::removeWindowEventListener(mInstance->getRenderWindowPtr(), this);
     windowClosed(mInstance->getRenderWindowPtr());
+}
+
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::setMouseExclusive(bool exclusive)
+{
+    if (exclusive == mMouseExclusive) return;
+    mMouseExclusive = exclusive;
+
+    // Re-initialize OIS (input context, devices, listeners)
+    finalizeOIS();
+    initializeOIS();
 }
 
 //-------------------------------------------------------------------------------------
@@ -74,20 +86,7 @@ void AutoCreatedWindow::windowClosed(RenderWindow* rw)
     //Unattach OIS before window shutdown (very important under Linux)
     //Only close for window that created OIS (the main window in these demos)
     if (rw == mInstance->getRenderWindowPtr())
-    {
-        if (mInputManager)
-        {
-            mInputManager->destroyInputObject(mMouse);
-            mMouse = 0;
-            mInputManager->destroyInputObject(mKeyboard);
-            mKeyboard = 0;
-            mInputManager->destroyInputObject(mJoy);
-            mJoy = 0;
-
-            OIS::InputManager::destroyInputSystem(mInputManager);
-            mInputManager = 0;
-        }
-    }
+        finalizeOIS();
 }
 
 //-------------------------------------------------------------------------------------
@@ -172,9 +171,8 @@ bool AutoCreatedWindow::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButton
 //-------------------------------------------------------------------------------------
 void AutoCreatedWindow::initialize()
 {
-    using namespace OIS;
-
 #ifdef WIN32
+    // Set application icon
     HWND hwnd = (HWND)getHandle();
     HINSTANCE hinstance = GetModuleHandle(NULL);
     HICON icon = LoadIcon(hinstance, MAKEINTRESOURCE(AUTOCREATEDWINDOW_ICON_INDEX));
@@ -182,11 +180,35 @@ void AutoCreatedWindow::initialize()
     SendMessage(hwnd, WM_SETICON, ICON_SMALL, LPARAM(icon));
 #endif
 
+    // Initialize OIS (input context, devices, listeners)
+    initializeOIS();
+
+    // Register as a Window listener
+    WindowEventUtilities::addWindowEventListener(mInstance->getRenderWindowPtr(), this);
+
+    // Register as an Ogre Frame listener
+    Root::getSingletonPtr()->addFrameListener(this);
+}
+
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::initializeOIS()
+{
+    using namespace OIS;
+
+    if (mInputManager != 0) return;
+
     // Create the input context
     ParamList pl;
     std::ostringstream windowHndStr;
     windowHndStr << (size_t)getHandle();
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+    if (!mMouseExclusive)
+    {
+#ifdef WIN32
+        pl.insert(make_pair(std::string("w32_mouse"), "DISCL_FOREGROUND"));
+        pl.insert(make_pair(std::string("w32_mouse"), "DISCL_NONEXCLUSIVE"));
+#endif
+    }
     mInputManager = InputManager::createInputSystem(pl);
 
     // Create all devices (We only catch joystick exceptions here, as, most people have Key/Mouse)
@@ -202,14 +224,34 @@ void AutoCreatedWindow::initialize()
     // Set initial mouse clipping size
     windowResized(mInstance->getRenderWindowPtr());
 
-    // Register as a Window listener
-    WindowEventUtilities::addWindowEventListener(mInstance->getRenderWindowPtr(), this);
-
     // OIS Listeners
     mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
+}
 
-    Root::getSingletonPtr()->addFrameListener(this);
+//-------------------------------------------------------------------------------------
+void AutoCreatedWindow::finalizeOIS()
+{
+    using namespace OIS;
+
+    if (mInputManager == 0) return;
+
+    // Release all keys before removing keyboard listener
+    char keys[256];
+    mKeyboard->copyKeyStates(keys);
+    for (int k = 0; k < 256; ++k)
+        if (keys[k])
+            keyReleased(KeyEvent(mKeyboard, (OIS::KeyCode)k, (unsigned int)k));
+
+    mInputManager->destroyInputObject(mMouse);
+    mMouse = 0;
+    mInputManager->destroyInputObject(mKeyboard);
+    mKeyboard = 0;
+    mInputManager->destroyInputObject(mJoy);
+    mJoy = 0;
+
+    InputManager::destroyInputSystem(mInputManager);
+    mInputManager = 0;
 }
 
 //-------------------------------------------------------------------------------------

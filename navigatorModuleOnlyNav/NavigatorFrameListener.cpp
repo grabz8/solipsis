@@ -963,7 +963,7 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
 
     if (((mNavigator->getState() == Navigator::SAvatarEdit) && (getCameraMode() == CMAroundPerson)) ||
         ((mNavigator->getState() == Navigator::SModeling) && (getCameraMode() == CMModeling)))
-			 return;
+        return;
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar == 0) return;
@@ -1058,7 +1058,10 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
     if (navigatorGUI != 0)
     {
+        // Hide mouse only on 1st person camera mode
         navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
+        // Set mouse exclusive mode (exclusive only on 1st person camera mode)
+        mNavigator->getIWindow()->setMouseExclusive(mode == CM1stPerson);
         navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
         NaviManager::Get().deFocusAllNavis();
         if (mode == CM1stPerson)
