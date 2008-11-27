@@ -37,6 +37,10 @@ public:
     */
     virtual void* getHandle()=0;
 
+    /** is a fullscreen window ?
+    */
+    virtual bool isFullscreen()=0;
+
     /** get width of the window
     */
     virtual unsigned int getWidth()=0;

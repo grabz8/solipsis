@@ -73,6 +73,8 @@ public:
         return (void*)windowHnd;
     }
     /** See IWindow. */
+    virtual bool isFullscreen() { return mInstance->getRenderWindowPtr()->isFullScreen(); }
+    /** See IWindow. */
     virtual unsigned int getWidth() { return mInstance->getRenderWindowPtr()->getWidth(); }
     /** See IWindow. */
     virtual unsigned int getHeight() { return mInstance->getRenderWindowPtr()->getHeight(); }

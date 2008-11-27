@@ -47,6 +47,9 @@ AutoCreatedWindow::~AutoCreatedWindow()
 void AutoCreatedWindow::setMouseExclusive(bool exclusive)
 {
     if (exclusive == mMouseExclusive) return;
+    // Mouse is always exclusive in fullscreen mode
+    if (isFullscreen()) return;
+
     mMouseExclusive = exclusive;
 
     // Re-initialize OIS (input context, devices, listeners)
@@ -179,6 +182,9 @@ void AutoCreatedWindow::initialize()
     SendMessage(hwnd, WM_SETICON, ICON_BIG, LPARAM(icon));
     SendMessage(hwnd, WM_SETICON, ICON_SMALL, LPARAM(icon));
 #endif
+
+    // Mouse is always exclusive in fullscreen mode
+    mMouseExclusive = isFullscreen();
 
     // Initialize OIS (input context, devices, listeners)
     initializeOIS();
