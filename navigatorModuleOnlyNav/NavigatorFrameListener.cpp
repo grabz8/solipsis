@@ -1060,8 +1060,9 @@ void NavigatorFrameListener::setCameraMode(CameraMode mode)
     {
         // Hide mouse only on 1st person camera mode
         navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
-        // Set mouse exclusive mode (exclusive only on 1st person camera mode)
-        mNavigator->getIWindow()->setMouseExclusive(mode == CM1stPerson);
+        // Set mouse exclusive mode in windowed mode (exclusive only on 1st person camera mode)
+        if (!mNavigator->getIWindow()->isFullscreen())
+            mNavigator->getIWindow()->setMouseExclusive(mode == CM1stPerson);
         navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
         NaviManager::Get().deFocusAllNavis();
         if (mode == CM1stPerson)
