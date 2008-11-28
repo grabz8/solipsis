@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;ENABLE_ECHO;NTEST_PLAY_SOUND"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -106,7 +106,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;&quot;$(BOOST_ROOT)&quot;;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;NENABLE_ECHO"
 				RuntimeLibrary="2"
 				WarningLevel="3"

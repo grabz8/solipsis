@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __SimpleVoiceEngineProtocol_h__
 #define __SimpleVoiceEngineProtocol_h__
 
-#include <EntityUID.h>
+#include <XmlDatasBasicTypes.h>
 #include "voiceheader.h"
 
 class Socket;

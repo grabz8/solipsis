@@ -24,8 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IVoicePacketListener_h__
 #define __IVoicePacketListener_h__
 
-#include "DllExport.h"
-
 namespace Solipsis
 {
 	class VoicePacket;
@@ -33,7 +31,7 @@ namespace Solipsis
 	/**
 		@brief	interface for objects that need to do something when a voice packet is received
 	*/
-	class VOICEENGINE_EXPORT IVoicePacketListener
+	class IVoicePacketListener
 	{
 	public:
 		IVoicePacketListener() {}

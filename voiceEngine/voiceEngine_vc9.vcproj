@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories=".;..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDING_VOICEENGINE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -92,8 +92,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copying include and library files"
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)*.h&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\debug&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\debug&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\Debug\.&quot; /y&#x0D;&#x0A;"
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)*.h&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".;..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories=".;..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;BUILDING_VOICEENGINE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -165,8 +165,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copying include and library files"
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)*.h&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\.&quot; /y&#x0D;&#x0A;"
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)*.h&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\VoiceEngine\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

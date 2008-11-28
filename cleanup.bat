@@ -71,6 +71,10 @@ rmdir Dependencies\md5wrapper /S /Q
 rmdir Dependencies\authentFB /S /Q
 rmdir Dependencies\RakNetObjects /S /Q
 rmdir Dependencies\navigatorConfigDialog /S /Q
+rmdir Dependencies\VoiceEngine /S /Q
+rmdir Dependencies\SimpleVoiceEngineProtocol /S /Q
+rmdir Dependencies\Phonetizer /S /Q
+rmdir Dependencies\DummyPhonetizer /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -252,6 +256,10 @@ rmdir VNCPlugin\vncviewer\zlib\Release /S /Q
 rmdir VNCPlugin\vncviewer\Debug /S /Q
 rmdir VNCPlugin\vncviewer\Release /S /Q
 
+rmdir voiceEngine\Debug /S /Q
+rmdir voiceEngine\Release /S /Q
+rmdir voiceEngine\SimpleVoiceEngineProtocol\Debug /S /Q
+rmdir voiceEngine\SimpleVoiceEngineProtocol\Release /S /Q
 rmdir voiceEngine\Client\Debug /S /Q
 rmdir voiceEngine\Client\Release /S /Q
 rmdir voiceEngine\SimpleServer\Debug /S /Q
@@ -279,6 +287,11 @@ rmdir VLCPlugin\Release /S /Q
 
 rmdir authentFB\Debug /S /Q
 rmdir authentFB\Release /S /Q
+
+rmdir Phonetizer\Debug /S /Q
+rmdir Phonetizer\Release /S /Q
+rmdir DummyPhonetizer\Debug /S /Q
+rmdir DummyPhonetizer\Release /S /Q
 
 del setup\nsis\Setup.exe
 

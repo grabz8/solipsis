@@ -24,9 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IVoiceEngine_h__
 #define __IVoiceEngine_h__
 
-#include "DllExport.h"
 #include <string>
-#include <EntityUID.h>
+#include <XmlDatasBasicTypes.h>
 
 namespace FMOD
 {
@@ -47,7 +46,7 @@ public:
 
 /** This class represents a generic Voice engine.
 */
-class VOICEENGINE_EXPORT IVoiceEngine
+class IVoiceEngine
 {
 public:
     IVoiceEngine() {}

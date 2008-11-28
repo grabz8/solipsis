@@ -8,8 +8,6 @@ copy ..\navigatorModule\IApplication.h ..\Dependencies\navigatorModule\include\.
 copy ..\navigatorModule\IInstance.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\IWindow.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
-copy .\IVoiceEngine.h ..\Dependencies\navigatorModule\include\. /y
-copy .\VoiceEngineManager.h ..\Dependencies\navigatorModule\include\. /y
 copy .\ExternalTextureSourceEx.h ..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\Dependencies\navigatorModule\lib\Debug mkdir ..\Dependencies\navigatorModule\lib\Debug
@@ -70,13 +68,14 @@ xcopy "..\Dependencies\protocols\P2NClient\ulxmlrpcpp\DebugDLL\ULXMLRPCPPP2NClie
 if exist "..\Dependencies\ulxmlrpcpp\lib\DebugDLL\ulxmlrpcpp_23.dll" xcopy "..\Dependencies\ulxmlrpcpp\lib\DebugDLL\ulxmlrpcpp_23.dll" "%dst%" /s /y
 if exist "..\Dependencies\expat\lib\DebugDLL\libexpat.dll" xcopy "..\Dependencies\expat\lib\DebugDLL\libexpat.dll" "%dst%" /s /y
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
-del "%dst%\NaviLocal\*.pdn"
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodexL.dll" xcopy "%FMOD_PATH%\fmodexL.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds_d.dll" xcopy "..\Dependencies\plugin_3ds\lib\plugin_3ds_d.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_skp_d.dll" xcopy "..\Dependencies\plugin_skp\include\Debug\*.dll" "%dst%" /s /y
 if not exist "%dst%\libcurld.dll" xcopy "..\Dependencies\curl\lib\DebugDLL\libcurld.dll" "%dst%" /s /y
 xcopy "..\Dependencies\navigatorConfigDialog\lib\WIN32\Debug\navigatorConfigDialog.dll" "%dst%" /s /y
+xcopy "..\Dependencies\VoiceEngine\lib\Debug\voiceEngine.dll" "%dst%" /s /y
+xcopy "..\Dependencies\Phonetizer\lib\Debug\Phonetizer.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" "%dst%" /s /y

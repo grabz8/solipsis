@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
 #include <CharacterInstance.h>
-#include "VoiceEngineManager.h"
+#include <VoiceEngineManager.h>
 
 using namespace Solipsis;
 using namespace CommonTools;

@@ -866,5 +866,6 @@ Mouse cursor is now exclusive only on 1st person camera mode, mouse can leave wi
 27/11/08
 
 Added a facial animation system that allows the lips of the avatars to move when the user contolling them is talking.
+Small updates into visual configs : XmlDatasBasicTypes.h replace Solipsis lib, ZLib configs removed, cleanup.bat updated, projects directories fixed, dll copy moved into postBuild batches
 
 ---------------------------

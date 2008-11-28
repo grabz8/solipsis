@@ -28,9 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <ostream>
 #include "XmlDatasPrerequisites.h"
+#include "XmlDatasBasicTypes.h"
 #include <Ogre.h>
 #include <tinyxml.h>
-#include <EntityUID.h>
 
 #define POOL
 #ifdef POOL
@@ -43,11 +43,8 @@ namespace Solipsis {
 enum AuthentType {
     ATFacebook = 'F',   // User is authenticated by facebook site on external browser
     ATSolipsis = 'S',   // User is authenticated by the Solipsis Worlds server
-	ATFixed = 'f'       // User specified its own nodeId into boot.lua (no authentication)
+    ATFixed = 'f'       // User specified its own nodeId into boot.lua (no authentication)
 };
-
-#define SOLIPSIS_MAX_NODEID_LEN 64
-typedef std::string NodeId;
 
 enum EventType {
     ETNewEntity = 0,        /// New entity

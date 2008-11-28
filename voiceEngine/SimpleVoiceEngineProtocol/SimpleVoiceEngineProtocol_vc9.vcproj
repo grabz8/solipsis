@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -77,13 +77,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot; mkdir &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -139,6 +140,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot; mkdir &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot;&#x0D;&#x0A;xcopy &quot;*.h&quot; &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>

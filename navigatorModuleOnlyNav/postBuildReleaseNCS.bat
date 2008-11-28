@@ -8,8 +8,6 @@ copy ..\navigatorModule\IApplication.h ..\Dependencies\navigatorModule\include\.
 copy ..\navigatorModule\IInstance.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\IWindow.h ..\Dependencies\navigatorModule\include\. /y
 copy ..\navigatorModule\OgreHelpers.h ..\Dependencies\navigatorModule\include\. /y
-copy .\IVoiceEngine.h ..\Dependencies\navigatorModule\include\. /y
-copy .\VoiceEngineManager.h ..\Dependencies\navigatorModule\include\. /y
 copy .\ExternalTextureSourceEx.h ..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\Dependencies\navigatorModule\lib\Release mkdir ..\Dependencies\navigatorModule\lib\Release
@@ -69,7 +67,6 @@ xcopy "..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL\P2NNullClientSer
 xcopy "..\Dependencies\peerModule\lib\Release\Peer.dll" "%dst%" /s /y
 if exist "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" xcopy "..\Dependencies\expat\lib\ReleaseDLL\libexpat.dll" "%dst%" /s /y
 if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
-del "%dst%\NaviLocal\*.pdn"
 if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodex.dll" xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds.dll" xcopy "..\Dependencies\plugin_3ds\lib\plugin_3ds.dll" "%dst%" /s /y
@@ -77,6 +74,8 @@ if not exist "%dst%\plugin_skp.dll" xcopy "..\Dependencies\plugin_skp\include\Re
 if not exist "%dst%\RakNet.dll" xcopy "..\Dependencies\RakNet\lib\RakNet.dll" "%dst%" /s /y
 if not exist "%dst%\libcurl.dll" xcopy "..\Dependencies\curl\lib\ReleaseDLL\libcurl.dll" "%dst%" /s /y
 xcopy "..\Dependencies\navigatorConfigDialog\lib\WIN32\Release\navigatorConfigDialog.dll" "%dst%" /s /y
+xcopy "..\Dependencies\VoiceEngine\lib\Release\voiceEngine.dll" "%dst%" /s /y
+xcopy "..\Dependencies\Phonetizer\lib\Release\Phonetizer.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%dst%" /s /y

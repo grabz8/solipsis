@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <map>
 #include <Socket.h>
-#include <EntityUID.h>
+#include <XmlDatasBasicTypes.h>
 
 namespace FMOD
 {

@@ -173,7 +173,6 @@ bool NavigatorApp::initialize(bool configManagedByOgre, String windowTitle)
     // Create the voice engine manager
     mVoiceEngineManager = new VoiceEngineManager();
 
-
     // Call inherited method
     return OgreApplication::initialize(configManagedByOgre, windowTitle);
 }
