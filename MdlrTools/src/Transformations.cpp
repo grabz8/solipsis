@@ -30,8 +30,8 @@ Transformations::Transformations(void)
 	mMode = SELECT ;
 	mOldpos = Vector3::ZERO ;
 
-	mAxeClicked = AxeClicked::NONE ;
-	mPlaneClicked = AxeClicked::NONE ;
+	mAxeClicked = Transformations::NONE ;
+	mPlaneClicked = Transformations::NONE ;
 
 	// Create the resource group
     mResourceGroup = "TransformationsResources";
@@ -61,17 +61,17 @@ void Transformations::firstClickForTransformation( RaySceneQueryResult &result )
 
 	switch( mMode )
 	{
-		case Mode::MOVE :
+    case Transformations::MOVE :
 			NameAxeX = "moveX" ;
 			NameAxeY = "moveY" ;
 			NameAxeZ = "moveZ" ;
 			break;
-		case ROTATE :
+		case Transformations::ROTATE :
 			NameAxeX = "rotateX" ;
 			NameAxeY = "rotateY" ;
 			NameAxeZ = "rotateZ" ;
 			break;
-		case Mode::SCALE :
+		case Transformations::SCALE :
 			NameAxeX = "scaleX" ;
 			NameAxeY = "scaleY" ;
 			NameAxeZ = "scaleZ" ;
@@ -87,41 +87,41 @@ void Transformations::releasedClickForTransformation ()
 	SceneNode* node;
 	switch( mMode )
 	{
-		case Mode::MOVE :
+		case Transformations::MOVE :
 		{
 			switch (mAxeClicked)
 			{
-				case AxeClicked::X :
+				case Transformations::X :
 					node = mPlaneX->getParentSceneNode() ;
 					mNode_X->detachObject(mPlaneZ);
 					mNode_X->detachObject(mPlaneY);
 					break ;
-				case AxeClicked::Y :
+				case Transformations::Y :
 					mNode_Y->detachObject(mPlaneY);
 					mNode_Y->detachObject(mPlaneZ);
 					break ;
-				case AxeClicked::Z :
+				case Transformations::Z :
 					mNode_Z->detachObject(mPlaneY);
 					mNode_Z->detachObject(mPlaneZ);
 					break ;
 			}
 			break;
 		}
-		case Mode::ROTATE :
+		case Transformations::ROTATE :
 		{
 			switch (mAxeClicked)
 			{
-				case AxeClicked::X :
+				case Transformations::X :
 					mNode_X->detachObject(mPlaneX);
 					mNode_X->detachObject(mPlaneY);
 					mNode_X->detachObject(mPlaneZ);
 					break ;
-				case AxeClicked::Y :
+				case Transformations::Y :
 					mNode_Y->detachObject(mPlaneX);
 					mNode_Y->detachObject(mPlaneY);
 					mNode_Y->detachObject(mPlaneZ);
 					break ;
-				case AxeClicked::Z :
+				case Transformations::Z :
 					mNode_Z->detachObject(mPlaneX);
 					mNode_Z->detachObject(mPlaneY);
 					mNode_Z->detachObject(mPlaneZ);
@@ -129,19 +129,19 @@ void Transformations::releasedClickForTransformation ()
 			}
 			break;							
 		}
-		case Mode::SCALE :
+		case Transformations::SCALE :
 		{
 			switch (mAxeClicked)
 			{
-				case AxeClicked::X :
+				case Transformations::X :
 					mNode_X->detachObject(mPlaneY);
 					mNode_X->detachObject(mPlaneZ);
 					break ;
-				case AxeClicked::Y :
+				case Transformations::Y :
 					mNode_Y->detachObject(mPlaneY);
 					mNode_Y->detachObject(mPlaneZ);
 					break ;
-				case AxeClicked::Z :
+				case Transformations::Z :
 					mNode_Z->detachObject(mPlaneY);
 					mNode_Z->detachObject(mPlaneZ);
 					break ;
@@ -150,8 +150,8 @@ void Transformations::releasedClickForTransformation ()
 		}
 	}
 
-	mAxeClicked = AxeClicked::NONE;
-	mPlaneClicked = AxeClicked::NONE;
+	mAxeClicked = Transformations::NONE;
+	mPlaneClicked = Transformations::NONE;
 	mOldpos = Vector3::ZERO;	
 }
 //-------------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 // Jerome
 /*		switch(mMode )
 		{
-			case Mode::MOVE :	//Move objects
+			case Transformations::MOVE :	//Move objects
 			{
 				Matrix3 nodeSelectionRotationMatrix;
 				nodeSelectionOrientation.ToRotationMatrix(nodeSelectionRotationMatrix);
@@ -183,49 +183,49 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
 						moving.x = newdelta.x; //newpos.x - mOldpos.x ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						moving.y = newdelta.y;//newpos.y - mOldpos.y ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
 						moving.z = newdelta.z; //newpos.z - mOldpos.z ;
 						break ;
 				}
 				break;
 			}
-			case Mode::ROTATE :	//Rotate objects
+			case Transformations::ROTATE :	//Rotate objects
 			{
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
                         //moving.z = newpos.x - mOldpos.x ;
 						moving.x =  newpos.y - mOldpos.y ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						//moving.x = newpos.y - mOldpos.y ;
 						moving.z = mOldpos.y - newpos.y ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
                         //moving.y = newpos.x - mOldpos.x ;
 						moving.y = newpos.x - mOldpos.x ;
 						break ;
 				}
 				break;
 			}
-			case Mode::SCALE :	//Scale objects, but not gizmos
+			case Transformations::SCALE :	//Scale objects, but not gizmos
 			{
 				moving = Vector3 (1, 1, 1);
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
 						moving.z = abs( 1 + (newpos.x - mOldpos.x)/15.0 ) ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						moving.y = abs( 1 + (mOldpos.y - newpos.y )/30.0 ) ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
 						moving.x = abs( 1 + (mOldpos.x - newpos.x )/30.0 ) ;
 						//moving.z = abs( 1 + (newpos.z - mOldpos.z)/100.0 ) ;
 
@@ -238,52 +238,52 @@ Vector3 Transformations::drapNdrop( Vector3 newpos )
 
 		switch(mMode )
 		{
-			case Mode::MOVE :	//Move objects
+			case Transformations::MOVE :	//Move objects
 			{
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
 						moving.x = newpos.x - mOldpos.x ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						moving.y = newpos.y - mOldpos.y ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
 						moving.z = newpos.z - mOldpos.z ;
 						break ;
 				}
 				break;
 			}
-			case Mode::ROTATE :	//Rotate objects
+			case Transformations::ROTATE :	//Rotate objects
 			{
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
 						//moving.z = newpos.z - mOldpos.z ;
                         moving.z = newpos.x - mOldpos.x ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						moving.x = newpos.x - mOldpos.x ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
 						//moving.y = -(newpos.y - mOldpos.y) ;
                         moving.y = newpos.x - mOldpos.x ;
 						break ;
 				}
 				break;
 			}
-			case Mode::SCALE :	//Scale objects, but not gizmos
+			case Transformations::SCALE :	//Scale objects, but not gizmos
 			{
 				moving = Vector3 (1, 1, 1);
 				switch (mAxeClicked )	//search axis
 				{
-					case AxeClicked::X :		//move X		
+					case Transformations::X :		//move X		
 						moving.x = abs( 1 + (newpos.x - mOldpos.x)/100.0 ) ;
 						break;
-					case AxeClicked::Y :		//move Y
+					case Transformations::Y :		//move Y
 						moving.y = abs( 1 + (newpos.y - mOldpos.y)/100.0 ) ;
 						break ;
-					case AxeClicked::Z :		//move Z
+					case Transformations::Z :		//move Z
 						moving.z = abs( 1 + (newpos.z - mOldpos.z)/100.0 ) ;
 						break ;
 				}
@@ -498,7 +498,7 @@ void Transformations::createGizmosMove(SceneManager * pSceneMgr)
     material->setDepthFunction( CMPF_ALWAYS_PASS );
     material->setDepthCheckEnabled( false );
     material->setDepthWriteEnabled( true );
-    material->setCullingMode( Ogre::CullingMode::CULL_NONE );
+    material->setCullingMode( Ogre::CULL_NONE );
     material->setDiffuse( ColourValue::White );
     material->setAmbient( .5, .5, .5 );
     //material->setColourWriteEnabled( true );
@@ -701,70 +701,70 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 
 			switch( mMode )
 			{
-				case Transformations::Mode::MOVE :
+				case Transformations::MOVE :
 				{
 					if (name == pNameAxeX)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						mAxeClicked = AxeClicked::X ;
+						mAxeClicked = Transformations::X ;
 					}
 					else if (name == pNameAxeY)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Y ;
+						mAxeClicked = Transformations::Y ;
 					}
 					else if( name == pNameAxeZ)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Z ;
+						mAxeClicked = Transformations::Z ;
 					}
                     break;
 				}
-				case Transformations::Mode::ROTATE :
+				case Transformations::ROTATE :
 				{
 					if (name == pNameAxeX)
 					{
                         nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						mAxeClicked = AxeClicked::Y ;
+						mAxeClicked = Transformations::Y ;
 					}
 					else if (name == pNameAxeY)
 					{
                         nodeM->getParentSceneNode()->detachObject(mPlaneZ);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Z ;
+						mAxeClicked = Transformations::Z ;
 					}
 					else if( name == pNameAxeZ)
 					{
                         nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneX);
-						mAxeClicked = AxeClicked::X ;
+						mAxeClicked = Transformations::X ;
 					}		
 					//nodeM->getParentSceneNode()->attachObject(mSceneMgr->getEntity("dummy_plane_y"));				
 					break;
 				}
-				case Transformations::Mode::SCALE :
+				case Transformations::SCALE :
 				{
 					if (name == pNameAxeX)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-                        mAxeClicked = AxeClicked::X ;
+                        mAxeClicked = Solipsis::Transformations::X ;
 					}
 					else if (name == pNameAxeY)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Y ;
+						mAxeClicked = Solipsis::Transformations::Y ;
 					}
 					else if( name == pNameAxeZ)
 					{
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						mAxeClicked = AxeClicked::Z ;
+						mAxeClicked = Solipsis::Transformations::Z ;
 					}
 					break;
 				}
@@ -804,10 +804,10 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
 				String name = itrRSQR->movable->getName();	//search the good object (dummy_plane) :
 				if(name == mPlaneX->getName())
 				{
-					if(mPlaneClicked == AxeClicked::NONE)	//if it is the first clck ...
-						mPlaneClicked = AxeClicked::X ;		//	remenber this plane
+					if(mPlaneClicked == Transformations::NONE)	//if it is the first clck ...
+						mPlaneClicked = Transformations::X ;		//	remenber this plane
 
-					if(mPlaneClicked == AxeClicked::X)
+					if(mPlaneClicked == Transformations::X)
 					{
 						//We can calculate the new position :
 						Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
@@ -817,10 +817,10 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
 				}
 				else if(name == mPlaneY->getName())
 				{
-					if(mPlaneClicked == AxeClicked::NONE)	//if it is the first clck ...
-						mPlaneClicked = AxeClicked::Y ;		//	remenber this plane
+					if(mPlaneClicked == Transformations::NONE)	//if it is the first clck ...
+						mPlaneClicked = Transformations::Y ;		//	remenber this plane
 
-					if(mPlaneClicked == AxeClicked::Y)
+					if(mPlaneClicked == Transformations::Y)
 					{
 						//We can calculate the new position :
 						Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
@@ -830,10 +830,10 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
 				}
 				else if(name == mPlaneZ->getName())
 				{
-					if(mPlaneClicked == AxeClicked::NONE)	//if it is the first clck ...
-						mPlaneClicked = AxeClicked::Z ;		//	remenber this plane
+					if(mPlaneClicked == Transformations::NONE)	//if it is the first clck ...
+						mPlaneClicked = Transformations::Z ;		//	remenber this plane
 	
-					if(mPlaneClicked == AxeClicked::Z)
+					if(mPlaneClicked == Transformations::Z)
 					{
 						//We can calculate the new position :
 						Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
