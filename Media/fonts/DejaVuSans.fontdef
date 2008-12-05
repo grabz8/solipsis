@@ -1,0 +1,10 @@
+DejaVuSans
+{
+	type 		truetype
+	source 	 	DejaVuSans.ttf
+	size 		16
+	resolution 	96
+	code_points 	33-8364
+}
+
+
