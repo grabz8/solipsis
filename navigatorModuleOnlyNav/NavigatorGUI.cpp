@@ -312,15 +312,16 @@ void NavigatorGUI::setStatusBarText(const std::string& statusText)
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::addChatText(const String& message)
+void NavigatorGUI::addChatText(const std::wstring& message)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_CHAT]);
     if (navi == 0)
         return;
-    std::string jsStr = "$('textChat').value += '" + message + "\\n'";
-    navi->evaluateJS(jsStr);
+    // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
+    navi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
+    navi->evaluateJS("$('textChat').value += '\\n'");
     navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
 

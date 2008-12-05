@@ -75,6 +75,9 @@ int main(int argc, char** argv)
 int main(int argc, char *argv[])
 #endif
 {
+    setlocale(LC_ALL, "");
+    setlocale(LC_NUMERIC, "English");
+
 //    LogHandler::getLogHandler()->setLogFilename("RakNetServer_" + StringHelpers::toString(System::getPID()) + "_"  + System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     LogHandler::getLogHandler()->setLogFilename("RakNetServer.log");
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);

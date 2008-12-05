@@ -869,3 +869,11 @@ Added a facial animation system that allows the lips of the avatars to move when
 Small updates into visual configs : XmlDatasBasicTypes.h replace Solipsis lib, ZLib configs removed, cleanup.bat updated, projects directories fixed, dll copy moved into postBuild batches
 
 ---------------------------
+05/12/08
+
+libiconv added into DevTools to convert WCHAR_T (ie std::wstring) in UTF8
+chat panel is now internationalized
+ - 1 TrueTypeFont to display special wide-chars, 
+ - conversions: HTML chat panel (URI-encoded) -> defaultGUI.lua -> XmlAction::desc (wstring) -> XML (UTF8 + xmlEscaped) -> RakNet String serialization
+
+---------------------------

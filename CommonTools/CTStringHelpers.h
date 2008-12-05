@@ -50,6 +50,12 @@ public:
     static std::string toHexString(unsigned int val);
     /// Converts an hexadecimal string to an unsigned int
     static unsigned int convertHexStringToUInt(const std::string& str);
+    /// Converts a multibyte string to a wide-character string
+    static std::wstring convertStringToWString(const std::string& wstr);
+    /// Converts a wide-character string to a multibyte string
+    static std::string convertWStringToString(const std::wstring& str);
+    /// Insert hyphens according to the maximum number of characters per line
+    static void autoInsertHyphens(unsigned int maxLineChars, std::wstring& wstr);
     /// Converts an unsigned int version to a string
     static std::string getVersionString(unsigned int version);
     /// Tokenize function

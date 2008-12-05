@@ -151,7 +151,7 @@ public:
     void mainmenuSwitch();
 
     // Chat panel
-    void addChatText(const String& message);
+    void addChatText(const std::wstring& message);
 
     // Contextual panel
     void contextShow(int x, int y, NaviPanel ctxtPanel, const String& params);

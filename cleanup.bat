@@ -56,6 +56,7 @@ rmdir Dependencies\AvatarTools /S /Q
 rmdir Dependencies\expat /S /Q
 rmdir Dependencies\ulxmlrpcpp /S /Q
 rmdir Dependencies\zlib123 /S /Q
+rmdir Dependencies\libiconv /S /Q
 rmdir Dependencies\protocols /S /Q
 rmdir Dependencies\peerModule /S /Q
 rmdir Dependencies\CommonTools /S /Q
@@ -136,6 +137,8 @@ rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Release /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
 rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
+rmdir DevTools\libiconv\Debug /S /Q
+rmdir DevTools\libiconv\Release /S /Q
 rmdir DevTools\vnc_winsrc\winvnc\Debug /S /Q
 rmdir DevTools\vnc_winsrc\winvnc\Release /S /Q
 rmdir DevTools\vnc_winsrc\vncviewer\Debug /S /Q

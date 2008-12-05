@@ -71,6 +71,7 @@ INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
 int main(int argc, char *argv[])
 #endif
 {
+    setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "English");
     std::string title = "Solipsis - StandAlone Navigator";
     CommonTools::CrashReporter::getSingletonPtr()->initialize(title, CommonTools::IO::getCWD(), "SolipsisNavigator_minidump", "Latest log file saved:\n" + CommonTools::IO::getCWD() + "\\Ogre_XXXX_YYMMDDhhmm.log\n\nPlease send us files to solipsis.bugs@gmail.com");

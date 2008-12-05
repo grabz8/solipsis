@@ -112,6 +112,10 @@ public:
     static unsigned int convertHexStringToUInt(const char* str);
     static std::string convertBoolToString(bool value);
     static bool convertStringToBool(const char* str);
+    static std::string xmlEscape(const std::string &str);
+    static std::string xmlUnescape(const std::string &str);
+    static std::string convertWStringToUTF8(const std::string &enc, const std::wstring &wstr);
+    static std::wstring convertUTF8ToWString(const std::string &enc, const std::string &utf8str);
     static std::ostream& ostreamVector3(std::ostream& o, const Ogre::Vector3& v);
     static TiXmlElement* toXmlEltVector3(const std::string& eltName, const Ogre::Vector3& v);
     static bool fromXmlEltVector3(TiXmlElement* xmlElt, Ogre::Vector3& v);
@@ -734,14 +738,14 @@ protected:
     ActionType mType;
     EntityUID mSourceEntityUid;
     EntityUID mTargetEntityUid;
-    std::string mDesc;
+    std::wstring mDesc;
 
 public:
     XmlAction() :
       mType(ATNone),
       mSourceEntityUid(""),
       mTargetEntityUid(""),
-      mDesc("")
+      mDesc(L"")
     {}
 
 #ifdef POOL
@@ -769,8 +773,8 @@ public:
     void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
     const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
 
-    void setDesc(const std::string& desc) { mDesc = desc; }
-    const std::string& getDesc() { return mDesc; }
+    void setDesc(const std::wstring& desc) { mDesc = desc; }
+    const std::wstring& getDesc() { return mDesc; }
 };
 
 class XMLDATAS_EXPORT XmlEvt : public XmlData

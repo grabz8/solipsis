@@ -250,7 +250,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     xmlAction->setType(actionType);
     xmlAction->setSourceEntityUid(sourceEntityUid);
     xmlAction->setTargetEntityUid(targetEntityUid);
-    xmlAction->setDesc(desc);
+    xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
 #else
     XmlEvt* xmlEvt = new XmlEvt();
@@ -259,7 +259,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     xmlAction->setType(actionType);
     xmlAction->setSourceEntityUid(sourceEntityUid);
     xmlAction->setTargetEntityUid(targetEntityUid);
-    xmlAction->setDesc(desc);
+    xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
     xmlEvt->setDatas(xmlAction);
 #endif
     pthread_mutex_lock(&mEvtsMutex);
@@ -443,7 +443,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         bitStream.Write(xmlAction->getType());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getSourceEntityUid());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getTargetEntityUid());
-        RakNetConnection::SerializeString(&bitStream, xmlAction->getDesc());
+        RakNetConnection::SerializeString(&bitStream, XmlHelpers::convertWStringToUTF8("WCHAR_T", xmlAction->getDesc()));
         // Send the action to the server, it will look at source/target to broadcast/send to target(s)
         RakNetConnection::getSingletonPtr()->getRakPeer()->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, RakNetConnection::getSingletonPtr()->getServerSystemAddress(), false);
     }

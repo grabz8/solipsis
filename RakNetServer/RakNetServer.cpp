@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTSystem.h>
 #include <CTIO.h>
 #include <CTLog.h>
+#include <CTStringHelpers.h>
 #include <Ogre.h>
 
 using namespace RakNet;
@@ -75,7 +76,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
 
     // Retrieve Media/Cache path
     if (mMediaCachePath.empty())
-        mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+        mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     ms_Singleton = this;
 }
@@ -167,6 +168,8 @@ void RakNetServer::run()
                     RakNetConnection::DeserializeString(&bitStream, targetEntityUid);
                     std::string desc;
                     RakNetConnection::DeserializeString(&bitStream, desc);
+                    std::wstring wdesc = XmlHelpers::convertUTF8ToWString("WCHAR_T", desc);
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION desc:%s", StringHelpers::convertWStringToString(wdesc).c_str());
                     if (sourceEntityUid == targetEntityUid)
                     {
                         // Broadcast
@@ -184,7 +187,7 @@ void RakNetServer::run()
             }
         }
 
-        CommonTools::System::sleep(100);
+        System::sleep(100);
     }
 }
 

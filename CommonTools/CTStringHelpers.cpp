@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "CTStringHelpers.h"
-
 #include <sstream>
 
 using namespace std;
@@ -130,6 +129,68 @@ unsigned int StringHelpers::convertHexStringToUInt(const string& str)
     unsigned int value;
     sscanf(str.c_str(), "%08X", &value);
     return value;
+}
+
+//-------------------------------------------------------------------------------------
+std::wstring StringHelpers::convertStringToWString(const std::string& str)
+{
+    size_t size = mbstowcs(0, str.c_str(), 0) + 1;
+    wchar_t *temp = new wchar_t[size];
+    mbstowcs(temp, str.c_str(), size);
+    std::wstring result(temp);
+    delete[] temp;
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
+std::string StringHelpers::convertWStringToString(const std::wstring& wstr)
+{
+    size_t size = wcstombs(0, wstr.c_str(), 0) + 1;
+    char *temp = new char[size];
+    wcstombs(temp, wstr.c_str(), size);
+    std::string result(temp);
+    delete[] temp;
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
+void StringHelpers::autoInsertHyphens(unsigned int maxLineChars, std::wstring& wstr)
+{
+    if (maxLineChars < 1) return;
+
+    static std::wstring hypenatizedCharsInsert = convertStringToWString("-,;:.!?");
+    static std::wstring hypenatizedCharsReplace = convertStringToWString(" ");
+    static std::wstring newLine = convertStringToWString("\x0D");
+    std::wstring::size_type maxReturn = std::min(maxLineChars, (unsigned int)10);
+    std::wstring::size_type size = wstr.size();
+    std::wstring::size_type c = 0;
+
+    while (c + maxLineChars < size)
+    {
+        c += maxLineChars - 1;
+        std::wstring::size_type cmin = c - maxReturn + 1;
+        while (c > cmin)
+        {
+            if (hypenatizedCharsInsert.find_first_of(wstr[c]) != std::wstring::npos)
+            {
+                c += 1;
+                wstr.insert(c, newLine);
+                break;
+            }
+            else if (hypenatizedCharsReplace.find_first_of(wstr[c]) != std::wstring::npos)
+            {
+                wstr.replace(c, 1, newLine);
+                break;
+            }
+            c--;
+        }
+        if (c == cmin)
+        {
+            c += maxReturn;
+            wstr.insert(c, newLine);
+        }
+        c++;
+    }
 }
 
 //-------------------------------------------------------------------------------------

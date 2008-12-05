@@ -89,6 +89,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     // Lua initialization
     mLuaState = lua_open();
     luaL_openlibs(mLuaState);
+//with LuaPlus    mLuaPlusState = LuaPlus::LuaState::Create(true);
+//with LuaPlus    mLuaState = mLuaPlusState->GetCState();
 }
 
 //-------------------------------------------------------------------------------------
@@ -122,6 +124,7 @@ Navigator::~Navigator()
 
     // Lua finalization
     lua_close(mLuaState);
+//with LuaPlus    LuaPlus::LuaState::Destroy(mLuaPlusState);
 
     if (mNavigatorSound != 0)
     {
@@ -1386,6 +1389,11 @@ bool Navigator::sendMessage(const String& message)
     if (mXmlRpcClient == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send message without XMLRPC client", "Navigator::sendMessage");
 
+    // decode URI encoded string into a wide-char string
+    std::wstring messageWStr = NaviUtilities::decodeURIComponent(message);
+    // log with locale string
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendMessage(%s)", StringHelpers::convertWStringToString(messageWStr).c_str());
+
 #ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETActionOnEntity);
@@ -1393,7 +1401,7 @@ bool Navigator::sendMessage(const String& message)
     xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setType(ATChat);
-    xmlAction->setDesc(std::string(message));
+    xmlAction->setDesc(messageWStr);
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
@@ -1402,7 +1410,7 @@ bool Navigator::sendMessage(const String& message)
     XmlAction xmlAction(ETActionOnEntity);
     xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setType(ATChat);
-    xmlAction->setDesc(std::string(message));
+    xmlAction->setDesc(messageWStr);
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 #endif

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Peer.h"
 #include "OgreHelpers.h"
-#include "CTSystem.h"
 #include "AvatarNode.h"
+#include <CTSystem.h>
 #include <CTIO.h>
 
 using namespace RakNet;
@@ -88,8 +88,8 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
 {
     assert(Peer::ms_Singleton == 0);
 
-    CommonTools::LogHandler::setLogHandler(&mOgreLogger);
-    CommonTools::LogHandler::getLogHandler()->setVerbosityLevel(CommonTools::LogHandler::VL_DEBUG);
+    LogHandler::setLogHandler(&mOgreLogger);
+    LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
 
     if (appPath != 0)
         mAppPath = appPath;
@@ -124,7 +124,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
 
     // Retrieve Media/Cache path
     if (mMediaCachePath.empty())
-        mMediaCachePath = CommonTools::IO::getCWD() + "\\" + CommonTools::IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+        mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     mPhysicsEngineManager = new PhysicsEngineManager();
 }
@@ -286,7 +286,7 @@ void Peer::run()
         }
         pthread_mutex_unlock(&mEvtsToProcessMutex);
 
-        CommonTools::System::sleep(tickDuration*1000.0f);
+        System::sleep(tickDuration*1000.0f);
 
         if (!_fireTick())
         {
@@ -613,10 +613,10 @@ void Peer::createAvatarNode()
         EntityUID AvatarEntityUid;
         AvatarEntityUid = mAvatarNode->getNodeId() + "_00000000";
         // Randomize the character
-        CommonTools::IO::FilenameVector filenames;
-        CommonTools::IO::getFilenames(mMediaCachePath, filenames);
-        CommonTools::IO::FilenameVector safFilenames;
-        for (CommonTools::IO::FilenameVector::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
+        IO::FilenameVector filenames;
+        IO::getFilenames(mMediaCachePath, filenames);
+        IO::FilenameVector safFilenames;
+        for (IO::FilenameVector::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
             if (it->find(".saf") == it->length() - 4)
                 safFilenames.push_back(*it);
         int safIdx = time(NULL)%(int)safFilenames.size();

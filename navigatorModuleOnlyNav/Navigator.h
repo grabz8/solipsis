@@ -118,6 +118,7 @@ protected:
     Vector2 mClosestTriUV0, mClosestTriUV1, mClosestTriUV2;
 
     lua_State* mLuaState;
+//with LuaPlus    LuaPlus::LuaState* mLuaPlusState;
     NavigatorLua* mNavigatorLua;
 
     Avatar* mUserAvatar;

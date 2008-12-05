@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "XmlDatas.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <iconv.h>
 
 namespace Solipsis {
 
@@ -111,6 +112,196 @@ bool XmlHelpers::convertStringToBool(const char* str)
     if (stricmp(str, "false") == 0)
         return false;
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlHelpers::xmlEscape(const std::string &str)
+{
+    std::string ret;
+    std::string::size_type prev = 0;
+    std::string::size_type len = str.length();
+    std::string::size_type curs = 0;
+    const char *pc = str.data();
+
+    const char *amp = "&amp;";
+    const char *lt = "&lt;";
+    const char *gt = "&gt;";
+    const char *apos = "&#39;";
+    const char *quotes = "&quot;";
+
+    while (curs != len)
+    {
+        char c = *pc++;
+        if (c == '&')
+        {
+            ret += str.substr(prev, curs - prev);
+            ret += amp;
+            prev = curs + 1;
+        }
+        else if (c == '<')
+        {
+            ret += str.substr(prev, curs - prev);
+            ret += lt;
+            prev = curs + 1;
+        }
+        else if (c == '>')
+        {
+            ret += str.substr(prev, curs - prev);
+            ret += gt;
+            prev = curs + 1;
+        }
+        else if (c == '\'')
+        {
+            ret += str.substr(prev, curs - prev);
+            ret += apos;
+            prev = curs + 1;
+        }
+        else if (c == '"')
+        {
+            ret += str.substr(prev, curs - prev);
+            ret += quotes;
+            prev = curs + 1;
+        }
+        ++curs;
+    }
+    ret += str.substr(prev, curs - prev);
+    return ret;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlHelpers::xmlUnescape(const std::string &str)
+{
+    std::string ret;
+    std::string::size_type prev = 0;
+    std::string::size_type len = str.length();
+    std::string::size_type curs = 0;
+    std::string s;
+
+    const char *amp = "&amp;";
+    const char *lt = "&lt;";
+    const char *gt = "&gt;";
+    const char *apos = "&#35;";
+    const char *quotes = "&quot;";
+
+    while (curs < len)
+    {
+        const char *pc = str.data() + curs;
+        char c = *pc;
+        if (c == '&')
+        {
+            if (curs == len - 1)
+                throw std::exception("XmlHelpers::xmlUnescape() conversion failure !");
+
+            if (len - curs >= 5 && strncmp(pc, amp, 5) == 0)
+            {
+                ret += str.substr(prev, curs - prev);
+                ret += "&";
+                curs += 5;
+                prev = curs;
+            }
+            else if (len - curs >= 4 && strncmp(pc, lt, 4) == 0)
+            {
+                ret += str.substr(prev, curs - prev);
+                ret += "<";
+                curs += 4;
+                prev = curs;
+            }
+            else if (len - curs >= 4 && strncmp(pc, gt, 4) == 0)
+            {
+                ret += str.substr(prev, curs - prev);
+                ret += ">";
+                curs += 4;
+                prev = curs;
+            }
+            else if (len - curs >= 5 && strncmp(pc, apos, 5) == 0)
+            {
+                ret += str.substr(prev, curs - prev);
+                ret += "\'";
+                curs += 5;
+                prev = curs;
+            }
+            else if (len - curs >= 5 && strncmp(pc, quotes, 6) == 0)
+            {
+                ret += str.substr(prev, curs - prev);
+                ret += "\"";
+                curs += 6;
+                prev = curs;
+            }
+            else
+                throw std::exception("XmlHelpers::xmlUnescape() conversion failure !");
+        }
+        else
+            ++curs;
+    }
+    ret += str.substr(prev, curs - prev);
+
+    return ret;
+}
+
+//-------------------------------------------------------------------------------------
+std::string XmlHelpers::convertWStringToUTF8(const std::string &enc, const std::wstring &wstr)
+{
+    if (wstr.empty())
+        return std::string();
+
+    iconv_t     cd = iconv_open("UTF-8", enc.c_str());
+    std::string out;
+    char        obuf[257];
+    char        *optr;
+    size_t      olen;
+    char        *sptr = (char *)wstr.c_str();
+    size_t      slen = wstr.length() * sizeof(wchar_t);
+
+    while (slen > 0)
+    {
+        obuf[0] = '\0';
+        optr = (char *)obuf;
+        olen = sizeof(obuf) - sizeof(obuf[0]);
+        size_t ret = iconv(cd, (const char**)&sptr, &slen, &optr, &olen);
+        if (ret == size_t(-1))
+        {
+            iconv_close(cd);
+            throw std::exception("XmlHelpers::convertWStringToUTF8() conversion failure !");
+        }
+        *optr = '\0';
+        out  += obuf;
+    }
+    iconv_close(cd);
+
+    return out;
+}
+
+//-------------------------------------------------------------------------------------
+std::wstring XmlHelpers::convertUTF8ToWString(const std::string &enc, const std::string &utf8str)
+{
+    if (utf8str.empty())
+        return std::wstring();
+
+    iconv_t         cd = iconv_open(enc.c_str(), "UTF-8");
+    std::wstring    out;
+    wchar_t         obuf[65];
+    char            *optr;
+    size_t          olen;
+    char            *sptr = (char *)utf8str.c_str();
+    size_t          slen = utf8str.length();
+
+    while (slen > 0)
+    {
+        obuf[0] = L'\0';
+        optr = (char *)obuf;
+        olen = sizeof(obuf) - sizeof(obuf[0]);
+        size_t ret = iconv(cd, (const char**)&sptr, &slen, &optr, &olen);
+        if (ret == size_t(-1))
+        {
+            iconv_close(cd);
+            throw std::exception("XmlHelpers::convertUTF8ToWString() conversion failure !");
+        }
+        *((wchar_t *)optr) = L'\0';
+        out += obuf;
+    }
+    iconv_close(cd);
+
+    return out;
 }
 
 //-------------------------------------------------------------------------------------
@@ -783,7 +974,7 @@ std::string XmlAction::toXmlString() const
     s << "<action type=\"" << mType << "\"";
     s << " sourceEntityUid=\"" << mSourceEntityUid << "\"";
     s << " targetEntityUid=\"" << mTargetEntityUid << "\"";
-    s << " desc=\"" << mDesc << "\"";
+    s << " desc=\"" << XmlHelpers::xmlEscape(XmlHelpers::convertWStringToUTF8("WCHAR_T", mDesc)).c_str() << "\"";
     s << " />";
     return s.str();
 }
@@ -795,7 +986,7 @@ bool XmlAction::toXmlElt(TiXmlElement& xmlElt) const
     actionElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
     actionElt->SetAttribute("sourceEntityUid", mSourceEntityUid.c_str());
     actionElt->SetAttribute("targetEntityUid", mTargetEntityUid.c_str());
-    actionElt->SetAttribute("desc", mDesc.c_str());
+    actionElt->SetAttribute("desc", XmlHelpers::convertWStringToUTF8("WCHAR_T", mDesc).c_str());
     xmlElt.LinkEndChild(actionElt);
     return true;
 }
@@ -812,7 +1003,7 @@ bool XmlAction::fromXmlElt(TiXmlElement* xmlElt)
     if (!XmlHelpers::getAttribute(xmlElt, "targetEntityUid", attr)) return false;
     mTargetEntityUid = attr;
     if (!XmlHelpers::getAttribute(xmlElt, "desc", attr)) return false;
-    mDesc = attr;
+    mDesc = XmlHelpers::convertUTF8ToWString("WCHAR_T", std::string(attr));
 
     return true;
 }

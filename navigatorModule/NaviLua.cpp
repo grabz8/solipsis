@@ -141,7 +141,9 @@ void cLuaNaviFunctor::onNaviDataEvent(NaviLibrary::Navi *caller, const NaviLibra
 
 	std::map<std::string,std::string> naviDataMap;
 	//myData.getDataMap(naviDataMap);
-	naviDataMap = myData.toStringMap(false);
+    // Strings are URI encoded to send them to Lua
+//	naviDataMap = myData.toStringMap(false);
+	naviDataMap = myData.toStringMap(true);
 
 
 

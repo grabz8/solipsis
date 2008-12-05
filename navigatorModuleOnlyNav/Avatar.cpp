@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Avatar.h"
 #include "OgreHelpers.h"
 #include "Navigator.h"
+#include <CTStringHelpers.h>
 #include <CharacterManager.h>
 #include <Character.h>
 #include <CharacterInstance.h>
@@ -181,7 +182,8 @@ void Avatar::onSceneNodeChanged()
 	// Chat Label
     if (mChatLabel == 0)
     {
-        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
+//        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
+        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "DejaVuSans");
         mChatLabel->setScale(0.12f);
         mChatLabel->setCharacterHeight(1);
 		mChatLabel->setSpaceWidth(1);
@@ -512,15 +514,10 @@ bool Avatar::action(RefCntPoolPtr<XmlAction>& xmlAction)
 bool Avatar::action(XmlAction* xmlAction)
 #endif
 {
-	String label = xmlAction->getDesc();
-	if( label.size() < 1 ) label = " ";
-    // Add CR every 30 chars
-    for (int nl = 0; nl < (int)label.size()/30; ++nl)
-        label.insert((nl + 1)*30, "\x0D");
-    // Convert to UTF
-    std::wstring wlabel;
-    wlabel.assign(label.begin(), label.end());
-	mChatLabel->setCaption(wlabel);
+    std::wstring wlabel = xmlAction->getDesc();
+    if (wlabel.size() < 1) wlabel = L" ";
+    StringHelpers::autoInsertHyphens(30, wlabel);
+    mChatLabel->setCaption(wlabel);
     mChatLabelAlphaTimer = 10.0f;
 
     return true;
