@@ -26,6 +26,7 @@ if exist "..\Dependencies\expat\lib\DebugDLL\libexpat.dll" xcopy "..\Dependencie
 xcopy "..\Dependencies\protocols\XmlDatas\lib\DebugDLL\XmlDatas.dll" "%dst%" /s /y
 xcopy "..\Dependencies\protocols\P2NClient\xmlrpc++\DebugDLL\XMLRPCP2NClient.dll" "%dst%" /s /y
 if not exist "%dst%\RakNetDebug.dll" xcopy "..\Dependencies\RakNet\lib\RakNetDebug.dll" "%dst%" /s /y
+xcopy "..\Dependencies\libiconv\lib\libiconv2.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  xcopy "Plugins.cfg" "%dst%" /s /y
