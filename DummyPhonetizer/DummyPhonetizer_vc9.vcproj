@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories="..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;DUMMYPHONETIZER_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories="..\Dependencies\Phonetizer\include;..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;DUMMYPHONETIZER_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
