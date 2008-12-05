@@ -1,0 +1,24 @@
+LOG_FILE=Log9.txt
+LOG_LEVEL=HIGH
+
+
+#sockets for each protocol port
+KLEINBERG_PORT= 9000
+VORONOI_PORT= 9001
+RAYNET_PORT=9002
+
+
+GOSSIP =1
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+#This node's position x,y,z
+POSITION= 9000.0, 9000.0, 9000.0
+
+# peer = Kport,Vport,Rport[,address]
+# No address means local host
+
+Peer=10000,10001,10002
+
+
+TCP_TIMEOUT = 5

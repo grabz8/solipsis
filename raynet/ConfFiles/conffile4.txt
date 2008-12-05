@@ -1,0 +1,23 @@
+LOG_FILE=Log4.txt
+LOG_LEVEL=HIGH
+
+#sockets for each protocol port
+KLEINBERG_PORT= 4000
+VORONOI_PORT= 4001
+RAYNET_PORT=4002
+
+
+GOSSIP =1
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+#This node's position x,y,z
+POSITION=4000.0, 4000.0, 4000.0
+
+# peer = Kport,Vport,Rport[,address]
+# No address means local host
+
+Peer=5000,5001,5002
+
+
+TCP_TIMEOUT = 5

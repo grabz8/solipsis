@@ -1,0 +1,29 @@
+
+#sockets for each protocol port
+PROTOCOL_PORT= 2000
+
+RAYNET_PORT=2002
+TCP_TIMEOUT=5
+
+
+KLEINBERG_GOSSIP_INTERVAL = 1
+VORONOI_GOSSIP_INTERVAL = 2
+UPDATE_SIZE=3
+VIEW_SIZE=6
+LOG_FILE=hello.txt
+LOG_LEVEL=HIGH
+
+#x,y,z
+POSITION=1.0,2.0,3.0
+
+
+#Peers..can be empty set
+Peer=1,2,127.0.0.1
+Peer=3,4,127.0.0.1
+Peer=5,6,127.0.0.1
+Peer=7,8,127.0.0.1
+Peer=9,10,127.0.0.1
+
+
+
+	

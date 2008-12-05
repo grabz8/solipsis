@@ -1,0 +1,24 @@
+LOG_FILE=Log7.txt
+LOG_LEVEL=HIGH
+
+
+#sockets for each protocol port
+KLEINBERG_PORT= 7000
+VORONOI_PORT= 7001
+RAYNET_PORT=7002
+
+
+GOSSIP =1
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+#This node's position x,y,z
+POSITION=7000.0, 7000.0, 7000.0
+
+# peer = Kport,Vport,Rport[,address]
+# No address means local host
+
+Peer=8000,8001,8002
+
+
+TCP_TIMEOUT = 5

@@ -1,0 +1,21 @@
+LOG_FILE=log2.txt
+
+
+#sockets for each protocol port
+KLEINBERG_PORT= 2000
+VORONOI_PORT= 2001
+RAYNET_PORT=2002
+
+
+
+GOSSIP =1
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+POSITION=2000.0, 2000.0, 2000.0
+
+
+# peer = Kport,Vport,Rport[,address]
+peer=3000,3001,3002
+
+TCP_TIMEOUT = 5

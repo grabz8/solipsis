@@ -1,0 +1,29 @@
+LOG_FILE=Log1.txt
+LOG_LEVEL=HIGH
+
+
+
+
+
+
+#sockets for each protocol port
+KLEINBERG_PORT= 1000
+VORONOI_PORT= 1001
+RAYNET_PORT=1002
+
+KLEINBERG_GOSSIP =1
+VORONOI_GOSSIP =5
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+#This node's position x,y,z
+POSITION=1.0, 2.0, 3.0
+
+# port / address/ x pos / y pos/ z pos
+# peer = Kport,Vport,Rport[,address]
+#Peer=2000,2001,2002,127.0.0.1
+
+# No address means local host
+Peer=2000,2001,2002
+
+TCP_TIMEOUT = 5

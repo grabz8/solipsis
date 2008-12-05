@@ -1,0 +1,13 @@
+PORT=700
+GOSSIP = 1
+UPDATE_SIZE=3
+LOG_FILE="hello"
+
+
+#Peers
+Peer=100,127.0.0.1
+Peer=200,127.0.0.1
+Peer=300,127.0.0.1
+Peer=400,127.0.0.1
+Peer=500,127.0.0.1
+Peer=600,127.0.0.1

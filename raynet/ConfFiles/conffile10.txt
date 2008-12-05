@@ -1,0 +1,22 @@
+LOG_FILE=Log10.txt
+LOG_LEVEL=HIGH
+
+#sockets for each protocol port
+KLEINBERG_PORT= 10000
+VORONOI_PORT= 10001
+RAYNET_PORT=10002
+
+
+GOSSIP =1
+UPDATE_SIZE=3
+VIEW_SIZE=5
+
+#This node's position x,y,z
+POSITION= 10000.0, 10000.0, 10000.0
+
+# port / address/ x pos / y pos/ z pos
+#Peer=1000, 127.0.0.1
+Peer=1000,1001,1002
+
+
+TCP_TIMEOUT = 5
