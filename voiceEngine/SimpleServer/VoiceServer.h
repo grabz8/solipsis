@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <pthread.h>
 #include <string>
 
-#include <EntityUID.h>
+#include <XmlDatasBasicTypes.h> // for EntityUID
 
 #include <boost/pool/pool.hpp>
 #include <boost/shared_ptr.hpp>

@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\Solipsis\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

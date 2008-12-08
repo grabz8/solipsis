@@ -44,7 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <set>
 #include "VoiceServerSocket.h"
-#include <EntityUID.h>
+#include <XmlDatasBasicTypes.h> // for EntityUID
 
 namespace SolipsisVoiceServer {
 

@@ -67,8 +67,8 @@ namespace Solipsis
 			Phoneme::PhonemeType phonemeType;
 			#ifdef TRACE_PHONETIZER_OUTPUT
 			{
-				wchar_t message[256];
-				swprintf(message, sizeof(message), L"DummyPhonetizer::audioToPhonemes sound pressure %d - %d\n", minSoundPressureInPhoneme, maxSoundPressureInPhoneme );
+				char message[256];
+				sprintf(message, "DummyPhonetizer::audioToPhonemes sound pressure %d - %d\n", minSoundPressureInPhoneme, maxSoundPressureInPhoneme );
 				OutputDebugString( message );
 			}
 			#endif
@@ -88,8 +88,8 @@ namespace Solipsis
 
 			#ifdef TRACE_PHONETIZER_OUTPUT
 			{
-				wchar_t message[256];
-				swprintf(message, sizeof(message), L"DummyPhonetizer::audioToPhonemes appending phoneme : %d\n", phonemeType );
+				char message[256];
+				sprintf(message, "DummyPhonetizer::audioToPhonemes appending phoneme : %d\n", phonemeType );
 				OutputDebugString( message );
 			}
 			#endif

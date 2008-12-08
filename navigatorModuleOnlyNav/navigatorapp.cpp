@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Platform.h"
 #include <VoiceEngineManager.h>
 #include <PhonetizerManager.h>
+#include <FaceControlSystemManager.h>
 
 using namespace Solipsis;
 
@@ -74,7 +75,8 @@ NavigatorApp::NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow,
     mInitialized(false),
     mNumInstances(0),
     mVoiceEngineManager(0),
-	mPhonetizerManager(0)
+	mPhonetizerManager(0),
+	mFaceControlSystemManager(0)
 {
     assert(NavigatorApp::ms_Singleton == 0);
     if (appPath != 0)
@@ -173,6 +175,9 @@ bool NavigatorApp::initialize(bool configManagedByOgre, String windowTitle)
     // Create the voice engine manager
     mVoiceEngineManager = new VoiceEngineManager();
 
+	// Create the Face Control System Manager
+	mFaceControlSystemManager = new FaceControlSystemManager();
+
     // Call inherited method
     return OgreApplication::initialize(configManagedByOgre, windowTitle);
 }
@@ -182,6 +187,9 @@ bool NavigatorApp::finalize()
 {
     // Call inherited method
     bool result = OgreApplication::finalize();
+
+	// Destroy the face control system manager
+	delete mFaceControlSystemManager;
 
     // Destroy the voice engine manager
     delete mVoiceEngineManager;

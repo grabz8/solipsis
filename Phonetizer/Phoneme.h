@@ -109,6 +109,8 @@ namespace Solipsis
 			kPhonemeTypeSil,	// silence
 			kPhonemeTypeii,		// inspiration
 			kPhonemeTypesp,		// short pause
+
+			kPhonemeTypeCount	///< number of phoneme types
 		};
 		//typedef unsigned short int IpaNumber; ///< from international phonetics alphabet number chart (http://en.wikipedia.org/wiki/International_Phonetic_Alphabet, http://www.bas.uni-muenchen.de/studium/skripten/IPA/IPANumberChart96.pdf)
 

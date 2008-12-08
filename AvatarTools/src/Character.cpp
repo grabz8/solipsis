@@ -24,7 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <FileBuffer.h>
 #include <SolipsisErrorHandler.h>
 #include "Character.h"
-#include "MouthFlapperCreator.h"
+#include <FaceControlSystemManager.h>
+#include <IFaceControlSystem.h>
+//#define ACTIVATE_FACE_CONTROLLER
+#ifdef ACTIVATE_FACE_CONTROLLER
+	#include "MouthFlapperCreator.h"
+#endif
+
 
 using namespace Solipsis;
 
@@ -155,6 +161,7 @@ Character::Character(String pName, SceneManager* pSceneMgr) :
 	}
 
 	// skeleton filename
+	Ogre::String skeletonName = mesh->getSkeletonName();
 	if (!mZipArchive->isFilePresent(mesh->getSkeletonName()))
 	{
 		mLoadingErrorMessage = "Skeleton file\nnot found in the character archive !"; 
@@ -584,7 +591,20 @@ Character::Character(String pName, SceneManager* pSceneMgr) :
 	}
 
 	#ifdef ACTIVATE_FACE_CONTROLLER
-		mFaceControllerCreator = new MouthFlapperCreator("Eric_Machoire01", Ogre::Quaternion::IDENTITY, Ogre::Quaternion( Radian(1.0), Vector3::UNIT_Z ));
+		if( mName == "KevinDiva" )
+		{
+			FaceControlSystemManager::getSingleton().selectFaceControlSystem("Diva Face Control System");
+			IFaceControlSystem* pFaceControlSystem = FaceControlSystemManager::getSingleton().getSelectedFaceControlSystem();
+			mFaceControllerCreator = pFaceControlSystem->createFaceControllerCreator();
+		}
+		else if( mName == "Eric" )
+		{
+			mFaceControllerCreator = new MouthFlapperCreator("Eric_Machoire01", Ogre::Quaternion::IDENTITY, Ogre::Quaternion( Radian(1.0), Vector3::UNIT_Z ));
+		}
+		else
+		{
+			mFaceControllerCreator = NULL;
+		}
 	#else
 		mFaceControllerCreator = NULL;
 	#endif

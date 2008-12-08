@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __CharacterInstance_h__
 
 #include <Ogre.h>
-#include <tinyxml.h>
+//#include <tinyxml.h>
 #include <FileBrowser.h>
 #include <Path.h>
 #include <myZipArchive.h>

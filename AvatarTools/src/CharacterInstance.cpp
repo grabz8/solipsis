@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
+//#define ACTIVATE_FACE_CONTROLLER
+
 //---------------------------------------------------------------------------------
 CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid, const String& pDefaultCharacterName, SceneManager* pSceneMgr, CharacterManager* pCharacterMgr) :
     mUid(pUid),
@@ -120,7 +122,11 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
 
 	// create the face controller
 	#ifdef ACTIVATE_FACE_CONTROLLER
-		mFaceController = mCharacter->getFaceControllerCreator()->createFaceController( this );
+		IFaceControllerCreator* pFaceControllerCreator = mCharacter->getFaceControllerCreator();
+		if(pFaceControllerCreator)
+		{
+			mFaceController = pFaceControllerCreator->createFaceController( this );
+		}
 	#endif
 
 	//Creating the object necessary to the Couples of poses.
@@ -196,8 +202,10 @@ CharacterInstance::~CharacterInstance()
 void CharacterInstance::onVoicePacketReception( VoicePacket* pVoicePacket )
 {
 	#ifdef ACTIVATE_FACE_CONTROLLER
-		assert( mFaceController );
-		mFaceController->onVoicePacketReception( pVoicePacket );
+		if( mFaceController )
+		{
+			mFaceController->onVoicePacketReception( pVoicePacket );
+		}
 	#endif
 }
 

@@ -2,6 +2,7 @@
 #include "Phoneme.h"
 #include <ostream>
 #include <istream>
+#include <assert.h>
 
 namespace Solipsis
 {
@@ -16,7 +17,7 @@ namespace Solipsis
 
 	void PhonemeSequence::appendPhoneme( const Phoneme & phoneme )
 	{
-		mPhonemes.push_back( phoneme );
+		mElements.push_back( phoneme );
 
 		// update the duration of the sequence
 		mDuration += phoneme.getDuration();
@@ -25,10 +26,10 @@ namespace Solipsis
 	void PhonemeSequence::serialize( std::ostream & outputStream ) const
 	{
 		//outputStream << mPhonemes.size();
-		unsigned int numPhonemes = (unsigned int)mPhonemes.size();
+		unsigned int numPhonemes = (unsigned int)mElements.size();
 		outputStream.write( (char*)&numPhonemes, sizeof(unsigned int) );
 		std::vector<Phoneme>::const_iterator it;
-		for(it = mPhonemes.begin() ; it < mPhonemes.end() ; ++it )
+		for(it = mElements.begin() ; it < mElements.end() ; ++it )
 		{
 			float phonemeDuration = it->getDuration();
 			outputStream.write( (char*)&phonemeDuration, sizeof(float) );
@@ -48,7 +49,7 @@ namespace Solipsis
 	unsigned int PhonemeSequence::getSerializedSize( void ) const
 	{
 		const unsigned int sizeOfAPhoneme = sizeof(float) + sizeof(unsigned char) + sizeof( unsigned short );
-		unsigned int size = sizeof(unsigned int) + sizeOfAPhoneme * (unsigned int)mPhonemes.size();
+		unsigned int size = sizeof(unsigned int) + sizeOfAPhoneme * (unsigned int)mElements.size();
 		return size;
 	}
 
@@ -71,34 +72,4 @@ namespace Solipsis
 		}
 		return pPhonemeSequence;
 	}
-
-
-	PhonemeSequence::Cursor::Cursor( const PhonemeSequence & phonemeSequence )
-	: mPhonemeSequence( phonemeSequence )
-	, mCurrentTime( 0.0f )
-	, mCurrentPhonemeIndex( 0 )
-	, mCurrentPhonemeStartTime( 0.0f )
-	{
-	}
-
-	void PhonemeSequence::Cursor::evolve( float timeStepDuration )
-	{
-		mCurrentTime += timeStepDuration;
-		while( (mCurrentTime - mCurrentPhonemeStartTime) > mPhonemeSequence.mPhonemes[ mCurrentPhonemeIndex ].getDuration() )
-		{
-			if( mCurrentPhonemeIndex == (mPhonemeSequence.mPhonemes.size() - 1) )
-			{
-				// the end of the phoneme sequence has been reached
-				break;
-			}
-			mCurrentPhonemeStartTime += mPhonemeSequence.mPhonemes[ mCurrentPhonemeIndex ].getDuration();
-			mCurrentPhonemeIndex++;
-		}
-	}
-
-	const Phoneme::PhonemeType PhonemeSequence::Cursor::getPointedPhonemeType( void ) const
-	{
-		return mPhonemeSequence.mPhonemes[ mCurrentPhonemeIndex ].getPhonemeType();
-	}
-
 }

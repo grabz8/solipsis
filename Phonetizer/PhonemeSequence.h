@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PhonemeSequence_h__
 #include <vector>
 #include "Phoneme.h"
+#include "SequenceCursor.h"
+#include <assert.h>
 
 #ifdef PHONETIZER_EXPORTS
 	#define PHONETIZER_EXPORT __declspec( dllexport )
@@ -73,43 +75,27 @@ namespace Solipsis
 		unsigned int getSerializedSize( void ) const;
 
 		/**
+			@brief	returns the number of phonemes
+		*/
+		unsigned int getNumElements( void ) const { return (unsigned int) mElements.size(); }
+
+		/**
+			@brief	returns the number of phonemes
+		*/
+		const Phoneme & getElement( unsigned int elementIndex ) const { return mElements[elementIndex]; }
+
+		/**
 			@brief	creates a PhonemeSequence instance from a serialized representation coming from a stream
 		*/
 		static PhonemeSequence* createFromStream( std::istream & inputStream );
 
-		/**
-			@brief	class that represents a reading cursor into a phoneme sequence
-		*/
-		class PHONETIZER_EXPORT Cursor
-		{
-		public:
-			/**
-				@brief	constructor
-
-				@param	phonemeSequence the phoneme sequence this cursor points into
-			*/
-			Cursor( const PhonemeSequence & phonemeSequence );
-
-			void evolve( float timeStepDuration );
-
-			/**
-				@brief	gets the phoneme this cursor points to
-			*/
-			const Phoneme::PhonemeType getPointedPhonemeType( void ) const;
-
-		private:
-			const PhonemeSequence& mPhonemeSequence;	///< phoneme sequence pointed by this cursor
-			float	mCurrentTime;						///< time from the beginning of the phoneme sequence (in seconds)
-			unsigned int mCurrentPhonemeIndex;			///< the cursor is currently inside this phoneme
-			float	mCurrentPhonemeStartTime;			///<
-		};
+		typedef SequenceCursor<PhonemeSequence, Phoneme> Cursor;
 
 	private:
 		float		mDuration;			///< duration of the sequence in seconds
-		std::vector<Phoneme>	mPhonemes;
-
-		friend class Cursor;
+		std::vector<Phoneme>	mElements;
 	};
+
 }
 
 #endif //__PhonemeSequence_h__

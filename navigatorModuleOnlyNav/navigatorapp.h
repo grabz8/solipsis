@@ -35,6 +35,7 @@ namespace Solipsis {
 
 class PhonetizerManager;
 class VoiceEngineManager;
+class FaceControlSystemManager;
 
 /** This class manages the Navigator application composed of several running instances.
  */
@@ -88,6 +89,7 @@ protected:
     Instance* mStandAloneInstance;
     VoiceEngineManager* mVoiceEngineManager;
 	PhonetizerManager* mPhonetizerManager;	///< manager of phonetizers (owned)
+	FaceControlSystemManager* mFaceControlSystemManager; ///< manager of face control systems (owned)
 
 protected: 
     NavigatorApp(const char* appPath, bool standAloneAutoCreateWindow, const char* windowTitle);

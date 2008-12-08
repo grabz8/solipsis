@@ -80,7 +80,7 @@ void MouthFlapper::updateFace(float timeSinceLastFrame)
 		bool bPlayingSilencePhoneme = false;
 		if( mPhonemeCursor )
 		{
-			Phoneme::PhonemeType currentPhonemeType = mPhonemeCursor->getPointedPhonemeType();
+			Phoneme::PhonemeType currentPhonemeType = mPhonemeCursor->getPointedElement().getPhonemeType();
 			#ifdef TRACE_MOUTH_FLAPPER_INPUT
 			{
 				char message[256];

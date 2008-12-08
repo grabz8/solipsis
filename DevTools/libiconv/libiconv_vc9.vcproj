@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="libiconv"
 	ProjectGUID="{F726EB96-A5D1-402A-980C-E4D09ED1BB3C}"
 	RootNamespace="libiconv"
@@ -83,4 +83,6 @@
 			>
 		</Filter>
 	</Files>
+	<Globals>
+	</Globals>
 </VisualStudioProject>
