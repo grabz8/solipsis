@@ -296,7 +296,7 @@ rmdir Phonetizer\Release /S /Q
 rmdir DummyPhonetizer\Debug /S /Q
 rmdir DummyPhonetizer\Release /S /Q
 
-del setup\nsis\Setup.exe
+del setup\nsis\Solipsis-*-win32.exe
 
 echo ============== Done! ===============
 pause
