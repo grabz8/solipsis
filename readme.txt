@@ -83,9 +83,9 @@ into Media\lua\boot.lua, you can tune default connection params into the line na
 
 
 About HTTP proxy, you can now define it into the options panel, the resulting config
-file will be updated : navigator\bin\release\NaviProfile\prefs.js like this (FT proxy example)
+file will be updated : navigator\bin\release\NaviProfile\prefs.js like this (mycompany example)
 user_pref("network.proxy.type", 2);
-user_pref("network.proxy.autoconfig_url", "http://proxyconf.rd.francetelecom.fr");
+user_pref("network.proxy.autoconfig_url", "http://proxy.mycompany.com");
 
 
 You can build:
@@ -186,11 +186,6 @@ Batch build Navigator project (Debug+Release)
 To build the VNC plugin afx is needed so define the directories of the PSDK into the VS options,
 Tools/Options menu, Projects and solutions, VC++ directories, Include files + C:\Program Files\Microsoft Platform SDK\Include + C:\Program Files\Microsoft Platform SDK\Include\mfc,
 Library files + C:\Program Files\Microsoft Platform SDK\Lib
-
-Finally, open/build plugins from their dedicated solutions:
- voiceEngine_vcX.sln
- VNCPlugin_vcX.sln
- VLCPlugin_vcX.sln
 
 Check into the Navigator project settings you set correctly the Debug/Working directory to $(TargetDir)
 Press F5 to run the Release binary OR launch directly navigator/bin/Release/Navigator.exe

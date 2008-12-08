@@ -877,3 +877,9 @@ chat panel is now internationalized
  - conversions: HTML chat panel (URI-encoded) -> defaultGUI.lua -> XmlAction::desc (wstring) -> XML (UTF8 + xmlEscaped) -> RakNet String serialization
 
 ---------------------------
+08/12/08
+
+VNC and VLC plugins added into global solution
+VNC viewer (VNC plugin) is now using same zlib than Solipsis (only libjpeg and omnithread are still proprietary libs)
+
+---------------------------
