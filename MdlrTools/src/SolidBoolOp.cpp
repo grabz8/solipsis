@@ -250,11 +250,12 @@ void SBO::OutputSolid(BREP_SOLID* solid,
 	for(PointMap::iterator mp = pointMap.begin(); mp != pointMap.end(); mp++)
 		vectors[mp->second] = ((VERTEX*)(mp->first))->point;
 
+    VECTOR v;
 	// vertex data
 	for(unsigned long n = 0; n < vertexid; n++)
 	{
-		VECTOR v = vectors[n];
-		*vertex++ = v.x;		*vertex++ = v.y;		*vertex++ = v.z;	// position
+		v = vectors[n];
+		*vertex++ = float(v.x);		*vertex++ = float(v.y);		*vertex++ = float(v.z);	// position
 		*vertex++ = 0;			*vertex++ = 0;			*vertex++ = 0;		// normal
 		*vertex++ = 0;														// colour
 		*vertex++ = 0;			*vertex++ = 1;								// tex. coord
@@ -301,9 +302,9 @@ void SBO::OutputSolid(BREP_SOLID* solid,
 		}
 
 		// apply the normal face to the 3 vertex of it
-		vertex[ id1 + 3 ] = vertex[ id2 + 3 ] = vertex[ id3 + 3 ] = normal.x;
-		vertex[ id1 + 4 ] = vertex[ id2 + 4 ] = vertex[ id3 + 4 ] = normal.y;
-		vertex[ id1 + 5 ] = vertex[ id2 + 5 ] = vertex[ id3 + 5 ] = normal.z;
+		vertex[ id1 + 3 ] = vertex[ id2 + 3 ] = vertex[ id3 + 3 ] = float(normal.x);
+		vertex[ id1 + 4 ] = vertex[ id2 + 4 ] = vertex[ id3 + 4 ] = float(normal.y);
+		vertex[ id1 + 5 ] = vertex[ id2 + 5 ] = vertex[ id3 + 5 ] = float(normal.z);
 	}
 }
 
