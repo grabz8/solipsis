@@ -883,3 +883,9 @@ VNC and VLC plugins added into global solution
 VNC viewer (VNC plugin) is now using same zlib than Solipsis (only libjpeg and omnithread are still proprietary libs)
 
 ---------------------------
+10/12/08
+
+Skybox keys shortcuts only InWorld
+ResetMousePicking on object deletion (bug fix)
+
+---------------------------
