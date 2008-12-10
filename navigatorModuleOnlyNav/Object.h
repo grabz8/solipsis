@@ -36,6 +36,10 @@ namespace Solipsis {
 class Object : public OgrePeer
 {
 protected:
+    /// Resource group name
+    String mResourceGroup;
+    /// Resource location
+    String mResourceLocation;
     /// Modeler Object3D
     Object3D* mObject3D;
 

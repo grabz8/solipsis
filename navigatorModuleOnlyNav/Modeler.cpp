@@ -705,13 +705,6 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 
 	if(zz.isArchivePresent() )
 	{
-// TODO The addResourceLocation will create 1 file handle on the .sof file
-// => to delete/rename/... the .sof file we have to unload this resource location first !!!!
-		//Adding the zip to the ressource location and load all the medias in the zip.
-		//ResourceGroupManager::getSingleton().createResourceGroup(name + "Resources");
-//				ResourceGroupManager::getSingleton().addResourceLocation(FilePath.getUniversalPath(),"Zip");//, name + "Resources");
-		//ResourceGroupManager::getSingleton().initialiseResourceGroup(name + "Resources");
-
 		for( int i=0 ; i<zz.getNbFile() ; i++)	//search all XML files
 		{
 			Path currentFileName ( zz.getName(i) ) ;
@@ -1171,7 +1164,9 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
 {
     TexturePtr texture;
     if (textureExtParamsMap.empty())
-        texture = TextureManager::getSingleton().load(name , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    {
+        texture = TextureManager::getSingleton().load(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    }
     else
     {
         ModifiedMaterialManager* modifiedMaterialManager = object->getMaterialManager();

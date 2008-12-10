@@ -3020,7 +3020,10 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 		String TextureFilePath (PathTexture);
 
 		//Create the new OGRE texture with the file selected :
-		TexturePtr PtrTexture = TextureManager::getSingleton().load( TextureFilePath, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		Path filePath(TextureFilePath);
+        ResourceGroupManager::getSingleton().addResourceLocation(filePath.getFormatedRootPath(), "FileSystem");
+        TextureExtParamsMap textureExtParamsMap;
+        TexturePtr PtrTexture = modeler->loadTexture(obj, TextureFilePath, textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )

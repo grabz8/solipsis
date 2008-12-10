@@ -37,6 +37,8 @@ Object::Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D) :
     OgrePeer(xmlEntity, isLocal),
     mObject3D(object3D)
 {
+    mResourceGroup = xmlEntity->getUid() + "Resources";
+    ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
 }
 
 //-------------------------------------------------------------------------------------
@@ -49,6 +51,11 @@ Object::~Object()
     {
         Selection *selection = modeler->getSelection();
         selection->remove3DObject(mObject3D);
+
+        if (!mResourceLocation.empty())
+	        ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+        if (!mResourceGroup.empty())
+            ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
     }
 }
 
@@ -102,6 +109,11 @@ bool Object::update(XmlEntity* xmlEntity)
         {
             Selection *selection = modeler->getSelection();
             selection->remove3DObject(mObject3D);
+
+            if (!mResourceLocation.empty())
+	            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+            if (!mResourceGroup.empty())
+                ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
         }
 
         String pathname = "";
@@ -109,6 +121,10 @@ bool Object::update(XmlEntity* xmlEntity)
         for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
             if (it->mFilename.find(".sof") == it->mFilename.length() - 4)
                 pathname = Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + it->mFilename;
+
+        mResourceLocation = pathname;
+        ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
+        ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
 
         Object3DPtrList newObjects;
         if (!modeler->XMLLoad(pathname, newObjects))
