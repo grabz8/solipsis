@@ -76,6 +76,7 @@ if not exist "%dst%\libcurl.dll" xcopy "..\Dependencies\curl\lib\ReleaseDLL\libc
 xcopy "..\Dependencies\navigatorConfigDialog\lib\WIN32\Release\navigatorConfigDialog.dll" "%dst%" /s /y
 xcopy "..\Dependencies\VoiceEngine\lib\Release\voiceEngine.dll" "%dst%" /s /y
 xcopy "..\Dependencies\Phonetizer\lib\Release\Phonetizer.dll" "%dst%" /s /y
+xcopy "..\Dependencies\FaceController\lib\Release\FaceController.dll" "%dst%" /s /y
 xcopy "..\Dependencies\libiconv\lib\libiconv2.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
