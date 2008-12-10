@@ -887,5 +887,7 @@ VNC viewer (VNC plugin) is now using same zlib than Solipsis (only libjpeg and o
 
 Skybox keys shortcuts only InWorld
 ResetMousePicking on object deletion (bug fix)
+sof texture not reloaded due to lack of resourceGroup/Location in Object class
+bug fixed in "modeler add texture" => new test in 160RC1, absolute path without resource location declared are now rejected
 
 ---------------------------
