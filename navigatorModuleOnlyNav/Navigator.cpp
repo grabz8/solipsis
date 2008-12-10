@@ -412,6 +412,7 @@ Avatar* Navigator::getUserAvatar()
 //-------------------------------------------------------------------------------------
 void Navigator::fakeSurroundingArea(int index)
 {
+    if (mState != SInWorld) return;
     mCamera->getViewport()->setBackgroundColour(ColourValue::Black);
     switch (index)
     {
