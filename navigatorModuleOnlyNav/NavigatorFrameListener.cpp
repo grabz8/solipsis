@@ -217,6 +217,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 {
                     // remove the current selection
                     modeler->removeSelection();
+                    // reset mouse picking
+                    mNavigator->resetMousePicking();
 
                     // hide the gizmos axes
                     modeler->getSelection()->mTransformation->showGizmosMove(false);

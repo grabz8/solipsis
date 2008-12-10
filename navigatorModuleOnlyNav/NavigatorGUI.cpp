@@ -2358,6 +2358,8 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 
             // remove the current selection
             modeler->removeSelection();
+            // reset mouse picking
+            mNavigator->resetMousePicking();
 
             // hide the gizmos axes
             modeler->getSelection()->mTransformation->showGizmosMove(false);
