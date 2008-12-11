@@ -44,6 +44,7 @@ rmdir Dependencies\navi /S /Q
 rmdir Dependencies\navigatorModule /S /Q
 rmdir Dependencies\navigatorPlugin /S /Q
 rmdir Dependencies\ode /S /Q
+rmdir Dependencies\OgreMax /S /Q
 rmdir Dependencies\OgreOde /S /Q
 rmdir Dependencies\pthreads /S /Q
 rmdir Dependencies\tinyxml /S /Q
@@ -99,6 +100,9 @@ rmdir DevTools\navi\NaviDemo\Bin\debug_vc9 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\release_vc7 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\release_vc8 /S /Q
 rmdir DevTools\navi\NaviDemo\Bin\release_vc9 /S /Q
+rmdir DevTools\OgreMax\script\lib /S /Q
+rmdir DevTools\OgreMax\script\Debug /S /Q
+rmdir DevTools\OgreMax\script\Release /S /Q
 rmdir DevTools\OgreOde\lib\debug /S /Q
 rmdir DevTools\OgreOde\lib\release /S /Q
 rmdir DevTools\OgreOde\obj\Debug /S /Q
