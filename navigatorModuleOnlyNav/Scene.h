@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Scene_h__
 
 #include "OgrePeer.h"
+#include "OgreMaxScene.hpp"
 
 using namespace Ogre;
 
@@ -43,6 +44,8 @@ protected:
     SceneNode* mSceneNode;
     /// Converted static geometry (optimized scene geometry)
     StaticGeometry* mStaticGeometry;
+    /// OgreMax scene
+    OgreMax::OgreMaxScene* mOgreMaxScene;
 
 public:
 #ifdef POOL

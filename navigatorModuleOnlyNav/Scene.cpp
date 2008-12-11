@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Scene.h"
 #include "Navigator.h"
 #include "OgreOSMScene.h"
+//#include "OgreMaxscene.hpp"
 #include "OgreHelpers.h"
 
 using namespace Solipsis;
@@ -50,7 +51,8 @@ Scene::Scene(XmlEntity* xmlEntity, bool isLocal) :
 #endif
     OgrePeer(xmlEntity, isLocal),
     mSceneNode(0),
-    mStaticGeometry(0)
+    mStaticGeometry(0),
+    mOgreMaxScene(0)
 {
 }
 
@@ -106,6 +108,41 @@ bool Scene::update(XmlEntity* xmlEntity)
         // Create the scene node
         SceneNode* sceneNode = sceneMgr->getRootSceneNode()->createChildSceneNode(xmlEntity->getUid() + "Scene");
 
+        // Check the scene type (.OSM with oFusion or .SCENE with ogreMax)
+        std::string sceneFilename( xmlSceneLodContent0->getMainFilename().c_str() );
+        if( sceneFilename.find(".osm") == sceneFilename.size() - 4)
+        {
+            // Load from the .osm
+            OSMScene osmScene(sceneMgr, Navigator::getSingletonPtr()->getRenderWindowPtr());
+            OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
+            //if (!osmScene.initialise(xmlSceneLodContent0->getMainFilename().c_str(), &osmSceneCallbacks))
+            if (!osmScene.initialise(sceneFilename.c_str(), &osmSceneCallbacks))
+                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+            osmScene.declareResources();
+            if (!osmScene.createScene(sceneNode))
+                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+        }
+        else if( sceneFilename.find(".scene") == sceneFilename.size() - 6 )
+        {
+            // Load from the .scene
+            mOgreMaxScene = new OgreMax::OgreMaxScene();
+            mOgreMaxScene->Load( 
+                sceneFilename, 
+                Navigator::getSingletonPtr()->getRenderWindowPtr(),
+                OgreMax::OgreMaxScene::NO_OPTIONS,
+                sceneMgr,
+                sceneNode,
+                0,
+                mResourceGroup );
+
+// NO STATIC_GEOM 
+            if (1) mSceneNode = sceneNode;
+// NO STATIC_GEOM
+        }
+        else
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create any file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+
+        /*
         // Load from the .osm
         OSMScene osmScene(sceneMgr, Navigator::getSingletonPtr()->getRenderWindowPtr());
         OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
@@ -114,6 +151,7 @@ bool Scene::update(XmlEntity* xmlEntity)
         osmScene.declareResources();
         if (!osmScene.createScene(sceneNode))
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+        */
 
 #ifdef SHADOWS
         sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
@@ -134,7 +172,9 @@ bool Scene::update(XmlEntity* xmlEntity)
             sceneNode->setPosition(xmlEntity->getPosition());
         if (definedAttributes & XmlEntity::DAOrientation)
             sceneNode->setOrientation(xmlEntity->getOrientation());
-
+// NO STATIC_GEOM 
+        if (1 && mOgreMaxScene != 0) return true;
+// NO STATIC_GEOM
         // Optimize by converting it into static geometry
         convertToStaticGeometry(sceneNode);
     }
@@ -164,10 +204,25 @@ void Scene::destroy()
         sceneMgr->destroyStaticGeometry(mStaticGeometry);
         mStaticGeometry = 0;
 
+        if (mOgreMaxScene != 0)
+        {
+            delete mOgreMaxScene;
+            mOgreMaxScene = 0;
+        }
+
 	    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
-    }
+    } 
+// NO STATIC_GEOM   
+else if (1 && mOgreMaxScene != 0)
+{
+    delete mOgreMaxScene;
+    mOgreMaxScene = 0;
 
+    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+    ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+}
+// NO STATIC_GEOM
     if (mSceneNode != 0)
     {
         OgreHelpers::removeAndDestroySceneNode(mSceneNode);

@@ -168,7 +168,7 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
         ResourceGroupManager::getSingleton().addResourceLocation(Peer::getSingleton().getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
 
-        // Load .osm
+        // Load .osm or .scene
         TiXmlDocument osmFileDoc;
         DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlSceneLodContent0->getMainFilename());
 	    if (!pStream->size())
@@ -181,38 +181,93 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
 	    osmFileDoc.Parse(pBuf);
 	    delete[] pBuf;
 
-        TiXmlElement* entities = osmFileDoc.RootElement()->FirstChildElement("entities");
-        TiXmlElement* entity = entities->FirstChildElement("entity");
-        while (entity != 0)
-        {
-            const char* attr = 0;
-            attr = entity->Attribute("name");
-            if ((attr == 0) || (attr[0] == '\0'))
-                continue;
-            if (strcmp(attr, xmlSceneLodContent0->getCollision().c_str()) == 0)
-                break;
-            entity = entity->NextSiblingElement("entity");
-        }
-        if (entity == 0)
-            return;
-        mCollisionMeshFilename = entity->Attribute("filename");
-
         Vector3 position;
         Quaternion rotation;
         Vector3 scale;
 
-        // Position
-	    TiXmlElement* posElem = entity->FirstChildElement("position");
-        if (posElem)
-            XmlHelpers::fromXmlEltVector3(posElem, position);
-	    // Rotation
-	    TiXmlElement* rotElem = entity->FirstChildElement("rotation");
-        if (rotElem)
-            XmlHelpers::fromXmlEltQuaternion(rotElem, rotation);
-	    // Scale
-	    TiXmlElement* scaleElem = entity->FirstChildElement("scale");
-        if (scaleElem)
-            XmlHelpers::fromXmlEltVector3(scaleElem, scale);
+        // Check the scene type (.OSM with oFusion or .SCENE with ogreMax)
+        TiXmlElement* entity;
+        std::string sceneFilename( xmlSceneLodContent0->getMainFilename().c_str() );
+        if( sceneFilename.find(".osm") == sceneFilename.length() - 4 )
+        {
+            // Load .osm
+            TiXmlElement* entities = osmFileDoc.RootElement()->FirstChildElement("entities");
+            entity = entities->FirstChildElement("entity");
+            while (entity != 0)
+            {
+                const char* attr = 0;
+                attr = entity->Attribute("name");
+                if ((attr == 0) || (attr[0] == '\0'))
+                    continue;
+                if (strcmp(attr, xmlSceneLodContent0->getCollision().c_str()) == 0)
+                    break;
+                entity = entity->NextSiblingElement("entity");
+            }
+
+            if (entity == 0)
+                return;
+
+            mCollisionMeshFilename = entity->Attribute("filename");
+
+            // Position
+            TiXmlElement* posElem = entity->FirstChildElement("position");
+            if (posElem)
+                XmlHelpers::fromXmlEltVector3(posElem, position);
+            // Rotation
+            TiXmlElement* rotElem = entity->FirstChildElement("rotation");
+            if (rotElem)
+                XmlHelpers::fromXmlEltQuaternion(rotElem, rotation);
+            // Scale
+            TiXmlElement* scaleElem = entity->FirstChildElement("scale");
+            if (scaleElem)
+                XmlHelpers::fromXmlEltVector3(scaleElem, scale);
+        }
+        else if( sceneFilename.find(".scene") == sceneFilename.length() - 6 )
+        {
+            // Load .scene
+            TiXmlElement* nodes = osmFileDoc.RootElement()->FirstChildElement("nodes");
+            TiXmlElement* node = nodes->FirstChildElement("node");
+            if (node != 0)
+            {
+                entity = node->FirstChildElement("entity");
+                while (entity != 0)
+                {
+                    const char* attr = 0;
+                    attr = entity->Attribute("name");
+                    if ((attr == 0) || (attr[0] == '\0'))
+                        continue;
+                    if (strcmp(attr, xmlSceneLodContent0->getCollision().c_str()) == 0)
+                        break;
+
+                    entity = node->NextSiblingElement("entity");
+                    while (entity == 0)
+                    {
+                        node = node->NextSiblingElement("node");
+                        entity = node->FirstChildElement("entity");
+                    }
+                }
+            }
+
+            if (entity == 0)
+                return;
+
+            mCollisionMeshFilename = entity->Attribute("meshFile");
+
+            // Position
+            TiXmlElement* posElem = node->FirstChildElement("position");
+            if (posElem)
+                XmlHelpers::fromXmlEltVector3(posElem, position);
+            // Rotation
+            TiXmlElement* rotElem = node->FirstChildElement("rotation");
+            if (rotElem)
+                XmlHelpers::fromXmlEltQuaternion(rotElem, rotation);
+            // Scale
+            TiXmlElement* scaleElem = node->FirstChildElement("scale");
+            if (scaleElem)
+                XmlHelpers::fromXmlEltVector3(scaleElem, scale);
+        }
+        else
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create any file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
 
         IPeerRenderSystemLock* renderSystemLock = Peer::getSingleton().getRenderSystemLock();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::createPhysics() loading mesh%s", (renderSystemLock != 0) ? " locking" : "");

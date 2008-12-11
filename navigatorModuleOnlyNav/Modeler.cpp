@@ -825,7 +825,10 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 		{
             //ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
 			if(ext == "mesh")
-				entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
+            {
+				//entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
+                entity = mSceneManager->createEntity( entityName, FilePath.getFormatedPath() );
+            }
 			else if(ext == "3ds")
 			{
 				entity = Plugin_3ds::createEntityFrom3ds(entityName,filenameToLoad,mSceneManager);
