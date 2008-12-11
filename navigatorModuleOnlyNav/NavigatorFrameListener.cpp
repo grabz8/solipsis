@@ -711,13 +711,13 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
                 //Apply the transformation
                 switch( selection->mTransformation->getMode() )
                 {
-                case Transformations::Mode::MOVE :	//Move objects
+                case Transformations::MOVE :	//Move objects
                     mNavigator->MdlrModifGizmo( dragNdrop );
                     break;
-                case Transformations::Mode::ROTATE :	//Rotate objects
+                case Transformations::ROTATE :	//Rotate objects
                     mNavigator->MdlrModifGizmo( dragNdrop * 10. );
                     break;
-                case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
+                case Transformations::SCALE :	//Scale objects, but not gizmos
                     dragNdrop -= Vector3::UNIT_SCALE;
                     mNavigator->MdlrModifGizmo( dragNdrop * 100. );
                     break;
