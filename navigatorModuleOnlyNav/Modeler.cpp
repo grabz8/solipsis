@@ -560,6 +560,7 @@ void Modeler::deselectNode()
 		mSelection->deselect_all();
 		if( mSelection->mTransformation )
 			mSelection->mTransformation->eventSelection();
+        mOnGizmo=false;
 	}
 }
 
