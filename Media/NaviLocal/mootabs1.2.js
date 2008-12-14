@@ -2,7 +2,7 @@ var mootabs = new Class({
 	
 	initialize: function(element, options) {
 		this.options = Object.extend({
-			width:				'300px',
+			width:				'350px',
 			height:				'200px',
 			changeTransition:	Fx.Transitions.Bounce.easeOut,
 			duration:			1000,
