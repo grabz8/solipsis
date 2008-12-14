@@ -34,25 +34,15 @@ namespace Solipsis {
 class NavigatorFrameListener : public OgreFrameListener
 {
 public:
-    enum CameraMode {
-        CMDetached,
-        CM1stPerson,
-        CM1stPersonWithMouse,
-        CM3rdPerson,
-        CMAroundPerson,
-		CMModeling
-    };
 
 protected:
     Navigator* mNavigator;
     Overlay* mStandardOverlay;
     bool mBoundingBoxesShows;
-    CameraMode mCameraMode;
-    CameraMode mLastCameraMode;
-    CameraMode mSavedCameraMode;
     int mEscapeHitsB4CancellingFocus;
     unsigned long mLastEscapeHitTimer;
 	bool mMouseMiddlePressed;
+	bool mMouseRightPressed;
 
 public:
     NavigatorFrameListener(Navigator* navigator);
@@ -72,12 +62,6 @@ public:
     /** See OgreFrameListener. */
     virtual bool mouseReleased(const MouseEvt& evt);
 
-    void setCameraMode(CameraMode mode);
-    CameraMode getCameraMode();
-    void saveLastCameraMode() { mLastCameraMode = mCameraMode; }
-    CameraMode getLastCameraMode() { return mLastCameraMode; }
-    void detachCamera();
-    void attachCamera();
 };
 
 } // namespace Solipsis
