@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Event.h"
 #include "NavigatorSound.h"
 #include "AvatarEditor.h"
+#include "CameraSupportManager.h"
 
 namespace Solipsis {
 
@@ -71,6 +72,21 @@ public:
         QFObject = QFAvatar<<1,
         QFGizmo = QFObject<<1
     };
+    enum NavigationInterface
+    {
+        NIMouseKeyboard,
+        NIWiimoteNunchuk,
+        NIWiimoteNunchukIR
+    };
+     enum CameraMode {
+        CMDetached,
+        CM1stPerson,
+        CM1stPersonWithMouse,
+        CM3rdPerson,
+        CMAroundPerson,
+		CMModeling,
+		CMAroundObject
+    };
 
 private:
     static Navigator* ms_singletonPtr;
@@ -92,6 +108,10 @@ protected:
     NodeId mFixedNodeId;
     NodeId mNodeId;
     String mMediaCachePath;
+
+    CameraSupportManager* mMainCameraSupportMgr;
+
+    NavigationInterface mNavigationInterface;
 
     NavigatorXMLRPCClient* mXmlRpcClient;
 
@@ -170,6 +190,10 @@ public:
     void setMediaCachePath(const String& mediaCachePath);
     bool setNameValueVariable(const String& varName, const String& varValue);
 
+    void setNavigationInterface(NavigationInterface ni) { mNavigationInterface=ni; };
+    NavigationInterface getNavigationInterface() { return mNavigationInterface; }; 
+
+
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
     Modeler* getModeler();
@@ -179,7 +203,12 @@ public:
     void setNavigatorLua(NavigatorLua* navigatorLua);
     NavigatorLua* getNavigatorLua();
 
-    NavigatorSound* getNavigatorSound() { return mNavigatorSound; }
+    NavigatorSound* getNavigatorSound() { return mNavigatorSound; };
+
+    CameraSupportManager* getMainCameraSupportManager() { return mMainCameraSupportMgr; };
+    void setCameraMode(int mode);
+    int getCameraMode() { return mMainCameraSupportMgr->getActiveCameraSupportIndex(); };
+    int getLastCameraMode() { return mMainCameraSupportMgr->getLastCameraSupportIndex(); };
 
     Avatar* getUserAvatar();
 
@@ -302,6 +331,7 @@ public:
     bool avatarXMLSaveAs();
 
     bool isOnLeftCTRL;
+    bool isOnRightCTRL;
 	bool isOnGizmo;
 
     void onMouseMoved(const MouseEvt& evt);
