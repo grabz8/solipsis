@@ -1894,6 +1894,13 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
         sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
         navi->evaluateJS(txt);
     }
+    Navigator::NavigationInterface ni=mNavigator->getNavigationInterface();
+    sprintf(txt, "setInputState('radioControlKeyboardAndMouse', null, %s)", (ni==Navigator::NIMouseKeyboard) ? "'checked'" : "null");
+    navi->evaluateJS(txt);
+    sprintf(txt, "setInputState('radioControlWiimoteAndNunchuk', null, %s)", (ni==Navigator::NIWiimoteNunchuk) ? "'checked'" : "null");
+    navi->evaluateJS(txt);
+    sprintf(txt, "setInputState('radioControlWiimoteAndNunchukAndIR', null, %s)", (ni==Navigator::NIWiimoteNunchukIR) ? "'checked'" : "null");
+    navi->evaluateJS(txt);
 
     // Show Navi UI options
     if (mNavisStates[NAVI_OPTIONS] == NSCreated)
@@ -1922,13 +1929,15 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "peerHost=%s, peerPort=%d", peerHost.c_str(), peerPort);
     std::string radioProxyType;
 	std::string proxyHttpHost;
+    std::string radioControlType;
     int proxyHttpPort;
 	std::string proxyAutoconfUrl;
     radioProxyType = naviData["radioProxyType"].str();
     proxyHttpHost = naviData["proxyHttpHost"].str();
     proxyHttpPort = naviData["proxyHttpPort"].toInt();
     proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioProxyType=%s, proxyHttpHost=%s, proxyHttpPort=%d, proxyAutoconfUrl=%s", radioProxyType.c_str(), proxyHttpHost.c_str(), proxyHttpPort, proxyAutoconfUrl.c_str());
+    radioControlType = naviData["radioControlType"].str();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioProxyType=%s, proxyHttpHost=%s, proxyHttpPort=%d, proxyAutoconfUrl=%s, controlType=%s", radioProxyType.c_str(), proxyHttpHost.c_str(), proxyHttpPort, proxyAutoconfUrl.c_str(), radioControlType.c_str());
 
     // Check
     AuthentType authentType = (AuthentType)radioIdAuthentType.c_str()[0];
@@ -2000,6 +2009,14 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         }
     }
 
+    Navigator::NavigationInterface controlType = Navigator::NIMouseKeyboard;
+    if (radioControlType == "KeyboardAndMouse")
+        controlType=Navigator::NIMouseKeyboard;
+    else if (radioControlType == "WiimoteAndNunchuk")
+        controlType=Navigator::NIWiimoteNunchuk;
+    else if (radioControlType == "WiimoteAndNunchukAndIR")
+        controlType=Navigator::NIWiimoteNunchukIR;
+
     // Valid options ?
     if (valid_options)
     {
@@ -2014,6 +2031,8 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         mNavigator->setWorldsServerAddress(CommonTools::StringHelpers::getURL(wsHost, wsPort));
         mNavigator->setPeerAddress(CommonTools::StringHelpers::getURL(peerHost, peerPort));
         mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
+
+        mNavigator->setNavigationInterface(controlType);
 
         navi->evaluateJS("$('infosText').innerHTML = ''");
 
@@ -2229,8 +2248,7 @@ void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileExit()");
 
     modelerMainUnload();
-    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
-    navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+    mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 }
 
 //-------------------------------------------------------------------------------------
@@ -3472,8 +3490,7 @@ void NavigatorGUI::avatarMainFileExit(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarMainFileExit()");
 
     avatarMainUnload();
-    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mNavigator->getFrameListener();
-    navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+    mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 }
 //-------------------------------------------------------------------------------------
 /*void NavigatorGUI::avatarMainSelectPrev(const NaviData& naviData)
