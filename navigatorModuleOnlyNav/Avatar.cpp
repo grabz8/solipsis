@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Avatar.h"
 #include "OgreHelpers.h"
 #include "Navigator.h"
+#include "OrbitalCameraSupport.h"
 #include <CTStringHelpers.h>
 #include <CharacterManager.h>
 #include <Character.h>
@@ -214,88 +215,18 @@ void Avatar::onSceneNodeChanged()
     mSelectionObject->setBoundingBox(selectionBbox);
     getSceneNode()->attachObject(mSelectionObject);
 
-    // Create or re-attach the cameras scene node on the character instance scene node
-    if (isLocal())
+    // Attach all camera supports to the new avatar 
+    Navigator::getSingletonPtr()->getMainCameraSupportManager()->attachAllCameraSupportsToNode(getSceneNode());
+    // Compute the new position of the camera support according to the new height of the Avatar
+    CameraSupport* camSup = Navigator::getSingletonPtr()->getMainCameraSupportManager()->getActiveCameraSupport();
+    if (camSup!=0)
     {
-        SceneNode* firstPersonCamNode = 0;
-        SceneNode* firstPersonCamPitchNode = 0;
-        SceneNode* thirdPersonCamNode = 0;
-        SceneNode* thirdPersonCamPitchNode = 0;
-        SceneNode* turnAroundPersonCamNode = 0;
-        SceneNode* turnAroundPersonCamPitchNode = 0;
-		SceneNode* turnAroundPersonCamDistNode = 0;
-		SceneNode* modelingCamNode = 0;
-		SceneNode* modelingCamYawNode = 0;
-		SceneNode* modelingCamPitchNode = 0;
-		SceneNode* modelingCamDistNode=0;
-        if (mCamerasSceneNode == 0)
+        if (camSup->getIndex()==Navigator::CMAroundPerson && camSup->getMode()==CameraSupport::CSMOrbital)
         {
-            // Create camera node/pitch nodes
-            mCamerasSceneNode = getSceneNode()->createChildSceneNode(mXmlEntity->getUid() + "CamerasNode");
-
-            // Create First person camera node/pitch node
-            firstPersonCamNode = mCamerasSceneNode->createChildSceneNode("FirstPersonCamNode");
-            firstPersonCamPitchNode = firstPersonCamNode->createChildSceneNode("FirstPersonCamPitchNode");
-
-            // Create the Third camera node/pitch node
-            thirdPersonCamNode = mCamerasSceneNode->createChildSceneNode("ThirdPersonCamNode");
-            thirdPersonCamPitchNode = thirdPersonCamNode->createChildSceneNode("ThirdPersonCamPitchNode");
-
-	        // Create the Fourth camera node/pitch node
-            turnAroundPersonCamNode = mCamerasSceneNode->createChildSceneNode("TurnAroundPersonCamNode");
-            turnAroundPersonCamPitchNode = turnAroundPersonCamNode->createChildSceneNode("TurnAroundPersonCamPitchNode");
-			turnAroundPersonCamDistNode = turnAroundPersonCamPitchNode->createChildSceneNode("TurnAroundPersonCamDistNode");
-
-			// Create the Fifth camera node/pitch node
-            modelingCamNode = mCamerasSceneNode->createChildSceneNode("ModelingCamNode");
-			modelingCamYawNode = modelingCamNode->createChildSceneNode("ModelingCamYawNode");
-            modelingCamPitchNode = modelingCamYawNode->createChildSceneNode("ModelingCamPitchNode");
-			modelingCamDistNode = modelingCamPitchNode->createChildSceneNode("ModelingCamDistNode");
+            camSup->setCameraSupportNodePosition(Vector3::ZERO);
+            camSup->translateCameraSupport(0.0, 0.5*avatarSize.y, 0.0);
+            ((OrbitalCameraSupport*)camSup)->setDistanceFromTarget(2*avatarSize.y);
         }
-        else
-        {
-            firstPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("FirstPersonCamNode");
-            firstPersonCamPitchNode = (SceneNode*)firstPersonCamNode->getChild("FirstPersonCamPitchNode");
-            thirdPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("ThirdPersonCamNode");
-            thirdPersonCamPitchNode = (SceneNode*)thirdPersonCamNode->getChild("ThirdPersonCamPitchNode");
-            turnAroundPersonCamNode = (SceneNode*)mCamerasSceneNode->getChild("TurnAroundPersonCamNode");
-            turnAroundPersonCamPitchNode = (SceneNode*)turnAroundPersonCamNode->getChild("TurnAroundPersonCamPitchNode");
-			turnAroundPersonCamDistNode = (SceneNode*)turnAroundPersonCamPitchNode->getChild("TurnAroundPersonCamDistNode");
-			modelingCamNode = (SceneNode*)mCamerasSceneNode->getChild("ModelingCamNode");
-			modelingCamYawNode = (SceneNode*)modelingCamNode->getChild("ModelingCamYawNode");
-            modelingCamPitchNode = (SceneNode*)modelingCamYawNode->getChild("ModelingCamPitchNode");
-			modelingCamDistNode = (SceneNode*)modelingCamPitchNode->getChild("ModelingCamDistNode");
-            getSceneNode()->addChild(mCamerasSceneNode->getParentSceneNode()->removeChild(mCamerasSceneNode));
-        }
-
-        mCamerasSceneNode->setPosition(Vector3::ZERO);
-        mCamerasSceneNode->setOrientation(Quaternion::IDENTITY);
-        firstPersonCamNode->setPosition(Vector3(0, 0.95, 0)*avatarSize);
-        firstPersonCamNode->setOrientation(Quaternion::IDENTITY);
-        firstPersonCamNode->yaw(Radian(-Math::HALF_PI));
-        firstPersonCamPitchNode->setPosition(Vector3::ZERO);
-        firstPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
-        thirdPersonCamNode->setPosition(Vector3(-4, 1.1, 0)*avatarSize.y);
-        thirdPersonCamNode->setOrientation(Quaternion::IDENTITY);
-        thirdPersonCamNode->yaw(Radian(-Math::HALF_PI));
-        thirdPersonCamPitchNode->setPosition(Vector3::ZERO);
-        thirdPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
-		turnAroundPersonCamDistNode->setPosition(Vector3(4, 0.5, 0)*avatarSize.y);
-        turnAroundPersonCamDistNode->setOrientation(Quaternion::IDENTITY);
-		turnAroundPersonCamDistNode->yaw(Radian(Math::HALF_PI));
-        turnAroundPersonCamPitchNode->setPosition(Vector3::ZERO);
-        turnAroundPersonCamPitchNode->setOrientation(Quaternion::IDENTITY);
-		turnAroundPersonCamPitchNode->roll(Degree(25.));
-		modelingCamNode->setPosition(Vector3(DIST_AVATAR_OBJECT, 0.5*avatarSize.y, 2.0));
-		modelingCamNode->setOrientation(Quaternion::IDENTITY);
-		modelingCamYawNode->setPosition(Vector3::ZERO);
-		modelingCamYawNode->setOrientation(Quaternion::IDENTITY);
-		modelingCamYawNode->yaw(Degree(-135.));
-		modelingCamPitchNode->setPosition(Vector3::ZERO);
-		modelingCamPitchNode->setOrientation(Quaternion::IDENTITY);
-		modelingCamPitchNode->roll(Degree(-45));
-		modelingCamDistNode->setPosition(Vector3(4, 0, 0)*avatarSize.y );
-		modelingCamDistNode->setOrientation(Quaternion::IDENTITY);
     }
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
@@ -313,14 +244,6 @@ void Avatar::detachFromSceneNode()
 
     // Picking
     getSceneNode()->detachObject(mSelectionObject);
-
-    // Re-attach cameras scene node on parent
-    if (isLocal())
-    {
-        mCamerasSceneNode->setPosition(getSceneNode()->getPosition());
-        mCamerasSceneNode->setOrientation(getSceneNode()->getOrientation());
-        getSceneNode()->getParentSceneNode()->addChild(getSceneNode()->removeChild(mCamerasSceneNode));
-    }
 }
 
 //-------------------------------------------------------------------------------------
