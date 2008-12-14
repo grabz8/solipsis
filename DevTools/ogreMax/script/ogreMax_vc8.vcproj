@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="ogreMax_vc8"
-	ProjectGUID="{9CCBCFF0-C83F-4E6C-A2B8-7C23409ECFF9}"
+	ProjectGUID="{48AFAAA6-65AB-47B1-8DFA-79E9F99948C5}"
 	RootNamespace="ogreMax_vc8"
 	Keyword="Win32Proj"
 	>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/include&quot;;../../../Dependencies/tinyxml/include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;../../../Dependencies/tinyxml/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_TIXML_USE_STL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -79,7 +79,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax_d.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax_d.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y&#x0D;&#x0A;"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -106,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/include&quot;;../../../Dependencies/tinyxml/include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;../../../Dependencies/tinyxml/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_TIXML_USE_STL"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -142,7 +143,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
