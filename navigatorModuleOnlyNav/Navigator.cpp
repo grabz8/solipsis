@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTIO.h>
 #include "Navi.h"
 #include "NaviLua.h"
+#include "FirstPersonCameraSupport.h"
+#include "OrbitalCameraSupport.h"
 #include <Modeler.h>
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
@@ -62,6 +64,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mFacebookLoginUrl("http://api.facebook.com/login.php"),
     mFixedNodeId(""),
     mNodeId(""),
+    mNavigationInterface(NIMouseKeyboard),
     mXmlRpcClient(0),
     mOgrePeerManager(0),
     mNavigatorGUI(0),
@@ -75,8 +78,10 @@ Navigator::Navigator(const String name, IApplication* application) :
     mPickedMovable(0),
     mUserAvatar(0),
     mNavigatorSound(0),
+    mMainCameraSupportMgr(0),
     mModeler(0),
     isOnLeftCTRL(false),
+    isOnRightCTRL(false),
 	isOnGizmo(false)
 {
     ms_singletonPtr = this;
@@ -132,6 +137,10 @@ Navigator::~Navigator()
         mNavigatorSound->shutdown();
         delete mNavigatorSound;
     }
+
+    // Destroy Main Camera Manager
+    if (mMainCameraSupportMgr != 0)
+        delete mMainCameraSupportMgr;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1029,7 +1038,7 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
-            if ((avatar == mUserAvatar) && (((NavigatorFrameListener*)mFrameListener)->getCameraMode() == NavigatorFrameListener::CM1stPersonWithMouse)) continue;
+            if ((avatar == mUserAvatar) && (getCameraMode() == CM1stPersonWithMouse)) continue;
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
             return true;
         }
@@ -1068,6 +1077,9 @@ bool Navigator::initialize()
     camera->_notifyViewport(oldViewport);
 */
 // COLOR PICKING
+
+    // Create Main Camera Support Manager
+    mMainCameraSupportMgr=new CameraSupportManager(mCamera);
 
     if (!mNaviSupported)
     {
@@ -1249,6 +1261,14 @@ bool Navigator::connect()
 
         mState = SInWorld;
 
+        // Create and add all needed Camera Supports to the Main Camera Support Manager
+        mMainCameraSupportMgr->addCameraSupport(new FPCameraSupport("DetachedCameraSupport", CMDetached, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new FPCameraSupport("FirstPersonCameraSupport", CM1stPerson, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new FPCameraSupport("FirstPersonWithMouseCameraSupport", CM1stPersonWithMouse, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new OrbitalCameraSupport("ThirdPersonCameraSupport", CM3rdPerson, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new OrbitalCameraSupport("AroundPersonCameraSupport", CMAroundPerson, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new OrbitalCameraSupport("ModelingCameraSupport", CMModeling, mSceneMgr));
+        mMainCameraSupportMgr->addCameraSupport(new OrbitalCameraSupport("AroundObjectCameraSupport", CMAroundObject, mSceneMgr));
         return true;
     }
 }
@@ -1264,12 +1284,12 @@ bool Navigator::disconnect()
     if (mState == SAvatarEdit)
     {
         mNavigatorGUI->avatarMainUnload();
-        navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+        setCameraMode(getLastCameraMode());
     }
     else if (mState == SModeling)
     {
         mNavigatorGUI->modelerMainUnload();
-        navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+        setCameraMode(getLastCameraMode());
     }
 
     // Stop the node events listener thread
@@ -1281,7 +1301,10 @@ bool Navigator::disconnect()
     mXmlRpcClient = 0;
 
     // reset the camera mode
-    navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMDetached);
+    setCameraMode(CMDetached);
+
+    // Suppress all camera supports
+    mMainCameraSupportMgr->suppressAllCameraSupports();
 
     // reset mouse picking
     resetMousePicking();
@@ -1323,13 +1346,13 @@ bool Navigator::mainMenuClick(const String& item)
         disconnect();
     // Submenu View
     else if (item == "1stPerson")
-        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM1stPerson);
+        setCameraMode(CM1stPerson);
     else if (item == "1stPersonMouse")
-        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM1stPersonWithMouse);
+        setCameraMode(CM1stPersonWithMouse);
     else if (item == "3rdPerson")
-        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CM3rdPerson);
+        setCameraMode(CM3rdPerson);
     else if (item == "Orbit")
-        navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
+        setCameraMode(CMAroundPerson);
     // Submenu Panels
     else if (item == "Chat")
         mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
@@ -1337,28 +1360,26 @@ bool Navigator::mainMenuClick(const String& item)
     {
         if (mState == SInWorld)
         {
-            navigatorFrameListener->saveLastCameraMode();
-            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMAroundPerson);
+            setCameraMode(CMAroundPerson);
             mNavigatorGUI->avatarMainShow();
         }
         else if (mState == SAvatarEdit)
         {
             mNavigatorGUI->avatarMainUnload();
-            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+            setCameraMode(getLastCameraMode());
         }
     }
     else if (item == "Modeler")
     {
         if (mState == SInWorld)
         {
-            navigatorFrameListener->saveLastCameraMode();
-            navigatorFrameListener->setCameraMode(NavigatorFrameListener::CMModeling);
+            setCameraMode(CMModeling);
             mNavigatorGUI->modelerMainShow();
         }
         else if (mState == SModeling)
         {
             mNavigatorGUI->modelerMainUnload();
-            navigatorFrameListener->setCameraMode(navigatorFrameListener->getLastCameraMode());
+            setCameraMode(getLastCameraMode());
         }
     }
     // Submenu Help
@@ -1554,8 +1575,8 @@ void Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
     {
         mUserAvatar = (Avatar*)ogrePeer;
 
-        // set Third person camera
-        ((NavigatorFrameListener*)mFrameListener)->setCameraMode(NavigatorFrameListener::CM3rdPerson);
+        // Set the ThirdPersonCam as active
+        setCameraMode(CM3rdPerson);
     }
 }
 
@@ -1914,7 +1935,7 @@ bool Navigator::endAvatarEdit()
 
     // Save avatar
 	avatarXMLSave();
-
+    
     return true;
 }
 
@@ -2056,4 +2077,130 @@ bool Navigator::avatarXMLSaveAs()
 	{}
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setCameraMode(int mode)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorFrameListener::setCameraMode(%d)", mode);
+
+    if (mode == mMainCameraSupportMgr->getActiveCameraSupportIndex() && (mode != CMAroundPerson && mode != CMModeling)) 
+        return;
+
+    if (((mState == SAvatarEdit) && (mMainCameraSupportMgr->getActiveCameraSupportIndex() == CMAroundPerson)) ||
+        ((mState == SModeling) && (mMainCameraSupportMgr->getActiveCameraSupportIndex() == CMModeling)))
+        return;
+
+    if (mUserAvatar == 0) return;
+	Vector3 pos;
+	Quaternion orientation;
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+     pos = userAvatar->getSceneNode()->getWorldPosition();
+	 orientation = userAvatar->getSceneNode()->getWorldOrientation();
+#else
+	 pos = mUserAvatar->getSceneNode()->_getDerivedPosition();
+	 orientation = mUserAvatar->getSceneNode()->_getDerivedOrientation();
+#endif
+    Vector3 size = mUserAvatar->getEntity()->getBoundingBox().getSize();
+
+    switch (mode)
+    {
+    case CMDetached:
+        {
+            mMainCameraSupportMgr->activeCameraSupport(CMDetached);
+            break;
+        }
+    case CM1stPerson:
+        {
+            mMainCameraSupportMgr->activeCameraSupport(CM1stPerson);
+            FPCameraSupport* FPSupportCam = (FPCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM1stPerson);
+            FPSupportCam->resetCameraSupport();
+            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+            FPSupportCam->yaw(Radian(-Math::PI/2));
+            // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
+            FPSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
+            break;
+        }
+    case CM1stPersonWithMouse:
+        {
+            mMainCameraSupportMgr->activeCameraSupport(CM1stPersonWithMouse);
+            FPCameraSupport* FPWMSupportCam = (FPCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM1stPersonWithMouse);
+            FPWMSupportCam->resetCameraSupport();
+            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+            FPWMSupportCam->yaw(Radian(-Math::PI/2));
+            // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
+            FPWMSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
+            mUserAvatar->setMvtType(Avatar::MT1stPerson);
+            break;
+        }
+    case CM3rdPerson:
+        {
+            mMainCameraSupportMgr->activeCameraSupport(CM3rdPerson);
+            OrbitalCameraSupport* TPSupportCam = (OrbitalCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM3rdPerson);
+            TPSupportCam->resetCameraSupport();
+            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+            TPSupportCam->yaw(Radian(-Math::PI/2));
+            // Translate the origin of the camera support along the y axis to the middle of the avatar bbox
+            TPSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.5*size.y, 0));
+            TPSupportCam->pitch(Degree(-15.0));
+            TPSupportCam->setDistanceFromTarget(2.0*size.y);
+            mUserAvatar->setMvtType(Avatar::MT3rdPerson);
+            break;
+        }
+        
+    case CMAroundPerson:
+		{
+            mMainCameraSupportMgr->activeCameraSupport(CMAroundPerson);
+            OrbitalCameraSupport* APSupportCam = (OrbitalCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CMAroundPerson);
+            APSupportCam->resetCameraSupport();
+            mCamera->setOrientation(Quaternion::IDENTITY);
+            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+            APSupportCam->yaw(Radian(-Math::PI/2));
+            // Put camera on the front of the avatar 
+            APSupportCam->yaw(Radian(Math::PI));
+            // Translate the origin of the camera support along the y axis to the middle of the avatar bbox
+            APSupportCam->translateCameraSupport(0.0, 0.5*size.y, 0.0);
+            APSupportCam->pitch(Degree(-15.));
+            APSupportCam->setDistanceFromTarget(2*size.y);
+            mUserAvatar->setMvtType(Avatar::MTArountPerson);
+            break;
+        }
+		
+	case CMModeling:
+		{
+			mMainCameraSupportMgr->activeCameraSupport(CMModeling);
+            OrbitalCameraSupport* MSupportCam = (OrbitalCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CMModeling);
+            MSupportCam->resetCameraSupport();
+            // Translate the origin of the camera support along the y axis to the middle of the avatar bbox, and 1,5m ahead
+            MSupportCam->translateCameraSupport(DIST_AVATAR_OBJECT, 0.5*size.y, 0.0);
+            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+            MSupportCam->yaw(Radian(-Math::PI/2));
+            // Put camera on the front of the avatar (45°)
+            MSupportCam->yaw(Degree(45.0));
+            MSupportCam->pitch(Degree(-35.));
+            MSupportCam->setDistanceFromTarget(2.5*size.y);
+            mUserAvatar->setMvtType(Avatar::MTArountPerson);
+            break;
+		}
+	case CMAroundObject:
+		{
+    		break;
+		}
+    }
+    mUserAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
+    mUserAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
+    if (mNavigatorGUI != 0)
+    {
+        // Hide mouse only on 1st person camera mode
+        mNavigatorGUI->SetMouseVisibility(mode != CM1stPerson);
+        // Set mouse exclusive mode in windowed mode (exclusive only on 1st person camera mode)
+        if (!mIWindow->isFullscreen())
+            mIWindow->setMouseExclusive(mode == CM1stPerson);
+        mNavigatorGUI->setNaviVisibility(mNavigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
+        NaviManager::Get().deFocusAllNavis();
+        if (mode == CM1stPerson)
+            mNavigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
+        else if (mode == CMAroundPerson || mode == CMModeling)
+            mNavigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
+    }
 }
