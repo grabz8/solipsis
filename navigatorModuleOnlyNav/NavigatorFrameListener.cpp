@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
 #include "DebugHelpers.h"
+#include "OrbitalCameraSupport.h"
+#include "FirstPersonCameraSupport.h"
 
 using namespace NaviLibrary;
 using namespace Solipsis;
@@ -43,17 +45,16 @@ NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     OgreFrameListener(navigator->getRenderWindowPtr(),navigator->getCameraPtr(),navigator->getSceneMgrPtr()),
     mNavigator(navigator),
     mBoundingBoxesShows(false),
-    mCameraMode(CMDetached),
-    mLastCameraMode(CMDetached),
-    mSavedCameraMode(CMDetached),
     mEscapeHitsB4CancellingFocus(0),
     mLastEscapeHitTimer(0),
-    mMouseMiddlePressed(false)
+    mMouseMiddlePressed(false),
+	mMouseRightPressed(false)
 {
     mStandardOverlay = OverlayManager::getSingleton().getByName("Solipsis/StandardOverlay");
     if (mStandardOverlay != 0)
         mStandardOverlay->show();
 }
+
 
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
@@ -108,6 +109,15 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         mLastEscapeHitTimer = now;
     }
 
+    // RControl = Middle mouse for GlovePIE control mapping
+    if (mNavigator->getNavigationInterface()!=Navigator::NIMouseKeyboard && evt.mKey == KC_RCONTROL)
+    {
+        MouseEvt mEvt;
+        mEvt.mState.mButtons=MBMiddle;
+        mNavigator->isOnRightCTRL = true;
+        mousePressed (mEvt);
+    }
+
     // Cancel focus on Navi ?
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
     {
@@ -148,45 +158,84 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 if (navigatorGUI != 0)
                 {
                     navigatorGUI->modelerMainUnload();
-                    setCameraMode(getLastCameraMode());
+                    mNavigator->setCameraMode(mNavigator->getLastCameraMode());
                 }
                 return OgreFrameListener::keyPressed(evt);
 
             case KC_UP:
+                mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
+                return OgreFrameListener::keyPressed(evt);
             case KC_W:
                 if (mNavigator->isOnLeftCTRL)
                 {
                     if( !modeler->isSelectionEmpty() )
                         modeler->getSelected()->undo();
+                    return OgreFrameListener::keyPressed(evt);
                 }
-                else
+                else if (!mNavigator->isOnRightCTRL)
+                {   
                     mNavigator->MdlrModifGizmo(Vector3(.1,0,0));
-                return OgreFrameListener::keyPressed(evt);
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
+                    
+                OgreFrameListener::keyPressed(evt);
+                break;   
 
             case KC_DOWN:
-            case KC_S:
                 mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
                 return OgreFrameListener::keyPressed(evt);
-
+            case KC_S:
+                if (!mNavigator->isOnRightCTRL)
+                {
+                    mNavigator->MdlrModifGizmo(Vector3(-.1,0,0));
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
             case KC_LEFT:
-            case KC_A:
                 mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
                 return OgreFrameListener::keyPressed(evt);
-
+            case KC_A:
+                if (!mNavigator->isOnRightCTRL)
+                {
+                    mNavigator->MdlrModifGizmo(Vector3(0,0,-.1));
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
             case KC_RIGHT:
-            case KC_D:
                 mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
                 return OgreFrameListener::keyPressed(evt);
-
+            case KC_D:
+                if (!mNavigator->isOnRightCTRL)
+                {
+                    mNavigator->MdlrModifGizmo(Vector3(0,0,.1));
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
             case KC_PGUP:
-            case KC_E:
                 mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
                 return OgreFrameListener::keyPressed(evt);
-
+            case KC_E:
+                if (!mNavigator->isOnRightCTRL)
+                {
+                    mNavigator->MdlrModifGizmo(Vector3(0,.1,0));
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
             case KC_PGDOWN:
             case KC_C:
-                mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
-                return OgreFrameListener::keyPressed(evt);
+                if (!mNavigator->isOnRightCTRL)
+                {                
+                    mNavigator->MdlrModifGizmo(Vector3(0,-.1,0));
+                    return OgreFrameListener::keyPressed(evt);
+                }
+                OgreFrameListener::keyPressed(evt);
+                break;
             }
         }
 
@@ -201,7 +250,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             else 
             {
                 navigatorGUI->modelerMainUnload();
-                setCameraMode(getLastCameraMode());
+                mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
 
@@ -240,9 +289,11 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 {
                     if( !modeler->isSelectionEmpty() )
                         modeler->getSelected()->undo();
+                    return OgreFrameListener::keyPressed(evt);
                 }
             }
-            return OgreFrameListener::keyPressed(evt);
+            OgreFrameListener::keyPressed(evt);
+            break;
         }
     }
 
@@ -260,7 +311,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             else 
             {
                 navigatorGUI->avatarMainUnload();
-                setCameraMode(getLastCameraMode());
+                mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
         }
@@ -298,7 +349,18 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     case KC_ESCAPE:
         if (mNavigator->getState() != Navigator::SLogin)
         {
-            mNavigator->disconnect();
+            if (mNavigator->getState()==Navigator::SModeling)
+			{
+				navigatorGUI->modelerMainUnload();
+                mNavigator->setCameraMode(mNavigator->getLastCameraMode());
+			}
+			else if (mNavigator->getState()==Navigator::SAvatarEdit)
+			{
+				navigatorGUI->avatarMainUnload();
+                mNavigator->setCameraMode(mNavigator->getLastCameraMode());
+			}
+			else
+				mNavigator->disconnect();
             return true;
         }
         break;
@@ -326,8 +388,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         if (navigatorGUI != 0)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
-                saveLastCameraMode();
-                setCameraMode(CMAroundPerson);
+                mNavigator->setCameraMode(Navigator::CMAroundPerson);
                 navigatorGUI->avatarMainShow();
             }
             break;
@@ -336,8 +397,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         if (navigatorGUI != 0)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
-                saveLastCameraMode();
-                setCameraMode(CMModeling);
+                mNavigator->setCameraMode(Navigator::CMModeling);
                 navigatorGUI->modelerMainShow();
             }
             break;
@@ -346,44 +406,120 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         mBoundingBoxesShows = !mBoundingBoxesShows;
         mSceneMgr->showBoundingBoxes(mBoundingBoxesShows);
         break;
+   
     }
-
+//    Navigator::NavigationInterface navInterface mNavigator->getNavigationInterface();
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar != 0)
     {
         switch (evt.mKey)
         {
         case KC_1: // Switch to 1st person camera
-            setCameraMode(CM1stPerson);
+            mNavigator->setCameraMode(Navigator::CM1stPerson);
             break;
         case KC_2: // Switch to 1st person camera with mouse
-            setCameraMode(CM1stPersonWithMouse);
+            mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);
             break;
         case KC_3: // Switch to 3rd person camera
-            setCameraMode(CM3rdPerson);
+            mNavigator->setCameraMode(Navigator::CM3rdPerson);
             break;
-        case KC_4: // Switch to TrunAround person camera
-            setCameraMode(CMAroundPerson);
+        case KC_4: // Switch to TurnAround person camera
+            mNavigator->setCameraMode(Navigator::CMAroundPerson);
             break;
 
+		case KC_V:
+            {
+                switch (mNavigator->getCameraMode())
+                {
+                    case Navigator::CM1stPerson :
+                    {
+                        mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);
+                        break;
+                    }
+                    case Navigator::CM1stPersonWithMouse :
+                    {
+                        mNavigator->setCameraMode(Navigator::CM3rdPerson);
+                        break;
+                    }
+                    case Navigator::CM3rdPerson :
+                    {
+                        mNavigator->setCameraMode(Navigator::CMAroundPerson);
+                        break;
+                    }
+                    case Navigator::CMAroundPerson :
+                    {
+                        if (mNavigator->getNavigationInterface() == Navigator::NIMouseKeyboard)
+                            mNavigator->setCameraMode(Navigator::CM1stPerson);
+                        else
+                            mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);
+                        break;
+                    }
+                }
+            break;
+            }
+			
         case KC_UP:
-        case KC_W:
             userAvatar->movementKeyPressed(KC_UP);
+            break;
+        case KC_W:
+            if (mNavigator->isOnRightCTRL)
+            {
+                CameraSupport* camSupport=mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                if (camSupport->getMode() == CameraSupport::CSMOrbital)
+                    camSupport->pitch(Degree(-2.0));
+                else if (camSupport->getMode() == CameraSupport::CSMFirstPerson)
+                    mCamera->pitch(Degree(2.0));
+            }
+            else
+                userAvatar->movementKeyPressed(KC_UP);
             break;
 
         case KC_DOWN:
-        case KC_S:
             userAvatar->movementKeyPressed(KC_DOWN);
+            break;
+        case KC_S:
+            if (mNavigator->isOnRightCTRL)
+            {
+                CameraSupport* camSupport=mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                if (camSupport->getMode() == CameraSupport::CSMOrbital)
+                    camSupport->pitch(Degree(2.0));
+                else if (camSupport->getMode() == CameraSupport::CSMFirstPerson)
+                    mCamera->pitch(Degree(-2.0));
+            }
+            else
+                userAvatar->movementKeyPressed(KC_DOWN);
             break;
 
         case KC_LEFT:
-        case KC_A:
             userAvatar->movementKeyPressed(KC_LEFT);
+            break;
+        case KC_A:
+            if (mNavigator->isOnRightCTRL)
+            {
+                CameraSupport* camSupport=mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                if (camSupport->getMode() == CameraSupport::CSMOrbital)
+                    camSupport->yaw(Degree(-2.0));
+                else if (camSupport->getMode() == CameraSupport::CSMFirstPerson)
+                    userAvatar->yaw(Degree(2.0));
+            }
+            else
+                userAvatar->movementKeyPressed(KC_LEFT);
             break;
 
         case KC_RIGHT:
-        case KC_D:
             userAvatar->movementKeyPressed(KC_RIGHT);
+            break;
+        case KC_D:
+            if (mNavigator->isOnRightCTRL)
+            {
+                CameraSupport* camSupport=mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                if (camSupport->getMode() == CameraSupport::CSMOrbital)
+                    camSupport->yaw(Degree(2.0));
+                else if (camSupport->getMode() == CameraSupport::CSMFirstPerson)
+                    userAvatar->yaw(Degree(-2.0));
+            }
+            else
+                userAvatar->movementKeyPressed(KC_RIGHT);
             break;
 
         case KC_PGUP:
@@ -421,6 +557,15 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
             //return OgreFrameListener::keyReleased(evt);
             break;
         }
+    }
+
+    // RControl = Middle mouse for GlovePIE control mapping
+    if (mNavigator->getNavigationInterface()!=Navigator::NIMouseKeyboard && evt.mKey == KC_RCONTROL)
+    {
+        MouseEvt mEvt;
+        mEvt.mState.mButtons=MBMiddle;
+        mNavigator->isOnRightCTRL = false;
+        mouseReleased(mEvt);
     }
 
     // Navi focused -> key processed by the navi
@@ -489,8 +634,9 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (mNavigator->isNaviSupported())
     {
         if ((mNavigator->getState() == Navigator::SInWorld) &&
-            NaviManager::Get().isAnyNaviFocused() && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
-            && (mCameraMode != CM1stPerson))
+            NaviManager::Get().isAnyNaviFocused() 
+            && NaviManager::Get().getFocusedNavi()->isMaterialOnly()
+            && (mNavigator->getCameraMode() != Navigator::CM1stPerson))
         {
             std::string focusedNavi = NaviManager::Get().getFocusedNavi()->getName();
             if (evt.mState.mZrel != 0) NaviManager::Get().getFocusedNavi()->injectMouseWheel(evt.mState.mZrel);
@@ -554,101 +700,104 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         }
     }
 
+    CameraSupportManager* mainCSM = mNavigator->getMainCameraSupportManager();
+    if (mainCSM==0)
+        return false;
+
     // zoom and orbit camera in Modeling or AvatarEdit Mode
     Real mouseWheel = evt.mState.mZrel;
     if(!NaviManager::Get().isAnyNaviFocused() && 
-        ((getCameraMode() == CMAroundPerson) || (getCameraMode() == CMModeling)))
+        ((mNavigator->getCameraMode() == Navigator::CMAroundPerson) || (mNavigator->getCameraMode() == Navigator::CMModeling) || (mNavigator->getCameraMode() == Navigator::CMAroundObject)))
     {
 		SceneNode *camNode = 0, *camPitchNode = 0, *camDistNode = 0, *camYawNode = 0;
-        if (getCameraMode() == CMAroundPerson)
-		{
-			camNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
-			camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
-			camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
-		}
-		else if (getCameraMode() == CMModeling)
-		{
-			camNode = mSceneMgr->getSceneNode("ModelingCamNode");
-			camYawNode = mSceneMgr->getSceneNode("ModelingCamYawNode");
-			camPitchNode = mSceneMgr->getSceneNode("ModelingCamPitchNode");
-			camDistNode = mSceneMgr->getSceneNode("ModelingCamDistNode");
-		}
 
         // zoom camera when the wheel mouse has changed
         if (!Ogre::Math::RealEqual(mouseWheel, 0))
         {
-			Vector3 pos;
-			Quaternion orientation;
-#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-			orientation = mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation();
-#else
-			pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
-			orientation = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedOrientation();
-#endif
-			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
-
-            // WARNING, here we force update of view by resetting the orientation
-			mCamera->setOrientation(Quaternion::IDENTITY);
-			Real DistFrontAvatar=0.0f;
-			if (getCameraMode() == CMModeling)
-				DistFrontAvatar=DIST_AVATAR_OBJECT;
-			
-			mCamera->lookAt(pos + orientation*Vector3(DistFrontAvatar , 0.5*size.y, 0.0));
-
-#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
-            Vector3 camAbs = mCamera->getWorldPosition();
-			if (posAbs.squaredDistance(camAbs) >= 3.5)
+            if (mainCSM->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
             {
-                camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-				camAbs = mCamera->getWorldPosition();
-				if (posAbs.squaredDistance(camAbs) < 3.5)
-                    camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-            }
+                Vector3 pos;
+			    Quaternion orientation;
+                OrbitalCameraSupport* orbitalCameraSupport = (OrbitalCameraSupport*) mainCSM->getActiveCameraSupport();
+    #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			    pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
+			    orientation = mNavigator->getUserAvatar()->getSceneNode()->getWorldOrientation();
+    #else
+			    pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
+			    orientation = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedOrientation();
+    #endif
+			    Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
+
+                // WARNING, here we force update of view by resetting the orientation
+			    mCamera->setOrientation(Quaternion::IDENTITY);
+			    Real DistFrontAvatar=0.0f;
+                if (mNavigator->getCameraMode() == Navigator::CMModeling)
+                    DistFrontAvatar=DIST_AVATAR_OBJECT;
+                
+
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+			    Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
+                Vector3 camAbs = mCamera->getWorldPosition();
+			    if (posAbs.squaredDistance(camAbs) >= 3.5)
+                {
+                    orbitalCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
+                    //camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
+				    /*
+                    camAbs = mCamera->getWorldPosition();
+				    if (posAbs.squaredDistance(camAbs) < 3.5)
+                        orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
+                        //camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
+                    */
+                }
 
 #else
-			Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
-            Vector3 camAbs = mCamera->getRealPosition();
-			if (posAbs.squaredDistance(camAbs) >= 3.5)
-            {
-                camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-				camAbs = mCamera->getRealPosition();
-				if (posAbs.squaredDistance(camAbs) < 3.5)
-                    camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-            }
+			    Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
+                Vector3 camAbs = mCamera->getRealPosition();
+			    if (posAbs.squaredDistance(camAbs) >= 3.5)
+                {
+                    orbitalCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
+                    camAbs = mCamera->getRealPosition();
+				    if (posAbs.squaredDistance(camAbs) < 3.5)
+                        orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
+               
+                }
 #endif
+                mCamera->lookAt(pos + orientation*Vector3(DistFrontAvatar , 0.5*size.y, 0.0));
+            }
 			return true;
         }
 
 
 
-        // orbit camera when the rigth click is pressed 
+        // orbit camera when the middle click is pressed 
         if (mMouseMiddlePressed)
         {
             //apply the rotation around the avatar
             static Real yaw = 0;
-            static Real roll = 0;
+            static Real pitch = 0;
             yaw = -mRotate*evt.mState.mXrel;
-            roll = mRotate*evt.mState.mYrel * .5;
+            pitch = mRotate*evt.mState.mYrel * .5;
 
+            CameraSupport* activeCameraSupport = mainCSM->getActiveCameraSupport();
             // rotate around the avatar or object
-			camNode->yaw(Degree(yaw));
+			activeCameraSupport->yaw(Degree(yaw));
+            //camNode->yaw(Degree(yaw));
 
-			if (getCameraMode() == CMModeling)
+            if (mNavigator->getCameraMode() == Navigator::CMModeling)
 			{
-				Real camRoll =camYawNode->getOrientation().getRoll().valueDegrees();
-				//if( -90. <= (camRoll+roll) && (camRoll+roll) <= 90. ) 
-					camYawNode->roll(Degree(roll));
-				
+                // turn the camera up and down around the object
+				// limit the roll to -90° to +90
+                Real camPitch =activeCameraSupport->getPitch().valueDegrees();
+                if( -90. <= (camPitch+pitch) && (camPitch+pitch) <= 90. )
+                     activeCameraSupport->pitch(Degree(pitch));   			
 			}
 			else
 			{
 				// look in front of / upper the avatar
-				// limit the roll to +5° to +50
-				Real camRoll = camPitchNode->getOrientation().getRoll().valueDegrees();
-				if( 5. <= (camRoll+roll) && (camRoll+roll) <= 50. ) 
-					camPitchNode->roll(Degree(roll));
+				// limit the roll to -5° to -50
+				Real camPitch = activeCameraSupport->getPitch().valueDegrees();
+				if( -50. <= (camPitch+pitch) && (camPitch+pitch) <= -5. ) 
+					activeCameraSupport->pitch(Degree(pitch));
 			}
 			return true;
 
@@ -659,7 +808,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (mNavigator->getState() == Navigator::SModeling &&
         !NaviManager::Get().isAnyNaviFocused())
     {
-        if (getCameraMode() == CM1stPerson)
+        if (mNavigator->getCameraMode() == Navigator::CM1stPerson)
         {
             mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
             mCamNode->getChild(0)->pitch(Degree(mRotate*evt.mState.mYrel));
@@ -672,38 +821,6 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         if( mNavigator->isOnGizmo )//&& !selection->isEmpty() )
         {
             //Calculate drag and drop :
-// Jerome
-/*			if (selection->mTransformation->getMode()==Transformations::Mode::MOVE)
-			{
-				Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
-				Quaternion nodeSelectionOrientation = mNavigator->getSceneMgrPtr()->getSceneNode("NodeSelection")->_getDerivedOrientation();
-				dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay), nodeSelectionOrientation );
-			}	
-			else
-			{
-				Vector3 PosOnScreen((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight(), 0);
-				dragNdrop = selection->mTransformation->drapNdrop( PosOnScreen );
-			}
-			
-			if( dragNdrop != Vector3::ZERO )
-            {
-                //Apply the transformation
-                switch( selection->mTransformation->getMode() )
-                {
-                case Transformations::Mode::MOVE :	//Move objects
-                    mNavigator->MdlrModifGizmo( dragNdrop );
-                    break;
-                case Transformations::Mode::ROTATE :	//Rotate objects
-                    mNavigator->MdlrModifGizmo( dragNdrop *75.);
-                    break;
-                case Transformations::Mode::SCALE :	//Scale objects, but not gizmos
-                    dragNdrop -= Vector3::UNIT_SCALE;
-                    mNavigator->MdlrModifGizmo( dragNdrop * 100. );
-                    break;
-                }
-*/
-// End Jerome
-
 			Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
 			dragNdrop = selection->mTransformation->drapNdrop( selection->mTransformation->getMousePosOnDummyPlane(mouseRay) );			
             if( dragNdrop != Vector3::ZERO )
@@ -738,12 +855,18 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     // zoom with the wheel mouse
     if (!Ogre::Math::RealEqual(mouseWheel, 0))
     {
-        if (getCameraMode() == CM1stPerson&&mouseWheel < 0.0f)
+        if ((mNavigator->getCameraMode() == Navigator::CM1stPerson ||  
+            (mNavigator->getCameraMode() == Navigator::CM1stPersonWithMouse /*&& mNavigator->getNavigationInterface() != Navigator::NIMouseKeyboard*/))
+            && mouseWheel < 0.0f)
         {
-            setCameraMode(CM3rdPerson);
-            mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));//To be sure to go away from the avatar
+            mNavigator->setCameraMode(Navigator::CM3rdPerson);
+            if (mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode()==CameraSupport::CSMOrbital)
+            {
+                OrbitalCameraSupport* thirdCamSupport=(OrbitalCameraSupport*)mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                thirdCamSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
+            }
         }
-        else if (getCameraMode() == CM3rdPerson)
+        else if (mNavigator->getCameraMode() == Navigator::CM3rdPerson)
         {
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
@@ -766,17 +889,41 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 #endif
 			
 			if (posAbs.squaredDistance(camAbs) >= 2.5 )
-                mCamNode->translate(Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0));
+            {
+                if (mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
+                {
+                    OrbitalCameraSupport* thirdPersonCameraSupport = (OrbitalCameraSupport*) mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
+                    thirdPersonCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
+                }
+            }
             else
-                setCameraMode(CM1stPerson);
+                if (mNavigator->getNavigationInterface() == Navigator::NIMouseKeyboard)
+                    mNavigator->setCameraMode(Navigator::CM1stPerson);
+                else
+                    mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);
         }
     }
 
-    if (getCameraMode() == CM1stPerson)
+    if (mNavigator->getCameraMode() == Navigator::CM1stPerson || (mMouseMiddlePressed && ( mNavigator->getCameraMode() == Navigator::CM1stPersonWithMouse )))
     {
         mNavigator->getUserAvatar()->getSceneNode()->yaw(Degree(-mRotate*evt.mState.mXrel));
-        mCamNode->getChild(0)->pitch(Degree(-mRotate*evt.mState.mYrel));
+        mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->pitch(Degree(-mRotate*evt.mState.mYrel));
     }
+
+	// Orbit around a right-clickable object 
+	if (mMouseRightPressed)
+	{
+		// Initialisation
+		if (mNavigator->getMainCameraSupportManager()->getActiveCameraSupportName() == "ThirdPersonCameraSupport"/*getCameraMode() == CM3rdPerson*/)
+		{
+			//Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+		}
+	}
+	else if (mNavigator->getMainCameraSupportManager()->getActiveCameraSupportName() == "AroundObjectCameraSupport"/*getCameraMode() == CMAroundObject*/) // We come back to the third person camera
+	{
+
+	}
+
 
     return true;
 }
@@ -828,11 +975,14 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                     navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
                 }
             }
-            else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+            else if (!(evt.mState.mButtons & MBMiddle))
             {
-                NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
-                NaviManager::Get().focusNavi(navi);
-                navi->injectMouseDown(naviX, naviY);
+                if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+                {
+                    NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
+                    NaviManager::Get().focusNavi(navi);
+                    navi->injectMouseDown(naviX, naviY);
+                }
             }
             // VNC panel ?
             else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
@@ -869,6 +1019,9 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
 
     if (evt.mState.mButtons & MBMiddle)
         mMouseMiddlePressed = true;
+
+	if (evt.mState.mButtons & MBRight)
+        mMouseRightPressed = true;
 
     return OgreFrameListener::mousePressed(evt);
 }
@@ -951,152 +1104,11 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
             NaviManager::Get().injectMouseUp(buttonsId);
     }
 
-    mMouseMiddlePressed = false;
+	if (evt.mState.mButtons & MBMiddle)
+		mMouseMiddlePressed = false;
+
+	if (evt.mState.mButtons & MBRight)
+		mMouseRightPressed = false;
 
     return OgreFrameListener::mouseReleased(evt);
 }
-
-//-------------------------------------------------------------------------------------
-void NavigatorFrameListener::setCameraMode(CameraMode mode)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorFrameListener::setCameraMode(%d)", mode);
-
-    if (mode == mCameraMode && (mode != CMAroundPerson && mode != CMModeling)) return;
-
-    if (((mNavigator->getState() == Navigator::SAvatarEdit) && (getCameraMode() == CMAroundPerson)) ||
-        ((mNavigator->getState() == Navigator::SModeling) && (getCameraMode() == CMModeling)))
-        return;
-
-    Avatar* userAvatar = mNavigator->getUserAvatar();
-    if (userAvatar == 0) return;
-	Vector3 pos;
-	Quaternion orientation;
-#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-     pos = userAvatar->getSceneNode()->getWorldPosition();
-	 orientation = userAvatar->getSceneNode()->getWorldOrientation();
-#else
-	 pos = userAvatar->getSceneNode()->_getDerivedPosition();
-	 orientation = userAvatar->getSceneNode()->_getDerivedOrientation();
-#endif
-    Vector3 size = userAvatar->getEntity()->getBoundingBox().getSize();
-
-    if (mCamera->getParentSceneNode() != 0)
-        mCamera->getParentSceneNode()->detachObject(mCamera);
-
-    switch (mode)
-    {
-    case CMDetached:
-        break;
-    case CM1stPerson:
-    case CM1stPersonWithMouse:
-        mCamNode = mSceneMgr->getSceneNode("FirstPersonCamNode");
-        mSceneMgr->getSceneNode("FirstPersonCamPitchNode")->attachObject(mCamera);
-        userAvatar->setMvtType(Avatar::MT1stPerson);
-        break;
-    case CM3rdPerson:
-        mCamNode = mSceneMgr->getSceneNode("ThirdPersonCamNode");
-        mSceneMgr->getSceneNode("ThirdPersonCamPitchNode")->attachObject(mCamera);
-        userAvatar->setMvtType(Avatar::MT3rdPerson);
-        // look at the avatar
-        // WARNING, here we force update of view by resetting the orientation
-        mCamera->setOrientation(Quaternion::IDENTITY);
-        mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
-        break;
-    case CMAroundPerson:
-		{
-            mCamNode = mSceneMgr->getSceneNode("TurnAroundPersonCamNode");
-            SceneNode* camPitchNode = mSceneMgr->getSceneNode("TurnAroundPersonCamPitchNode");
-            SceneNode* camDistNode = mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode");
-
-            // reset orientations
-            mCamNode->setOrientation( Quaternion::IDENTITY );
-            camDistNode->setOrientation( Quaternion::IDENTITY );
-            camPitchNode->setOrientation( Quaternion::IDENTITY );
-
-            // restore default orientations
-			camDistNode->yaw(Radian(Math::HALF_PI)); // No need of this rotation
-            camPitchNode->roll(Degree(25.));
-            camDistNode->setPosition( Vector3(4, 0.5, 0)*size.y );
-   
-            mSceneMgr->getSceneNode("TurnAroundPersonCamDistNode")->attachObject(mCamera);
-            userAvatar->setMvtType(Avatar::MTArountPerson);
-            // look at the avatar
-            // WARNING, here we force update of view by resetting the orientation
-            mCamera->setOrientation(Quaternion::IDENTITY);
-            mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
-        }
-		break;
-	case CMModeling:
-		{
-			mCamNode = mSceneMgr->getSceneNode("ModelingCamNode");
-			SceneNode* camYawNode = mSceneMgr->getSceneNode("ModelingCamYawNode");
-            SceneNode* camPitchNode = mSceneMgr->getSceneNode("ModelingCamPitchNode");
-            SceneNode* camDistNode = mSceneMgr->getSceneNode("ModelingCamDistNode");
-
-            // reset orientations
-            mCamNode->setOrientation( Quaternion::IDENTITY );
-            camDistNode->setOrientation( Quaternion::IDENTITY );
-			camYawNode->setOrientation( Quaternion::IDENTITY);
-            camPitchNode->setOrientation( Quaternion::IDENTITY );
-
-            // restore default orientations
-			mCamNode->setPosition( Vector3(DIST_AVATAR_OBJECT, 0.5*size.y, 0)); 
-			camYawNode->yaw(Degree(-135.));
-			camPitchNode->roll(Degree(45.));
-			camDistNode->setPosition( Vector3(4, 0, 0)*size.y );
-
-   
-            mSceneMgr->getSceneNode("ModelingCamDistNode")->attachObject(mCamera);
-            userAvatar->setMvtType(Avatar::MTArountPerson);
-            // look at the avatar
-            // WARNING, here we force update of view by resetting the orientation
-            mCamera->setOrientation(Quaternion::IDENTITY);
-            mCamera->lookAt(pos + orientation*Vector3(DIST_AVATAR_OBJECT, 0.5*size.y, 0.0)); 
-		}
-        break;
-    }
-    userAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
-    userAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
-    NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    if (navigatorGUI != 0)
-    {
-        // Hide mouse only on 1st person camera mode
-        navigatorGUI->SetMouseVisibility(mode != CM1stPerson);
-        // Set mouse exclusive mode in windowed mode (exclusive only on 1st person camera mode)
-        if (!mNavigator->getIWindow()->isFullscreen())
-            mNavigator->getIWindow()->setMouseExclusive(mode == CM1stPerson);
-        navigatorGUI->setNaviVisibility(navigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
-        NaviManager::Get().deFocusAllNavis();
-        if (mode == CM1stPerson)
-            navigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
-        else if (mode == CMAroundPerson || mode == CMModeling)
-            navigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
-    }
-    mCameraMode = mode;
-}
-
-//-------------------------------------------------------------------------------------
-NavigatorFrameListener::CameraMode NavigatorFrameListener::getCameraMode()
-{
-    return mCameraMode;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorFrameListener::detachCamera()
-{
-    if (mSavedCameraMode != CMDetached)
-        return;
-    mSavedCameraMode = getCameraMode();
-    setCameraMode(CMDetached);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorFrameListener::attachCamera()
-{
-    if (mSavedCameraMode == CMDetached)
-        return;
-    setCameraMode(mSavedCameraMode);
-    mSavedCameraMode = CMDetached;
-}
-
-//-------------------------------------------------------------------------------------
