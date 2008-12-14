@@ -30,8 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovableText.h"
 #include "Event.h"
 
-#define DIST_AVATAR_OBJECT 1.5f
-
 using namespace Ogre;
 
 namespace Solipsis {
