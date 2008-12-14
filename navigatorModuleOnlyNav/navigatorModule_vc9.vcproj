@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorModule"
 	ProjectGUID="{B71ED042-7AAC-48D8-9BE9-5946D194A25F}"
 	RootNamespace="navigatorModule"
@@ -362,7 +362,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\navigatorModule\CameraSupport.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\navigatorModule\CameraSupportManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DebugHelpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\navigatorModule\FirstPersonCameraSupport.cpp"
 				>
 			</File>
 			<File
@@ -450,6 +462,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\navigatorModule\OribitalCameraSupport.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Scene.cpp"
 				>
 			</File>
@@ -472,6 +488,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\navigatorModule\CameraSupport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\navigatorModule\CameraSupportManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DebugHelpers.h"
 				>
 			</File>
@@ -481,6 +505,10 @@
 			</File>
 			<File
 				RelativePath=".\ExternalTextureSourceEx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\navigatorModule\FirstPersonCameraSupport.h"
 				>
 			</File>
 			<File
@@ -593,6 +621,10 @@
 			</File>
 			<File
 				RelativePath=".\OgrePeerManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\navigatorModule\OrbitalCameraSupport.h"
 				>
 			</File>
 			<File
