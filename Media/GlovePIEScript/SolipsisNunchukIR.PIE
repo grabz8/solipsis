@@ -1,0 +1,133 @@
+
+// Original code by Jerome
+
+var.xOffset = 3
+var.yOffset = 0
+var.zOffset = 6
+
+// set these to the offsets when the wiimote is at rest
+// will be different for each wiimote 
+var.x = Wiimote.RawForceX + var.xOffset //trim to 0
+var.y = Wiimote.RawForceY + var.yOffset // trim to 0
+var.z = Wiimote.RawForceZ + var.zOffset //trim to 0
+
+debug = 'X:' + var.x + ', ' + 'Y:' + var.y + ', ' + 'Z:' + var.z  + ' mx:' + mouse.DirectInputX + ' my' + mouse.DirectInputY  + ' wiidown ' + wiimote.Nunchuk.JoyX
+
+//precision 
+var.threshx = 15
+var.threshz = 15
+var.senseCross = 8
+
+//Options:
+var.deadzone = 5 //distance in pixels that you have to move the wiimote in
+   //order for it to register movement. Creates a "dead zone" around the pointer
+   //to make it easier to click. Higher = smoother but less accurate.
+var.KITTspeed = 100 ms //delay speed for flashing LEDs. higher = slower
+var.rumble = false //makes the wiimote rumble if you hit the edge of the screen
+//more options to be added later
+
+// Here I set the nunchuk so it corresponts with my direction keys.
+if (wiimote.hasNunchuk)
+   if (WiiMote.Down) then
+      keyboard.RightControl= true
+      keyboard.S = true
+      keyboard.S= false
+      keyboard.RightControl= false
+   endif
+   if (WiiMote.Up) then
+      keyboard.RightControl= true
+      keyboard.W = true
+      keyboard.W= false
+      keyboard.RightControl= false
+   endif
+   if (WiiMote.Right) then
+      keyboard.RightControl= true
+      keyboard.D = true
+      keyboard.D= false
+      keyboard.RightControl= false
+   endif
+   if (WiiMote.Left) then
+      keyboard.RightControl= true
+      keyboard.A = true
+      keyboard.A= false
+      keyboard.RightControl= false
+   endif
+   Right = wiimote.Nunchuk.JoyX > 0.1
+   Left = wiimote.Nunchuk.JoyX < -0.1
+   Up = wiimote.Nunchuk.JoyY > 0.1
+   Down = wiimote.Nunchuk.JoyY < -0.1
+else
+    Right =  WiiMote.Right
+    Left =  WiiMote.Left
+    Down =  WiiMote.Down
+    Up =  WiiMote.Up
+endif
+// Change the view from 1 to 4
+V = wiimote.One
+
+//mouse emulation
+//xaxis
+if (-var.threshx >= var.x) then
+   keyboard.RightControl= true
+   keyboard.D = true
+   keyboard.D= false
+   keyboard.RightControl= false
+endif
+if (var.x>= var.threshx) then
+   keyboard.RightControl= true
+   keyboard.A = true
+   keyboard.A= false
+   keyboard.RightControl= false
+endif
+//yaxis 
+if (-var.threshz >= var.z) then
+   keyboard.RightControl= true
+   keyboard.S = true
+   keyboard.S= false
+   keyboard.RightControl= false
+endif
+if (var.z>= var.threshz) then
+   keyboard.RightControl= true
+   keyboard.W = true
+   keyboard.W= false
+   keyboard.RightControl= false
+endif
+
+// Wiimote mouse script for Windows desktop
+// Requires a sensor bar
+
+//var.ButtonFreezeTime = 250ms
+//var.PointerBump = KeepDown(Pressed(wiimote.A),var.ButtonFreezeTime) or KeepDown(Pressed(wiimote.B),var.ButtonFreezeTime)
+
+// Mouse movement
+if wiimote.PointerVisible then //but not var.PointerBump then
+  mouse.x = wiimote.PointerX
+  mouse.y = wiimote.PointerY
+end if
+
+// Bind some keys to the mote, you can bind your own.
+if (Wiimote.Plus)
+mouse.WheelUp = true
+Wait 20ms
+mouse.WheelUp = false
+endif
+if (Wiimote.Minus)
+mouse.WheelDown = true
+Wait 20ms
+mouse.WheelDown = false
+endif
+
+esc = Wiimote.Home
+
+// A for left click and B for right click
+mouse.LeftButton = Wiimote.A
+mouse.RightButton= Wiimote.B
+
+// You can use a combination of keys by adding a + in between, like this - if 
+// you want to bind one of the buttons for SHIFT+Loot. 
+// shift + mouse.RightButton = Wiimote.A 
+
+// Using the leds when pressing the buttons. Almost like having a GF. 
+Wiimote.Led1 = 1
+
+

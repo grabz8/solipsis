@@ -1,0 +1,109 @@
+// Original code by Jerome
+
+/* Here you want to change the offset so it matches your mote. To do this, you 
+first have to put the wiimote down on a flat surface, then running the script. 
+
+When running the script, you will notice some X, Y, Z numbers on the rightside 
+of the run button. You want these to be 0,28,0 - so change the numbers under 
+to make your X,Y,Z fit these. 
+
+My numbers were -2, 30, -4 so I changed them to 0,28,0 by setting 
+x to 2 
+y to -2 
+z to 4 
+
+After you have done this, push the run button to make sure its 0,28,0.*/ 
+
+var.xOffset = 0
+var.yOffset = 0
+var.zOffset = 0
+
+// set these to the offsets when the wiimote is at rest
+// will be different for each wiimote 
+var.x = Wiimote.RawForceX + var.xOffset //trim to 0
+var.y = Wiimote.RawForceY + var.yOffset // trim to 0
+var.z = Wiimote.RawForceZ + var.zOffset //trim to 0
+
+debug = 'X:' + var.x + ', ' + 'Y:' + var.y + ', ' + 'Z:' + var.z  + ' mx:' + mouse.DirectInputX + ' my' + mouse.DirectInputY
+
+//precision 
+var.sense = 0.4
+var.threshx = 15
+var.threshz = 15
+var.senseCross = 4
+
+if (WiiMote.Down) then
+   RightControl = true
+   mouse.DirectInputY =  mouse.DirectInputY + var.senseCross
+   Wait 10ms
+   RightControl = false
+endif
+if (WiiMote.Up) then
+   RightControl = true
+   mouse.DirectInputY = mouse.DirectInputY - var.senseCross
+   Wait 10ms
+   RightControl = false
+endif
+if (WiiMote.Right) then
+   RightControl = true
+   mouse.DirectInputX = mouse.DirectInputX + var.senseCross
+   Wait 10ms
+   RightControl = false
+endif
+if (WiiMote.Left) then
+   RightControl =  true
+   mouse.DirectInputX = mouse.DirectInputX - var.senseCross
+   Wait 10ms
+   RightControl = false
+endif
+
+//mouse emulation
+//xaxis
+if (-var.threshx >= var.x  || var.x>= var.threshx) then
+   RightControl = true
+   mouse.DirectInputX = mouse.DirectInputX - (var.x * var.sense)
+   Wait 10ms
+   RightControl = false
+endif
+//yaxis 
+if (-var.threshz >= var.z  || var.z>= var.threshz) then
+   RightControl = true
+   mouse.DirectInputY = mouse.DirectInputY - (var.z * var.sense)
+   Wait 10ms
+   RightControl = false
+endif
+
+
+
+// Here I set the nunchuk so it corresponts with my direction keys. 
+Right =  Wiimote1.Nunchuk.JoyX > 0.1
+Left =  Wiimote1.Nunchuk.JoyX < -0.1
+down =  Wiimote1.Nunchuk.JoyY > 0.1
+up =  Wiimote1.Nunchuk.JoyY < -0.1
+
+// Bind some keys to the mote, you can bind your own.
+mouse.WheelUp = Wiimote.Plus
+mouse.WheelDown = Wiimote.Minus
+
+// Change the view from 1 to 4
+v = Wiimote.Nunchuk.CButton
+
+esc = Wiimote.Home
+
+tab = Wiimote.One
+shift +  tab = Wiimote.Two
+
+// A for left click and B for right click
+mouse.LeftButton = Wiimote.A
+mouse.RightButton= Wiimote.B
+
+// You can use a combination of keys by adding a + in between, like this - if 
+// you want to bind one of the buttons for SHIFT+Loot. 
+// shift + mouse.RightButton = Wiimote.A 
+
+// Nothin' like a little rumblin' 
+Wiimote.Rumble = Wiimote.B
+
+// Using the leds when pressing the buttons. Almost like having a GF. 
+Wiimote.Led1 = 1
+
