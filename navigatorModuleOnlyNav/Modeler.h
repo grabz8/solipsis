@@ -42,6 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <XmlDatas.h>
 
+#define DIST_AVATAR_OBJECT 1.5f
+
 namespace Solipsis {
 
 /** This class defines a callbacks interface on Modeler.
