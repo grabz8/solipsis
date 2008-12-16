@@ -215,6 +215,7 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                     loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Failed')
                     loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', '')
                 self.wfile.write(loginHtmlFileContent)
+                usersManager.save()
             elif o.path == '/uiworlds.html':
                 if not self.checkNavigatorVersion(query):
                     return
