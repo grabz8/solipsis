@@ -127,9 +127,21 @@ void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
     OgreHelpers::getMovableObjectsList(node, "", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
     {
+#if SHADOWS
+        (*movableObject)->setCastShadows(false);
+#endif
         node->detachObject(*movableObject);
-        node->getCreator()->destroyMovableObject(*movableObject);
+        try
+        {
+            node->getCreator()->destroyMovableObject(*movableObject);
+        }
+        catch(Ogre::Exception e) 
+        {
+            OGRE_LOG("OgreHelpers::removeAndDestroySceneNode() catch exception from destroyMovableObject "+ (*movableObject)->getName());
+            OGRE_LOG(e.getDescription());
+        }
     }
+    //node->needUpdate();
     node->getCreator()->destroySceneNode(node->getName());
 }
 

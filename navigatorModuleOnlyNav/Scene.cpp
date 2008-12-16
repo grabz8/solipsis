@@ -65,6 +65,8 @@ Scene::~Scene()
 //-------------------------------------------------------------------------------------
 void Scene::update(Ogre::Real timeSinceLastFrame)
 {
+    if(mOgreMaxScene != 0)
+        mOgreMaxScene->Update( timeSinceLastFrame );
 }
 
 //-------------------------------------------------------------------------------------
@@ -154,10 +156,21 @@ bool Scene::update(XmlEntity* xmlEntity)
         */
 
 #ifdef SHADOWS
-        sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
-        sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
-        Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
-        sceneMgr->setShadowCameraSetup(shadowCameraSetup);
+        if(1 && mOgreMaxScene != 0)
+        {
+            // use the ogreScene's shadow parameters
+        }
+        else
+        {
+            //sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
+            sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
+            //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
+            sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
+            Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
+sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
+sceneMgr->setShadowFarDistance(100.);
+            sceneMgr->setShadowCameraSetup(shadowCameraSetup);
+        }
 #endif
 
         // Destroy the scene collision mesh
@@ -172,7 +185,7 @@ bool Scene::update(XmlEntity* xmlEntity)
             sceneNode->setPosition(xmlEntity->getPosition());
         if (definedAttributes & XmlEntity::DAOrientation)
             sceneNode->setOrientation(xmlEntity->getOrientation());
-// NO STATIC_GEOM 
+// NO STATIC_GEOM
         if (1 && mOgreMaxScene != 0) return true;
 // NO STATIC_GEOM
         // Optimize by converting it into static geometry
@@ -206,6 +219,18 @@ void Scene::destroy()
 
         if (mOgreMaxScene != 0)
         {
+            // remove all aniamtions & animations states from the objects attached to the scene
+            OgreMax::OgreMaxScene::AnimationStates animations = mOgreMaxScene->GetAnimationStates();
+            OgreMax::OgreMaxScene::AnimationStates::iterator anim = animations.begin();
+            while( anim != animations.end() )
+            {
+                (*anim).second->setEnabled(false);
+                (*anim).second->setLoop(false);
+                sceneMgr->destroyAnimation((*anim).first);
+                sceneMgr->destroyAnimationState((*anim).first);
+                anim++;
+            }
+            // remove the scene
             delete mOgreMaxScene;
             mOgreMaxScene = 0;
         }
@@ -216,6 +241,18 @@ void Scene::destroy()
 // NO STATIC_GEOM   
 else if (1 && mOgreMaxScene != 0)
 {
+    // remove all aniamtions & animations states from the objects attached to the scene
+    OgreMax::OgreMaxScene::AnimationStates animations = mOgreMaxScene->GetAnimationStates();
+    OgreMax::OgreMaxScene::AnimationStates::iterator anim = animations.begin();
+    while( anim != animations.end() )
+    {
+        (*anim).second->setEnabled(false);
+        (*anim).second->setLoop(false);
+        sceneMgr->destroyAnimation((*anim).first);
+        sceneMgr->destroyAnimationState((*anim).first);
+        anim++;
+    }
+    // remove the scene
     delete mOgreMaxScene;
     mOgreMaxScene = 0;
 

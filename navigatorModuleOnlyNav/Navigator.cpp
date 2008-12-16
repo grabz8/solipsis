@@ -2095,8 +2095,8 @@ void Navigator::setCameraMode(int mode)
 	Vector3 pos;
 	Quaternion orientation;
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-     pos = userAvatar->getSceneNode()->getWorldPosition();
-	 orientation = userAvatar->getSceneNode()->getWorldOrientation();
+     pos = mUserAvatar->getSceneNode()->getWorldPosition();
+	 orientation = mUserAvatar->getSceneNode()->getWorldOrientation();
 #else
 	 pos = mUserAvatar->getSceneNode()->_getDerivedPosition();
 	 orientation = mUserAvatar->getSceneNode()->_getDerivedOrientation();

@@ -52,7 +52,7 @@ mSceneMgr(pSceneMgr)
 CameraSupport::~CameraSupport()
 {
     mCameraSupportSceneNode->removeAndDestroyAllChildren();
-    mSceneMgr->destroySceneNode(mCameraSupportSceneNode);
+    mSceneMgr->destroySceneNode(mCameraSupportSceneNode->getName());
 }
 
 //-------------------------------------------------------------------------------------

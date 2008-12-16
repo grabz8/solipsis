@@ -480,7 +480,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
         AvatarEditor::getSingletonPtr()->setCharacterInstance(characterInstance);
 
 #ifdef SHADOWS
-    entity->setCastShadows(true);
+    characterInstance->getEntity()->setCastShadows(true);
 #endif
 
     Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, characterInstance);
