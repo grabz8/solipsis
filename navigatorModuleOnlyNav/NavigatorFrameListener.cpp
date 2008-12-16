@@ -853,7 +853,8 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         return true;
 
     // zoom with the wheel mouse
-    if (!Ogre::Math::RealEqual(mouseWheel, 0))
+    if (!NaviManager::Get().isAnyNaviFocused() &&
+        !Ogre::Math::RealEqual(mouseWheel, 0))
     {
         if ((mNavigator->getCameraMode() == Navigator::CM1stPerson ||  
             (mNavigator->getCameraMode() == Navigator::CM1stPersonWithMouse /*&& mNavigator->getNavigationInterface() != Navigator::NIMouseKeyboard*/))
