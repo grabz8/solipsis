@@ -53,6 +53,12 @@ void System::showMessageBox(const std::string& text, const std::string& caption,
 }
 
 //-------------------------------------------------------------------------------------
+bool System::showDlgOpenFilename(std::string& filename, const char* filter, const std::string& extension)
+{
+//    GetOpenFilename();
+}
+
+//-------------------------------------------------------------------------------------
 void System::runExternalWebBrowser(const std::string& url)
 {
 //    ShellExecute(0, "open", url.c_str(), 0, 0, SW_SHOWNORMAL); ?linux?

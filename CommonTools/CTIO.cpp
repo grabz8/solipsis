@@ -28,9 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <windows.h>
 #include <sys\stat.h>
 #include <direct.h>
+#define GETCWD _getcwd
+#define CHDIR _chdir
 #else
 #include <unistd.h>
 #include <sys/stat.h>
+#define GETCWD getcwd
+#define CHDIR chdir
 #endif
 
 #include <fstream>
@@ -41,12 +45,18 @@ namespace CommonTools {
 std::string IO::getCWD()
 {
     char *buffer;
-    if ((buffer = _getcwd(NULL, 0)) == NULL)
+    if ((buffer = GETCWD(NULL, 0)) == NULL)
         return "";
 
     std::string cwd = buffer;
     free(buffer);
     return cwd;
+}
+
+//-------------------------------------------------------------------------------------
+void IO::setCWD(const std::string& pathname)
+{
+    CHDIR(pathname.c_str());
 }
 
 //-------------------------------------------------------------------------------------

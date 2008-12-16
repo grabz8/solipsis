@@ -58,6 +58,8 @@ public:
     static void autoInsertHyphens(unsigned int maxLineChars, std::wstring& wstr);
     /// Converts an unsigned int version to a string
     static std::string getVersionString(unsigned int version);
+    /// Replace 1 sub-string by 1 replacement string into 1 string
+    static void replaceSubStr(std::string& str, const std::string& subStr, const std::string& replacementStr);
     /// Tokenize function
     static void tokenize(const std::string& str, const std::string& delimiter, std::vector<std::string>& tokens);
     /// Concatenate host and port to form 1 url

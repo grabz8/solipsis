@@ -65,6 +65,33 @@ protected:
     }
 };
 
+/// RakNet server
+RakNetServer *rakNetServer = 0;
+
+/// Console thread
+ConsoleThread *consoleThread = 0;
+
+#ifdef WIN32
+/// Console handler to catch close event from the console window
+BOOL WINAPI ConsoleHandler(DWORD CEvent)
+{
+    switch(CEvent)
+    {
+    case CTRL_C_EVENT:
+    case CTRL_BREAK_EVENT:
+    case CTRL_CLOSE_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        if (rakNetServer != 0)
+            rakNetServer->quit();
+        // Waiting server is shutting down
+        System::sleep(1000);
+        break;
+    }
+    return TRUE;
+}
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -83,14 +110,24 @@ int main(int argc, char *argv[])
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Starting RakNet server");
 
-    RakNetServer rakNetServer(argc, argv);
+#ifdef WIN32
+    // Install the console handler
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleHandler, TRUE);
+#endif
 
-    ConsoleThread consoleThread(&rakNetServer);
-    consoleThread.start();
+    rakNetServer = new RakNetServer(argc, argv);
 
-    rakNetServer.initialize();
-    rakNetServer.run();
-    rakNetServer.finalize();
+    consoleThread = new ConsoleThread(rakNetServer);
+    consoleThread->start();
+
+    rakNetServer->initialize();
+    rakNetServer->run();
+    delete rakNetServer;
+    rakNetServer = 0;
+
+    consoleThread->stop(0);
+    delete consoleThread;
+    consoleThread = 0;
 
     return 0;
 }

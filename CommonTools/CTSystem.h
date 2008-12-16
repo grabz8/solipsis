@@ -42,6 +42,9 @@ public:
     /// Display a modal message box
     static void showMessageBox(const std::string& text, const std::string& caption, bool okButton, bool okCancelButton, bool iconAsterisk, bool iconExclamation, bool iconHand);
 
+    /// Display the open filename modal dialog box
+    static bool showDlgOpenFilename(std::string& filename, const char* filter, const std::string& extension);
+
     /// Run the external Web browser on the system displaying the specified url
     static void runExternalWebBrowser(const std::string& url);
 

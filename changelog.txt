@@ -891,3 +891,21 @@ sof texture not reloaded due to lack of resourceGroup/Location in Object class
 bug fixed in "modeler add texture" => new test in 160RC1, absolute path without resource location declared are now rejected
 
 ---------------------------
+11/12/08
+
+Bug fix in Instance::handleEvents() when 1 exception occurs in FrameListener, same evt was looping
+Close events from console window (RakNetServer) is now caught
+WorldsServer saves users.xml on each new authentication
+
+---------------------------
+16/12/08
+
+mdlrprop panel
+ bug fix VLC param filename with \ not well displayed when object is loaded
+ file browse added into mrl input
+VNC [noimage] the "Please wait - initial screen loading" bitmap is now received meanwhile connection is established
+VLC [noimage] the screen is black on initialization
+MouseWheel do not zoom camera if 1 navi is focused
+NavigatorGUI install itself as WindowEventListener to catch window resize and update Navi panels positions
+
+---------------------------

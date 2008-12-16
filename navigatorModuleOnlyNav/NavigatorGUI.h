@@ -38,7 +38,7 @@ class AvatarEditor;
 
 /** This class manages all Graphical User Interfaces of the Navigator.
  */
-class NavigatorGUI
+class NavigatorGUI : public WindowEventListener
 {
 public:
     enum NaviState {
@@ -127,6 +127,9 @@ public:
     bool startup();
     // Update
     void update();
+
+    /** See Ogre::WindowEventListener. */
+    virtual void windowResized(RenderWindow* rw);
 
     // Mouse
     void SetMouseVisibility(bool visible);
@@ -312,6 +315,7 @@ protected:
     void modelerPropTextureNext(const NaviData& naviData);
     void modelerPropWWWTextureApply(const NaviData& naviData);
     void modelerPropVLCTextureApply(const NaviData& naviData);
+    void modelerPropVLCMrlBrowse(const NaviData& naviData);
     void modelerPropVNCTextureApply(const NaviData& naviData);
     // Modeler 3D callbacks
     void modelerPropPositionX(const NaviData& naviData);

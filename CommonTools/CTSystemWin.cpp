@@ -22,12 +22,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "CTSystem.h"
+#include "CTIO.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
 #include <process.h>
+#include <commdlg.h>
 #include <shellapi.h>
 
 namespace CommonTools {
@@ -48,6 +50,38 @@ void System::setMouseCursorVisibility(bool visible)
 void System::showMessageBox(const std::string& text, const std::string& caption, bool okButton, bool okCancelButton, bool iconAsterisk, bool iconExclamation, bool iconHand)
 {
     MessageBox(NULL, text.c_str(), caption.c_str(), (okButton?MB_OK:0) | (okCancelButton?MB_OKCANCEL:0) | (iconAsterisk?MB_ICONASTERISK:0) | (iconExclamation?MB_ICONEXCLAMATION:0) | (iconHand?MB_ICONHAND:0));
+}
+
+//-------------------------------------------------------------------------------------
+bool System::showDlgOpenFilename(std::string& filename, const char* filter, const std::string& extension)
+{
+    bool result = false;
+
+    setMouseCursorVisibility(true);
+    std::string cwd = IO::getCWD();
+
+    #define STRFILE_MAX 8192
+    char *strFile = new char[STRFILE_MAX];
+    strFile[0] = 0;
+    OPENFILENAME ofn;
+    memset(&ofn, 0, sizeof(OPENFILENAME));
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = NULL;
+    ofn.lpstrFilter = filter;
+    ofn.nFilterIndex = 0;
+    ofn.lpstrFile = strFile;
+    ofn.nMaxFile = STRFILE_MAX;
+    ofn.Flags = OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_ALLOWMULTISELECT|OFN_ENABLESIZING|OFN_EXPLORER;
+    ofn.lpstrDefExt = extension.c_str();
+    result = (GetOpenFileName(&ofn) == TRUE);
+    if (result)
+        filename = strFile;
+    delete [] strFile;
+
+    IO::setCWD(cwd);
+    setMouseCursorVisibility(false);
+
+    return result;
 }
 
 //-------------------------------------------------------------------------------------

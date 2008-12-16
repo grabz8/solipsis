@@ -200,6 +200,19 @@ string StringHelpers::getVersionString(unsigned int version)
 }
 
 //-------------------------------------------------------------------------------------
+void StringHelpers::replaceSubStr(string& str, const string& subStr, const string& replacementStr)
+{
+    string::size_type p0 = 0;
+    while (true)
+    {
+        string::size_type p1 = str.find(subStr, p0);
+        if (p1 == string::npos) break;
+        str.replace(p1, subStr.length(), replacementStr);
+        p0 = p1 + replacementStr.length();
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void StringHelpers::tokenize(const string& str, const string& delimiter, vector<string>& tokens)
 {
     tokens.clear();

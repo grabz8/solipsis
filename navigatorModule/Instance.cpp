@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Instance.h"
 #include "AutoCreatedWindow.h"
-#include "NaviManager.h"
 #include "Platform.h"
 #include "OgreHelpers.h"
 
@@ -434,8 +433,8 @@ bool Instance::handleEvents()
         }
         else
         {
-            handleEvent(*evt);
             mEventQueue.removeHead();
+            handleEvent(*evt);
         }
     }
 

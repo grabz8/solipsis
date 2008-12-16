@@ -53,12 +53,15 @@ protected:
     /// Site node
     SiteNode *mSiteNode;
 
+    /// Is running
+    bool mRunning;
     /// Flag to quit
     bool mQuit;
 
 public:
     /** Constructor. */
     RakNetServer(int argc, char** argv);
+    ~RakNetServer();
 
     static RakNetServer* getSingletonPtr() { return ms_Singleton; }
     static RakNetServer& getSingleton() { return *ms_Singleton; }
@@ -67,6 +70,8 @@ public:
     void initialize();
     /** Run the loop. */
     void run();
+    /** Return true if running. */
+    bool isRunning() { return mRunning; }
     /** Call this to quit the loop. */
     void quit() { mQuit = true; }
     /** Finalize the server. */

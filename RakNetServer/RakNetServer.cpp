@@ -44,6 +44,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
     mRakNetConnection(&mConnectionFactory, true, "localhost", 8660, 32),
     mSiteNodeId("11112222"),
     mSiteNode(0),
+    mRunning(false),
     mQuit(false)
 {
     for (int iarg=1; iarg < argc; iarg++)
@@ -82,6 +83,14 @@ RakNetServer::RakNetServer(int argc, char** argv) :
 }
 
 //-------------------------------------------------------------------------------------
+RakNetServer::~RakNetServer()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::~RakNetServer()");
+
+    finalize();
+}
+
+//-------------------------------------------------------------------------------------
 void RakNetServer::initialize()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::initialize()");
@@ -106,6 +115,7 @@ void RakNetServer::run()
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run()");
 
+    mRunning = true;
     while (!mQuit)
     {
         // process packets
@@ -189,12 +199,22 @@ void RakNetServer::run()
 
         System::sleep(100);
     }
+
+    mRunning = false;
 }
 
 //-------------------------------------------------------------------------------------
 void RakNetServer::finalize()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::finalize()");
+
+    // Quit the loop
+    if (mRunning)
+    {
+        quit();
+        while (mQuit)
+            System::sleep(100);
+    }
 
     // Save the site node
     if (mSiteNode != 0)

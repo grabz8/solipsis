@@ -37,8 +37,10 @@ public:
     typedef std::vector<std::string> FilenameVector;
 
 public:
-    /// Returns the current working directory
+    /// Get the current working directory
     static std::string getCWD();
+    /// Set the current working directory
+    static void setCWD(const std::string& pathname);
     /// Returns true if a file exists
     static bool isFileExists(const std::string& filename);
     /// Returns true if a directory exists

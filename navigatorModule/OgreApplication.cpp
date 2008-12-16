@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreApplication.h"
 #include "NavigatorConfigDialog.h"
 #include "OgreHelpers.h"
-#include "NaviManager.h"
 #include <CTSystem.h>
 #include <CTStringHelpers.h>
 #include <CTIO.h>

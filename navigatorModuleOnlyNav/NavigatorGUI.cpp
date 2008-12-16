@@ -92,6 +92,9 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
 
+    // Add ourself as a Window listener
+    WindowEventUtilities::addWindowEventListener(mNavigator->getRenderWindowPtr(), this);
+
     for (int n=0;n<NAVI_COUNT;n++)
         mNavisStates[n] = NSNotCreated;
 }
@@ -99,6 +102,9 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
 //-------------------------------------------------------------------------------------
 NavigatorGUI::~NavigatorGUI()
 {
+    // Remove ourself as a Window listener
+    WindowEventUtilities::removeWindowEventListener(mNavigator->getRenderWindowPtr(), this);
+
     // Hide previous Navi UI
     hidePreviousNavi();
 
@@ -156,6 +162,12 @@ void NavigatorGUI::update()
             navi->hide(true);
         mStatusBarDisplayDate = 0;
     }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::windowResized(RenderWindow* rw)
+{
+    mNaviMgr->resetAllPositions();
 }
 
 //-------------------------------------------------------------------------------------
@@ -552,6 +564,7 @@ void NavigatorGUI::modelerPropShow()
 		navi->bind("MdlrNextTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureNext));
 		navi->bind("MdlrApplyWWWTexture", NaviDelegate(this, &NavigatorGUI::modelerPropWWWTextureApply));
 		navi->bind("MdlrApplyVLCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVLCTextureApply));
+        navi->bind("MdlrVLCMrlBrowse", NaviDelegate(this, &NavigatorGUI::modelerPropVLCMrlBrowse));
 		navi->bind("MdlrApplyVNCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVNCTextureApply));
 		// 3D
 		navi->bind("MdlrPositionX", NaviDelegate(this, &NavigatorGUI::modelerPropPositionX));
@@ -1163,12 +1176,17 @@ void NavigatorGUI::modelerUpdateTextures()
         }
         else if (plugin == "vlc")
         {
-            navi->evaluateJS("$('MaterialVLCMrl').value = '" + (*textureExtParamsMap)["mrl"] + "'");
+            std::string mrl = (*textureExtParamsMap)["mrl"];
+            StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
+            NaviUtilities::encodeURIComponent(StringHelpers::convertStringToWString((*textureExtParamsMap)["mrl"]));
+            navi->evaluateJS("$('MaterialVLCMrl').value = '" + mrl + "'");
             navi->evaluateJS("$('MaterialVLCWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
             navi->evaluateJS("$('MaterialVLCHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
             navi->evaluateJS("$('MaterialVLCFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
             navi->evaluateJS("$('MaterialVLCParams').value = '" + (*textureExtParamsMap)["vlc_params"] + "'");
-            navi->evaluateJS("$('MaterialVLCRemoteMrl').value = '" + (*textureExtParamsMap)["remoteMrl"] + "'");
+            mrl = (*textureExtParamsMap)["remoteMrl"];
+            StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
+            navi->evaluateJS("$('MaterialVLCRemoteMrl').value = '" + mrl + "'");
         }
         else if (plugin == "vnc")
         {
@@ -3208,6 +3226,19 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropVLCMrlBrowse(const NaviData& naviData)
+{
+    std::string mrl;
+    if (System::showDlgOpenFilename(mrl, "Media File,(*.*)\0*.*\0", ""))
+    {
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
+        std::string mrlStr(mrl);
+        StringHelpers::replaceSubStr(mrlStr, "\\", "\\\\");
+        navi->evaluateJS("$('MaterialVLCMrl').value='" + mrlStr + "'");
     }
 }
 
