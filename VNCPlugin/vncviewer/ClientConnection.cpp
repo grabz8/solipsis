@@ -3311,6 +3311,11 @@ void ClientConnection::AddUpdateListener(VNCScreenUpdateListener *pListener)
 {
     omni_mutex_lock l(m_suMutex);
     m_suListeners.push_back(pListener);
+// GREG BEGIN
+	// Inform it that an update is needed for initial screen.
+    if (m_hBitmap != NULL)
+        pListener->screenUpdated(m_hBitmapDC, m_hBitmap);
+// GREG END
 }
 
 
