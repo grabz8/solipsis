@@ -106,6 +106,7 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         vlc_argv[vlc_argc++] = it->c_str();
     // Allocating screen buffer
     mScreen = (unsigned char*)malloc(mWidth*mHeight*sizeof(unsigned short));
+    memset(mScreen, 0, mWidth*mHeight*sizeof(unsigned short));
     // libvlc Init/New instance/Add playlist/play
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_exception_init");
     libvlc_exception_init(&mLibVLCException);
