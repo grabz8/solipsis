@@ -898,6 +898,11 @@ Close events from console window (RakNetServer) is now caught
 WorldsServer saves users.xml on each new authentication
 
 ---------------------------
+12/12/08
+
+Antlr and gecode added into DevTools (for declarative modeling)
+
+---------------------------
 16/12/08
 
 mdlrprop panel
@@ -907,5 +912,6 @@ VNC [noimage] the "Please wait - initial screen loading" bitmap is now received 
 VLC [noimage] the screen is black on initialization
 MouseWheel do not zoom camera if 1 navi is focused
 NavigatorGUI install itself as WindowEventListener to catch window resize and update Navi panels positions
+Cleanup.bat updated (Antlr and gecode clean up)
 
 ---------------------------

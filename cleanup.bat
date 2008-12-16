@@ -77,6 +77,8 @@ rmdir Dependencies\VoiceEngine /S /Q
 rmdir Dependencies\SimpleVoiceEngineProtocol /S /Q
 rmdir Dependencies\Phonetizer /S /Q
 rmdir Dependencies\DummyPhonetizer /S /Q
+rmdir Dependencies\Antlr2.7.6 /S /Q
+rmdir Dependencies\gecode-2.2.0 /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
