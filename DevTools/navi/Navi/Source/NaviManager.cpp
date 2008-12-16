@@ -92,6 +92,9 @@ NaviManager::~NaviManager()
         mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(toDelete->getMaterialName()));
 // END GREG
         iter = activeNavis.erase(iter);
+// BEGIN GREG
+        if(focusedNavi == toDelete) focusedNavi = 0;
+// END GREG
 		delete toDelete;
 	}
 
