@@ -66,13 +66,21 @@
             {
                 new NaviData(elementName).send();
             }
-            
-            function sendMessage(message)
+
+            function mrlHelperSelected(helper)
             {
-                //alert(message);
-                new NaviData('sendMessage').add({msg:message}).send();
-            }  
-            
+                if (helper == "Browse")
+                {
+                    document.getElementById('MaterialVLCMrlHelpers').options[0].selected = 'true';
+                    document.getElementById('MaterialVLCMrl').value='';
+                    new NaviData('MdlrVLCMrlBrowse').send();
+                }
+                else
+                {
+                    document.getElementById('MaterialVLCMrl').value=helper;
+                }
+            }
+
             function decToHex(dec) 
             {
                 var hexa="0123456789ABCDEF";
@@ -475,8 +483,9 @@
                                         <td>MRL</td>
                                         <td><input type="text" size="50" id="MaterialVLCMrl" value=""/></td>
                                         <td>
-                                            <select onchange="document.getElementById('MaterialVLCMrl').value=this.options[this.selectedIndex].value" id="MaterialVLCMrlHelpers">
+                                            <select onchange="mrlHelperSelected(this.options[this.selectedIndex].value)" id="MaterialVLCMrlHelpers">
                                                 <option selected="selected" value="">File</option>
+                                                <option value="Browse" value="">Browse ...</option>
                                                 <option value='dvd://D:@0:0  :sub-track=0  :audio-track=0'>DVD(menus)</option>
                                                 <option value='dvdsimple://D:@0:0  :sub-track=0  :audio-track=0'>DVD</option>
                                                 <option value='vcd://D:'>VCD</option>
