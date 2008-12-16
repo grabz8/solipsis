@@ -156,7 +156,7 @@ bool Scene::update(XmlEntity* xmlEntity)
         */
 
 #ifdef SHADOWS
-        if(1 && mOgreMaxScene != 0)
+        if(0 && mOgreMaxScene != 0)
         {
             // use the ogreScene's shadow parameters
         }
@@ -167,7 +167,8 @@ bool Scene::update(XmlEntity* xmlEntity)
             //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
             sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
             Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
-sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
+//sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
+sceneMgr->setShadowColour(ColourValue(.7, .75, .8, .5));
 sceneMgr->setShadowFarDistance(100.);
             sceneMgr->setShadowCameraSetup(shadowCameraSetup);
         }
