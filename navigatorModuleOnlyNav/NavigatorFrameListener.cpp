@@ -707,7 +707,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     // zoom and orbit camera in Modeling or AvatarEdit Mode
     Real mouseWheel = evt.mState.mZrel;
     if(!NaviManager::Get().isAnyNaviFocused() && 
-        ((mNavigator->getCameraMode() == Navigator::CMAroundPerson) || (mNavigator->getCameraMode() == Navigator::CMModeling) || (mNavigator->getCameraMode() == Navigator::CMAroundObject)))
+        ((mNavigator->getCameraMode() == Navigator::CMAroundPerson) || (mNavigator->getCameraMode() == Navigator::CM3rdPerson) || (mNavigator->getCameraMode() == Navigator::CMModeling) || (mNavigator->getCameraMode() == Navigator::CMAroundObject)))
     {
 		SceneNode *camNode = 0, *camPitchNode = 0, *camDistNode = 0, *camYawNode = 0;
 
@@ -964,16 +964,23 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             Vector2 vncXY;
             if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
             {
-                MovableObject* vlcMovableObj = 0;
-                if (mNavigator->is1AvatarHitByMouse(avatar))
-                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
-                else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
-                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
-                else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
+                if (mMouseMiddlePressed && mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
                 {
-                    Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
-                    String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                    navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                    mNavigator->setCameraMode(mNavigator->getCameraMode ());
+                }
+                else
+                {
+                    MovableObject* vlcMovableObj = 0;
+                    if (mNavigator->is1AvatarHitByMouse(avatar))
+                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
+                    else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
+                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
+                    else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
+                    {
+                        Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
+                        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                    }
                 }
             }
             else if (!(evt.mState.mButtons & MBMiddle))
