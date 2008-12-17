@@ -98,12 +98,11 @@ endif
 
 //var.ButtonFreezeTime = 250ms
 //var.PointerBump = KeepDown(Pressed(wiimote.A),var.ButtonFreezeTime) or KeepDown(Pressed(wiimote.B),var.ButtonFreezeTime)
-
-// Mouse movement
-if wiimote.PointerVisible then //but not var.PointerBump then
+ // Mouse movement
+if (wiimote.PointerVisible) then
   mouse.x = wiimote.PointerX
   mouse.y = wiimote.PointerY
-end if
+endif
 
 // Bind some keys to the mote, you can bind your own.
 if (Wiimote.Plus)
