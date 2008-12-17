@@ -2119,6 +2119,7 @@ void Navigator::setCameraMode(int mode)
             FPSupportCam->yaw(Radian(-Math::PI/2));
             // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
             FPSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
+            mUserAvatar->setMvtType(Avatar::MT1stPerson);
             break;
         }
     case CM1stPersonWithMouse:
@@ -2162,7 +2163,7 @@ void Navigator::setCameraMode(int mode)
             APSupportCam->translateCameraSupport(0.0, 0.5*size.y, 0.0);
             APSupportCam->pitch(Degree(-15.));
             APSupportCam->setDistanceFromTarget(2*size.y);
-            mUserAvatar->setMvtType(Avatar::MTArountPerson);
+            mUserAvatar->setMvtType(Avatar::MT3rdPerson);
             break;
         }
 		
@@ -2179,7 +2180,7 @@ void Navigator::setCameraMode(int mode)
             MSupportCam->yaw(Degree(45.0));
             MSupportCam->pitch(Degree(-35.));
             MSupportCam->setDistanceFromTarget(2.5*size.y);
-            mUserAvatar->setMvtType(Avatar::MTArountPerson);
+            mUserAvatar->setMvtType(Avatar::MT3rdPerson);
             break;
 		}
 	case CMAroundObject:
