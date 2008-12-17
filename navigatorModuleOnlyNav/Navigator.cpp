@@ -2084,7 +2084,7 @@ void Navigator::setCameraMode(int mode)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorFrameListener::setCameraMode(%d)", mode);
 
-    if (mode == mMainCameraSupportMgr->getActiveCameraSupportIndex() && (mode != CMAroundPerson && mode != CMModeling)) 
+    if (mode == mMainCameraSupportMgr->getActiveCameraSupportIndex() && (mode != CMAroundPerson && mode != CMModeling && mode != CM3rdPerson)) 
         return;
 
     if (((mState == SAvatarEdit) && (mMainCameraSupportMgr->getActiveCameraSupportIndex() == CMAroundPerson)) ||
