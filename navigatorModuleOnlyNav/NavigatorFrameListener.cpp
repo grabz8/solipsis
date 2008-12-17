@@ -704,7 +704,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
     if (mainCSM==0)
         return false;
 
-    // zoom and orbit camera in Modeling or AvatarEdit Mode
+    // zoom and orbit camera in Modeling, 3rd Person or AvatarEdit Mode
     Real mouseWheel = evt.mState.mZrel;
     if(!NaviManager::Get().isAnyNaviFocused() && 
         ((mNavigator->getCameraMode() == Navigator::CMAroundPerson) || (mNavigator->getCameraMode() == Navigator::CM3rdPerson) || (mNavigator->getCameraMode() == Navigator::CMModeling) || (mNavigator->getCameraMode() == Navigator::CMAroundObject)))
@@ -738,31 +738,44 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
 			    Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
                 Vector3 camAbs = mCamera->getWorldPosition();
-			    if (posAbs.squaredDistance(camAbs) >= 3.5)
+			    if (posAbs.squaredDistance(camAbs) >= 2.5)
                 {
                     orbitalCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
-                    //camDistNode->translate( Vector3(-mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-				    /*
                     camAbs = mCamera->getWorldPosition();
-				    if (posAbs.squaredDistance(camAbs) < 3.5)
-                        orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
-                        //camDistNode->translate( Vector3(mouseWheel*MOUSE_WHEEL_FACTOR,0,0) );
-                    */
+                    if (posAbs.squaredDistance(camAbs) < 2.5)
+                    {
+                        if (mNavigator->getCameraMode() == Navigator::CM3rdPerson)
+                        {
+                            if (mNavigator->getNavigationInterface() == Navigator::NIMouseKeyboard)
+                                mNavigator->setCameraMode(Navigator::CM1stPerson);
+                            else
+                                mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);           
+                        }
+                        else
+                            orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
+                    }
                 }
-
 #else
 			    Vector3 posAbs = pos + orientation*Vector3(DistFrontAvatar, 0.5*size.y, 0);
                 Vector3 camAbs = mCamera->getRealPosition();
-			    if (posAbs.squaredDistance(camAbs) >= 3.5)
+			    if (posAbs.squaredDistance(camAbs) >= 2.5)
                 {
                     orbitalCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
                     camAbs = mCamera->getRealPosition();
-				    if (posAbs.squaredDistance(camAbs) < 3.5)
-                        orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
-               
+                    if (posAbs.squaredDistance(camAbs) < 2.5)
+                    {
+                        if (mNavigator->getCameraMode() == Navigator::CM3rdPerson)
+                        {
+                            if (mNavigator->getNavigationInterface() == Navigator::NIMouseKeyboard)
+                                mNavigator->setCameraMode(Navigator::CM1stPerson);
+                            else
+                                mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);           
+                        }
+                        else
+                            orbitalCameraSupport->moveToTarget(mouseWheel*MOUSE_WHEEL_FACTOR);
+                    }
                 }
 #endif
-                mCamera->lookAt(pos + orientation*Vector3(DistFrontAvatar , 0.5*size.y, 0.0));
             }
 			return true;
         }
@@ -857,7 +870,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         !Ogre::Math::RealEqual(mouseWheel, 0))
     {
         if ((mNavigator->getCameraMode() == Navigator::CM1stPerson ||  
-            (mNavigator->getCameraMode() == Navigator::CM1stPersonWithMouse /*&& mNavigator->getNavigationInterface() != Navigator::NIMouseKeyboard*/))
+            (mNavigator->getCameraMode() == Navigator::CM1stPersonWithMouse ))
             && mouseWheel < 0.0f)
         {
             mNavigator->setCameraMode(Navigator::CM3rdPerson);
@@ -866,42 +879,6 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
                 OrbitalCameraSupport* thirdCamSupport=(OrbitalCameraSupport*)mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
                 thirdCamSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
             }
-        }
-        else if (mNavigator->getCameraMode() == Navigator::CM3rdPerson)
-        {
-#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition();
-#else
-			Vector3 pos = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition();
-#endif
-			Vector3 size = mNavigator->getUserAvatar()->getEntity()->getBoundingBox().getSize();
-
-            // WARNING, here we force update of view by resetting the orientation
-            mCamera->setOrientation(Quaternion::IDENTITY);
-            mCamera->lookAt(pos + Vector3(0, 0.5*size.y, 0)); 
-
-            //Switch to 1st person camera if close to avatar
- #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->getWorldPosition() + Vector3(0, 0.5*size.y, 0);
-            Vector3 camAbs = mCamera->getWorldPosition();
-#else
-			Vector3 posAbs = mNavigator->getUserAvatar()->getSceneNode()->_getDerivedPosition() + Vector3(0, 0.5*size.y, 0);
-            Vector3 camAbs = mCamera->getRealPosition();
-#endif
-			
-			if (posAbs.squaredDistance(camAbs) >= 2.5 )
-            {
-                if (mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
-                {
-                    OrbitalCameraSupport* thirdPersonCameraSupport = (OrbitalCameraSupport*) mNavigator->getMainCameraSupportManager()->getActiveCameraSupport();
-                    thirdPersonCameraSupport->moveToTarget(-mouseWheel*MOUSE_WHEEL_FACTOR);
-                }
-            }
-            else
-                if (mNavigator->getNavigationInterface() == Navigator::NIMouseKeyboard)
-                    mNavigator->setCameraMode(Navigator::CM1stPerson);
-                else
-                    mNavigator->setCameraMode(Navigator::CM1stPersonWithMouse);
         }
     }
 
