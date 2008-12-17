@@ -1401,7 +1401,27 @@ bool Navigator::contextItemSelected(const String& item)
     mNavigatorGUI->contextHide();
 
     // Perform action associated to item selected
-    // TODO
+    if (item == "config")
+    {
+        if (mState == SInWorld)
+        {
+            setCameraMode(CMAroundPerson);
+            mNavigatorGUI->avatarMainShow();
+        }
+    }
+    else if (item == "create")
+    {
+        if (mState == SInWorld)
+        {
+            setCameraMode(CMModeling);
+            mNavigatorGUI->modelerMainShow();
+        }
+    }
+    else if (item == "chat")
+    {
+        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+    }
+
     return true;
 }
 
