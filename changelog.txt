@@ -918,5 +918,6 @@ Cleanup.bat updated (Antlr and gecode clean up)
 17/12/08
 
 Avatar MvtType on 1stPersonCamMode bug fixed
+uictxt avatar look#talk#cancel replaced by config#create#chat#talk
 
 ---------------------------
