@@ -972,7 +972,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 {
                     MovableObject* vlcMovableObj = 0;
                     if (mNavigator->is1AvatarHitByMouse(avatar))
-                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "look#talk#cancel");
+                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "config#create#chat#talk");
                     else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
                         navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
                     else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
