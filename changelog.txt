@@ -915,3 +915,8 @@ NavigatorGUI install itself as WindowEventListener to catch window resize and up
 Cleanup.bat updated (Antlr and gecode clean up)
 
 ---------------------------
+17/12/08
+
+Avatar MvtType on 1stPersonCamMode bug fixed
+
+---------------------------
