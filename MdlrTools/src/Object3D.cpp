@@ -329,6 +329,20 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
                 textureExtParamsMap[textureExtParamElt->Attribute("Name")] = textureExtParamElt->Attribute("Value");
                 textureExtParamElt = textureExtParamElt->NextSiblingElement("param");
             }
+
+            // GILLES BEGIN - remove the path from the SWF textures full path
+            if (textureExtParamsMap.find("plugin") != textureExtParamsMap.end() && 
+                (*textureExtParamsMap.find("plugin")).second == "swf" )
+            {
+                if (textureExtParamsMap.find("url") != textureExtParamsMap.end())
+                {
+                    std::string filename = _getcwd(NULL, 0);
+                    filename += "\\solTmpTexture\\";
+                    filename += (*textureExtParamsMap.find("url")).second;
+                    (*textureExtParamsMap.find("url")).second = filename.c_str();
+                }
+            }
+            // GILLES END
         }
         if (mModifiedMaterialManager->getMMMTextureManager() != 0)
         {
@@ -527,12 +541,36 @@ int		Object3D::saveToFile(const char* fileName)
 		toSave << "\t\t\t<texture Name=\"" << textureName << "\" currenttexture=\"" << currentTexture << "\">" << endl;	
         if (textureExtParamsMap != 0)
         {
+            // check if it's a SWF texture
+            bool isSWF = false;
+            for(TextureExtParamsMap::const_iterator it=textureExtParamsMap->begin();it!=textureExtParamsMap->end();++it)
+            {
+                if (it->first == "plugin")
+                    if (it->second == "swf")
+                    {
+                        isSWF = true;
+                        break;
+                    }
+            }
+
             toSave << "\t\t\t\t<textureExtParamsMap>" << endl;
             for(TextureExtParamsMap::const_iterator it=textureExtParamsMap->begin();it!=textureExtParamsMap->end();++it)
             {
                 TiXmlString xmlStringIn(it->second.c_str());
                 TiXmlString xmlStringOut;
                 TiXmlBase::EncodeString(xmlStringIn, &xmlStringOut);
+                // GILLES BEGIN - remove the path from the texture path
+                if (isSWF && it->first == "url")
+                {
+                    std::string filename = xmlStringOut.c_str();
+                    int slash = filename.find_last_of('\\')+1;
+                    if(slash > 0)
+                    {
+                        xmlStringOut.clear();
+                        xmlStringOut.assign( filename.substr(slash, filename.length() - slash).c_str(), filename.length() - slash);
+                    }
+                }
+                // GILLES END
                 toSave << "\t\t\t\t\t<param Name=\"" << it->first << "\" Value=\"" << xmlStringOut.c_str() << "\" />" << endl;
             }
             toSave << "\t\t\t\t</textureExtParamsMap>" << endl;
