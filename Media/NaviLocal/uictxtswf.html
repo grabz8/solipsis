@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uictxtswf</title>
+        <script type="text/javascript" src="Navi-yui.js"></script>
+        <script type="text/javascript">
+            var ctxtSWFNameParam;
+            function pageLoaded()
+            {
+                ctxtSWFNameParam = $PND.get('ctxtSWFName');
+                $ND('pageLoaded').add({naviName:'uictxtswf'}).add({ctxtSWFName:ctxtSWFNameParam}).send();
+            }
+            function swfCommand(command)
+            {
+                $ND('swfCommand').add({ctxtSWFName:ctxtSWFNameParam}).add({cmd:command}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #000000;
+	            color: #FFFFFF;
+	            overflow: hidden;
+            }
+            #container
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 64px;
+                background-color: #D8DBE0;
+            }
+            .SWFIcon
+            {
+                position: absolute;
+	            left: 4px;
+	            top: 25px;
+                width: 30px;
+                height: 34px;
+                background-image: url(swficon.png);
+            }
+            .swfToolbarIcons
+            {
+                background-image: url(swftoolbar.png);
+                background-repeat: no-repeat;
+                position: relative;
+	            top: 26px;
+                left: 40px;
+                float: left;
+            }
+            .swfToolbarPlayPause { width: 41px; height: 34px; background-position: 0px 0px; }
+            .swfToolbarPlayPause:hover { background-position: 0px -34px; }
+            .swfToolbarStop { width: 41px; height: 34px; background-position: -41px 0px; }
+            .swfToolbarStop:hover { background-position: -41px -34px; }
+            .swfToolbarPrev { width: 44px; height: 34px; background-position: -82px 0px; }
+            .swfToolbarPrev:hover { background-position: -82px -34px; }
+            .swfToolbarNext { width: 44px; height: 34px; background-position: -126px 0px; }
+            .swfToolbarNext:hover { background-position: -126px -34px; }
+            .swfToolbarVolume { width: 40px; height: 34px; background-position: -173px 0px; }
+            .swfToolbarVolume:hover { background-position: -173px -34px; }
+            .swfToolbarVolumeOff { width: 40px; height: 34px; background-position: -213px 0px; }
+            #urlInput
+            {
+	            position: absolute;
+	            left: 1px;
+	            top: 0px;
+            }
+            .inputText
+            {
+                background-color: #000000;
+                color: #FFFFFF;
+            }
+            .inputText:hover
+            {
+                background-color: #FFFFFF;
+                color: #000000;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <form id="urlForm" action="" onsubmit="swfCommand('seturl');return false;">
+                <div id="urlInput">
+                    <input id="inputUl" class="inputText" name="inputUrl" value="" type="text" size="38"/>
+                </div>
+            </form>
+            <span id="mSWFIcon" class="SWFIcon"></span>
+            <span id="mTbIconPlayPause" class="swfToolbarIcons swfToolbarPlayPause" onclick="swfCommand('playpause')"></span>
+            <span id="mTbIconStop" class="swfToolbarIcons swfToolbarStop" onclick="swfCommand('stop')"></span>
+            <span id="mTbIconPrev" class="swfToolbarIcons swfToolbarPrev" onclick="swfCommand('prev')"></span>
+            <span id="mTbIconNext" class="swfToolbarIcons swfToolbarNext" onclick="swfCommand('next')"></span>
+            <span id="mTbIconVolume" class="swfToolbarIcons swfToolbarVolume" onclick="swfCommand('mute')"></span>
+        </div>
+    </body>
+</html>

@@ -105,6 +105,10 @@
                 document.getElementById('MaterialWWWWidth').value = '512';
                 document.getElementById('MaterialWWWHeight').value = '512';
                 document.getElementById('MaterialWWWFps').value = '0';
+				document.getElementById('MaterialSWFUrl').value = 'D:\\Super-Crazy-Guitar-Maniac-Deluxe6357.swf';
+                document.getElementById('MaterialSWFWidth').value = '256';
+                document.getElementById('MaterialSWFHeight').value = '256';
+				document.getElementById('MaterialSWFFps').value = '25';
                 document.getElementById('MaterialVLCMrlHelpers').options[0].selected = 'true';
                 document.getElementById('MaterialVLCWidth').value = '256';
                 document.getElementById('MaterialVLCHeight').value = '256';
@@ -473,6 +477,23 @@
 						        </table>
 						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyWWWTexture')"/></td></tr>
+						        </table>
+ 	                        </div>
+							<div class="tabbertab">
+		                        <!-- SWF -->
+		                        <h2>SWF</h2>
+						        <table>
+                                    <tr><td>URL</td><td><input type="text" size="50" id="MaterialSWFUrl" value=""/></td></tr>
+						        </table>
+						        <table>
+                                    <tr>
+                                        <td>Width</td><td><input type="text" size="6" id="MaterialSWFWidth" value=""/></td>
+                                        <td>Height</td><td><input type="text" size="6" id="MaterialSWFHeight" value=""/></td>
+                                        <td>Fps</td><td><input type="text" size="6" id="MaterialSWFFps" value=""/></td>
+                                    </tr>
+						        </table>
+						        <table>
+                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplySWFTexture')"/></td></tr>
 						        </table>
  	                        </div>
 	                        <div class="tabbertab">

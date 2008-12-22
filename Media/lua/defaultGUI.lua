@@ -138,6 +138,36 @@ function uictxtvlcListener(eventType, naviName, naviDataName, param)
 	end
 end
 
+-- uictxtswf listener
+function uictxtswfListener(eventType, naviName, naviDataName, param)
+	logMessage(string.format("uictxtswfListener(%s, %s, %s)", eventType, naviName, naviDataName))
+	if eventType == "Data" then
+		if naviDataName == "pageLoaded" then
+		    local ctxtSWFName = param["ctxtSWFName"]
+	        local url = navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, "geturl")
+	        local urlJS = string.gsub(url, "[\\]", "\\\\");
+		    naviEvaluateJS(naviName, "$('inputUrl').value = '" .. urlJS .. "'")
+	        local mute = navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, "getmute")
+	        if mute == "true" then
+		        naviEvaluateJS(naviName, "$('mTbIconVolume').addClass('swfToolbarVolumeOff')")
+		    else
+		        naviEvaluateJS(naviName, "$('mTbIconVolume').removeClass('swfToolbarVolumeOff')")
+		    end
+			naviShow(naviName)
+		elseif naviDataName == "swfCommand" then
+		    local ctxtSWFName = param["ctxtSWFName"]
+		    local cmd = param["cmd"]
+		    if cmd == "seturl" then
+		        local url = naviEvaluateJS(naviName, "$('inputUrl').value")
+	            navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, "seturl?" .. url)
+		    else
+	            navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, cmd)
+	        end
+			navigator:hideNavi(naviName)
+		end
+	end
+end
+
 -- screen clamping computation
 function clampNaviOnScreen(x, y, w, h)
 	local cx = x - w/2
@@ -269,6 +299,29 @@ function NavigatorLua:createGUI(guiName, ...)
 		naviDatas["ctxtVLCName"] = ctxtVLCName
 		naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)
 		return true
+	elseif guiName == "uictxtswf" then
+		-- Create Navi UI context about SWF material
+		local args = { ... }
+		local x, y, ctxtSWFName = args[1], args[2], args[3]
+		logMessage(string.format("x, y, ctxtSWFName = %d, %d, %s", x, y, ctxtSWFName))
+		local naviW, naviH = 256, 64
+		x, y = clampNaviOnScreen(x, y, naviW, naviH)
+		if not naviMgrIsNaviExists(guiName) then
+		    naviMgrCreateNavi(guiName, "", x, y, naviW, naviH, false, false)
+		    naviSetOpacity(guiName, 0.8)
+		    naviSetMaxUpdatesPerSec(guiName, 8)
+		    naviSetForceMaxUpdate(guiName, false)
+		    naviSetAutoUpdateOnFocus(guiName, true)
+		    naviAddEventListener(guiName, guiName .. "Listener")
+		else
+		    naviSetPosition(guiName, x, y)
+		end
+		local naviDatas = {}
+		naviDatas["naviDataName"] = guiName .. "Datas"
+		naviDatas["ctxtSWFName"] = ctxtSWFName
+		naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)
+		return true
 	end
+	
 	return false
 end
