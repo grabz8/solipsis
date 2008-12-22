@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\ogreMax&quot; mkdir &quot;..\..\..\Dependencies\ogreMax&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\include&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\include&quot;&#x0D;&#x0A;copy &quot;..\src\*.hpp&quot; &quot;..\..\..\Dependencies\ogreMax\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\ogreMax\lib&quot; mkdir &quot;..\..\..\Dependencies\ogreMax\lib&quot;&#x0D;&#x0A;copy &quot;lib\ogreMax_d.lib&quot; &quot;..\..\..\Dependencies\ogreMax\lib&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration

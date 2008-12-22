@@ -983,7 +983,11 @@ void OgreMaxScene::LoadInstancedGeometries(const TiXmlElement* objectElement)
 void OgreMaxScene::LoadInstancedGeometry(const TiXmlElement* objectElement)
 {
     String name = OgreMaxUtilities::GetStringAttribute(objectElement, "name");
+#ifdef SHADOWS
     bool castShadows = OgreMaxUtilities::GetBoolAttribute(objectElement, "castShadows", true);
+#else
+    bool castShadows = false;
+#endif
     ObjectVisibility visibility = OgreMaxUtilities::GetObjectVisibilityAttribute(objectElement, "visible");
     unsigned int batchCount = OgreMaxUtilities::GetUIntAttribute(objectElement, "batchCount", 0);
     String renderQueue = OgreMaxUtilities::GetStringAttribute(objectElement, "renderQueue");
@@ -1091,7 +1095,11 @@ void OgreMaxScene::LoadStaticGeometries(const TiXmlElement* objectElement)
 void OgreMaxScene::LoadStaticGeometry(const TiXmlElement* objectElement)
 {
     String name = OgreMaxUtilities::GetStringAttribute(objectElement, "name");
+#ifdef SHADOWS
     bool castShadows = OgreMaxUtilities::GetBoolAttribute(objectElement, "castShadows", true);
+#else
+    bool castShadows = false;
+#endif
     ObjectVisibility visibility = OgreMaxUtilities::GetObjectVisibilityAttribute(objectElement, "visible");
     String renderQueue = OgreMaxUtilities::GetStringAttribute(objectElement, "renderQueue");
     Real renderingDistance = OgreMaxUtilities::GetRealAttribute(objectElement, "renderingDistance", 0);
@@ -1411,8 +1419,10 @@ void OgreMaxScene::LoadEnvironment(const TiXmlElement* objectElement)
                 }while (this->renderWindows->MoveNext());
             }
         }
+#ifdef SHADOWS
         else if (elementName == "shadows")
             LoadShadows(childElement);
+#endif
     }
 
     //Set fog parameters into scene manager
@@ -2050,7 +2060,7 @@ void OgreMaxScene::LoadShadows(const TiXmlElement* objectElement)
     String techniqueText = OgreMaxUtilities::GetStringAttribute(objectElement, "technique", "none");
     if (!techniqueText.empty())
         params.shadowTechnique = OgreMaxUtilities::ParseShadowTechnique(techniqueText);
-    params.selfShadow = OgreMaxUtilities::GetBoolAttribute(objectElement, "selfShadow", params.selfShadow);
+    params.selfShadow = false;//OgreMaxUtilities::GetBoolAttribute(objectElement, "selfShadow", params.selfShadow);
     params.farDistance = OgreMaxUtilities::GetRealAttribute(objectElement, "farDistance", params.farDistance);
             
     //Parse child elements
@@ -2231,7 +2241,11 @@ void OgreMaxScene::LoadEntity(const TiXmlElement* objectElement, const MovableOb
     parameters.visibility = OgreMaxUtilities::GetObjectVisibilityAttribute(objectElement, "visible");
     parameters.meshFile = OgreMaxUtilities::GetStringAttribute(objectElement, "meshFile");
     parameters.materialFile = OgreMaxUtilities::GetStringAttribute(objectElement, "materialFile");
+#ifdef SHADOWS
     parameters.castShadows = OgreMaxUtilities::GetBoolAttribute(objectElement, "castShadows", true);
+#else
+    parameters.castShadows = false;
+#endif
     
     String renderQueue = OgreMaxUtilities::GetStringAttribute(objectElement, "renderQueue");
     parameters.renderQueue = OgreMaxUtilities::ParseRenderQueue(renderQueue);
@@ -2348,7 +2362,11 @@ void OgreMaxScene::LoadLight(const TiXmlElement* objectElement, const MovableObj
     uint32 visibilityFlags = OgreMaxUtilities::GetUIntAttribute(objectElement, "visibilityFlags", 0);
     ObjectVisibility visibility = OgreMaxUtilities::GetObjectVisibilityAttribute(objectElement, "visible");
     String type = OgreMaxUtilities::GetStringAttribute(objectElement, "type", "point");
+#ifdef SHADOWS
     bool castShadows = OgreMaxUtilities::GetBoolAttribute(objectElement, "castShadows", true);
+#else
+    bool castShadows = false;
+#endif
     float power = OgreMaxUtilities::GetRealAttribute(objectElement, "power", 1);
     
     //Create the light
@@ -2669,7 +2687,11 @@ void OgreMaxScene::LoadPlane(const TiXmlElement* objectElement, const MovableObj
     parameters.material = OgreMaxUtilities::GetStringAttribute(objectElement, "material");
     parameters.normals = OgreMaxUtilities::GetBoolAttribute(objectElement, "normals", true);
     parameters.createMovablePlane = OgreMaxUtilities::GetBoolAttribute(objectElement, "movablePlane", true);
+#ifdef SHADOWS
     parameters.castShadows = OgreMaxUtilities::GetBoolAttribute(objectElement, "castShadows", true);
+#else
+    parameters.castShadows = false;
+#endif
     parameters.resourceGroupName = this->defaultResourceGroupName;
     
     String renderQueue = OgreMaxUtilities::GetStringAttribute(objectElement, "renderQueue");

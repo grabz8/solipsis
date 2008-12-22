@@ -874,7 +874,9 @@ void OgreMaxModel::CreateEntity
     if (entityParams->visibilityFlags != 0)
         entity->setVisibilityFlags(entityParams->visibilityFlags);
     OgreMaxUtilities::SetObjectVisibility(entity, entityParams->visibility);
+#ifdef SHADOWS
     entity->setCastShadows(entityParams->castShadows);    
+#endif
     entity->setRenderQueueGroup(entityParams->renderQueue);
     entity->setRenderingDistance(entityParams->renderingDistance);
     OgreMaxUtilities::SetCustomParameters(entity, entityParams->customParameters);
@@ -951,7 +953,9 @@ void OgreMaxModel::CreateLight
         light->setVisibilityFlags(lightParams->visibilityFlags);
     OgreMaxUtilities::SetObjectVisibility(light, lightParams->visibility);
     light->setType(lightParams->lightType);
+#ifdef SHADOWS
     light->setCastShadows(lightParams->castShadows);                
+#endif
     light->setPowerScale(lightParams->power);
     light->setDiffuseColour(lightParams->diffuseColor);
     light->setSpecularColour(lightParams->specularColor);
@@ -1150,7 +1154,9 @@ void OgreMaxModel::CreatePlane
     if (planeParameters->visibilityFlags != 0)
         entity->setVisibilityFlags(planeParameters->visibilityFlags);
     OgreMaxUtilities::SetObjectVisibility(entity, planeParameters->visibility);
+#ifdef SHADOWS
     entity->setCastShadows(planeParameters->castShadows);
+#endif
     entity->setRenderQueueGroup(planeParameters->renderQueue);
     entity->setRenderingDistance(planeParameters->renderingDistance);
     OgreMaxUtilities::SetCustomParameters(entity, planeParameters->customParameters);
