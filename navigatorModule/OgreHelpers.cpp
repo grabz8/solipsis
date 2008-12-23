@@ -127,9 +127,9 @@ void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
     OgreHelpers::getMovableObjectsList(node, "", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
     {
-#if SHADOWS
+//#ifdef SHADOWS
         (*movableObject)->setCastShadows(false);
-#endif
+//#endif
         node->detachObject(*movableObject);
         try
         {

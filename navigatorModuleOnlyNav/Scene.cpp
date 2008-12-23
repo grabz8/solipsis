@@ -164,11 +164,12 @@ bool Scene::update(XmlEntity* xmlEntity)
         {
             //sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
             sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
+sceneMgr->setShadowTextureSelfShadow(false);
             //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
             sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
             Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
 //sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
-sceneMgr->setShadowColour(ColourValue(.7, .75, .8, .5));
+sceneMgr->setShadowColour(ColourValue(.7, .75, .85, 1.));
 sceneMgr->setShadowFarDistance(100.);
             sceneMgr->setShadowCameraSetup(shadowCameraSetup);
         }

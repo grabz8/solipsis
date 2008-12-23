@@ -343,6 +343,26 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
         return true;
     }
+    // SWF object ?
+    else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFSWFPanel))
+    {
+        if (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS)
+        {
+            mEscapeHitsB4CancellingFocus = 0;
+            mNavigator->resetMousePicking();
+            return true;
+        }
+        MovableObject* swfMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(swfMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
+        ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
+        Evt swfEvt;
+        swfEvt.mType = evt.mType;
+        swfEvt.mKeyboard = evt;
+        swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
+        return true;
+    }
 
     switch (evt.mKey)
     {
@@ -585,6 +605,18 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
         vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
         return true;
     }
+    else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFSWFPanel))
+    {
+        MovableObject* swfMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(swfMovableObj->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
+        ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
+        Evt swfEvt;
+        swfEvt.mKeyboard = evt;
+        swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
+        return true;
+    }
 
     Avatar* userAvatar = mNavigator->getUserAvatar();
     if (userAvatar != 0)
@@ -697,6 +729,39 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
             vncEvt.mMouse.mState.mXreal = vncXY.x;
             vncEvt.mMouse.mState.mYreal = vncXY.y;
             vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+        }
+    }
+
+    // SWF panel ?
+    if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFSWFPanel))
+    {
+        MovableObject* swfMovableObj = mNavigator->getPickedMovable();
+        Entity* pickedEntity = static_cast<Entity*>(swfMovableObj->getParentSceneNode()->getAttachedObject(0));
+        // normalize (x, y) on 0..1 and get the ray emitted from the camera
+        Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+        // Compute SWF panel mouse location
+        Real closestDistance = -1.0f;
+        Vector2 closestUV;
+        Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+        Vector2 swfXY;
+        if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+            closestDistance,
+            closestUV,
+            closestTriUV0, closestTriUV1, closestTriUV2))
+        {
+            // compute texture coordinates of the hit
+            mNavigator->computeSwfHit(closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2,
+                swfXY);
+            String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
+            ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
+            Evt swfEvt;
+            swfEvt.mType = evt.mType;
+            swfEvt.mMouse.mState = evt.mState;
+            swfEvt.mMouse.mState.mXreal = swfXY.x;
+            swfEvt.mMouse.mState.mYreal = swfXY.y;
+            swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
         }
     }
 
@@ -938,7 +1003,8 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             int naviX, naviY;
             Avatar* avatar;
             MovableObject* vncMovableObj = 0;
-            Vector2 vncXY;
+            MovableObject* swfMovableObj = 0;
+            Vector2 vncXY, swfXY;
             if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
             {
                 if (mMouseMiddlePressed && mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
@@ -947,16 +1013,22 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 }
                 else
                 {
-                    MovableObject* vlcMovableObj = 0;
+                    MovableObject* movableObj = 0;
                     if (mNavigator->is1AvatarHitByMouse(avatar))
                         navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "config#create#chat#talk");
                     else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
                         navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
-                    else if (mNavigator->is1VLCHitByMouse(vlcMovableObj))
+                    else if (mNavigator->is1VLCHitByMouse(movableObj))
                     {
-                        Entity* pickedEntity = static_cast<Entity*>(vlcMovableObj->getParentSceneNode()->getAttachedObject(0));
+                        Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
                         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
                         navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                    }
+                    else if (mNavigator->is1SWFHitByMouse(movableObj, swfXY))
+                    {
+                        Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
+                        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTSWF, mtlName);
                     }
                 }
             }
@@ -967,6 +1039,20 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                     NaviLibrary::Navi* navi = NaviManager::Get().getNavi(naviName);
                     NaviManager::Get().focusNavi(navi);
                     navi->injectMouseDown(naviX, naviY);
+                }
+                // SWF object ?
+                else if (mNavigator->is1SWFHitByMouse(swfMovableObj, swfXY))
+                {
+                    Entity* pickedEntity = static_cast<Entity*>(swfMovableObj->getParentSceneNode()->getAttachedObject(0));
+                    String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                    ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
+                    ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
+                    Evt swfEvt;
+                    swfEvt.mType = evt.mType;
+                    swfEvt.mMouse.mState = evt.mState;
+                    swfEvt.mMouse.mState.mXreal = swfXY.x;
+                    swfEvt.mMouse.mState.mYreal = swfXY.y;
+                    swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
                 }
             }
             // VNC panel ?
@@ -1075,6 +1161,38 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
                 vncEvt.mMouse.mState.mXreal = vncXY.x;
                 vncEvt.mMouse.mState.mYreal = vncXY.y;
                 vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+            }
+        }
+        // SWF panel ?
+        else if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFSWFPanel))
+        {
+            MovableObject* swfMovableObj = mNavigator->getPickedMovable();
+            Entity* pickedEntity = static_cast<Entity*>(swfMovableObj->getParentSceneNode()->getAttachedObject(0));
+            // normalize (x, y) on 0..1 and get the ray emitted from the camera
+            Ray mouseRay = mCamera->getCameraToViewportRay((Real)evt.mState.mX/(Real)mCamera->getViewport()->getActualWidth(), (Real)evt.mState.mY/(Real)mCamera->getViewport()->getActualHeight());
+            // Compute SWF panel mouse location
+            Real closestDistance = -1.0f;
+            Vector2 closestUV;
+            Vector2 closestTriUV0, closestTriUV1, closestTriUV2;
+            Vector2 swfXY;
+            if (OgreHelpers::isEntityHitByMouse(mouseRay, pickedEntity,
+                closestDistance,
+                closestUV,
+                closestTriUV0, closestTriUV1, closestTriUV2))
+            {
+                // compute texture coordinates of the hit
+                mNavigator->computeSwfHit(closestUV,
+                    closestTriUV0, closestTriUV1, closestTriUV2,
+                    swfXY);
+                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
+                ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
+                Evt swfEvt;
+                swfEvt.mType = evt.mType;
+                swfEvt.mMouse.mState = evt.mState;
+                swfEvt.mMouse.mState.mXreal = swfXY.x;
+                swfEvt.mMouse.mState.mYreal = swfXY.y;
+                swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
             }
         }
         else if (!NaviManager::Get().isAnyNaviFocused() &&

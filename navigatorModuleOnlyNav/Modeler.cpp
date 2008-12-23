@@ -193,7 +193,9 @@ bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -215,7 +217,9 @@ bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -239,7 +243,9 @@ bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vecto
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -262,7 +268,9 @@ bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vect
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -285,7 +293,9 @@ bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -307,7 +317,9 @@ bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vec
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -329,7 +341,9 @@ bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vect
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -351,7 +365,9 @@ bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -373,7 +389,9 @@ bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vec
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -395,7 +413,9 @@ bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vecto
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -417,7 +437,9 @@ bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, V
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -439,7 +461,9 @@ bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -461,7 +485,9 @@ bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -483,7 +509,9 @@ bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3
 	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
-	entity->setCastShadows(true);
+    entity->setCastShadows(true);
+#else
+    entity->setCastShadows(false);
 #endif
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
@@ -706,6 +734,23 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 
 	if(zz.isArchivePresent() )
 	{
+        for( int i=0 ; i<zz.getNbFile() ; i++)	//search all SWF files
+        {
+            Path currentFileName ( zz.getName(i) ) ;
+			string ext =  currentFileName.getExtension() ;
+
+            if ( (strcmp ( currentFileName.getExtension().c_str() , "swf")) == 0 )
+			{
+				//we find a XML file, so we create an object :
+                std::string destFile( "solTmpTexture\\" + zz.getName(i));
+				FileBuffer buff = zz.readFile( zz.getName(i) );
+                ofstream file;
+                file.open( destFile.c_str(), ios::binary );
+                file.write( (const char*)buff.data, buff.size );
+                file.close();
+            }
+        }
+
 		for( int i=0 ; i<zz.getNbFile() ; i++)	//search all XML files
 		{
 			Path currentFileName ( zz.getName(i) ) ;
@@ -827,8 +872,10 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
             //ResourceGroupManager::getSingleton().addResourceLocation("C:\\3dsfiles\\", "FileSystem");
 			if(ext == "mesh")
             {
+                // GILLES BEGIN
 				//entity = mSceneManager->createEntity( entityName, FilePath.getLastFileName(true) );
                 entity = mSceneManager->createEntity( entityName, FilePath.getFormatedPath() );
+                // GILLES END
             }
 			else if(ext == "3ds")
 			{
@@ -840,9 +887,14 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 			}
 		}
         entity = mSceneManager->getEntity(entityName)->clone(entityUID);
+        // GILLES BEGIN
+        entity->setNormaliseNormals(true);
+        // GILLES END
         SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
         entity->setCastShadows(true);
+#else
+        entity->setCastShadows(false);
 #endif
         entity->setQueryFlags(Navigator::QFObject);
         node->attachObject(entity);
@@ -945,6 +997,31 @@ bool Modeler::XMLSave(bool all)
 				        zz->writeFile( newFile );
 
 			        SOLdeleteFile( newFile.c_str() );
+                }
+                else 
+                {
+                    std::map<std::string, std::string>::iterator param = textureExtParamsMap->find("plugin");
+                    if (param != textureExtParamsMap->end())
+                    {
+                        // SWF
+                        if ((*param).second == "swf" )
+                        {
+                            param = textureExtParamsMap->find("url");
+                            if (param != textureExtParamsMap->end())
+                            {
+                                Path url((*param).second);
+                                std::string newFile( "solTmpTexture\\" + url.getLastFileName() );
+                                SOLcopyFile((*param).second.c_str(), newFile.c_str());
+
+                                if ( ! zz->isFilePresent( url.getLastFileName() ) )
+				                    zz->writeFile( newFile );
+
+                                SOLdeleteFile( newFile.c_str() );
+
+                                (*param).second = url.getLastFileName();
+                            }
+                        }
+                    }
                 }
 		    }
 		    SOLdeleteFile(fileToSave.c_str());
@@ -1214,6 +1291,37 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
             naviWWWTexture->setMaxUPS(fps);
             naviWWWTexture->setForceMaxUpdate(fps != 0);
             naviWWWTexture->setOpacity(1.0f);
+        }
+        else if (plugin == "swf")
+        {
+            String url;
+            int width , height, fps;
+            TextureExtParamsMap::const_iterator it;
+            it = textureExtParamsMap.find("url");
+            if (it == textureExtParamsMap.end())
+                return texture;
+            url = it->second;
+            it = textureExtParamsMap.find("width");
+            if (it == textureExtParamsMap.end())
+                return texture;
+            width = atoi(it->second.c_str());
+            it = textureExtParamsMap.find("height");
+            if (it == textureExtParamsMap.end())
+                return texture;
+            height = atoi(it->second.c_str());
+            it = textureExtParamsMap.find("frames_per_second");
+            if (it == textureExtParamsMap.end())
+                return texture;
+            fps = atoi(it->second.c_str());
+
+            ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
+            ExternalTextureSource* extTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin);
+            {
+                for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
+                    extTextSrc->setParameter(it->first, it->second);
+            }
+
+            extTextSrc->createDefinedTexture(mtlName);
         }
         else
         {

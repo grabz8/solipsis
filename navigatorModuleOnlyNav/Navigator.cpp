@@ -72,6 +72,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mMaxNaviPickingDistance(10),
     mMaxVLCPickingDistance(10),
     mMaxVNCPickingDistance(8),
+    mMaxSWFPickingDistance(8),
     mMaxAvatarPickingDistance(10),
     mMaxObjectPickingDistance(20),
     mRaySceneQuery(0),
@@ -911,6 +912,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     {
                         if (((it->movable->getQueryFlags() & QFNaviPanel) && (it->distance < mMaxNaviPickingDistance)) ||
                             ((it->movable->getQueryFlags() & QFVNCPanel) && (it->distance < mMaxVNCPickingDistance)) ||
+                            ((it->movable->getQueryFlags() & QFSWFPanel) && (it->distance < mMaxSWFPickingDistance)) ||
                             ((it->movable->getQueryFlags() & QFVLCPanel) && (it->distance < mMaxVLCPickingDistance)))
                             mPickedMovable = it->movable;
                     }
@@ -976,6 +978,43 @@ void Navigator::computeNaviHit(const String& naviName,
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::is1SWFHitByMouse(MovableObject*& swfMovableObj, Vector2& swfXY)
+{
+    // if 1 SWF entity hit
+    if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFSWFPanel))
+    {
+        swfMovableObj = mPickedMovable;
+
+        Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+        String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+        // compute texture coordinates of the hit
+        computeSwfHit(mClosestUV,
+                      mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
+                      swfXY);
+
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1SWFHitByMouse() found SWF movable=%s, swfXY=%s", mPickedMovable->getName().c_str(), StringConverter::toString(swfXY).c_str());
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::computeSwfHit(Vector2& closestUV,
+                              Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
+                              Vector2& swfXY)
+{
+    // uv computation found into the "Pick" sample of MS Direct SDK
+    Vector2 dt1 = closestTriUV1 - closestTriUV0;
+    Vector2 dt2 = closestTriUV2 - closestTriUV0;
+
+    swfXY.x = closestTriUV0.x + closestUV.x*dt1.x + closestUV.y*dt2.x;
+    swfXY.y = closestTriUV0.y + closestUV.x*dt1.y + closestUV.y*dt2.y;
+
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeSwfHit() uv=%s, dt1=%s, dt2=%s, swfXY=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(swfXY).c_str());
 }
 
 //-------------------------------------------------------------------------------------

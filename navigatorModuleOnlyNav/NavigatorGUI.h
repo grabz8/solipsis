@@ -80,6 +80,7 @@ public:
         NAVI_COMMANDS,
         NAVI_CTXTAVATAR,
         NAVI_CTXTWWW,
+        NAVI_CTXTSWF,
         NAVI_CTXTVLC,
         NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
@@ -314,6 +315,7 @@ protected:
     void modelerPropTexturePrev(const NaviData& naviData);
     void modelerPropTextureNext(const NaviData& naviData);
     void modelerPropWWWTextureApply(const NaviData& naviData);
+    void modelerPropSWFTextureApply(const NaviData& naviData);
     void modelerPropVLCTextureApply(const NaviData& naviData);
     void modelerPropVLCMrlBrowse(const NaviData& naviData);
     void modelerPropVNCTextureApply(const NaviData& naviData);

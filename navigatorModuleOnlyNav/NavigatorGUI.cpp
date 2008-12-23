@@ -60,6 +60,7 @@ const std::string NavigatorGUI::ms_NavisNames[] = {
     "uicommands",
     "uictxtavatar",
     "uictxtwww",
+    "uictxtswf",
     "uictxtvlc",
     "uictxtvnc",
     "uimdlrmain",
@@ -226,6 +227,9 @@ void NavigatorGUI::login()
     contextDestroy();
     destroyNavi(NAVI_CTXTAVATAR);
     destroyNavi(NAVI_CTXTWWW);
+    // GILLES BEGIN
+    //destroyNavi(NAVI_CTXTSWF);
+    // GILLES END
     destroyNavi(NAVI_CTXTVLC);
     destroyNavi(NAVI_CTXTVNC);
 
@@ -563,6 +567,7 @@ void NavigatorGUI::modelerPropShow()
 		navi->bind("MdlrPrevTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTexturePrev));
 		navi->bind("MdlrNextTexture", NaviDelegate(this, &NavigatorGUI::modelerPropTextureNext));
 		navi->bind("MdlrApplyWWWTexture", NaviDelegate(this, &NavigatorGUI::modelerPropWWWTextureApply));
+        navi->bind("MdlrApplySWFTexture", NaviDelegate(this, &NavigatorGUI::modelerPropSWFTextureApply));
 		navi->bind("MdlrApplyVLCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVLCTextureApply));
         navi->bind("MdlrVLCMrlBrowse", NaviDelegate(this, &NavigatorGUI::modelerPropVLCMrlBrowse));
 		navi->bind("MdlrApplyVNCTexture", NaviDelegate(this, &NavigatorGUI::modelerPropVNCTextureApply));
@@ -3166,6 +3171,63 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
 	}
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
+{
+    Modeler *modeler = mNavigator->getModeler();
+	if( modeler != 0 )
+	{
+		Object3D * obj = modeler->getSelected();
+
+        // only 1 SWF per modifiedMaterial for instance ... TODO
+        ModifiedMaterialManager* modifiedMaterialManager = obj->getMaterialManager();
+        TexturePtr texture;
+        TextureVectorIterator tvIter = modifiedMaterialManager->getTextureIterator();
+        while (tvIter.hasMoreElements())
+        {
+            texture = tvIter.getNext();
+            TextureExtParamsMap* textureExtParamsMap = modifiedMaterialManager->getTextureExtParamsMap(texture);
+            if (textureExtParamsMap == 0) continue;
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap->find("plugin");
+            if (it == textureExtParamsMap->end()) continue;
+            if (it->second == "swf")
+            {
+                obj->deleteTexture(texture);
+                break;
+            }
+        }
+
+	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
+	    std::string urlStr = navi->evaluateJS("$('MaterialSWFUrl').value");
+	    std::string widthStr = navi->evaluateJS("$('MaterialSWFWidth').value");
+	    std::string heightStr = navi->evaluateJS("$('MaterialSWFHeight').value");
+        std::string fpsStr = navi->evaluateJS("$('MaterialSWFFps').value");
+        int width = atoi(widthStr.c_str());
+        int height = atoi(heightStr.c_str());
+        int fps = atoi(fpsStr.c_str());
+
+        TextureExtParamsMap textureExtParamsMap;
+        textureExtParamsMap["plugin"] = "swf";
+        textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFSWFPanel);
+        textureExtParamsMap["url"] = urlStr;
+        textureExtParamsMap["width"] = StringConverter::toString(width);
+        textureExtParamsMap["height"] = StringConverter::toString(height);
+        textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
+        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
+
+		//Test if this texture is already in the list :
+		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
+		{
+            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+			return;
+		}
+
+		//Add texture for the object (with obj->mModifiedMaterialManager)
+		obj->addTexture(PtrTexture, textureExtParamsMap);
+		obj->setCurrentTexture(PtrTexture);
+    }
 }
 
 //-------------------------------------------------------------------------------------
