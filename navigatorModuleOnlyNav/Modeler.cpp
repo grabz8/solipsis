@@ -741,6 +741,12 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 
             if ( (strcmp ( currentFileName.getExtension().c_str() , "swf")) == 0 )
 			{
+                //create the temp directory if doesn't yet exsits
+                std::string workDir = _getcwd(NULL, 0);
+                workDir += "\\solTmpTexture";
+                if (!SOLisDirectory( workDir.c_str() ))
+                    _mkdir("solTmpTexture");
+
 				//we find a XML file, so we create an object :
                 std::string destFile( "solTmpTexture\\" + zz.getName(i));
 				FileBuffer buff = zz.readFile( zz.getName(i) );
