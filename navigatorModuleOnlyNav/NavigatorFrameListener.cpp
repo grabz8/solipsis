@@ -1054,20 +1054,20 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                     swfEvt.mMouse.mState.mYreal = swfXY.y;
                     swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
                 }
-            }
-            // VNC panel ?
-            else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
-            {
-                Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
-                String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
-                ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
-                Evt vncEvt;
-                vncEvt.mType = evt.mType;
-                vncEvt.mMouse.mState = evt.mState;
-                vncEvt.mMouse.mState.mXreal = vncXY.x;
-                vncEvt.mMouse.mState.mYreal = vncXY.y;
-                vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+                // VNC panel ?
+                else if (mNavigator->is1VNCHitByMouse(vncMovableObj, vncXY))
+                {
+                    Entity* pickedEntity = static_cast<Entity*>(vncMovableObj->getParentSceneNode()->getAttachedObject(0));
+                    String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
+                    ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
+                    ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
+                    Evt vncEvt;
+                    vncEvt.mType = evt.mType;
+                    vncEvt.mMouse.mState = evt.mState;
+                    vncEvt.mMouse.mState.mXreal = vncXY.x;
+                    vncEvt.mMouse.mState.mYreal = vncXY.y;
+                    vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
+                }
             }
         }
         else if (!NaviManager::Get().isAnyNaviFocused() &&
