@@ -901,7 +901,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     {
                         mPickedMovable = it->movable;
                         break;
-                    }
+                    }                    
 
                     // if we found a new closest raycast for this object, update the
                     // mPickedMovable before moving on to the next object.
