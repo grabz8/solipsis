@@ -894,7 +894,9 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 		}
         entity = mSceneManager->getEntity(entityName)->clone(entityUID);
         // GILLES BEGIN
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6) 
         entity->setNormaliseNormals(true);
+#endif
         // GILLES END
         SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 #ifdef SHADOWS
