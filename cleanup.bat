@@ -79,6 +79,9 @@ rmdir Dependencies\Phonetizer /S /Q
 rmdir Dependencies\DummyPhonetizer /S /Q
 rmdir Dependencies\Antlr2.7.6 /S /Q
 rmdir Dependencies\gecode-2.2.0 /S /Q
+rmdir Dependencies\FaceController /S /Q
+rmdir Dependencies\ogreMax /S /Q
+rmdir Dependencies\hikari /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -158,6 +161,8 @@ rmdir DevTools\curl\lib\Debug /S /Q
 rmdir DevTools\curl\lib\Release /S /Q
 rmdir DevTools\md5wrapper\Debug /S /Q
 rmdir DevTools\md5wrapper\Release /S /Q
+rmdir DevTools\hikari\lib /S /Q
+rmdir DevTools\hikari\objects /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
@@ -301,6 +306,9 @@ rmdir Phonetizer\Debug /S /Q
 rmdir Phonetizer\Release /S /Q
 rmdir DummyPhonetizer\Debug /S /Q
 rmdir DummyPhonetizer\Release /S /Q
+
+rmdir plugin_swf\Debug /S /Q
+rmdir plugin_swf\Release /S /Q
 
 del setup\nsis\Solipsis-*-win32.exe
 
