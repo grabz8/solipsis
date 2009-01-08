@@ -280,7 +280,7 @@ String SWFInstance::handleEvt(const String& evt)
 //-------------------------------------------------------------------------------------
 void SWFInstance::destroy(bool force)
 {
-    LogManager::getSingleton().logMessage("SWFInstance::destroy()" + force ? " forced" : "");
+    LogManager::getSingleton().logMessage("SWFInstance::destroy()" + String(force ? " forced" : ""));
     pthread_mutex_lock(&mUpdateMutex);
     mSafeToDelete = force;
     mAlive = false;

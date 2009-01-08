@@ -114,7 +114,7 @@ int SWFPlugin::newInstance(const String& url, int width, int height, int fps, co
 //-------------------------------------------------------------------------------------
 void SWFPlugin::destroyInstance(int id, bool force)
 {
-    LogManager::getSingleton().logMessage("SWFPlugin::destroyInstance" + force ? " forced" : "");
+    LogManager::getSingleton().logMessage("SWFPlugin::destroyInstance" + String(force ? " forced" : ""));
 
     pthread_mutex_lock(&mSWFInstanceMapMutex);
     SWFInstanceMap::iterator i = mSWFInstanceMap.find(id);
