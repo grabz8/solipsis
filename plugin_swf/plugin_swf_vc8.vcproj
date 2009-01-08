@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="SWFPlugin"
-	ProjectGUID="{C477314D-972B-4524-95C3-25DA9471A3C3}"
+	ProjectGUID="{F2481C43-BA3A-47F1-92F8-27B0FD5C8702}"
 	RootNamespace="SWFPlugin"
 	Keyword="Win32Proj"
 	>
