@@ -228,7 +228,7 @@ void NavigatorGUI::login()
     destroyNavi(NAVI_CTXTAVATAR);
     destroyNavi(NAVI_CTXTWWW);
     // GILLES BEGIN
-    //destroyNavi(NAVI_CTXTSWF);
+    destroyNavi(NAVI_CTXTSWF);
     // GILLES END
     destroyNavi(NAVI_CTXTVLC);
     destroyNavi(NAVI_CTXTVNC);
