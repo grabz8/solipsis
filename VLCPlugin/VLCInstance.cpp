@@ -269,7 +269,7 @@ String VLCInstance::handleEvt(const String& evt)
 //-------------------------------------------------------------------------------------
 void VLCInstance::destroy(bool force)
 {
-    LogManager::getSingleton().logMessage("VLCInstance::destroy()" + force ? " forced" : "");
+    LogManager::getSingleton().logMessage("VLCInstance::destroy()" + String(force ? " forced" : ""));
     pthread_mutex_lock(&mUpdateMutex);
     mSafeToDelete = force;
     mAlive = false;

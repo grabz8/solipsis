@@ -97,7 +97,7 @@ int VLCPlugin::newInstance(const String& mrl, int width, int height, int fps, co
 //-------------------------------------------------------------------------------------
 void VLCPlugin::destroyInstance(int id, bool force)
 {
-    LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance" + force ? " forced" : "");
+    LogManager::getSingleton().logMessage("VLCPlugin::destroyInstance" + String(force ? " forced" : ""));
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
     VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
