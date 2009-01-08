@@ -1189,7 +1189,7 @@ void NavigatorGUI::modelerUpdateTextures()
             navi->evaluateJS("$('MaterialVLCHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
             navi->evaluateJS("$('MaterialVLCFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
             navi->evaluateJS("$('MaterialVLCParams').value = '" + (*textureExtParamsMap)["vlc_params"] + "'");
-            mrl = (*textureExtParamsMap)["remoteMrl"];
+            mrl = (*textureExtParamsMap)["remote_mrl"];
             StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
             navi->evaluateJS("$('MaterialVLCRemoteMrl').value = '" + mrl + "'");
         }
@@ -3064,7 +3064,7 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 		Path filePath(TextureFilePath);
         ResourceGroupManager::getSingleton().addResourceLocation(filePath.getFormatedRootPath(), "FileSystem");
         TextureExtParamsMap textureExtParamsMap;
-        TexturePtr PtrTexture = modeler->loadTexture(obj, TextureFilePath, textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), TextureFilePath, textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -3158,7 +3158,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
-        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -3215,7 +3215,7 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
-        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -3263,9 +3263,15 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 	    std::string fpsStr = navi->evaluateJS("$('MaterialVLCFps').value");
         std::string paramsStr = navi->evaluateJS("$('MaterialVLCParams').value");
         std::string remoteMrlStr = navi->evaluateJS("$('MaterialVLCRemoteMrl').value");
+        std::string sp3dStr = navi->evaluateJS("$('MaterialVLCSP3d').checked");
+        std::string spMinStr = navi->evaluateJS("$('MaterialVLCSPMin').value");
+        std::string spMaxStr = navi->evaluateJS("$('MaterialVLCSPMax').value");
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
+        bool sound3d = (sp3dStr == "true")?true:false;
+        float sound3dMin = atof(spMinStr.c_str());
+        float sound3dMax = atof(spMaxStr.c_str());
 
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "vlc";
@@ -3275,8 +3281,9 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
         textureExtParamsMap["vlc_params"] = paramsStr;
-        textureExtParamsMap["remoteMrl"] = remoteMrlStr;
-        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
+        textureExtParamsMap["remote_mrl"] = remoteMrlStr;
+        textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -3343,7 +3350,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVNCPanel);
         textureExtParamsMap["address"] = address;
         textureExtParamsMap["password"] = password;
-        TexturePtr PtrTexture = modeler->loadTexture(obj, "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )

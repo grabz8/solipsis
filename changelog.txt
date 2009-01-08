@@ -921,3 +921,11 @@ Avatar MvtType on 1stPersonCamMode bug fixed
 uictxt avatar look#talk#cancel replaced by config#create#chat#talk
 
 ---------------------------
+08/01/09
+
+Spatialized sound added on VLC-textureSource mapped objects
+New VLC audio ouput plugin called amem is in charge of forwarding sound buffers to handler
+NavigatorSound implements the sound handler to take in charge buffers streaming and 3D parameters in FMod
+uimdlrprop panel updated to specify use of 3D sound and additional parameters (min, max dist)
+
+---------------------------

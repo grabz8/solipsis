@@ -115,6 +115,9 @@
                 document.getElementById('MaterialVLCFps').value = '25';
                 document.getElementById('MaterialVLCParamsHelpers').options[0].selected = 'true';
                 document.getElementById('MaterialVLCRemoteMrlHelpers').options[0].selected = 'true';
+                document.getElementById('MaterialVLCSP3d').value = 'null';
+                document.getElementById('MaterialVLCSPMin').value = '1';
+                document.getElementById('MaterialVLCSPMax').value = '100';
                 var localIP = getURLParam('localIP');
                 <!-- Assign the local IP address for http streaming -->
                 document.getElementById('MaterialVLCParamsHelpers').options[2].value = '--sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=' + localIP + ':8080}}';
@@ -566,6 +569,14 @@
                                         </td>
                                     </tr>
 						        </table>
+                                <table>
+                                    <tr>
+                                        <td>Sound</td>
+                                        <td>3d</td><td><input type="checkbox" id="MaterialVLCSP3d" value=""/></td>
+                                        <td>MinDist</td><td><input type="text" size="6" id="MaterialVLCSPMin" value=""/></td>
+                                        <td>MaxDist</td><td><input type="text" size="6" id="MaterialVLCSPMax" value=""/></td>
+                                    </tr>
+                                </table>
 						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVLCTexture')"/></td></tr>
 						        </table>

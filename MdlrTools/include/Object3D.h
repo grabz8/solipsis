@@ -216,6 +216,7 @@ public:
 
 	/// brief ...
 	Entity*	getEntity() { return mEntity; };
+    SceneNode* getSceneNode() { return mNode; }
 
 	/// Get the creator name 
 	Ogre::String &	getCreator() {return mCreatorName;}; 

@@ -29,8 +29,9 @@ namespace Solipsis {
 
 ModifiedMaterialManager::MMMTextureManager* ModifiedMaterialManager::ms_MMMTextureManager = 0;
 
-ModifiedMaterialManager::ModifiedMaterialManager(void)
+ModifiedMaterialManager::ModifiedMaterialManager(Object3D *object3D)
 {
+    mObject3D = object3D;
 	mModifiedMaterial = NULL;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,6 +65,12 @@ void ModifiedMaterialManager::setMMMTextureManager(MMMTextureManager* textureMan
 ModifiedMaterialManager::MMMTextureManager* ModifiedMaterialManager::getMMMTextureManager()
 {
     return ms_MMMTextureManager;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+Object3D* ModifiedMaterialManager::getObject3D()
+{
+    return mObject3D;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

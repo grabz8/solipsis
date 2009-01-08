@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "VLCInstance.h"
 #include "VLCTextureSource.h"
+#include "ExternalTextureSourceEx.h"
 
 #include <OgreHardwarePixelBuffer.h>
 #include <OgreRoot.h>
@@ -36,14 +37,16 @@ namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
 VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
-                         const String& mrl, int width, int height, int fps, const String& vlcParams) :
+                         const String& mrl, int width, int height, int fps, const String& soundParams, const String& vlcParams) :
     mUpdateMutex(PTHREAD_MUTEX_INITIALIZER),
     mScreen(0),
     mMrl(mrl),
     mWidth(width),
     mHeight(height),
     mFps(fps),
+    mSoundParams(soundParams),
     mVlcParams(vlcParams),
+    mSoundId(-1),
     mTextureSource(textureSource),
     mID(id),
     mAlive(true),
@@ -59,10 +62,15 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TEX_TYPE_2D,
         mWidth, mHeight, 0, PF_BYTE_BGRA, TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
+    // Add 1 sound buffer into the sound handler
+    ExternalTextureSourceExSoundHandler *soundHandler = mTextureSource->getSoundHandler();
+    if (soundHandler != 0)
+        mSoundId = soundHandler->createSoundBuffer(mMrl);
+
     /*
      *  Initialise libVLC
      */
-    char pclock[64], pcunlock[64], pcdata[64];
+    char plock[64], punlock[64], pdata[64];
     char pwidth[32], pheight[32], ppitch[32];
     char const *vlc_argv_default[] =
     {
@@ -76,22 +84,41 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         "--vmem-height", pheight,
         "--vmem-pitch", ppitch,
         "--vmem-chroma", "RV16",
-        "--vmem-lock", pclock,
-        "--vmem-unlock", pcunlock,
-        "--vmem-data", pcdata,
+        "--vmem-lock", plock,
+        "--vmem-unlock", punlock,
+        "--vmem-data", pdata,
 //        "--sout", "#transcode{vcodec=mp2v,vb=1024,scale=1,acodec=mpga,ab=192,channels=2}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}",
     };
+    char popensb[64], pplaysb[64], pclosesb[64];
+    char const *vlc_argv_amem[] =
+    {
+        "--aout", "amem",
+        "--amem-opensb", popensb,
+        "--amem-playsb", pplaysb,
+        "--amem-closesb", pclosesb,
+        "--amem-data", pdata,
+    };
     // Set vmem plugin arguments lock/unlock functions + this as context pointer
-    sprintf(pclock, "%lld", (long long int)(intptr_t)_libvlc_lock);
-    sprintf(pcunlock, "%lld", (long long int)(intptr_t)_libvlc_unlock);
-    sprintf(pcdata, "%lld", (long long int)(intptr_t)this);
+    sprintf(plock, "%lld", (long long int)(intptr_t)_libvlc_lock);
+    sprintf(punlock, "%lld", (long long int)(intptr_t)_libvlc_unlock);
+    sprintf(pdata, "%lld", (long long int)(intptr_t)this);
     sprintf(pwidth, "%i", mWidth);
     sprintf(pheight, "%i", mHeight);
     sprintf(ppitch, "%i", mWidth*sizeof(unsigned short));
-    // Add additional parameters
+    sprintf(popensb, "%lld", (long long int)(intptr_t)_libvlc_opensb);
+    sprintf(pplaysb, "%lld", (long long int)(intptr_t)_libvlc_playsb);
+    sprintf(pclosesb, "%lld", (long long int)(intptr_t)_libvlc_closesb);
+    // Set standard parameters in list
     std::list<String> args;
     for(int a=0; a<sizeof(vlc_argv_default)/sizeof(*vlc_argv_default); ++a)
         args.push_back(vlc_argv_default[a]);
+    // Add additional sound parameters
+    if (mSoundParams.find("3d") == 0)
+    {
+        for(int a=0; a<sizeof(vlc_argv_amem)/sizeof(*vlc_argv_amem); ++a)
+            args.push_back(vlc_argv_amem[a]);
+    }
+    // Add additional parameters
     for (String::size_type i = mVlcParams.find_first_not_of(" "); i != String::npos; i = mVlcParams.find_first_not_of(" ", i))
     {
         String::size_type j = mVlcParams.find_first_of(" ", i);
@@ -137,9 +164,15 @@ VLCInstance::~VLCInstance()
     if (mLibVLCInstance != 0)
         libvlc_destroy(mLibVLCInstance);
 
+    // Destroy the sound buffer into the sound handler
+    ExternalTextureSourceExSoundHandler *soundHandler = mTextureSource->getSoundHandler();
+    if (soundHandler != 0)
+        soundHandler->destroySoundBuffer(mSoundId);
+
     mTextureSource = 0;
 
     delete mScreen;
+
     LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() END");
 }
 
@@ -338,6 +371,39 @@ void VLCInstance::_libvlc_unlock(VLCInstance *ctx)
 {
 //    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_unlock() ");
     pthread_mutex_unlock(&ctx->mUpdateMutex);
+}
+
+//-------------------------------------------------------------------------------------
+void VLCInstance::_libvlc_opensb(VLCInstance *ctx, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize)
+{
+//    char tmp[256];
+//    _snprintf(tmp, sizeof(tmp), "mSoundId:%d, frequency:%d, nbChannels:%d, fourCCFormat:%d, frameSize:%d", ctx->getSoundId(), *frequency, *nbChannels, *fourCCFormat, *frameSize);
+//    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_opensb() " + String(tmp));
+    ExternalTextureSourceExSoundHandler *soundHandler = ctx->getTextureSource()->getSoundHandler();
+    if (soundHandler != 0)
+        soundHandler->openSoundBuffer(ctx->getSoundId(), ctx->getSoundParams(), frequency, nbChannels, fourCCFormat, frameSize);
+}
+
+//-------------------------------------------------------------------------------------
+void VLCInstance::_libvlc_playsb(VLCInstance *ctx, unsigned char *buffer, size_t bufferSize, unsigned int nbSamples)
+{
+//    char tmp[256];
+//    _snprintf(tmp, sizeof(tmp), "mSoundId:%d, buffer:0x%08x, bufferSize:%ld, nbSamples:%d", ctx->getSoundId(), buffer, bufferSize, nbSamples);
+//    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_playsb() " + String(tmp));
+    ExternalTextureSourceExSoundHandler *soundHandler = ctx->getTextureSource()->getSoundHandler();
+    if (soundHandler != 0)
+        soundHandler->playSoundBuffer(ctx->getSoundId(), buffer, bufferSize, nbSamples);
+}
+
+//-------------------------------------------------------------------------------------
+void VLCInstance::_libvlc_closesb(VLCInstance *ctx)
+{
+//    char tmp[256];
+//    _snprintf(tmp, sizeof(tmp), "mSoundId:%d", ctx->getSoundId());
+//    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_closesb() " + String(tmp));
+    ExternalTextureSourceExSoundHandler *soundHandler = ctx->getTextureSource()->getSoundHandler();
+    if (soundHandler != 0)
+        soundHandler->closeSoundBuffer(ctx->getSoundId());
 }
 
 //-------------------------------------------------------------------------------------

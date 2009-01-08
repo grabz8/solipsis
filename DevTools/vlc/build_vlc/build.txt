@@ -99,6 +99,37 @@ Finally we will add 1 configure arg, in the same file configure.ac, add the foll
    fi
  fi
 
+Now we will add the AMEM plugin for VLC:
+Copy the plugin source file build_vlc/modules/audio_output/amem.c into <VLCSRC>/modules/video_output
+We will add this plugin into list of modules to build, edit the file <VLCSRC>/modules/video_output/Modules.am
+ add this line at the end:
+ SOURCES_amem = amem.c
+We will add this plugin into list of default modules, edit the file <VLCSRC>/configure.ac
+ dnl
+ dnl  default modules
+ dnl
+ ...
+ VLC_ADD_PLUGINS([i420_rgb rawvideo blend scale image vmem amem logo magnify])
+Finally we will add 1 configure arg, in the same file configure.ac, add the following amem dedicated text block after JACK for example
+ dnl
+ dnl  JACK plugin
+ dnl
+ ...
+
+dnl
+dnl  amem plugin
+dnl
+AC_ARG_ENABLE(amem,
+  [  --enable-amem         AMem module (default enabled on Win32)])
+if test "${enable_amem}" != "no"; then
+  if test "${SYS}" = "mingw32" -o "${SYS}" = "cygwin"; then
+    VLC_ADD_PLUGINS([amem])
+  fi
+  if test "${SYS}" = "mingwce"; then
+    VLC_ADD_PLUGINS([amem])
+  fi
+fi
+
 $ export CONTRIBS=/usr/win32-branch
 $ export PATH=${CONTRIBS}/bin:$PATH
 $ cd /cygdrive/.../<VLCSRC>
@@ -145,7 +176,8 @@ $ ./configure \
      --enable-shared-libvlc \
      --enable-shared \
      --enable-shout \
-     --enable-vmem
+     --enable-vmem \
+     --enable-amem
 
 To avoid pb with libtool about shared libs (suffix DLL vs DLL.EXE), we have to edit the libtool script created auto. by VLC configure step:
 Edit <VLCSRC>/libtool
@@ -205,7 +237,8 @@ $ ./configure \
      --enable-shared-libvlc \
      --enable-shared \
      --enable-shout \
-     --enable-vmem
+     --enable-vmem \
+     --enable-amem
 
 To avoid pb with libtool about shared libs (suffix DLL vs DLL.EXE), we have to edit the libtool script created auto. by VLC configure step:
 Edit <VLCSRC>/libtool

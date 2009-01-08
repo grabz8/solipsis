@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Navigator.h"
 #include "NavigatorGUI.h"
 #include <OgreExternalTextureSourceManager.h>
+#include "ExternalTextureSourceEx.h"
 #include <Navi.h>
 #include <CTSystem.h>
 #include <CTIO.h>
@@ -1249,8 +1250,9 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 }
 
 /// Dedicated callback texture loader
-TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const TextureExtParamsMap& textureExtParamsMap)
+TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap)
 {
+    Object3D* object = modifiedMaterialManager->getObject3D();
     TexturePtr texture;
     if (textureExtParamsMap.empty())
     {
@@ -1258,7 +1260,6 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
     }
     else
     {
-        ModifiedMaterialManager* modifiedMaterialManager = object->getMaterialManager();
         Entity* entity = object->getEntity();
         bool objectIsLocal = true;
         OgrePeer* ogrePeer = Navigator::getSingletonPtr()->getOgrePeerManager()->getOgrePeer(object->getEntityUID());
@@ -1343,14 +1344,14 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
             else
             {
                 bool remoteMrlEmpty = true;
-                it = textureExtParamsMap.find("remoteMrl");
+                it = textureExtParamsMap.find("remote_mrl");
                 if (it != textureExtParamsMap.end())
                     remoteMrlEmpty = it->second.empty();
                 if (objectIsLocal || remoteMrlEmpty)
                 {
                     for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
                     {
-                        if (it->first == "remoteMrl") continue;
+                        if (it->first == "remote_mrl") continue;
                         extTextSrc->setParameter(it->first, it->second);
                     }
                 }
@@ -1360,7 +1361,7 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
                     {
                         if (it->first == "mrl") continue;
                         if (it->first == "vlc_params") continue;
-                        if (it->first == "remoteMrl")
+                        if (it->first == "remote_mrl")
                             extTextSrc->setParameter("mrl", it->second);
                         else
                             extTextSrc->setParameter(it->first, it->second);
@@ -1368,6 +1369,13 @@ TexturePtr Modeler::loadTexture(Object3D* object, const String& name, const Text
                 }
             }
             extTextSrc->createDefinedTexture(mtlName);
+            if (plugin == "vlc")
+            {
+                TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
+                if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))
+                    // Bind the scene node to the material name / sound buffer
+                    Navigator::getSingletonPtr()->getNavigatorSound()->bindNodeToMaterial(object->getSceneNode(), mtlName);
+            }
         }
         // here we refresh internal variables on tech, pass, text unit because
         // the texture source plugin maybe updated them
@@ -1386,6 +1394,7 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
 {
     if (textureExtParamsMap.empty())
         return;
+    Object3D* object = modifiedMaterialManager->getObject3D();
     ModifiedMaterial* modifiedMaterial = modifiedMaterialManager->getModifiedMaterial();
     String mtlName = modifiedMaterial->getOwner()->getName();
     TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("plugin");
@@ -1403,6 +1412,13 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
     }
     else
     {
+        if (plugin == "vlc")
+        {
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
+            if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))
+                // Unbind the scene node from the material name / sound buffer
+                Navigator::getSingletonPtr()->getNavigatorSound()->unbindNodeToMaterial(object->getSceneNode());
+        }
         ExternalTextureSourceManager::getSingleton().destroyAdvancedTexture(mtlName);
     }
 }

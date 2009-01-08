@@ -60,11 +60,11 @@ public:
     {
     public:
 	    /// brief callback to load a texture
-	    /// param object3D The object3D loading the texture
+	    /// param modifiedMaterialManager The material manager
 	    /// param name The name of the texture
 	    /// param textureExtParamsMap The extended parameters of the texture
 	    /// return the texture
-        virtual TexturePtr loadTexture(Object3D* object, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+        virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
 	    /// brief callback to release a texture
 	    /// param modifiedMaterialManager The material manager
 	    /// param name The name of the texture
@@ -74,7 +74,7 @@ public:
 
 public:
 	///brief Constructor
-	ModifiedMaterialManager(void);
+	ModifiedMaterialManager(Object3D *object3D);
 	///brief Destructor
 	~ModifiedMaterialManager(void);
 
@@ -85,6 +85,9 @@ public:
 	///brief Static method to get the texture manager.
 	///return The texture manager.
     static MMMTextureManager* getMMMTextureManager();
+
+    ///brief Get the object3D
+    Object3D *getObject3D();
 
 	///brief Method which initialises the class according to a material.
 	///param material Material of the object which is going to be modified.
@@ -232,6 +235,7 @@ public:
 	Ogre::SceneBlendType getSceneBlendType();
 
 private:
+    Object3D* mObject3D;								///brief Object3D
 	ModifiedMaterial* mModifiedMaterial;				///brief ModifiedMaterial associated to the object's material.
 	TextureVector mTextures;							///brief Collection of possibles textures of the object.
 	TextureNameExtParamsMap mTextureNameExtParamsMap;	///brief Map of extended parameters of textures.

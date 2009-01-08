@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "VLCTextureSource.h"
 #include "VLCPlugin.h"
+#include "VLCInstance.h"
 
 #include <OgreExternalTextureSourceManager.h>
 #include <OgreLogManager.h>
@@ -41,7 +42,11 @@ namespace Solipsis {
 VLCTextureSource::CmdMrl VLCTextureSource::msCmdMrl;
 VLCTextureSource::CmdWidth VLCTextureSource::msCmdWidth;
 VLCTextureSource::CmdHeight VLCTextureSource::msCmdHeight;
+VLCTextureSource::CmdSoundParams VLCTextureSource::msCmdSoundParams;
 VLCTextureSource::CmdVlcParams VLCTextureSource::msCmdVlcParams;
+VLCTextureSource::CmdSoundId VLCTextureSource::msCmdSoundId;
+
+ExternalTextureSourceExSoundHandler *VLCTextureSource::msSoundHandler = 0;
 
 //-------------------------------------------------------------------------------------
 VLCTextureSource::VLCTextureSource(VLCPlugin *plugin)
@@ -112,6 +117,18 @@ void VLCTextureSource::CmdHeight::doSet(void* target, const Ogre::String& val)
 }
 
 //-------------------------------------------------------------------------------------
+Ogre::String VLCTextureSource::CmdSoundParams::doGet(const void* target) const
+{
+	return static_cast<const VLCTextureSource*>(target)->getSoundParams();
+}
+
+//-------------------------------------------------------------------------------------
+void VLCTextureSource::CmdSoundParams::doSet(void* target, const Ogre::String& val)
+{
+	static_cast<VLCTextureSource*>(target)->setSoundParams(val);
+}
+
+//-------------------------------------------------------------------------------------
 Ogre::String VLCTextureSource::CmdVlcParams::doGet(const void* target) const
 {
 	return static_cast<const VLCTextureSource*>(target)->getVlcParams();
@@ -124,6 +141,18 @@ void VLCTextureSource::CmdVlcParams::doSet(void* target, const Ogre::String& val
 }
 
 //-------------------------------------------------------------------------------------
+Ogre::String VLCTextureSource::CmdSoundId::doGet(const void* target) const
+{
+	return Ogre::StringConverter::toString(static_cast<const VLCTextureSource*>(target)->getSoundId());
+}
+
+//-------------------------------------------------------------------------------------
+void VLCTextureSource::CmdSoundId::doSet(void* target, const Ogre::String& val)
+{
+	static_cast<VLCTextureSource*>(target)->setSoundId(Ogre::StringConverter::parseInt(val));
+}
+
+//-------------------------------------------------------------------------------------
 bool VLCTextureSource::initialise()
 {
     addBaseParams();
@@ -133,7 +162,9 @@ bool VLCTextureSource::initialise()
     dict->addParameter(Ogre::ParameterDef("mrl", "VLC Media Resource Link", Ogre::PT_STRING), &msCmdMrl);
     dict->addParameter(Ogre::ParameterDef("width", "Video width", Ogre::PT_INT), &msCmdWidth);
     dict->addParameter(Ogre::ParameterDef("height", "Video height", Ogre::PT_INT), &msCmdHeight);
+    dict->addParameter(Ogre::ParameterDef("sound_params", "Additional sound parameters", Ogre::PT_STRING), &msCmdSoundParams);
     dict->addParameter(Ogre::ParameterDef("vlc_params", "Additional VLC parameters", Ogre::PT_STRING), &msCmdVlcParams);
+    dict->addParameter(Ogre::ParameterDef("sound_id", "Additional VLC parameters", Ogre::PT_STRING), &msCmdSoundId);
 
     return true;
 }
@@ -172,7 +203,7 @@ void VLCTextureSource::createDefinedTexture(const Ogre::String& materialName, co
     if (id == -1)
     {
         // If no existing instance was found create a new one
-        id = mPlugin->newInstance(mMrl, mWidth, mHeight, mFramesPerSecond, mVlcParams);
+        id = mPlugin->newInstance(mMrl, mWidth, mHeight, mFramesPerSecond, mSoundParams, mVlcParams);
         if (id == -1)
         {
             Ogre::LogManager::getSingleton().logMessage(Ogre::LML_CRITICAL,
@@ -181,6 +212,9 @@ void VLCTextureSource::createDefinedTexture(const Ogre::String& materialName, co
         }
     }
 
+    // Bind this material to the sound buffer of the instance into the sound handler
+    if (msSoundHandler != 0)
+        msSoundHandler->bindMaterialToSoundBuffer(materialName, mPlugin->getInstance(id)->getSoundId());
     // Add material to materials list using this VLC texture instance
     MaterialListMap::iterator materialListIt = mMaterials.find(id);
     if (materialListIt == mMaterials.end())
@@ -223,6 +257,9 @@ void VLCTextureSource::destroyAdvancedTexture(const Ogre::String& material, cons
             Ogre::MaterialPtr matPtr = *materialIt;
             if (!matPtr.isNull() && matPtr->getName() == material)
             {
+                // Unbind this material from the sound buffer of the instance into the sound handler
+                if (msSoundHandler != 0)
+                    msSoundHandler->unbindMaterialToSoundBuffer(material);
                 // remove this material from list of materials using this VLC texture
                 materials.erase(materialIt);
                 // no more material using this VLC texture ?
@@ -249,6 +286,12 @@ Ogre::String VLCTextureSource::handleEvt(const Ogre::String& material, const Ogr
         }
     }
     return "";
+}
+
+//-------------------------------------------------------------------------------------
+void VLCTextureSource::setSoundHandler(ExternalTextureSourceExSoundHandler* soundHandler)
+{
+    msSoundHandler = soundHandler;
 }
 
 //-------------------------------------------------------------------------------------

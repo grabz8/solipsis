@@ -30,6 +30,32 @@ namespace Solipsis
 {
     class Event;
 
+    class ExternalTextureSourceExSoundHandler
+	{
+    public:
+        /** Create 1 sound buffer */
+        virtual int createSoundBuffer(const Ogre::String& name) = 0;
+        /** Destroy 1 sound buffer */
+        virtual void destroySoundBuffer(int soundId) = 0;
+        /** Bind 1 material (by its name) to 1 sound buffer */
+        virtual void bindMaterialToSoundBuffer(const Ogre::String& material, int soundId) = 0;
+        /** Unbind 1 material (by its name) to 1 sound buffer */
+        virtual void unbindMaterialToSoundBuffer(const Ogre::String& material) = 0;
+        /** Open 1 sound buffer
+        @param soundId The sound identifier
+        @param soundParams The additional sound parameters
+        @param frequency Frequency
+        @param nbChannels number of channels (1:mono, 2:stereo, ...)
+        @param fourCCFormat The fourCC-coded format of the sound (unsigned8bits, signed16bits, ...)
+        @param frameSize The frame size (in bytes)
+        */
+        virtual void openSoundBuffer(int soundId, const Ogre::String& soundParams, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize) = 0;
+        /** Play 1 sound buffer */
+        virtual void playSoundBuffer(int soundId, unsigned char *buffer, size_t bufferSize, unsigned int nbSamples) = 0;
+        /** Close 1 sound buffer */
+        virtual void closeSoundBuffer(int soundId) = 0;
+    };
+
     class ExternalTextureSourceEx : public Ogre::ExternalTextureSource
 	{
     public:
@@ -43,7 +69,10 @@ namespace Solipsis
 		virtual Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt) = 0;
 		/** Handle evt */
 		virtual void handleEvt(const Ogre::String& material, const Event& evt) = 0;
-	};
+
+        /** Set the sound handler */
+        virtual void setSoundHandler(ExternalTextureSourceExSoundHandler* soundHandler) {}
+    };
 }
 
 #endif

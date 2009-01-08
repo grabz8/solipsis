@@ -78,15 +78,15 @@ void VLCPlugin::uninstall()
 }
 
 //-------------------------------------------------------------------------------------
-int VLCPlugin::newInstance(const String& mrl, int width, int height, int fps, const String& vlcParams)
+int VLCPlugin::newInstance(const String& mrl, int width, int height, int fps, const String& soundParams, const String& vlcParams)
 {
-    LogManager::getSingleton().logMessage("VLCPlugin - Creating new instance mrl='" + mrl + "', " + StringConverter::toString(width) + "x" + StringConverter::toString(height) + "x" + StringConverter::toString(fps) + ", vlcParams=" + vlcParams);
+    LogManager::getSingleton().logMessage("VLCPlugin - Creating new instance mrl='" + mrl + "', " + StringConverter::toString(width) + "x" + StringConverter::toString(height) + "x" + StringConverter::toString(fps) + ", soundParams=" + soundParams + ", vlcParams=" + vlcParams);
 
     pthread_mutex_lock(&mVLCInstanceMapMutex);
 
     // Set mrl and map it by id
     int id = mVLCInstanceMapCounter++;
-    VLCInstancePtr instance(new VLCInstance(id, mVLCTextureSource, mrl, width, height, fps, vlcParams));
+    VLCInstancePtr instance(new VLCInstance(id, mVLCTextureSource, mrl, width, height, fps, soundParams, vlcParams));
     mVLCInstanceMap.insert(std::make_pair(id, instance));
 
     pthread_mutex_unlock(&mVLCInstanceMapMutex);
@@ -118,6 +118,20 @@ void VLCPlugin::deleteInstance(int id)
     if (i != mVLCInstanceMap.end())
         mVLCInstanceMap.erase(i);
     pthread_mutex_unlock(&mVLCInstanceMapMutex);
+}
+
+//-------------------------------------------------------------------------------------
+VLCPlugin::VLCInstancePtr VLCPlugin::getInstance(int id)
+{
+    VLCInstancePtr instance;
+
+    pthread_mutex_lock(&mVLCInstanceMapMutex);
+    VLCInstanceMap::iterator i = mVLCInstanceMap.find(id);
+    if (i != mVLCInstanceMap.end())
+        instance = i->second;
+    pthread_mutex_unlock(&mVLCInstanceMapMutex);
+
+    return instance;
 }
 
 //-------------------------------------------------------------------------------------

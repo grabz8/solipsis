@@ -1159,6 +1159,13 @@ bool Navigator::initPostOgreCore()
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::initPostOgreCore() Unable to initialize sound");
         return false;
     }
+    // Register our sound system as sound handler for "vlc" external texture source plugin
+    ExternalTextureSource *vlcExtTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vlc");
+    if (vlcExtTextSrc != 0)
+    {
+        ExternalTextureSourceEx *vlcExtTextSrcEx = dynamic_cast<ExternalTextureSourceEx*>(vlcExtTextSrc);
+        vlcExtTextSrcEx->setSoundHandler(mNavigatorSound);
+    }
 
     // Retrieve Media/Cache path (either set by lua either found from cwd)
     if (mMediaCachePath.empty())
@@ -1175,6 +1182,17 @@ void Navigator::createSceneManager()
 
     // Create the ray scene query
     mRaySceneQuery = mSceneMgr->createRayQuery(Ray());
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::createCamera()
+{
+    // call inherited
+    Instance::createCamera();
+
+    // Set the sound listener camera
+    if (mNavigatorSound != 0)
+        mNavigatorSound->setSoundListenerCamera(mCamera);
 }
 
 //-------------------------------------------------------------------------------------

@@ -48,18 +48,26 @@ public:
     @param[in] width The video width
     @param[in] height The video height
     @param[in] fps The update rate in frames per second
+    @param[in] soundParams The additional sound parameters
     @param[in] vlcParams The additional VLC parameters
     */
     VLCInstance(int id, VLCTextureSource* textureSource,
-                const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& vlcParams);
+                const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& soundParams, const Ogre::String& vlcParams);
     /// Destructor
     ~VLCInstance();
 
     /// Get MRL
     const Ogre::String& getMrl() const { return mMrl; }
+    /// Get additional sound parameters
+    const Ogre::String& getSoundParams() const { return mSoundParams; }
+    /// Get sound identifier
+    int getSoundId() { return mSoundId; }
 
     /// Get Texture
     Ogre::TexturePtr getTexture() const { return mTexture; }
+
+    /// Get TextureSource
+    VLCTextureSource* getTextureSource() { return mTextureSource; }
 
     /// Handle 1 event
     Ogre::String handleEvt(const Ogre::String& evt);
@@ -79,6 +87,9 @@ private:
     // Static callbacks used by libvlc
     static void * _libvlc_lock(VLCInstance *ctx);
     static void _libvlc_unlock(VLCInstance *ctx);
+    static void _libvlc_opensb(VLCInstance *ctx, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize);
+    static void _libvlc_playsb(VLCInstance *ctx, unsigned char *buffer, size_t bufferSize, unsigned int nbSamples);
+    static void _libvlc_closesb(VLCInstance *ctx);
 
 private:
     /// Update mutex
@@ -99,8 +110,12 @@ private:
     int mHeight;
     /// Video frames per second
     int mFps;
+    /// Additional sound parameters
+    Ogre::String mSoundParams;
     /// Additional VLC parameters
     Ogre::String mVlcParams;
+    /// Sound identifier
+    int mSoundId;
 
     typedef struct { int item; Ogre::String mrl; } PlayListEntry;
     typedef std::vector<PlayListEntry> PlayList;

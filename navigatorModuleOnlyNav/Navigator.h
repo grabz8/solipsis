@@ -354,6 +354,7 @@ protected:
     virtual bool initPostOgreCore();
 
     virtual void createSceneManager(); 
+    virtual void createCamera(); 
     virtual void createFrameListener();
 
     virtual void createScene();

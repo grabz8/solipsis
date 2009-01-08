@@ -43,6 +43,7 @@ class VLCPlugin;
             width 256
             height 256
             frames_per_second 25
+            sound_params <additional sound parameters>
             vlc_params <additional VLC parameters>
         }
     }
@@ -57,6 +58,9 @@ class VLCPlugin;
  *   vlc_params --sout #transcode{vcodec=mp2v,vb=1024,scale=1,acodec=mpga,ab=192,channels=2}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}
  *  same eg. but with mpeg video (no transcodage)
  *   vlc_params --sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}
+ * Sound parameters:
+ *  empty string : sound is played by VLC
+ *  "3d <minDist:float> <maxDist:float>" : sound is spatialized and played by the sound handler
  */
 class VLCTextureSource : public ExternalTextureSourceEx
 {
@@ -95,7 +99,19 @@ public:
 		Ogre::String doGet(const void* target) const;
         void doSet(void* target, const Ogre::String& val);
     };
+    class _OgrePrivate CmdSoundParams : public Ogre::ParamCommand
+    {
+    public:
+		Ogre::String doGet(const void* target) const;
+        void doSet(void* target, const Ogre::String& val);
+    };
     class _OgrePrivate CmdVlcParams : public Ogre::ParamCommand
+    {
+    public:
+		Ogre::String doGet(const void* target) const;
+        void doSet(void* target, const Ogre::String& val);
+    };
+    class _OgrePrivate CmdSoundId : public Ogre::ParamCommand
     {
     public:
 		Ogre::String doGet(const void* target) const;
@@ -117,10 +133,21 @@ public:
 	void setHeight(int iHeight) { mHeight = iHeight; }
 	//! Gets currently set video height
 	const int getHeight() const { return mHeight; }
+	//! Sets the additional sound parameters
+    void setSoundParams(const Ogre::String& iSoundParams) { mSoundParams = iSoundParams; }
+	//! Gets currently set additional sound parameters
+    const Ogre::String& getSoundParams() const { return mSoundParams; }
 	//! Sets the additional VLC parameters
     void setVlcParams(const Ogre::String& iVlcParams) { mVlcParams = iVlcParams; }
 	//! Gets currently set additional VLC parameters
     const Ogre::String& getVlcParams() const { return mVlcParams; }
+	//! Sets the sound identifier
+    void setSoundId(int iSoundId) { mSoundId = iSoundId; }
+	//! Gets currently set sound identifier
+    int getSoundId() const { return mSoundId; }
+
+    /// Get the sound handler
+    ExternalTextureSourceExSoundHandler* getSoundHandler() { return msSoundHandler; }
 
 protected:
     /// @copydoc Ogre::ExternalTextureSource::initialise
@@ -136,12 +163,19 @@ protected:
     Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt);
     /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
     void handleEvt(const Ogre::String& material, const Event& evt) {}
+    /// @copydoc Solipsis::ExternalTextureSourceEx::setSoundHandler
+    void setSoundHandler(ExternalTextureSourceExSoundHandler* soundHandler);
 
 protected:
-	static CmdMrl msCmdMrl;             //! Command for setting media resource link
-	static CmdWidth msCmdWidth;         //! Command for setting video width
-	static CmdHeight msCmdHeight;       //! Command for setting video height
-	static CmdVlcParams msCmdVlcParams; //! Command for setting additional VLC parameters
+	static CmdMrl msCmdMrl;                 //! Command for setting media resource link
+	static CmdWidth msCmdWidth;             //! Command for setting video width
+	static CmdHeight msCmdHeight;           //! Command for setting video height
+	static CmdSoundParams msCmdSoundParams; //! Command for setting additional sound parameters
+	static CmdVlcParams msCmdVlcParams;     //! Command for setting additional VLC parameters
+	static CmdSoundId msCmdSoundId;         //! Command for setting the sound identifier
+
+    /// Sound handler
+    static ExternalTextureSourceExSoundHandler *msSoundHandler;
 
     /// VLC plugin
     VLCPlugin* mPlugin;
@@ -152,8 +186,12 @@ protected:
     int mWidth;
     /// Video height
     int mHeight;
+    /// Additional sound parameters
+    Ogre::String mSoundParams;
     /// Additional VLC parameters
     Ogre::String mVlcParams;
+    /// Sound identifier
+    int mSoundId;
 
     typedef std::vector<Ogre::MaterialPtr> MaterialList;
     typedef std::map<int, MaterialList> MaterialListMap;

@@ -89,7 +89,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	//mType = OTHER;
 	resetParameters();
 
-	mModifiedMaterialManager = new ModifiedMaterialManager() ;
+	mModifiedMaterialManager = new ModifiedMaterialManager(this) ;
     // TODO 
 	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material" + mEntityUID);
 	mEntity->getSubEntity(0)->setMaterialName( tmpMaterial->getName());
@@ -346,7 +346,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
         }
         if (mModifiedMaterialManager->getMMMTextureManager() != 0)
         {
-            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(this, trans->Attribute("Name"), textureExtParamsMap);
+            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(mModifiedMaterialManager, trans->Attribute("Name"), textureExtParamsMap);
         }
         else
         {

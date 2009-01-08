@@ -39,6 +39,9 @@ class VLCInstance;
 class VLCPlugin : public Ogre::Plugin
 {
 public:
+    typedef Ogre::SharedPtr<VLCInstance> VLCInstancePtr;
+
+public:
     VLCPlugin();
 
     /// @copydoc Plugin::getName
@@ -61,10 +64,11 @@ public:
     @param[in] width The video width
     @param[in] height The video height
     @param[in] fps The update rate in frames per second
+    @param[in] soundParams The additional sound parameters
     @param[in] vlcParams The additional VLC parameters
     @return Connection id
     */
-    int newInstance(const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& vlcParams);
+    int newInstance(const Ogre::String& mrl, int width, int height, int fps, const Ogre::String& soundParams, const Ogre::String& vlcParams);
 
     /** Destroy a VLC instance (notifying it should no more listen frames)
     @param[in] id VLC Instance id
@@ -75,6 +79,12 @@ public:
     @param[in] id VLC Instance id
     */
     void deleteInstance(int id);
+
+    /** Retrieves an existing VLC instance by id
+    @param[in] id VLC Instance id
+    @return VLC Instance shared pointer
+    */
+    VLCInstancePtr getInstance(int id);
 
     /** Retrieves an existing VLC instance by media resource link
     @param[in] mrl media resource link
@@ -99,7 +109,6 @@ private:
     /// VLC texture source
     VLCTextureSource* mVLCTextureSource;
 
-    typedef Ogre::SharedPtr<VLCInstance> VLCInstancePtr;
     typedef std::map<int, VLCInstancePtr> VLCInstanceMap;
     /// VLC instances map by id
     VLCInstanceMap mVLCInstanceMap;
