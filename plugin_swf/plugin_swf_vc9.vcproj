@@ -106,8 +106,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Copying SWF dependencies ..."
-				CommandLine="&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

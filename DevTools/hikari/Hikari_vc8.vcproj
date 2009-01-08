@@ -88,6 +88,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if not exist &quot;..\..\Dependencies\hikari&quot; mkdir &quot;..\..\Dependencies\hikari&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\include&quot; mkdir &quot;..\..\Dependencies\hikari\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\include\impl&quot; mkdir &quot;..\..\Dependencies\hikari\include\impl&quot;&#x0D;&#x0A;copy &quot;include\*.h&quot; &quot;..\..\Dependencies\hikari\include&quot; /y&#x0D;&#x0A;copy &quot;include\impl\*.h&quot; &quot;..\..\Dependencies\hikari\include\impl&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\lib&quot; mkdir &quot;..\..\Dependencies\hikari\lib&quot;&#x0D;&#x0A;copy &quot;lib\hikari_d.lib&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y&#x0D;&#x0A;copy &quot;lib\hikari_d.dll&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y&#x0D;&#x0A;copy &quot;ocx\*.ocx&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -159,6 +160,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if not exist &quot;..\..\Dependencies\hikari&quot; mkdir &quot;..\..\Dependencies\hikari&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\include&quot; mkdir &quot;..\..\Dependencies\hikari\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\include\impl&quot; mkdir &quot;..\..\Dependencies\hikari\include\impl&quot;&#x0D;&#x0A;copy &quot;include\*.h&quot; &quot;..\..\Dependencies\hikari\include&quot; /y&#x0D;&#x0A;copy &quot;include\impl\*.h&quot; &quot;..\..\Dependencies\hikari\include\impl&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\hikari\lib&quot; mkdir &quot;..\..\Dependencies\hikari\lib&quot;&#x0D;&#x0A;copy &quot;lib\hikari.lib&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y&#x0D;&#x0A;copy &quot;lib\hikari.dll&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y&#x0D;&#x0A;copy &quot;ocx\*.ocx&quot; &quot;..\..\Dependencies\hikari\lib&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>

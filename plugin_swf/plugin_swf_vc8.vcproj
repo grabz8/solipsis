@@ -24,8 +24,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Copying SWF dependencies ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\swf\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\include\*.*&quot; &quot;$(ProjectDir)..\Dependencies\swf\include&quot; /s /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\lib\libswf.lib&quot; &quot;$(ProjectDir)..\Dependencies\swf\lib&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\runtime\libswf.dll&quot; &quot;$(ProjectDir)..\Dependencies\swf\runtime&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins\libvmem_plugin.dll&quot; xcopy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\runtime\plugins\*.*&quot; &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot; /s /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -42,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\swf\include;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\hikari\include;..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SWFPLUGIN_EXPORTS;OGRE_SWFPLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,10 +61,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib pthreadVC_d.lib libswf.lib"
+				AdditionalDependencies="OgreMain_d.lib pthreadVC_d.lib hikari_d.lib"
 				OutputFile="$(OutDir)\Plugin_SWF_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\swf\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\hikari\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -95,7 +93,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(ProjectDir)..\Dependencies\swf\runtime\libswf.dll&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot; mkdir &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins\libvmem_plugin.dll&quot; xcopy &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins\*.*&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot; /s /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\hikari\lib\hikari_d.dll&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -108,8 +106,6 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Copying SWF dependencies ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\swf\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\lib&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot; mkdir &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\include\*.*&quot; &quot;$(ProjectDir)..\Dependencies\swf\include&quot; /s /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\lib\libswf.lib&quot; &quot;$(ProjectDir)..\Dependencies\swf\lib&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\runtime\libswf.dll&quot; &quot;$(ProjectDir)..\Dependencies\swf\runtime&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins\libvmem_plugin.dll&quot; xcopy &quot;$(ProjectDir)..\DevTools\swf\libraries\i686-win32\runtime\plugins\*.*&quot; &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins&quot; /s /y&#x0D;&#x0A;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -125,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\swf\include;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\hikari\include;..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SWFPLUGIN_EXPORTS;OGRE_SWFPLUGIN_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -144,10 +140,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain.lib pthreadVC.lib libswf.lib"
+				AdditionalDependencies="OgreMain.lib pthreadVC.lib hikari.lib"
 				OutputFile="$(OutDir)\Plugin_SWF.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\swf\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\hikari\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -178,7 +174,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(ProjectDir)..\Dependencies\swf\runtime\libswf.dll&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot; mkdir &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins\libvmem_plugin.dll&quot; xcopy &quot;$(ProjectDir)..\Dependencies\swf\runtime\plugins\*.*&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\SWFplugins&quot; /s /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\hikari\lib\Hikari.dll&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -190,19 +186,19 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			>
 			<File
-				RelativePath=".\SWFInstance.cpp"
+				RelativePath=".\src\SWFInstance.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFPlugin.cpp"
+				RelativePath=".\src\SWFPlugin.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFPluginDll.cpp"
+				RelativePath=".\src\SWFPluginDll.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFTextureSource.cpp"
+				RelativePath=".\src\SWFTextureSource.cpp"
 				>
 			</File>
 		</Filter>
@@ -211,19 +207,19 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
 			<File
-				RelativePath=".\SWFInstance.h"
+				RelativePath=".\src\SWFInstance.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFPlugin.h"
+				RelativePath=".\src\SWFPlugin.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFPluginPrerequisites.h"
+				RelativePath=".\src\SWFPluginPrerequisites.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SWFTextureSource.h"
+				RelativePath=".\src\SWFTextureSource.h"
 				>
 			</File>
 		</Filter>
