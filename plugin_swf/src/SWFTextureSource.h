@@ -39,7 +39,7 @@ class SWFPlugin;
     {
         texture_source swf
         {
-            mrl video.mpg
+            url video.mpg
             width 256
             height 256
             frames_per_second 25
@@ -47,16 +47,6 @@ class SWFPlugin;
         }
     }
  *  \endcode
- *  Refer to VLC manual for mrl and params
- *   local media file : mrl <filename>
- *   udp stream : mrl udp://@<ip>:<port>
- *   http stream : mrl http://<ip>:<port>
- *   directShow webcam : dshow:// :dshow-vdev="" :dshow-adev="" :dshow-size=""
- *  To stream the video you can use the VLC standard parameters, take care to define ALWAYS the destination display vmem in your duplicate list,
- *  for eg. to stream the video on HTTP (here video is transcoded into MPEG2 for HTTP, ...so... ! CPU consuming !):
- *   vlc_params --sout #transcode{vcodec=mp2v,vb=1024,scale=1,acodec=mpga,ab=192,channels=2}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}
- *  same eg. but with mpeg video (no transcodage)
- *   vlc_params --sout #duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}
  */
 class SWFTextureSource : public ExternalTextureSourceEx
 {
