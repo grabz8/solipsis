@@ -116,3 +116,7 @@ to the mesh' normals direction ! Flip them resolved it.
 
 - VNCPlugin : kbd events OK but kbd mapping is strange azerty vs qwerty (virtual keys to debug)
 => fixed by using getKeyboardLayout() and MapVirtualKeyEx(), still some minor addons to do
+
+- sometimes crash when quitting with 1 VLC object into libvlc_destroy(mLibVLCInstance), after some investigations:
+  pb occurs with 2 simultaneous videos when destroying 2nd instance (only when libvlc is linked by VStudio)
+=> fixed by adding Static functions in misc/unicode.c, misc/win32_specific.c called only once in libvlc.c + misc/messages.c msg_XXX() logs removed 

@@ -11,7 +11,6 @@
 - entity datas panel (object panel attributes moved into this new panel)
 
 - sometimes crash on resize window on login panel
-- sometimes crash when quitting with 1 VLC object into libvlc_destroy(mLibVLCInstance);
 
 - if Peer cannot connect to RakNetServer, the login XMLRPC method returned OK but no evt are sent ...,
 so no error is displayed -> Nav-Peer cnx should be asynchronous with 1 CNX_ACCEPTED message

@@ -1,6 +1,6 @@
 /* CYGWIN - copy libvlc.dll into this directory
 export CXX='g++ -mno-cygwin'
-${CXX} -g -c ./main.cpp -o ./main.o -I /cygdrive/d/solipsis/Work/solipsis/trunk/DevTools/vlc-0.8.6e/include
+${CXX} -g -c ./main.cpp -o ./main.o -I /cygdrive/d/solipsis/Work/solipsis/trunk/DevTools/vlc/libraries/i686-win32/include
 ${CXX} -g -o ./main.exe ./main.o -llibvlc -L./
 ./main.exe
 */
@@ -31,8 +31,8 @@ static void quit_on_exception (libvlc_exception_t *excp) {
 
 int main(int argc, char **argv) {
    libvlc_exception_t excp;
-   libvlc_instance_t *inst;
-   int item;
+   libvlc_instance_t *inst, *inst2;
+   int item, item2;
 #if 0
    char *myarg0 = "-I";  char *myarg1 = "dummy";
 //   char *myarg2 = "--plugin-path=C:\\program files\\VideoLAN\\VLC\\plugins";
@@ -53,11 +53,12 @@ int main(int argc, char **argv) {
 #ifdef WIN32
         "--fast-mutex", "--win9x-cv-method=1",
 #endif
-        "--plugin-path=D:\\tmp\\TestLibVLC\\TestLibVLC\\Debug\\plugins",
+        "--plugin-path=D:\\solipsis\\Work\\solipsis\\trunk\\DevTools\\vlc\\libraries\\i686-win32\\runtime\\plugins",
     };
     int myargsc = sizeof(myargs) / sizeof(*myargs);
 //   char *filename = "D:\\tmp\\E5535DC8d01";
-   char *filename = "D:\\tmp\\SAMPLE.AVI";
+   char *filename = "D:\\burned\\solipsis\\8103D9F9d01.mpeg";
+   char *filename2 = "D:\\burned\\solipsis\\E5535DC8d01.mpeg";
 
 #ifdef DYNAMIC_LOAD
 //    h = LoadLibrary("C:\\program files\\VideoLAN\\VLC\\libvlc.dll");
@@ -66,30 +67,67 @@ int main(int argc, char **argv) {
     libvlc_instance_t* (*libvlc_newFunction)(int , char **, libvlc_exception_t *) = reinterpret_cast<libvlc_instance_t* (*)(int , char **, libvlc_exception_t *)>(GetProcAddress(h, "libvlc_new"));
     int (*libvlc_playlist_addFunction)(libvlc_instance_t *, const char *, const char *, libvlc_exception_t *) = reinterpret_cast<int (*)(libvlc_instance_t *, const char *, const char *, libvlc_exception_t *)>(GetProcAddress(h, "libvlc_playlist_add"));
     void (*libvlc_playlist_playFunction)(libvlc_instance_t*, int, int, char **, libvlc_exception_t *) = reinterpret_cast<void (*)(libvlc_instance_t*, int, int, char **, libvlc_exception_t *)>(GetProcAddress(h, "libvlc_playlist_play"));
+    void (*libvlc_playlist_stopFunction)(libvlc_instance_t*, libvlc_exception_t *) = reinterpret_cast<void (*)(libvlc_instance_t*, libvlc_exception_t *)>(GetProcAddress(h, "libvlc_playlist_stop"));
     int (*libvlc_playlist_isplayingFunction)(libvlc_instance_t *, libvlc_exception_t *) = reinterpret_cast<int (*)(libvlc_instance_t *, libvlc_exception_t *)>(GetProcAddress(h, "libvlc_playlist_isplaying"));
     void (*libvlc_destroyFunction)(libvlc_instance_t *) = reinterpret_cast<void (*)(libvlc_instance_t *)>(GetProcAddress(h, "libvlc_destroy"));
     (*libvlc_exception_initFunction)(&excp);
+    printf("Starting 1st video\n");
     inst = libvlc_newFunction (myargsc, (char**)myargs, &excp);
     quit_on_exception (&excp);
     item = libvlc_playlist_addFunction (inst, filename, NULL, &excp); 
     quit_on_exception (&excp);
     libvlc_playlist_playFunction (inst, item, 0, NULL, &excp); 
     quit_on_exception (&excp);
-    while (libvlc_playlist_isplayingFunction(inst, &excp))
-        Sleep (1000);
+//    while (libvlc_playlist_isplayingFunction(inst, &excp))
+       Sleep (3000);
+
+    printf("Starting 2nd video\n");
+    inst2 = libvlc_newFunction (myargsc, (char**)myargs, &excp);
+    quit_on_exception (&excp);
+    item2 = libvlc_playlist_addFunction (inst2, filename2, NULL, &excp); 
+    quit_on_exception (&excp);
+    libvlc_playlist_playFunction (inst2, item2, 0, NULL, &excp); 
+    quit_on_exception (&excp);
+    Sleep (10000);
+
+    printf("End of 2nd video\n");
+    libvlc_playlist_stopFunction(inst2, &excp);
+    libvlc_destroyFunction (inst2);
+    Sleep (3000);
+
+    printf("End of 1st video\n");
+    libvlc_playlist_stopFunction(inst, &excp);
     libvlc_destroyFunction (inst);
 #else
    libvlc_exception_init (&excp);
+   printf("Starting 1st video\n");
    inst = libvlc_new (myargsc, (char**)myargs, &excp);
    quit_on_exception (&excp);
    item = libvlc_playlist_add (inst, filename, NULL, &excp); 
    quit_on_exception (&excp);
    libvlc_playlist_play (inst, item, 0, NULL, &excp); 
    quit_on_exception (&excp);
-   while (libvlc_playlist_isplaying(inst, &excp))
-       Sleep (1000);
-//   libvlc_playlist_stop(inst, &excp);
+//   while (libvlc_playlist_isplaying(inst, &excp))
+       Sleep (3000);
+
+   printf("Starting 2nd video\n");
+   inst2 = libvlc_new (myargsc, (char**)myargs, &excp);
+   quit_on_exception (&excp);
+   item2 = libvlc_playlist_add (inst2, filename2, NULL, &excp); 
+   quit_on_exception (&excp);
+   libvlc_playlist_play (inst2, item2, 0, NULL, &excp); 
+   quit_on_exception (&excp);
+   Sleep (10000);
+
+   printf("End of 2nd video\n");
+   libvlc_playlist_stop(inst2, &excp);
+   libvlc_destroy (inst2);
+   Sleep (3000);
+
+   printf("End of 1st video\n");
+   libvlc_playlist_stop(inst, &excp);
    libvlc_destroy (inst);
 #endif
+   printf("End.\n");
    return 0;
 }

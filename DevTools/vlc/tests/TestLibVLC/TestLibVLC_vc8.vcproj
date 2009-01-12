@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc-0.8.6e\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\include&quot;"
 				PreprocessorDefinitions="WIN32;DEBUG;DYNAMIC_LOAD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc-0.8.6e\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;DYNAMIC_LOAD"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -187,7 +187,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc-0.8.6e\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\include&quot;"
 				PreprocessorDefinitions="WIN32;DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -208,7 +208,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libvlc.lib"
-				AdditionalLibraryDirectories=".\Debug\086eAfterCompilation"
+				AdditionalLibraryDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -262,7 +262,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc-0.8.6e\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -281,7 +281,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libvlc.lib"
-				AdditionalLibraryDirectories=".\Debug\086eAfterCompilation"
+				AdditionalLibraryDirectories="D:\solipsis\Work\solipsis\trunk\DevTools\vlc\libraries\i686-win32\lib"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

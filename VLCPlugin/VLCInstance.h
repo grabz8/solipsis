@@ -82,7 +82,7 @@ private:
     bool frameEnded(const Ogre::FrameEvent& e);
 
     /// libvlc exception helper method
-    void _libvlc_exception(libvlc_exception_t *ex);
+    static void _libvlc_exception(libvlc_exception_t *ex);
 
     // Static callbacks used by libvlc
     static void * _libvlc_lock(VLCInstance *ctx);
@@ -138,7 +138,8 @@ private:
     volatile bool mSafeToDelete;
 
     /// libvlc exception structure
-    libvlc_exception_t mLibVLCException;
+    static libvlc_exception_t mLibVLCException;
+    static bool exceptionInstalled;
     /// libvlc instance
     libvlc_instance_t *mLibVLCInstance;
 };  //  class VLCInstance

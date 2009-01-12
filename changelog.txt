@@ -929,3 +929,10 @@ NavigatorSound implements the sound handler to take in charge buffers streaming 
 uimdlrprop panel updated to specify use of 3D sound and additional parameters (min, max dist)
 
 ---------------------------
+12/01/09
+
+VLC plugin crash bug fix when 2 VLC instances are running simultaneously and 2nd libvlc_destroy(mLibVLCInstance) crashed
+=> fixed by adding Static functions in misc/unicode.c, misc/win32_specific.c called only once in libvlc.c + misc/messages.c msg_XXX() logs removed 
+--loop added
+
+---------------------------

@@ -116,19 +116,19 @@ Finally we will add 1 configure arg, in the same file configure.ac, add the foll
  dnl
  ...
 
-dnl
-dnl  amem plugin
-dnl
-AC_ARG_ENABLE(amem,
-  [  --enable-amem         AMem module (default enabled on Win32)])
-if test "${enable_amem}" != "no"; then
-  if test "${SYS}" = "mingw32" -o "${SYS}" = "cygwin"; then
-    VLC_ADD_PLUGINS([amem])
-  fi
-  if test "${SYS}" = "mingwce"; then
-    VLC_ADD_PLUGINS([amem])
-  fi
-fi
+ dnl
+ dnl  amem plugin
+ dnl
+ AC_ARG_ENABLE(amem,
+   [  --enable-amem         AMem module (default enabled on Win32)])
+ if test "${enable_amem}" != "no"; then
+   if test "${SYS}" = "mingw32" -o "${SYS}" = "cygwin"; then
+     VLC_ADD_PLUGINS([amem])
+   fi
+   if test "${SYS}" = "mingwce"; then
+     VLC_ADD_PLUGINS([amem])
+   fi
+ fi
 
 $ export CONTRIBS=/usr/win32-branch
 $ export PATH=${CONTRIBS}/bin:$PATH
@@ -153,7 +153,8 @@ To avoid some compilation errors (I got on this vlc release) perform those worka
  #  #endif
  # (OR into /usr/include/mingw/sys/types.h)
 
-
+To fix problems about simultaneous instances of VLC, apply GREG updates from build_vlc/update/src into <VLCSRC>/src:
+ libvlc.c, misc/messages.c, misc/unicode.c, misc/win32_specific.c
 
 
 We will build in release mode:
@@ -243,7 +244,7 @@ $ ./configure \
 To avoid pb with libtool about shared libs (suffix DLL vs DLL.EXE), we have to edit the libtool script created auto. by VLC configure step:
 Edit <VLCSRC>/libtool
  replace line: output=`$echo $output | ${SED} -e 's,.exe$,,;s,$,.exe,'` ;;
- by this line: output=`$echo $output` 
+ by this line: output=`$echo $output` ;;
 
 $ make
 
@@ -269,3 +270,50 @@ lib.exe /machine:i386 /def:libvlc.def
 Now, run the copy_vlc_files.bat to install dependencies files
  cd build_vlc
  copy_vlc_files.bat
+
+
+----------------------------------------------------
+Notes about compilation with vlc 0.9.6
+
+vmem.c is now integrated into default video_output modules so it s no more necessary to copy it from <VLCSRC>/modules/video_output
+
+(contribs for 0.9.6 found on http://people.videolan.org/~jb/Contribs/contrib-20080811-win32-bin-gcc-4.2.1-sjlj-runtime-3.13-only.tar.bz2)
+Unzip contribs (contrib-20080811-win32-bin-gcc-4.2.1-sjlj-runtime-3.13-only.tar.bz2) into the /usr/win32-branch_vlc096 directory of your Cygwin directory C:\cygwin\usr\win32-branch_vlc096
+$ cd /cygdrive/.../build_vlc
+$ tar xjvf contrib-0.8.6e-gcc-3.4.5-only.tar.bz2 -C /
+
+Upgrade cygwin gettext with 0.17
+
+$ export CONTRIBS=/usr/win32-branch_vlc096
+$ export PATH=${CONTRIBS}/bin:$PATH
+$ cd /cygdrive/.../<VLCSRC>
+$ ./bootstrap
+
+$ export PKG_CONFIG_PATH=$CONTRIBS/lib/pkgconfig \
+       CPPFLAGS="-I$CONTRIBS/include -I$CONTRIBS/include/ebml" CXXCPP=$CPPFLAGS \
+       LDFLAGS=-L$CONTRIBS/lib \
+       CC='gcc -mno-cygwin' CXX='g++ -mno-cygwin'
+
+$ ./configure \
+     --host=i686-pc-mingw32 \
+     --disable-gtk \
+     --enable-nls --enable-sdl --with-sdl-config-path=$CONTRIBS/bin \
+     --enable-avcodec --enable-avformat --enable-swscale \
+     --enable-ffmpeg --with-ffmpeg-mp3lame --with-ffmpeg-faac \
+     --with-ffmpeg-zlib --enable-faad --enable-flac --enable-theora \
+     --with-wx-config-path=$CONTRIBS/bin \
+     --with-freetype-config-path=$CONTRIBS/bin \
+     --with-fribidi-config-path=$CONTRIBS/bin \
+     --enable-live555 --with-live555-tree=$CONTRIBS/live.com \
+     --enable-caca --with-caca-config-path=$CONTRIBS/bin \
+     --with-xml2-config-path=$CONTRIBS/bin \
+     --with-dvdnav-config-path=$CONTRIBS/bin \
+     --disable-cddax --disable-vcdx --enable-goom \
+     --enable-twolame --enable-dvdread \
+     --enable-dca \
+     --disable-mkv --disable-taglib \
+     --enable-shared-libvlc \
+     --enable-shared \
+     --enable-shout
+
+$ make
