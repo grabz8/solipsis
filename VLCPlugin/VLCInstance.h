@@ -137,11 +137,15 @@ private:
     /// True if texture can be deleted (no more listening frames)
     volatile bool mSafeToDelete;
 
-    /// libvlc exception structure
-    static libvlc_exception_t mLibVLCException;
-    static bool exceptionInstalled;
     /// libvlc instance
     libvlc_instance_t *mLibVLCInstance;
+
+    /// Static mutex
+    static pthread_mutex_t ms_Mutex;
+
+    /// libvlc exception structure
+    static libvlc_exception_t ms_LibVLCException;
+    static bool ms_LibVLCExceptionInstalled;
 };  //  class VLCInstance
 
 } // namespace Solipsis
