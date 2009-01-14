@@ -375,14 +375,14 @@ void NavigatorSound::update()
             soundBuffer->getChannel()->getPosition(&pos, FMOD_TIMEUNIT_PCM);
             if ((pos > lastPos) && ((pos - lastPos) < frameSizePCM))
             {
-                LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::update() soundId:%d Starving/not enough audio data ... stop (pos:%d, lastPos:%d)", soundId, pos, lastPos);
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::update() soundId:%d Starving/not enough audio data ... stop (pos:%d, lastPos:%d)", soundId, pos, lastPos);
                 // the player is starving (not enough audio data added in the sound buffer)
                 soundBuffer->stop();
             }
         }
         if (!isPlaying && (lastPos >= frameSizePCM))
         {
-            LOGHANDLER_LOGF(LogHandler::VL_INFO, "NavigatorSound::update() soundId:%d Enough audio data ... starting (lastPos:%d, frameSizePCM:%d)", soundId, lastPos, frameSizePCM);
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::update() soundId:%d Enough audio data ... starting (lastPos:%d, frameSizePCM:%d)", soundId, lastPos, frameSizePCM);
             // Enough audio data in the sound buffer we can start playing
             soundBuffer->play(mSoundSystem);
         }
@@ -419,6 +419,8 @@ void NavigatorSound::update()
 //-------------------------------------------------------------------------------------
 int NavigatorSound::createSoundBuffer(const Ogre::String& name)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::createSoundBuffer(%s)", name.c_str());
+
     SoundBuffer *soundBuffer = new SoundBuffer(name);
     int soundId;
     pthread_mutex_lock(&mMutex);
@@ -428,6 +430,7 @@ int NavigatorSound::createSoundBuffer(const Ogre::String& name)
         mSoundBufferVector.push_back(soundBuffer);
     else
         mSoundBufferVector[soundId] = soundBuffer;
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::createSoundBuffer(%s) soundId=%d", name.c_str(), soundId);
     pthread_mutex_unlock(&mMutex);
     return soundId;
 }
@@ -435,6 +438,8 @@ int NavigatorSound::createSoundBuffer(const Ogre::String& name)
 //-------------------------------------------------------------------------------------
 void NavigatorSound::destroySoundBuffer(int soundId)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::destroySoundBuffer(%d)", soundId);
+
     pthread_mutex_lock(&mMutex);
     delete mSoundBufferVector[soundId];
     mSoundBufferVector[soundId] = 0;
@@ -444,6 +449,8 @@ void NavigatorSound::destroySoundBuffer(int soundId)
 //-------------------------------------------------------------------------------------
 void NavigatorSound::bindMaterialToSoundBuffer(const Ogre::String& material, int soundId)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::bindMaterialToSoundBuffer(%s, %d)", material.c_str(), soundId);
+
     if (mSoundBufferVector[soundId] == 0) return;
     mMtlSoundBufferMap[material] = soundId;
 }
@@ -451,6 +458,8 @@ void NavigatorSound::bindMaterialToSoundBuffer(const Ogre::String& material, int
 //-------------------------------------------------------------------------------------
 void NavigatorSound::unbindMaterialToSoundBuffer(const Ogre::String& material)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::unbindMaterialToSoundBuffer(%s)", material.c_str());
+
     MtlSoundBufferMap::iterator it = mMtlSoundBufferMap.find(material);
     if (it == mMtlSoundBufferMap.end()) return;
     mMtlSoundBufferMap.erase(it);
@@ -459,6 +468,8 @@ void NavigatorSound::unbindMaterialToSoundBuffer(const Ogre::String& material)
 //-------------------------------------------------------------------------------------
 void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParams, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::openSoundBuffer(%d, %s, %d, %d, %d, %d)", soundId, soundParams.c_str(), *frequency, *nbChannels, *fourCCFormat, *frameSize);
+
     if (mSoundBufferVector[soundId] == 0) return;
 
     *nbChannels = 1;
@@ -543,6 +554,8 @@ void NavigatorSound::playSoundBuffer(int soundId, unsigned char *buffer, size_t 
 //-------------------------------------------------------------------------------------
 void NavigatorSound::closeSoundBuffer(int soundId)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::closeSoundBuffer(%d)", soundId);
+
     if (mSoundBufferVector[soundId] == 0) return;
 
     SoundBuffer *soundBuffer = mSoundBufferVector[soundId];
@@ -557,6 +570,8 @@ void NavigatorSound::closeSoundBuffer(int soundId)
 //-------------------------------------------------------------------------------------
 void NavigatorSound::bindNodeToMaterial(Ogre::Node *node, const Ogre::String& material)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::bindNodeToMaterial(%s, %s)", node->getName().c_str(), material.c_str());
+
     MtlSoundBufferMap::iterator it = mMtlSoundBufferMap.find(material);
     if (it == mMtlSoundBufferMap.end()) return;
     mNodeSoundBufferMap[node] = it->second;
@@ -565,6 +580,8 @@ void NavigatorSound::bindNodeToMaterial(Ogre::Node *node, const Ogre::String& ma
 //-------------------------------------------------------------------------------------
 void NavigatorSound::unbindNodeToMaterial(Ogre::Node *node)
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::unbindNodeToMaterial(%s)", node->getName().c_str());
+
     NodeSoundBufferMap::iterator it = mNodeSoundBufferMap.find(node);
     if (it == mNodeSoundBufferMap.end()) return;
     mNodeSoundBufferMap.erase(it);
