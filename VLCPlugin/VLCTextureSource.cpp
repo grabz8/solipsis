@@ -213,7 +213,7 @@ void VLCTextureSource::createDefinedTexture(const Ogre::String& materialName, co
     }
 
     // Bind this material to the sound buffer of the instance into the sound handler
-    if (msSoundHandler != 0)
+    if ((msSoundHandler != 0) && (mSoundParams.find("3d") == 0))
         msSoundHandler->bindMaterialToSoundBuffer(materialName, mPlugin->getInstance(id)->getSoundId());
     // Add material to materials list using this VLC texture instance
     MaterialListMap::iterator materialListIt = mMaterials.find(id);
@@ -258,7 +258,7 @@ void VLCTextureSource::destroyAdvancedTexture(const Ogre::String& material, cons
             if (!matPtr.isNull() && matPtr->getName() == material)
             {
                 // Unbind this material from the sound buffer of the instance into the sound handler
-                if (msSoundHandler != 0)
+                if ((msSoundHandler != 0) && (mSoundParams.find("3d") == 0))
                     msSoundHandler->unbindMaterialToSoundBuffer(material);
                 // remove this material from list of materials using this VLC texture
                 materials.erase(materialIt);
