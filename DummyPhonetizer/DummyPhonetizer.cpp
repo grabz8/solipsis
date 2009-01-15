@@ -4,7 +4,7 @@
 #include <Phoneme.h>
 #include <AudioSequence.h>
 
-#define TRACE_PHONETIZER_OUTPUT
+//#define TRACE_PHONETIZER_OUTPUT
 
 #ifdef TRACE_PHONETIZER_OUTPUT
 	#include <Windows.h>
