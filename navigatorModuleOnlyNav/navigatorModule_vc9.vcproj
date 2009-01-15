@@ -532,10 +532,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IVoicePacketListener.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\IWindow.h"
 				>
 			</File>
