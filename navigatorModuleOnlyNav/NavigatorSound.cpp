@@ -496,7 +496,7 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
     if (soundParams.find("3d") == 0)
     {
         std::vector<std::string> tokens;
-        StringHelpers::tokenize(soundParams, "", tokens);
+        StringHelpers::tokenize(soundParams, " ", tokens);
         if (tokens.size() == 3)
         {
             float min = atof(tokens[1].c_str());
