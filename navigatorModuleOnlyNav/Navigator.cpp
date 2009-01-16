@@ -2015,6 +2015,9 @@ bool Navigator::endAvatarEdit()
 
     // Save avatar
 	avatarXMLSave();
+
+    // Attach all camera supports to the new avatar 
+    mMainCameraSupportMgr->attachAllCameraSupportsToNode(mUserAvatar->getSceneNode());
     
     return true;
 }
