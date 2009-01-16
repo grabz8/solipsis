@@ -1651,7 +1651,10 @@ void Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
     if (ogrePeer->isLocal())
     {
         mUserAvatar = (Avatar*)ogrePeer;
-
+        
+        // Attach all camera supports to the new avatar 
+        mMainCameraSupportMgr->attachAllCameraSupportsToNode(mUserAvatar->getSceneNode());
+ 
         // Set the ThirdPersonCam as active
         setCameraMode(CM3rdPerson);
     }

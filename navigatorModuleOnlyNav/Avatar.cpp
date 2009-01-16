@@ -215,20 +215,6 @@ void Avatar::onSceneNodeChanged()
     mSelectionObject->setBoundingBox(selectionBbox);
     getSceneNode()->attachObject(mSelectionObject);
 
-    // Attach all camera supports to the new avatar 
-    Navigator::getSingletonPtr()->getMainCameraSupportManager()->attachAllCameraSupportsToNode(getSceneNode());
-    // Compute the new position of the camera support according to the new height of the Avatar
-    CameraSupport* camSup = Navigator::getSingletonPtr()->getMainCameraSupportManager()->getActiveCameraSupport();
-    if (camSup!=0)
-    {
-        if (camSup->getIndex()==Navigator::CMAroundPerson && camSup->getMode()==CameraSupport::CSMOrbital)
-        {
-            camSup->setCameraSupportNodePosition(Vector3::ZERO);
-            camSup->translateCameraSupport(0.0, 0.5*avatarSize.y, 0.0);
-            ((OrbitalCameraSupport*)camSup)->setDistanceFromTarget(2*avatarSize.y);
-        }
-    }
-
     getSceneNode()->setPosition(mXmlEntity->getPosition());
     getSceneNode()->setOrientation(mXmlEntity->getOrientation());
     setState(ASAvatarIdle);
