@@ -60,9 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib wsock32.lib VoiceEngineSimpleServer.lib"
+				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib wsock32.lib SimpleVoiceEngineProtocol.lib VoiceEngineSimpleServer.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineSimpleServer\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineSimpleServer\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -138,9 +138,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC.lib CommonTools.lib wsock32.lib VoiceEngineSimpleServer.lib"
+				AdditionalDependencies="pthreadVC.lib CommonTools.lib wsock32.lib SimpleVoiceEngineProtocol.lib VoiceEngineSimpleServer.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineSimpleServer\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineSimpleServer\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
