@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\DummyPhonetizer;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib fmodexL_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib VoiceEngine.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib Plugin_DummyPhonetizer_d.lib"
+				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib fmodexL_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib VoiceEngine.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib OgreMain_d.lib Plugin_DummyPhonetizer_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\DummyPhonetizer\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;..\..\DummyPhonetizer\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -92,7 +92,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC_d.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(FMOD_PATH)\fmodexL.dll&quot; $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\VoiceEngine\lib\debug\voiceEngine.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\Phonetizer\lib\debug\Phonetizer.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\DummyPhonetizer\lib\debug\Plugin_DummyPhonetizer_d.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(OGRE_HOME)\lib\OgreMain_d.dll&quot; $(TargetDir) /y&#x0D;&#x0A;"
+				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC_d.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(FMOD_PATH)\fmodexL.dll&quot; $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\VoiceEngine\lib\debug\voiceEngine.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\Phonetizer\lib\debug\Phonetizer.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\DummyPhonetizer\debug\Plugin_DummyPhonetizer_d.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(OGRE_HOME)\lib\OgreMain_d.dll&quot; $(TargetDir) /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\Dependencies\DummyPhonetizer\include;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;&quot;$(BOOST_ROOT)&quot;;&quot;$(FMOD_PATH)\inc&quot;;..\..\Dependencies\VoiceEngineClient\include;..\..\Dependencies\SimpleVoiceEngineProtocol\include;..\..\DummyPhonetizer;..\..\Dependencies\Phonetizer\include;..\..\Dependencies\CommonTools\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -140,9 +140,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkLibraryDependencies="false"
-				AdditionalDependencies="pthreadVC.lib CommonTools.lib fmodex_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib VoiceEngine.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib Plugin_DummyPhonetizer.lib"
+				AdditionalDependencies="pthreadVC.lib CommonTools.lib fmodex_vc.lib libspeex.lib wsock32.lib VoiceEngineClient.lib VoiceEngine.lib Phonetizer.lib SimpleVoiceEngineProtocol.lib OgreMain.lib Plugin_DummyPhonetizer.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\DummyPhonetizer\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;$(FMOD_PATH)\lib&quot;;&quot;..\..\Dependencies\speex\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngineClient\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\VoiceEngine\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\Phonetizer\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\SimpleVoiceEngineProtocol\lib\$(ConfigurationName)&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;..\..\DummyPhonetizer\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -172,7 +172,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(FMOD_PATH)\fmodex.dll&quot; $(TargetDir) /y&#x0D;&#x0A;"
+				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(FMOD_PATH)\fmodex.dll&quot; $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\VoiceEngine\lib\release\voiceEngine.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\Dependencies\Phonetizer\lib\release\Phonetizer.dll $(TargetDir) /y&#x0D;&#x0A;copy ..\..\DummyPhonetizer\release\Plugin_DummyPhonetizer.dll $(TargetDir) /y&#x0D;&#x0A;copy &quot;$(OGRE_HOME)\lib\OgreMain.dll&quot; $(TargetDir) /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
