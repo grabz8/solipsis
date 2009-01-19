@@ -51,7 +51,9 @@ bool FModSpeexEngine::shutdown()
 }
 
 //-------------------------------------------------------------------------------------
-bool FModSpeexEngine::initSoundSystem(FMOD::System* system, size_t networkChunkSizePCM, unsigned int bufferFrameCount, unsigned int frequency)
+bool FModSpeexEngine::initSoundSystem(FMOD::System* system,
+                                      size_t networkChunkSizePCM, unsigned int bufferFrameCount, unsigned int frequency,
+                                      float silenceLevel, unsigned int silenceLatencySec)
 {
     if (mVoiceEngine != 0)
     {
@@ -60,12 +62,13 @@ bool FModSpeexEngine::initSoundSystem(FMOD::System* system, size_t networkChunkS
     }
     mVoiceEngine = 0;
 
-	mVoiceEngine = new FModSpeexVoipHandler(system, this);
+	mVoiceEngine = new FModSpeexVoipHandler(system, this, networkChunkSizePCM, bufferFrameCount, frequency, silenceLevel, silenceLatencySec);
     if (mVoiceEngine == 0)
     {
         logMessage("Could not create the voice engine");
         return false;
     }
+    mVoiceEngine->setLogger(this); 
 
     return true;
 }
@@ -86,7 +89,7 @@ bool FModSpeexEngine::shutdownSoundSystem()
 }
 
 //-------------------------------------------------------------------------------------
-bool FModSpeexEngine::connect(const char* host, int port, const Solipsis::EntityUID & voiceId)
+bool FModSpeexEngine::connect(const char* host, unsigned short port, const EntityUID& voiceId)
 {
     if (mVoiceEngine == 0)
         return false;
@@ -101,9 +104,21 @@ void FModSpeexEngine::disconnect()
 }
 
 //-------------------------------------------------------------------------------------
+bool FModSpeexEngine::isConnected()
+{
+    return mVoiceEngine->isConnected();
+}
+
+//-------------------------------------------------------------------------------------
 void FModSpeexEngine::update()
 {
     mVoiceEngine->update();
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::setSilenceParams(float silenceLevel, unsigned int silenceLatencySec)
+{
+    mVoiceEngine->setSilenceParams(silenceLevel, silenceLatencySec);
 }
 
 //-------------------------------------------------------------------------------------
@@ -125,20 +140,26 @@ bool FModSpeexEngine::isRecording()
 }
 
 //-------------------------------------------------------------------------------------
+void FModSpeexEngine::updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel)
+{
+    mVoiceEngine->updateAvatar(voiceId, pos, dir, vel);
+}
 
+//-------------------------------------------------------------------------------------
 void FModSpeexEngine::addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
 {
 	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) == mAvatarUidToVoicePacketListener.end() );
 	mAvatarUidToVoicePacketListener[ talkingAvatarUid ] = pVoicePacketListener;
 }
 
+//-------------------------------------------------------------------------------------
 void FModSpeexEngine::removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
 {
 	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
 	mAvatarUidToVoicePacketListener.erase( talkingAvatarUid );
 }
 
-
+//-------------------------------------------------------------------------------------
 void FModSpeexEngine::onVoicePacketReception( VoicePacket* pVoicePacket )
 {
 	// we received a voice packet from FModSpeexVoipHandler, forward it to the listeners associated to the uid of the talking avatar
@@ -146,3 +167,5 @@ void FModSpeexEngine::onVoicePacketReception( VoicePacket* pVoicePacket )
 	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
 	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception( pVoicePacket );
 }
+
+//-------------------------------------------------------------------------------------

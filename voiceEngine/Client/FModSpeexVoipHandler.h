@@ -26,7 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "voiceformat.h"
 #include "voicesource.h"
-#include "voicenet.h"
+// GREG BEGIN
+//#include "voicenet.h"
+// GREG END
 #include "voiceheader.h"
 
 // GREG BEGIN
@@ -57,6 +59,14 @@ namespace Solipsis
 	class IVoicePacketListener;
 }
 
+/** This class provide logging capacities interface.
+ */
+class FModSpeexVoipHandlerLogger
+{
+public:
+    virtual void logMessage(const std::string& message) = 0;
+};
+
 /**
  *  A singleton class for handling voip communication
  */
@@ -71,76 +81,103 @@ public:
     static FModSpeexVoipHandler* getInstance();
 
     /**
+     * Constructor Perform the initialization with the sound system
      *  @param system External FMOD sound system or 0 if not available
      *  @param networkChunkSize Size of a network chunk, i.e. the amount of data that will be buffered before
      *                          it's sent to the server. The size is specified in PCM samples.
      *  @param bufferFrameCount The number of frames to hold in record buffer (buffer sample count = frequency * frame count)
      *  @param frequency Frequency of audio to record (affects only the default SPEEX codec)
+     *  @param silenceLevel The silence level between 0 (silent) and 128 (loud)
+     *  @param silenceLatencySec The silence latency during sound is sent/processed since last time silence was broken
      */
-	FModSpeexVoipHandler(FMOD::System* system, Solipsis::IVoicePacketListener* pVoicePacketListener, size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4,
-                  unsigned int frequency = 16000);
+	FModSpeexVoipHandler(FMOD::System* system,
+        Solipsis::IVoicePacketListener* pVoicePacketListener,
+        size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4, unsigned int frequency = 16000,
+        float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5);
 
     ~FModSpeexVoipHandler();
 
     /**
-     *  Connects to a voice chat server
-     *  @param host Voice server hostname
-     *  @param port Voice server port
-     *  @param id Avatar id
+     * Connects to a voice chat server
+     *  @param host The voice server hostname
+     *  @param port The voice server port
+     *  @param voiceId The unique user identifier connecting to the voice server, used to identify the sound source
      *  @return TRUE if successfully connected, FALSE otherwise
      */
-	bool connect(const char* host, int port, const Solipsis::EntityUID& voiceId);
+	bool connect(const char* host, unsigned short port, const Solipsis::EntityUID& voiceId);
 
     /**
-     *  Closes the connection to a voice server if connected
+     * Closes the connection to a voice server if connected
      */
     void disconnect();
 
     /**
-     *  Updates the internal sound system. This should be called once
-     *  per frame even if an external sound system is supplied.
+     * Returns true if engine is connected to the voice server.
+     *  @return TRUE if engine is connected, FALSE otherwise
+     */
+    bool isConnected();
+
+    /**
+     * Updates the internal sound system. This should be called once
+     * per frame even if an external sound system is supplied.
      */
     void update();
 
+    /**
+     * Set the silence detection parameters.
+     *  @param port The silence level between 0 (silent) and 128 (loud)
+     *  @param port The silence latency during sound is sent/processed since last time silence was broken
+     */
+	void setSilenceParams(float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5);
 
     /**
-     *  Starts recording audio through an input device. The recorded
-     *  data will be automatically sent to the voice server.
+     * Starts recording audio through an input device. The recorded
+     * data will be automatically sent to the voice server.
      */
     void startRecording();
 
     /**
-     *  Stops recording audio and sending data to the voice server.
+     * Stops recording audio and sending data to the voice server.
      */
     void stopRecording();
 
     /**
-     *  @return TRUE if the voice engine is currently recording audio or
-     *          FALSE otherwise
+     * Returns true if engine is recording
+     *  @return TRUE if the voice engine is currently recording audio, FALSE otherwise
      */
     bool isRecording() const;
 
 
     /**
-     *  Adds a new voice codec to the engine that can be used to
-     *  encode/decode incoming audio. If you want to encode outgoing
-     *  audio using this codec you can use setRecordCodec.
+     * Adds a new voice codec to the engine that can be used to
+     * encode/decode incoming audio. If you want to encode outgoing
+     * audio using this codec you can use setRecordCodec.
      */
     void addCodec(CodecPtr& codec);
 
     /**
-     *	Sets the codec used to encode outgoing audio data. A new
-     *  recording buffer will be created with the preferences of
-     *  the codec.
+     * Sets the codec used to encode outgoing audio data. A new
+     * recording buffer will be created with the preferences of
+     * the codec.
      *  @return TRUE on success, FALSE on failure
      */
     bool setRecordCodec(CodecPtr& codec);
 
 
-    void updateListener(float* pos, float* dir, float* vel);
+//    void updateListener(float* pos, float* dir, float* vel);
 	void updateAvatar(const Solipsis::EntityUID& id, float* pos, float* dir, float* vel);
 
     void setEnabled(bool enabled);
+
+    /// log a message
+    inline void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
+
+    /**
+     * setLogger.
+     *  @remarks An implementation must be supplied for this method.
+     *  @param logger The logger instance
+     */
+    void setLogger(FModSpeexVoipHandlerLogger* logger) { mLogger = logger; }
 
 private:
 	int sendLogin(const Solipsis::EntityUID& voiceId);
@@ -185,8 +222,15 @@ private:
 
 	VoiceBuffer* getAvatarVoiceBuffer(const Solipsis::EntityUID& id) const;
 
+// GREG BEGIN
+    bool silenceDetected(unsigned int from, unsigned int to);
+// GREG END
+
 private:
     static FModSpeexVoipHandler* mInstance;
+
+    /// Logging instance
+    FModSpeexVoipHandlerLogger* mLogger;
 
     FMOD::System* mSystem;
     FMOD::Sound* mRecordSound;
@@ -214,6 +258,17 @@ private:
 #endif
 // GREG END
 
+// GREG BEGIN
+    // Silence detection level
+    float mSilenceLevel;
+    // Silence latency in seconds (minimal duration sending audio after last sound detected)
+    unsigned int mSilenceLatencySec;
+    // Silence detected, no audio sent
+    bool mSilence;
+    // Time of the last sound detected in seconds
+    time_t mLastSoundDetectedTimeSec;
+// GREG END
+
     bool mRecording;
     bool mUseExternalSystem;
     bool mRun;
@@ -230,7 +285,7 @@ private:
     CodecMap mCodecs;
     int mSupportedFormats;
 
-    VoiceSource mSelfListener;		///< the motion state of the main avatar (ourselves). It is used to work out how we hear other sound sources (eg. are they far away ?)
+//    VoiceSource mSelfListener;		///< the motion state of the main avatar (ourselves). It is used to work out how we hear other sound sources (eg. are they far away ?)
 
 // GREG BEGIN
 //    apr_thread_mutex_t* mAvatarMutex;

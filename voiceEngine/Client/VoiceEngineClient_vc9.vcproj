@@ -165,10 +165,6 @@
 				RelativePath=".\voicecodecspeex.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\voicenet.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -193,10 +189,6 @@
 			</File>
 			<File
 				RelativePath=".\voiceformat.h"
-				>
-			</File>
-			<File
-				RelativePath=".\voicenet.h"
 				>
 			</File>
 			<File

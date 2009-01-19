@@ -46,6 +46,9 @@ navigator:setNameValueVariable("FacebookServer", "api.facebook.com/restserver.ph
 navigator:setNameValueVariable("FacebookLoginUrl", "http://api.facebook.com/login.php");
 navigator:setNameValueVariable("FixedNodeId", "")
 navigator:setNameValueVariable("MediaCachePath", "")
+navigator:setNameValueVariable("VoIPServerAddress", "localhost:30000")
+navigator:setNameValueVariable("VoIPSilenceLevel", "5.0")
+navigator:setNameValueVariable("VoIPSilenceLatency", "5")
 
 -- some usefull URLs
 -- http://mdeverdelhan.developpez.com/tutoriel/lua

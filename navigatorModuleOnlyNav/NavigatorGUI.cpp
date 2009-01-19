@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterManager.h>
 #include <Character.h>
 #include <CharacterInstance.h>
+#include <VoiceEngineManager.h>
 #include "Avatar.h"
 
 #ifdef _MSC_VER
@@ -1501,6 +1502,31 @@ void NavigatorGUI::debugRefreshUrl()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::debugRefreshDemoVoiceTalkButtonName()
+{
+    char txt[256];
+
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshDemoVoiceTalkButtonName()");
+
+    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
+
+    navi->evaluateJS("$('inputVoice').value = '" + mNavigator->getVoIPServerAddress() + "'");
+    sprintf(txt, "$('inputVoiceSilenceLvl').value = '%.2f'", mNavigator->getVoIPSilenceLevel());
+    navi->evaluateJS(txt);
+    sprintf(txt, "$('inputVoiceSilenceLat').value = '%d'", mNavigator->getVoIPSilenceLatency());
+    navi->evaluateJS(txt);
+
+    // get voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine == 0)
+        return;
+    sprintf(txt, "$('demoVoiceToggleTalkButton').innerHTML = '%s'", (voiceEngine->isRecording() ? "Stop" : "Start"));
+    navi->evaluateJS(txt);
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
@@ -1510,6 +1536,9 @@ void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
 
     // Refresh tree datas
     debugRefreshTree(naviData);
+
+    // Refresh voice engine state
+    debugRefreshDemoVoiceTalkButtonName();
 
     // Show Navi UI debug
     if (mNavisStates[NAVI_DEBUG] == NSCreated)

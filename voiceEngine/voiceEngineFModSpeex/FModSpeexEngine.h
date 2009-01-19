@@ -32,7 +32,7 @@ namespace Solipsis {
 
 /** This class manages the FModSpeex engine.
 */
-class FModSpeexEngine : public IVoiceEngine, public IVoicePacketListener
+class FModSpeexEngine : public IVoiceEngine, public IVoicePacketListener, public FModSpeexVoipHandlerLogger
 {
 private:
     /// Logging instance
@@ -57,45 +57,59 @@ public:
 		/// @copydoc IVoiceEngine::shutdown
 		virtual bool shutdown();
 
-		/// @copydoc IVoiceEngine::createScene
-		virtual bool initSoundSystem(FMOD::System* system, size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4, unsigned int frequency = 16000);
+		/// @copydoc IVoiceEngine::initSoundSystem
+		virtual bool initSoundSystem(FMOD::System* system,
+            size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4, unsigned int frequency = 16000,
+            float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5);
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::shutdownSoundSystem
 		virtual bool shutdownSoundSystem();
 
-		/// @copydoc IVoiceEngine::createScene
-		virtual bool connect(const char* host, int port, const Solipsis::EntityUID & id);
+		/// @copydoc IVoiceEngine::connect
+		virtual bool connect(const char* host, unsigned short port, const EntityUID& voiceId);
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::disconnect
 		virtual void disconnect();
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::isConnected
+        virtual bool isConnected();
+
+		/// @copydoc IVoiceEngine::update
 		virtual void update();
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::setSilenceParams
+		virtual void setSilenceParams(float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5);
+
+		/// @copydoc IVoiceEngine::startRecording
 		virtual void startRecording();
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::stopRecording
 		virtual void stopRecording();
 
-		/// @copydoc IVoiceEngine::createScene
+		/// @copydoc IVoiceEngine::isRecording
 		virtual bool isRecording();
+
+		/// @copydoc IVoiceEngine::updateAvatar
+        virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel);
 
 		/// @copydoc IVoiceEngine::setLogger
 		virtual void setLogger(IVoiceEngineLogger* logger) { mLogger = logger; }
 
+		/// @copydoc IVoiceEngine::addVoicePacketListener
 		virtual void addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener );
+
+        /// @copydoc IVoiceEngine::removeVoicePacketListener
 		virtual void removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener );
 
 	//! @}
-	
-    /// log a message
-    inline void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
 
 	//! @name IVoicePacketListener implementation
 	//!	@{
 		virtual void onVoicePacketReception( VoicePacket* pVoicePacket );
 	//! @}
+
+    /** See FModSpeexVoipHandlerLogger. */
+    virtual void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
 };
 
 } // namespace Solipsis

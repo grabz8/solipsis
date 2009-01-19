@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string>
 #include <XmlDatasBasicTypes.h>
+#include "DllExport.h"
 
 namespace FMOD
 {
@@ -46,52 +47,82 @@ public:
 
 /** This class represents a generic Voice engine.
 */
-class IVoiceEngine
+class VOICEENGINE_EXPORT IVoiceEngine
 {
 public:
     IVoiceEngine() {}
     virtual ~IVoiceEngine() {}
 
     /** Get the name of the voice engine.
+    @return The name of the voice engine
     @remarks An implementation must be supplied for this method to uniquely identify the engine.
     */
 	virtual const std::string& getName() const = 0;
 
     /** Perform the initialization. 
+    @return TRUE if successfully connected, FALSE otherwise
     @remarks An implementation must be supplied for this method.
     */
     virtual bool init() = 0;
 
     /** Perform any tasks when the system is shut down.
+    @return TRUE if successfully connected, FALSE otherwise
     @remarks An implementation must be supplied for this method.
     */
     virtual bool shutdown() = 0;
 
     /** Perform the initialization with the sound system. 
+    @param system External FMOD sound system or 0 if not available
+    @param networkChunkSize Size of a network chunk, i.e. the amount of data that will be buffered before
+                            it's sent to the server. The size is specified in PCM samples.
+    @param bufferFrameCount The number of frames to hold in record buffer (buffer sample count = frequency * frame count)
+    @param frequency Frequency of audio to record (affects only the default SPEEX codec)
+    @param silenceLevel The silence level between 0 (silent) and 128 (loud)
+    @param silenceLatencySec The silence latency during sound is sent/processed since last time silence was broken
+    @return TRUE if successfully connected, FALSE otherwise
     @remarks An implementation must be supplied for this method.
     */
-    virtual bool initSoundSystem(FMOD::System* system, size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4, unsigned int frequency = 16000) = 0;
+    virtual bool initSoundSystem(FMOD::System* system,
+        size_t networkChunkSizePCM = 6000, unsigned int bufferFrameCount = 4, unsigned int frequency = 16000,
+        float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5) = 0;
 
     /** Perform the finalization with the sound system. 
+    @return TRUE if successfully connected, FALSE otherwise
     @remarks An implementation must be supplied for this method.
     */
     virtual bool shutdownSoundSystem() = 0;
 
     /** Connect to a voice server.
-		@remarks An implementation must be supplied for this method.
-		@param	the id of the avatar connecting to the voice server. It is used to uniquely identify the sound sources and dispatch
+    @param host The voice server hostname
+    @param port The voice server port
+    @param voiceId The unique user identifier connecting to the voice server, used to identify the sound source
+    @return TRUE if successfully connected, FALSE otherwise
+    @remarks An implementation must be supplied for this method.
     */
-    virtual bool connect(const char* host, int port, const EntityUID & voiceId) = 0;
+    virtual bool connect(const char* host, unsigned short port, const EntityUID& voiceId) = 0;
 
     /** Disconnect from the voice server.
     @remarks An implementation must be supplied for this method.
     */
     virtual void disconnect() = 0;
 
+    /** Returns true if engine is connected to the voice server.
+    @return TRUE if engine is connected, FALSE otherwise
+    @remarks An implementation must be supplied for this method.
+    */
+    virtual bool isConnected() = 0;
+
     /** Update the voice engine, this should be called once per frame.
     @remarks An implementation must be supplied for this method.
     */
     virtual void update() = 0;
+
+    /** Set the silence detection parameters.
+    @param silenceLevel The silence level between 0 (silent) and 128 (loud)
+    @param silenceLatencySec The silence latency during sound is sent/processed since last time silence was broken
+    @remarks An implementation must be supplied for this method.
+    */
+	virtual void setSilenceParams(float silenceLevel = 5.0f, unsigned int silenceLatencySec = 5) = 0;
 
     /** Start recording.
     @remarks An implementation must be supplied for this method.
@@ -104,19 +135,31 @@ public:
     virtual void stopRecording() = 0;
 
     /** Returns true if engine is recording.
+    @return TRUE if engine is recording
     @remarks An implementation must be supplied for this method.
     */
     virtual bool isRecording() = 0;
 
-	/**
-		@brief	adds a listener that will be informed when a voice packet emitted by the given talking avatar is received
-	*/
+    /** Update sound position/velocity of an avatar.
+    @remarks An implementation must be supplied for this method.
+    */
+    virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel) = 0;
+
+    /** Adds a listener that will be informed when a voice packet emitted by the given talking avatar is received.
+    @remarks An implementation must be supplied for this method.
+    */
 	virtual void addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
 
-	/**
-		@brief	removes a listener for voice packets
-	*/
+    /** Removes a listener for voice packets.
+    @remarks An implementation must be supplied for this method.
+    */
 	virtual void removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
+
+    /** setLogger.
+    @remarks An implementation must be supplied for this method.
+    @param logger The logger instance
+    */
+    virtual void setLogger(IVoiceEngineLogger* logger) = 0;
 };
 
 } // namespace Solipsis

@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Ogre.h>
 #include "ExternalTextureSourceEx.h"
 #include <pthread.h>
+#include <VoiceEngineManager.h>
 
 namespace Solipsis {
 
@@ -103,6 +104,13 @@ public:
     void bindNodeToMaterial(Ogre::Node *node, const Ogre::String& material);
     /// bind 1 Ogre node from 1 material
     void unbindNodeToMaterial(Ogre::Node *node);
+
+protected:
+    class VoiceEngineLogger : public IVoiceEngineLogger {
+        /** See IVoiceEngineLogger. */
+        virtual void logMessage(const std::string& message);
+    };
+    VoiceEngineLogger mVoiceEngineLogger;
 
 private:
     /// convert Ogre Vector3 to FMod vector

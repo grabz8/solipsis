@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Character.h>
 #include <CharacterInstance.h>
 #include <IFaceController.h>
+#include <VoiceEngineManager.h>
 
 using namespace Solipsis;
 using namespace CommonTools;
@@ -218,6 +219,10 @@ void Avatar::onSceneNodeChanged()
     getSceneNode()->setPosition(mXmlEntity->getPosition());
     getSceneNode()->setOrientation(mXmlEntity->getOrientation());
     setState(ASAvatarIdle);
+
+    // Attach all camera supports to the new user avatar 
+    if (isLocal())
+        Navigator::getSingletonPtr()->getMainCameraSupportManager()->attachAllCameraSupportsToNode(getSceneNode());
 }
 
 //-------------------------------------------------------------------------------------
@@ -284,7 +289,7 @@ void Avatar::setState(Solipsis::AnimationState state)
     if (mStateAnimName[state].length() > 0)
         startAnimation(mStateAnimName[state]);
     mState = state;
-    if (mIsLocal)
+    if (isLocal())
         mUpdatedXmlEntity->setAnimation(mState);
 }
 
@@ -375,11 +380,23 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (definedAttributes & XmlEntity::DAPosition)
     {
         mLastRealPosition = xmlEntity->getPosition();
+
+        // Update position of avatar in the Voice engine
+        IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+        if ((voiceEngine != 0) && voiceEngine->isConnected())
+        {
+            float pos[3], dir[3], vel[3];
+            pos[0] = mLastRealPosition.x; pos[1] = mLastRealPosition.y; pos[2] = mLastRealPosition.z;
+            Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
+            dir[0] = vpn.x; dir[1] = vpn.y; dir[2] = vpn.z;
+            vel[0] = vel[1] = vel[2] = 0.0f;
+            voiceEngine->updateAvatar(xmlEntity->getUid(), pos, dir, vel);
+        }
     }
     if (definedAttributes & XmlEntity::DAOrientation)
     {
         mLastRealOrientation = xmlEntity->getOrientation();
-        if (mIsLocal)
+        if (isLocal())
         {
             mXmlEntity->setOrientation(xmlEntity->getOrientation());
             getSceneNode()->setOrientation(xmlEntity->getOrientation());

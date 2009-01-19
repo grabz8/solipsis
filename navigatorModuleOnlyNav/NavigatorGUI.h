@@ -191,6 +191,7 @@ public:
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
     void debugRefreshUrl();
+    void debugRefreshDemoVoiceTalkButtonName();
 #endif
 
 protected:

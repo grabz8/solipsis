@@ -64,6 +64,9 @@ Navigator::Navigator(const String name, IApplication* application) :
     mFacebookLoginUrl("http://api.facebook.com/login.php"),
     mFixedNodeId(""),
     mNodeId(""),
+    mVoIPServerAddress("localhost:30000"),
+    mVoIPSilenceLevel(5.0),
+    mVoIPSilenceLatency(5),
     mNavigationInterface(NIMouseKeyboard),
     mXmlRpcClient(0),
     mOgrePeerManager(0),
@@ -307,6 +310,42 @@ void Navigator::setMediaCachePath(const String& mediaCachePath)
 }
 
 //-------------------------------------------------------------------------------------
+const String& Navigator::getVoIPServerAddress()
+{
+    return mVoIPServerAddress;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setVoIPServerAddress(const String& address)
+{
+    mVoIPServerAddress = address;
+}
+
+//-------------------------------------------------------------------------------------
+float Navigator::getVoIPSilenceLevel()
+{
+    return mVoIPSilenceLevel;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setWorldsServerTimeout(float VoIPSilenceLevel)
+{
+    mVoIPSilenceLevel = VoIPSilenceLevel;
+}
+
+//-------------------------------------------------------------------------------------
+unsigned int Navigator::getVoIPSilenceLatency()
+{
+    return mVoIPSilenceLatency;
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec)
+{
+    mVoIPSilenceLatency = VoIPSilenceLatencySec;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::setNameValueVariable(const String& varName, const String& varValue)
 {
     if (varName == "PeerAddress")
@@ -366,6 +405,21 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
     if (varName == "MediaCachePath")
     {
         mMediaCachePath = varValue;
+        return true;
+    }
+    if (varName == "VoIPServerAddress")
+    {
+        mVoIPServerAddress = varValue;
+        return true;
+    }
+    if (varName == "VoIPSilenceLevel")
+    {
+        mVoIPSilenceLevel = StringConverter::parseReal(varValue);
+        return true;
+    }
+    if (varName == "VoIPSilenceLatency")
+    {
+        mVoIPSilenceLatency = StringConverter::parseInt(varValue);
         return true;
     }
     return false;
@@ -647,42 +701,24 @@ void Navigator::demoVLC(const String params)
 //-------------------------------------------------------------------------------------
 void Navigator::demoVoice(const String params)
 {
-    // get voice engine
-    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
-    if (voiceEngine == 0)
+    if (params.find("SilenceParams") == 0)
+    {
+        std::vector<std::string> tokens;
+        StringHelpers::tokenize(params, " ", tokens);
+        if (tokens.size() != 3)
+            return;
+        // get voice engine
+        IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+        if (voiceEngine != 0)
+            voiceEngine->setSilenceParams(atof(tokens[1].c_str()), atoi(tokens[2].c_str()));
         return;
+    }
 
-    if (params.compare("toggleVoiceRecording") == 0)
-    {
-        // start/stop speaking
-        if (voiceEngine->isRecording())
-            voiceEngine->stopRecording();
-        else
-            voiceEngine->startRecording();
-    }
-    else
-    {
-        // connection to the voice server
-        String voiceServerHost("localhost");
-        unsigned short voiceServerPort = 30000;
-        std::string::size_type strPos;
-        strPos = params.find_first_of(":");
-        if (strPos == std::string::npos)
-            voiceServerHost = params;
-        else
-        {
-            voiceServerHost = params.substr(0, strPos);
-            if (strPos + 1 < params.length())
-                voiceServerPort = atoi(params.substr(strPos + 1, params.length() - (strPos + 1)).c_str());
-        }
-        // stop recording
-        if (voiceEngine->isRecording())
-            voiceEngine->stopRecording();
-        // connect to voice server
-		EntityUID avatarUid = this->getUserAvatar()->getCharacterInstance()->getUid();
-        bool connectionSuccess = voiceEngine->connect(voiceServerHost.c_str(), voiceServerPort, avatarUid);
-		assert( connectionSuccess );
-    }
+    // set voice server address
+    setVoIPServerAddress(params);
+
+    // start/stop speaking
+    toggleVoIP();
 }
 #endif
 #ifdef DEMO_PHYSICS1
@@ -1336,6 +1372,14 @@ bool Navigator::disconnect()
     if (mXmlRpcClient == 0)
         return false;
 
+    // voice engine : stop speaking
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if ((voiceEngine != 0) && voiceEngine->isRecording())
+    {
+        voiceEngine->stopRecording();
+        voiceEngine->disconnect();
+    }
+
     // Unload avatar/modeler panels
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
     if (mState == SAvatarEdit)
@@ -1460,23 +1504,21 @@ bool Navigator::contextItemSelected(const String& item)
     // Perform action associated to item selected
     if (item == "config")
     {
-        if (mState == SInWorld)
-        {
-            setCameraMode(CMAroundPerson);
-            mNavigatorGUI->avatarMainShow();
-        }
+        setCameraMode(CMAroundPerson);
+        mNavigatorGUI->avatarMainShow();
     }
     else if (item == "create")
     {
-        if (mState == SInWorld)
-        {
-            setCameraMode(CMModeling);
-            mNavigatorGUI->modelerMainShow();
-        }
+        setCameraMode(CMModeling);
+        mNavigatorGUI->modelerMainShow();
     }
     else if (item == "chat")
     {
         mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+    }
+    else if (item == "talk")
+    {
+        toggleVoIP();
     }
 
     return true;
@@ -1652,9 +1694,6 @@ void Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
     {
         mUserAvatar = (Avatar*)ogrePeer;
         
-        // Attach all camera supports to the new avatar 
-        mMainCameraSupportMgr->attachAllCameraSupportsToNode(mUserAvatar->getSceneNode());
- 
         // Set the ThirdPersonCam as active
         setCameraMode(CM3rdPerson);
     }
@@ -2288,3 +2327,36 @@ void Navigator::setCameraMode(int mode)
             mNavigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
     }
 }
+
+//-------------------------------------------------------------------------------------
+void Navigator::toggleVoIP()
+{
+    // get voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine == 0)
+        return;
+
+    // start/stop recording
+    if (voiceEngine->isRecording())
+    {
+        voiceEngine->stopRecording();
+        voiceEngine->disconnect();
+    }
+    else
+    {
+        // connect to voice server
+	    EntityUID avatarUid = getUserAvatar()->getCharacterInstance()->getUid();
+        std::string voipSrvHost;
+        unsigned short voipSrvPort;
+        StringHelpers::getURLHostPort(getVoIPServerAddress(), voipSrvHost, voipSrvPort);
+        bool connectionSuccess = voiceEngine->connect(voipSrvHost.c_str(), voipSrvPort, avatarUid);
+	    if (connectionSuccess)
+            voiceEngine->startRecording();
+        else
+            mNavigatorGUI->showMessageBox("Voice engine", "Unable to connect to the Voice Server !<br/>Check your Internet connection and configure your firewall<br/>(UDP port " + StringHelpers::toString(voipSrvPort) + ").", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_ERROR);
+    }
+
+    mNavigatorGUI->debugRefreshDemoVoiceTalkButtonName();
+}
+
+//-------------------------------------------------------------------------------------

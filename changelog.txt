@@ -936,3 +936,9 @@ VLC plugin crash bug fix when 2 VLC instances are running simultaneously and 2nd
 --loop added
 
 ---------------------------
+19/01/09
+
+VoiceEngine silence detection added, parameters added, talk ctxt button bind added, some bugs fixed, vc configuration cleaned
+Cameras attachment on user avatar now performed into Avatar::onSceneNodeChanged()
+
+---------------------------

@@ -209,17 +209,25 @@ FModSpeexVoipHandler* FModSpeexVoipHandler::getInstance()
     return mInstance;
 }
 
-FModSpeexVoipHandler::FModSpeexVoipHandler(FMOD::System* system, Solipsis::IVoicePacketListener* pVoicePacketListener, size_t networkChunkSizePCM,
-                             unsigned int bufferFrameCount, unsigned int frequency)
+FModSpeexVoipHandler::FModSpeexVoipHandler(FMOD::System* system,
+                                           Solipsis::IVoicePacketListener* pVoicePacketListener,
+                                           size_t networkChunkSizePCM, unsigned int bufferFrameCount, unsigned int frequency,
+                                           float silenceLevel, unsigned int silenceLatencySec)
     : mSystem(system)
     , mRecordSound(0)
     , mRecordSampleRate(frequency)
     , mBufferFrameCount(bufferFrameCount)
     , mRecordSampleSize(0)
     , mRecording(false)
+// GREG BEGIN
+    , mSilenceLevel(silenceLevel)
+    , mSilenceLatencySec(silenceLatencySec)
+    , mSilence(true)
+    , mLastSoundDetectedTimeSec(0)
+// GREG END
     , mNetworkChunkSize(networkChunkSizePCM)
     , mUseExternalSystem(true)
-    , mRun(true)
+    , mRun(false)
     , mLastRecordPos(0)
     , mSock()
 // GREG BEGIN
@@ -417,6 +425,12 @@ unsigned short FModSpeexVoipHandler::encodeAudioFrame(char* data, unsigned int f
 // -----------------------------------------------------------------------------
 // Recording methods
 
+void FModSpeexVoipHandler::setSilenceParams(float silenceLevel, unsigned int silenceLatencySec)
+{
+    mSilenceLevel = silenceLevel;
+    mSilenceLatencySec = silenceLatencySec;
+}
+
 void FModSpeexVoipHandler::startRecording()
 {
     if (!mEnabled) return;
@@ -516,13 +530,13 @@ void FModSpeexVoipHandler::update()
 
                     FMOD_VECTOR pos;
                     source.getPosition(&pos.x, &pos.z, &pos.y);
-                    pos.x = -pos.x; // why ?
-                    pos.z = -pos.z; // why ?
+/*                    pos.x = -pos.x; // why ?
+                    pos.z = -pos.z; // why ?*/
 
                     FMOD_VECTOR vel;
                     source.getVelocity(&vel.x, &vel.z, &vel.y);
-                    vel.x = -vel.x; // why ?
-                    vel.z = -vel.z; // why ?
+/*                    vel.x = -vel.x; // why ?
+                    vel.z = -vel.z; // why ?*/
 
                     pVoiceBuffer->getChannel()->set3DAttributes(&pos, &vel);
                 }
@@ -535,6 +549,7 @@ void FModSpeexVoipHandler::update()
 // GREG END
     }
 
+/*
     // Update fmod system if we have created it
     if (!mUseExternalSystem)
     {
@@ -557,9 +572,9 @@ void FModSpeexVoipHandler::update()
 
         mSystem->set3DListenerAttributes(0, &pos, &vel, &dir, &up);
         mSystem->update();
-    }
+    }*/
 
-    if (!isRecording() && !mEnabled)
+    if (!isRecording() || !mEnabled)
         return;
 
     unsigned int length = mRecordSampleRate * mBufferFrameCount;
@@ -578,6 +593,31 @@ void FModSpeexVoipHandler::update()
     if (mSystem->getRecordPosition(&recordpos) != FMOD_OK)
         return;
 #endif
+// GREG END
+
+// GREG BEGIN
+    // Silence detection
+    time_t now;
+    time(&now);
+    if (recordpos >= mLastRecordPos)
+    {
+        if (!silenceDetected(mLastRecordPos, recordpos))
+            mLastSoundDetectedTimeSec = now;
+    }
+    else
+    {
+        if (!silenceDetected(mLastRecordPos, length))
+            mLastSoundDetectedTimeSec = now;
+    }
+    if (now - mLastSoundDetectedTimeSec > mSilenceLatencySec)
+        mSilence = true;
+    else
+        mSilence = false;
+    if (mSilence)
+    {
+        mLastRecordPos = recordpos;
+        return;
+    }
 // GREG END
 
     // If we have recorded mNetworkChunkSize since the last sent frame
@@ -599,13 +639,13 @@ void FModSpeexVoipHandler::update()
     }
 }
 
-void FModSpeexVoipHandler::updateListener(float* pos, float* dir, float* vel)
+/*void FModSpeexVoipHandler::updateListener(float* pos, float* dir, float* vel)
 {
     mSelfListener.setPosition(pos[0], pos[1], pos[2]);
     mSelfListener.setDirection(dir[0], dir[1], dir[2]);
     mSelfListener.setVelocity(vel[0], vel[1], vel[2]);
 }
-
+*/
 // -----------------------------------------------------------------------------
 // Avatar methods
 
@@ -623,12 +663,18 @@ void FModSpeexVoipHandler::updateAvatar(const EntityUID& id, float* pos, float* 
 //        apr_thread_mutex_unlock(mAvatarMutex);
         pthread_mutex_unlock(&mAvatarMutex);
 // GREG END
+        logMessage("FModSpeexVoipHandler::updateAvatar() avatar " + id + " not found !");
         return;
     }
 
     i->second.setPosition(pos[0], pos[1], pos[2]);
     i->second.setDirection(dir[0], dir[1], dir[2]);
     i->second.setVelocity(vel[0], vel[1], vel[2]);
+#ifdef _DEBUG
+    char tmp[256];
+    _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::updateAvatar(%s) pos=(%.2f,%.2f,%.2f)", id.c_str(), pos[0], pos[1], pos[2]);
+    logMessage(tmp);
+#endif
 
 // GREG BEGIN
 //    apr_thread_mutex_unlock(mAvatarMutex);
@@ -639,6 +685,7 @@ void FModSpeexVoipHandler::updateAvatar(const EntityUID& id, float* pos, float* 
 VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* codec)
 {
     // Create avatar sound
+    logMessage("FModSpeexVoipHandler::newAvatar(" + id + ")");
 
     FMOD_CREATESOUNDEXINFO exinfo;
     memset(&exinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
@@ -649,15 +696,15 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
     exinfo.length = mBufferFrameCount * exinfo.defaultfrequency * sampleSizeFromVoiceFormat(codec->getDecodeFormat());
 
     FMOD::Sound* sound = 0;
-    if (mSystem->createSound(0, FMOD_3D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
+    if (mSystem->createSound(0, /*FMOD_3D | */FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
     {
         return 0;
     }
 
-    sound->set3DMinMaxDistance(5, 10000.0f);
+    // To replace by the real values sent over voip network
+//    sound->set3DMinMaxDistance(1.0f, 5.0f);
 
     // Create voice buffer and source
-
     VoiceBuffer* buffer = new(VoiceBufferPool::malloc()) VoiceBuffer(sound);
 // GREG BEGIN
 //    apr_thread_mutex_lock(mAvatarMutex);
@@ -681,9 +728,10 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
     return buffer;
 }
 
-void FModSpeexVoipHandler::removeAvatar(const Solipsis::EntityUID &id)
+void FModSpeexVoipHandler::removeAvatar(const EntityUID& id)
 {
     // Release voice buffer and source
+    logMessage("FModSpeexVoipHandler::removeAvatar(" + id + ")");
 
 // GREG BEGIN
 //    apr_thread_mutex_lock(mAvatarMutex);
@@ -734,7 +782,7 @@ VoiceBuffer* FModSpeexVoipHandler::getAvatarVoiceBuffer(const Solipsis::EntityUI
 // -----------------------------------------------------------------------------
 // Network methods
 
-bool FModSpeexVoipHandler::connect(const char* host, int port, const Solipsis::EntityUID & voiceId)
+bool FModSpeexVoipHandler::connect(const char* host, unsigned short port, const EntityUID& voiceId)
 {
 	if (mSock.isValid())
         disconnect();
@@ -790,6 +838,11 @@ void FModSpeexVoipHandler::disconnect()
 // GREG END
 }
 
+bool FModSpeexVoipHandler::isConnected()
+{
+    return mRun;
+}
+
 int FModSpeexVoipHandler::recvVoiceHeader(VoicePacketHeader* header)
 {
     int received = 0;
@@ -804,7 +857,7 @@ int FModSpeexVoipHandler::recvVoiceHeader(VoicePacketHeader* header)
     return received;
 }
 
-int FModSpeexVoipHandler::sendLogin(const Solipsis::EntityUID & voiceId)
+int FModSpeexVoipHandler::sendLogin(const EntityUID& voiceId)
 {
     int sent = 0;
 	int voiceIdSerializedSize = (int)voiceId.size() + sizeof(unsigned int);
@@ -825,11 +878,87 @@ int FModSpeexVoipHandler::sendEnableVOIP(bool enabled)
     return sent;
 }
 
+// GREG BEGIN
+bool FModSpeexVoipHandler::silenceDetected(unsigned int from, unsigned int to)
+{
+	printf( "FModSpeexVoipHandler::silenceDetected : start\n" );
+
+    assert(to >= from);
+
+    // we will compute the surface of the spectrum bounded between -127..127
+    unsigned int sampleCount = (to - from)/mRecordSampleSize;
+    if (sampleCount < 1) return true;
+#define SILENCE_DETECTION_SAMPLE_RATE 1000.0f
+    unsigned int samplesInc = (unsigned int)((float)mRecordSampleRate/SILENCE_DETECTION_SAMPLE_RATE);
+    if (samplesInc == 0)
+        samplesInc = 1;
+
+	void* pptr1, *pptr2;
+	unsigned int plen1, plen2;
+
+	mRecordSound->lock(from*mRecordSampleSize, sampleCount*mRecordSampleSize, &pptr1, &pptr2, &plen1, &plen2);
+    unsigned int surface = 0;
+	unsigned int len1, len2;
+    len1 = plen1; len2 = plen2;
+    switch (mRecordSampleSize)
+    {
+        case sizeof(char):
+            {
+                for (char *ptr1 = (char*)pptr1; (char*)ptr1 < (char*)pptr1 + len1; ptr1 += samplesInc)
+                    surface += (unsigned int)((*ptr1 > 0) ? (*ptr1) : -(*ptr1))>>8;
+                for (char *ptr2 = (char*)pptr2; (char*)ptr2 < (char*)pptr2 + len2; ptr2 += samplesInc)
+                    surface += (unsigned int)((*ptr2 > 0) ? (*ptr2) : -(*ptr2))>>8;
+            }
+            break;
+        case sizeof(short):
+            {
+                for (short *ptr1 = (short*)pptr1; (char*)ptr1 < (char*)pptr1 + len1; ptr1 += samplesInc)
+                    surface += (unsigned int)((*ptr1 > 0) ? (*ptr1) : -(*ptr1))>>8;
+                for (short *ptr2 = (short*)pptr2; (char*)ptr2 < (char*)pptr2 + len2; ptr2 += samplesInc)
+                    surface += (unsigned int)((*ptr2 > 0) ? (*ptr2) : -(*ptr2))>>8;
+            }
+            break;
+        case sizeof(int):
+            {
+                for (int *ptr1 = (int*)pptr1; (char*)ptr1 < (char*)pptr1 + len1; ptr1 += samplesInc)
+                    surface += (unsigned int)((*ptr1 > 0) ? (*ptr1) : -(*ptr1))>>8;
+                for (int *ptr2 = (int*)pptr2; (char*)ptr2 < (char*)pptr2 + len2; ptr2 += samplesInc)
+                    surface += (unsigned int)((*ptr2 > 0) ? (*ptr2) : -(*ptr2))>>8;
+            }
+            break;
+    }
+	mRecordSound->unlock(pptr1, pptr2, plen1, plen2);
+
+    // the sum (surface) is now computed relative to the number of samples taken
+    // max surface of 1 sample = 127
+    // max surface = (sampleCount/samplesInc)*127
+    // 0 <= surfaceRel <= 127
+    float surfaceRel = (float)surface/(float)(sampleCount/samplesInc);
+#ifdef _DEBUG
+    char tmp[256];
+    _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::silenceDetected() %.8f", surfaceRel );
+    logMessage(tmp);
+#endif
+    return (surfaceRel < mSilenceLevel);
+}
+// GREG END
+
 int FModSpeexVoipHandler::sendAudioFrames(unsigned int from, unsigned int to)
 {
 	printf( "FModSpeexVoipHandler::sendAudioFrames : start\n" );
 
     assert(to >= from);
+// GREG BEGIN
+    // Speex sometimes crash when using big audio buffer close to 64Kb
+    // so we ensure buffers won t exceed 32Kb
+    if (to - from > 32768)
+    {
+        char tmp[256];
+        _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::sendAudioFrames() too much audio datas %d (>32768), keeping last 32768 bytes.", to - from);
+        logMessage(tmp);
+        from = to - 32768;
+    }
+// GREG END
 
     VoicePacketHeader header;
     header.format = mEncodeFormat;
@@ -1087,6 +1216,7 @@ int FModSpeexVoipHandler::recvAudioFrames(unsigned int expectedSize)
 
     unsigned short sampleSize = sampleSizeFromVoiceFormat(pCodec->getDecodeFormat());
     audioData = (char*)mReceivePool.ordered_malloc(header.decodedAudioSize);
+
     unsigned short frameSizeDecoded = pCodec->getFrameSizePCM() * sampleSize;
     size_t offset = 0;
     for (unsigned short f = 0; f < header.frames; ++f)

@@ -147,34 +147,36 @@
 	<References>
 	</References>
 	<Files>
-		<File
-			RelativePath=".\SimpleVoiceEngineProtocol.cpp"
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			>
-		</File>
-		<File
-			RelativePath=".\SimpleVoiceEngineProtocol.h"
+			<File
+				RelativePath=".\SimpleVoiceEngineProtocol.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Socket.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			>
-		</File>
-		<File
-			RelativePath=".\Socket.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Socket.h"
-			>
-		</File>
-		<File
-			RelativePath=".\voiceheader.h"
-			>
-		</File>
-		<File
-			RelativePath=".\voiceuuid.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\voiceuuid.h"
-			>
-		</File>
+			<File
+				RelativePath=".\SimpleVoiceEngineProtocol.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Socket.h"
+				>
+			</File>
+			<File
+				RelativePath=".\voiceheader.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

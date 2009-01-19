@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorSound.h"
 #include <PhonetizerManager.h>
-#include <VoiceEngineManager.h>
 #include <CTLog.h>
 #include <CTIO.h>
 #include <CTStringHelpers.h>
@@ -301,6 +300,7 @@ bool NavigatorSound::initialize(unsigned int updateRateMs)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorSound::initialize() Could not initialize the voice engine");
             return false;
         }
+    voiceEngine->setLogger(&mVoiceEngineLogger);
 
     return true;
 }
@@ -585,6 +585,12 @@ void NavigatorSound::unbindNodeToMaterial(Ogre::Node *node)
     NodeSoundBufferMap::iterator it = mNodeSoundBufferMap.find(node);
     if (it == mNodeSoundBufferMap.end()) return;
     mNodeSoundBufferMap.erase(it);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorSound::VoiceEngineLogger::logMessage(const std::string& message)
+{
+    LOGHANDLER_LOG(LogHandler::VL_DEBUG, message.c_str());
 }
 
 //-------------------------------------------------------------------------------------

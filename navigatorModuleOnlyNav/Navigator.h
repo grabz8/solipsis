@@ -109,6 +109,9 @@ protected:
     NodeId mFixedNodeId;
     NodeId mNodeId;
     String mMediaCachePath;
+    String mVoIPServerAddress;
+    float mVoIPSilenceLevel;
+    unsigned int mVoIPSilenceLatency;
 
     CameraSupportManager* mMainCameraSupportMgr;
 
@@ -190,11 +193,16 @@ public:
     void setNodeId(const NodeId& nodeId);
     const String& getMediaCachePath();
     void setMediaCachePath(const String& mediaCachePath);
+    const String& getVoIPServerAddress();
+    void setVoIPServerAddress(const String& address);
+    float getVoIPSilenceLevel();
+    void setWorldsServerTimeout(float VoIPSilenceLevel);
+    unsigned int getVoIPSilenceLatency();
+    void setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec);
     bool setNameValueVariable(const String& varName, const String& varValue);
 
     void setNavigationInterface(NavigationInterface ni) { mNavigationInterface=ni; };
     NavigationInterface getNavigationInterface() { return mNavigationInterface; }; 
-
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();
@@ -211,6 +219,8 @@ public:
     void setCameraMode(int mode);
     int getCameraMode() { return mMainCameraSupportMgr->getActiveCameraSupportIndex(); };
     int getLastCameraMode() { return mMainCameraSupportMgr->getLastCameraSupportIndex(); };
+
+    void toggleVoIP();
 
     Avatar* getUserAvatar();
 
