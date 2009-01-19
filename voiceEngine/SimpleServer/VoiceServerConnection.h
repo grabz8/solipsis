@@ -77,6 +77,9 @@ namespace SolipsisVoiceServer {
 	const Socket & getSocket( void ) const { return mSocket; }
 	Socket & getSocket( void ) { return mSocket; }
 
+    // Return the avatar for this connection
+    Avatar* getAvatar() { return mAvatar; }
+
     // return true if VOIP is enabled for this client
     bool isVOIPEnabled() { return mVOIPEnabled; }
 
