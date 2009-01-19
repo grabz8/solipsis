@@ -663,7 +663,7 @@ void FModSpeexVoipHandler::updateAvatar(const EntityUID& id, float* pos, float* 
 //        apr_thread_mutex_unlock(mAvatarMutex);
         pthread_mutex_unlock(&mAvatarMutex);
 // GREG END
-        logMessage("FModSpeexVoipHandler::updateAvatar() avatar " + id + " not found !");
+//        logMessage("FModSpeexVoipHandler::updateAvatar() avatar " + id + " not found !");
         return;
     }
 
@@ -702,7 +702,7 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
     }
 
     // To replace by the real values sent over voip network
-//    sound->set3DMinMaxDistance(1.0f, 5.0f);
+//    sound->set3DMinMaxDistance(1.0f, 3.0f);
 
     // Create voice buffer and source
     VoiceBuffer* buffer = new(VoiceBufferPool::malloc()) VoiceBuffer(sound);
