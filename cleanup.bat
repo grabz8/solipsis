@@ -306,6 +306,8 @@ rmdir Phonetizer\Debug /S /Q
 rmdir Phonetizer\Release /S /Q
 rmdir DummyPhonetizer\Debug /S /Q
 rmdir DummyPhonetizer\Release /S /Q
+rmdir FaceController\Debug /S /Q
+rmdir FaceController\Release /S /Q
 
 rmdir plugin_swf\Debug /S /Q
 rmdir plugin_swf\Release /S /Q
