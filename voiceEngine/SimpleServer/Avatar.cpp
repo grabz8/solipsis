@@ -88,11 +88,12 @@ void Avatar::audioDatasReceived(AudioDatasPtr& audioDatasPtr)
 int Avatar::sendAudioFrames(AudioDatasPtr& audioDatasPtr)
 {
     int sent = 0;
-	size_t serializedVoiceUidSize = sizeof(unsigned int) + mId.size();
+    const Solipsis::EntityUID& emitterVoiceUid = audioDatasPtr->mConnection->getAvatar()->getId();
+	size_t serializedVoiceUidSize = sizeof(unsigned int) + emitterVoiceUid.size();
 	sent += SimpleVoiceEngineProtocol::sendPacketHeader(_connection->getSocket(), VP_AUDIO_TO_CLIENT, (unsigned int)(serializedVoiceUidSize) + audioDatasPtr->mSize);
-	unsigned int numCharsInVoiceId = (unsigned int)mId.size();
+	unsigned int numCharsInVoiceId = (unsigned int)emitterVoiceUid.size();
     sent += _connection->getSocket().send( (const char*)&numCharsInVoiceId, sizeof(unsigned int));
-    sent += _connection->getSocket().send( mId.c_str(), (int)mId.size());
+    sent += _connection->getSocket().send( emitterVoiceUid.c_str(), (int)emitterVoiceUid.size());
     sent += _connection->getSocket().send( (const char*)audioDatasPtr->mDatas, audioDatasPtr->mSize);
 
     return sent;
