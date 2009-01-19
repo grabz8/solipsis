@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "CTBasicThread.h"
 
-#include "voiceuuid.h"
 #include "voiceheader.h"
 
 #include <boost/pool/pool.hpp>
