@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\VoiceEngineServer\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -91,12 +91,12 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC_d.dll $(TargetDir) /y"
+				CommandLine="postBuildDebug.bat"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\VoiceEngineServer\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -170,7 +170,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="copy ..\..\Dependencies\pthreads\lib\pthreadVC.dll $(TargetDir) /y"
+				CommandLine="postBuildRelease.bat"
 			/>
 		</Configuration>
 	</Configurations>
@@ -198,6 +198,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\readme.txt"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

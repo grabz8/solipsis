@@ -945,3 +945,8 @@ VoiceEngine silence detection added, parameters added, talk ctxt button bind add
 Cameras attachment on user avatar now performed into Avatar::onSceneNodeChanged()
 
 ---------------------------
+20/01/09
+
+VoiceEngine TestServer added into Common\bin and nsis setup
+
+---------------------------

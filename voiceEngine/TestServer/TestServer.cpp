@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
         {
             printf("Usage: TestServer -p <port> -v <verbosity>\n");
             printf(" -p <port:int>      : port (default: 30000)\n");
-            printf(" -v <verbosity:int> : verbosity level (0..2) (default: 5)\n");
+            printf(" -v <verbosity:int> : verbosity level (0..5) (default: 5)\n");
             printf("\n");
             return -1;
         }

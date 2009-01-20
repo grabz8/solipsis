@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Solipsis"
-!define PRODUCT_VERSION "1.0.8"
+!define PRODUCT_VERSION "1.0.9"
 !define PRODUCT_PUBLISHER "ANR-RIAM Project"
 !define PRODUCT_WEB_SITE "http://www.solipsis.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Navigator.exe"
@@ -111,7 +111,13 @@ Section "WorldsServer" SEC04
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
 SectionEnd
 
-Section "Media" SEC05
+Section "VoiceEngineServer" SEC05
+  SetOutPath "$INSTDIR\VoiceEngineServer"
+  File /r /x *.exp /x *.pdb "..\..\Common\bin\VoiceEngineServer\Release\*.*"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis VoiceEngine Server.lnk" "$INSTDIR\VoiceEngineServer\TestServer.exe"
+SectionEnd
+
+Section "Media" SEC06
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
   CreateDirectory $INSTDIR\Media\cacheServerIsland
@@ -158,6 +164,7 @@ Section Uninstall
 
   Delete "$SMPROGRAMS\Solipsis\Uninstall.lnk"
   Delete "$SMPROGRAMS\Solipsis\Visit Solipsis homepage.lnk"
+  Delete "$SMPROGRAMS\Solipsis\Solipsis VoiceEngine Server.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk"
   Delete "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk"
@@ -168,6 +175,7 @@ Section Uninstall
 
   RMDir "$SMPROGRAMS\Solipsis"
   RMDir /r "$INSTDIR\Media"
+  RMDir /r "$INSTDIR\VoiceEngineServer"
   RMDir /r "$INSTDIR\WorldsServer"
   RMDir /r "$INSTDIR\raknetserver"
   RMDir /r "$INSTDIR\peerRakNet"
