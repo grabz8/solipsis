@@ -869,6 +869,9 @@ Added a facial animation system that allows the lips of the avatars to move when
 Small updates into visual configs : XmlDatasBasicTypes.h replace Solipsis lib, ZLib configs removed, cleanup.bat updated, projects directories fixed, dll copy moved into postBuild batches
 
 ---------------------------
+RELEASE 1.0.8
+
+---------------------------
 05/12/08
 
 libiconv added into DevTools to convert WCHAR_T (ie std::wstring) in UTF8
