@@ -156,14 +156,14 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
 #endif
 
 	// register ourselves to receive voice packets
-	VoiceEngineManager::getSingleton().getSelectedEngine()->addVoicePacketListener( mUid, this );
+	VoiceEngineManager::getSingleton().getSelectedEngine()->addVoicePacketListener(mUid, this);
 }
 
 //---------------------------------------------------------------------------------
 CharacterInstance::~CharacterInstance()
 {
 	// unregister ourselves to no longer receive voice packets
-	VoiceEngineManager::getSingleton().getSelectedEngine()->removeVoicePacketListener( mUid, this );
+	VoiceEngineManager::getSingleton().getSelectedEngine()->removeVoicePacketListener(mUid);
 
 	mCharacter->removeInstance(mUid);
 
