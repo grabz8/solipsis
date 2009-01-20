@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/pool/singleton_pool.hpp>
 
 #include <iostream>
+#include <IVoiceEngine.h>
 #include <VoicePacket.h>
 #include <IVoicePacketListener.h>
 #include <AudioSequence.h>
@@ -702,7 +703,7 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
     }
 
     // To replace by the real values sent over voip network
-//    sound->set3DMinMaxDistance(1.0f, 3.0f);
+//    sound->set3DMinMaxDistance(1.0f, 100.0f);
 
     // Create voice buffer and source
     VoiceBuffer* buffer = new(VoiceBufferPool::malloc()) VoiceBuffer(sound);
@@ -1351,3 +1352,13 @@ void FModSpeexVoipHandler::setEnabled(bool enabled)
 	if (mSock.isValid())
         sendEnableVOIP(mEnabled);
 }
+
+// ----------------------------------------------------------------------------
+
+void FModSpeexVoipHandler::logMessage(const std::string& message)
+{
+    if (mLogger != 0)
+        mLogger->logMessage(message);
+}
+
+// ----------------------------------------------------------------------------

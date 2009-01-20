@@ -32,7 +32,7 @@ namespace Solipsis {
 
 /** This class manages the FModSpeex engine.
 */
-class FModSpeexEngine : public IVoiceEngine, public IVoicePacketListener, public FModSpeexVoipHandlerLogger
+class FModSpeexEngine : public IVoiceEngine, public IVoicePacketListener, public IVoiceEngineLogger
 {
 private:
     /// Logging instance
@@ -41,7 +41,7 @@ private:
     /// Voice engine
     FModSpeexVoipHandler *mVoiceEngine;
 
-	std::map< std::string, IVoicePacketListener* > mAvatarUidToVoicePacketListener;	///< associates a voice packet listener to an avatar. Note that these are just references to listeners, the listeners are owned by something else.
+	std::map<EntityUID, IVoicePacketListener* > mAvatarUidToVoicePacketListener;	///< associates a voice packet listener to an avatar. Note that these are just references to listeners, the listeners are owned by something else.
 
 public:
     FModSpeexEngine() : mVoiceEngine(0) {}
@@ -92,14 +92,14 @@ public:
 		/// @copydoc IVoiceEngine::updateAvatar
         virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel);
 
-		/// @copydoc IVoiceEngine::setLogger
-		virtual void setLogger(IVoiceEngineLogger* logger) { mLogger = logger; }
-
 		/// @copydoc IVoiceEngine::addVoicePacketListener
-		virtual void addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener );
+		virtual void addVoicePacketListener(const EntityUID& voiceId, IVoicePacketListener* voicePacketListener);
 
         /// @copydoc IVoiceEngine::removeVoicePacketListener
-		virtual void removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener );
+		virtual void removeVoicePacketListener(const EntityUID& voiceId);
+
+		/// @copydoc IVoiceEngine::setLogger
+		virtual void setLogger(IVoiceEngineLogger* logger) { mLogger = logger; }
 
 	//! @}
 
@@ -108,7 +108,7 @@ public:
 		virtual void onVoicePacketReception( VoicePacket* pVoicePacket );
 	//! @}
 
-    /** See FModSpeexVoipHandlerLogger. */
+    /** See IVoiceEngineLogger. */
     virtual void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
 };
 

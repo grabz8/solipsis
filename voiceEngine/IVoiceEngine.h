@@ -146,14 +146,17 @@ public:
     virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel) = 0;
 
     /** Adds a listener that will be informed when a voice packet emitted by the given talking avatar is received.
+    @param voiceId The unique user identifier connecting to the voice server
+    @param voicePacketListener The VoicePacketListener implementation
     @remarks An implementation must be supplied for this method.
     */
-	virtual void addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
+	virtual void addVoicePacketListener(const EntityUID& voiceId, IVoicePacketListener* voicePacketListener) = 0 ;
 
     /** Removes a listener for voice packets.
+    @param voiceId The unique user identifier connecting to the voice server
     @remarks An implementation must be supplied for this method.
     */
-	virtual void removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener ) = 0 ;
+	virtual void removeVoicePacketListener(const EntityUID& voiceId) = 0 ;
 
     /** setLogger.
     @remarks An implementation must be supplied for this method.

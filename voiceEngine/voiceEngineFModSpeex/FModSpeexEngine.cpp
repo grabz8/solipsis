@@ -146,26 +146,26 @@ void FModSpeexEngine::updateAvatar(const EntityUID& voiceId, float* pos, float* 
 }
 
 //-------------------------------------------------------------------------------------
-void FModSpeexEngine::addVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
+void FModSpeexEngine::addVoicePacketListener(const EntityUID& voiceId, IVoicePacketListener* voicePacketListener)
 {
-	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) == mAvatarUidToVoicePacketListener.end() );
-	mAvatarUidToVoicePacketListener[ talkingAvatarUid ] = pVoicePacketListener;
+	assert(mAvatarUidToVoicePacketListener.find(voiceId) == mAvatarUidToVoicePacketListener.end());
+	mAvatarUidToVoicePacketListener[voiceId] = voicePacketListener;
 }
 
 //-------------------------------------------------------------------------------------
-void FModSpeexEngine::removeVoicePacketListener( const std::string & talkingAvatarUid, IVoicePacketListener* pVoicePacketListener )
+void FModSpeexEngine::removeVoicePacketListener(const EntityUID& voiceId)
 {
-	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
-	mAvatarUidToVoicePacketListener.erase( talkingAvatarUid );
+	assert(mAvatarUidToVoicePacketListener.find(voiceId) != mAvatarUidToVoicePacketListener.end());
+	mAvatarUidToVoicePacketListener.erase(voiceId);
 }
 
 //-------------------------------------------------------------------------------------
-void FModSpeexEngine::onVoicePacketReception( VoicePacket* pVoicePacket )
+void FModSpeexEngine::onVoicePacketReception(VoicePacket* pVoicePacket)
 {
 	// we received a voice packet from FModSpeexVoipHandler, forward it to the listeners associated to the uid of the talking avatar
 	const std::string & talkingAvatarUid = pVoicePacket->getTalkingAvatarUid();
-	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end() );
-	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception( pVoicePacket );
+	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end());
+	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception(pVoicePacket);
 }
 
 //-------------------------------------------------------------------------------------

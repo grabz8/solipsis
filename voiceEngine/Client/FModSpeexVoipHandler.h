@@ -57,15 +57,8 @@ struct VoicePacketHeader;
 namespace Solipsis
 {
 	class IVoicePacketListener;
+    class IVoiceEngineLogger;
 }
-
-/** This class provide logging capacities interface.
- */
-class FModSpeexVoipHandlerLogger
-{
-public:
-    virtual void logMessage(const std::string& message) = 0;
-};
 
 /**
  *  A singleton class for handling voip communication
@@ -170,14 +163,13 @@ public:
     void setEnabled(bool enabled);
 
     /// log a message
-    inline void logMessage(const std::string& message) { if (mLogger != 0) mLogger->logMessage(message); }
+    void logMessage(const std::string& message);
 
     /**
      * setLogger.
-     *  @remarks An implementation must be supplied for this method.
      *  @param logger The logger instance
      */
-    void setLogger(FModSpeexVoipHandlerLogger* logger) { mLogger = logger; }
+    void setLogger(Solipsis::IVoiceEngineLogger* logger) { mLogger = logger; }
 
 private:
 	int sendLogin(const Solipsis::EntityUID& voiceId);
@@ -230,7 +222,7 @@ private:
     static FModSpeexVoipHandler* mInstance;
 
     /// Logging instance
-    FModSpeexVoipHandlerLogger* mLogger;
+    Solipsis::IVoiceEngineLogger* mLogger;
 
     FMOD::System* mSystem;
     FMOD::Sound* mRecordSound;
