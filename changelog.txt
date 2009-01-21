@@ -950,3 +950,8 @@ Cameras attachment on user avatar now performed into Avatar::onSceneNodeChanged(
 VoiceEngine TestServer added into Common\bin and nsis setup
 
 ---------------------------
+21/01/09
+
+Declarative Modeler added
+
+---------------------------

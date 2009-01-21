@@ -86,6 +86,7 @@ rmdir Dependencies\gecode-2.2.0 /S /Q
 rmdir Dependencies\FaceController /S /Q
 rmdir Dependencies\ogreMax /S /Q
 rmdir Dependencies\hikari /S /Q
+rmdir Dependencies\DeclarativeModeler /S /Q
 
 rmdir DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir DevTools\llmozlib\Debug_vc8 /S /Q
@@ -167,6 +168,10 @@ rmdir DevTools\md5wrapper\Debug /S /Q
 rmdir DevTools\md5wrapper\Release /S /Q
 rmdir DevTools\hikari\lib /S /Q
 rmdir DevTools\hikari\objects /S /Q
+rmdir DevTools\Antlr2.7.6\Debug /S /Q
+rmdir DevTools\Antlr2.7.6\Release /S /Q
+rmdir DevTools\Gecode-2.2.0\Debug /S /Q
+rmdir DevTools\Gecode-2.2.0\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
@@ -312,6 +317,8 @@ rmdir DummyPhonetizer\Debug /S /Q
 rmdir DummyPhonetizer\Release /S /Q
 rmdir FaceController\Debug /S /Q
 rmdir FaceController\Release /S /Q
+rmdir DeclarativeModeler\Debug /S /Q
+rmdir DeclarativeModeler\Release /S /Q
 
 rmdir plugin_swf\Debug /S /Q
 rmdir plugin_swf\Release /S /Q
