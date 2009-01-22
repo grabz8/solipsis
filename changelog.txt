@@ -953,5 +953,6 @@ VoiceEngine TestServer added into Common\bin and nsis setup
 21/01/09
 
 Declarative Modeler added
+VoiceEngine is now supporting 3D sound on speaking avatars
 
 ---------------------------

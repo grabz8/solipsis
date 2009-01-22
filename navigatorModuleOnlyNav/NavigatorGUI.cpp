@@ -788,6 +788,7 @@ void NavigatorGUI::avatarPropShow()
 		navi->bind("AvatarPrevTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTexturePrev));
 		navi->bind("AvatarNextTexture", NaviDelegate(this, &NavigatorGUI::avatarPropTextureNext));
 		navi->bind("AvatarResetColour", NaviDelegate(this, &NavigatorGUI::avatarPropResetColour));
+		navi->bind("AvatarPropSound", NaviDelegate(this, &NavigatorGUI::avatarPropSound));
 
         mNavisStates[NAVI_AVATARPROP] = NSCreated;
 	}
@@ -1001,6 +1002,25 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CULL_NONE)?"true":"false" );
 
 				avatarUpdateTextures( object );
+			}
+			break;
+		case 3:	//  sound tab
+			{
+				navi->evaluateJS("$('avatarTabbers').tabber.tabShow(3)");
+
+                float minDist, maxDist;
+	            Avatar* user = mNavigator->getUserAvatar();
+				user->getVoiceDistances(minDist, maxDist);
+				// sound3DMinDist
+				navi->evaluateJS("sound3DMinDist.onchange = function() {}");
+				navi->evaluateJS("sound3DMinDist.setValue(" + StringConverter::toString(minDist) + ")");
+				navi->evaluateJS("sound3DMinDist.onchange = function() {soundDistances()}");
+				navi->evaluateJS("$('Sound3DMinDistValue').value=sound3DMinDist.getValue()");
+				// sound3DMaxDist
+				navi->evaluateJS("sound3DMaxDist.onchange = function() {}");
+				navi->evaluateJS("sound3DMaxDist.setValue(" + StringConverter::toString(maxDist) + ")");
+				navi->evaluateJS("sound3DMaxDist.onchange = function() {soundDistances()}");
+				navi->evaluateJS("$('Sound3DMaxDistValue').value=sound3DMaxDist.getValue()");
 			}
 			break;
 		}
@@ -4818,6 +4838,20 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 
 	// Go back to the main directory
 	_chdir(mNavigator->getAvatarEditor()->mExecPath.c_str());
+}
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::avatarPropSound(const NaviData& naviData)
+{
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropSound()");
+	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
+	Avatar* user = mNavigator->getUserAvatar();
+
+    float minDist = atof(naviData["minDist"].str().c_str());
+    float maxDist = atof(naviData["maxDist"].str().c_str());
+    if (minDist > maxDist) minDist = maxDist;
+	navi->evaluateJS("$('Sound3DMinDistValue').value=sound3DMinDist.getValue()");
+	navi->evaluateJS("$('Sound3DMaxDistValue').value=sound3DMaxDist.getValue()");
+    user->setVoiceDistances(minDist, maxDist);
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale)

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgrePeer.h"
 #include <CharacterInstance.h>
+#include <IVoiceEngine.h>
 #include "KeyMotion.h"
 #include "MovableText.h"
 #include "Event.h"
@@ -36,7 +37,7 @@ namespace Solipsis {
 
 /** This class represents an avatar.
 */
-class Avatar : public OgrePeer
+class Avatar : public OgrePeer, public IVoiceEngineAvatarHandler
 {
 public:
     /** Enumeration denoting the type of movement (rotate, straff, ...) */
@@ -81,6 +82,8 @@ protected:
     ManualObject* mSelectionObject;
     /// Whether to apply the gravity
     bool mGravity;
+    /// Voice min and max distances
+    float mVoiceMinDist, mVoiceMaxDist;
 
 private:
     /// Animation name for Idle
@@ -175,6 +178,11 @@ public:
     /** Determines whether the gravity is applied or not. */
     bool isGravityEnabled();
 
+    /** Set voice 3D sound min/max distances. */
+    void setVoiceDistances(float minDist, float maxDist);
+    /** Get voice 3D sound min/max distances. */
+    void getVoiceDistances(float &minDist, float &maxDist);
+
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
@@ -204,6 +212,10 @@ public:
 
     /** Rotate the avatar around the Y-axis. */
     void yaw(const Radian& angle);
+
+protected:
+    /** Update the avatar properties into the voice engine. */
+    void updateVoiceEngine(bool updatePosDirVel, bool updateDist);
 };
 
 } // namespace Solipsis

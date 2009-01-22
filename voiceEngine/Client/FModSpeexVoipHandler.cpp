@@ -511,6 +511,10 @@ void FModSpeexVoipHandler::update()
                     velogs << "Warning: No voice playback data available (pos:"
                            << pos << " lastPos:" << lastpos << " offset:" << playbackOffset << ")" << veendl;
                     pVoiceBuffer->stop();
+
+                    AvatarHandlerMap::iterator ahi = mAvatarHandlers.find(voiceUuid);
+                    if (ahi != mAvatarHandlers.end())
+                        ahi->second->onTalking(false);
                 }
             }
 
@@ -519,27 +523,32 @@ void FModSpeexVoipHandler::update()
 				// we received enough data to start playing the sound
                 velogs << "Starting playback" << veendl;
                 pVoiceBuffer->play(mSystem);
+
+                AvatarHandlerMap::iterator ahi = mAvatarHandlers.find(voiceUuid);
+                if (ahi != mAvatarHandlers.end())
+                    ahi->second->onTalking(true);
             }
 
 			// update the way the sound is played, depending on the position (and velocity) of the speaking avatar
-            if (playing)
+            SourceMap::iterator sourceIt = mSources.find(voiceUuid);
+            if (sourceIt != mSources.end())
             {
-                SourceMap::const_iterator j = mSources.find(voiceUuid);
-                if (j != mSources.end())
+                VoiceSource& source = sourceIt->second;
+                if ((!playing && pVoiceBuffer->isPlaying()) ||
+                    (playing && source.isPosDirVelUpdated()))
                 {
-                    const VoiceSource& source = j->second;
-
-                    FMOD_VECTOR pos;
-                    source.getPosition(&pos.x, &pos.z, &pos.y);
-/*                    pos.x = -pos.x; // why ?
-                    pos.z = -pos.z; // why ?*/
-
-                    FMOD_VECTOR vel;
-                    source.getVelocity(&vel.x, &vel.z, &vel.y);
-/*                    vel.x = -vel.x; // why ?
-                    vel.z = -vel.z; // why ?*/
-
+                    FMOD_VECTOR pos, vel;
+                    source.getPosition(&pos.x, &pos.y, &pos.z);
+                    source.getVelocity(&vel.x, &vel.y, &vel.z);
                     pVoiceBuffer->getChannel()->set3DAttributes(&pos, &vel);
+                    source.resetPosDirVelUpdated();
+                }
+                if (source.isDistancesUpdated())
+                {
+                    float minDist, maxDist;
+                    source.getDistances(&minDist, &maxDist);
+                    pVoiceBuffer->getSound()->set3DMinMaxDistance(minDist, maxDist);
+                    source.resetDistancesUpdated();
                 }
             }
         }
@@ -549,31 +558,6 @@ void FModSpeexVoipHandler::update()
         pthread_mutex_unlock(&mAvatarMutex);
 // GREG END
     }
-
-/*
-    // Update fmod system if we have created it
-    if (!mUseExternalSystem)
-    {
-        FMOD_VECTOR up = {0.0f, 1.0f, 0.0f};
-
-        FMOD_VECTOR pos;
-        mSelfListener.getPosition(&pos.x, &pos.z, &pos.y);
-        pos.x = -pos.x;
-        pos.z = -pos.z;
-
-        FMOD_VECTOR vel;
-        mSelfListener.getVelocity(&vel.x, &vel.z, &vel.y);
-        vel.x = -vel.x;
-        vel.z = -vel.z;
-
-        FMOD_VECTOR dir;
-        mSelfListener.getDirection(&dir.x, &dir.z, &dir.y);
-        dir.x = -dir.x;
-        dir.z = -dir.z;
-
-        mSystem->set3DListenerAttributes(0, &pos, &vel, &dir, &up);
-        mSystem->update();
-    }*/
 
     if (!isRecording() || !mEnabled)
         return;
@@ -640,47 +624,15 @@ void FModSpeexVoipHandler::update()
     }
 }
 
-/*void FModSpeexVoipHandler::updateListener(float* pos, float* dir, float* vel)
-{
-    mSelfListener.setPosition(pos[0], pos[1], pos[2]);
-    mSelfListener.setDirection(dir[0], dir[1], dir[2]);
-    mSelfListener.setVelocity(vel[0], vel[1], vel[2]);
-}
-*/
 // -----------------------------------------------------------------------------
 // Avatar methods
 
-void FModSpeexVoipHandler::updateAvatar(const EntityUID& id, float* pos, float* dir, float* vel)
+void FModSpeexVoipHandler::updateRecordingAvatar(float* pos, float* dir, float* vel, float* dist)
 {
-// GREG BEGIN
-//    apr_thread_mutex_lock(mAvatarMutex);
-    pthread_mutex_lock(&mAvatarMutex);
-// GREG END
-
-    SourceMap::iterator i = mSources.find(id);
-    if (i == mSources.end())
-    {
-// GREG BEGIN
-//        apr_thread_mutex_unlock(mAvatarMutex);
-        pthread_mutex_unlock(&mAvatarMutex);
-// GREG END
-//        logMessage("FModSpeexVoipHandler::updateAvatar() avatar " + id + " not found !");
-        return;
-    }
-
-    i->second.setPosition(pos[0], pos[1], pos[2]);
-    i->second.setDirection(dir[0], dir[1], dir[2]);
-    i->second.setVelocity(vel[0], vel[1], vel[2]);
-#ifdef _DEBUG
-    char tmp[256];
-    _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::updateAvatar(%s) pos=(%.2f,%.2f,%.2f)", id.c_str(), pos[0], pos[1], pos[2]);
-    logMessage(tmp);
-#endif
-
-// GREG BEGIN
-//    apr_thread_mutex_unlock(mAvatarMutex);
-    pthread_mutex_unlock(&mAvatarMutex);
-// GREG END
+    mRecordingSource.setPosition(pos);
+    mRecordingSource.setDirection(dir);
+    mRecordingSource.setVelocity(vel);
+    mRecordingSource.setDistances(dist);
 }
 
 VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* codec)
@@ -697,13 +649,13 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
     exinfo.length = mBufferFrameCount * exinfo.defaultfrequency * sampleSizeFromVoiceFormat(codec->getDecodeFormat());
 
     FMOD::Sound* sound = 0;
-    if (mSystem->createSound(0, /*FMOD_3D | */FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
+    if (mSystem->createSound(0, FMOD_3D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
     {
         return 0;
     }
 
-    // To replace by the real values sent over voip network
-//    sound->set3DMinMaxDistance(1.0f, 100.0f);
+    // Set initial distances
+    sound->set3DMinMaxDistance(1.0f, 100.0f);
 
     // Create voice buffer and source
     VoiceBuffer* buffer = new(VoiceBufferPool::malloc()) VoiceBuffer(sound);
@@ -713,6 +665,10 @@ VoiceBuffer* FModSpeexVoipHandler::newAvatar(const EntityUID& id, VoiceCodec* co
 // GREG END
     mBuffers.insert(std::make_pair(id, buffer));
     mSources.insert(std::make_pair(id, VoiceSource()));
+
+    AvatarHandlerMap::iterator ahi = mAvatarHandlers.find(id);
+    if (ahi != mAvatarHandlers.end())
+        ahi->second->onVoiceCreation();
 // GREG BEGIN
 //    apr_thread_mutex_unlock(mAvatarMutex);
     pthread_mutex_unlock(&mAvatarMutex);
@@ -738,6 +694,10 @@ void FModSpeexVoipHandler::removeAvatar(const EntityUID& id)
 //    apr_thread_mutex_lock(mAvatarMutex);
     pthread_mutex_lock(&mAvatarMutex);
 // GREG END
+
+    AvatarHandlerMap::iterator ahi = mAvatarHandlers.find(id);
+    if (ahi != mAvatarHandlers.end())
+        ahi->second->onVoiceDestruction();
 
     BufferMap::iterator b = mBuffers.find(id);
     if (b != mBuffers.end())
@@ -935,11 +895,11 @@ bool FModSpeexVoipHandler::silenceDetected(unsigned int from, unsigned int to)
     // max surface = (sampleCount/samplesInc)*127
     // 0 <= surfaceRel <= 127
     float surfaceRel = (float)surface/(float)(sampleCount/samplesInc);
-#ifdef _DEBUG
-    char tmp[256];
-    _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::silenceDetected() %.8f", surfaceRel );
-    logMessage(tmp);
-#endif
+//#ifdef _DEBUG
+//    char tmp[256];
+//    _snprintf(tmp, sizeof(tmp) - 1, "FModSpeexVoipHandler::silenceDetected() %.8f", surfaceRel );
+//    logMessage(tmp);
+//#endif
     return (surfaceRel < mSilenceLevel);
 }
 // GREG END
@@ -1065,12 +1025,36 @@ int FModSpeexVoipHandler::sendAudioFrames(unsigned int from, unsigned int to)
 				delete [] pAudioData;
 			}
 
+            // Add 3D sound properties into header
+            header.flags = VPF_NONE;
+            unsigned int flagsSize = 0;
+            float flagsDatas[3*3 + 2];
+            float *pflagsDatas = flagsDatas;
+            if (mRecordingSource.isPosDirVelUpdated())
+            {
+                header.flags |= VPF_POSDIRVEL;
+                flagsSize += 3*3*sizeof(float);
+                mRecordingSource.getPosition(pflagsDatas); pflagsDatas += 3;
+                mRecordingSource.getDirection(pflagsDatas); pflagsDatas += 3;
+                mRecordingSource.getVelocity(pflagsDatas); pflagsDatas += 3;
+                mRecordingSource.resetPosDirVelUpdated();
+            }
+            if (mRecordingSource.isDistancesUpdated())
+            {
+                header.flags |= VPF_DISTANCES;
+                flagsSize += 2*sizeof(float);
+                mRecordingSource.getDistances(pflagsDatas); pflagsDatas += 2;
+                mRecordingSource.resetDistancesUpdated();
+            }
+
             // Send headers and audio data to server
 
             if (header.audioSize != 0)
             {
-                SimpleVoiceEngineProtocol::sendPacketHeader(mSock, VP_AUDIO_TO_SERVER, sizeof(header) + frameHeadersSize + header.audioSize + pPhonemeSequence->getSerializedSize());
+                SimpleVoiceEngineProtocol::sendPacketHeader(mSock, VP_AUDIO_TO_SERVER, sizeof(header) + flagsSize + frameHeadersSize + header.audioSize + pPhonemeSequence->getSerializedSize());
                 mSock.send((const char*)&header, sizeof(header));
+                if (flagsSize > 0)
+                    mSock.send((const char*)&flagsDatas, flagsSize);
                 mSock.send((const char*)frameHeaders, frameHeadersSize);
                 mSock.send(encBuffer, header.audioSize);
             }
@@ -1149,6 +1133,36 @@ int FModSpeexVoipHandler::recvAudioFrames(unsigned int expectedSize)
         voice = newAvatar(avatarId, pCodec);
         if (!voice)
             return size;
+    }
+
+    // Get 3D sound
+    if (header.flags != VPF_NONE)
+    {
+        unsigned int flagsSize = 0;
+        if (header.flags & VPF_POSDIRVEL) flagsSize += 3*3*sizeof(float);
+        if (header.flags & VPF_DISTANCES) flagsSize += 2*sizeof(float);
+        float flagsDatas[3*3 + 2];
+        float *pflagsDatas = flagsDatas;
+        received = 0;
+        while (received < flagsSize)
+        {
+			int packetBytes = mSock.receive(&((char*)flagsDatas)[received], flagsSize-received);
+            size += packetBytes;
+            received += packetBytes;
+            if (packetBytes <= 0) return size;
+        }
+        SourceMap::iterator sourceIt = mSources.find(avatarId);
+        if (sourceIt != mSources.end())
+        {
+            if (header.flags & VPF_POSDIRVEL)
+            {
+                sourceIt->second.setPosition(pflagsDatas); pflagsDatas += 3;
+                sourceIt->second.setDirection(pflagsDatas); pflagsDatas += 3;
+                sourceIt->second.setVelocity(pflagsDatas); pflagsDatas += 3;
+            }
+            if (header.flags & VPF_DISTANCES)
+                sourceIt->second.setDistances(pflagsDatas); pflagsDatas += 2;
+        }
     }
 
     // Read frame headers
@@ -1359,6 +1373,22 @@ void FModSpeexVoipHandler::logMessage(const std::string& message)
 {
     if (mLogger != 0)
         mLogger->logMessage(message);
+}
+
+// ----------------------------------------------------------------------------
+
+void FModSpeexVoipHandler::setAvatarHandler(const Solipsis::EntityUID& voiceId, Solipsis::IVoiceEngineAvatarHandler* avatarHandler)
+{
+	assert(mAvatarHandlers.find(voiceId) == mAvatarHandlers.end());
+    mAvatarHandlers[voiceId] = avatarHandler;
+}
+
+// ----------------------------------------------------------------------------
+
+void FModSpeexVoipHandler::removeAvatarHandler(const Solipsis::EntityUID& voiceId)
+{
+	assert(mAvatarHandlers.find(voiceId) != mAvatarHandlers.end());
+	mAvatarHandlers.erase(voiceId);
 }
 
 // ----------------------------------------------------------------------------

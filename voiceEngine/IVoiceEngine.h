@@ -45,6 +45,28 @@ public:
     virtual void logMessage(const std::string& message) = 0;
 };
 
+/** This class provide voice engine avatar events interface.
+ */
+class IVoiceEngineAvatarHandler
+{
+public:
+    /** Called when avatar voice is created.
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onVoiceCreation() {}
+
+    /** Called when avatar voice is destroyed.
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onVoiceDestruction() {}
+
+    /** Called when avatar is talking or not.
+    @param talking TRUE if avatar is speaking, FALSE otherwise
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onTalking(bool talking) {}
+};
+
 /** This class represents a generic Voice engine.
 */
 class VOICEENGINE_EXPORT IVoiceEngine
@@ -140,10 +162,10 @@ public:
     */
     virtual bool isRecording() = 0;
 
-    /** Update sound position/velocity of an avatar.
+    /** Update sound position/direction/velocity/3D sound distances of an avatar.
     @remarks An implementation must be supplied for this method.
     */
-    virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel) = 0;
+    virtual void updateRecordingAvatar(float* pos, float* dir, float* vel, float* dist) = 0;
 
     /** Adds a listener that will be informed when a voice packet emitted by the given talking avatar is received.
     @param voiceId The unique user identifier connecting to the voice server
@@ -157,6 +179,19 @@ public:
     @remarks An implementation must be supplied for this method.
     */
 	virtual void removeVoicePacketListener(const EntityUID& voiceId) = 0 ;
+
+    /** setAvatarHandler.
+    @remarks An implementation must be supplied for this method.
+    @param voiceId The unique user identifier connecting to the voice server
+    @param avatarHandler The avatar handler instance
+    */
+    virtual void setAvatarHandler(const EntityUID& voiceId, IVoiceEngineAvatarHandler* avatarHandler) = 0;
+
+    /** removeAvatarHandler.
+    @remarks An implementation must be supplied for this method.
+    @param voiceId The unique user identifier connecting to the voice server
+    */
+    virtual void removeAvatarHandler(const EntityUID& voiceId) = 0;
 
     /** setLogger.
     @remarks An implementation must be supplied for this method.

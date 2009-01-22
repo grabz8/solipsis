@@ -58,6 +58,7 @@ namespace Solipsis
 {
 	class IVoicePacketListener;
     class IVoiceEngineLogger;
+    class IVoiceEngineAvatarHandler;
 }
 
 /**
@@ -156,9 +157,7 @@ public:
      */
     bool setRecordCodec(CodecPtr& codec);
 
-
-//    void updateListener(float* pos, float* dir, float* vel);
-	void updateAvatar(const Solipsis::EntityUID& id, float* pos, float* dir, float* vel);
+	void updateRecordingAvatar(float* pos, float* dir, float* vel, float* dist);
 
     void setEnabled(bool enabled);
 
@@ -170,6 +169,18 @@ public:
      *  @param logger The logger instance
      */
     void setLogger(Solipsis::IVoiceEngineLogger* logger) { mLogger = logger; }
+
+    /**
+     * setAvatarHandler.
+     *  @param voiceId The unique user identifier connecting to the voice server, used to identify the sound source
+     *  @param handler The handler instance
+     */
+    void setAvatarHandler(const Solipsis::EntityUID& voiceId, Solipsis::IVoiceEngineAvatarHandler* avatarHandler);
+    /**
+     * removeAvatarHandler.
+     *  @param voiceId The unique user identifier connecting to the voice server, used to identify the sound source
+     */
+    void removeAvatarHandler(const Solipsis::EntityUID& voiceId);
 
 private:
 	int sendLogin(const Solipsis::EntityUID& voiceId);
@@ -261,6 +272,8 @@ private:
     time_t mLastSoundDetectedTimeSec;
 // GREG END
 
+    VoiceSource mRecordingSource;
+
     bool mRecording;
     bool mUseExternalSystem;
     bool mRun;
@@ -297,6 +310,10 @@ private:
     bool mEnabled;
 
 	Solipsis::IVoicePacketListener*	mVoicePacketListener;	///< reference to the listener that is listening for voice packets
+
+    /// Avatars handlers map
+    typedef std::map<Solipsis::EntityUID, Solipsis::IVoiceEngineAvatarHandler*> AvatarHandlerMap;
+    AvatarHandlerMap mAvatarHandlers;
 
 };  //  class VoiceEngine
 

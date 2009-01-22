@@ -44,7 +44,7 @@ private:
 	std::map<EntityUID, IVoicePacketListener* > mAvatarUidToVoicePacketListener;	///< associates a voice packet listener to an avatar. Note that these are just references to listeners, the listeners are owned by something else.
 
 public:
-    FModSpeexEngine() : mVoiceEngine(0) {}
+    FModSpeexEngine() : mLogger(0), mVoiceEngine(0) {}
 
 	//! @name IVoiceEngine implementation
 	//!	@{
@@ -89,14 +89,20 @@ public:
 		/// @copydoc IVoiceEngine::isRecording
 		virtual bool isRecording();
 
-		/// @copydoc IVoiceEngine::updateAvatar
-        virtual void updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel);
+		/// @copydoc IVoiceEngine::updateRecordingAvatar
+        virtual void updateRecordingAvatar(float* pos, float* dir, float* vel, float* dist);
 
 		/// @copydoc IVoiceEngine::addVoicePacketListener
 		virtual void addVoicePacketListener(const EntityUID& voiceId, IVoicePacketListener* voicePacketListener);
 
         /// @copydoc IVoiceEngine::removeVoicePacketListener
 		virtual void removeVoicePacketListener(const EntityUID& voiceId);
+
+		/// @copydoc IVoiceEngine::setAvatarHandler
+        virtual void setAvatarHandler(const EntityUID& voiceId, IVoiceEngineAvatarHandler* avatarHandler);
+
+		/// @copydoc IVoiceEngine::removeAvatarHandler
+        virtual void removeAvatarHandler(const EntityUID& voiceId);
 
 		/// @copydoc IVoiceEngine::setLogger
 		virtual void setLogger(IVoiceEngineLogger* logger) { mLogger = logger; }

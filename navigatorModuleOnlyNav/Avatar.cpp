@@ -77,7 +77,9 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mRightKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+    mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
+    mVoiceMinDist(1.0f),
+    mVoiceMaxDist(100.0f)
 {
     for (int a = 0;a < ASAvatarAnimCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
@@ -113,11 +115,24 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mLastRealOrientation = getSceneNode()->getOrientation();
 
     mGravity = mXmlEntity->getFlags() & EFGravity;
+
+    // Bind this avatar in the Voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine != 0)
+        voiceEngine->setAvatarHandler(mXmlEntity->getUid(), this);
+    // Update initial properties of user avatar in the voice engine
+    if (isLocal)
+        updateVoiceEngine(true, true);
 }
 
 //-------------------------------------------------------------------------------------
 Avatar::~Avatar()
 {
+    // Unbind this avatar in the Voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine != 0)
+        voiceEngine->removeAvatarHandler(mXmlEntity->getUid());
+
     if (mCharacterInstance == 0) return;
     if (getSceneNode() == 0) return;
 
@@ -330,6 +345,21 @@ bool Avatar::isGravityEnabled()
 }
 
 //-------------------------------------------------------------------------------------
+void Avatar::setVoiceDistances(float minDist, float maxDist)
+{
+    mVoiceMinDist = minDist;
+    mVoiceMaxDist = maxDist;
+    updateVoiceEngine(false, true);
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::getVoiceDistances(float &minDist, float &maxDist)
+{
+    minDist = mVoiceMinDist;
+    maxDist = mVoiceMaxDist;
+}
+
+//-------------------------------------------------------------------------------------
 void Avatar::update(Real timeSinceLastFrame)
 {
     animate(timeSinceLastFrame);
@@ -380,18 +410,8 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (definedAttributes & XmlEntity::DAPosition)
     {
         mLastRealPosition = xmlEntity->getPosition();
-
-        // Update position of avatar in the Voice engine
-        IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
-        if ((voiceEngine != 0) && voiceEngine->isConnected())
-        {
-            float pos[3], dir[3], vel[3];
-            pos[0] = mLastRealPosition.x; pos[1] = mLastRealPosition.y; pos[2] = mLastRealPosition.z;
-            Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
-            dir[0] = vpn.x; dir[1] = vpn.y; dir[2] = vpn.z;
-            vel[0] = vel[1] = vel[2] = 0.0f;
-            voiceEngine->updateAvatar(xmlEntity->getUid(), pos, dir, vel);
-        }
+        if (isLocal())
+            updateVoiceEngine(true, false);
     }
     if (definedAttributes & XmlEntity::DAOrientation)
     {
@@ -669,6 +689,33 @@ void Avatar::yaw(const Radian& angle)
         getSceneNode()->yaw(angle);
         mXmlEntity->setOrientation(getSceneNode()->getOrientation());
     }
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::updateVoiceEngine(bool updatePosDirVel, bool updateDist)
+{
+    // Update position of avatar in the Voice engine
+    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
+    if (voiceEngine == 0) return;
+
+    float pos[3], dir[3], vel[3], dist[2];
+    float *ppos, *pdir, *pvel, *pdist;
+    ppos = pdir = pvel = pdist = 0;
+    if (updatePosDirVel)
+    {
+        pos[0] = mLastRealPosition.x; pos[1] = mLastRealPosition.y; pos[2] = mLastRealPosition.z;
+        Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
+        dir[0] = vpn.x; dir[1] = vpn.y; dir[2] = vpn.z;
+        vel[0] = vel[1] = vel[2] = 0.0f;
+        ppos = pos; pdir = dir; pvel = vel;
+    }
+    if (updateDist)
+    {
+        dist[0] = mVoiceMinDist;
+        dist[1] = mVoiceMaxDist;
+        pdist = dist;
+    }
+    voiceEngine->updateRecordingAvatar(ppos, pdir, pvel, pdist);
 }
 
 //-------------------------------------------------------------------------------------

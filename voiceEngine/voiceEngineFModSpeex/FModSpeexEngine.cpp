@@ -140,9 +140,9 @@ bool FModSpeexEngine::isRecording()
 }
 
 //-------------------------------------------------------------------------------------
-void FModSpeexEngine::updateAvatar(const EntityUID& voiceId, float* pos, float* dir, float* vel)
+void FModSpeexEngine::updateRecordingAvatar(float* pos, float* dir, float* vel, float* dist)
 {
-    mVoiceEngine->updateAvatar(voiceId, pos, dir, vel);
+    mVoiceEngine->updateRecordingAvatar(pos, dir, vel, dist);
 }
 
 //-------------------------------------------------------------------------------------
@@ -166,6 +166,18 @@ void FModSpeexEngine::onVoicePacketReception(VoicePacket* pVoicePacket)
 	const std::string & talkingAvatarUid = pVoicePacket->getTalkingAvatarUid();
 	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end());
 	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception(pVoicePacket);
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::setAvatarHandler(const EntityUID& voiceId, IVoiceEngineAvatarHandler* avatarHandler)
+{
+    mVoiceEngine->setAvatarHandler(voiceId, avatarHandler);
+}
+
+//-------------------------------------------------------------------------------------
+void FModSpeexEngine::removeAvatarHandler(const EntityUID& voiceId)
+{
+    mVoiceEngine->removeAvatarHandler(voiceId);
 }
 
 //-------------------------------------------------------------------------------------

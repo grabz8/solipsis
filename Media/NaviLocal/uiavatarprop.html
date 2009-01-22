@@ -651,6 +651,48 @@
                         </table>
                     </p>
                 </div>
+                <!-- SOUND -->
+                <div class="tabbertab">
+                    <h2>
+                        Sound</h2>
+                    <p>
+                        <table width="496">
+                            <tr>
+                                <td width="30"></td>
+                                <td width="90"></td>
+                                <td width="30"></td>
+                                <td width="150"></td>
+                                <td width="30"></td>
+                                <td width="40"></td>
+                                <td ></td>
+                            </tr>
+                            <!-- Min distance -->
+                            <tr>
+                                <td colspan="2"><b>Min distance</b></td>
+                                <td colspan="4">
+                                    <div class="slider" id="sound3DMinDist" style="width: 260px" >
+                                        <input class="slider-input" id="sound3DMinDistInput" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" id="Sound3DMinDistValue" value="1.0" style="width: 40px" />
+                                </td>
+                            </tr>
+                            <!-- Max distance -->
+                            <tr>
+                                <td colspan="2"><b>Max distance</b></td>
+                                <td colspan="4">
+                                    <div class="slider" id="sound3DMaxDist" style="width: 260px" >
+                                        <input class="slider-input" id="sound3DMaxDistInput" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" id="Sound3DMaxDistValue" value="100.0" style="width: 40px" />
+                                </td>
+                            </tr>
+                        </table>
+                    </p>
+                </div>
             </div>
             <!-- SLIDERS BEGIN -->
 
@@ -680,9 +722,13 @@
 					var scaleU = new Slider($("scaleU"), $("scaleUInput"));
 					var scaleV = new Slider($("scaleV"), $("scaleVInput"));
 					var rotateU = new Slider($("rotateU"), $("rotateUInput"));
-					
+					var sound3DMinDist = new Slider($("sound3DMinDist"), $("sound3DMinDistInput"));
+					var sound3DMaxDist = new Slider($("sound3DMaxDist"), $("sound3DMaxDistInput"));
+	
 					// set min & max values
 					height.setMinimum(0); height.setMaximum(200);
+                    sound3DMinDist.setMinimum(1.0); sound3DMinDist.setMaximum(100.0);
+                    sound3DMaxDist.setMinimum(1.0); sound3DMaxDist.setMaximum(100.0);
 					
 					// onchange / deformations
 					//taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
@@ -704,6 +750,18 @@
 					scaleU.onchange = function() {elementClicked('AvatarScaleU')};
 					scaleV.onchange = function() {elementClicked('AvatarScaleV')};
 					rotateU.onchange = function() {elementClicked('AvatarRotateU')};
+
+					sound3DMinDist.onchange = function() {soundDistances()};
+					sound3DMaxDist.onchange = function() {soundDistances()};
+
+function soundDistances()
+{
+    if (sound3DMinDist.getValue() > sound3DMaxDist.getValue())
+    {
+        sound3DMinDist.setValue(sound3DMaxDist.getValue())
+    }
+    new NaviData('AvatarPropSound').add({minDist:sound3DMinDist.getValue()}).add({maxDist:sound3DMaxDist.getValue()}).send();
+}
 
 function updTexture()
 {

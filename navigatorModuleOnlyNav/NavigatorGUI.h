@@ -391,11 +391,7 @@ protected:
 	void avatarPropTexturePrev(const NaviData& naviData);
 	void avatarPropTextureNext(const NaviData& naviData);
 	void avatarPropResetColour(const NaviData& naviData);
-
-
-
-
-
+	void avatarPropSound(const NaviData& naviData);
 
 public:
     // Modeler properties updates
