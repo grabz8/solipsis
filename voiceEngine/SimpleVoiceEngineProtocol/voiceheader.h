@@ -44,6 +44,16 @@ static char* VoicePacketTypeName[4] = {
 // GREG END
 
 // ---------------------------------------------------------------------------
+// Packet flags
+
+enum VoicePacketFlags
+{
+    VPF_NONE = 0x00,
+    VPF_POSDIRVEL = 1,
+    VPF_DISTANCES = VPF_POSDIRVEL<<1
+};
+
+// ---------------------------------------------------------------------------
 // Audio data headers
 
 struct VoicePacketHeader
@@ -52,6 +62,7 @@ struct VoicePacketHeader
     unsigned short audioSize;	///< size of the encoded audio data in bytes
     unsigned short decodedAudioSize; ///< size of the decoded audio data in bytes
     unsigned short frames;		///< number of frames
+    unsigned char flags;		///< flags
 };  //  struct VoicePacketHeader
 
 struct VoiceFrameHeader
