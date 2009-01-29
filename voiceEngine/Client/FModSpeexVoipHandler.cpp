@@ -842,7 +842,7 @@ int FModSpeexVoipHandler::sendEnableVOIP(bool enabled)
 // GREG BEGIN
 bool FModSpeexVoipHandler::silenceDetected(unsigned int from, unsigned int to)
 {
-	printf( "FModSpeexVoipHandler::silenceDetected : start\n" );
+//	printf( "FModSpeexVoipHandler::silenceDetected : start\n" );
 
     assert(to >= from);
 
