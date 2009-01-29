@@ -36,6 +36,8 @@
 #include <video_output.h>
 // GREG END
 
+#define argsPVLC
+
 /*****************************************************************************
  * Local prototypes
  *****************************************************************************/
@@ -76,6 +78,11 @@ static int  UnlockPicture ( vout_thread_t *, picture_t * );
 #define T_DATA N_( "Callback data" )
 #define LT_DATA N_( "Data for the locking and unlocking functions" )
 
+#ifndef argsPVLC
+#define T_IPH N_( "Instance params handler function" )
+#define LT_IPH N_( "Address of the instance parameters handler function" )
+#endif
+
 vlc_module_begin( );
     set_description( _( "Video memory module" ) );
     set_shortname( _("Video memory") );
@@ -91,6 +98,9 @@ vlc_module_begin( );
     add_string( "vmem-lock", "0", NULL, T_LOCK, LT_LOCK, VLC_TRUE );
     add_string( "vmem-unlock", "0", NULL, T_UNLOCK, LT_UNLOCK, VLC_TRUE );
     add_string( "vmem-data", "0", NULL, T_DATA, LT_DATA, VLC_TRUE );
+#ifndef argsPVLC
+    add_string( "vmem-iph", "0", NULL, T_IPH, LT_IPH, VLC_TRUE );
+#endif
 
     set_callbacks( Create, Destroy );
 vlc_module_end();
@@ -105,6 +115,9 @@ struct vout_sys_t
     void * (*pf_lock) (void *);
     void (*pf_unlock) (void *);
     void *p_data;
+#ifndef argsPVLC
+    void (*pf_iph) (void *, char *, char *);
+#endif
 };
 
 /*****************************************************************************
@@ -133,6 +146,17 @@ static int Create( vlc_object_t *p_this )
     return VLC_SUCCESS;
 }
 
+#ifdef argsPVLC
+static char* getPsz(int argc, char **argv, char *name)
+{
+    int a;
+    for (a = 0; a < argc; a++)
+        if (strstr(argv[a], name) != 0)
+            return strdup(argv[a + 1]);
+    return 0;
+}
+#endif
+
 /*****************************************************************************
  * Init: initialize video thread
  *****************************************************************************/
@@ -142,17 +166,32 @@ static int Init( vout_thread_t *p_vout )
     picture_t *p_pic;
     char *psz_chroma, *psz_tmp;
     int i_width, i_height, i_pitch, i_chroma;
+#ifndef argsPVLC
+    char value[32], chroma[32];
+#endif
 
+#ifndef argsPVLC
     i_width = config_GetInt( p_vout, "vmem-width" );
     i_height = config_GetInt( p_vout, "vmem-height" );
     i_pitch = config_GetInt( p_vout, "vmem-pitch" );
+#else
+    i_width = atoi( getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-width" ) );
+    i_height = atoi( getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-height" ) );
+    i_pitch = atoi( getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-pitch" ) );
+#endif
 
+#ifndef argsPVLC
     psz_chroma = config_GetPsz( p_vout, "vmem-chroma" );
+    strcpy( chroma, psz_chroma);
+#else
+    psz_chroma = getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-chroma" );
+#endif
     if( psz_chroma )
     {
         if( strlen( psz_chroma ) < 4 )
         {
             msg_Err( p_vout, "vmem-chroma should be 4 characters long" );
+            free( psz_chroma );
             return VLC_EGENERIC;
         }
         i_chroma = VLC_FOURCC( psz_chroma[0], psz_chroma[1],
@@ -165,17 +204,70 @@ static int Init( vout_thread_t *p_vout )
         return VLC_EGENERIC;
     }
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_vout, "vmem-lock" );
+#else
+    psz_tmp = getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-lock" );
+#endif
     p_vout->p_sys->pf_lock = (void * (*) (void *))(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_vout, "vmem-unlock" );
+#else
+    psz_tmp = getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-unlock" );
+#endif
     p_vout->p_sys->pf_unlock = (void (*) (void *))(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_vout, "vmem-data" );
+#else
+    psz_tmp = getPsz( p_vout->p_vlc->i_argc, p_vout->p_vlc->ppsz_argv, "vmem-data" );
+#endif
     p_vout->p_sys->p_data = (void *)(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
+
+#ifndef argsPVLC
+    psz_tmp = config_GetPsz( p_vout, "vmem-iph" );
+    p_vout->p_sys->pf_iph = (void (*) (void *, char *, char *))(intptr_t)atoll( psz_tmp );
+    free( psz_tmp );
+
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_vout->p_sys->p_data));
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-data", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-data", value );
+    p_vout->p_sys->p_data = (void *)(intptr_t)atoll( value );
+    sprintf(value, "%i", i_width);
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-width", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-width", value );
+    i_width = atoi( value );
+    sprintf(value, "%i", i_height);
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-height", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-height", value );
+    i_height = atoi( value );
+    sprintf(value, "%i", i_pitch);
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-pitch", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-pitch", value );
+    i_pitch = atoi( value );
+    strcpy(value, chroma);
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-chroma", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-chroma", value );
+    if( strlen( value ) < 4 )
+    {
+        msg_Err( p_vout, "vmem-chroma should be 4 characters long" );
+        return VLC_EGENERIC;
+    }
+    i_chroma = VLC_FOURCC( value[0], value[1],
+                           value[2], value[3] );
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_vout->p_sys->pf_lock));
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-lock", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-lock", value );
+    p_vout->p_sys->pf_lock = (void * (*) (void *))(intptr_t)atoll( value );
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_vout->p_sys->pf_unlock));
+//    p_vout->p_sys->pf_iph( (void *)p_vout, "vmem-unlock", value );
+p_vout->p_sys->pf_iph( (void *)p_vout->p_vlc, "vmem-unlock", value );
+    p_vout->p_sys->pf_unlock = (void (*) (void *))(intptr_t)atoll( value );
+#endif
 
     if( !p_vout->p_sys->pf_lock || !p_vout->p_sys->pf_unlock )
     {

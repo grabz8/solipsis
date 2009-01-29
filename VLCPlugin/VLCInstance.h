@@ -31,6 +31,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreFrameListener.h>
 #include <OgreTexture.h>
 
+// define argsPVLC to use p_vlc struct args ptr OR don t define argsPVLC to use the instance_params_handler
+// even with vlc0.9.6, arguments passed to new libvlc instance and read by plugins (vmem, amem, ...)
+// are always GLOBAL so 2nd call to libvlc_new(argc, argv) overwrites old args of 1st call
+// + when stopping/playing 1 video plugins are freed/recreated so args are read again
+// 1 workaround consists in either using p_vlc->args saved pointers to get them from plugins
+// or using 1 iph arg pointing to 1 static callback able to give correct args according to p_vlc pointer (libvlc instance *)
+// Another problem appears when creating 2 VLCinstances in the same time, 1st new/play is ok but 2nd libvlc_new is crashing due to
+// call to 1st plugin Create() by 1st thread not yet performed when calling 2nd libvlc_new
+// post about this on VLC devs forums : http://forum.videolan.org/viewtopic.php?f=32&t=55117&p=181676#p181676
+#define argsPVLC
+
 namespace Solipsis {
 
 class VLCTextureSource;
@@ -63,6 +74,11 @@ public:
     /// Get sound identifier
     int getSoundId() { return mSoundId; }
 
+#ifndef argsPVLC
+    /// Instance parameters handler
+    void instanceParamsHandler(char *name, char *value);
+#endif
+
     /// Get Texture
     Ogre::TexturePtr getTexture() const { return mTexture; }
 
@@ -85,6 +101,9 @@ private:
     static void _libvlc_exception(libvlc_exception_t *ex);
 
     // Static callbacks used by libvlc
+#ifndef argsPVLC
+    static void _libvlc_instparamshdlr(void *vlcObject, char *name, char *value);
+#endif
     static void * _libvlc_lock(VLCInstance *ctx);
     static void _libvlc_unlock(VLCInstance *ctx);
     static void _libvlc_opensb(VLCInstance *ctx, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize);
@@ -137,15 +156,27 @@ private:
     /// True if texture can be deleted (no more listening frames)
     volatile bool mSafeToDelete;
 
+    /// libvlc exception structure
+    libvlc_exception_t mLibVLCException;
+
     /// libvlc instance
     libvlc_instance_t *mLibVLCInstance;
 
+#ifndef argsPVLC
     /// Static mutex
     static pthread_mutex_t ms_Mutex;
 
-    /// libvlc exception structure
-    static libvlc_exception_t ms_LibVLCException;
-    static bool ms_LibVLCExceptionInstalled;
+    /// Map of VLC object ptr and VLC instance
+    typedef std::map<void*, VLCInstance*> VLCObjInstMap;
+    static VLCObjInstMap ms_VLCObjInstMap;
+#else
+    /// VLC instance arguments list
+    std::list<Ogre::String> args;
+    /// VLC instance arguments count
+    int vlc_argc;
+    /// VLC instance arguments ptr array
+    const char **vlc_argv;
+#endif
 };  //  class VLCInstance
 
 } // namespace Solipsis

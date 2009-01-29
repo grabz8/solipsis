@@ -31,14 +31,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreStringConverter.h>
 #include <OgreTextureManager.h>
 
+// Hack to Sleep() after libvlc_play
+#ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#include <process.h>
+#include <commdlg.h>
+#include <shellapi.h>
+
 using namespace Ogre;
 
 namespace Solipsis {
 
+#ifndef argsPVLC
 pthread_mutex_t VLCInstance::ms_Mutex = PTHREAD_MUTEX_INITIALIZER;
 
-libvlc_exception_t VLCInstance::ms_LibVLCException;
-bool VLCInstance::ms_LibVLCExceptionInstalled = false;
+VLCInstance::VLCObjInstMap VLCInstance::ms_VLCObjInstMap;
+#endif
 
 //-------------------------------------------------------------------------------------
 VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
@@ -76,6 +86,9 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
      *  Initialise libVLC
      */
     char plock[64], punlock[64], pdata[64];
+#ifndef argsPVLC
+    char pinstparamshdlr[64];
+#endif
     char pwidth[32], pheight[32], ppitch[32];
     char const *vlc_argv_default[] =
     {
@@ -93,6 +106,9 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         "--vmem-lock", plock,
         "--vmem-unlock", punlock,
         "--vmem-data", pdata,
+#ifndef argsPVLC
+        "--vmem-iph", pinstparamshdlr,
+#endif
 //        "--sout", "#transcode{vcodec=mp2v,vb=1024,scale=1,acodec=mpga,ab=192,channels=2}:duplicate{dst=display{vmem},dst=std{access=http,mux=ts,dst=127.0.0.1:8080}}",
     };
     char popensb[64], pplaysb[64], pclosesb[64];
@@ -103,8 +119,14 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         "--amem-playsb", pplaysb,
         "--amem-closesb", pclosesb,
         "--amem-data", pdata,
+#ifndef argsPVLC
+        "--amem-iph", pinstparamshdlr,
+#endif
     };
     // Set vmem plugin arguments lock/unlock functions + this as context pointer
+#ifndef argsPVLC
+    sprintf(pinstparamshdlr, "%lld", (long long int)(intptr_t)_libvlc_instparamshdlr);
+#endif
     sprintf(plock, "%lld", (long long int)(intptr_t)_libvlc_lock);
     sprintf(punlock, "%lld", (long long int)(intptr_t)_libvlc_unlock);
     sprintf(pdata, "%lld", (long long int)(intptr_t)this);
@@ -115,7 +137,11 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
     sprintf(pplaysb, "%lld", (long long int)(intptr_t)_libvlc_playsb);
     sprintf(pclosesb, "%lld", (long long int)(intptr_t)_libvlc_closesb);
     // Set standard parameters in list
+#ifndef argsPVLC
     std::list<String> args;
+#else
+    args.clear();
+#endif
     for(int a=0; a<sizeof(vlc_argv_default)/sizeof(*vlc_argv_default); ++a)
         args.push_back(vlc_argv_default[a]);
     // Add additional sound parameters
@@ -132,8 +158,13 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
         args.push_back(mVlcParams.substr(i, j - i));
         i = j;
     }
+#ifndef argsPVLC
     int vlc_argc = (int)args.size();
     const char **vlc_argv = (const char**)malloc(vlc_argc*sizeof(const char*));
+#else
+    vlc_argc = (int)args.size();
+    vlc_argv = (const char**)malloc(vlc_argc*sizeof(const char*));
+#endif
     vlc_argc = 0;
     for (std::list<String>::const_iterator it = args.begin(); it != args.end(); ++it)
         vlc_argv[vlc_argc++] = it->c_str();
@@ -141,29 +172,27 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
     mScreen = (unsigned char*)malloc(mWidth*mHeight*sizeof(unsigned short));
     memset(mScreen, 0, mWidth*mHeight*sizeof(unsigned short));
     // libvlc Init/New instance/Add playlist/play
-    pthread_mutex_lock(&ms_Mutex);
-    if (!ms_LibVLCExceptionInstalled)
-    {
-        LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_exception_init");
-        libvlc_exception_init(&ms_LibVLCException);
-        ms_LibVLCExceptionInstalled = true;
-    }
-    pthread_mutex_unlock(&ms_Mutex);
+    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_exception_init");
+    libvlc_exception_init(&mLibVLCException);
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_new");
-    mLibVLCInstance = libvlc_new(vlc_argc, (char**)vlc_argv, &ms_LibVLCException);
-    _libvlc_exception(&ms_LibVLCException);
+    mLibVLCInstance = libvlc_new(vlc_argc, (char**)vlc_argv, &mLibVLCException);
+    _libvlc_exception(&mLibVLCException);
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_add");
-    int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &ms_LibVLCException); 
-    _libvlc_exception(&ms_LibVLCException);
+    int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
+    _libvlc_exception(&mLibVLCException);
     PlayListEntry playListEntry = {item, mMrl};
     mPlayList.push_back(playListEntry);
     mCurrentPlayListItem = 0;
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
-    libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &ms_LibVLCException); 
-    _libvlc_exception(&ms_LibVLCException);
+    libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+    _libvlc_exception(&mLibVLCException);
     mStopped = false;
+    // Hack to Sleep() after libvlc_play
+    Sleep(1000);
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() END");
+#ifndef argsPVLC
     free(vlc_argv);
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -187,6 +216,22 @@ VLCInstance::~VLCInstance()
     mTextureSource = 0;
 
     delete mScreen;
+
+#ifndef argsPVLC
+    pthread_mutex_lock(&ms_Mutex);
+    for (VLCObjInstMap::iterator it = ms_VLCObjInstMap.begin(); it != ms_VLCObjInstMap.end(); )
+    {
+        if (it->second == this)
+        {
+            ms_VLCObjInstMap.erase(it);
+            it = ms_VLCObjInstMap.begin();
+        }
+        else ++it;
+    }
+    pthread_mutex_unlock(&ms_Mutex);
+#else
+    free(vlc_argv);
+#endif
 
     LogManager::getSingleton().logMessage("VLCInstance::~VLCInstance() END");
 }
@@ -220,41 +265,41 @@ String VLCInstance::handleEvt(const String& evt)
         if ((tokens.size() < 2) || tokens[1].empty()) return result;
         mMrl = tokens[1];
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_stop");
-        libvlc_playlist_stop(mLibVLCInstance, &ms_LibVLCException);
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_stop(mLibVLCInstance, &mLibVLCException);
+        _libvlc_exception(&mLibVLCException);
         mStopped = true;
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_add");
-        int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+        int item = libvlc_playlist_add(mLibVLCInstance, mMrl.c_str(), NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
         PlayListEntry playListEntry = {item, mMrl};
         mPlayList.push_back(playListEntry);
         mCurrentPlayListItem = (int)mPlayList.size() - 1;
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
-        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
         mStopped = false;
     }
     else if (tokens[0].compare("getmute") == 0)
     {
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_audio_get_mute");
-        result = (libvlc_audio_get_mute(mLibVLCInstance, &ms_LibVLCException) ? "true" : "false");
-        _libvlc_exception(&ms_LibVLCException);
+        result = (libvlc_audio_get_mute(mLibVLCInstance, &mLibVLCException) ? "true" : "false");
+        _libvlc_exception(&mLibVLCException);
     }
     else if (tokens[0].compare("playpause") == 0)
     {
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play/libvlc_playlist_pause");
         if (mStopped)
-            libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &ms_LibVLCException); 
+            libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
         else
-            libvlc_playlist_pause(mLibVLCInstance, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+            libvlc_playlist_pause(mLibVLCInstance, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
         mStopped = false;
     }
     else if (tokens[0].compare("stop") == 0)
     {
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_stop");
-        libvlc_playlist_stop(mLibVLCInstance, &ms_LibVLCException);
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_stop(mLibVLCInstance, &mLibVLCException);
+        _libvlc_exception(&mLibVLCException);
         mStopped = true;
     }
     else if ((tokens[0].compare("prev") == 0) && (mCurrentPlayListItem > 0))
@@ -262,22 +307,22 @@ String VLCInstance::handleEvt(const String& evt)
         mCurrentPlayListItem--;
         mMrl = mPlayList[mCurrentPlayListItem].mrl;
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
-        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
     }
     else if ((tokens[0].compare("next") == 0) && (mCurrentPlayListItem < (int)mPlayList.size() - 1))
     {
         mCurrentPlayListItem++;
         mMrl = mPlayList[mCurrentPlayListItem].mrl;
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
-        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
     }
     else if (tokens[0].compare("mute") == 0)
     {
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_audio_toggle_mute");
-        libvlc_audio_toggle_mute(mLibVLCInstance, &ms_LibVLCException); 
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_audio_toggle_mute(mLibVLCInstance, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
     }
 
     return result;
@@ -287,16 +332,16 @@ String VLCInstance::handleEvt(const String& evt)
 void VLCInstance::destroy(bool force)
 {
     LogManager::getSingleton().logMessage("VLCInstance::destroy()" + String(force ? " forced" : ""));
-    libvlc_playlist_stop(mLibVLCInstance, &ms_LibVLCException);
-    _libvlc_exception(&ms_LibVLCException);
+    libvlc_playlist_stop(mLibVLCInstance, &mLibVLCException);
+    _libvlc_exception(&mLibVLCException);
     mStopped = true;
 /*    for (PlayList::iterator it = mPlayList.begin(); it != mPlayList.end(); it = mPlayList.begin())
     {
-        libvlc_playlist_delete_item(mLibVLCInstance, it->item, &ms_LibVLCException);
-        _libvlc_exception(&ms_LibVLCException);
+        libvlc_playlist_delete_item(mLibVLCInstance, it->item, &mLibVLCException);
+        _libvlc_exception(&mLibVLCException);
         mPlayList.erase(it);
     }
-    libvlc_playlist_clear(mLibVLCInstance, &ms_LibVLCException);*/
+    libvlc_playlist_clear(mLibVLCInstance, &mLibVLCException);*/
     pthread_mutex_lock(&mUpdateMutex);
     mSafeToDelete = force;
     mAlive = false;
@@ -378,14 +423,71 @@ bool VLCInstance::frameEnded(const FrameEvent& e)
 //-------------------------------------------------------------------------------------
 void VLCInstance::_libvlc_exception(libvlc_exception_t *ex)
 {
-    pthread_mutex_lock(&ms_Mutex);
     if(libvlc_exception_raised(ex))
     {
         LogManager::getSingleton().logMessage("VLCInstance::exception() " + String(libvlc_exception_get_message(ex)));
     }
     libvlc_exception_clear(ex);
-    pthread_mutex_unlock(&ms_Mutex);
 }
+
+#ifndef argsPVLC
+//-------------------------------------------------------------------------------------
+void VLCInstance::instanceParamsHandler(char *name, char *value)
+{
+    if (strcmp(name, "vmem-width") == 0)
+        sprintf(value, "%i", mWidth);
+    else if (strcmp(name, "vmem-height") == 0)
+        sprintf(value, "%i", mHeight);
+    else if (strcmp(name, "vmem-pitch") == 0)
+        sprintf(value, "%i", mWidth*sizeof(unsigned short));
+    else if (strcmp(name, "vmem-chroma") == 0)
+        strcpy(value, "RV16");
+    else if (strcmp(name, "vmem-lock") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)_libvlc_lock);
+    else if (strcmp(name, "vmem-unlock") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)_libvlc_unlock);
+    else if (strcmp(name, "vmem-data") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)this);
+    else if (strcmp(name, "amem-opensb") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)_libvlc_opensb);
+    else if (strcmp(name, "amem-playsb") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)_libvlc_playsb);
+    else if (strcmp(name, "amem-closesb") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)_libvlc_closesb);
+    else if (strcmp(name, "amem-data") == 0)
+        sprintf(value, "%lld", (long long int)(intptr_t)this);
+    else value[0] = '\0';
+}
+#endif
+
+#ifndef argsPVLC
+//-------------------------------------------------------------------------------------
+void VLCInstance::_libvlc_instparamshdlr(void *vlcObject, char *name, char *value)
+{
+    if ((name == 0) || (value == 0)) return;
+
+    char tmp[256];
+    _snprintf(tmp, sizeof(tmp), "VLCInstance::_libvlc_instparamshdlr(vlcObject:0x%08x, name:%s, value:%s)", (unsigned int)vlcObject, name, value);
+    LogManager::getSingleton().logMessage(String(tmp));
+
+    pthread_mutex_lock(&ms_Mutex);
+    VLCObjInstMap::iterator it = ms_VLCObjInstMap.find(vlcObject);
+    if (it == ms_VLCObjInstMap.end())
+    {
+        // Binding VLC object and VLC instance (vmem-data and amem-data contains VLC instance ptr)
+        if ((strcmp(name, "vmem-data") == 0) || (strcmp(name, "amem-data") == 0))
+            ms_VLCObjInstMap[vlcObject] = (VLCInstance*)strtol(value, (char **)NULL, 10);
+        it = ms_VLCObjInstMap.find(vlcObject);
+    }
+    VLCInstance* instance = it->second;
+    pthread_mutex_unlock(&ms_Mutex);
+
+    // retrieve the instance's value for this named parameter
+    instance->instanceParamsHandler(name, value);
+    _snprintf(tmp, sizeof(tmp), "VLCInstance::_libvlc_instparamshdlr(vlcObject:0x%08x, name:%s, value:%s) END", (unsigned int)vlcObject, name, value);
+    LogManager::getSingleton().logMessage(String(tmp));
+}
+#endif
 
 //-------------------------------------------------------------------------------------
 void * VLCInstance::_libvlc_lock(VLCInstance *ctx)

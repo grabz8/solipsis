@@ -956,3 +956,10 @@ Declarative Modeler added
 VoiceEngine is now supporting 3D sound on speaking avatars
 
 ---------------------------
+28/01/09
+
+VLC plugin
+ - multi-instances support improved (now instance's args are no more retrieved from GLOBAL config but from saved instance's args var pointers)
+ - 1 workaround added about crash when launching several VLC materials in the same time (a better solution should be found)
+
+---------------------------

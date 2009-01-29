@@ -35,6 +35,8 @@
 #include <vlc/aout.h>
 #include "aout_internal.h"
 
+#define argsPVLC
+
 #define FRAME_SIZE 2048
 
 /*****************************************************************************
@@ -59,6 +61,11 @@ static void Play        ( aout_instance_t * );
 #define T_DATA N_( "Callback data" )
 #define LT_DATA N_( "Data for the openning, playing and closing functions" )
 
+#ifndef argsPVLC
+#define T_IPH N_( "Instance params handler function" )
+#define LT_IPH N_( "Address of the instance parameters handler function" )
+#endif
+
 vlc_module_begin();
     set_description( _( "Audio memory module" ) );
     set_shortname( _("Audio memory") );
@@ -71,6 +78,9 @@ vlc_module_begin();
     add_string( "amem-playsb", "0", NULL, T_PLAYSB, LT_PLAYSB, VLC_TRUE );
     add_string( "amem-closesb", "0", NULL, T_CLOSESB, LT_CLOSESB, VLC_TRUE );
     add_string( "amem-data", "0", NULL, T_DATA, LT_DATA, VLC_TRUE );
+#ifndef argsPVLC
+    add_string( "amem-iph", "0", NULL, T_IPH, LT_IPH, VLC_TRUE );
+#endif
 
     set_callbacks( Open, Close );
 vlc_module_end();
@@ -84,7 +94,21 @@ struct aout_sys_t
     void (*pf_playsb) (void *, unsigned char *buffer, size_t bufferSize, unsigned int nbSamples);
     void (*pf_closesb) (void *);
     void *p_data;
+#ifndef argsPVLC
+    void (*pf_iph) (void *, char *, char *);
+#endif
 };
+
+#ifdef argsPVLC
+static char* getPsz(int argc, char **argv, char *name)
+{
+    int a;
+    for (a = 0; a < argc; a++)
+        if (strstr(argv[a], name) != 0)
+            return strdup(argv[a + 1]);
+    return 0;
+}
+#endif
 
 /*****************************************************************************
  * Open: open the audio device
@@ -93,27 +117,69 @@ static int Open ( vlc_object_t *p_this )
 {
     aout_instance_t *p_aout = (aout_instance_t *)p_this;
     char *psz_tmp;
+#ifndef argsPVLC
+    char value[32];
+#endif
 
     /* Allocate instance and initialize some members */
     p_aout->output.p_sys = malloc( sizeof( aout_sys_t ) );
     if( ! p_aout->output.p_sys )
         return VLC_ENOMEM;
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_aout, "amem-opensb" );
+#else
+    psz_tmp = getPsz( p_aout->p_vlc->i_argc, p_aout->p_vlc->ppsz_argv, "amem-opensb" );
+#endif
     p_aout->output.p_sys->pf_opensb = (void (*) (void *, unsigned int *, unsigned int *, unsigned int *, unsigned int *))(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_aout, "amem-playsb" );
+#else
+    psz_tmp = getPsz( p_aout->p_vlc->i_argc, p_aout->p_vlc->ppsz_argv, "amem-playsb" );
+#endif
     p_aout->output.p_sys->pf_playsb = (void (*) (void *, unsigned char *, size_t, unsigned int))(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_aout, "amem-closesb" );
+#else
+    psz_tmp = getPsz( p_aout->p_vlc->i_argc, p_aout->p_vlc->ppsz_argv, "amem-closesb" );
+#endif
     p_aout->output.p_sys->pf_closesb = (void (*) (void *))(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
 
+#ifndef argsPVLC
     psz_tmp = config_GetPsz( p_aout, "amem-data" );
+#else
+    psz_tmp = getPsz( p_aout->p_vlc->i_argc, p_aout->p_vlc->ppsz_argv, "amem-data" );
+#endif
     p_aout->output.p_sys->p_data = (void *)(intptr_t)atoll( psz_tmp );
     free( psz_tmp );
+
+#ifndef argsPVLC
+    psz_tmp = config_GetPsz( p_aout, "amem-iph" );
+    p_aout->output.p_sys->pf_iph = (void (*) (void *, char *, char *))(intptr_t)atoll( psz_tmp );
+    free( psz_tmp );
+
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_aout->output.p_sys->p_data));
+//    p_aout->output.p_sys->pf_iph( (void *)p_aout, "amem-data", value );
+p_aout->output.p_sys->pf_iph( (void *)p_aout->p_vlc, "amem-data", value );
+    p_aout->output.p_sys->p_data = (void *)(intptr_t)atoll( value );
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_aout->output.p_sys->pf_opensb));
+//    p_aout->output.p_sys->pf_iph( (void *)p_aout, "amem-opensb", value );
+p_aout->output.p_sys->pf_iph( (void *)p_aout->p_vlc, "amem-opensb", value );
+    p_aout->output.p_sys->pf_opensb = (void (*) (void *, unsigned int *, unsigned int *, unsigned int *, unsigned int *))(intptr_t)atoll( value );
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_aout->output.p_sys->pf_playsb));
+//    p_aout->output.p_sys->pf_iph( (void *)p_aout, "amem-playsb", value );
+p_aout->output.p_sys->pf_iph( (void *)p_aout->p_vlc, "amem-playsb", value );
+    p_aout->output.p_sys->pf_playsb = (void (*) (void *, unsigned char *, size_t, unsigned int))(intptr_t)atoll( value );
+    sprintf(value, "%lld", (long long int)(intptr_t)(p_aout->output.p_sys->pf_closesb));
+//    p_aout->output.p_sys->pf_iph( (void *)p_aout, "amem-closesb", value );
+p_aout->output.p_sys->pf_iph( (void *)p_aout->p_vlc, "amem-closesb", value );
+    p_aout->output.p_sys->pf_closesb = (void (*) (void *))(intptr_t)atoll( value );
+#endif
 
     // Open the sound buffer
     unsigned int frequency = p_aout->output.output.i_rate;

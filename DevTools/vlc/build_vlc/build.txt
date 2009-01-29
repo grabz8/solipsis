@@ -255,7 +255,7 @@ $ objdump -p vlc.exe
 ...
 
 We generate the resulting package directory (called <VLCPKG> in next steps, eg. /build_vlc/vlc-0.8.6e/vlc-0.8.6e)
-$ make package-win32-base
+$ make package-win32-base-debug
 
 Now, to use this libvlc.dll we have to generate the Microsoft .lib file
 Copy the definition file build_vlc/libvlc.def into the resulting package directory <VLCPKG>
@@ -267,9 +267,31 @@ Go into <VLCPKG>
 lib.exe /machine:i386 /def:libvlc.def
 (Note: Maybe we could also use the dlltool utility of Cygwin)
 
+If you want to re-create the libvlc.def (for example you compile another vlc version),
+first you have to get all exported functions of libvlc.dll, I use dllexportviewer, open the libvlc.dll,
+select all functions and save the libvlc.txt text file containing exported functions names,
+second step consists in parsing this libvlc.txt to create the libvlc.def file, open cygwin bash shell and
+grep/gawk like this:
+Go into <VLCPKG>
+cat libvlc.txt | grep 'Function Name' > libvlc2.txt
+echo 'LIBRARY LIBVLC.DLL' > libvlc.def
+echo 'EXPORTS' >> libvlc.def
+gawk -F' ' '{print $4}' libvlc2.txt >> libvlc.def
+unix2dos libvlc.def
+
 Now, run the copy_vlc_files.bat to install dependencies files
  cd build_vlc
  copy_vlc_files.bat
+
+
+----------------------------------------------------
+Notes about libvlc multi-instances and plugin config parameters problem
+
+Even with latest release vlc 0.9.x, this problem is still not resolved,
+parameters passed to plugins are global and resetted on each call
+
+http://forum.videolan.org/viewtopic.php?f=32&t=54354
+https://trac.videolan.org/vlc/ticket/2325
 
 
 ----------------------------------------------------
@@ -283,8 +305,9 @@ $ cd /cygdrive/.../build_vlc
 $ tar xjvf contrib-0.8.6e-gcc-3.4.5-only.tar.bz2 -C /
 
 Upgrade cygwin gettext with 0.17
+If ./bootstrap warns about out-of-date gettext, don t worry about it.
 
-$ export CONTRIBS=/usr/win32-branch_vlc096
+$ export CONTRIBS=/usr/win32
 $ export PATH=${CONTRIBS}/bin:$PATH
 $ cd /cygdrive/.../<VLCSRC>
 $ ./bootstrap
@@ -294,13 +317,14 @@ $ export PKG_CONFIG_PATH=$CONTRIBS/lib/pkgconfig \
        LDFLAGS=-L$CONTRIBS/lib \
        CC='gcc -mno-cygwin' CXX='g++ -mno-cygwin'
 
+We will build in release mode:
+
 $ ./configure \
      --host=i686-pc-mingw32 \
      --disable-gtk \
      --enable-nls --enable-sdl --with-sdl-config-path=$CONTRIBS/bin \
      --enable-avcodec --enable-avformat --enable-swscale \
-     --enable-ffmpeg --with-ffmpeg-mp3lame --with-ffmpeg-faac \
-     --with-ffmpeg-zlib --enable-faad --enable-flac --enable-theora \
+     --enable-faad --enable-flac --enable-theora \
      --with-wx-config-path=$CONTRIBS/bin \
      --with-freetype-config-path=$CONTRIBS/bin \
      --with-fribidi-config-path=$CONTRIBS/bin \
@@ -311,9 +335,56 @@ $ ./configure \
      --disable-cddax --disable-vcdx --enable-goom \
      --enable-twolame --enable-dvdread \
      --enable-dca \
-     --disable-mkv --disable-taglib \
-     --enable-shared-libvlc \
-     --enable-shared \
-     --enable-shout
+     --disable-mkv --disable-taglib
+
+Edit libtool file and set in line 144:
+# Take the output of nm and produce a listing of raw symbols and C names.
+global_symbol_pipe="sed -n -e 's/^.*[   ]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[       ][      ]*\\(\\)\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1\\2\\3 \\3/p'"
 
 $ make
+
+Making all in qt4
+make[5]: Entering directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui/qt4'
+/usr/win32/bin/moc -DHAVE_CONFIG_H -I../../../include -I../../../include -I/usr/win32/include -I/usr/win32/include/ebml
+-DSYS_MINGW32 -I../../.. `top_builddir="../../.." ../../../vlc-config --cppflags plugin qt4` -o main_interface.moc.cpp m
+ain_interface.hpp
+/usr/win32/bin/moc: /usr/win32/bin/moc: cannot execute binary file
+make[5]: *** [main_interface.moc.cpp] Error 126
+make[5]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui/qt4'
+make[4]: *** [all-recursive] Error 1
+make[4]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui'
+make[3]: *** [all] Error 2
+make[3]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6'
+make: *** [all] Error 2
+
+Rename or Delete Linux executables moc, rcc and uic into C:\cygwin\usr\win32\bin, in order to avoid win32 cygwin
+try to launch them instead of .exe win32 versions
+
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../include/w32api/winbase.h:1690: error: declaration of C function `LONG Int
+erlockedExchangeAdd(volatile LONG*, LONG)' conflicts with
+/usr/win32/include/qt4/QtCore/qatomic_windows.h:397: error: previous declaration `long int InterlockedExchangeAdd(long i
+nt*, long int)' here
+/usr/lib/gcc/i686-pc-mingw32/3.4.4/../../../../include/w32api/winbase.h:1694: error: declaration of C function `LONG Int
+erlockedIncrement(volatile LONG*)' conflicts with
+/usr/win32/include/qt4/QtCore/qatomic_windows.h:394: error: previous declaration `long int InterlockedIncrement(long int
+*)' here
+make[6]: *** [libqt4_plugin_la-qt4.lo] Error 1
+make[6]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui/qt4'
+make[5]: *** [all] Error 2
+make[5]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui/qt4'
+make[4]: *** [all-recursive] Error 1
+make[4]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui'
+make[3]: *** [all] Error 2
+make[3]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules/gui'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6/modules'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/cygdrive/d/solipsis/Work/Solipsis/trunk/DevTools/vlc/build_vlc/vlc-0.9.6'
+make: *** [all] Error 2
+
+Run cygwin setup and downgrade w32api to 3.11.1
+
