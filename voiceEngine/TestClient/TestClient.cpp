@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
         if ((_stricmp(argv[iarg], "/h") == 0) || (_stricmp(argv[iarg], "/H") == 0) || (_stricmp(argv[iarg], "?") == 0))
         {
             printf("Usage: TestClient -h <host> -p <port> -v <verbosity>\n");
-            printf(" -p <host:str>      : host (default: localhost)\n");
+            printf(" -h <host:str>      : host (default: localhost)\n");
             printf(" -p <port:int>      : port (default: 30000)\n");
             printf(" -v <verbosity:int> : verbosity level (0..2) (default: 5)\n");
             printf("\n");
@@ -135,6 +135,21 @@ int main(int argc, char* argv[])
         printf("Error!  Could not connect to the Voice server (%s:%d) ...\n", host, port);
         return 0;
     }
+
+    FMOD_VECTOR lpos, lvel, lforward, lup;
+    lpos.x = 0.0f; lpos.y = 0.0f; lpos.z = 0.0f;
+    lvel.x = 0.0f; lvel.y = 0.0f; lvel.z = 0.0f;
+    lforward.x = 0.0f; lforward.y = 0.0f; lforward.z = 1.0f;
+    lup.x = 0.0f; lup.y = 1.0f; lup.z = 0.0f;
+    system->set3DListenerAttributes(0, &lpos, &lvel, &lforward, &lup);
+
+    float pos[3], dir[3], vel[3], dist[2];
+    pos[0] = 0.0f; pos[1] = 0.0f; pos[2] = 0.0f;
+    dir[0] = 0.0f; dir[1] = 0.0f; dir[2] = 1.0f;
+    vel[0] = vel[1] = vel[2] = 0.0f;
+    dist[0] = 1.0f;
+    dist[1] = 1000.0f;
+    voiceEngine->updateRecordingAvatar(pos, dir, vel, dist);
 
     // Main loop until ESCAPE pressed
     printf("Entering main loop ...\n");
