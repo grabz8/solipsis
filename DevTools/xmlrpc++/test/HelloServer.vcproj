@@ -74,7 +74,7 @@
 				OutputFile=".\Release/HelloServer.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\release"
+				AdditionalLibraryDirectories="..\lib"
 				ProgramDatabaseFile=".\Release/HelloServer.pdb"
 				SubSystem="1"
 			/>
@@ -160,11 +160,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="xmlrpc.lib Ws2_32.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="xmlrpc_d.lib Ws2_32.lib odbc32.lib odbccp32.lib"
 				OutputFile=".\Debug/HelloServer.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="..\Debug"
+				AdditionalLibraryDirectories="..\lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/HelloServer.pdb"
 				SubSystem="1"
