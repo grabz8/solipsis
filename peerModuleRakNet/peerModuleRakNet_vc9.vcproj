@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -201,7 +201,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -281,7 +281,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\protocols\P2NClient;..\Dependencies\protocols\P2NServer;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;PHYSICSPLUGINS;NLOGSNDRCV;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\Solipsis\include;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\RakNet\include;..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
