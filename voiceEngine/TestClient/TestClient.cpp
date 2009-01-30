@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "fmod.hpp"
 #include "fmod_errors.h"
 
+#include <IVoiceEngine.h>
 #include "FModSpeexVoipHandler.h"
 #include <DummyPhonetizerPlugin.h>
 #include <PhonetizerManager.h>
@@ -40,6 +41,15 @@ void ERRCHECK(FMOD_RESULT result)
         exit(-1);
     }
 }
+
+class VoiceEngineLogger : public Solipsis::IVoiceEngineLogger {
+    /** See IVoiceEngineLogger. */
+    virtual void logMessage(const std::string& message)
+    {
+        printf(message.c_str());
+    }
+};
+VoiceEngineLogger mVoiceEngineLogger;
 
 int main(int argc, char* argv[])
 {
@@ -127,6 +137,7 @@ int main(int argc, char* argv[])
         printf("Error!  Could not create the voice engine\n");
         return 0;
     }
+    voiceEngine->setLogger(&mVoiceEngineLogger);
 
     printf("Trying to connect to Voice server (%s:%d) ...\n", host, port);
     printf("\n");
