@@ -214,7 +214,8 @@ FModSpeexVoipHandler::FModSpeexVoipHandler(FMOD::System* system,
                                            Solipsis::IVoicePacketListener* pVoicePacketListener,
                                            size_t networkChunkSizePCM, unsigned int bufferFrameCount, unsigned int frequency,
                                            float silenceLevel, unsigned int silenceLatencySec)
-    : mSystem(system)
+    : mLogger(0)
+    , mSystem(system)
     , mRecordSound(0)
     , mRecordSampleRate(frequency)
     , mBufferFrameCount(bufferFrameCount)
