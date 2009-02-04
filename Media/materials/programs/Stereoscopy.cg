@@ -59,53 +59,6 @@ float4 Interlace_fp
 	return lerp(left, right, f);
 }
 
-float4 SplitScreen_fp
-(
-	// input
-	in float2 texCoord: TEXCOORD0,
-	
-	// parameters
-	uniform sampler2D LeftTex : register(s0),
-	uniform sampler2D RightTex : register(s1)
-
-) : COLOR
-{
-	#ifdef VERT
-	if (texCoord.x < 0.5)
-	{
-		float2 vNewCoord;
-		vNewCoord.x = texCoord.x *2.0;
-		vNewCoord.y = texCoord.y; 
-		return tex2D(LeftTex, vNewCoord);
-	}
-	else
-	{
-		float2 vNewCoord;
-		vNewCoord.x = (texCoord.x -0.5) *2.0;
-		vNewCoord.y = texCoord.y; 
-		return tex2D(RightTex, vNewCoord);
-	}
-	#endif
-	#ifdef HORIZ
-	if (texCoord.y < 0.5)
-	{
-		float2 vNewCoord;
-		vNewCoord.y = texCoord.y *2.0;
-		vNewCoord.x = texCoord.x; 
-		return tex2D(LeftTex, vNewCoord);
-	}
-	else
-	{
-		float2 vNewCoord;
-		vNewCoord.y = (texCoord.y -0.5) *2.0;
-		vNewCoord.x = texCoord.x; 
-		return tex2D(RightTex, vNewCoord);
-	}
-	#endif
-}
-
-
-
 float4 Anaglyph_fp
 (
 	// input
@@ -123,3 +76,56 @@ float4 Anaglyph_fp
 //	return float4(left.r, right.g, right.b, 1);
 	return left * float4(1,0,0,1) + right * float4(0,1,1,1);
 }
+
+float4 SplitScreen_V_fp
+(
+	// input
+	in float2 texCoord: TEXCOORD0,
+	
+	// parameters
+	uniform sampler2D LeftTex : register(s0),
+	uniform sampler2D RightTex : register(s1)
+
+) : COLOR
+{
+	float2 vNewCoord;
+	if (texCoord.x < 0.5)
+	{
+		vNewCoord.x = texCoord.x *2.0;
+		vNewCoord.y = texCoord.y; 
+		return tex2D(LeftTex, vNewCoord);
+	}
+	else
+	{
+		vNewCoord.x = (texCoord.x -0.5) *2.0;
+		vNewCoord.y = texCoord.y; 
+		return tex2D(RightTex, vNewCoord);
+	}
+}
+
+float4 SplitScreen_H_fp
+(
+	// input
+	in float2 texCoord: TEXCOORD0,
+	
+	// parameters
+	uniform sampler2D LeftTex : register(s0),
+	uniform sampler2D RightTex : register(s1)
+
+) : COLOR
+{
+	float2 vNewCoord;
+	if (texCoord.y < 0.5)
+	{
+		vNewCoord.y = texCoord.y *2.0;
+		vNewCoord.x = texCoord.x; 
+		return tex2D(LeftTex, vNewCoord);
+	}
+	else
+	{
+		vNewCoord.y = (texCoord.y -0.5) *2.0;
+		vNewCoord.x = texCoord.x; 
+		return tex2D(RightTex, vNewCoord);
+	}
+}
+
