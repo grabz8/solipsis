@@ -44,12 +44,10 @@ using namespace Ogre;
 void StereoManager::StereoCameraListener::init(StereoManager *stereoMgr, Viewport *viewport, bool isLeftEye)
 {
 	mStereoMgr = stereoMgr;
-	//mCamera = mStereoMgr->getCamera();
 	mIsLeftEye = isLeftEye;
 	mViewport = viewport;
 }
 
-//void StereoManager::StereoCameraListener::preRenderTargetUpdate(const RenderTargetEvent& evt)
 void StereoManager::StereoCameraListener::preViewportUpdate (const RenderTargetViewportEvent& evt)
 {
 	if(evt.source != mViewport)
@@ -71,7 +69,7 @@ void StereoManager::StereoCameraListener::preViewportUpdate (const RenderTargetV
 	mStereoMgr->updateAllDependentRenderTargets(mIsLeftEye);
 	mStereoMgr->chooseDebugPlaneMaterial(mIsLeftEye);
 }
-//void StereoManager::StereoCameraListener::postRenderTargetUpdate(const RenderTargetEvent& evt)
+
 void StereoManager::StereoCameraListener::postViewportUpdate (const RenderTargetViewportEvent& evt)
 {
 	if(evt.source != mViewport)
@@ -242,34 +240,6 @@ void StereoManager::initCompositor(Viewport *viewport, const String &materialNam
 	out_left = mCompositorInstance->getRenderTarget("Stereo/Left")->getViewport(0);
 	out_right = mCompositorInstance->getRenderTarget("Stereo/Right")->getViewport(0);
 
-/*
-	// extract all the compositors added to the main viewport and attach them to the left/right vewports
-	CompositorManager &compositorManager = CompositorManager::getSingleton();
-	if(compositorManager.hasCompositorChain(mCompositorViewport))
-	{
-		CompositorChain *oldChain = compositorManager.getCompositorChain(mCompositorViewport);
-
-		for(unsigned int i = 0; i < oldChain->getNumCompositors(); i++)
-		{
-			CompositorInstance *compositorInstance = oldChain->getCompositor(i);
-			Compositor *compositor = compositorInstance->getCompositor();
-			compositorManager.addCompositor(leftViewport, compositor->getName());
-			compositorManager.setCompositorEnabled(leftViewport, compositor->getName(),compositorInstance->getEnabled());
-			compositorManager.addCompositor(rightViewport, compositor->getName());
-			compositorManager.setCompositorEnabled(rightViewport, compositor->getName(),compositorInstance->getEnabled());
-
-		}
-		// remove the compositors from the main viewport since they are now on the left/right vewports
-		oldChain->removeAllCompositors();
-	}
-*/
-/*
-	// enable the overlays on the new viewports and disable them from the main viewport
-	mAreOverlaysEnabled = viewport->getOverlaysEnabled();
-	out_left->setOverlaysEnabled(mAreOverlaysEnabled);
-	out_right->setOverlaysEnabled(mAreOverlaysEnabled);
-	viewport->setOverlaysEnabled(false);
-*/
 	mDeviceLostListener.init(this);
 	Root::getSingleton().getRenderSystem()->addListener(&mDeviceLostListener);
 }
@@ -279,29 +249,6 @@ void StereoManager::shutdownCompositor()
 	CompositorManager::getSingleton().setCompositorEnabled(mCompositorViewport, "Stereo/BaseCompositor", false);
 	CompositorManager::getSingleton().removeCompositor(mCompositorViewport, "Stereo/BaseCompositor");
 
-/*
-		// put back the compositors on the main viewport
-		CompositorManager &compositorManager = CompositorManager::getSingleton();
-		if(compositorManager.hasCompositorChain(mLeftViewport))
-		{
-			CompositorChain *oldChain = compositorManager.getCompositorChain(mLeftViewport);
-			for(unsigned int i = 0; i < oldChain->getNumCompositors(); i++)
-			{
-				CompositorInstance *compositorInstance = oldChain->getCompositor(i);
-				Compositor *compositor = compositorInstance->getCompositor();
-				compositorManager.addCompositor(mCompositorViewport, compositor->getName());
-				compositorManager.setCompositorEnabled(mCompositorViewport, compositor->getName(),compositorInstance->getEnabled());
-			}
-			oldChain->removeAllCompositors();
-		}
-
-		//mRightTarget->removeAllViewports();
-		//mLeftTarget->removeAllViewports();
-		mCompositorViewport->setOverlaysEnabled(mAreOverlaysEnabled);
-*/
-/*
-	mCompositorViewport->setOverlaysEnabled(mAreOverlaysEnabled);
-*/
 	Root::getSingleton().getRenderSystem()->removeListener(&mDeviceLostListener);
 	mCompositorInstance = NULL;
 	mCompositorViewport = NULL;
@@ -533,16 +480,6 @@ void StereoManager::saveConfig(const String &filename)
         "StereoManager::saveConfig");
 
 	of << "[Stereoscopy]" << std::endl;
-	of << "# Available Modes: ";
-	
-	const StereoModeList::const_iterator end = mAvailableModes.end();
-	for(StereoModeList::iterator it = mAvailableModes.begin(); it != end; ++it)
-	{
-		of << it->second.mName << " ";
-	}
-	of << std::endl;
-
-	of << "Stereo mode = "  << mAvailableModes[mStereoMode].mName << std::endl;
 	of << "Eyes spacing = " << mEyesSpacing << std::endl;
 	of << "Focal length = " << mFocalLength << std::endl;
 	of << "Inverse stereo = " << (mIsInversed ? "true" : "false") << std::endl;
@@ -560,19 +497,6 @@ void StereoManager::loadConfig(const String &filename)
 	cf.load(filename.c_str());
 
 	const String &modeName = cf.getSetting("Stereo mode","Stereoscopy");
-	const StereoModeList::const_iterator end = mAvailableModes.end();
-	StereoModeList::iterator it;
-	for(it = mAvailableModes.begin(); it != end; ++it)
-	{
-		if(it->second.mName == modeName)
-		{
-			mStereoMode = it->first;
-			break;
-		}
-	}
-	if(it == mAvailableModes.end())
-		mStereoMode = SM_NONE;
-
 	fixFocalPlanePos(StringConverter::parseBool(cf.getSetting("Fixed screen","Stereoscopy")));
 	setFocalLength(StringConverter::parseReal(cf.getSetting("Focal length","Stereoscopy")));
 	setEyesSpacing(StringConverter::parseReal(cf.getSetting("Eyes spacing","Stereoscopy")));
