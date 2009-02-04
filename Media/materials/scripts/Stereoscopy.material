@@ -34,37 +34,25 @@ fragment_program Stereo/Interlace_CB_fp cg
    }
 }
 
+fragment_program Stereo/Anaglyph_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point Anaglyph_fp
+}
+
 fragment_program Stereo/SplitScreen_V_fp cg
 {
    source Stereoscopy.cg
    profiles ps_2_0 arbfp1
-   entry_point SplitScreen_fp
-   compile_arguments -DVERT
-   default_params
-   {
-      param_named_auto screenSize viewport_size
-   }
+   entry_point SplitScreen_V_fp
 }
 
 fragment_program Stereo/SplitScreen_H_fp cg
 {
    source Stereoscopy.cg
    profiles ps_2_0 arbfp1
-   entry_point SplitScreen_fp
-   compile_arguments -DHORIZ
-   default_params
-   {
-      param_named_auto screenSize viewport_size
-   }
-}
-
-
-
-fragment_program Stereo/Anaglyph_fp cg
-{
-   source Stereoscopy.cg
-   profiles ps_2_0 arbfp1
-   entry_point Anaglyph_fp
+   entry_point SplitScreen_H_fp
 }
 
 material Stereo/BaseCompositorMaterial
@@ -135,6 +123,19 @@ material Stereo/CheckboardInterlace : Stereo/BaseCompositorMaterial
 	}
 }
 
+material Stereo/Anaglyph : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/Anaglyph_fp
+			{
+			}
+		}
+	}
+}
+
 material Stereo/VerticalSplitScreen : Stereo/BaseCompositorMaterial
 {
 	technique
@@ -155,19 +156,6 @@ material Stereo/HorizontalSplitScreen : Stereo/BaseCompositorMaterial
 		pass
 		{		
 			fragment_program_ref Stereo/SplitScreen_H_fp 
-			{
-			}
-		}
-	}
-}
-
-material Stereo/Anaglyph : Stereo/BaseCompositorMaterial
-{
-	technique
-	{
-		pass
-		{		
-			fragment_program_ref Stereo/Anaglyph_fp
 			{
 			}
 		}
