@@ -55,17 +55,15 @@ void StereoPlugin::install()
 	mOptEnableStereo.currentValue.clear();
 	mOptEnableStereo.possibleValues.clear();
 	mOptEnableStereo.immutable = false;
-    mOptEnableStereo.possibleValues.push_back( "No" );
-    mOptEnableStereo.possibleValues.push_back( "Yes" );
-    /*    
-    mOptEnableStereo.possibleValues.push_back( "Anaglyph" );
+    mOptEnableStereo.possibleValues.push_back( "No" );   
     mOptEnableStereo.possibleValues.push_back( "Vertical Interlaced" );
     mOptEnableStereo.possibleValues.push_back( "Horizontal Interlaced" );
     mOptEnableStereo.possibleValues.push_back( "CheckBoard Interlaced" );
-    mOptEnableStereo.possibleValues.push_back( "Vertical Split" );
-    mOptEnableStereo.possibleValues.push_back( "Horizontal Split" );
-    mOptEnableStereo.possibleValues.push_back( "Dual Screen" );
-*/	mOptEnableStereo.currentValue = "No";
+    mOptEnableStereo.possibleValues.push_back( "Vertical Split Screen" );
+    mOptEnableStereo.possibleValues.push_back( "Horizontal Split Screen" );
+    mOptEnableStereo.possibleValues.push_back( "Anaglyph" );
+    mOptEnableStereo.possibleValues.push_back( "Dual Output" );
+	mOptEnableStereo.currentValue = "No";
 
 	RenderSystemList& renderSystemList = *Root::getSingleton().getAvailableRenderers();
 	for (size_t i = 0 ; i < renderSystemList.size() ; i++)
@@ -86,8 +84,8 @@ void StereoPlugin::initialise()
 	}
 
 	// the stereo manager needs a camera and a viewport but the have not been created yet in the application
-	// create a frame manager to delay the initialisation to the first frame
-	Root::getSingleton().addFrameListener(this);
+	// create a frame manager to delay the initialisation to the first frame    
+    Root::getSingleton().addFrameListener(this);
 }
 
 void StereoPlugin::shutdown()
@@ -132,25 +130,48 @@ bool StereoPlugin::frameStarted(const FrameEvent& evt)
 				renderTextureList.push_back(rt);
 		}
 	}
-
+    
+    bool isConfigExist=true;
+    // try to load the config file
 	try
 	{
-		// try to load the config file
-		mStereoManager.init(viewport, NULL, "stereo.cfg");
-	}
+		mStereoManager.loadConfig("stereo.cfg");
+    }
 	catch(Exception e)
 	{
 		// if the config file is not found, it throws an exception
 		if(e.getNumber() == Exception::ERR_FILE_NOT_FOUND)
 		{
-			// init the manager with defaults parameters
-			mStereoManager.init(viewport, NULL, StereoManager::SM_ANAGLYPH);
-			// and generate a default config file
-			mStereoManager.saveConfig("stereo.cfg");
+			// Save config file after initialization
+            isConfigExist=false;
 		}
 		else
 			throw e;
-	}		
+	}		   
+    
+    ConfigOptionMap& configOptionMap = Root::getSingleton().getRenderSystem()->getConfigOptions();
+    String stereoMode=configOptionMap[mOptEnableStereo.name].currentValue;
+    if (stereoMode=="No")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_NONE);
+    else if (stereoMode=="Anaglyph")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_ANAGLYPH);
+    else if (stereoMode=="Horizontal Interlaced")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_INTERLACED_H);
+    else if (stereoMode=="Vertical Interlaced")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_INTERLACED_V);
+    else if (stereoMode=="CheckBoard Interlaced")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_INTERLACED_CB);
+    else if (stereoMode=="Vertical Split Screen")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_SPLITSCREEN_V);
+    else if (stereoMode=="Horizontal Split Screen")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_SPLITSCREEN_H);
+    else if (stereoMode=="Dual Ouptut")
+        mStereoManager.init(viewport, NULL, StereoManager::SM_DUALOUTPUT);
+    else  
+        mStereoManager.init(viewport, NULL, StereoManager::SM_NONE);
+    
+    if (!isConfigExist)
+        mStereoManager.saveConfig("stereo.cfg");
 
 	while(!renderTextureList.empty())
 	{
