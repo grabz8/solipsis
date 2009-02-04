@@ -1,0 +1,216 @@
+fragment_program Stereo/Interlace_H_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point Interlace_fp
+   compile_arguments -DHORIZ
+   default_params
+   {
+      param_named_auto screenSize viewport_size
+   }
+}
+
+fragment_program Stereo/Interlace_V_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point Interlace_fp
+   compile_arguments -DVERT
+   default_params
+   {
+      param_named_auto screenSize viewport_size
+   }
+}
+
+fragment_program Stereo/Interlace_CB_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point Interlace_fp
+   compile_arguments -DHORIZ -DVERT
+   default_params
+   {
+      param_named_auto screenSize viewport_size
+   }
+}
+
+fragment_program Stereo/SplitScreen_V_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point SplitScreen_fp
+   compile_arguments -DVERT
+   default_params
+   {
+      param_named_auto screenSize viewport_size
+   }
+}
+
+fragment_program Stereo/SplitScreen_H_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point SplitScreen_fp
+   compile_arguments -DHORIZ
+   default_params
+   {
+      param_named_auto screenSize viewport_size
+   }
+}
+
+
+
+fragment_program Stereo/Anaglyph_fp cg
+{
+   source Stereoscopy.cg
+   profiles ps_2_0 arbfp1
+   entry_point Anaglyph_fp
+}
+
+material Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref Ogre/Compositor/StdQuad_Cg_vp
+			{
+			}
+			
+			texture_unit Left
+			{
+				tex_address_mode clamp
+				filtering linear linear none
+				tex_coord_set 0
+				texture_alias Left
+			}
+			
+			texture_unit Right
+			{
+				tex_address_mode clamp
+				filtering linear linear none
+				tex_coord_set 0
+				texture_alias Right
+			}
+		}
+	}
+}
+
+material Stereo/VerticalInterlace : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/Interlace_V_fp
+			{
+			}
+		}
+	}
+}
+
+material Stereo/HorizontalInterlace : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/Interlace_H_fp
+			{
+			}
+		}
+	}
+}
+
+material Stereo/CheckboardInterlace : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/Interlace_CB_fp
+			{
+			}
+		}
+	}
+}
+
+material Stereo/VerticalSplitScreen : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/SplitScreen_V_fp 
+			{
+			}
+		}
+	}
+}
+
+material Stereo/HorizontalSplitScreen : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/SplitScreen_H_fp 
+			{
+			}
+		}
+	}
+}
+
+material Stereo/Anaglyph : Stereo/BaseCompositorMaterial
+{
+	technique
+	{
+		pass
+		{		
+			fragment_program_ref Stereo/Anaglyph_fp
+			{
+			}
+		}
+	}
+}
+
+material Stereo/Wireframe
+{
+	technique
+	{
+		pass
+		{
+			polygon_mode wireframe
+			cull_hardware none
+			lighting off
+		}
+	}
+}
+
+material Stereo/DebugLeft
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture Stereo/Left
+			}
+		}
+	}
+}
+
+material Stereo/DebugRight
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture Stereo/Right
+			}
+		}
+	}
+}
