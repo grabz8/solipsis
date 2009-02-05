@@ -32,7 +32,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying runtime files ..."
+				Description="Copying debug runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\Antlr2.7.6\include&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;copy &quot;include\antlr&quot; &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\lib&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\lib&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;lib\$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
@@ -55,6 +55,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying release runtime files ..."
 				CommandLine="if not exist &quot;..\..\Dependencies\Antlr2.7.6\include&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;copy &quot;include\antlr&quot; &quot;..\..\Dependencies\Antlr2.7.6\include\antlr&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\lib&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\lib&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;lib\$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>

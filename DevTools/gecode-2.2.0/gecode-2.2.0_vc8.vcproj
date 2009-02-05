@@ -32,8 +32,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\gecode-2.2.0\include&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\include&quot;&#x0D;&#x0A;xcopy &quot;include&quot; &quot;..\..\Dependencies\gecode-2.2.0\include\&quot; /y /E /S&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\lib&quot;&#x0D;&#x0A;copy &quot;lib\*.lib&quot; &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; /y&#x0D;&#x0A;copy &quot;lib\*.dll&quot; &quot;..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;..\..\Dependencies\gecode-2.2.0\include&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\include&quot;&#x0D;&#x0A;xcopy &quot;include&quot; &quot;..\..\Dependencies\gecode-2.2.0\include\&quot; /y /E /S&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\lib&quot;&#x0D;&#x0A;copy &quot;lib\*.lib&quot; &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -55,7 +55,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if not exist &quot;..\..\Dependencies\gecode-2.2.0\include&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\include&quot;&#x0D;&#x0A;xcopy &quot;include&quot; &quot;..\..\Dependencies\gecode-2.2.0\include\&quot; /y /E /S&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\lib&quot;&#x0D;&#x0A;copy &quot;lib\*.lib&quot; &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; /y&#x0D;&#x0A;copy &quot;lib\*.dll&quot; &quot;..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;..\..\Dependencies\gecode-2.2.0\include&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\include&quot;&#x0D;&#x0A;xcopy &quot;include&quot; &quot;..\..\Dependencies\gecode-2.2.0\include\&quot; /y /E /S&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; mkdir &quot;..\..\Dependencies\gecode-2.2.0\lib&quot;&#x0D;&#x0A;copy &quot;lib\*.lib&quot; &quot;..\..\Dependencies\gecode-2.2.0\lib&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>

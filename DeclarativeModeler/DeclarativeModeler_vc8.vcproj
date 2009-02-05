@@ -76,7 +76,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="postBuildDebug.bat vc9"
+				Description="Copying debug runtime files ..."
+				CommandLine="postBuildDebug.bat"
 			/>
 		</Configuration>
 		<Configuration
@@ -141,7 +142,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="postBuildRelease.bat vc9"
+				Description="Copying release runtime files ..."
+				CommandLine="postBuildRelease.bat"
 			/>
 		</Configuration>
 	</Configurations>
