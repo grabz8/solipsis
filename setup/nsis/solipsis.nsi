@@ -48,6 +48,18 @@ ShowInstDetails show
 ShowUnInstDetails show
 
 Section -Prerequisites
+  UserInfo::GetName
+  ; UserInfo.dll cannot run under Win9x so we don t need to care about admin rights
+  IfErrors IsAdmin
+  pop $0
+  UserInfo::getAccountType
+  pop $0
+  strCmp $0 "Admin" IsAdmin
+  strCmp $0 "" IsAdmin
+  MessageBox MB_OK "Administrator rights are required to install Solipsis ! (AccountType:$0)"
+  Abort
+  IsAdmin:
+
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON1 "Solipsis requires Visual C++ 2005 Redist x86 libraries package. Do you accept VCRedistx86 installation ?" IDYES VCRedistInstall
 
   EndOfVCRedistInstall:
@@ -83,7 +95,7 @@ SectionEnd
 
 Section "Navigator" SEC01
   SetOutPath "$INSTDIR\navigator"
-  File /r /x resources.cfg /x Ogre.cfg /x Ogre.log /x SOLlog.log /x *.pdb "..\..\Common\bin\navigator\Release\*.*"
+  File /r /x resources.cfg /x Ogre.cfg /x Ogre*.log /x SOLlog.log /x *.pdb "..\..\Common\bin\navigator\Release\*.*"
   File "resources.cfg"
   CreateDirectory "$SMPROGRAMS\Solipsis"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Navigator.lnk" "$INSTDIR\navigator\Navigator.exe"
@@ -92,14 +104,14 @@ SectionEnd
 
 Section "PeerRakNet" SEC02
   SetOutPath "$INSTDIR\peerRakNet"
-  File /r /x resources.cfg /x Ogre.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
+  File /r /x resources.cfg /x Ogre*.log /x *.pdb /x *.ilk "..\..\Common\bin\peerRakNet\Release\*.*"
   File "resources.cfg"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis PeerRakNet.lnk" "$INSTDIR\peerRakNet\peer.exe" "-h localhost -p 8880 -v 0"
 SectionEnd
 
 Section "RakNetServer" SEC03
   SetOutPath "$INSTDIR\raknetserver"
-  File /r /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
+  File /r /x stats /x RakNetServer*.log /x *.pdb /x *.ilk "..\..\Common\bin\raknetserver\Release\*.*"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Children Island).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8660 -s 11112223 -m $\"$INSTDIR\Media\cacheServerIsland$\""
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Delta Station).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8559 -s 11112222 -m $\"$INSTDIR\Media\cacheServerDeltastation$\""
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis RakNet Server (Rennes).lnk" "$INSTDIR\raknetserver\raknetserver.exe" "-p 8558 -s 11112235 -m $\"$INSTDIR\Media\cacheServerRennes$\""
@@ -107,7 +119,7 @@ SectionEnd
 
 Section "WorldsServer" SEC04
   SetOutPath "$INSTDIR\WorldsServer"
-  File /r /x .svn /x *.pdn /x *.bat /x setup.py /x users.xml "..\..\WorldsServer\*.*"
+  File /r /x .svn /x stats /x *.pdn /x *.bat /x setup.py /x users.xml "..\..\WorldsServer\*.*"
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis Worlds Server.lnk" "$INSTDIR\WorldsServer\WorldsServer.py" "" "$INSTDIR\WorldsServer\WorldsServer.ico" 0
 SectionEnd
 
@@ -117,7 +129,12 @@ Section "VoiceEngineServer" SEC05
   CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis VoiceEngine Server.lnk" "$INSTDIR\VoiceEngineServer\TestServer.exe"
 SectionEnd
 
-Section "Media" SEC06
+Section "Statistics" SEC06
+  SetOutPath "$INSTDIR\Statistics"
+  File /r /x .svn /x *.pyc /x *.csv /x *.svg "..\..\Statistics\*.*"
+SectionEnd
+
+Section "Media" SEC07
   SetOutPath "$INSTDIR\Media"
   File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
   CreateDirectory $INSTDIR\Media\cacheServerIsland
@@ -175,6 +192,7 @@ Section Uninstall
 
   RMDir "$SMPROGRAMS\Solipsis"
   RMDir /r "$INSTDIR\Media"
+  RMDir /r "$INSTDIR\Statistics"
   RMDir /r "$INSTDIR\VoiceEngineServer"
   RMDir /r "$INSTDIR\WorldsServer"
   RMDir /r "$INSTDIR\raknetserver"

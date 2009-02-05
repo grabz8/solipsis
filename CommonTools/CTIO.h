@@ -45,6 +45,8 @@ public:
     static bool isFileExists(const std::string& filename);
     /// Returns true if a directory exists
     static bool isDirectoryExists(const std::string& pathname);
+    /// Returns true if a directory was created
+    static bool createDirectory(const std::string& pathname);
     /// Copy a file
     static bool copyFile(const std::string& srcFilename, const std::string& dstFilename);
     /// Delete a file

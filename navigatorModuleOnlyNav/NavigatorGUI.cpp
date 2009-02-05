@@ -1755,6 +1755,7 @@ void NavigatorGUI::worldOk(const NaviData& naviData)
     {
         std::string voipServer = naviData["voipServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
+        mNavigator->setVoIPServerAddress(voipServer);
     }
     if (naviData.exists("vncServer"))
     {

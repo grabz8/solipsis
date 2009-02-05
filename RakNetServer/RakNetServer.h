@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __RakNetServer_h__
 
 #include <string>
+#include <CTStatsManager.h>
 #include <XmlDatas.h>
 #include <RakNetConnection.h>
 #include "RM2Connection.h"
@@ -57,6 +58,9 @@ protected:
     bool mRunning;
     /// Flag to quit
     bool mQuit;
+
+    /// Statistics manager
+    CommonTools::StatsManager mStatsManager;
 
 public:
     /** Constructor. */

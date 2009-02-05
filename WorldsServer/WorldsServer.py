@@ -1,6 +1,27 @@
 #!/usr/bin/python
 #-*- coding: ISO-8859-1 -*-
 
+##This source file is part of Solipsis
+##    (Solipsis is an opensource decentralized Metaverse platform)
+##For the latest info, see http://www.solipsis.org/
+##
+##Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
+##Author JAN Gregory
+##
+##This program is free software; you can redistribute it and/or
+##modify it under the terms of the GNU General Public License
+##as published by the Free Software Foundation; either version 2
+##of the License, or (at your option) any later version.
+##
+##This program is distributed in the hope that it will be useful,
+##but WITHOUT ANY WARRANTY; without even the implied warranty of
+##MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##GNU General Public License for more details.
+##
+##You should have received a copy of the GNU General Public License
+##along with this program; if not, write to the Free Software
+##Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 """WorldsServer
 A simple Worlds Server which is able to return list of available Solipsis worlds.
 It can also return nodeId according to new/registered login.
@@ -20,6 +41,8 @@ from SimpleHTTPServer import SimpleHTTPRequestHandler
 import SocketServer, socket
 from urlparse import urlparse
 from cgi import parse_qs
+sys.path.append('../Statistics')
+from StatsManager import StatsManager, StatEvent
 
 
 # event to stop the process and threads
@@ -39,6 +62,7 @@ host = defaultHost
 port = defaultPort
 
 usersManager = None
+statsManager = StatsManager()
 
 
 class UsersManager:
@@ -139,6 +163,8 @@ class UsersManager:
                 # compress it on 22bytes sbase64 string instead of 32bytes hexa string
                 nodeId = self.convertInt2SBase64(nodeId128, 128)
                 self.users[login] = [pwd, nodeId]
+                statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_NEW_USER'], statDesc='%s/%s/%s' % (login, pwd, nodeId)))
+                statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_NB_USERS'], statType=StatEvent.StatEventType['SET_ABSOLUTE'], statDesc='%d' % len(self.users)))
                 result = True
             print 'Authenticated %s/%s -> %s, %s' % (login, pwd, result, nodeId)
 #            print 'Converted in integer : ', self.convertSBase642Int(nodeId)
@@ -181,20 +207,24 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
             navVersion = int(query['navVersion'][0], 16)
         except:
             # navVersion param is missing !
+            statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_RESP_ERROR']))
             self.send_error(404, 'Malformed url ...')
             return False
         if not self.isNavigatorVersionCompatible(navVersion):
             # incompatibility detected !
+            statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_NAV_INCOMPATBILITY'], statDesc=getVersionStr(navVersion)))
             self.send_error(409, 'Navigator version ' + getVersionStr(navVersion) + ' not supported by server version ' + getVersionStr(WSERVER_VERSION))
             return False
         return True
 
     def do_GET(self):
+#        statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_REQ']))
         o = urlparse(self.path)
         print 'WSRequestHandler::do_GET() %s request from %s, url=%s' % (self.command, self.client_address, self.path)
         query = parse_qs(o.query)
         t = o.path.split('.')
         if t[len(t) - 1] in ['html', 'png', 'js']:
+            statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_REQ']))
             if o.path == '/uiauthentws.html':
                 if not self.checkNavigatorVersion(query):
                     return
@@ -203,6 +233,7 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                     pwd = query['pwd'][0]
                 except:
                     # login param is missing !
+                    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_RESP_ERROR']))
                     self.send_error(404, 'Malformed url ...')
                     return
                 authenticated, nodeId = usersManager.authenticate(login, pwd)
@@ -211,9 +242,11 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                 if authenticated:
                     loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Succeeded')
                     loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', nodeId)
+                    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_AUTH_SUCCESS'], statDesc='%s/%s' % (login, pwd)))
                 else:
                     loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Failed')
                     loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', '')
+                    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_AUTH_FAILURE'], statDesc='%s/%s' % (login, pwd)))
                 self.wfile.write(loginHtmlFileContent)
                 usersManager.save()
             elif o.path == '/uiworlds.html':
@@ -225,6 +258,7 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                     navVersion = int(query['navVersion'][0], 16)
                 except:
                     # navVersion param is missing !
+                    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_RESP_ERROR']))
                     self.send_error(404, 'Malformed url ...')
                     return
                 infoHtmlFile = open('uiinfows.html', 'r')
@@ -239,6 +273,7 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                 SimpleHTTPRequestHandler.do_GET(self)
         else:
             # url not supported !
+#            statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_RESP_ERROR']))
             self.send_error(404, 'Malformed url ...')
 
 
@@ -309,7 +344,6 @@ class Console(threading.Thread):
                     print '=========================================================='
                     print '=                     C O N S O L E                      ='
                     print '=========================================================='
-#                    print 'w/W .............................................. Worlds'
                     print 'u/U ................................................ Users'
                     print 'q/Q ................................................. Quit'
                     print '\n'
@@ -354,7 +388,9 @@ def main():
     Main entry
     """
 
-    global stopEvent, usersXmlFilename, host, port, usersManager
+    global stopEvent, usersXmlFilename, host, port, usersManager, statsManager
+
+    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_START']))
 
     # process arguments
     try:
@@ -366,6 +402,7 @@ def main():
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
+            statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_END']))
             sys.exit()
         elif opt in ("-H", "--HOST"):
             host = arg
@@ -394,6 +431,7 @@ def main():
 
     print 'Quitting application'
     usersManager.save()
+    statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_END']))
     sys.exit(0)
 
 

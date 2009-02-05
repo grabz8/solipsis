@@ -30,11 +30,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <direct.h>
 #define GETCWD _getcwd
 #define CHDIR _chdir
+#define MKDIR _mkdir
 #else
 #include <unistd.h>
 #include <sys/stat.h>
 #define GETCWD getcwd
 #define CHDIR chdir
+#define MKDIR _mkdir
 #endif
 
 #include <fstream>
@@ -73,6 +75,12 @@ bool IO::isDirectoryExists(const std::string& pathname)
     struct stat _stat;
     if (stat(pathname.c_str(), &_stat) != 0) return false;
     return ((_stat.st_mode & S_IFDIR) != 0);
+}
+
+//-------------------------------------------------------------------------------------
+bool IO::createDirectory(const std::string& pathname)
+{
+    return (MKDIR(pathname.c_str()) == 0);
 }
 
 //-------------------------------------------------------------------------------------
@@ -121,7 +129,7 @@ bool IO::renameFile(const std::string& srcFilename, const std::string& dstFilena
 std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
 {
     std::string fullPath;
-    char *cwd = _getcwd(NULL, 0);
+    char *cwd = GETCWD(NULL, 0);
     std::string currentPath = cwd;
     std::string relativePath = pathname;
     while (currentPath.find_last_of("\\") != std::string::npos)

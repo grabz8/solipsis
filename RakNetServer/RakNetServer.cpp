@@ -80,6 +80,9 @@ RakNetServer::RakNetServer(int argc, char** argv) :
         mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     ms_Singleton = this;
+
+    mStatsManager.initialize();
+    mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_START, "");
 }
 
 //-------------------------------------------------------------------------------------
@@ -88,6 +91,9 @@ RakNetServer::~RakNetServer()
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::~RakNetServer()");
 
     finalize();
+
+    mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_END, "");
+    mStatsManager.finalize();
 }
 
 //-------------------------------------------------------------------------------------
@@ -137,23 +143,27 @@ void RakNetServer::run()
             case ID_NEW_INCOMING_CONNECTION:
                 {
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NEW_INCOMING_CONNECTION from %s", packet->systemAddress.ToString());
+                    mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_CONNECTION, std::string(packet->systemAddress.ToString()));
                     // Set notifications interval for big file transfer
                     RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
                 }
                 break;
             case ID_DISCONNECTION_NOTIFICATION:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_DISCONNECTION_NOTIFICATION from %s", packet->systemAddress.ToString());
+                mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_DISCONNECTION, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetEntity::deleteByAddress(packet->systemAddress);
                 break;
             case ID_CONNECTION_LOST:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_LOST from %s", packet->systemAddress.ToString());
+                mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_LOST, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetEntity::deleteByAddress(packet->systemAddress);
                 break;
             case RakNetConnection::ID_REQUESTING_FILETRANSFER:
                 {
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_REQUESTING_FILETRANSFER from %s", packet->systemAddress.ToString());
+                    mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_REQFILETRANSFER, std::string(packet->systemAddress.ToString()));
                     BitStream bitStream(packet->data, packet->length, false);
                     bitStream.IgnoreBytes(1);
                     unsigned short fileListTransferSetID;

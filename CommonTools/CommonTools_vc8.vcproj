@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTStatsManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CTStringHelpers.cpp"
 				>
 			</File>
@@ -265,6 +269,10 @@
 			</File>
 			<File
 				RelativePath=".\CTSingleton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTStatsManager.h"
 				>
 			</File>
 			<File

@@ -963,3 +963,13 @@ VLC plugin
  - 1 workaround added about crash when launching several VLC materials in the same time (a better solution should be found)
 
 ---------------------------
+05/02/09
+
+voIP server address from uiworlds.html response taken into account, client will now connect by default on world dedicated voIP server
+Statistics added
+ - C++ CTStatsManager, Python StatsManager classes
+ - RakNetServer and WorldsServer are now generating stats
+ - Statistics directory contains usefull scripts to compute stats
+Setup abort message about administrator rights added
+
+---------------------------
