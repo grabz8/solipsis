@@ -105,8 +105,7 @@ int main(int argc, char *argv[])
     setlocale(LC_ALL, "");
     setlocale(LC_NUMERIC, "English");
 
-//    LogHandler::getLogHandler()->setLogFilename("RakNetServer_" + StringHelpers::toString(System::getPID()) + "_"  + System::getDateTimeYYYYMMDDHHMMSS() + ".log");
-    LogHandler::getLogHandler()->setLogFilename("RakNetServer.log");
+    LogHandler::getLogHandler()->setLogFilename("RakNetServer_" + StringHelpers::toString(System::getPID()) + "_"  + System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Starting RakNet server");
 
