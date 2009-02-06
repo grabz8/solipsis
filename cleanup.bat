@@ -42,6 +42,11 @@ rmdir Common\bin\VoiceEngineServer\debug /S /Q
 rmdir Common\bin\VoiceEngineServer\release /S /Q
 rmdir Common\bin\VoiceEngineServer
 
+rmdir WorldsServer\stats /S /Q
+del Statistics\*.csv
+del Statistics\*.svg
+del Statistics\*.pyc
+
 rmdir Dependencies\llmozlib /S /Q
 rmdir Dependencies\lua /S /Q
 rmdir Dependencies\navi /S /Q
@@ -322,6 +327,9 @@ rmdir DeclarativeModeler\Release /S /Q
 
 rmdir plugin_swf\Debug /S /Q
 rmdir plugin_swf\Release /S /Q
+
+rmdir StereoPlugin\Debug /S /Q
+rmdir StereoPlugin\Release /S /Q
 
 del setup\nsis\Solipsis-*-win32.exe
 
