@@ -33,7 +33,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\libiconv\include&quot; mkdir &quot;..\..\Dependencies\libiconv\include&quot;&#x0D;&#x0A;copy &quot;win32\include\*.h&quot; &quot;..\..\Dependencies\libiconv\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\libiconv\lib&quot; mkdir &quot;..\..\Dependencies\libiconv\lib&quot;&#x0D;&#x0A;copy &quot;win32\lib\libcharset.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libcharset1.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv2.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;"
+				CommandLine="if exist &quot;..\..\Dependencies\libiconv\include&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\Dependencies\libiconv\include&quot;&#x0D;&#x0A;copy &quot;win32\include\*.h&quot; &quot;..\..\Dependencies\libiconv\include&quot; /y&#x0D;&#x0A;:includeOK&#x0D;&#x0A;if exist &quot;..\..\Dependencies\libiconv\lib&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\Dependencies\libiconv\lib&quot;&#x0D;&#x0A;copy &quot;win32\lib\libcharset.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libcharset1.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv2.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;:libOK"
 			/>
 		</Configuration>
 		<Configuration
@@ -56,7 +56,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\libiconv\include&quot; mkdir &quot;..\..\Dependencies\libiconv\include&quot;&#x0D;&#x0A;copy &quot;win32\include\*.h&quot; &quot;..\..\Dependencies\libiconv\include&quot; /y&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\libiconv\lib&quot; mkdir &quot;..\..\Dependencies\libiconv\lib&quot;&#x0D;&#x0A;copy &quot;win32\lib\libcharset.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libcharset1.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv2.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;"
+				CommandLine="if exist &quot;..\..\Dependencies\libiconv\include&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\Dependencies\libiconv\include&quot;&#x0D;&#x0A;copy &quot;win32\include\*.h&quot; &quot;..\..\Dependencies\libiconv\include&quot; /y&#x0D;&#x0A;:includeOK&#x0D;&#x0A;if exist &quot;..\..\Dependencies\libiconv\lib&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\Dependencies\libiconv\lib&quot;&#x0D;&#x0A;copy &quot;win32\lib\libcharset.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv.lib&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libcharset1.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;copy &quot;win32\lib\libiconv2.dll&quot; &quot;..\..\Dependencies\libiconv\lib&quot; /y&#x0D;&#x0A;:libOK"
 			/>
 		</Configuration>
 	</Configurations>

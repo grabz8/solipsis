@@ -973,3 +973,9 @@ Statistics added
 Setup abort message about administrator rights added
 
 ---------------------------
+06/02/09
+
+voIP server address from uiworlds.html response taken into account
+postbuild batch events optimization (gecode, antlr, libiconv)
+
+---------------------------
