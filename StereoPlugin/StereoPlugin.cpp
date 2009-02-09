@@ -90,13 +90,15 @@ void StereoPlugin::initialise()
 
 void StereoPlugin::shutdown()
 {
-	ConfigOptionMap& configOptionMap = Root::getSingleton().getRenderSystem()->getConfigOptions();
+	if (Root::getSingleton().getRenderSystem()==NULL)
+        return;
+    ConfigOptionMap& configOptionMap = Root::getSingleton().getRenderSystem()->getConfigOptions();
 	if (configOptionMap[mOptEnableStereo.name].currentValue == "No")
 	{
 		return;
 	}
 
-	mStereoManager.shutdown();
+    mStereoManager.shutdown();
 }
 
 void StereoPlugin::uninstall()
