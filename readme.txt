@@ -130,7 +130,7 @@ Update the default Visual Studio COREWIN properties XML file to add system libra
  by this line
   AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/>
 
-Download Ogre source package (branch 1.4)
+Download Ogre source package (branch 1.6)
 Download Ogre Dependencies for VS8.1 (http://www.ogre3d.org/index.php?option=com_content&task=view&id=412&Itemid=132)
 and unzip them into ogrenew subdirectory
 
