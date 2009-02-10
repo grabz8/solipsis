@@ -186,11 +186,13 @@ void RakNetServer::run()
                     RakNetConnection::DeserializeString(&bitStream, sourceEntityUid);
                     EntityUID targetEntityUid;
                     RakNetConnection::DeserializeString(&bitStream, targetEntityUid);
+                    bool broadcast;
+                    bitStream.Read(broadcast);
                     std::string desc;
                     RakNetConnection::DeserializeString(&bitStream, desc);
                     std::wstring wdesc = XmlHelpers::convertUTF8ToWString("WCHAR_T", desc);
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_ACTION desc:%s", StringHelpers::convertWStringToString(wdesc).c_str());
-                    if (sourceEntityUid == targetEntityUid)
+                    if (broadcast || (sourceEntityUid == targetEntityUid))
                     {
                         // Broadcast
                         RakPeer->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, UNASSIGNED_SYSTEM_ADDRESS, true);

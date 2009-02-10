@@ -25,8 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreHelpers.h"
 #include "Navigator.h"
 #include "Modeler.h"
+#include <CTStringHelpers.h>
+#include <Navi.h>
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
@@ -88,6 +91,33 @@ bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
 bool Object::action(XmlAction* xmlAction)
 #endif
 {
+    // Action applied by our local avatar ?
+    if (xmlAction->getSourceEntityUid() == Navigator::getSingletonPtr()->getUserAvatar()->getXmlEntity()->getUid())
+        return true;
+
+    if (!Navigator::getSingletonPtr()->isNaviSupported())
+        return true;
+    std::string action = StringHelpers::convertWStringToString(xmlAction->getDesc());
+    std::string::size_type comma = action.find_first_of(",");
+    if ((comma == std::string::npos) || (comma < 1) || (action.length() - comma <= 1))
+    {
+        OGRE_LOG("Object::action() Navi " + mXmlEntity->getUid() + " not found !");
+        return true;
+    }
+    std::string naviName = action.substr(0, comma);
+    std::string url = action.substr(comma + 1);
+    NaviLibrary::Navi* navi = NaviLibrary::NaviManager::Get().getNavi(naviName);
+    if (navi == 0)
+    {
+        OGRE_LOG("Object::action() Navi " + mXmlEntity->getUid() + " not found !");
+        return true;
+    }
+    if (navi->getCurrentLocation() != url)
+    {
+        Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviName, url);
+        navi->navigateTo(url);
+    }
+
     return true;
 }
 

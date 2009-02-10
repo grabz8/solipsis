@@ -517,7 +517,7 @@ void Navigator::demoNavi1()
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi1Video", "demoNavi1Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + vidEnt->getName(), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
     vidNavi->setForceMaxUpdate(true);
@@ -532,7 +532,7 @@ void Navigator::demoNavi1()
     // Creates the Text Plane and subsequent NaviMaterial
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + txtEnt->getName(), "local://lgpl-3.0.txt", 512, 512);
+    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*txtEnt), "local://lgpl-3.0.txt", 512, 512);
     txtNavi->show(true);
     txtNavi->setMaxUPS(8);
     txtEnt->setMaterialName(txtNavi->getMaterialName());
@@ -543,7 +543,7 @@ void Navigator::demoNavi1()
     // web knot
     Entity* knotEnt = mSceneMgr->createEntity("demoNavi1WebKnot", "knot.mesh");
     knotEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + knotEnt->getName(), "http://www.google.com", 512, 512);
+    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*knotEnt), "http://www.google.com", 512, 512);
     knotNavi->show(true);
     knotNavi->setMaxUPS(8);
     std::string googleMtlName = knotNavi->getMaterialName();
@@ -591,7 +591,7 @@ void Navigator::demoNavi2(const String params)
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + vidEnt->getName(), "", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), "", 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
     vidNavi->setForceMaxUpdate(true);
@@ -602,7 +602,7 @@ void Navigator::demoNavi2(const String params)
     videoNode->setPosition(position);
     videoNode->yaw(Degree(180), Node::TS_WORLD);
     // Add 1 listener to follow URL changes
-    vidNavi->addEventListener(&mDemoNavi2EventListener);
+    vidNavi->addEventListener(this);
     vidNavi->navigateTo(url2go);
 }
 #endif
@@ -777,6 +777,12 @@ void Navigator::demoPhysics1()
 */
 }
 #endif
+
+//-------------------------------------------------------------------------------------
+String Navigator::getEntityNaviName(const Entity& entity)
+{
+    return "WWW_" + entity.getName();
+}
 
 //-------------------------------------------------------------------------------------
 Entity* Navigator::getNaviEntity(const String& naviName)
@@ -1015,7 +1021,7 @@ void Navigator::computeNaviHit(const String& naviName,
     navi->getExtents(naviWidth, naviHeight);
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -1122,6 +1128,20 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
     }
 
     return false;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::is1ObjectHitByMouse(Object*& object)
+{
+    // if 1 Object entity hit
+    if ((mPickedMovable == 0) || (mPickedMovable->getQueryFlags() & QFObject))
+        return false;
+
+    Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+    Object3D* obj = mModeler->getSelection()->get3DObject(pickedEntity);
+    object = (Object*)mOgrePeerManager->getOgrePeer(obj->getEntityUID());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1ObjectHitByMouse() found Object movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), object->getXmlEntity()->getUid().c_str(), pickedEntity->getName().c_str());
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1545,6 +1565,7 @@ bool Navigator::sendMessage(const String& message)
     xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setType(ATChat);
+    xmlAction->setBroadcast(true);
     xmlAction->setDesc(messageWStr);
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
     std::string xmlResp;
@@ -1552,9 +1573,55 @@ bool Navigator::sendMessage(const String& message)
 #else
     XmlEvt xmlEvt(ETActionOnEntity);
     XmlAction xmlAction(ETActionOnEntity);
+    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
     xmlAction->setType(ATChat);
+    xmlAction->setBroadcast(true);
     xmlAction->setDesc(messageWStr);
+    std::string xmlResp;
+    return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
+#endif
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::addNaviURLUpdatePending(const String& naviName, const String& url)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::addNaviURLUpdatePending(%, %s)", naviName.c_str(), url.c_str());
+
+    mNaviURLUpdatePending[naviName] = url;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool Navigator::sendURLUpdate(const EntityUID& entityUID, const String& naviName, const String& url)
+{
+    if (mXmlRpcClient == 0)
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send URL update without XMLRPC client", "Navigator::sendURLUpdate");
+
+    std::wstring actionWStr = StringHelpers::convertStringToWString(naviName + "," + url);
+    // log with locale string
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendURLUpdate() %s", StringHelpers::convertWStringToString(actionWStr).c_str());
+
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+    xmlEvt->setType(ETActionOnEntity);
+    RefCntPoolPtr<XmlAction> xmlAction;
+    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlAction->setTargetEntityUid(entityUID);
+    xmlAction->setType(ATURLUpdate);
+    xmlAction->setBroadcast(true);
+    xmlAction->setDesc(actionWStr);
+    xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
+    std::string xmlResp;
+    return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
+#else
+    XmlEvt xmlEvt(ETActionOnEntity);
+    XmlAction xmlAction(ETActionOnEntity);
+    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
+    xmlAction->setTargetEntityUid(entityUID);
+    xmlAction->setType(ATURLUpdate);
+    xmlAction->setBroadcast(true);
+    xmlAction->setDesc(actionWStr);
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
 #endif
@@ -1614,6 +1681,43 @@ void Navigator::onPeerAction(XmlAction* xmlAction)
 
     if (!mOgrePeerManager->action(xmlAction))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peer !", "Navigator::onPeerAction");
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::onLocationChange(Navi *caller, const std::string &url)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange(%s, %s)", caller->getName().c_str(), url.c_str());
+
+#ifdef DEMO_NAVI2
+    if (caller->getName() == "demoNavi2Video")
+        mNavigatorGUI->debugRefreshUrl();
+#endif
+
+    std::map<String, String>::iterator it = mNaviURLUpdatePending.find(caller->getName());
+    if (it != mNaviURLUpdatePending.end())
+    {
+        mNaviURLUpdatePending.erase(it);
+        return;
+    }
+    Entity* entity = getNaviEntity(caller->getName());
+    if (entity == 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No entity found for navi %s !", caller->getName().c_str());
+        return;
+    }
+    Object3D* object3D = mModeler->getSelection()->get3DObject(entity);
+    if (object3D == 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No object3D found for navi %s !", caller->getName().c_str());
+        return;
+    }
+    Object* object = (Object*)mOgrePeerManager->getOgrePeer(object3D->getEntityUID());
+    if (object == 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No object found for navi %s !", caller->getName().c_str());
+        return;
+    }
+    sendURLUpdate(object->getXmlEntity()->getUid(), caller->getName(), url);
 }
 
 //-------------------------------------------------------------------------------------

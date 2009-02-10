@@ -62,7 +62,8 @@ enum EntityType {
 
 enum ActionType {
     ATNone = 0,         /// No action
-    ATChat = 1,         /// Chat message sent by the target entity
+    ATChat = 1,         /// Chat message sent by the source entity
+    ATURLUpdate = 2,    /// URL updated on 1 Navi-mapped entity object
 };
 
 typedef unsigned int EntityFlags;
@@ -738,6 +739,7 @@ protected:
     ActionType mType;
     EntityUID mSourceEntityUid;
     EntityUID mTargetEntityUid;
+    bool mBroadcast;
     std::wstring mDesc;
 
 public:
@@ -745,6 +747,7 @@ public:
       mType(ATNone),
       mSourceEntityUid(""),
       mTargetEntityUid(""),
+      mBroadcast(false),
       mDesc(L"")
     {}
 
@@ -755,6 +758,7 @@ public:
         mType = ATNone;
         mSourceEntityUid.clear();
         mTargetEntityUid.clear();
+        mBroadcast = false;
         mDesc.clear();
     }
 #endif
@@ -772,6 +776,9 @@ public:
 
     void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
     const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
+
+    void setBroadcast(bool broadcast) { mBroadcast = broadcast; }
+    bool getBroadcast() { return mBroadcast; }
 
     void setDesc(const std::wstring& desc) { mDesc = desc; }
     const std::wstring& getDesc() { return mDesc; }

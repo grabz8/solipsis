@@ -1295,11 +1295,14 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
             // Navi supported ?
             if (!Navigator::getSingletonPtr()->isNaviSupported())
                 return TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + entity->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
+            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*entity), url, width, height, FO_ANISOTROPIC, mtlName);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
             naviWWWTexture->setForceMaxUpdate(fps != 0);
             naviWWWTexture->setOpacity(1.0f);
+            // Add 1 listener to follow URL changes
+            Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviWWWTexture->getName(), url);
+            naviWWWTexture->addEventListener(Navigator::getSingletonPtr());
         }
         else if (plugin == "swf")
         {

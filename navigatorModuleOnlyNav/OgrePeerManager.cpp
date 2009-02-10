@@ -275,6 +275,17 @@ OgrePeer* OgrePeerManager::getOgrePeer(const EntityUID& entityUID)
 }
 
 //-------------------------------------------------------------------------------------
+bool OgrePeerManager::isOgrePeerOwned(OgrePeer* peer)
+{
+    // Object exists or not yet saved ?
+    OgrePeersMap::iterator ogrePeer = mOgrePeersMap.find(peer->getXmlEntity()->getUid());
+    if (ogrePeer == mOgrePeersMap.end())
+        return true;
+
+    return (peer->getXmlEntity()->getOwner() == mNodeId);
+}
+
+//-------------------------------------------------------------------------------------
 bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object3D)
 {
     // Object updated or new object ?

@@ -74,7 +74,8 @@ public:
         char timeBuf[16];
         _strtime_s(timeBuf, 16);
         char log[256];
-        _snprintf(log, sizeof(log) - 1, "%s: %s\n", timeBuf, msg);
+        _snprintf(log, sizeof(log) - 2, "%s: %s\n", timeBuf, msg);
+        log[sizeof(log) - 2] = '\n';
         log[sizeof(log) - 1] = '\0';
 
 #ifdef USE_WINDOWS_DEBUG

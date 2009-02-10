@@ -119,6 +119,8 @@ public:
     EntityUID getNewEntityUID();
 	/** Retrieve 1 peer according to its entity uid. */
     OgrePeer* getOgrePeer(const EntityUID& entityUID);
+	/** Return true if 1 peer is owned by me. */
+    bool isOgrePeerOwned(OgrePeer* peer);
 
     /** See Solipsis::IModelerCallbacks. */
 	virtual bool onObject3DSave(const String& sofFilename, Object3D* object3D);

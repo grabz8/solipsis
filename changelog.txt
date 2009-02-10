@@ -979,3 +979,10 @@ voIP server address from uiworlds.html response taken into account
 postbuild batch events optimization (gecode, antlr, libiconv)
 
 ---------------------------
+10/02/09
+
+URL update on network added (1 action is sent over network when Navi location change)
+iconv long string bug fix
+truncated log strings are now postfixed by \n
+
+---------------------------

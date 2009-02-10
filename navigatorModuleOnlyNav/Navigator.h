@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NodeEventListener.h"
 #include "Avatar.h"
 #include "Scene.h"
+#include "Object.h"
 #include "OgrePeerManager.h"
 #include "NavigatorGUI.h"
 #include "LuaBinding.h"
@@ -54,7 +55,7 @@ class AvatarEditor;
 
 /** The main class of Navigator application.
  */
-class Navigator : public Instance, public NodeEventListener, public IOgrePeerManagerCallbacks
+class Navigator : public Instance, public NodeEventListener, public IOgrePeerManagerCallbacks, public NaviEventListener
 {
 public:
     enum State {
@@ -152,6 +153,8 @@ protected:
 
     NavigatorSound* mNavigatorSound;
 
+    std::map<String, String> mNaviURLUpdatePending;
+
 public:
     Navigator(const String name, IApplication* application);
     ~Navigator();
@@ -230,15 +233,6 @@ public:
     void demoNavi1();
 #endif
 #ifdef DEMO_NAVI2
-    class DemoNavi2EventListener : public NaviEventListener
-    {
-	public:
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-		virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
-        virtual void onLocationChange(Navi *caller, const std::string &url) { getSingletonPtr()->getNavigatorGUI()->debugRefreshUrl(); }
-		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
-    };
-    DemoNavi2EventListener mDemoNavi2EventListener;
     void demoNavi2(const String params);
 #endif
 #ifdef DEMO_VNC
@@ -255,6 +249,7 @@ public:
 #endif
 
     // Navi 3D panels management
+    String getEntityNaviName(const Entity& entity);
     Entity* getNaviEntity(const String& naviName);
 
     // Mouse ray picking
@@ -276,6 +271,7 @@ public:
                        Vector2& closestTriUV0, Vector2& closestTriUV1, Vector2& closestTriUV2,
                        Vector2& vncXY);
     bool is1AvatarHitByMouse(Avatar*& avatar);
+    bool is1ObjectHitByMouse(Object*& object);
 
     bool quit();
     bool connect();
@@ -283,6 +279,8 @@ public:
     bool mainMenuClick(const String& item);
     bool contextItemSelected(const String& item);
     bool sendMessage(const String& message);
+    bool addNaviURLUpdatePending(const String& naviName, const String& url);
+    bool sendURLUpdate(const EntityUID& entityUID, const String& naviName, const String& url);
 
     // process events received by node
     void processEvents();
@@ -392,6 +390,15 @@ protected:
     virtual void onPeerUpdated(XmlEntity* xmlEntity);
     virtual void onPeerAction(XmlAction* xmlAction);
 #endif
+
+    /** See NaviEventListener. */
+    virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
+    /** See NaviEventListener. */
+    virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+    /** See NaviEventListener. */
+    virtual void onLocationChange(Navi *caller, const std::string &url);
+    /** See NaviEventListener. */
+    virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
 };
 
 } // namespace Solipsis

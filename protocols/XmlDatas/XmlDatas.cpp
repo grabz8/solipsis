@@ -245,28 +245,47 @@ std::string XmlHelpers::convertWStringToUTF8(const std::string &enc, const std::
         return std::string();
 
     iconv_t     cd = iconv_open("UTF-8", enc.c_str());
-    std::string out;
-    char        obuf[257];
-    char        *optr;
-    size_t      olen;
     char        *sptr = (char *)wstr.c_str();
-    size_t      slen = wstr.length() * sizeof(wchar_t);
+    char        *sptr_oldErr = 0;
+    size_t      slen = wstr.length()*sizeof(wchar_t);
+    std::string out;
+    size_t      olen_alloc = wstr.length()*6; // worst case
+    size_t      olen;
+    char        *obuf = (char*)malloc(olen_alloc);
+    char        *optr;
 
     while (slen > 0)
     {
         obuf[0] = '\0';
         optr = (char *)obuf;
-        olen = sizeof(obuf) - sizeof(obuf[0]);
+        olen = olen_alloc - sizeof(char);
         size_t ret = iconv(cd, (const char**)&sptr, &slen, &optr, &olen);
         if (ret == size_t(-1))
         {
-            iconv_close(cd);
-            throw std::exception("XmlHelpers::convertWStringToUTF8() conversion failure !");
+            if (sptr_oldErr == sptr)
+            {
+                iconv_close(cd);
+                free(obuf);
+                char tmp[256];
+                _snprintf(tmp, sizeof(tmp) - 1, "XmlHelpers::convertUTF8ToWString() conversion failure (errno:%d) !", errno);
+                throw std::exception(tmp);
+            }
+            // we save pos where iconv stop conversion and we make another attempt
+            // by re-allocating twice the output buffer, if same pos is still on error
+            // then we will thow an definitive exception
+            sptr_oldErr = sptr;
+            olen_alloc *= 2;
+            obuf = (char*)realloc(obuf, olen_alloc);
+            out.clear();
+            sptr = (char *)wstr.c_str();
+            slen = wstr.length()*sizeof(wchar_t);
+            continue;
         }
         *optr = '\0';
         out  += obuf;
     }
     iconv_close(cd);
+    free(obuf);
 
     return out;
 }
@@ -279,27 +298,46 @@ std::wstring XmlHelpers::convertUTF8ToWString(const std::string &enc, const std:
 
     iconv_t         cd = iconv_open(enc.c_str(), "UTF-8");
     std::wstring    out;
-    wchar_t         obuf[65];
-    char            *optr;
-    size_t          olen;
     char            *sptr = (char *)utf8str.c_str();
+    char            *sptr_oldErr = 0;
     size_t          slen = utf8str.length();
+    size_t          olen_alloc = utf8str.length()*2; // worst case
+    size_t          olen;
+    wchar_t         *obuf = (wchar_t*)malloc(olen_alloc);
+    char            *optr;
 
     while (slen > 0)
     {
         obuf[0] = L'\0';
         optr = (char *)obuf;
-        olen = sizeof(obuf) - sizeof(obuf[0]);
+        olen = olen_alloc - sizeof(wchar_t);
         size_t ret = iconv(cd, (const char**)&sptr, &slen, &optr, &olen);
         if (ret == size_t(-1))
         {
-            iconv_close(cd);
-            throw std::exception("XmlHelpers::convertUTF8ToWString() conversion failure !");
+            if (sptr_oldErr == sptr)
+            {
+                iconv_close(cd);
+                free(obuf);
+                char tmp[256];
+                _snprintf(tmp, sizeof(tmp) - 1, "XmlHelpers::convertUTF8ToWString() conversion failure (errno:%d) !", errno);
+                throw std::exception(tmp);
+            }
+            // we save pos where iconv stop conversion and we make another attempt
+            // by re-allocating twice the output buffer, if same pos is still on error
+            // then we will thow an definitive exception
+            sptr_oldErr = sptr;
+            olen_alloc *= 2;
+            obuf = (wchar_t*)realloc(obuf, olen_alloc);
+            out.clear();
+            sptr = (char *)utf8str.c_str();
+            slen = utf8str.length();
+            continue;
         }
         *((wchar_t *)optr) = L'\0';
         out += obuf;
     }
     iconv_close(cd);
+    free(obuf);
 
     return out;
 }
@@ -974,6 +1012,7 @@ std::string XmlAction::toXmlString() const
     s << "<action type=\"" << mType << "\"";
     s << " sourceEntityUid=\"" << mSourceEntityUid << "\"";
     s << " targetEntityUid=\"" << mTargetEntityUid << "\"";
+    s << " broadcast=\"" << XmlHelpers::convertBoolToString(mBroadcast).c_str() << "\"";
     s << " desc=\"" << XmlHelpers::xmlEscape(XmlHelpers::convertWStringToUTF8("WCHAR_T", mDesc)).c_str() << "\"";
     s << " />";
     return s.str();
@@ -986,6 +1025,7 @@ bool XmlAction::toXmlElt(TiXmlElement& xmlElt) const
     actionElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
     actionElt->SetAttribute("sourceEntityUid", mSourceEntityUid.c_str());
     actionElt->SetAttribute("targetEntityUid", mTargetEntityUid.c_str());
+    actionElt->SetAttribute("broadcast", XmlHelpers::convertBoolToString(mBroadcast).c_str());
     actionElt->SetAttribute("desc", XmlHelpers::convertWStringToUTF8("WCHAR_T", mDesc).c_str());
     xmlElt.LinkEndChild(actionElt);
     return true;
@@ -1002,6 +1042,8 @@ bool XmlAction::fromXmlElt(TiXmlElement* xmlElt)
     mSourceEntityUid = attr;
     if (!XmlHelpers::getAttribute(xmlElt, "targetEntityUid", attr)) return false;
     mTargetEntityUid = attr;
+    if (!XmlHelpers::getAttribute(xmlElt, "broadcast", attr)) return false;
+    mBroadcast = XmlHelpers::convertStringToBool(attr);
     if (!XmlHelpers::getAttribute(xmlElt, "desc", attr)) return false;
     mDesc = XmlHelpers::convertUTF8ToWString("WCHAR_T", std::string(attr));
 

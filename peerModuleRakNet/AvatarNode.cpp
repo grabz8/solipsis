@@ -241,6 +241,8 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     RakNetConnection::DeserializeString(bitStream, sourceEntityUid);
     EntityUID targetEntityUid;
     RakNetConnection::DeserializeString(bitStream, targetEntityUid);
+    bool broadcast;
+    bitStream->Read(broadcast);
     std::string desc;
     RakNetConnection::DeserializeString(bitStream, desc);
 #ifdef POOL
@@ -250,6 +252,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     xmlAction->setType(actionType);
     xmlAction->setSourceEntityUid(sourceEntityUid);
     xmlAction->setTargetEntityUid(targetEntityUid);
+    xmlAction->setBroadcast(broadcast);
     xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
 #else
@@ -259,6 +262,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     xmlAction->setType(actionType);
     xmlAction->setSourceEntityUid(sourceEntityUid);
     xmlAction->setTargetEntityUid(targetEntityUid);
+    xmlAction->setBroadcast(broadcast);
     xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
     xmlEvt->setDatas(xmlAction);
 #endif
@@ -443,6 +447,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         bitStream.Write(xmlAction->getType());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getSourceEntityUid());
         RakNetConnection::SerializeString(&bitStream, xmlAction->getTargetEntityUid());
+        bitStream.Write(xmlAction->getBroadcast());
         RakNetConnection::SerializeString(&bitStream, XmlHelpers::convertWStringToUTF8("WCHAR_T", xmlAction->getDesc()));
         // Send the action to the server, it will look at source/target to broadcast/send to target(s)
         RakNetConnection::getSingletonPtr()->getRakPeer()->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, RakNetConnection::getSingletonPtr()->getServerSystemAddress(), false);
