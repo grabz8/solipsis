@@ -148,12 +148,12 @@ visibility
 A key feature of the \sol protocol is the use of the RayNet overlay to
 organize peers in a topology that mimics the distribution of their
 sites in the 3D world. Specifically, a network host is associated
-with a nodes in the \ray overlay characterized by virtual coordinates
+with a nodes in the RayNet overlay characterized by virtual coordinates
 that are the same as those of its site in the 3D world. If a host owns
-multiple sites in the 3D world, then it appears in the \ray overlay as
+multiple sites in the 3D world, then it appears in the RayNet overlay as
 multiple nodes. Note that the presence of a host in multiple points on
 the overlay does not consitute a problem for the small-world routing
-strategies exploited by \ray. On the other hand, it allows the overlay
+strategies exploited by RayNet. On the other hand, it allows the overlay
 to perform additional optimizations by taking shortcuts on the
 physical network that would not be available otherwise. 
 
@@ -176,7 +176,7 @@ inform their neighbors whenever they detect a change
 periodically\df{or whenever they detect changes: this may be a nice
   point in the evaluation if we manage to characterize one or a few
   usage scenarios for the \sol world.} send a copy of their list to
-their nerighbors in the \ray overlay. Receiving nodes, process this
+their nerighbors in the RayNet overlay. Receiving nodes, process this
 list and add to their own list any node that is also visible from
 their own cells.  To manage the disappearance of objects from the
 visible list, nodes tag each entry in the list with the hopcount from
@@ -211,14 +211,14 @@ nodes as we describe in Section~\ref{}.
 
 
 \paragraph{A note on RayNet cells}
-It is important to observe that the position of a node in the \ray
+It is important to observe that the position of a node in the RayNet
 overlay is solely determined by location of the corresponding site in
 the virtual world and \emph{not} by the size of the site or by the
 presence of multiple hosts at nearby locations.  As a result, it is
-possible that the \ray cell associated with a node comprises a region
+possible that the RayNet cell associated with a node comprises a region
 that covers only part of the corresponding object in the 3D
 world. This has no influence on the behaviour of the protocol for two
-reasons. First, \ray only considers the neighborhood relationship
+reasons. First, RayNet only considers the neighborhood relationship
 between nodes and does not associate any size or weight properties
 with overlay nodes. Second, according to the above descriptions \sol
 nodes maintain information regarding their own site and the objects
