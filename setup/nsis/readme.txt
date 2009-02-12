@@ -1,0 +1,23 @@
+Check list to create the setup :
+
+1 - Execute the cleanup.bat on the root repository
+
+2 - Compile Solipsis in Release mode
+
+3 - Don't forget to execute the "copyNCSPhysXFiles.bat" under the "navigatorModuleOnlyNav" repository
+
+4 - Compile the Voice Engine Server
+
+5 - Edit the "Media\lua\boot.lua" to set the good World Server IP
+
+6 - Edit the "Media\NaviLocal\NaviLocal\uimdlrprop.html" to set for example the VNC server IP
+
+7 - Edit the "Media\NaviLocal\NaviLocal\uidebug.html" to set the Voice server IP
+
+8 - In "Media", remove the server cache, and launch the "clean_cache.bat" in the cache repository
+
+9 - Launch the setup\nsis\makensisNCS.bat
+
+10 - Copy the result in a tmp repository, and add the dependencies (VCRedist, PhysX, Pyhton, DirectX 9.0c)
+
+11 - Burn this tmp repository, or zip it to upload it
