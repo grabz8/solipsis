@@ -18,6 +18,6 @@ Check list to create the setup :
 
 9 - Launch the setup\nsis\makensisNCS.bat
 
-10 - Copy the result in a tmp repository, and add the dependencies (VCRedist, PhysX, Pyhton, DirectX 9.0c)
+10 - Copy the result in a tmp repository, and add the dependencies (VCRedist, PhysX, Pyhton, DirectX 9.0c) and the guides (Build & Install)
 
 11 - Burn this tmp repository, or zip it to upload it
