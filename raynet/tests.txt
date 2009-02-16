@@ -1,0 +1,137 @@
+--------------------------------------------------------------------------------
+KleinBergFunctionalTest
+-----------------------
+
+Visual,Properties,Debugging,Working Directory: $(TargetDir)
+Config: ..\ConfFiles\conffile1.txt
+args: -t
+
+Type:ConfFileDataError
+d:\solipsis\work\solipsis\trunk\raynet\toolslayer\tools\conffile.h:260:Unrecogni
+sed Conf File value:KLEINBERG_PORT
+
+
+--------------------------------------------------------------------------------
+KleinBergTest
+-------------
+
+Visual,Properties,Debugging,Working Directory: $(TargetDir)
+Config: Debug
+args: -t
+
+*************UNIT TESTER**************
+[CONFFILE]
+Check bad conffiles fail......................................................OK
+
+Access data...................................................................OK
+
+[IPNODE]
+TestDistanceOp................................................................OK
+
+[KLEINBERG]
+Test select to send works.....................................................KO
+
+**ASSURE FAILED**
+  [.\ProtocolTest.cpp, 147]
+  Expression:updates.size() == _UPDATE_SIZE + MY_NODE_ALSO_SENT
+Test select to keep works.....................................................KO
+
+**ASSURE FAILED**
+  [.\ProtocolTest.cpp, 342]
+  Expression:std::find(SendsFarNodes.begin(), SendsFarNodes.end(), FarNode ) !=
+SendsFarNodes.end()
+Test odd amount of updates....................................................OK
+
+[PACKET]
+Test packet copying,assigning.................................................OK
+
+Test P2P Packets..............................................................OK
+
+[REACTOR]
+Simple write and read.........................................................OK
+
+No packages, no recv events...................................................OK
+
+start/stop many times.........................................................OK
+
+[SOCKET]
+Simple write and read.........................................................OK
+
+Loads written and read........................................................OK
+
+can serialise IPNodes correctly...............................................OK
+
+can network re-order bytes correctly..........................................OK
+
+merely stream floats..........................................................OK
+
+[THREAD]
+start/stop many times.........................................................OK
+
+start/stop many times check running...........................................OK
+
+[TOOLS]
+Test datablocks...............................................................OK
+
+
+
+ **************   KO   ***************
+
+
+--------------------------------------------------------------------------------
+RaynetFunctionalTest
+--------------------
+
+Visual,Properties,Debugging,Working Directory: $(TargetDir)
+Config: Debug
+args: ..\ConfFiles\conffileUnitTestGood.txt
+
+CRASH into TCPSocket::_setBlockingMode() m_h_socket=-1
+
+
+--------------------------------------------------------------------------------
+VoronoiTest
+-----------
+
+Visual,Properties,Debugging,Working Directory: $(TargetDir)
+Config: Debug
+args: -t
+
+*************UNIT TESTER**************
+[VORONOI]
+Test simple selectToSend works................................................KO
+
+**ASSURE FAILED**
+  [d:\solipsis\work\solipsis\trunk\raynet\voronoilayer\voronoitest\voronoiprotoc
+oltest.cpp, 160]
+  Expression:i_nearer + i_quite_near + i_farer == ToRun
+Test 3D selectToKeep works....................................................KO
+
+**ASSURE FAILED**
+  [d:\solipsis\work\solipsis\trunk\raynet\voronoilayer\voronoitest\voronoiprotoc
+oltest.cpp, 318]
+  Expression:std::find( View.begin(), View.end(), *it ) == View.end()
+Test update cornercases.......................................................KO
+
+**ASSURE FAILED**
+  [d:\solipsis\work\solipsis\trunk\raynet\voronoilayer\voronoitest\voronoiprotoc
+oltest.cpp, 221]
+  Expression:updates.size() == 1
+
+
+ **************   KO   ***************
+
+
+--------------------------------------------------------------------------------
+VoronoiFunctionalTest
+---------------------
+
+Visual,Properties,Debugging,Working Directory: $(TargetDir)
+Config: Debug
+args: ..\ConfFiles\conffile1.txt
+
+Type:ConfFileDataError
+d:\solipsis\work\solipsis\trunk\raynet\toolslayer\tools\conffile.h:260:Unrecogni
+sed Conf File value:KLEINBERG_PORT
+
+--------------------------------------------------------------------------------
