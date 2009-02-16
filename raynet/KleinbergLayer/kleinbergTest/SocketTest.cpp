@@ -66,7 +66,7 @@ void testCanTalk()
 	const unsigned int   TO_ADDR = ::inet_addr("127.0.0.1");
 
 	//prepare Listen socket
-	P2P::UDPSocket  ReadSocket; 	
+	IP::UDPSocket  ReadSocket; 	
 	ReadSocket.bind(TO_PORT);
 
 	//prepare package	
@@ -77,7 +77,7 @@ void testCanTalk()
 	Written.setObjects( vecInts);
 	
 
-	P2P::UDPSocket::send( 	Written );
+	IP::UDPSocket::send( 	Written );
 	P2P::UDPPacket Read = ReadSocket.recv();
 
 	
@@ -98,7 +98,7 @@ void testCanTalkTooMuch()
 	const unsigned int   LOCAL_ADDR = ::inet_addr("127.0.0.1");
 
 	//prepare Listen socket
-	P2P::UDPSocket  ReadSocket; 	
+	IP::UDPSocket  ReadSocket; 	
 	ReadSocket.bind(LOCAL_PORT);
 
 	//prepare package	
@@ -113,7 +113,7 @@ void testCanTalkTooMuch()
 	const int TIMES_TO_RUN = 100;
 	for ( int i = 0; i < TIMES_TO_RUN; i++ )
 	{
-		P2P::UDPSocket::send( 	Written );
+		IP::UDPSocket::send( 	Written );
 		P2P::UDPPacket Read = ReadSocket.recv();
 		ASSURE( Read.sameData( Written) );			
 	}
@@ -124,7 +124,7 @@ void testCanTalkTooMuch()
 	const int TIMES_TO_BURST =6;
 	for ( int i = 0; i < TIMES_TO_BURST; i++ )
 	{
-		P2P::UDPSocket::send( 	Written );
+		IP::UDPSocket::send( 	Written );
 	}
 
 	for ( int i = 0; i < TIMES_TO_BURST; i++ )
@@ -152,7 +152,7 @@ static void testCanSendNodes()
 	const unsigned int   TO_ADDR = ::inet_addr("127.0.0.1");
 
 	//prepare Listen socket
-	P2P::UDPSocket  ReadSocket; 	
+	IP::UDPSocket  ReadSocket; 	
 	ReadSocket.bind(TO_PORT);
 
 	//prepare package	
@@ -166,7 +166,7 @@ static void testCanSendNodes()
 	Written.setObjects( Nodes);
 	
 
-	P2P::UDPSocket::send( 	Written );
+	IP::UDPSocket::send( 	Written );
 	P2P::UDPPacket Read = ReadSocket.recv();
 
 	
@@ -187,7 +187,7 @@ static void testCanSendNodes()
 
 static void networkByteReorder()
 {
-	using namespace Tools::Network;
+	using namespace IP;
 
 	{
 	unsigned int from=0x12345678;

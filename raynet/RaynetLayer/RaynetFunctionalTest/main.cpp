@@ -28,12 +28,20 @@ class Myhandler : public P2P::RaynetHandler
 
 
 
-
-int main ( int, void **)
+//GREG BEGIN
+//int main ( int, void **)
+int main ( int argc, char **argv)
+//GREG END
 {
 	using namespace P2P;
 
-	ConfFile<IPNode> confFile("  ");	
+//GREG BEGIN
+    std::string confFilename = "  ";
+    if (argc > 1)
+        confFilename = std::string(argv[1]);
+//	ConfFile<IPNode> confFile("  ");	
+	ConfFile<IPNode> confFile(confFilename);	
+//GREG END
 
 	Myhandler  handler;
 

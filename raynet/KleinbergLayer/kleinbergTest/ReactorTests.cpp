@@ -69,13 +69,9 @@ public:
 		
 	}
 
-				
-	void evSocketWrite(SOCKET) {};
-
 	virtual void evTimeOut() 
 	{
 		//m_o_CallbackTimeOut.set();		
-		
 	}
 	virtual void evSocketRead(SOCKET) 
 	{
@@ -84,6 +80,7 @@ public:
 		m_o_CallbackRead.set();
 	
 	}
+	virtual void evSocketWrite(SOCKET) {};
 };
 
 
@@ -97,18 +94,26 @@ static void test1()
 	
 	
 	//read socket
-	P2P::UDPSocket ReadSocket;
+	IP::UDPSocket ReadSocket;
 	ReadSocket.bind(LOCAL_PORT);
 		
+//GREG BEGIN
+//	// set up reactor
+//	const int TIMEOUT = 1;	
+//	P2P::SocketReactor reactor( TIMEOUT);				
+//GREG END
+		
+	//create test handler
+	Tools::Event      o_CallbackRead;
+	TestHandler1 testhandler( ReadSocket , o_CallbackRead) ;
+//GREG BEGIN
+//	reactor.addHandler( ReadSocket.getHandle(), testhandler);
 
 	// set up reactor
 	const int TIMEOUT = 1;	
-	P2P::SocketReactor reactor( TIMEOUT);				
-		
-	//create test handler
-	P2P::Event      o_CallbackRead;
-	TestHandler1 testhandler( ReadSocket , o_CallbackRead) ;
-	reactor.addHandler( ReadSocket.getHandle(), testhandler);
+	IP::SocketReactor reactor( testhandler, testhandler, TIMEOUT);				
+	reactor.add( ReadSocket.getHandle(), IP::SocketReactor::eReadNotify);
+//GREG END
 
 	reactor.start();
 
@@ -127,7 +132,7 @@ static void test1()
 		myInts.push_back(0xEEEEEEEE);
 		myInts.push_back(0xFFFFFFFF);
 		packetToReac.setObjects( myInts);
-		P2P::UDPSocket::send( packetToReac);
+		IP::UDPSocket::send( packetToReac);
 		o_CallbackRead.wait();
 
 		//check handler after packet
@@ -165,12 +170,12 @@ static void test1()
 
 */
 
-class TestHandler2 : public P2P::SocketHandler
+class TestHandler2 : public IP::SocketReactorHandler
 {
-	P2P::Event& m_ev_Timeout;
+	Tools::Event& m_ev_Timeout;
 	int m_i_time_out;
 public:
-	TestHandler2( P2P::Event& _ev)
+	TestHandler2( Tools::Event& _ev)
 		:m_ev_Timeout(_ev),
 		m_i_time_out( 5 )
 	{
@@ -184,6 +189,7 @@ public:
 	{
 		ASSURE( false)
 	}
+	virtual void evSocketWrite(SOCKET) {};
 };
 
 
@@ -194,18 +200,23 @@ static void test2()
 	
 	
 	//read socket
-	P2P::UDPSocket ReadSocket;
+	IP::UDPSocket ReadSocket;
 	ReadSocket.bind(LOCAL_PORT);
 	
-	P2P::Event      m_o_evTimeOut;
+	Tools::Event      m_o_evTimeOut;
 
 	// set up reactor
 	const int TIMEOUT = 1;	
 	
+//GREG BEGIN
+//    TestHandler2 testhandler( m_o_evTimeOut );
+//	IP::SocketReactor reactor( TIMEOUT);	
+//	reactor.addHandler( ReadSocket.getHandle(), testhandler);
+//	reactor.addTimeOutHandler( testhandler);
 	TestHandler2 testhandler( m_o_evTimeOut );
-	P2P::SocketReactor reactor( TIMEOUT);	
-	reactor.addHandler( ReadSocket.getHandle(), testhandler);
-	reactor.addTimeOutHandler( testhandler);
+	IP::SocketReactor reactor( testhandler, testhandler, TIMEOUT);				
+	reactor.add( ReadSocket.getHandle(), IP::SocketReactor::eReadNotify);
+//GREG END
 	reactor.start();
 
 	// wait for the reactor to timeout the handler
@@ -309,37 +320,40 @@ static void test1()
 
 
 
-class Pants : public P2P::SocketHandler
+class Pants : public IP::SocketReactorHandler
 {	
 public:
-	P2P::Event& m_e;
-	Pants ( P2P::Event& _e) :  m_e( _e){};	
+	Tools::Event& m_e;
+	Pants ( Tools::Event& _e) :  m_e( _e){};	
 	~Pants( ){}
 
 	virtual void evTimeOut() 	{
 		m_e.set();	
 	}
-	virtual void evSocketRead(SOCKET) 
-	{
-	}
+	virtual void evSocketRead(SOCKET)  {}
+	virtual void evSocketWrite(SOCKET) {};
 };
 
 
 
 void startStop()
 {
-	P2P::Event      o_evTimeOut;
+	Tools::Event      o_evTimeOut;
 // set up reactor
 	const int TIMEOUT = 1;	
-	P2P::SocketReactor reactor( TIMEOUT);				
+//GREG BEGIN
+//	IP::SocketReactor reactor( TIMEOUT);				
 		
 	//create test handler
 	Pants eatMyShorts(o_evTimeOut);	
-	P2P::UDPSocket  o_ReadSocket; 
+	IP::UDPSocket  o_ReadSocket; 
 	o_ReadSocket.bind(LOCAL_PORT);
 
-	reactor.addHandler( o_ReadSocket.getHandle(), eatMyShorts);
-	reactor.addTimeOutHandler(  eatMyShorts);
+//	reactor.addHandler( o_ReadSocket.getHandle(), eatMyShorts);
+//	reactor.addTimeOutHandler(  eatMyShorts);
+	IP::SocketReactor reactor( eatMyShorts, eatMyShorts, TIMEOUT);				
+	reactor.add( o_ReadSocket.getHandle(), IP::SocketReactor::eReadNotify);
+//GREG END
 
 	for ( int i = 0; i < 10 ; i++)
 	{

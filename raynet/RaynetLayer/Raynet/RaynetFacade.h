@@ -10,6 +10,11 @@
 #include "RaynetMessage.h"
 
 
+//GREG BEGIN
+// disable warning: 'this' : used in base member initializer list
+// we won t access members on 'this' into base-class constructors
+#pragma warning( disable : 4355 )
+//GREG END
 
 
 namespace P2P

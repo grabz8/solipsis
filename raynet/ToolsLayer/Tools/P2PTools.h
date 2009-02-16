@@ -154,12 +154,20 @@ namespace Tools
 
 	//------	
 
+//GREG BEGIN
+	struct _rndNumberSeeder{
+		_rndNumberSeeder(){	time_t timer;	::srand( (int) time(&timer) ); 	}
+	};
+//GREG END
 	inline unsigned int rndNumber( unsigned int _ceiling)
 	{
-		struct Seeder{
-			Seeder(){	time_t timer;	::srand( (int) time(&timer) ); 	}
-		};
-		static Seeder setRndSeed;
+//GREG BEGIN
+//	    struct Seeder{
+//		    Seeder(){	time_t timer;	::srand( (int) time(&timer) ); 	}
+//	    };
+//		static Seeder setRndSeed;
+//GREG END
+		static _rndNumberSeeder setRndSeed;
 
 		//time_t timer;
 		//::srand( (int) time(&timer) ); 	

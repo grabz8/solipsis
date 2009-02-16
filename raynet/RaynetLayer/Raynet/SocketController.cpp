@@ -15,6 +15,11 @@
 #include "LogFile.h"
 
 
+//GREG BEGIN
+// disable warning: 'this' : used in base member initializer list
+// we won t access members on 'this' into base-class constructors
+#pragma warning( disable : 4355 )
+//GREG END
 
 
 namespace P2P
@@ -255,7 +260,10 @@ namespace P2P
 			}
 			else if ( _sock == m_o_protocolSocket.getHandle() )
 			{
-				char buff[UDPPacket::MAX_PACKET_SIZE];					
+//GREG BEGIN
+//				char buff[UDPPacket::MAX_PACKET_SIZE];					
+				char buff[IP::MAX_UDP_PACKET_SIZE];					
+//GREG END
 
 				IP::Port remotePort=0;
 				IP::Addr remoteAddr=0;					
@@ -264,7 +272,10 @@ namespace P2P
 											remotePort,
 											remoteAddr,
 											buff,											
-											UDPPacket::MAX_PACKET_SIZE			
+//GREG BEGIN
+//											UDPPacket::MAX_PACKET_SIZE			
+                                            IP::MAX_UDP_PACKET_SIZE
+//GREG END
 											);
 
 				m_o_controllerCallback.protocolUpdate( 						

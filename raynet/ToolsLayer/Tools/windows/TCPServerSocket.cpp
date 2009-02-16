@@ -52,7 +52,10 @@ TCPServerSocket::TCPServerSocket(IP::Port _port)
 	service.sin_addr.s_addr = ::htonl( INADDR_ANY );
 	service.sin_port = hton(_port);
 
-	if ( ::bind( m_h_socket, (SOCKADDR*)&service, sizeof(service) ) == SOCKET_ERROR  )
+//GREG BEGIN
+//	if ( ::bind( m_h_socket, (SOCKADDR*)&service, sizeof(service) ) == SOCKET_ERROR  )
+	if ( ::bind( tmp, (SOCKADDR*)&service, sizeof(service) ) == SOCKET_ERROR  )
+//GREG END
 	{
 		THROW(TCPSocketBindError, Tools::NETWORK_ERROR);
 	}

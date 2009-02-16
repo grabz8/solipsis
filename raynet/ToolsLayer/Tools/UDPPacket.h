@@ -29,8 +29,9 @@ namespace P2P{
 	// buffer stuff
 
 		
-
-	enum { MAX_PACKET_SIZE = USHRT_MAX};
+//GREG BEGIN
+//	enum { MAX_PACKET_SIZE = USHRT_MAX};
+//GREG END
 
 	private:
 	
@@ -66,7 +67,10 @@ namespace P2P{
 
 		//unsigned char m_o_datablock[MAX_SIZE ];
 		//int m_i_bufSize;
-		Tools::DataBlock< MAX_PACKET_SIZE > m_o_datablock;
+//GREG BEGIN
+//		Tools::DataBlock< MAX_PACKET_SIZE > m_o_datablock;
+		Tools::DataBlock< IP::MAX_UDP_PACKET_SIZE > m_o_datablock;
+//GREG END
 
 		int m_i_RemoteAddr;	
 		unsigned short m_us_RemotePort;

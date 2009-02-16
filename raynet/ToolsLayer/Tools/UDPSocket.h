@@ -36,8 +36,16 @@ namespace IP
 		UDPSocket();
 		~UDPSocket();
 
-		static void send( IP::Port _p, IP::Addr _a, const void* _pdata, ushort _size) ;
-		uint recv( IP::Port& _port, IP::Addr& _addr, void* _data, ushort bufsize) ;
+//GREG BEGIN
+//		static void send( IP::Port _p, IP::Addr _a, const void* _pdata, ushort _size) ;
+		static void send( IP::Port _p, IP::Addr _a, const void* _pdata, int _size) ;
+//		uint recv( IP::Port& _port, IP::Addr& _addr, void* _data, ushort bufsize) ;
+		uint recv( IP::Port& _port, IP::Addr& _addr, void* _data, int bufsize) ;
+//GREG END
+//GREG BEGIN
+    	static void send( P2P::UDPPacket& _packet );
+		P2P::UDPPacket recv( ) ;
+//GREG END
 
 		void bind(   unsigned short  _port);
 		int getBindPort();	

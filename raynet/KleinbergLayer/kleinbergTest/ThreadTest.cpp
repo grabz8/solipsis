@@ -6,7 +6,7 @@
 #include "CppTest.h"
 
 
-class MyTest1 : public P2P::Thread
+class MyTest1 : public Tools::Thread
 {
 public:
 	~MyTest1()
@@ -39,7 +39,7 @@ void threadTest1()
 
 volatile bool gRUNNING = false;
 
-class NoSleep : public P2P::Thread
+class NoSleep : public Tools::Thread
 {
 public:
 	~NoSleep()

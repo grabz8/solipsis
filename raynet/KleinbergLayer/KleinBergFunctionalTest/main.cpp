@@ -38,12 +38,19 @@ int main ( int _argc, char ** _argv)
 
 		
 
+//GREG BEGIN
+//		KleinbergProtocol<P2P::IPNode> facade	( 
+//				o_confFile.initView(),
+//				o_confFile.updateSize(),
+//				o_confFile.viewSize(),
+//				thisNode
+//		);
 		KleinbergProtocol<P2P::IPNode> facade	( 
 				o_confFile.initView(),
 				o_confFile.updateSize(),
-				o_confFile.viewSize(),
-				thisNode
+				o_confFile.viewSize()
 		);
+//GREG END
 		
 
 

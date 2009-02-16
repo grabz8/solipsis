@@ -86,7 +86,10 @@ namespace IP
 		::closesocket( m_h_socket );
 	}
 	//---------------------
-	void UDPSocket::send( IP::Port _p, IP::Addr _a, const void* _pdata, ushort _size) 
+//GREG BEGIN
+//	void UDPSocket::send( IP::Port _p, IP::Addr _a, const void* _pdata, ushort _size) 
+	void UDPSocket::send( IP::Port _p, IP::Addr _a, const void* _pdata, int _size) 
+//GREG END
 	{
 		UDPSocket o_socket;
 		
@@ -113,13 +116,26 @@ namespace IP
 			THROW(UDPSocketSendError, Tools::NETWORK_ERROR);
 		}
 	}
+//GREG BEGIN
+	//---------------------
+	void UDPSocket::send( P2P::UDPPacket& _packet )
+	{
+    	send( _packet.getRemotePort(), _packet.getRemoteAddr(), _packet.getBuffer(), _packet.size());
+    }
+//GREG END
 	//---------------------
 
-	uint  UDPSocket::recv(IP::Port& _port, IP::Addr& _addr, void* _buf, ushort _bufsize) 
+//GREG BEGIN
+//	uint  UDPSocket::recv(IP::Port& _port, IP::Addr& _addr, void* _buf, ushort _bufsize) 
+	uint  UDPSocket::recv(IP::Port& _port, IP::Addr& _addr, void* _buf, int _bufsize) 
+//GREG END
 	{
 		//clearly we cannot recv packages if NOT bound
 		assert( m_us_localBindPort != 0);		
-		assert( MAX_UDP_PACKET_SIZE > _bufsize);
+//GREG BEGIN
+//		assert( MAX_UDP_PACKET_SIZE > _bufsize);
+		assert( _bufsize <= MAX_UDP_PACKET_SIZE );
+//GREG END
 
 		sockaddr_in RemoteAddr;
 		int remAddrSize = sizeof( sockaddr_in);
@@ -147,6 +163,24 @@ namespace IP
 
 		return ret;
 	}
+//GREG BEGIN
+	//---------------------
+	P2P::UDPPacket UDPSocket::recv( )
+	{
+//GREG BEGIN
+//		char buff[P2P::UDPPacket::MAX_PACKET_SIZE];					
+		char buff[IP::MAX_UDP_PACKET_SIZE];					
+//GREG END
+        IP::Port port=0;
+        IP::Addr addr=0;
+//GREG BEGIN
+//    	uint ret = recv( port, addr, buff, P2P::UDPPacket::MAX_PACKET_SIZE );
+    	uint ret = recv( port, addr, buff, IP::MAX_UDP_PACKET_SIZE );
+//GREG END
+
+        return P2P::UDPPacket( port, addr, buff, ret );
+    }
+//GREG END
 	//---------------------
 	void UDPSocket::bind(   unsigned short  _port)
 	{
