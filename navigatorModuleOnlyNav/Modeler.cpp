@@ -1138,7 +1138,7 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
 
             // SetTexture() will do it.
 
-            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + entity->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
+            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*entity), url, width, height, FO_ANISOTROPIC, mtlName);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
             naviWWWTexture->setForceMaxUpdate(fps != 0);
@@ -1310,8 +1310,13 @@ void Modeler::pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
         extTextSrc->handleEvt(mtlName, "stop");
         SOLIPSISINFO("Modeler ==> STOP envoyé à la texture : ", name.c_str());
-        if (plugin == "vlc") // Restart the sound (send a play to
-            Navigator::getSingletonPtr()->getNavigatorSound()->unbindNodeToMaterial(object->getSceneNode());
+        if (plugin == "vlc")
+        {
+            TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
+            if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))
+                // Unbind the scene node to the material name / sound buffer
+                Navigator::getSingletonPtr()->getNavigatorSound()->unbindNodeToMaterial(object->getSceneNode());
+        }
     }
 }
 
@@ -1346,11 +1351,14 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         if (navi == 0)
         {
             // recreate a Navi
-            NaviLibrary::Navi* naviWWWTexture = naviMgr.createNaviMaterial("WWW_" + object->getEntity()->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
+            NaviLibrary::Navi* naviWWWTexture = naviMgr.createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*(object->getEntity())), url, width, height, FO_ANISOTROPIC, mtlName);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
             naviWWWTexture->setForceMaxUpdate(fps != 0);
             naviWWWTexture->setOpacity(1.0f);
+            // Add 1 listener to follow URL changes
+            Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviWWWTexture->getName(), url);
+            naviWWWTexture->addEventListener(Navigator::getSingletonPtr());
         }
         else
         {
@@ -1369,11 +1377,13 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
     {
         // Send a stop to the plugin to stop the material rendering
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
-        TextureExtParamsMap::const_iterator it=textureExtParamsMap.find("mrl");
         ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
         extTextSrc->handleEvt(mtlName, "playpause");
         SOLIPSISINFO("Modeler ==> PLAY envoyé à la texture : ", name.c_str());
-        Navigator::getSingletonPtr()->getNavigatorSound()->bindNodeToMaterial(object->getSceneNode(), mtlName);
+        TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
+        if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))
+            // Bind the scene node to the material name / sound buffer
+            Navigator::getSingletonPtr()->getNavigatorSound()->bindNodeToMaterial(object->getSceneNode(), mtlName);
     }
     else  if (plugin == "swf")
     {
