@@ -986,3 +986,12 @@ iconv long string bug fix
 truncated log strings are now postfixed by \n
 
 ---------------------------
+17/02/09
+
+Artefacto updates committed
+voiceEngineSimpleServer and TestServer added into solutions
+getNaviEntityName restored into Modeler.cpp
+play call into NavigatorSound::opensb() removed
+WorldsServer.py version set to 1.0.9
+
+---------------------------
