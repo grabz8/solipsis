@@ -1313,7 +1313,11 @@ Vector3 Object3D::getPosition(bool worldPosition )
 Vector3 Object3D::getOrientation()
 {
 	//return Vector3(mNode->getWorldOrientation().getYaw().valueDegrees(),mNode->getWorldOrientation().getPitch().valueDegrees(),mNode->getWorldOrientation().getRoll().valueDegrees());
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
     return Vector3(mNode->getWorldOrientation().getPitch().valueDegrees(),mNode->getWorldOrientation().getYaw().valueDegrees(),mNode->getWorldOrientation().getRoll().valueDegrees());
+#else
+    return Vector3(mNode->_getDerivedOrientation().getPitch().valueDegrees(),mNode->_getDerivedOrientation().getYaw().valueDegrees(),mNode->_getDerivedOrientation().getRoll().valueDegrees());
+#endif
 }
 
 //-------------------------------------------------------------------------------------
