@@ -50,7 +50,7 @@ stopEvent = threading.Event()
 
 WSERVER_VERSION_MAJOR = 1
 WSERVER_VERSION_MINOR = 0
-WSERVER_VERSION_PATCH = 8
+WSERVER_VERSION_PATCH = 9
 WSERVER_VERSION = ((WSERVER_VERSION_MAJOR << 16) | (WSERVER_VERSION_MINOR << 8) | WSERVER_VERSION_PATCH)
 def getVersionStr(version):
     return hex(version >> 16)[2:] + '.' + hex((version & 0x0000FF00) >> 8)[2:] + '.' + hex(version & 0x000000FF)[2:]
