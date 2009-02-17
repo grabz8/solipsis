@@ -70,6 +70,16 @@ public:
 	    /// param name The name of the texture
 	    /// param textureExtParamsMap The extended parameters of the texture
         virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+	    /// brief callback to stop a texture sound effect
+	    /// param modifiedMaterialManager The material manager
+	    /// param name The name of the texture
+	    /// param textureExtParamsMap The extended parameters of the texture
+        virtual void pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,TextureExtParamsMap &textureExtParamsMap) = 0;
+	    /// brief callback to stop a texture sound effect
+	    /// param modifiedMaterialManager The material manager
+	    /// param name The name of the texture
+	    /// param textureExtParamsMap The extended parameters of the texture
+        virtual void startEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,TextureExtParamsMap &textureExtParamsMap) = 0;
     };
 
 public:
@@ -136,11 +146,15 @@ public:
 	///brief Method which return a texture with a given number
 	TexturePtr getTexture(const int n);
 
-	///brief Method which return the current texture applied on the object.
-	///return the current texture applied on the object.
+	///brief Method which return the current texture selected in the UI.
+	///return the current texture selected in the UI.
 	TexturePtr getCurrentTexture();
-
-	///brief Method which return an Ogre iterator on the textures of the object.
+	
+    ///brief Method which return the current texture applied on the object.
+	///return the current texture applied on the object.
+	TexturePtr getCurrentAppliedTexture();
+    
+    ///brief Method which return an Ogre iterator on the textures of the object.
 	///return An Ogre iterator on the textures of the object.
 	TextureVectorIterator getTextureIterator();
 
@@ -172,12 +186,11 @@ public:
 	///param textureExtParamsMap Texture extended parameters of added texture.
 	void addTexture(TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap = TextureExtParamsMap());
 
-	///brief Method which delete the last texture to the object textures list
-	void deleteLastTexture();
-
 	///brief Method which delete a texture to the object textures list. If it is the current texture, changes to deflaut texture.
 	///param texture Ogre texture to delete
 	void deleteTexture(TexturePtr pTexture) ;
+    ///brief Final clean up of all textures 
+	void clearTextures() ;
 
 	///brief Method which return the number of textures to the object
 	///return number of texture
@@ -196,6 +209,10 @@ public:
 	///param pTexture texture
 	///return the texture extended parameters.
 	TextureExtParamsMap* getTextureExtParamsMap(TexturePtr pTexture);
+    ///brief Method which return the texture extended parameters by textureName.
+	///param name = String containing the texture name
+	///return the texture extended parameters.
+    TextureExtParamsMap* getTextureExtParamsMap(const Ogre::String name);
 
 	///biref Sets the translation offset of the texture, ie scrolls the texture
 	///param pU  The amount the texture should be moved horizontally (u direction). 
@@ -242,6 +259,7 @@ private:
     static MMMTextureManager* ms_MMMTextureManager;		///brief Texture manager singleton.
 	TextureVector::iterator mDefaultTextureIterator;	///brief Iterator pointing on the default texture of the object (the first added in fact).
 	TextureVector::iterator mCurrentTextureIterator;	///brief Iterator pointing on the texture which is currently applied on the object.
+    TextureVector::iterator mCurrentSelectedTextureIterator;	///brief Iterator pointing on the currently applied texture.
 
 };
 

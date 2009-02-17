@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SolipsisErrorHandler.h"
 
 #include "tinyxml.h"
+#include "MyZipArchive.h"
+#include "Path.h"
 
 namespace Solipsis {
 
@@ -48,8 +50,6 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	mVertexDecl = mVertexData->vertexDeclaration->getVertexSize(0);
 
 	// get the object datas
-	//mVertex = 0;
-	//mIndex = 0;
  	getDataFromBuffer( NULL, NULL );
 
 	// create the (backup) buffers
@@ -109,6 +109,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 #else
 	std::cerr << "Automatically get the user Name not tested : getgid will do the job ?? << endl; 
 #endif
+    mMeshImport = "";
 
 	mCanBeModified = mCanBeCopied = false;
 	mEnableCollision = mEnableGravity = false;
@@ -123,8 +124,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 //-------------------------------------------------------------------------------------
 Object3D::~Object3D()
 {
-	while (mModifiedMaterialManager->getNbTexture() > 1)
-        mModifiedMaterialManager->deleteTexture(mModifiedMaterialManager->getTexture(mModifiedMaterialManager->getNbTexture() - 1));
+    mModifiedMaterialManager->clearTextures();
 
     // Cloned material should be freed when no more referenced
     // but here we will remove it from resources list in order to free
@@ -164,25 +164,6 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("objrigths")->Attribute("cop"),mCanBeCopied);
 
 	e = doc.RootElement()->FirstChildElement("model");
-	// we do not need to restore the primitive type that has been restored before 
-/*	from_string(e->FirstChildElement("taperx")->Attribute("value"),mTaperX);
-	from_string(e->FirstChildElement("tapery")->Attribute("value"),mTaperY);
-	from_string(e->FirstChildElement("pathcutbegin")->Attribute("value"),mPathCutBegin);
-	from_string(e->FirstChildElement("pathcutend")->Attribute("value"),mPathCutEnd);
-	from_string(e->FirstChildElement("dimplebegin")->Attribute("value"),mDimpleBegin);
-	from_string(e->FirstChildElement("dimpleend")->Attribute("value"),mDimpleEnd);
-	from_string(e->FirstChildElement("holex")->Attribute("value"),mHoleSizeX);
-	from_string(e->FirstChildElement("holey")->Attribute("value"),mHoleSizeY);
-	from_string(e->FirstChildElement("hollowshape")->Attribute("value"),(int &)mHollowShape);
-	from_string(e->FirstChildElement("twistbegin")->Attribute("value"),mTwistBegin);
-	from_string(e->FirstChildElement("twistend")->Attribute("value"),mTwistEnd);
-	from_string(e->FirstChildElement("topshearx")->Attribute("value"),mTopShearX);
-	from_string(e->FirstChildElement("topsheary")->Attribute("value"),mTopShearY);
-	from_string(e->FirstChildElement("skew")->Attribute("value"),mSkew);
-	from_string(e->FirstChildElement("revolutions")->Attribute("value"),mRevolutions);
-	from_string(e->FirstChildElement("radiusdelta")->Attribute("value"),mRadiusDelta);
-	*/	
-	//resetParameters();
 
 	TiXmlElement *trans = e->FirstChildElement("transformation")->FirstChildElement("transfo");
 	TCommand toAdd;
@@ -331,15 +312,26 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
             }
 
             // GILLES BEGIN - remove the path from the SWF textures full path
-            if (textureExtParamsMap.find("plugin") != textureExtParamsMap.end() && 
-                (*textureExtParamsMap.find("plugin")).second == "swf" )
+            if (textureExtParamsMap.find("plugin") != textureExtParamsMap.end() && (
+                ((*textureExtParamsMap.find("plugin")).second == "swf" ) ||
+                ((*textureExtParamsMap.find("plugin")).second == "vlc" )
+               ))
             {
+                // swf
                 if (textureExtParamsMap.find("url") != textureExtParamsMap.end())
                 {
                     std::string filename = _getcwd(NULL, 0);
                     filename += "\\solTmpTexture\\";
                     filename += (*textureExtParamsMap.find("url")).second;
                     (*textureExtParamsMap.find("url")).second = filename.c_str();
+                }
+                // vlc
+                else if (textureExtParamsMap.find("mrl") != textureExtParamsMap.end())
+                {
+                    std::string filename = _getcwd(NULL, 0);
+                    filename += "\\solTmpTexture\\";
+                    filename += (*textureExtParamsMap.find("mrl")).second;
+                    (*textureExtParamsMap.find("mrl")).second = filename.c_str();
                 }
             }
             // GILLES END
@@ -356,11 +348,31 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 
 		addTexture (texture, textureExtParamsMap);
 
-		from_string( trans->Attribute("currenttexture") , currenttexture);
-		if( strcmp (currenttexture.c_str() , "true" ) == 0 )
+		currenttexture = trans->Attribute("currenttexture");
+		if( currenttexture == "true" )
 		{
 			setCurrentTexture( texture );
-		}
+        }
+        else
+        {
+            // Not the current texture ==> Stop sound if VLC plugin
+            if (textureExtParamsMap.find("plugin") != textureExtParamsMap.end())
+            {    
+                TextureExtParamsMap::iterator it = textureExtParamsMap.find("plugin");
+                if ((it->second == "vlc" ) || (it->second == "swf" ) || (it->second == "www" ))
+                {
+                    if (mModifiedMaterialManager->getMMMTextureManager() != 0)
+                    {
+                        LogManager::getSingleton().logMessage("Object3D::loadFromFile() : Plugin" + it->second + " detecté sur la texture (" + trans->Attribute("Name") + ") ==> Texture non courante ==> On arrête le son" );
+                        mModifiedMaterialManager->getMMMTextureManager()->pauseEffect(mModifiedMaterialManager, trans->Attribute("Name"),textureExtParamsMap);
+                    }
+                    else
+                    {
+                        LogManager::getSingleton().logMessage("Object3D::loadFromFile() : Plugin" + it->second + "detecté sur la texture et pas de MMMTextureManager" );
+                    }
+                }
+            }
+        }
 		trans = trans->NextSiblingElement("texture");
 	}
 	
@@ -391,11 +403,13 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 */
 	mNode->setPosition(tmp);
 	mCentreSelection = tmp;
+    Quaternion quat;
+    from_string(e->FirstChildElement("objorientation")->Attribute("w"),quat.w);
+	from_string(e->FirstChildElement("objorientation")->Attribute("x"),quat.x);
+	from_string(e->FirstChildElement("objorientation")->Attribute("y"),quat.y);
+	from_string(e->FirstChildElement("objorientation")->Attribute("z"),quat.z);
+    mNode->setOrientation( quat );
 
-	//from_string(e->FirstChildElement("objorientation")->Attribute("x"),tmp.x);
-	//from_string(e->FirstChildElement("objorientation")->Attribute("y"),tmp.y);
-	//from_string(e->FirstChildElement("objorientation")->Attribute("z"),tmp.z);
-	// TODO : Restore Orientation
 	//from_string(e->FirstChildElement("objscale")->Attribute("x"),tmp.x);
 	//from_string(e->FirstChildElement("objscale")->Attribute("y"),tmp.y);
 	//from_string(e->FirstChildElement("objscale")->Attribute("z"),tmp.z);
@@ -452,24 +466,15 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t</properties>" << endl;
 
 	toSave << "\t<model>" << endl;
-	toSave << "\t\t<primitive Name=\"" << SOLTYPESTRING[(int)mType] << "\" />" << endl;
-/*	toSave << "\t\t<taperx value=\"" << mTaperX << "\" />" << endl;
-	toSave << "\t\t<tapery value=\"" << mTaperY << "\" />" << endl;
-	toSave << "\t\t<pathcutbegin value=\"" << mPathCutBegin << "\" />" << endl;
-	toSave << "\t\t<pathcutend value=\"" << mPathCutEnd << "\" />" << endl;
-	toSave << "\t\t<dimplebegin value=\"" << mDimpleBegin << "\" />" << endl;
-	toSave << "\t\t<dimpleend value=\"" << mDimpleEnd << "\" />" << endl;
-	toSave << "\t\t<holex value=\"" << mHoleSizeX << "\" />" << endl;
-	toSave << "\t\t<holey value=\"" << mHoleSizeY << "\" />" << endl;
-	toSave << "\t\t<hollowshape value=\"" << mHollowShape << "\" />" << endl;
-	toSave << "\t\t<twistbegin value=\"" << mTwistBegin << "\" />" << endl;
-	toSave << "\t\t<twistend value=\"" << mTwistBegin << "\" />" << endl;
-	toSave << "\t\t<topshearx value=\"" << mTopShearX << "\" />" << endl;
-	toSave << "\t\t<topsheary value=\"" << mTopShearY << "\" />" << endl;
-	toSave << "\t\t<skew value=\"" << mSkew << "\" />" << endl;
-	toSave << "\t\t<revolutions value=\"" << mRevolutions << "\" />" << endl;
-	toSave << "\t\t<radiusdelta value=\"" << mRadiusDelta << "\" />" << endl;
-*/	toSave << "\t\t<transformation>" << endl;
+    toSave << "\t\t<primitive Name=\"" << SOLTYPESTRING[(int)mType] << "\"";
+    if (mType == OTHER)
+    {
+        int slash = mMeshImport.find_last_of("\\");
+        std::string meshArchive(mMeshImport.substr(slash+1, mMeshImport.size()-slash));
+        toSave << " Mesh=\"" << meshArchive << "\"";
+    }
+    toSave << " />" << endl;
+	toSave << "\t\t<transformation>" << endl;
 	std::list<TCommand>::iterator itCommands = mCommandList.begin();
 	char valueTransfo [20] ;
 	while (itCommands != mCommandList.end())
@@ -541,14 +546,19 @@ int		Object3D::saveToFile(const char* fileName)
 		toSave << "\t\t\t<texture Name=\"" << textureName << "\" currenttexture=\"" << currentTexture << "\">" << endl;	
         if (textureExtParamsMap != 0)
         {
-            // check if it's a SWF texture
             bool isSWF = false;
+            bool isVLC = false;
             for(TextureExtParamsMap::const_iterator it=textureExtParamsMap->begin();it!=textureExtParamsMap->end();++it)
             {
                 if (it->first == "plugin")
                     if (it->second == "swf")
                     {
                         isSWF = true;
+                        break;
+                    }
+                    else if (it->second == "vlc")
+                    {
+                        isVLC = true;
                         break;
                     }
             }
@@ -560,7 +570,8 @@ int		Object3D::saveToFile(const char* fileName)
                 TiXmlString xmlStringOut;
                 TiXmlBase::EncodeString(xmlStringIn, &xmlStringOut);
                 // GILLES BEGIN - remove the path from the texture path
-                if (isSWF && it->first == "url")
+                if ((isSWF && it->first == "url") ||
+                    (isVLC && it->first == "mrl"))
                 {
                     std::string filename = xmlStringOut.c_str();
                     int slash = filename.find_last_of('\\')+1;
@@ -569,7 +580,7 @@ int		Object3D::saveToFile(const char* fileName)
                         xmlStringOut.clear();
                         xmlStringOut.assign( filename.substr(slash, filename.length() - slash).c_str(), filename.length() - slash);
                     }
-                }
+                }                   
                 // GILLES END
                 toSave << "\t\t\t\t\t<param Name=\"" << it->first << "\" Value=\"" << xmlStringOut.c_str() << "\" />" << endl;
             }
@@ -584,8 +595,10 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t<threeD>" << endl;
 	Vector3 tmp = getPosition(false);
 	toSave << "\t\t<objposition x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
-	tmp = getRotate(); //getOrientation();
-	toSave << "\t\t<objorientation x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
+	//tmp = getRotate(); 
+    //getOrientation();
+    Quaternion quat = mNode->getOrientation();
+	toSave << "\t\t<objorientation w=\"" << quat.w << "\" x=\"" << quat.x << "\" y=\"" << quat.y << "\" z=\"" << quat.z << "\" />" << endl;
 	tmp = getScale();
 	toSave << "\t\t<objscale x=\"" << tmp.x << "\" y=\"" << tmp.y << "\" z=\"" << tmp.z << "\" />" << endl;
 	toSave << "\t\t<physics col=\"" << mEnableCollision << "\" grav=\"" << mEnableGravity << "\" />" << endl;
@@ -603,7 +616,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "</SOLObject>" << endl;
 	toSave.close();
 
-	return 0; // no error
+    return 0; // no error
 }
 
 //-------------------------------------------------------------------------------------
@@ -1299,7 +1312,8 @@ Vector3 Object3D::getPosition(bool worldPosition )
 //-------------------------------------------------------------------------------------
 Vector3 Object3D::getOrientation()
 {
-	return Vector3(mNode->getOrientation().getYaw().valueDegrees(),mNode->getOrientation().getPitch().valueDegrees(),mNode->getOrientation().getRoll().valueDegrees());
+	//return Vector3(mNode->getWorldOrientation().getYaw().valueDegrees(),mNode->getWorldOrientation().getPitch().valueDegrees(),mNode->getWorldOrientation().getRoll().valueDegrees());
+    return Vector3(mNode->getWorldOrientation().getPitch().valueDegrees(),mNode->getWorldOrientation().getYaw().valueDegrees(),mNode->getWorldOrientation().getRoll().valueDegrees());
 }
 
 //-------------------------------------------------------------------------------------
@@ -1459,7 +1473,7 @@ void Object3D::setPoint(unsigned int index, const Vector3 &value)
 } 
 
 //-------------------------------------------------------------------------------------
-Vector3 inline Object3D::getPoint(unsigned int index)
+Vector3 /*inline*/ Object3D::getPoint(unsigned int index)
 {
 	assert(index < mVertexCount && "Point index is out of bounds!!");
 
@@ -1478,7 +1492,7 @@ size_t Object3D::getNumPoints(void)
 }
 
 //-------------------------------------------------------------------------------------
-void inline Object3D::getFace(unsigned int index, Object3D::Face &face)
+void /*inline*/ Object3D::getFace(unsigned int index, Object3D::Face &face)
 {
 	if( index < mIndexCount )
 	{
@@ -1663,42 +1677,95 @@ void Object3D::deleteTexture(TexturePtr pTexture)
 void Object3D::setCurrentTexture(const String& textureName)
 {
 	TexturePtr texture = TextureManager::getSingleton().getByName(textureName) ;
-	//test if this texture is in the list
-	if( ! mModifiedMaterialManager->isPresentInList( texture ) )
+    setCurrentTexture(texture);
+}
+//-------------------------------------------------------------------------------------
+void Object3D::setCurrentTexture(const TexturePtr texture)
+{
+    if (texture.isNull())
+    {
+        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Pointeur de texture NULL " );
+        return;
+    }
+
+    TexturePtr currentTexture = mModifiedMaterialManager->getCurrentAppliedTexture();
+
+    //if (texture == currentTexture)
+    //{
+    //    // Same texture => Do nothing 
+    //    return;
+    //}
+    
+    Solipsis::TextureExtParamsMap *textureExtParamsMap;
+    if (!currentTexture.isNull())
+    {
+        textureExtParamsMap = mModifiedMaterialManager->getTextureExtParamsMap(currentTexture);
+
+        if (textureExtParamsMap)
+        {
+            // Stop the old sound if any
+            // Not the current texture ==> Stop sound if VLC plugin
+            if (textureExtParamsMap->find("plugin") != textureExtParamsMap->end())
+            {
+                std::string plugin = (textureExtParamsMap->find("plugin"))->second ;
+                if ((plugin == "vlc") || (plugin == "swf") || (plugin == "www" ))
+                {
+                    if (mModifiedMaterialManager->getMMMTextureManager() != 0)
+                    {
+                        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> Old Texture ==> Stop the effect" );
+                        mModifiedMaterialManager->getMMMTextureManager()->pauseEffect(mModifiedMaterialManager, currentTexture->getName(),*textureExtParamsMap);
+                    }
+                    else
+                    {
+                        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> getMMMTextureManager() returns NULL ==> TODO" );
+                    }
+                }
+            }
+         }
+    }
+
+    
+    textureExtParamsMap = mModifiedMaterialManager->getTextureExtParamsMap(texture);
+
+    //test if this texture is in the list
+	if( ! mModifiedMaterialManager->isPresentInList(texture))
 	{
 		//we add it if it isn't present :
-		mModifiedMaterialManager->addTexture( texture );
+		mModifiedMaterialManager->addTexture(texture, *textureExtParamsMap);
 	}
 
-	mModifiedMaterialManager->setCurrentTexture( texture) ;
+    mModifiedMaterialManager->setCurrentTexture(texture);
+ 
+    if (textureExtParamsMap)
+    {
+        // Restart sound texture if any
+        // Not the current texture ==> Stop sound if VLC plugin
+        if (textureExtParamsMap->find("plugin") != textureExtParamsMap->end())
+        {       
+            std::string plugin = (textureExtParamsMap->find("plugin"))->second ;
+            if ((plugin == "vlc") || (plugin == "swf") || (plugin == "www" ))
+            {
+                if (mModifiedMaterialManager->getMMMTextureManager() != 0)
+                {
+                    LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> Current Texture ==> Start the effect" );
+                    mModifiedMaterialManager->getMMMTextureManager()->startEffect(mModifiedMaterialManager, texture->getName(),*textureExtParamsMap );
+                }
+                else
+                {
+                    LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> getMMMTextureManager() returns NULL ==> TODO" );
+                }
+            }
+        }
+    }
 
-	if (mChildren)
+
+
+    if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
 		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
 			(*itr)->setCurrentTexture(texture);
-		}
-	}
-}
-//-------------------------------------------------------------------------------------
-void Object3D::setCurrentTexture(const TexturePtr texture, const TextureExtParamsMap& textureExtParamsMap)
-{
-	//test if this texture is in the list
-	if( ! mModifiedMaterialManager->isPresentInList(texture))
-	{
-		//we add it if it isn't present :
-		mModifiedMaterialManager->addTexture(texture, textureExtParamsMap);
-	}
-
-	mModifiedMaterialManager->setCurrentTexture(texture);
-
-	if (mChildren)
-	{
-		vector< Object3D* >::iterator itr ;
-		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
-		{
-			(*itr)->setCurrentTexture(texture, textureExtParamsMap);
 		}
 	}
 }
@@ -2188,6 +2255,104 @@ bool Object3D::undo()
 			(*child)->undo();
 
 	return true;
+}
+
+int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
+{
+    Ogre::String texturePath;
+    for (int i=1; i< mModifiedMaterialManager->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
+    {
+        texturePath = mModifiedMaterialManager->getTexture(i)->getName();
+
+        Path path(texturePath);
+        size_t nameSizeChar = path.getFormatedPath().find_last_of( '\\' );
+        std::string fileName (path.getFormatedPath(), nameSizeChar+1, path.getFormatedPath().length() );
+
+        // Extended texture
+        TextureExtParamsMap *textureExtParamsMap = mModifiedMaterialManager->getTextureExtParamsMap(texturePath);
+        if (textureExtParamsMap == 0)
+        {
+            String str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
+            std::string newFile( "solTmpTexture\\" + fileName );
+
+            Ogre::Image image;
+            image.load( texturePath, str);
+            image.save( newFile );
+
+            if ( ! zz->isFilePresent( texturePath ) )
+                zz->writeFile( newFile );
+
+            SOLdeleteFile( newFile.c_str() );
+        }
+
+        // SWF / MOVIES (mpg, mpeg, avi, mp4, flv ...)
+        if (textureExtParamsMap != 0)
+        {
+            std::map<std::string, std::string>::iterator param = textureExtParamsMap->find("plugin");
+            if (param != textureExtParamsMap->end())
+            {
+                // SWF
+                if ((*param).second == "swf" )
+                {
+                    param = textureExtParamsMap->find("url");
+                    if (param != textureExtParamsMap->end())
+                    {
+                        Path url((*param).second);
+                        std::string newFile( "solTmpTexture\\" + url.getLastFileName() );
+
+                        if ( ! zz->isFilePresent( url.getLastFileName() ) )
+                        {
+                            SOLcopyFile((*param).second.c_str(), newFile.c_str());
+                            zz->writeFile( newFile );
+                            // GILLES begin
+                            //SOLdeleteFile( newFile.c_str() );
+                            // GILLES end
+                        }
+                        (*param).second = url.getLastFileName();
+                    }
+                }
+                // VLC
+                else if ((*param).second == "vlc" )
+                {
+                    param = textureExtParamsMap->find("mrl");
+                    if (param != textureExtParamsMap->end())
+                    {
+                        Path mrl((*param).second);
+                        //std::string newFile( "solTmpTexture\\" + mrl.getLastFileName() );
+
+                        if ( ! zz->isFilePresent( mrl.getLastFileName() ) )
+                        {
+                           // SOLcopyFile((*param).second.c_str(), newFile.c_str());
+                            zz->writeFile( param->second );
+                            // GILLES begin
+                            //SOLdeleteFile( newFile.c_str() );
+                            // GILLES end
+                            //(*param).second = newFile;
+                        }
+                        //(*param).second = mrl.getLastFileName();
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    // MESH
+    if (getTypeAsInt() == Object3D::OTHER && !getMeshImportName().empty())
+    {           
+        Path meshPath(getMeshImportName());
+        std::string newFile( "solTmpTexture\\" + meshPath.getLastFileName() );
+
+        if ( ! zz->isFilePresent( meshPath.getLastFileName() ) )
+        {
+            SOLcopyFile(getMeshImportName().c_str(), newFile.c_str());
+            zz->writeFile( newFile );
+            SOLdeleteFile( newFile.c_str() );
+        }
+    }
+    */
+
+    return 0;
 }
 
 }//namespace

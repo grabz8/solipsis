@@ -47,6 +47,9 @@ public:
 	///param subEntity SubEntity from which the material has to be modified
 	ModifiedMaterial(SubEntity* subEntity);
 
+    ///brief Desstructor
+	~ModifiedMaterial();
+
 	///brief Refresh technique, pass and texture unit
     void refreshTechPassTextUnit();
 

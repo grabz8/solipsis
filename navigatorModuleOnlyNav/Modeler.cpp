@@ -65,16 +65,7 @@ Modeler::~Modeler(void)
 	mSceneManager->destroyEntity(mGenericTorus);
 	mSceneManager->destroyEntity(mGenericTube);
 	mSceneManager->destroyEntity(mGenericRing);
-    // Meshes should be freed when no more referenced
-/*    MeshManager::getSingleton().remove("Plane.mesh");
-    MeshManager::getSingleton().remove("Box.mesh");
-    MeshManager::getSingleton().remove("Prism.mesh");
-    MeshManager::getSingleton().remove("Cylinder.mesh");
-    MeshManager::getSingleton().remove("Sphere.mesh");
-    MeshManager::getSingleton().remove("Torus.mesh");
-    MeshManager::getSingleton().remove("Tube.mesh");
-    MeshManager::getSingleton().remove("Ring.mesh");*/
-
+ 
 	mSelection->mTransformation->destroyGizmos(mSceneManager);	
 
 	// Destroy our scene nodes
@@ -735,12 +726,18 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 
 	if(zz.isArchivePresent() )
 	{
-        for( int i=0 ; i<zz.getNbFile() ; i++)	//search all SWF files
+        for( int i=0 ; i<zz.getNbFile() ; i++)	//search all SWF or MESH files
         {
             Path currentFileName ( zz.getName(i) ) ;
 			string ext =  currentFileName.getExtension() ;
 
-            if ( (strcmp ( currentFileName.getExtension().c_str() , "swf")) == 0 )
+            if ((currentFileName.getExtension() == "swf") ||
+                (currentFileName.getExtension() == "mesh") ||
+                (currentFileName.getExtension() == "mp4") ||
+                (currentFileName.getExtension() == "avi") ||
+                (currentFileName.getExtension() == "mpg") ||
+                (currentFileName.getExtension() == "mpeg") ||
+                (currentFileName.getExtension() == "flv"))
 			{
                 //create the temp directory if doesn't yet exsits
                 std::string workDir = _getcwd(NULL, 0);
@@ -763,7 +760,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 			Path currentFileName ( zz.getName(i) ) ;
 			string ext =  currentFileName.getExtension() ;
 
-			if ( (strcmp ( currentFileName.getExtension().c_str() , "xml")) == 0 )
+			if (currentFileName.getExtension() == "xml")
 			{
 				//we find a XML file, so we create an object :
 				FileBuffer buff = zz.readFile( zz.getName(i) );
@@ -788,7 +785,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 			Path currentFileName ( zz.getName(i) ) ;
 			string ext =  currentFileName.getExtension() ;
 
-			if ( (strcmp ( currentFileName.getExtension().c_str() , "xml")) == 0 )
+			if (currentFileName.getExtension() == "xml")
 			{
 				//we find a XML file, so we open it : 
 				FileBuffer buff = zz.readFile( zz.getName(i) );
@@ -847,7 +844,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 }
 
 /// Import a mesh file to a XML SOLIPSIS file (.sof)
-bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos)
+bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos, Quaternion orientation)
 {
     String filenameToLoad = filename;
     if (filenameToLoad.empty())
@@ -919,6 +916,7 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
         obj->mCentreSelection = pos;
 
         node->setPosition(pos);
+	    node->setOrientation(orientation);
     }
     return true;
 }
@@ -926,10 +924,10 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 /// Save to a XML SOLIPSIS file (.sof)
 bool Modeler::XMLSave(bool all)
 {
-	MyZipArchive* zz;
+    MyZipArchive* zz;
 
-	// Go back to the main directory
-	_chdir(mExecPath.c_str());
+    // Go back to the main directory
+    _chdir(mExecPath.c_str());
 
     if (all)
     {
@@ -942,98 +940,68 @@ bool Modeler::XMLSave(bool all)
         mSelection->set_lock(false);
     }
 
-	// Save all objects in this scene
-	if (!mSelection->isEmpty())
-	{
+    // Save all objects in this scene
+    if (!mSelection->isEmpty())
+    {
         Object3D* obj = mSelection->getFirstSelectedObject();
         while (obj != 0)
         {
             EntityUID entityUID = obj->getEntityUID();
             Ogre::String fileZipToSave = Ogre::String(entityUID) + Ogre::String(".sof"); 
             Ogre::String pathZipToSave = mPath + Ogre::String("\\") + fileZipToSave; 
-		    zz = new MyZipArchive(pathZipToSave.c_str());
+            zz = new MyZipArchive(pathZipToSave.c_str());
 
             // if this archive is already present then remove all files
-		    if (zz->isArchivePresent())
-			    for (int f=zz->getNbFile(); f>=0; f--)
-				    zz->removeFile(zz->getName(f));
 
-		    // Update command list with the last called 
-		    updateCommand(Object3D::NONE, obj, true);
+            if (zz->isArchivePresent())
+            {
+                vector<std::string> fileToRemove;
+                //for (int f=zz->getNbFile(); f>=0; f--)
+                for (int f=zz->getNbFile(); f>0; f--)
+                    //for (int f=0; f<zz->getNbFile(); f++)
+                {
+                    // TODO extraire les tous les fichier dans SOLTMPTEXTURE
+                    // ...
+                    // and delete them after so
+                    Path filename( zz->getName(f-1) );
+                    if( filename.getExtension() == "xml" )
+                        zz->removeFile(zz->getName(f-1));
+                    //fileToRemove.push_back( zz->getName(f) );
+                }
+                //while (!fileToRemove.empty())
+                //{   
+                //    zz->removeFile((*fileToRemove.begin()).c_str());
+                //    fileToRemove.pop_back();
+                //}
+            }
+
+            // Update command list with the last called 
+            updateCommand(Object3D::NONE, obj, true);
 
             // Save object in XML
             Ogre::String fileToSave = mPath + Ogre::String("\\") + obj->getEntityUID() + Ogre::String(".xml");
-		    obj->saveToFile(fileToSave.c_str());
-		    zz->writeFile(fileToSave);
+            obj->saveToFile(fileToSave.c_str());
+            zz->writeFile(fileToSave);
 
-            if (!obj->mCommandList.empty())
+            //if (!obj->mCommandList.empty())
+            if (obj->mCommandList.size() > 1)
             {
-			    obj->mCommandList.pop_back();
-			    list<Object3D::TCommand>::iterator cmd = obj->mCommandList.end();
+                obj->mCommandList.pop_back();
+                list<Object3D::TCommand>::iterator cmd = obj->mCommandList.end();
                 cmd--;
-		        const Object3D::Command command = (*cmd).first;
-		        obj->mCommandLast = command;
+                const Object3D::Command command = (*cmd).first;
+                obj->mCommandLast = command;
             }
 
-		    //Save textures :
+            //Save textures :
 #ifdef WIN32
-		    CreateDirectory( "solTmpTexture", NULL );
+            CreateDirectory( "solTmpTexture", NULL );
 #else
-		    system( "md solTmpTexture" );
+            system( "md solTmpTexture" );
 #endif
-		    std::string texturePath ;
-		    for (int i=1; i< obj->getMaterialManager()->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
-		    {
-			    texturePath = obj->getMaterialManager()->getTexture(i)->getName();
+            obj->saveTextures(Ogre::String("solTmpTexture"),zz);
 
-			    Path path(texturePath);
-			    size_t nameSizeChar = path.getFormatedPath().find_last_of( '\\' );
-			    std::string fileName (path.getFormatedPath(), nameSizeChar+1, path.getFormatedPath().length() );
-
-			    TexturePtr Texture = TextureManager::getSingleton().getByName(texturePath);
-                // Extended texture
-                TextureExtParamsMap *textureExtParamsMap = obj->getMaterialManager()->getTextureExtParamsMap(Texture);
-                if (textureExtParamsMap == 0)
-                {
-				    String str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
-			        std::string newFile( "solTmpTexture\\" + fileName );
-    				
-			        Ogre::Image image;
-			        image.load( texturePath, str);
-			        image.save( newFile );
-
-			        if ( ! zz->isFilePresent( texturePath ) )
-				        zz->writeFile( newFile );
-
-			        SOLdeleteFile( newFile.c_str() );
-                }
-                else 
-                {
-                    std::map<std::string, std::string>::iterator param = textureExtParamsMap->find("plugin");
-                    if (param != textureExtParamsMap->end())
-                    {
-                        // SWF
-                        if ((*param).second == "swf" )
-                        {
-                            param = textureExtParamsMap->find("url");
-                            if (param != textureExtParamsMap->end())
-                            {
-                                Path url((*param).second);
-                                std::string newFile( "solTmpTexture\\" + url.getLastFileName() );
-                                SOLcopyFile((*param).second.c_str(), newFile.c_str());
-
-                                if ( ! zz->isFilePresent( url.getLastFileName() ) )
-				                    zz->writeFile( newFile );
-
-                                SOLdeleteFile( newFile.c_str() );
-
-                                (*param).second = url.getLastFileName();
-                            }
-                        }
-                    }
-                }
-		    }
-		    SOLdeleteFile(fileToSave.c_str());
+            SOLdeleteFile(fileToSave.c_str());
 
             if (mModelerCallbacks != 0)
                 mModelerCallbacks->onObject3DSave(fileZipToSave, obj);
@@ -1044,135 +1012,7 @@ bool Modeler::XMLSave(bool all)
             obj = mSelection->getNextSelectedObject();
         }
     }
-/*
-	//Create Path :
-    std::string strCompleteFileName ( std::string(pathToSave) + "\\solTmpObject.sof" );
-	Path FilePath (	strCompleteFileName );
 
-	//Get only path
-	size_t nameSizeChar = strCompleteFileName.find_last_of( '\\' );
-	//size_t nameSizeChar = strCompleteFileName.find_last_of( '/' );
-	std::string directory (strCompleteFileName, 0, nameSizeChar+1);
-
-	//get only name of file (without extension)
-	size_t extPos = strCompleteFileName.find_last_of( '.' );
-//		std::string name (FilePath.getLastFileName(false) , nameSizeChar+1, FilePath.getLastFileName(false).length());
-	std::string name (FilePath.getLastFileName(false));
-
-	//Save all objects in this scene
-	if (!isSelectionEmpty())
-	{
-		Object3DPtrList listObj, tmp1, tmp2;
-        Object3D* obj = mSelection->getFirstSelectedObject();
-        while (obj != 0)
-        {
-            tmp1.clear();
-		    tmp1.push_back( obj );
-		    while( !tmp1.empty() )
-		    {
-			    Object3DPtrList::iterator itList;
-			    for( itList=tmp1.begin(); itList!=tmp1.end(); itList++)
-			    {
-                    Object3DPtrList::iterator itListCheck;
-		            for(itListCheck=listObj.begin(); itListCheck!=listObj.end(); itListCheck++)
-                        if (*itListCheck == *itList)
-                            break;
-                    if (itListCheck == listObj.end())
-                        listObj.push_back( (*itList) );
-				    tmp2.push_back( (*itList) );
-			    }
-			    tmp1.clear();
-			    for( itList=tmp2.begin(); itList!=tmp2.end(); itList++)
-			    {
-				    std::vector<Object3D *> *listChild = (*itList)->getChildren();
-				    if( listChild != 0 )
-				    {
-					    std::vector<Object3D *>::iterator it;
-					    for(it=listChild->begin() ; it != listChild->end() ; it++ )
-						    tmp1.push_back( (*it) );
-				    }
-			    }
-			    tmp2.clear();
-		    }
-            obj = mSelection->getNextSelectedObject();
-        }
-
-		//Save SOF :
-		Ogre::String fileZipToSave = directory + name + Ogre::String(".sof"); 
-		zz = new MyZipArchive(fileZipToSave.c_str());
-
-		if( zz->isArchivePresent() )	//if this archive is already present ...
-			for (int i=zz->getNbFile(); i>=0  ; i--)	//...remove all files :
-				zz->removeFile(zz->getName(i)) ;
-
-		Object3DPtrList::iterator itr ;
-		for(itr=listObj.begin() ; itr != listObj.end() ; itr++ )
-		{
-			// Update command list with the last called 
-			updateCommand(Object3D::NONE, (*itr) );
-
-			//Save object in XML :
-			Ogre::String fileToSave = directory + (*itr)->getName() + Ogre::String(".xml");
-			(*itr)->saveToFile(fileToSave.c_str());
-			zz->writeFile(fileToSave);
-
-            if (!(*itr)->mCommandList.empty())
-            {
-    			(*itr)->mCommandList.pop_back();
-				list<Object3D::TCommand>::iterator cmd = (*itr)->mCommandList.end();
-                cmd--;
-			    const Object3D::Command command = (*cmd).first;
-			    (*itr)->mCommandLast = command;
-            }
-
-			//Save textures :
-#ifdef WIN32
-			CreateDirectory( "solTmpTexture", NULL );
-#else
-			system( "md solTmpTexture" );
-#endif
-			std::string texturePath ;
-			for (int i=1; i< (*itr)->getMaterialManager()->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
-			{
-				texturePath = (*itr)->getMaterialManager()->getTexture(i)->getName();
-
-				Path path(texturePath);
-				size_t nameSizeChar = path.getFormatedPath().find_last_of( '\\' );
-				std::string fileName (path.getFormatedPath(), nameSizeChar+1, path.getFormatedPath().length() );
-
-				TexturePtr Texture = TextureManager::getSingleton().getByName(texturePath);
-                // Extended texture
-                TextureExtParamsMap *textureExtParamsMap = (*itr)->getMaterialManager()->getTextureExtParamsMap(Texture);
-                if (textureExtParamsMap == 0)
-                {
-    				String str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
-				    std::string newFile( "solTmpTexture\\" + fileName );
-    				
-				    Ogre::Image image;
-				    image.load( texturePath, str);
-				    image.save( newFile );
-
-				    if ( ! zz->isFilePresent( texturePath ) )
-					    zz->writeFile( newFile );
-
-				    SOLdeleteFile( newFile.c_str() );
-                }
-			}
-#ifdef WIN32
-//				RemoveDirectory( "solTmpTexture" );
-#else
-//				system( "rm solTmpTexture -r" );
-#endif		
-			SOLdeleteFile(fileToSave.c_str());
-		}
-
-        if (mModelerCallbacks != 0)
-            mModelerCallbacks->OnObject3DListSave(fileZipToSave, listObj);
-
-		listObj.clear();
-	}
-*/
-	// Go back to the main directory
 	_chdir(mExecPath.c_str());
 
 //#ifdef WIN32
@@ -1240,8 +1080,8 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 			break;
 	}
 
-	Object3D * newObject = mSelection->geLastAddedObject();
-	newObject->loadFromFile(doc, path.c_str());
+    Object3D * newObject = mSelection->geLastAddedObject();
+    newObject->loadFromFile(doc, path.c_str());
 
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
@@ -1295,7 +1135,10 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
             // Navi supported ?
             if (!Navigator::getSingletonPtr()->isNaviSupported())
                 return TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*entity), url, width, height, FO_ANISOTROPIC, mtlName);
+
+            // SetTexture() will do it.
+
+            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial("WWW_" + entity->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
             naviWWWTexture->setForceMaxUpdate(fps != 0);
@@ -1339,6 +1182,7 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
         {
             ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
             ExternalTextureSource* extTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin);
+            extTextSrc->setPlayMode(TextureEffectPause);
             if (plugin != "vlc")
             {
                 for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
@@ -1411,7 +1255,10 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
         if (navi == 0)
     		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
         else
+        {
             naviMgr.destroyNavi(navi->getName());
+            naviMgr.Update(); // Force the destroy
+        }
     }
     else
     {
@@ -1425,6 +1272,125 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
         ExternalTextureSourceManager::getSingleton().destroyAdvancedTexture(mtlName);
     }
 }
+
+void Modeler::pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,  TextureExtParamsMap &textureExtParamsMap)
+{
+    Object3D* object = modifiedMaterialManager->getObject3D();
+    ModifiedMaterial* modifiedMaterial = modifiedMaterialManager->getModifiedMaterial();
+    String mtlName = modifiedMaterial->getOwner()->getName();
+    
+    // Attention pas de controle du plugin appelant ==> Le plugin appelant doit être VLC pour le moment
+    TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("plugin");
+    if (it == textureExtParamsMap.end())
+        return;
+
+    String plugin = it->second;
+    if (plugin == "www")
+    {
+        NaviManager &naviMgr = NaviLibrary::NaviManager::Get();
+        Navi *navi = naviMgr.getNaviFromMtlName(mtlName);
+        if (navi == 0)
+    		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
+        else
+        {
+            navi->hide();
+            navi->setMaxUPS(0);
+            navi->setForceMaxUpdate(false);
+            navi->setOpacity(0.0f);
+            // TODO : Better manage Navis !! => We must be able to delete them properly
+            // Remove the texture from object texture list 
+            //naviMgr.destroyNavi(navi->getName());
+            //naviMgr.Update(); // Force the destroy
+        }
+    }
+    else if ((plugin == "vlc") || (plugin == "swf"))
+    {
+        // Send a stop to the plugin to stop the material rendering
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
+        ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
+        extTextSrc->handleEvt(mtlName, "stop");
+        SOLIPSISINFO("Modeler ==> STOP envoyé à la texture : ", name.c_str());
+        if (plugin == "vlc") // Restart the sound (send a play to
+            Navigator::getSingletonPtr()->getNavigatorSound()->unbindNodeToMaterial(object->getSceneNode());
+    }
+}
+
+void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,TextureExtParamsMap &textureExtParamsMap)
+{
+    Object3D* object = modifiedMaterialManager->getObject3D();
+    ModifiedMaterial* modifiedMaterial = modifiedMaterialManager->getModifiedMaterial();
+    String mtlName = modifiedMaterial->getOwner()->getName();
+    
+    // Attention pas de controle du plugin appelant ==> Le plugin appelant doit être VLC pour le moment
+    TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("plugin");
+    if (it == textureExtParamsMap.end())
+        return;
+
+    String plugin = it->second;
+    if (plugin == "www")
+    {
+        NaviManager &naviMgr = NaviLibrary::NaviManager::Get();
+        Navi *navi = naviMgr.getNaviFromMtlName(mtlName);
+
+        String url;
+        int width , height, fps;
+        it = textureExtParamsMap.find("url");
+        url = it->second;
+        it = textureExtParamsMap.find("width");
+        width = atoi(it->second.c_str());
+        it = textureExtParamsMap.find("height");
+        height = atoi(it->second.c_str());
+        it = textureExtParamsMap.find("frames_per_second");
+        fps = atoi(it->second.c_str());
+
+        if (navi == 0)
+        {
+            // recreate a Navi
+            NaviLibrary::Navi* naviWWWTexture = naviMgr.createNaviMaterial("WWW_" + object->getEntity()->getName(), url, width, height, FO_ANISOTROPIC, mtlName);
+            naviWWWTexture->show(true);
+            naviWWWTexture->setMaxUPS(fps);
+            naviWWWTexture->setForceMaxUpdate(fps != 0);
+            naviWWWTexture->setOpacity(1.0f);
+        }
+        else
+        {
+            navi->focus(); // Give the focus to the existing Navi
+            if (!navi->getVisibility())
+            {
+                navi->show(true);
+                navi->setMaxUPS(fps);
+                navi->setForceMaxUpdate(fps != 0);
+                navi->setOpacity(1.0f);
+                naviMgr.Update();
+            }
+        }
+    }
+    else if (plugin == "vlc")
+    {
+        // Send a stop to the plugin to stop the material rendering
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
+        TextureExtParamsMap::const_iterator it=textureExtParamsMap.find("mrl");
+        ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
+        extTextSrc->handleEvt(mtlName, "playpause");
+        SOLIPSISINFO("Modeler ==> PLAY envoyé à la texture : ", name.c_str());
+        Navigator::getSingletonPtr()->getNavigatorSound()->bindNodeToMaterial(object->getSceneNode(), mtlName);
+    }
+    else  if (plugin == "swf")
+    {
+        // Reload the plugin
+        ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
+        ExternalTextureSource* extTextSrc = ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin);
+        {
+            for(TextureExtParamsMap::const_iterator it=textureExtParamsMap.begin();it!=textureExtParamsMap.end();++it)
+            {
+                extTextSrc->setParameter(it->first, it->second);
+            }
+        }
+        extTextSrc->createDefinedTexture(mtlName);
+    }
+
+}
+
 
 /// Update the command list
 bool Modeler::updateCommand(Object3D::Command pCommand, Object3D* pObject, bool pForSave)

@@ -58,27 +58,26 @@ mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.5,1))
 	assert(subEntity != NULL);
 	mMaterial = subEntity->getMaterial();
 
-	if (mMaterial->getNumTechniques() > 0)
-	{
-		mTechnique = mMaterial->getTechnique(0);
-	}else{
-		mTechnique = mMaterial->createTechnique();
-	}
-
-	if (mTechnique->getNumPasses() > 0)
-	{
-		mPass = mTechnique->getPass(0);
-	}else{
-		mPass = mTechnique->createPass();
-	}
-
-	if (mPass->getNumTextureUnitStates() > 0)
-	{
-		mTextureUnitState = mPass->getTextureUnitState(0);
-	}else{
-		mTextureUnitState = mPass->createTextureUnitState();
-	}
+	refreshTechPassTextUnit();
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+ModifiedMaterial::~ModifiedMaterial() 
+{ 
+    // TODO : Clean propre des matériaux !!!
+
+    // Clean Pass
+    //mPass->removeAllTextureUnitStates();
+    //mTextureUnitState = NULL;
+    //mAddedColourTextureUnitState = NULL;
+    //// Clean Pass
+    //mTechnique->removeAllPasses();
+    //mPass = NULL;
+    //// Clean technique
+    //mMaterial->removeAllTechniques();
+    //mTechnique = NULL;
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterial::refreshTechPassTextUnit()
 {
@@ -300,6 +299,7 @@ const String& ModifiedMaterial::getTextureName()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterial::setTexture(const String& name)
 {
+    refreshTechPassTextUnit(); // Avoid a crash while reloading a web texture. 
 	mTextureUnitState->setTextureName(name);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------

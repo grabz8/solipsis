@@ -73,6 +73,8 @@ public:
     void play(FMOD::System* system);
 	///	Stop the sound
     void stop();
+	///	Get this sound name
+    const char*  getName() {return mName.c_str();};
 
 private:
     /// Name
@@ -468,9 +470,9 @@ void NavigatorSound::unbindMaterialToSoundBuffer(const Ogre::String& material)
 //-------------------------------------------------------------------------------------
 void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParams, unsigned int *frequency, unsigned int *nbChannels, unsigned int *fourCCFormat, unsigned int *frameSize)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::openSoundBuffer(%d, %s, %d, %d, %d, %d)", soundId, soundParams.c_str(), *frequency, *nbChannels, *fourCCFormat, *frameSize);
-
     if (mSoundBufferVector[soundId] == 0) return;
+
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorSound::openSoundBuffer(%d, %s, %d, %d, %d, %d) ==> %s",soundId, soundParams.c_str(), *frequency, *nbChannels, *fourCCFormat, *frameSize,mSoundBufferVector[soundId]->getName());
 
     *nbChannels = 1;
 
@@ -507,6 +509,8 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
 
     // Set the sound buffer
     mSoundBufferVector[soundId]->setSound(sound);
+    //Play the sound
+    mSoundBufferVector[soundId]->play(mSoundSystem);       
 }
 
 //-------------------------------------------------------------------------------------
@@ -574,6 +578,9 @@ void NavigatorSound::bindNodeToMaterial(Ogre::Node *node, const Ogre::String& ma
 
     MtlSoundBufferMap::iterator it = mMtlSoundBufferMap.find(material);
     if (it == mMtlSoundBufferMap.end()) return;
+
+    // Temp Stephane -- On lance le SoundBuffer 
+    mSoundBufferVector[it->second]->play(mSoundSystem);   
     mNodeSoundBufferMap[node] = it->second;
 }
 
@@ -584,8 +591,10 @@ void NavigatorSound::unbindNodeToMaterial(Ogre::Node *node)
 
     NodeSoundBufferMap::iterator it = mNodeSoundBufferMap.find(node);
     if (it == mNodeSoundBufferMap.end()) return;
-    mNodeSoundBufferMap.erase(it);
-}
+
+    // Temp Stephane -- On stoppe également le SoundBuffer 
+    mSoundBufferVector[it->second]->stop();   
+    mNodeSoundBufferMap.erase(it);}
 
 //-------------------------------------------------------------------------------------
 void NavigatorSound::VoiceEngineLogger::logMessage(const std::string& message)

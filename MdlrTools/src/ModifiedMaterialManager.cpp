@@ -33,24 +33,12 @@ ModifiedMaterialManager::ModifiedMaterialManager(Object3D *object3D)
 {
     mObject3D = object3D;
 	mModifiedMaterial = NULL;
+    mCurrentSelectedTextureIterator = mCurrentTextureIterator = mTextures.begin();
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 ModifiedMaterialManager::~ModifiedMaterialManager(void)
 {
-    while (!mTextures.empty())
-    {
-        TexturePtr lastTexture = mTextures.back();
-        // Destroy texture
-        if (ms_MMMTextureManager != 0)
-        {
-            TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(lastTexture->getName());
-            if (it != mTextureNameExtParamsMap.end())
-                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), it->second);
-            else
-                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), TextureExtParamsMap());
-        }
-        mTextures.pop_back();
-    }
+    clearTextures();
 	if (mModifiedMaterial)
 		delete mModifiedMaterial;
 }
@@ -82,7 +70,9 @@ void ModifiedMaterialManager::initialise(const MaterialPtr& material)
 		String textureName = mModifiedMaterial->getTextureName();
 		TexturePtr texture = TextureManager::getSingleton().getByName(textureName);
 		addTexture(texture);
-	}
+        // First texture added ==> Initialise iterators 
+        mCurrentSelectedTextureIterator = mCurrentTextureIterator = mTextures.begin();
+    }
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -90,8 +80,6 @@ ModifiedMaterial* ModifiedMaterialManager::getModifiedMaterial()
 {
 	return mModifiedMaterial;
 }
-
-
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 bool ModifiedMaterialManager::isColourModifiable()
@@ -147,16 +135,17 @@ bool ModifiedMaterialManager::isTextureModifiable()
 TexturePtr ModifiedMaterialManager::getTexture(const String& name)
 {
 	TextureVector::iterator textureIterator = mTextures.begin();
-	TextureVector::iterator endVector = mTextures.end();
-	while ((textureIterator != endVector) && ((*textureIterator)->getName() != name)) textureIterator++;
-	if (textureIterator != endVector)
-	{
-		return *textureIterator;
-	}else{
-		static TexturePtr nullTexture;
-		return nullTexture;
-	}
+    while (textureIterator != mTextures.end())
+    {
+        if ((*textureIterator)->getName() == name)
+            // Found it
+            return (*textureIterator);
+        textureIterator++;
+    }
+    LogManager::getSingleton().logMessage("ModifiedMaterialManager::getTexture(String): Texture not found in the list => " + name); 
+    return TexturePtr();
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 TexturePtr ModifiedMaterialManager::getTexture(const int n)
 {
@@ -170,7 +159,8 @@ TexturePtr ModifiedMaterialManager::getTexture(const int n)
 	}
 	else
 	{
-		static TexturePtr nullTexture;
+		TexturePtr nullTexture;
+        nullTexture.setNull();
 		return nullTexture;
 	}
 }
@@ -178,6 +168,17 @@ TexturePtr ModifiedMaterialManager::getTexture(const int n)
 TexturePtr ModifiedMaterialManager::getCurrentTexture()
 {
 	return *mCurrentTextureIterator;
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TexturePtr ModifiedMaterialManager::getCurrentAppliedTexture()
+{
+    if (mTextures.empty())
+    {
+        TexturePtr tRet;
+        tRet.setNull();
+        return tRet;
+    }
+	return *mCurrentSelectedTextureIterator;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -189,45 +190,52 @@ TextureVectorIterator ModifiedMaterialManager::getTextureIterator()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setPreviousTexture()
 {
-	if (mCurrentTextureIterator == mTextures.begin()) mCurrentTextureIterator = mTextures.end();
+	if (mCurrentTextureIterator == mTextures.begin()) 
+        mCurrentTextureIterator = mTextures.end();
 	mCurrentTextureIterator--;
-	//mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setPreviousTextureAsCurrent()
 {
-	if (mCurrentTextureIterator == mTextures.begin()) mCurrentTextureIterator = mTextures.end();
-	mCurrentTextureIterator--;
-	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+	setPreviousTexture();
+    mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+    // Set the currently Applied texture iterator
+    mCurrentSelectedTextureIterator = mCurrentTextureIterator;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setNextTexture()
 {
 	mCurrentTextureIterator++;
-	if (mCurrentTextureIterator == mTextures.end()) mCurrentTextureIterator = mTextures.begin();
-	//  mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+	if (mCurrentTextureIterator == mTextures.end()) 
+        mCurrentTextureIterator = mTextures.begin();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setNextTextureAsCurrent()
 {
-	mCurrentTextureIterator++;
-	if (mCurrentTextureIterator == mTextures.end()) mCurrentTextureIterator = mTextures.begin();
+	setNextTexture();
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+    // Set the currently Applied texture iterator
+    mCurrentSelectedTextureIterator = mCurrentTextureIterator;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::setCurrentTexture(TexturePtr texture)
 {
-	TextureVector::iterator textureIterator = mTextures.begin();
-	TextureVector::iterator endVector = mTextures.end();
-	while ((textureIterator != endVector) && ((*textureIterator)->getName() != texture->getName())) textureIterator++;
-	assert( (textureIterator != endVector) && "Texture not found !");
-
-    mCurrentTextureIterator = textureIterator;
-	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+    TextureVector::iterator textureIterator = mTextures.begin();
+    while (textureIterator !=  mTextures.end())
+    {
+        if ((*textureIterator) == texture)
+        { // Found it
+            mCurrentTextureIterator = mCurrentSelectedTextureIterator = textureIterator;
+            mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
+            return;
+        }
+        textureIterator ++; 
+    }
+    LogManager::getSingleton().logMessage("ModifiedMaterialManager::setCurrentTexture(TexturePtr): Texture not found in the list => " + texture->getName()); 
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -249,10 +257,6 @@ void ModifiedMaterialManager::addTexture(TexturePtr texture, const TextureExtPar
 	mTextures.push_back(texture);
     if (!textureExtParamsMap.empty())
         mTextureNameExtParamsMap[texture->getName()] = textureExtParamsMap;
-
-	//mDefaultTextureIterator = mTextures.end();
-	//mDefaultTextureIterator--;
-	//mCurrentTextureIterator = mDefaultTextureIterator;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -269,62 +273,61 @@ int ModifiedMaterialManager::getNbTexture()
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiedMaterialManager::deleteLastTexture()
+void ModifiedMaterialManager::clearTextures()
 {
-	if (mTextures.size() > 0)	//if there are 2 textures or more
-	{
-		TextureVector::iterator itr ;
-		itr = mTextures.end() ;
-		if( mDefaultTextureIterator == itr)
-            mDefaultTextureIterator = mTextures.begin() ;
-		if( mCurrentTextureIterator == itr)
-			setCurrentTexture( (*(mTextures.begin())) ) ;
-
-        // Destroy texture
-        TexturePtr lastTexture = mTextures.back();
-        if (ms_MMMTextureManager != 0)
-        {
-            TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(lastTexture->getName());
+    if (!ms_MMMTextureManager)
+    {
+        LogManager::getSingleton().logMessage("ModifiedMaterialManager::clearTextures: No MMMTextureManager ==> Cannot delete textures" );
+    }
+    else
+    {
+        TextureVector::iterator itText = mTextures.begin();
+        TextureNameExtParamsMap::iterator it;
+        while (itText != mTextures.end())
+        {           
+            it = mTextureNameExtParamsMap.find((*itText)->getName());
             if (it != mTextureNameExtParamsMap.end())
-                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), it->second);
+                ms_MMMTextureManager->releaseTexture(this, (*itText)->getName(), it->second);
             else
-                ms_MMMTextureManager->releaseTexture(this, lastTexture->getName(), TextureExtParamsMap());
+                ms_MMMTextureManager->releaseTexture(this, (*itText)->getName(), TextureExtParamsMap());
+            // Next element
+            itText = mTextures.erase( itText);
         }
-        mTextures.pop_back();
-		
-	}
-
+        // Reset iterators
+        mCurrentSelectedTextureIterator = mCurrentTextureIterator = mTextures.begin();
+    }   
+    mTextureNameExtParamsMap.clear();
 }
+
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 {
+    if (pTexture.isNull())
+    {
+        LogManager::getSingleton().logMessage("ModifiedMaterialManager::deleteTexture() : NULL Texture pointer" );
+        return;
+    }
 	if( pTexture->getName() != "default_texture.jpg" )	//if it is not the default texture ...
-		/*
-		if (mTextures.size() > 0)	//if there are 2 textures or more ...
-		{	
-			if( (*mCurrentTextureIterator) == pTexture)
-				setCurrentTexture( "default_texture.jpg" ) ;
-
-			if( (*mDefaultTextureIterator) == pTexture)
-				this->setDefaultTextureAsCurrent();
-				
-			setCurrentTexture( getCurrentTexture() ) ;
-			mTextures.remove( pTexture );
-		}
-		*/
-	{
-		setPreviousTextureAsCurrent();
+    {
+        if ((*mCurrentSelectedTextureIterator)->getName() == pTexture->getName())
+           // The texture to delete is the current one ==> We must change the current selected texture
+           setPreviousTextureAsCurrent();
+        
         // Destroy texture
         if (ms_MMMTextureManager != 0)
         {
             TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(pTexture->getName());
             if (it != mTextureNameExtParamsMap.end())
+            {
                 ms_MMMTextureManager->releaseTexture(this, pTexture->getName(), it->second);
+                it = mTextureNameExtParamsMap.erase(it); // Delete texture ext params accessor
+            }
             else
                 ms_MMMTextureManager->releaseTexture(this, pTexture->getName(), TextureExtParamsMap());
+
         }
-		mTextures.remove( pTexture );
+        mTextures.remove( pTexture );
 	}
 }
 
@@ -345,7 +348,12 @@ bool ModifiedMaterialManager::isPresentInList(TexturePtr pTexture)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 TextureExtParamsMap* ModifiedMaterialManager::getTextureExtParamsMap(TexturePtr pTexture)
 {
-    TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(pTexture->getName());
+    return getTextureExtParamsMap(pTexture->getName());
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+TextureExtParamsMap* ModifiedMaterialManager::getTextureExtParamsMap(const Ogre::String name)
+{
+    TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(name);
     if (it == mTextureNameExtParamsMap.end())
         return 0;
     return &(it->second);

@@ -147,7 +147,7 @@ public:
 
 	/// Load from / Save to a XML SOLIPSIS file
 	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
-	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO);
+	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLSave(bool all = false);
 
 	/// Update the command list of the stored deformations
@@ -168,6 +168,10 @@ public:
     virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
     /// See TextureManager::releaseTexture
     virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
+    /// See TextureManager::loadTexture
+    virtual void pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,TextureExtParamsMap &textureExtParamsMap);
+    /// See TextureManager::loadTexture
+    virtual void startEffect(ModifiedMaterialManager* modifiedMaterialManager, const String& name,TextureExtParamsMap &textureExtParamsMap);
 
 private : 
 	/// Backup old camera to set active when we will exit mode

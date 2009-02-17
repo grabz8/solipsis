@@ -196,6 +196,7 @@ int NavigatorLua::call(const char* method, const char *fmt, ...)
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorLua:%s() error, %s", method, lua_tolstring(mLuaState, -1, NULL));
         return false;
     }
+
     if (!lua_isboolean(mLuaState, -1))
     {
 //        luaL_error(mLuaState, "NavigatorLua:%s() boolean result expected", method);

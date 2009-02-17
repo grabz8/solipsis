@@ -149,6 +149,9 @@ public:
 		Y,
 		Z };
 
+    AxeClicked getAxeClicked();
+
+
 private :
 	///brief Create Move Gizmos and hide them
 	void createGizmosMove(SceneManager * pSceneMgr);

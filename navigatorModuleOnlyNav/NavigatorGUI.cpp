@@ -480,7 +480,7 @@ void NavigatorGUI::modelerMainUnload()
 		modelerPropUnload();
 
 		// Remove temporary files & folder of the thumbnails
-		std::string path ( "NaviLocal\\solTmpTexture" );
+		std::string path ( "NaviLocal\\NaviTmpTexture" );
 		std::vector<std::string> fileList;
 
 		if( SOLisDirectory( String( Modeler::getSingletonPtr()->mExecPath + "\\" + path ).c_str() ) )
@@ -715,7 +715,7 @@ void NavigatorGUI::avatarMainUnload()
 		avatarMainUnload();
 
 		// Remove temporary files & folder of the thumbnails
-		std::string path ( "NaviLocal\\solTmpTexture" );
+		std::string path ( "NaviLocal\\NaviTmpTexture" );
 		std::vector<std::string> fileList;
 
 		if( SOLisDirectory( String( AvatarEditor::getSingletonPtr()->mExecPath + "\\" + path ).c_str() ) )
@@ -1114,7 +1114,6 @@ void NavigatorGUI::modelerUpdateTextures()
 	
 	std::string texturePath, text;
 	String str;
-	TexturePtr texture; 
 	Ogre::Image image;
 
 	// Go back to the main directory
@@ -1122,33 +1121,30 @@ void NavigatorGUI::modelerUpdateTextures()
 	
 	// create a temporary forlder for the thumbnail textures
 #ifdef WIN32
-	CreateDirectory( "NaviLocal\\solTmpTexture", NULL );
+	CreateDirectory( "NaviLocal\\NaviTmpTexture", NULL );
 #else
-	system( "md NaviLocal\\solTmpTexture" );
+	system( "md NaviLocal\\NaviTmpTexture" );
 #endif
 
-	/*
-	text = "textTabTextures = \"";
-	text += "<img src='./color/blank.jpg' width=128 height=128/>	";
-	text += "<img src='file:///z:/5.png' width=128 height=128/>	";
-	text += "\"";
-	*/
 
-	// update Navi interface
-	text = "textTabTextures = \"";
-	for(int t=1; t<obj->getMaterialManager()->getNbTexture(); t++)
-	{
-		texture = obj->getMaterialManager()->getTexture(t);
-        TextureExtParamsMap* textureExtParamsMap = obj->getMaterialManager()->getTextureExtParamsMap(texture);
-        if (textureExtParamsMap != 0)
-        {
-		    text += "<img src='./NaviLocal/";
-		    text += (*textureExtParamsMap)["type"] + "_texture.jpg";
-		    text +=	"' width=128 height=128/>";
-        }
+
+
+
+
+/*
+    // update Navi interface
+    TextureExtParamsMap* textureExtParamsMap2 = obj->getMaterialManager()->getTextureExtParamsMap(obj->getMaterialManager()->getCurrentTexture());
+    if (textureExtParamsMap2)
+    {
+        TextureExtParamsMap::iterator it = textureExtParamsMap2->find("plugin");
+        if ((it->second == "vlc") || (it->second == "swf") || (it->second == "www"))
+            text = "document.getElementById('imgSelec').setAttribute('style','background-image:url(__" + it->second + ".jpg)')";
         else
-        {
-		    texturePath = texture->getName();
+            text = "document.getElementById('imgSelec').setAttribute('style','background-image:url(__default_color.jpg)')";    
+    }
+    else // It is a picture
+    {
+        	texturePath = obj->getMaterialManager()->getCurrentTexture()->getName();
 		    Path path(texturePath);
 		    size_t begin = path.getFormatedPath().find_last_of( '\\' );
 		    size_t end = path.getFormatedPath().find_last_of( '.' );
@@ -1157,13 +1153,13 @@ void NavigatorGUI::modelerUpdateTextures()
 
 		    str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
 
-		    //text += "<img src='file:///d:\\test.jpg";
+		    //"<img src='file:///d:\\test.jpg";
 		    text += "<img src='./solTmpTexture/";
 		    text += fileName;
 		    text +=	"' width=128 height=128/>";
 
 		    vector<std::string> files;
-		    SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
+		    SOLlistDirectoryFiles( "NaviLocal\\NaviTmpTexture\\", &files );
 		    vector<std::string>::iterator iter = files.begin();
 		    bool found = false;
 		    while( iter != files.end() )
@@ -1180,12 +1176,103 @@ void NavigatorGUI::modelerUpdateTextures()
 		    {
 			    image.load( texturePath, str);
 			    image.resize( 128, 128 );
-			    image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+			    image.save( "NaviLocal\\NaviTmpTexture\\" + fileName );
+		    }
+            text = "document.getElementById('imgSelec').setAttribute('style','background-image:url(./NaviTmpTexture/" + fileName + ")')";    
+    }
+    navi->evaluateJS(text);
+*/
+
+
+
+
+	/*
+	text = "textTabTextures = \"";
+	text += "<img src='./color/blank.jpg' width=128 height=128/>	";
+	text += "<img src='file:///z:/5.png' width=128 height=128/>	";
+	text += "\"";
+	*/
+
+    TexturePtr texture; 
+	// update Navi interface
+	text = "textTabTextures = \"";
+
+    //text += "<img src='./NaviLocal/__default_color.jpg' width=128 height=128/>";
+    text += "<img src='./__default_color.jpg' width=100 height=100/> ";
+
+	for(int t=1; t<obj->getMaterialManager()->getNbTexture(); t++)
+	{
+		texture = obj->getMaterialManager()->getTexture(t);
+        TextureExtParamsMap* textureExtParamsMap = obj->getMaterialManager()->getTextureExtParamsMap(texture);
+        if (textureExtParamsMap != 0)
+        {
+            //text += "<img src='./NaviLocal/";
+            //text += (*textureExtParamsMap)["type"] + "_texture.jpg";
+            //text +=	"' width=128 height=128/>";
+
+            TextureExtParamsMap::iterator it = textureExtParamsMap->find("plugin");
+            if ((it->second == "vlc") || (it->second == "swf") || (it->second == "www"))
+            {
+                //text = "document.getElementById('imgSelec').setAttribute('style','background-image:url(__" + it->second + ".jpg)')";
+                //text += "<img src='./NaviLocal/__";
+                text += "<img src='./__";
+		        //text += (*textureExtParamsMap)["type"] + "_texture.jpg";
+                text += it->second;
+		        text +=	".jpg' width=100 height=100/> ";
+            }
+            /*
+            else
+            {
+                //text = "document.getElementById('imgSelec').setAttribute('style','background-image:url(__default_color.jpg)')";    
+                //text += "<img src='./NaviLocal/__default_color.jpg' width=128 height=128/>";
+                text += "<img src='./__default_color.jpg' width=128 height=128/>";
+            }
+            */
+        }
+        else
+        {
+		    texturePath = texture->getName();
+		    Path path(texturePath);
+		    size_t begin = path.getFormatedPath().find_last_of( '\\' );
+		    size_t end = path.getFormatedPath().find_last_of( '.' );
+		    std::string fileName( path.getFormatedPath(), begin+1, end-begin-1 );
+		    fileName += ".jpg";
+
+		    str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
+
+		    //text += "<img src='file:///d:\\test.jpg";
+		    text += "<img src='./NaviTmpTexture/";
+		    text += fileName;
+		    text +=	"' width=100 height=100/> ";
+
+		    vector<std::string> files;
+		    SOLlistDirectoryFiles( "NaviLocal\\NaviTmpTexture\\", &files );
+		    vector<std::string>::iterator iter = files.begin();
+		    bool found = false;
+		    while( iter != files.end() )
+		    {
+			    if( (*iter) ==  fileName )
+			    {
+				    found = true;
+				    break;
+			    }
+			    iter++;
+		    }
+		    files.clear();
+		    if( !found )
+		    {
+			    image.load( texturePath, str);
+			    image.resize( 128, 128 );
+			    image.save( "NaviLocal\\NaviTmpTexture\\" + fileName );
 		    }
         }
 	}
 	text += "\"";
 	navi->evaluateJS(text);
+
+
+
+
 
     // Update WWW/VLC/VNC panels
     navi->evaluateJS("resetWWWVLCVNCtabs()");
@@ -1195,10 +1282,10 @@ void NavigatorGUI::modelerUpdateTextures()
         String plugin = (*textureExtParamsMap)["plugin"];
         if (plugin == "www")
         {
-            navi->evaluateJS("$('MaterialWWWUrl').value = '" + (*textureExtParamsMap)["url"] + "'");
-            navi->evaluateJS("$('MaterialWWWWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
-            navi->evaluateJS("$('MaterialWWWHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
-            navi->evaluateJS("$('MaterialWWWFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
+            navi->evaluateJS("document.getElementById('MaterialWWWUrl').value = '" + (*textureExtParamsMap)["url"] + "'");
+            navi->evaluateJS("document.getElementById('MaterialWWWWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
+            navi->evaluateJS("document.getElementById('MaterialWWWHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
+            navi->evaluateJS("document.getElementById('MaterialWWWFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
         }
         else if (plugin == "vlc")
         {
@@ -3152,6 +3239,7 @@ void NavigatorGUI::modelerPropTextureRemove(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropTextureApply(const NaviData& naviData)
 {
+   
     Modeler *modeler = mNavigator->getModeler();
 	if( modeler != 0 )
 	{
@@ -3200,6 +3288,9 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
+        bool sound3d = true;
+        float sound3dMin = 0;
+        float sound3dMax = 10;
 
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "www";
@@ -3208,6 +3299,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
+        textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
         TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
@@ -3224,12 +3316,26 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerPropSWFMrlBrowse(const NaviData& naviData)
+{
+    std::string mrl;
+    if (System::showDlgOpenFilename(mrl, "Flash Media File,(*.swf)\0*.swf\0", ""))
+    {
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
+        std::string mrlStr(mrl);
+        StringHelpers::replaceSubStr(mrlStr, "\\", "\\\\");
+        navi->evaluateJS("$('MaterialSWFMrl').value='" + mrlStr + "'");
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 {
     Modeler *modeler = mNavigator->getModeler();
 	if( modeler != 0 )
 	{
 		Object3D * obj = modeler->getSelected();
+        if( obj == 0 ) return;
 
         // only 1 SWF per modifiedMaterial for instance ... TODO
         ModifiedMaterialManager* modifiedMaterialManager = obj->getMaterialManager();
@@ -3254,9 +3360,16 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 	    std::string widthStr = navi->evaluateJS("$('MaterialSWFWidth').value");
 	    std::string heightStr = navi->evaluateJS("$('MaterialSWFHeight').value");
         std::string fpsStr = navi->evaluateJS("$('MaterialSWFFps').value");
+        //std::string sp3dStr = navi->evaluateJS("$('MaterialSWFSP3d').checked");
+        std::string spMinStr = navi->evaluateJS("$('MaterialSWFSPMin').value");
+        std::string spMaxStr = navi->evaluateJS("$('MaterialSWFSPMax').value");
+
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
+        bool sound3d = true;
+        float sound3dMin = atof(spMinStr.c_str());
+        float sound3dMax = atof(spMaxStr.c_str());
 
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "swf";
@@ -3265,6 +3378,8 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
+        textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
+
         TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
 
 		//Test if this texture is already in the list :
@@ -3323,10 +3438,20 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         float sound3dMin = atof(spMinStr.c_str());
         float sound3dMax = atof(spMaxStr.c_str());
 
+		Path p(mrlStr);
+        std::string newFile = std::string("solTmpTexture\\") + p.getLastFileName();
+        if (mrlStr.find(newFile) == -1) // File is not already in solTmpTexture
+        {
+            if (!SOLcopyFile(mrlStr.c_str(), newFile.c_str()))
+            {
+                showMessageBox("Modeler error", "Impossible de copier le fichier dans temp", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
+            }
+        }
+
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "vlc";
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVLCPanel);
-        textureExtParamsMap["mrl"] = mrlStr;
+        textureExtParamsMap["mrl"] = newFile;
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
@@ -3357,6 +3482,7 @@ void NavigatorGUI::modelerPropVLCMrlBrowse(const NaviData& naviData)
 	    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
         std::string mrlStr(mrl);
         StringHelpers::replaceSubStr(mrlStr, "\\", "\\\\");
+        navi->evaluateJS("$('MaterialVLCMrl').innerHTML='" + mrlStr + "'");
         navi->evaluateJS("$('MaterialVLCMrl').value='" + mrlStr + "'");
     }
 }
@@ -3424,6 +3550,7 @@ void NavigatorGUI::modelerPropTexturePrev(const NaviData& naviData)
 		Object3D * obj = modeler->getSelected();
 		obj->getMaterialManager()->setPreviousTexture();
 	}
+    modelerUpdateTextures();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3436,6 +3563,7 @@ void NavigatorGUI::modelerPropTextureNext(const NaviData& naviData)
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
 			obj->getMaterialManager()->setNextTexture();
 	}
+    modelerUpdateTextures();
 }
 
 //-------------------------------------------------------------------------------------
@@ -3505,7 +3633,7 @@ void NavigatorGUI::modelerPropOrientationZ(const NaviData& naviData)
 void NavigatorGUI::modelerPropScaleX(const NaviData& naviData)
 {
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERPROP]);
-	//std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
+    //std::string value = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
     std::string valueX = navi->evaluateJS("document.getElementById('scaleX').value * 10000");
     std::string valueY = navi->evaluateJS("document.getElementById('scaleY').value * 10000");
     std::string valueZ = navi->evaluateJS("document.getElementById('scaleZ').value * 10000");
@@ -3603,7 +3731,10 @@ void NavigatorGUI::avatarMainPageLoaded(const NaviData& naviData)
 
     // Show Navi UI
     if (mNavisStates[NAVI_AVATARMAIN] == NSCreated)
+    {
         navi->show(true);
+        navi->focus();
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -3677,12 +3808,12 @@ void NavigatorGUI::avatarMainSelected(const NaviData& naviData)
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
 	std::string item( naviData["item"].str() );
 	
-	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
-	if( avatar->getCharacter()->getName() != item )
-	{
+    CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
+    if( avatar->getCharacter()->getName() != item )
+    {
         Avatar* userAvatar = mNavigator->getUserAvatar();
         userAvatar->detachFromSceneNode();
-		AvatarEditor::getSingletonPtr()->setCurrentByName(item);
+        AvatarEditor::getSingletonPtr()->setCurrentByName(item);
         userAvatar->setCharacterInstance(AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance());
 
 		NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARMAIN]);
@@ -4784,9 +4915,9 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 	
 	// create a temporary forlder for the thumbnail textures
 #ifdef WIN32
-	CreateDirectory( "NaviLocal\\solTmpTexture", NULL );
+	CreateDirectory( "NaviLocal\\NaviTmpTexture", NULL );
 #else
-	system( "md NaviLocal\\solTmpTexture" );
+	system( "md NaviLocal\\NaviTmpTexture" );
 #endif
 
 	// update Navi interface
@@ -4807,12 +4938,12 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 			str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
 
 			//text += "<img src='file:///d:\\test.jpg";
-			text += "<img src='./solTmpTexture/";
+			text += "<img src='./NaviTmpTexture/";
 			text += fileName;
 			text +=	"' width=128 height=128/>	";
 	
 			vector<std::string> files;
-			SOLlistDirectoryFiles( "NaviLocal\\solTmpTexture\\", &files );
+			SOLlistDirectoryFiles( "NaviLocal\\NaviTmpTexture\\", &files );
 			vector<std::string>::iterator iter = files.begin();
 			bool found = false;
 			while( iter != files.end() )
@@ -4829,7 +4960,7 @@ void NavigatorGUI::avatarUpdateTextures(ModifiableMaterialObject* pObject)
 			{
 				image.load( texturePath, str);
 				image.resize( 128, 128 );
-				image.save( "NaviLocal\\solTmpTexture\\" + fileName );
+				image.save( "NaviLocal\\NaviTmpTexture\\" + fileName );
 			}
 		}
 	}
@@ -4969,7 +5100,11 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 
     // Show Navi UI
     if (mNavisStates[naviPanel] == NSCreated)
-        mNaviMgr->getNavi(ms_NavisNames[naviPanel])->show(true);
+    {
+        Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
+        navi->show(true);
+        navi->focus();
+    }
 
     mCurrentNaviCreationDate = 0;
 }
@@ -5062,6 +5197,7 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
             {
                 mNaviMgr->destroyNavi(navi);
                 mNavisStates[naviPanel] = NSNotCreated;
+
             }
         }
     }

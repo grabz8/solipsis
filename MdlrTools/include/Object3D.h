@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ModifiedMaterialManager.h"
 
 #include <XmlDatas.h>
+#include <map>
 
 using namespace Ogre;
 using namespace std;
@@ -46,6 +47,8 @@ namespace Solipsis {
 const string SOLTYPESTRING[] = { "PLANE", "BOX", "CORNER", "PYRAMID","PRISM","CYLINDER","HALF_CYLINDER","CONE","HALF_CONE","SPHERE","HALF_SPHERE","TORUS","TUBE","RING","OTHER"};
 typedef std::vector<unsigned int> uintvector;
 typedef std::vector<Real> realvector;
+
+class MyZipArchive;
 
 //-------------------------------------------------------------------------------------
 /// brief ...
@@ -116,7 +119,9 @@ public:
 	/// Save a object3D to a file 
 	/// \param fileName = The path to the file to save
 	int		saveToFile(const char* fileName);
-
+    /// Save an object3D textures attributes 
+	/// \param pathToSave = The path to the save temporary files
+    int		saveTextures(Ogre::String &pathToSave,MyZipArchive* zz);
 
 	/// brief ...
 	void setEntityUID(const EntityUID& entityUID);
@@ -277,7 +282,7 @@ public:
 	///brief Method which set the given texture as the current texture of the object and for all children. 
 	///param texture Texture to set as current texture.
 	///param textureExtParamsMap Texture extended parameters of current texture.
-	void setCurrentTexture(const TexturePtr pTexture, const TextureExtParamsMap& textureExtParamsMap = TextureExtParamsMap());
+	void setCurrentTexture(const TexturePtr pTexture);
 	///brief Method which return the current texture applied on the object.
 	///return the current texture applied on the object.
 	TexturePtr getCurrentTexture();
@@ -372,7 +377,7 @@ private:
 	void getSize(Vector3 &size, Vector3 &min, Vector3 &max); 
 	///brief Copy the hardware vertex data to a vector Vertex
 	void getDataFromBuffer(vector<Vector3>* pVertex, vector<Face>* pFace);
-	///brief Change the location of an existing point in the point list
+    ///brief Change the location of an existing point in the point list
 	void setPoint(unsigned int index, const Vector3 &value);
 	///brief Return the location of an existing point in the point list
 	Vector3 getPoint(unsigned int index);
@@ -459,6 +464,8 @@ protected:
 	Ogre::String mDesc;							
 	/// The Tags property
 	Ogre::String mTags;							
+   // The mesh filename imported
+    Ogre::String mMeshImport;
 	/// The modification property
 	bool		 mCanBeModified;
 	/// The copy property
@@ -767,7 +774,7 @@ public:
 class Object3DOther: public Object3D
 {
 public:
-	Object3DOther(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
+    Object3DOther(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode) : Object3D(pEntityUID, pName, pNode)
 	{
         mType = OTHER;
 	}

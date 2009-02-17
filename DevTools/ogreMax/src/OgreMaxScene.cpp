@@ -765,12 +765,12 @@ void OgreMaxScene::LoadScene(const TiXmlElement* objectElement)
 
     //Make sure the Ogre version used to compile this viewer supports the Ogre version 
     //required by the scene file
-    if (this->minOgreVersion > CURRENT_OGRE_VERSION)
+    /*if (this->minOgreVersion > CURRENT_OGRE_VERSION)
     {
         StringUtil::StrStreamType errorMessage;
         errorMessage 
             << "The scene file's required Ogre version (" << this->minOgreVersion.ToString()
-            << ") is not supported by the Ogre version this viewer uses ( " << CURRENT_OGRE_VERSION_STRING << ")";
+            << ") is not supported by the Ogre version this viewer 2 uses ( " << CURRENT_OGRE_VERSION_STRING << ")";
 
         OGRE_EXCEPT
             (
@@ -778,7 +778,7 @@ void OgreMaxScene::LoadScene(const TiXmlElement* objectElement)
 		    errorMessage.str(), 
 		    "OgreMaxScene::LoadScene"
             );
-    }
+    }*/
 
     //Create scene manager
     if (this->sceneManager == 0)

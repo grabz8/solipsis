@@ -144,16 +144,20 @@ String MyZipArchive::getName(const int pNumFile)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void MyZipArchive::writeFile(const String& filePath)
 {
-
-	FILE* toAdd = fopen(filePath.c_str(),"rb");
-	fseek(toAdd,0,SEEK_END);
-	size_t toAddFileSize = ftell(toAdd);
-	fseek(toAdd,0,SEEK_SET);
-	void* toAddFileData = new unsigned char[toAddFileSize];
-	fread(toAddFileData,toAddFileSize,sizeof(unsigned char),toAdd);
-	writeFile(filePath.c_str(), FileBuffer(toAddFileData, toAddFileSize));
-
-	fclose(toAdd);
+    std::ifstream inputFile(filePath.c_str(),std::ios::in|std::ios::binary|std::ios::ate);
+    if (!inputFile.is_open())
+    {
+        inputFile.close();
+        SOLIPSISWARNING("MyZipArchive::writeFile(String) : Unable to open file ",filePath.c_str());
+        return;
+    }
+    int toAddFileSize = inputFile.tellg();
+    char* toAddFileData = new char[toAddFileSize + 1];    
+    inputFile.seekg(0,std::ios::beg);
+    inputFile._Read_s(&toAddFileData[0],toAddFileSize,toAddFileSize + 1);
+    writeFile(filePath.c_str(), FileBuffer(toAddFileData, toAddFileSize));
+    inputFile.close();
+    // Memory buffer will be released by FileBuffer destructor.
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

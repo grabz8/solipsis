@@ -317,6 +317,7 @@ protected:
     void modelerPropTextureNext(const NaviData& naviData);
     void modelerPropWWWTextureApply(const NaviData& naviData);
     void modelerPropSWFTextureApply(const NaviData& naviData);
+    void modelerPropSWFMrlBrowse(const NaviData& naviData);
     void modelerPropVLCTextureApply(const NaviData& naviData);
     void modelerPropVLCMrlBrowse(const NaviData& naviData);
     void modelerPropVNCTextureApply(const NaviData& naviData);
