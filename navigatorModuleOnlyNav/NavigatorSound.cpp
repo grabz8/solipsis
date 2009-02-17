@@ -509,8 +509,6 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
 
     // Set the sound buffer
     mSoundBufferVector[soundId]->setSound(sound);
-    //Play the sound
-    mSoundBufferVector[soundId]->play(mSoundSystem);       
 }
 
 //-------------------------------------------------------------------------------------
