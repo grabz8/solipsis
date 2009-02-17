@@ -2,7 +2,7 @@ Check list to create the setup :
 
 1 - Execute the cleanup.bat on the root repository
 
-2 - Compile Solipsis in Release mode
+2 - Compile Solipsis in ReleaseNCS mode
 
 3 - Don't forget to execute the "copyNCSPhysXFiles.bat" under the "navigatorModuleOnlyNav" repository
 
