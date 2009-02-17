@@ -3312,6 +3312,8 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
+
+        modelerUpdateTextures();
 	}
 }
 
@@ -3392,6 +3394,8 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
+
+        modelerUpdateTextures();
     }
 }
 
@@ -3470,6 +3474,8 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
+
+        modelerUpdateTextures();
     }
 }
 
@@ -3538,6 +3544,8 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
+
+        modelerUpdateTextures();
     }
 }
 
@@ -3550,7 +3558,8 @@ void NavigatorGUI::modelerPropTexturePrev(const NaviData& naviData)
 		Object3D * obj = modeler->getSelected();
 		obj->getMaterialManager()->setPreviousTexture();
 	}
-    modelerUpdateTextures();
+    //modelerUpdateTextures();
+    modelerPropTextureApply( naviData );
 }
 
 //-------------------------------------------------------------------------------------
@@ -3563,7 +3572,8 @@ void NavigatorGUI::modelerPropTextureNext(const NaviData& naviData)
 		if( obj->getMaterialManager()->getNbTexture() > 1 )
 			obj->getMaterialManager()->setNextTexture();
 	}
-    modelerUpdateTextures();
+    //modelerUpdateTextures();
+    modelerPropTextureApply( naviData );
 }
 
 //-------------------------------------------------------------------------------------
