@@ -326,6 +326,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
                     (*textureExtParamsMap.find("url")).second = filename.c_str();
                 }
                 // vlc
+                /* EMBEDDED VIDEO
                 else if (textureExtParamsMap.find("mrl") != textureExtParamsMap.end())
                 {
                     std::string filename = _getcwd(NULL, 0);
@@ -333,6 +334,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
                     filename += (*textureExtParamsMap.find("mrl")).second;
                     (*textureExtParamsMap.find("mrl")).second = filename.c_str();
                 }
+                */
             }
             // GILLES END
         }
@@ -556,11 +558,13 @@ int		Object3D::saveToFile(const char* fileName)
                         isSWF = true;
                         break;
                     }
+                    /* EMBEDDED VIDEO
                     else if (it->second == "vlc")
                     {
                         isVLC = true;
                         break;
                     }
+                    */
             }
 
             toSave << "\t\t\t\t<textureExtParamsMap>" << endl;

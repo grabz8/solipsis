@@ -1269,6 +1269,9 @@ void NavigatorGUI::modelerUpdateTextures()
 	}
 	text += "\"";
 	navi->evaluateJS(text);
+    //navi->evaluateJS("updateTexture()");
+    //navi->evaluateJS("updTexture()");
+    //navi->evaluateJS("document.getElementById('divTexture').innerHTML=textTabTextures;"
 
 
 
@@ -3442,6 +3445,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         float sound3dMin = atof(spMinStr.c_str());
         float sound3dMax = atof(spMaxStr.c_str());
 
+        /* EMBEDDED VIDEO
 		Path p(mrlStr);
         std::string newFile = std::string("solTmpTexture\\") + p.getLastFileName();
         if (mrlStr.find(newFile) == -1) // File is not already in solTmpTexture
@@ -3451,11 +3455,13 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
                 showMessageBox("Modeler error", "Impossible de copier le fichier dans temp", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
             }
         }
+        */
 
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "vlc";
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVLCPanel);
-        textureExtParamsMap["mrl"] = newFile;
+        //textureExtParamsMap["mrl"] = newFile;     // EMBEDDED VIDEO
+        textureExtParamsMap["mrl"] = mrlStr;
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
