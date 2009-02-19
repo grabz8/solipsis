@@ -64,7 +64,7 @@ Navigator::Navigator(const String name, IApplication* application) :
     mFacebookLoginUrl("http://api.facebook.com/login.php"),
     mFixedNodeId(""),
     mNodeId(""),
-    mDefaultVoIPServerAddress("localhost:30000"),
+    mVoIPServerAddress("localhost:30000"),
     mVoIPSilenceLevel(5.0),
     mVoIPSilenceLatency(5),
     mNavigationInterface(NIMouseKeyboard),
@@ -89,7 +89,6 @@ Navigator::Navigator(const String name, IApplication* application) :
 	isOnGizmo(false)
 {
     ms_singletonPtr = this;
-    mVoIPServerAddress = mDefaultVoIPServerAddress;
 
     LogHandler::setLogHandler(&mOgreLogger);
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
@@ -410,8 +409,7 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
     }
     if (varName == "VoIPServerAddress")
     {
-        mDefaultVoIPServerAddress = varValue;
-        mVoIPServerAddress = mDefaultVoIPServerAddress;
+        mVoIPServerAddress = varValue;
         return true;
     }
     if (varName == "VoIPSilenceLevel")
@@ -1401,7 +1399,6 @@ bool Navigator::disconnect()
         voiceEngine->stopRecording();
         voiceEngine->disconnect();
     }
-    mVoIPServerAddress = mDefaultVoIPServerAddress;
 
     // Unload avatar/modeler panels
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
@@ -1468,6 +1465,9 @@ bool Navigator::mainMenuClick(const String& item)
     // Submenu File
     if (item == "Exit")
         disconnect();
+    // Submenu Action
+    else if (item == "Talk")
+        toggleVoIP();
     // Submenu View
     else if (item == "1stPerson")
         setCameraMode(CM1stPerson);

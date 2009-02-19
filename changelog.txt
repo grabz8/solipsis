@@ -1000,5 +1000,7 @@ WorldsServer.py version set to 1.0.9
 VLCinstance do not play auto on creation + play handleEvt added to let material user responsible of
 Modeler: mrl and remoteMrl are tested before embedding media (MRL) into SOF file (webcam, webtv, webradio, streamed media, ...)
 Talk crash fix, FModSpeexEngine VoicePacketListener calls are now thread-safe
+VoipServer bad address bug fix
+New mainmenu Action > Talk added
 
 ---------------------------

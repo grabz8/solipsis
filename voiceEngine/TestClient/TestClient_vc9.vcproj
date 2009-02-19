@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="TestClient"
+	Name="voiceEngineTestClient"
 	ProjectGUID="{A3C8E81A-9932-42B0-8FEB-17749ECB97ED}"
 	RootNamespace="TestClient"
 	TargetFrameworkVersion="131072"

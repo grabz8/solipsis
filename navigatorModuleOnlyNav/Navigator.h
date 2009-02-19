@@ -110,7 +110,7 @@ protected:
     NodeId mFixedNodeId;
     NodeId mNodeId;
     String mMediaCachePath;
-    String mVoIPServerAddress, mDefaultVoIPServerAddress;
+    String mVoIPServerAddress;
     float mVoIPSilenceLevel;
     unsigned int mVoIPSilenceLatency;
 

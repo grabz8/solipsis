@@ -22,6 +22,7 @@
                 {
                     mainmenuText.innerHTML = '';
                     mainmenuText.innerHTML += '<div id="fileMenu" class="menuText" onclick="menuClick(\'File\')">File</div>';
+                    mainmenuText.innerHTML += '<div id="actionMenu" class="menuText" onclick="menuClick(\'Action\')">Action</div>';
                     mainmenuText.innerHTML += '<div id="viewMenu" class="menuText" onclick="menuClick(\'View\')">View</div>';
                     mainmenuText.innerHTML += '<div id="panelsMenu" class="menuText" onclick="menuClick(\'Panels\')">Panels</div>';
                     mainmenuText.innerHTML += '<div id="helpMenu" class="menuText" onclick="menuClick(\'Help\')">Help</div>';
@@ -31,6 +32,12 @@
                     mainmenuText.innerHTML = '';
                     mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">File > </div>';
                     mainmenuText.innerHTML += '<div id="exitMenu" class="menuText" onclick="menuClick(\'Exit\')">Exit</div>';
+                }
+                else if (menu == 'Action')
+                {
+                    mainmenuText.innerHTML = '';
+                    mainmenuText.innerHTML += '<div id="mainMenu" class="menuText" onclick="menuClick(\'Main\')">Action > </div>';
+                    mainmenuText.innerHTML += '<div id="TalkMenu" class="menuText" onclick="menuClick(\'Talk\')">Talk</div>';
                 }
                 else if (menu == 'View')
                 {
