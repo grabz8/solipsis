@@ -326,15 +326,21 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
                     (*textureExtParamsMap.find("url")).second = filename.c_str();
                 }
                 // vlc
-                /* EMBEDDED VIDEO
                 else if (textureExtParamsMap.find("mrl") != textureExtParamsMap.end())
                 {
-                    std::string filename = _getcwd(NULL, 0);
-                    filename += "\\solTmpTexture\\";
-                    filename += (*textureExtParamsMap.find("mrl")).second;
-                    (*textureExtParamsMap.find("mrl")).second = filename.c_str();
+                    // Test if it is not an embedded media file: webcam, stream medias, webtv, webradios, ...
+                    String mrl = (*textureExtParamsMap.find("mrl")).second;
+                    String remoteMrl = "";
+                    if (textureExtParamsMap.find("remote_mrl") != textureExtParamsMap.end())
+                        remoteMrl = (*textureExtParamsMap.find("remote_mrl")).second;
+                    if (remoteMrl.empty() && (mrl.find("://") == String::npos))
+                    {
+                        std::string filename = _getcwd(NULL, 0);
+                        filename += "\\solTmpTexture\\";
+                        filename += (*textureExtParamsMap.find("mrl")).second;
+                        (*textureExtParamsMap.find("mrl")).second = filename.c_str();
+                    }
                 }
-                */
             }
             // GILLES END
         }
@@ -558,13 +564,11 @@ int		Object3D::saveToFile(const char* fileName)
                         isSWF = true;
                         break;
                     }
-                    /* EMBEDDED VIDEO
                     else if (it->second == "vlc")
                     {
                         isVLC = true;
                         break;
                     }
-                    */
             }
 
             toSave << "\t\t\t\t<textureExtParamsMap>" << endl;
@@ -574,8 +578,17 @@ int		Object3D::saveToFile(const char* fileName)
                 TiXmlString xmlStringOut;
                 TiXmlBase::EncodeString(xmlStringIn, &xmlStringOut);
                 // GILLES BEGIN - remove the path from the texture path
-                if ((isSWF && it->first == "url") ||
-                    (isVLC && it->first == "mrl"))
+                bool removePath = (isSWF && it->first == "url");
+                // Test if it is not an embedded media file: webcam, stream medias, webtv, webradios, ...
+                if (isVLC && it->first == "mrl")
+                {
+                    String mrl = it->second;
+                    String remoteMrl = "";
+                    if (textureExtParamsMap->find("remote_mrl") != textureExtParamsMap->end())
+                        remoteMrl = (textureExtParamsMap->find("remote_mrl"))->second;
+                    removePath = (remoteMrl.empty() && (mrl.find("://") == String::npos));
+                }
+                if (removePath)
                 {
                     std::string filename = xmlStringOut.c_str();
                     int slash = filename.find_last_of('\\')+1;
@@ -2325,19 +2338,27 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
                     param = textureExtParamsMap->find("mrl");
                     if (param != textureExtParamsMap->end())
                     {
-                        Path mrl((*param).second);
-                        //std::string newFile( "solTmpTexture\\" + mrl.getLastFileName() );
-
-                        if ( ! zz->isFilePresent( mrl.getLastFileName() ) )
+                        // Test if it is not an embedded media file: webcam, stream medias, webtv, webradios, ...
+                        String mrl = param->second;
+                        String remoteMrl = "";
+                        if (textureExtParamsMap->find("remote_mrl") != textureExtParamsMap->end())
+                            remoteMrl = (textureExtParamsMap->find("remote_mrl"))->second;
+                        if (remoteMrl.empty() && (mrl.find("://") == String::npos))
                         {
-                           // SOLcopyFile((*param).second.c_str(), newFile.c_str());
-                            zz->writeFile( param->second );
-                            // GILLES begin
-                            //SOLdeleteFile( newFile.c_str() );
-                            // GILLES end
-                            //(*param).second = newFile;
+                            Path mrlPath(mrl);
+                            //std::string newFile( "solTmpTexture\\" + mrlPath.getLastFileName() );
+
+                            if ( ! zz->isFilePresent( mrlPath.getLastFileName() ) )
+                            {
+                               // SOLcopyFile((*param).second.c_str(), newFile.c_str());
+                                zz->writeFile( param->second );
+                                // GILLES begin
+                                //SOLdeleteFile( newFile.c_str() );
+                                // GILLES end
+                                //(*param).second = newFile;
+                            }
+                            //(*param).second = mrlPath.getLastFileName();
                         }
-                        //(*param).second = mrl.getLastFileName();
                     }
                 }
             }

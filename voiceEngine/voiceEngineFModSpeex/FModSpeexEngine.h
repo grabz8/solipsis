@@ -41,10 +41,14 @@ private:
     /// Voice engine
     FModSpeexVoipHandler *mVoiceEngine;
 
+    /// Mutex
+    pthread_mutex_t mMutex;
+
+    /// Map of voice packet listeners
 	std::map<EntityUID, IVoicePacketListener* > mAvatarUidToVoicePacketListener;	///< associates a voice packet listener to an avatar. Note that these are just references to listeners, the listeners are owned by something else.
 
 public:
-    FModSpeexEngine() : mLogger(0), mVoiceEngine(0) {}
+    FModSpeexEngine() : mLogger(0), mVoiceEngine(0), mMutex(PTHREAD_MUTEX_INITIALIZER) {}
 
 	//! @name IVoiceEngine implementation
 	//!	@{

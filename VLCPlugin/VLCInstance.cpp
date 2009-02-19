@@ -183,10 +183,11 @@ VLCInstance::VLCInstance(int id, VLCTextureSource* textureSource,
     PlayListEntry playListEntry = {item, mMrl};
     mPlayList.push_back(playListEntry);
     mCurrentPlayListItem = 0;
-    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
-    libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
-    _libvlc_exception(&mLibVLCException);
-    mStopped = false;
+//    LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() libvlc_playlist_play");
+//    libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+//    _libvlc_exception(&mLibVLCException);
+//    mStopped = false;
+    mStopped = true;
     // Hack to Sleep() after libvlc_play
     Sleep(1000);
     LogManager::getSingleton().logMessage("VLCInstance::VLCInstance() END");
@@ -284,6 +285,14 @@ String VLCInstance::handleEvt(const String& evt)
         LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_audio_get_mute");
         result = (libvlc_audio_get_mute(mLibVLCInstance, &mLibVLCException) ? "true" : "false");
         _libvlc_exception(&mLibVLCException);
+    }
+    else if (tokens[0].compare("play") == 0)
+    {
+        LogManager::getSingleton().logMessage("VLCInstance::handleEvt() libvlc_playlist_play");
+        if (mStopped)
+            libvlc_playlist_play(mLibVLCInstance, mPlayList[mCurrentPlayListItem].item, 0, NULL, &mLibVLCException); 
+        _libvlc_exception(&mLibVLCException);
+        mStopped = false;
     }
     else if (tokens[0].compare("playpause") == 0)
     {

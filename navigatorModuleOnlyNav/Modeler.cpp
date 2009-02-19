@@ -1378,7 +1378,7 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         // Send a stop to the plugin to stop the material rendering
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
         ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
-        extTextSrc->handleEvt(mtlName, "playpause");
+        extTextSrc->handleEvt(mtlName, "play");
         SOLIPSISINFO("Modeler ==> PLAY envoyé à la texture : ", name.c_str());
         TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
         if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))

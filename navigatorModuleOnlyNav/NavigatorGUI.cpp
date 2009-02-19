@@ -3445,23 +3445,24 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
         float sound3dMin = atof(spMinStr.c_str());
         float sound3dMax = atof(spMaxStr.c_str());
 
-        /* EMBEDDED VIDEO
-		Path p(mrlStr);
-        std::string newFile = std::string("solTmpTexture\\") + p.getLastFileName();
-        if (mrlStr.find(newFile) == -1) // File is not already in solTmpTexture
+        std::string finalMrl = mrlStr;
+        if (remoteMrlStr.empty() && (mrlStr.find("://") == String::npos))
         {
-            if (!SOLcopyFile(mrlStr.c_str(), newFile.c_str()))
+		    Path p(mrlStr);
+            finalMrl = std::string("solTmpTexture\\") + p.getLastFileName();
+            if (mrlStr.find(finalMrl) == -1) // File is not already in solTmpTexture
             {
-                showMessageBox("Modeler error", "Impossible de copier le fichier dans temp", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
+                if (!SOLcopyFile(mrlStr.c_str(), finalMrl.c_str()))
+                {
+                    showMessageBox("Modeler error", "Impossible de copier le fichier dans temp", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
+                }
             }
         }
-        */
 
         TextureExtParamsMap textureExtParamsMap;
         textureExtParamsMap["plugin"] = "vlc";
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVLCPanel);
-        //textureExtParamsMap["mrl"] = newFile;     // EMBEDDED VIDEO
-        textureExtParamsMap["mrl"] = mrlStr;
+        textureExtParamsMap["mrl"] = finalMrl;
         textureExtParamsMap["width"] = StringConverter::toString(width);
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);

@@ -148,15 +148,19 @@ void FModSpeexEngine::updateRecordingAvatar(float* pos, float* dir, float* vel, 
 //-------------------------------------------------------------------------------------
 void FModSpeexEngine::addVoicePacketListener(const EntityUID& voiceId, IVoicePacketListener* voicePacketListener)
 {
+    pthread_mutex_lock(&mMutex);
 	assert(mAvatarUidToVoicePacketListener.find(voiceId) == mAvatarUidToVoicePacketListener.end());
 	mAvatarUidToVoicePacketListener[voiceId] = voicePacketListener;
+    pthread_mutex_unlock(&mMutex);
 }
 
 //-------------------------------------------------------------------------------------
 void FModSpeexEngine::removeVoicePacketListener(const EntityUID& voiceId)
 {
+    pthread_mutex_lock(&mMutex);
 	assert(mAvatarUidToVoicePacketListener.find(voiceId) != mAvatarUidToVoicePacketListener.end());
 	mAvatarUidToVoicePacketListener.erase(voiceId);
+    pthread_mutex_unlock(&mMutex);
 }
 
 //-------------------------------------------------------------------------------------
@@ -164,8 +168,10 @@ void FModSpeexEngine::onVoicePacketReception(VoicePacket* pVoicePacket)
 {
 	// we received a voice packet from FModSpeexVoipHandler, forward it to the listeners associated to the uid of the talking avatar
 	const std::string & talkingAvatarUid = pVoicePacket->getTalkingAvatarUid();
+    pthread_mutex_lock(&mMutex);
 	assert( mAvatarUidToVoicePacketListener.find(talkingAvatarUid) != mAvatarUidToVoicePacketListener.end());
 	mAvatarUidToVoicePacketListener[ talkingAvatarUid ]->onVoicePacketReception(pVoicePacket);
+    pthread_mutex_unlock(&mMutex);
 }
 
 //-------------------------------------------------------------------------------------
