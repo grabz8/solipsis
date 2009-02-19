@@ -40,7 +40,21 @@ For the latest info, see http://www.ogre3d.org/
 
 namespace Ogre
 {
-	class StereoPlugin : public Plugin,	public FrameListener
+	class MultiheadListener : public WindowEventListener
+	{
+		RenderWindow *mTargetWindow;
+	public:
+		void setTargetWindow (RenderWindow *rw)
+		{
+			mTargetWindow = rw;
+		}
+		void windowFocusChange (RenderWindow *rw)
+		{
+			mTargetWindow->setActive(rw->isActive());
+		}
+	};
+    
+    class StereoPlugin : public Plugin,	public FrameListener
 	{
     public:
         StereoPlugin();
@@ -63,6 +77,7 @@ namespace Ogre
 	protected:
 		ConfigOption mOptEnableStereo;
 		StereoManager mStereoManager;
+        MultiheadListener mFocusListener;
 	};
 }
 #endif

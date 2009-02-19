@@ -167,8 +167,25 @@ bool StereoPlugin::frameStarted(const FrameEvent& evt)
         mStereoManager.init(viewport, NULL, StereoManager::SM_SPLITSCREEN_V);
     else if (stereoMode=="Horizontal Split Screen")
         mStereoManager.init(viewport, NULL, StereoManager::SM_SPLITSCREEN_H);
-    else if (stereoMode=="Dual Ouptut")
-        mStereoManager.init(viewport, NULL, StereoManager::SM_DUALOUTPUT);
+    else if (stereoMode=="Dual Output")
+    {
+        RenderWindow *window2 = NULL;
+		Viewport *viewport2 = NULL;
+		NameValuePairList miscParams;
+		miscParams["monitorIndex"] = "2";
+			
+		window2 = Root::getSingleton().createRenderWindow("StereoPlugin right window", 
+			window->getWidth(), window->getHeight(), window->isFullScreen(), &miscParams);
+		viewport2 = window2->addViewport(viewport->getCamera());
+
+		// tells the listener to change the focus of the second window when the focus
+		// of the first windows has changed
+		mFocusListener.setTargetWindow(window2);
+		WindowEventUtilities::addWindowEventListener(window, &mFocusListener);
+		// gives the focus to the second window because when created, only the first window has the focus
+		mFocusListener.windowFocusChange(window);        
+        mStereoManager.init(viewport,viewport2, StereoManager::SM_DUALOUTPUT);
+    }
     else  
         mStereoManager.init(viewport, NULL, StereoManager::SM_NONE);
     
