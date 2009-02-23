@@ -45,6 +45,8 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
     mModelerCallbacks = modelerCallbacks;
     mOnGizmo = 0;
 
+	mDeclarativeModeler = NULL;
+
 	mExecPath = _getcwd(NULL, 0);
 	SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
 
@@ -74,6 +76,10 @@ Modeler::~Modeler(void)
 
 	// delete the selection manager
 	delete mSelection;
+
+	if( mDeclarativeModeler != NULL )
+		delete mDeclarativeModeler;
+
 }
 
 Modeler* Modeler::getSingletonPtr()
@@ -516,6 +522,68 @@ bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3
 	node->setOrientation(orientation);
 
 	return true;
+}
+
+/// Create a 3D scene from text
+bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg )
+{
+	if( s == "" ) {
+		errMsg = "Cannot model from an empty text. Please type/paste some text.";
+		return false;
+	}
+
+	// At first launch, create the modeler read models from file
+	if( mDeclarativeModeler == NULL ) {
+		mDeclarativeModeler = new DeclarativeModeler;
+	}
+
+	// launch decl. modeling
+	if( mDeclarativeModeler->run( s /*, errMsg, warnMsg */ ) != 0 ) {
+		errMsg = "There are some unknown/ununderstandable elements in the text. Please reformulate.";
+		return false;
+	}
+
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String( name ) + ".node" );
+
+	std::vector< Actor* > actors = mDeclarativeModeler->getActors();
+	if( actors.empty() ) {
+		errMsg = "Nothing could be modeled from the typed text. Please reformulate.";
+		return false;
+	}
+
+	unsigned int i;
+	for( i = 0; i < actors.size(); i++ ) {
+		if( actors[i]->getModelName() == "" ) {
+			errMsg = "No corresponding model could be found for actor '" + actors[i]->getName() + "'. Please reformulate.";
+			return false;
+		}
+		char numStr[32];
+		sprintf( numStr, "_%d", rand() );
+		MaterialPtr mat = ( MaterialPtr )( MaterialManager::getSingleton().getDefaultSettings() )->clone( actors[i]->getName()+numStr );
+		mat->getTechnique( 0 )->setDiffuse( actors[i]->getColor().r()/(double)256, actors[i]->getColor().g()/(double)256, actors[i]->getColor().b()/(double)256, 0.5 ); //actors[i]->getColor().a()/(double)256 );
+		Entity *childEntity = mSceneManager->createEntity(  actors[i]->getName()+numStr , actors[i]->getModelName() );
+		if( childEntity != NULL ) {
+			childEntity->setMaterialName( actors[i]->getName()+numStr );
+			SceneNode* childNode = mSceneManager->getSceneNode( String( name )+".node" )->createChildSceneNode( actors[i]->getName()+String( numStr )+".node" );
+			childEntity->setQueryFlags( Navigator::QFObject );
+			childNode->attachObject( childEntity );
+			Vec3<int> pos = actors[i]->getFinalPosition();
+			childNode->setPosition( (double)pos[0]/10000, (double)pos[1]/10000, (double)pos[2]/10000 );
+			Vec3<double> size = actors[i]->getFinalSize();
+			double finalSize = ( size[0] > size[1] && size[0] > size[1] ) ? size[0] : ( ( size[1]>size[2] ) ? size[1] : size[2] );
+			childNode->setScale( finalSize/10000, finalSize/10000, finalSize/10000 );
+		}
+	}
+
+	node->setPosition( player_pos );
+	node->setOrientation( orientation );
+
+	//Object3DOther* obj = new Object3DOther(entityUID, String(name), node );
+	//mSelection->add3DObject(obj);
+	//obj->mCentreSelection = player_pos;
+
+	return true;
+
 }
 
 /// Create a mesh. 

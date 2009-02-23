@@ -326,6 +326,8 @@ public:
     bool createTube();
     /** Create a ring. */
     bool createRing();
+    /** Create a Scene from text. */
+	bool createSceneFromText( const std::string&, std::string& errMsg, std::string& warnMsg );
     /** Create a mesh. */
     bool createMesh();
     /** Import a mesh file.*/

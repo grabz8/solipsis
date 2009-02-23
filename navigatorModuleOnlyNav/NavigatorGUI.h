@@ -85,6 +85,7 @@ public:
         NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
+		NAVI_MODELERSCENEFROMTEXT,
         NAVI_AVATARMAIN,
         NAVI_AVATARPROP,
 #ifdef UIDEBUG
@@ -96,7 +97,8 @@ public:
     enum ModelerError {
         ME_NOOBJECTSELECTED,    // No object3D selected
         ME_TEXTUREALREADYOPEN,  // Texture already open
-        ME_FILENOTFOUND
+        ME_FILENOTFOUND,
+		ME_DECLARATIVEMODELINGERROR, // decl. mod. error
     };
     static const std::string ms_ModelerErrors[];
 
@@ -187,6 +189,12 @@ public:
     void avatarPropHide();
     void avatarPropUnload();
 
+	// Scene From Text Modeler Panel
+	void modelerSceneFromTextShow();
+    bool isModelerSceneFromTextVisible();
+    void modelerSceneFromTextHide();
+    void modelerSceneFromTextUnload();
+
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
@@ -258,6 +266,8 @@ protected:
     void modelerMainCreateTorus(const NaviData& naviData);
     void modelerMainCreateTube(const NaviData& naviData);
     void modelerMainCreateRing(const NaviData& naviData);
+    void modelerMainCreateSceneFromText(const NaviData& naviData);
+
     // Modeler fake right click callbacks
     void modelerActionDelete(const NaviData& naviData);
     void modelerActionMove(const NaviData& naviData);
@@ -393,6 +403,11 @@ protected:
 	void avatarPropTextureNext(const NaviData& naviData);
 	void avatarPropResetColour(const NaviData& naviData);
 	void avatarPropSound(const NaviData& naviData);
+
+	// Modeler Scene From Text Setup properties page callbacks
+    void modelerSceneFromTextPageLoaded(const NaviData& naviData);
+	void modelerSceneFromTextExec(const NaviData& naviData);	
+	void modelerSceneFromTextCancelled(const NaviData& naviData);
 
 public:
     // Modeler properties updates
