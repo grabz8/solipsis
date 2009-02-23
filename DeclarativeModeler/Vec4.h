@@ -21,8 +21,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef VEC4_H_
-#define VEC4_H_
+#ifndef _VEC4_H_
+#define _VEC4_H_
 
 #include <iostream>
 

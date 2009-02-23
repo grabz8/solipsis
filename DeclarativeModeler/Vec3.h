@@ -21,8 +21,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef _VEC3
-#define _VEC3
+#ifndef _VEC3_H_
+#define _VEC3_H_
 
 #include <iostream>
 
@@ -169,5 +169,10 @@ public:
 private:
   T _x,  _y,  _z;
 };
+
+typedef Vec3<double> Vec3d;
+typedef Vec3<float> Vec3f;
+typedef Vec3<int> Vec3i;
+typedef Vec3<char> Vec3c;
 
 #endif /*VEC3_H_*/

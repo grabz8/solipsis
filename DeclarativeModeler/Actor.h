@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Vec4.h"
 #include "Matrix.h"
 
-#define PI 3.141592653589793
+const double PI = 3.141592653589793;
 
 typedef Matrix<double> Matrixd;
 typedef Vec3<double> Vec3d;
