@@ -50,8 +50,10 @@ int main(int argc , char** argv)
 	// creation du modeleur
 	DeclarativeModeler modeler;
 
+	std::string err = "";
+	std::string warn = "";
 	// on lance la modélisation...
-	int resultat = modeler.run( input );
+	int resultat = modeler.run( input ); //, err, warn );
 
 	// l'ensemble des acteurs à charger...
 	std::vector<Actor *> actors = modeler.getActors();

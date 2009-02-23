@@ -247,7 +247,7 @@ ANTLR_USE_NAMESPACE(antlr)RefToken TagsLexer::nextToken()
 		catch (ANTLR_USE_NAMESPACE(antlr)RecognitionException& e) {
 #ifdef WIN32
 			std::string msg = "There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-			MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
+			MessageBox(0, msg.c_str(), "Declarative modeling RecognitionException", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 #endif
 			return _returnToken;
 
@@ -256,7 +256,7 @@ ANTLR_USE_NAMESPACE(antlr)RefToken TagsLexer::nextToken()
 		catch (ANTLR_USE_NAMESPACE(antlr)CharStreamIOException& csie) {
 #ifdef WIN32
 			std::string msg = "There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-			MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
+			MessageBox(0, msg.c_str(), "Declarative modeling CharStreamIOException", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 #endif
 			return _returnToken;
 			//throw ANTLR_USE_NAMESPACE(antlr)TokenStreamIOException(csie.io);
@@ -264,7 +264,7 @@ ANTLR_USE_NAMESPACE(antlr)RefToken TagsLexer::nextToken()
 		catch (ANTLR_USE_NAMESPACE(antlr)CharStreamException& cse) {
 #ifdef WIN32
 			std::string msg = "There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-			MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
+			MessageBox(0, msg.c_str(), "Declarative modeling CharStreamException", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 #endif
 			return _returnToken;
 			//throw ANTLR_USE_NAMESPACE(antlr)TokenStreamException(cse.getMessage());
@@ -347,7 +347,7 @@ void TagsLexer::mALPHA(bool _createToken) {
 			if ( _cnt41>=1 ) { goto _loop41; } else {
 #ifdef WIN32
 				std::string msg = "There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-				MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
+				MessageBox(0, msg.c_str(), "Declarative modeling CNT41", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 #endif
 				return;
 				//throw ANTLR_USE_NAMESPACE(antlr)NoViableAltForCharException(LA(1), getFilename(), getLine(), getColumn());

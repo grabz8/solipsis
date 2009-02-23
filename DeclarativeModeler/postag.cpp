@@ -204,7 +204,7 @@ viterbi(vector<Token> & vt, const ME_Model & me)
       //      prepos = me.get_class_name(j);
       //      if (i == 0 && prepos != "BOS") continue;
 
-      ME_Sample mes = mesample(vt, i, prepos);
+      ME_Sample mes = mesample(vt, i, prepos );
       vector<double> membp = me.classify(mes);
       for (size_t k = 0; k < vd.size(); k++) {
         double l = mat[i][j] + log(membp[k]);

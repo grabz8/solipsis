@@ -47,7 +47,7 @@ static std::vector< ME_Model > m_vme;
 ME_Sample mesample(const vector<Token> &vt, int i, const string & prepos);
 void viterbi(vector<Token> & vt, const ME_Model & me);
 string postag(const string & s, const ME_Model & me);
-string bidir_postag(const string & s, const std::vector<ME_Model> & vme);
+string bidir_postag(const string & s, const std::vector<ME_Model> & vme /*, std::string& errMsg */);
 
 //static void bidir_postagging(vector<Sentence> & vs, const multimap<string, string> & tagdic, const vector<ME_Model> & vme);
 //static int bidir_train(const vector<Sentence> & vs, int para);
@@ -209,14 +209,14 @@ string bidir_postag(const string & s, const std::vector<ME_Model> & vme);
 	}
 }
 
-/*static*/ void tag( std::string & in,std::string & out)
+/*static*/ void tag( std::string & in,std::string & out /*, std::string& errMsg */ )
 {
   std::string _text = in;
 
   //loadVME(); // already done at DeclarativeModeler creation
 
   // tag
-  out = bidir_postag( _text, m_vme );
+  out = bidir_postag( _text, m_vme /*, errMsg*/ );
 }
 
 /*static*/ void extractTags(std::string & input, std::string & outFileName)

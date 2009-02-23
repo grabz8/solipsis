@@ -60,7 +60,7 @@ void tokenize(const string & s1, list<string> & lt);
 static ME_Sample
 mesample(const vector<Token> &vt, int i,
          const string & pos_left2, const string & pos_left1, 
-         const string & pos_right1, const string & pos_right2)
+		 const string & pos_right1, const string & pos_right2 /*, std::string& errorMsg*/ )
 {
   ME_Sample sample;
 
@@ -156,9 +156,9 @@ mesample(const vector<Token> &vt, int i,
 	  }
 	  }
 	  else {
+		  std::string errorMsg = "There are some unknown/ununderstandable characters near " + str + ". Please reformulate.";
 #ifdef WIN32
-		std::string msg = "There are some unknown/ununderstandable characters near " + str + ". Please reformulate.";
-	    MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
+	    // MessageBox(0, errorMsg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 #endif
 		return sample;
 
@@ -214,7 +214,7 @@ static double entropy(const vector<double>& v)
 }
 
 int
-bidir_train(const vector<Sentence> & vs, int para)
+bidir_train(const vector<Sentence> & vs, int para /*, std::string& errMsg */ )
 {
   //  vme.clear();
   //  vme.resize(16);
@@ -243,7 +243,11 @@ bidir_train(const vector<Sentence> & vs, int para)
         if ( (t & 0x2) == 0 ) pos_right1 = "";
         if ( (t & 0x1) == 0 ) pos_right2 = "";
 
-        train.push_back(mesample(s, j, pos_left2, pos_left1, pos_right1, pos_right2));
+		std::string currentErrMsg = "";
+        train.push_back(mesample(s, j, pos_left2, pos_left1, pos_right1, pos_right2 /*, currentErrMsg */));
+		
+//		if( currentErrMsg != "" )
+//			errMsg = currentErrMsg;
       }
       //      if (n++ > 1000) break;
     }
@@ -274,7 +278,8 @@ struct Hypothesis
   }
   Hypothesis(const vector<Token> & vt_,
              const multimap<string, string> & tagdic,
-             const vector<ME_Model> & vme)
+             const vector<ME_Model> & vme /*,
+			 std::string& errMsg */ )
   {
     prob = 1.0;
     vt = vt_;
@@ -284,7 +289,7 @@ struct Hypothesis
     order.resize(n);
     for (size_t i = 0; i < n; i++) {
       vt[i].prd = "";
-      Update(i, tagdic, vme);
+      Update(i, tagdic, vme /*, errMsg */);
     }
   }
   void Print()
@@ -299,7 +304,7 @@ struct Hypothesis
   }
   void Update(const int j,
               const multimap<string, string> & tagdic,
-              const vector<ME_Model> & vme)
+			  const vector<ME_Model> & vme /*, std::string& errMsg */ )
   {
     string pos_left1 = "BOS", pos_left2 = "BOS2";
     if (j >= 1) pos_left1 = vt[j-1].prd; // maybe bug??
@@ -308,7 +313,7 @@ struct Hypothesis
     string pos_right1 = "EOS", pos_right2 = "EOS2";
     if (j <= int(vt.size()) - 2) pos_right1 = vt[j+1].prd;
     if (j <= int(vt.size()) - 3) pos_right2 = vt[j+2].prd;
-    ME_Sample mes = mesample(vt, j, pos_left2, pos_left1, pos_right1, pos_right2);
+	ME_Sample mes = mesample(vt, j, pos_left2, pos_left1, pos_right1, pos_right2 /*, errMsg */ );
     
     vector<double> membp;
     const ME_Model * mep = NULL;
@@ -379,7 +384,8 @@ struct hashfun_str
 void generate_hypotheses(const int order, const Hypothesis & h,
                          const multimap<string, string> & tag_dictionary,
                          const vector<ME_Model> & vme,
-                         list<Hypothesis> & vh)
+                         list<Hypothesis> & vh /*,
+						 std::string& errMsg */ )
 {
   int n = h.vt.size();
   int pred_position = -1;
@@ -408,7 +414,10 @@ void generate_hypotheses(const int order, const Hypothesis & h,
     // update the neighboring predictions
     for (unsigned int j = pred_position - UPDATE_WINDOW_SIZE; j <= pred_position + UPDATE_WINDOW_SIZE; j++) {
       if (j < 0 || j > n-1) continue;
-      if (newh.vt[j].prd == "") newh.Update(j, tag_dictionary, vme);
+	  if (newh.vt[j].prd == "") { 
+		  std::string errMsg( "" );
+		  newh.Update(j, tag_dictionary, vme /*, errMsg */ );
+	  }
     }
     vh.push_back(newh);
   }
@@ -419,19 +428,20 @@ void generate_hypotheses(const int order, const Hypothesis & h,
 void
 bidir_decode_beam(vector<Token> & vt,
                   const multimap<string, string> & tag_dictionary,
-                  const vector<ME_Model> & vme)
+                  const vector<ME_Model> & vme /*,
+				  std::string& errMsg */ )
 {
   unsigned int n = vt.size();
   if (n == 0) return;
 
   list<Hypothesis> vh;
-  Hypothesis h(vt, tag_dictionary, vme);
+  Hypothesis h(vt, tag_dictionary, vme /*, errMsg */ );
   vh.push_back(h);
   
   for (size_t i = 0; i < n; i++) {
     list<Hypothesis> newvh;
     for (list<Hypothesis>::const_iterator j = vh.begin(); j != vh.end(); j++) {
-      generate_hypotheses(i, *j, tag_dictionary, vme, newvh);
+      generate_hypotheses(i, *j, tag_dictionary, vme, newvh /* , errMsg */ );
     }
     newvh.sort();
     while (newvh.size() > BEAM_NUM) {
@@ -506,7 +516,7 @@ public:
 ParenConverter paren_converter;
 
 string
-bidir_postag(const string & s, const vector<ME_Model> & vme)
+bidir_postag(const string & s, const vector<ME_Model> & vme /*, std::string& errMsg*/ )
 {
   list<string> lt;
   tokenize(s, lt);
@@ -527,7 +537,7 @@ bidir_postag(const string & s, const vector<ME_Model> & vme)
   
   const multimap<string, string> dummy;
   //  bidir_decode_search(vt, dummy, vme);
-  bidir_decode_beam(vt, dummy, vme);
+  bidir_decode_beam(vt, dummy, vme /* , errMsg */ );
 
   string tmp;
   for (size_t i = 0; i < vt.size(); i++) {
@@ -564,7 +574,8 @@ int push_stop_watch()
 void
 bidir_postagging(vector<Sentence> & vs,
                  const multimap<string, string> & tag_dictionary,
-                 const vector<ME_Model> & vme)
+                 const vector<ME_Model> & vme /*, 
+				 std::string& errMsg */ )
 {
   cerr << "now tagging";
   push_stop_watch();
@@ -573,7 +584,7 @@ bidir_postagging(vector<Sentence> & vs,
     Sentence & s = *i;
     ntokens += s.size();
     //    if (s.size() > 2) continue;
-    bidir_decode_beam(s, tag_dictionary, vme);
+    bidir_decode_beam(s, tag_dictionary, vme /*, errMsg */);
     //    bidir_decode_search(s, tag_dictionary, vme);
     //decode_no_context(s, vme[0]);
 

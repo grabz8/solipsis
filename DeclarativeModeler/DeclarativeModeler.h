@@ -55,7 +55,7 @@ public:
 	DeclarativeModeler( const std::string & s );
 
 	/**
-	 * \bried Destructeur
+	 * \brief Destructeur
 	 */
 	virtual ~DeclarativeModeler(void);
 	
@@ -63,11 +63,11 @@ public:
 	 * \brief Lance la modélisation
 	 * \return 0 si OK, une valeur négative si problème... cf fichier AttributeComputer pour les types de retour)
 	 */
-	int run( const std::string& s );
+	int run( const std::string& s /*, std::string& errorMsg, std::string& warningMsg */ );
 
-	void assignModelToActor( Actor* );
+	bool assignModelToActor( Actor* /*, std::string& msg */ );
 
-	void assignModelsToActors();
+	bool assignModelsToActors( /* std::string& msg */ );
 
 	/** Accesseurs */
 	std::string & getString() { return m_s;}
