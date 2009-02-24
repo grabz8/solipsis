@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\NavigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib Navigator.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -97,7 +97,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\NavigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -142,7 +142,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC.lib CommonTools.lib Navigator.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;&quot;..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\NavigatorModule\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -177,7 +177,7 @@
 		</Configuration>
 		<Configuration
 			Name="DebugNCS|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\Debug"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\$(ProjectName)\Debug"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -200,7 +200,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\NavigatorModule\include;..\..\Dependencies\PeerModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NULLCLIENTSERVER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -223,7 +223,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib CommonTools.lib Navigator.lib Peer.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\CommonTools\lib\Debug;..\Dependencies\NavigatorModule\lib\Debug;..\Dependencies\PeerModule\lib\Debug"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\CommonTools\lib\Debug;..\..\Dependencies\NavigatorModule\lib\Debug;..\..\Dependencies\PeerModule\lib\Debug"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -257,7 +257,7 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseNCS|Win32"
-			OutputDirectory="$(ProjectDir)..\Common\bin\$(ProjectName)\Release"
+			OutputDirectory="$(ProjectDir)..\..\Common\bin\$(ProjectName)\Release"
 			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="2"
@@ -281,7 +281,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\CommonTools\include;..\Dependencies\NavigatorModule\include;..\Dependencies\PeerModule\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\CommonTools\include;..\..\Dependencies\NavigatorModule\include;..\..\Dependencies\PeerModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NULLCLIENTSERVER"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -302,7 +302,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC.lib CommonTools.lib Navigator.lib Peer.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Dependencies\pthreads\lib;..\Dependencies\CommonTools\lib\Release;..\Dependencies\NavigatorModule\lib\Release;..\Dependencies\PeerModule\lib\Release"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\CommonTools\lib\Release;..\..\Dependencies\NavigatorModule\lib\Release;..\..\Dependencies\PeerModule\lib\Release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"

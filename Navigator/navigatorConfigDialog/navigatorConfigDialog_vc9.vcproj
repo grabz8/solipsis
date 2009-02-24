@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9.00"
 	Name="navigatorConfigDialog"
 	ProjectGUID="{6FE81BEF-D89F-45ED-B044-D8CC0975A825}"
 	RootNamespace="navigatorConfigDialog"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -62,6 +63,8 @@
 				AdditionalDependencies="OgreMain_d.lib"
 				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -83,12 +86,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)include\WIN32\*.h&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)include\WIN32\*.h&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -139,6 +139,8 @@
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -160,12 +162,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)include\WIN32\*.h&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\include\WIN32\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)include\*.h&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)include\WIN32\*.h&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\include\WIN32\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\Dependencies\navigatorConfigDialog\lib\WIN32\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
