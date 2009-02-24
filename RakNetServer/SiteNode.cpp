@@ -102,7 +102,7 @@ void SiteNode::onNewEntity(RakNetEntity* entity)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::onNewEntity() adding entity uid:%s", entity->getXmlEntity()->getUid().c_str());
 
-    // me ?
+    // Object ?
     if (entity->getXmlEntity()->getType() == ETObject)
         mPresentEntities[entity->getXmlEntity()->getUid()] = entity;
 }
@@ -112,7 +112,7 @@ void SiteNode::onLostEntity(RakNetEntity* entity)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::onLostEntity() removing entity uid:%s", entity->getXmlEntity()->getUid().c_str());
 
-    // me ?
+    // Object ?
     if (entity->getXmlEntity()->getType() == ETObject)
         mPresentEntities.erase(entity->getXmlEntity()->getUid());
 }
