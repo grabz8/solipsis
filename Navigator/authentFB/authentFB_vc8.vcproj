@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8,00"
 	Name="authentFB"
 	ProjectGUID="{A0E177B2-2F3B-4EAC-9DFF-B3AA42256993}"
 	RootNamespace="authentFB"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -40,7 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\tinyxml\include;..\Dependencies\curl\include;..\Dependencies\md5wrapper\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\tinyxml\include;..\..\Dependencies\curl\include;..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -76,7 +75,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\authentFB\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\authentFB\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)facebook.h&quot; &quot;$(ProjectDir)..\Dependencies\authentFB\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\authentFB\include&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\authentFB\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)facebook.h&quot; &quot;$(ProjectDir)..\..\Dependencies\authentFB\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -104,7 +103,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\tinyxml\include;..\Dependencies\curl\include;..\Dependencies\md5wrapper\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\tinyxml\include;..\..\Dependencies\curl\include;..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -138,7 +137,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\authentFB\include&quot; mkdir &quot;$(ProjectDir)..\Dependencies\authentFB\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)facebook.h&quot; &quot;$(ProjectDir)..\Dependencies\authentFB\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\Dependencies\authentFB\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\Dependencies\authentFB\include&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\authentFB\include&quot;&#x0D;&#x0A;copy &quot;$(ProjectDir)facebook.h&quot; &quot;$(ProjectDir)..\..\Dependencies\authentFB\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)&quot; mkdir &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\Dependencies\authentFB\lib\$(ConfigurationName)\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
