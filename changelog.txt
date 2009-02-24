@@ -1004,3 +1004,11 @@ VoipServer bad address bug fix
 New mainmenu Action > Talk added
 
 ---------------------------
+24/02/09
+
+Instantiated the declarative modeling tool. Panels > Modeler > Create > Scene from text.
+Still have to wait about 2 minutes at first launch (load of language models). A little bit unstable at this time, 
+but should not make the app crash!
+ - Added DeclarativeModeling/models/model.bidir.* to Media
+ - Merged Modeler (.h .cpp), Navigator (.h .cpp) NavigatorUI (.h .cpp)
+
