@@ -130,12 +130,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonTools", "CommonTools\
 		{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C} = {938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plugin_3ds", "plugin_3ds\plugin_3ds_vc9.vcproj", "{6F1BEDD7-D31B-4CEE-8B70-D254F1F1F0BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plugin_3ds", "Navigator\NavigatorPlugins\plugin_3ds\plugin_3ds_vc9.vcproj", "{6F1BEDD7-D31B-4CEE-8B70-D254F1F1F0BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B15BDA35-0972-428E-B5DA-F5EE528E36F0} = {B15BDA35-0972-428E-B5DA-F5EE528E36F0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc9.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc9.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetDLL", "DevTools\RakNet\Lib\DLL\RakNetDLL_vc9.vcproj", "{BC75CD23-CB75-4233-A305-B7328825A9A5}"
 EndProject
@@ -148,7 +148,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetServer", "RakNetServe
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "plugin_skp\Plugin_skp_vc9.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_skp", "Navigator\NavigatorPlugins\plugin_skp\Plugin_skp_vc9.vcproj", "{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "peerModuleRakNet", "peerModuleRakNet\peerModuleRakNet_vc9.vcproj", "{12E3DE4B-827E-4785-A8AF-16D1A945F3D6}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -263,7 +263,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "VNCPlugin\vnc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogreMax_vc9", "DevTools\ogreMax\script\ogreMax_vc9.vcproj", "{FD5D38D2-70B6-430C-9294-801AB0D9225C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SWFPlugin", "plugin_swf\plugin_swf_vc9.vcproj", "{F2481C43-BA3A-47F1-92F8-27B0FD5C8702}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SWFPlugin", "Navigator\NavigatorPlugins\plugin_swf\plugin_swf_vc9.vcproj", "{F2481C43-BA3A-47F1-92F8-27B0FD5C8702}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EE63115E-70F7-49D4-BADD-9C6D0F4DC295} = {EE63115E-70F7-49D4-BADD-9C6D0F4DC295}
 		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}

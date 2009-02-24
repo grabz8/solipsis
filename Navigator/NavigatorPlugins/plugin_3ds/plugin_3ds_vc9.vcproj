@@ -2,9 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Plugin_StereoManager"
-	ProjectGUID="{01B403C3-D24C-4CCE-84BD-037A8E51C801}"
-	RootNamespace="Stereo_plugin"
+	Name="plugin_3ds"
+	ProjectGUID="{6F1BEDD7-D31B-4CEE-8B70-D254F1F1F0BE}"
+	RootNamespace="Plugin_3ds"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -18,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -40,13 +41,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OGRE_STEREOPLUGIN_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)3dsftk3\INC&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_3DS_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -60,11 +61,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain_d.lib"
-				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;"
-				ModuleDefinitionFile=""
+				AdditionalDependencies="OgreMain_d.lib 3dsftk3\source\debug\3dsftk3_d.lib"
+				OutputFile="$(OutDir)\Plugin_3ds_d.dll"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
 				GenerateDebugInformation="true"
+				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -89,14 +91,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)3dsftk3\INC\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -118,11 +120,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OGRE_STEREOPLUGIN_EXPORTS"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)3dsftk3\INC&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_3DS_EXPORTS"
 				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -136,10 +141,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="OgreMain.lib"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;"
-				ModuleDefinitionFile=""
+				AdditionalDependencies="OgreMain.lib 3dsftk3\source\release\3dsftk3.lib"
+				OutputFile="$(OutDir)\Plugin_3ds.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
 				GenerateDebugInformation="true"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				RandomizedBaseAddress="1"
@@ -166,8 +173,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;xcopy &quot;$(ProjectDir)3dsftk3\INC\*.h&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\include\.&quot; /y&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\..\..\Dependencies\plugin_3ds\lib\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -180,15 +187,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\StereoManager.cpp"
+				RelativePath=".\src\getopt.c"
 				>
 			</File>
 			<File
-				RelativePath=".\StereoPlugin.cpp"
+				RelativePath=".\src\plugin_3ds.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\StereoPluginDll.cpp"
+				RelativePath=".\src\plugin_3dsDLL.cpp"
 				>
 			</File>
 		</Filter>
@@ -198,11 +205,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\StereoManager.h"
+				RelativePath=".\src\getopt.h"
 				>
 			</File>
 			<File
-				RelativePath=".\StereoPlugin.h"
+				RelativePath=".\src\plugin_3ds.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\plugin_3dsPrerequisites.h"
 				>
 			</File>
 		</Filter>

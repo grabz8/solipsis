@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="gb2312"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Plugin_skp"
-	ProjectGUID="{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
-	RootNamespace="Plugin_skp"
-	Keyword="Win32Proj"
-	TargetFrameworkVersion="196613"
+	Name="Plugin_StereoManager"
+	ProjectGUID="{01B403C3-D24C-4CCE-84BD-037A8E51C801}"
+	RootNamespace="Stereo_plugin"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -19,7 +18,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -41,13 +40,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME))\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_SKP_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;OGRE_STEREOPLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -62,11 +61,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OgreMain_d.lib"
-				OutputFile="$(OutDir)\Plugin_skp_d.dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
+				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -89,13 +89,14 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)lib\msvs2005\*.*&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Debug\.&quot; /y&#x0D;&#x0A;"
+				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -117,14 +118,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(OGRE_SRC)\OgreMain\include&quot;;&quot;$(OGRE_SRC)\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_SKP_EXPORTS"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;OGRE_STEREOPLUGIN_EXPORTS"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -139,13 +137,13 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OgreMain.lib"
-				OutputFile="$(OutDir)\Plugin_skp.dll"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OGRE_HOME)\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
-				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -168,7 +166,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="if not exist &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release&quot; mkdir &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release&quot;&#x0D;&#x0A;xcopy &quot;$(ProjectDir)src\*.h&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;copy &quot;$(ProjectDir)lib\msvs2005\*.*&quot; &quot;$(ProjectDir)..\Dependencies\plugin_skp\include\Release\.&quot; /y&#x0D;&#x0A;"
+				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -181,11 +180,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\plugin_skp.cpp"
+				RelativePath=".\StereoManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\plugin_skpDLL.cpp"
+				RelativePath=".\StereoPlugin.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\StereoPluginDll.cpp"
 				>
 			</File>
 		</Filter>
@@ -195,19 +198,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\GeomUtilities.cpp"
+				RelativePath=".\StereoManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\GeomUtilities.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\plugin_skp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\src\plugin_skpPrerequisites.h"
+				RelativePath=".\StereoPlugin.h"
 				>
 			</File>
 		</Filter>

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8,00"
 	Name="VNCPlugin"
 	ProjectGUID="{D9552077-0E23-4507-8460-3D939B79527D}"
 	RootNamespace="VNCPlugin"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;VNCPLUGIN_EXPORTS;OGRE_VNCPLUGIN_EXPORTS;__WIN32__;XMD_H;_WINSTATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,8 +67,6 @@
 				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;.\vncviewer\omnithread\$(ConfigurationName);.\vncviewer\$(ConfigurationName)"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -91,9 +88,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;.\vncviewer\Debug\vncviewer_d.dll&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;.\vncviewer\Debug\vncviewer_d.dll&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;.\vncviewer;.\vncviewer\omnithread;..\..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VNCPLUGIN_EXPORTS;OGRE_VNCPLUGIN_EXPORTS;__WIN32__;XMD_H;_WINSTATIC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -148,8 +148,6 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -171,9 +169,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;.\vncviewer\Release\vncviewer.dll&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;.\vncviewer\Release\vncviewer.dll&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;$(ProjectDir)..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;$(ProjectDir)..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

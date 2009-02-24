@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8,00"
 	Name="SWFPlugin"
 	ProjectGUID="{F2481C43-BA3A-47F1-92F8-27B0FD5C8702}"
 	RootNamespace="SWFPlugin"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\hikari\include;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\hikari\include;..\..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;SWFPLUGIN_EXPORTS;OGRE_SWFPLUGIN_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,11 +64,9 @@
 				AdditionalDependencies="OgreMain_d.lib pthreadVC_d.lib hikari_d.lib"
 				OutputFile="$(OutDir)\Plugin_SWF_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\hikari\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\hikari\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -91,9 +88,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\hikari\lib\hikari_d.dll&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;..\..\..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\..\..\Dependencies\hikari\lib\hikari_d.dll&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -121,7 +121,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\pthreads\include;..\Dependencies\hikari\include;..\Dependencies\navigatorModule\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\hikari\include;..\..\..\Dependencies\navigatorModule\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;SWFPLUGIN_EXPORTS;OGRE_SWFPLUGIN_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -143,13 +143,11 @@
 				AdditionalDependencies="OgreMain.lib pthreadVC.lib hikari.lib"
 				OutputFile="$(OutDir)\Plugin_SWF.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\Dependencies\pthreads\lib;..\Dependencies\hikari\lib"
+				AdditionalLibraryDirectories="&quot;$(OGRE_HOME)\lib&quot;;..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\hikari\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -171,9 +169,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files and Adding plugin into Plugins.cfg"
-				CommandLine="copy &quot;..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\hikari\lib\Hikari.dll&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;..\..\..\Dependencies\hikari\lib\*.ocx&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;..\..\..\Dependencies\hikari\lib\Hikari.dll&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;copy &quot;$(OutDir)\$(TargetFileName)&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)&quot; /y&#x0D;&#x0A;..\..\..\Common\addIntoCfg.bat &quot;Plugin=$(TargetFileName)&quot; &quot;..\..\..\Common\bin\navigator\$(ConfigurationName)\plugins.cfg&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
