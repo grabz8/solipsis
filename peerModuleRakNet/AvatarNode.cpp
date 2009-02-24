@@ -112,7 +112,7 @@ void AvatarNode::onNewEntity(Entity* entity)
         pthread_mutex_lock(&mMutex);
 #ifdef PHYSICSPLUGINS
         // create physics of the entity
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s, freezing", entity->getXmlEntity()->getUid().c_str());
         entity->createPhysics(Peer::getSingleton().getPhysicsScene());
         entity->applyGravity(true);
 #endif
@@ -140,6 +140,7 @@ void AvatarNode::onNewEntity(Entity* entity)
     if ((entity->getXmlEntity()->getType() == ETSite) && (mEntity != 0))
     {
         // Reset avatar orientation and displacement
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Resetting avatar: orientation, displacement, position on entryGate");
 #ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity = mEntity->getXmlEntity();
 #else
@@ -154,6 +155,7 @@ void AvatarNode::onNewEntity(Entity* entity)
         int rand = time(NULL)%9;
         xmlEntity->setPosition(xmlSceneContent->getEntryGate().mPosition + Ogre::Vector3(rand/3 - 1, 0, rand%3 - 1));
         mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAPosition);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Creating physics, applying gravity, unfreezing");
         if (xmlSceneContent->getEntryGate().mGravity)
             xmlEntity->setFlags(xmlEntity->getFlags() | EFGravity);
         else
