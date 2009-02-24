@@ -33,8 +33,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileBrowser.h"
 #include "Path.h"
 
+#ifdef DECLARATIVE_MODELER
 // Declarative modeling
 #include "DeclarativeModeler.h"
+#endif
+
 // Tinyxml
 #include "tinyxml.h"
 // Directory management
@@ -109,8 +112,10 @@ public:
 	bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 	/// Create a ring. 
 	bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+#ifdef DECLARATIVE_MODELER
 	/// Create a 3D scene by declatative modeling
 	bool createSceneFromText( const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg );
+#endif
 	/// Create a mesh. 
 	bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 
@@ -194,8 +199,9 @@ private :
     /// Callbacks
     IModelerCallbacks	*mModelerCallbacks;
 
+#ifdef DECLARATIVE_MODELER
 	DeclarativeModeler  *mDeclarativeModeler; 
-
+#endif
 	/// Primitive entities
 	Entity				*mGenericPlane;
 	Entity				*mGenericBox;

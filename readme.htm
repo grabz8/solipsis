@@ -1,0 +1,966 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head>
+<meta name="GENERATOR" content="PageBreeze Free HTML Editor (http://www.pagebreeze.com)">
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"><title>Solipsis Readme</title>
+
+<style type="text/css">
+<!--
+a.navwhite:link { text-decoration: none; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navwhite:visited { text-decoration: none; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navwhite:hover { text-decoration: underline; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:link { text-decoration: none; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:visited { text-decoration: none; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:hover { text-decoration: underline; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+h1 { font-family: Arial, sans-serif; font-size: 30px; color: #627E9A;}
+h2 { font-family: Arial, sans-serif; font-size: 18px; color: #62CC3C;}
+h3 { font-family: Arial, sans-serif; font-size: 14px; color: #5C8096;}
+h4 { font-family: Arial, sans-serif; font-size: 12px; color: #888888;}
+body,p,b,i,em,dt,dd,dl,sl,caption,th,td,tr,u,blink,select,option,form,div,li { font-family: Arial, sans-serif; font-size: 12px; }
+.style2 {color: #627E9A}
+.style3 {color: #62CC3C}
+.style6 {color: #5C8096}
+.style7 {color: #888888}
+-->
+</style>
+</head>
+
+
+<body style="background-color: rgb(255, 255, 255);">
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td>
+<p align="center"><font face="Arial"><img src="./Docs/HTML/images/header.jpg" border="0" height="216" hspace="0" width="776"></font></p>
+</td>
+</tr>
+<tr>
+<td>
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td>
+<p> </p>
+<br><font><br></font><font><font><p>&nbsp;</p>
+<p>&nbsp;</p></font></font><font><font><font><font></font></font></font></font><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td>
+<p align="left"><font face="Arial">Solipsis
+is an opensource decentralized Metaverse platform<br>
+For the latest info, see </font> <a href="http://www.solipsis.org/"><font face="Arial">http://www.solipsis.org/</font></a></p>
+<h2><a name="Config"></a>CONFIG</h2>
+<font>
+<ul>
+<li>
+<div><font face="Arial">Ogre
+built &gt;= 1.4.3 from SVN repository</font></div>
+</li>
+<li>
+<div><font face="Arial"> DXSDK
+(&gt;= August 2007)</font></div>
+</li>
+<li>
+<div><font face="Arial">Visual
+C++ &gt;= 2005 release runtime</font></div>
+</li>
+</ul>
+</font>
+<h2><a name="PREREQUISITES"></a>PREREQUISITES</h2>
+<font><font face="Arial"> </font></font>
+<ul>
+<font><font face="Arial"> <li>
+<div><font face="Arial">DXSDK
+(&gt;= August 2007) =&gt; C:\WINDOWS\system32\d3dx9*_35.dll or
+&gt;=<br>
+otherwise install at least August 2007 DX Redist package from </font><a href="http://www.microsoft.com/downloads"><font face="Arial">http://www.microsoft.com/downloads</font></a></div>
+</li>
+</font></font>
+</ul>
+<font><font face="Arial"> </font></font>
+<ul>
+<font><font face="Arial"> <li>
+<div><font face="Arial">Ageia
+PhysX drivers<br>
+If you are using PhysX plugin then check you have a recent release of
+PhysX drivers<br>
+supporting Engine release 2.7.2 from </font><a href="http://www.ageia.com/drivers/drivers.html"><font face="Arial">http://www.ageia.com/drivers/drivers.html</font></a><br>
+<font face="Arial">Since nVidia got
+Ageia PhysX, you can follow this link </font><a href="http://developer.nvidia.com/object/physx_downloads.html"><font face="Arial">http://developer.nvidia.com/object/physx_downloads.html</font></a><font face="Arial">,<br>
+if you do not have 1 nVidia graphics card then keep drivers 7.11.13 and
+SDK 2.7.3</font></div>
+</li>
+</font></font>
+</ul>
+<font><font face="Arial"> </font></font>
+<ul>
+<font><font face="Arial"> <li>
+<div><font face="Arial">Download
+the Microsoft Platform SDK to build the VNC plugin (afx is needed),<br>
+(PSDK for Windows Server 2003 was used with Visual Express 2005)</font></div>
+</li>
+</font></font>
+</ul>
+<font><font face="Arial"> </font></font>
+<h2><font><font face="Arial"><a name="HELP"></a>HELP</font></font></h2>
+<font><font face="Arial"> </font></font>
+<h3><font><font face="Arial">Camera
+:</font></font></h3>
+<font><font face="Arial"><font>
+<ul>
+<li>
+<div><font face="Arial">
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+First-Person view mode</font></div>
+</li>
+<li>
+<div><font face="Arial">2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+First-Person view mode with mouse to interact</font></div>
+</li>
+<li>
+<div><font face="Arial">
+3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Third-Person view mode</font></div>
+</li>
+<li>
+<div><font face="Arial">4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Third-Person view mode with camera orbit</font></div>
+</li>
+<li>
+<div><font face="Arial">
+MOUSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Cursor mode (3rd person) / View mode (1st person)</font></div>
+</li>
+<li>
+<div><font face="Arial">MOUSE
+DBL LCLICK In plugins mode, you have to double-click left mouse to
+enter/leave FirstPerson mouse mode</font></div>
+</li>
+</ul>
+</font> </font></font>
+<h3><font><font face="Arial">Move
+(french keyboard letters) :</font></font></h3>
+<font><font face="Arial"><font>
+<ul>
+<li>
+<div><font face="Arial">UP/Z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Move forward</font></div>
+</li>
+<li>
+<div><font face="Arial">DOWN/S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Move backward</font></div>
+</li>
+<li>
+<div><font face="Arial">LEFT/Q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Turn left (3rd person) / Straff left (1st person)</font></div>
+</li>
+<li>
+<div><font face="Arial">RIGHT/D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Turn right (3rd person) / Straff right (1st person)</font></div>
+</li>
+<li>
+<div><font face="Arial">PGUP/E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Fly up (+ deactivate gravity)</font></div>
+</li>
+<li>
+<div><font face="Arial">PGDOWN/C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Fly down</font></div>
+</li>
+<li>
+<div><font face="Arial">END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Activate gravity</font></div>
+</li>
+</ul>
+</font> </font></font>
+<h3><font><font face="Arial"><br>
+Panels :</font></font></h3>
+<font><font face="Arial"><font><font face="Arial">
+<ul>
+<li>
+<div>MOUSE
+RCLICK&nbsp;&nbsp;&nbsp;&nbsp; Display context panel
+(avatar, WWW navi, VLC, ...)</div>
+</li>
+<li>
+<div>ESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...)</div>
+</li>
+</ul>
+</font> </font></font></font>
+<h3><font><font face="Arial"><font><br>
+Debug commands:</font></font></font></h3>
+<font><font face="Arial"><font><font>
+<ul>
+<li>
+<div><font face="Arial"> F1 ..
+F4 SkyDome choice</font></div>
+</li>
+<li>
+<div><font face="Arial">
+F7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle
+CHAT panel</font></div>
+</li>
+<li>
+<div><font face="Arial">
+F8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle
+AVATAR main panel</font></div>
+</li>
+<li>
+<div><font face="Arial">
+F9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle
+MODELER main panel</font></div>
+</li>
+<li>
+<div><font face="Arial">F10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Toggle physics contacts display (if supported by the physics plugin)
+(NavDemo only)</font></div>
+</li>
+<li>
+<div><font face="Arial">F11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Toggle physics geometries display (if supported by the physics plugin)
+(NavDemo only)</font></div>
+</li>
+<li>
+<div><font face="Arial">
+F12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle
+bounding-boxes display</font></div>
+</li>
+<li>
+<div><font face="Arial">
+[PAUSE]&nbsp; Toggle DEBUG panel</font></div>
+</li>
+</ul>
+</font> </font></font></font>
+<h3><font><font face="Arial"><font>&nbsp;Helpers</font></font></font></h3>
+<font><font face="Arial"><font><font><font face="Arial">
+<ul>
+<li>
+<div>&nbsp;
+toggleAxis&nbsp;&nbsp;&nbsp;&nbsp; Toggle 1 axis on
+(0,0,0) with scale x1, position + scale can be updated to locate
+something</div>
+</li>
+<li>
+<div>&nbsp; rotateSunLight Rotate the
+directional light to debug normals illumination</div>
+</li>
+</ul>
+</font></font> </font></font></font>
+<h3><font><font face="Arial"><font>&nbsp;Demos</font></font></font></h3>
+<font><font face="Arial"><font><font><font face="Arial">
+<ul>
+<li>
+<div>&nbsp;
+demoNavi1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Launch
+DEMO_NAVI1 (refer below)</div>
+</li>
+<li>
+<div>&nbsp;
+demoPhysics1&nbsp;&nbsp; Launch DEMO_PHYSICS1 (refer below)
+(NavDemo only)</div>
+</li>
+</ul>
+</font>
+<h3><br>
+Demos Tips/Tricks:</h3>
+<font>
+<ul>
+<li>
+<div><font face="Arial">into
+Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment
+line under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS<br>
+into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update
+the position of the demoNavi2 panel<br>
+into Media\lua\boot.lua, you can tune default connection params into
+the line navigator:setConnectionParams("localhost", 8880, "me")</font></div>
+</li>
+</ul>
+<ul>
+<li>
+<div><font face="Arial">About
+HTTP proxy, you can now define it into the options panel, the resulting
+config<br>
+file will be updated : navigator\bin\release\NaviProfile\prefs.js like
+this (mycompany example)<br>
+user_pref("network.proxy.type", 2);<br>
+user_pref("network.proxy.autoconfig_url", "</font><a href="http://proxy.mycompany.com/"><font face="Arial">http://proxy.mycompany.com</font></a><font face="Arial">");</font></div>
+</li>
+</ul>
+<ul>
+<li>
+<div><font face="Arial">You
+can build:<br>
+- the Peer and Navigator applications separately (Debug/Release configs)<br>
+- the Navigator application with the Peer embedded (DebugNCS/ReleaseNCS
+configs, NCS stands for NullClientServer)</font></div>
+</li>
+</ul>
+<ul>
+<li>
+<div><font face="Arial">To run
+the Peer application you can specify host, port and verbosity of the
+Peer/Navigator XMLRPC server,<br>
+additionally you have to specify host, port of the RakNet server, in
+DebugNCS/ReleaseNCS configs those parameters should be passed to the
+Navigator application:<br>
+-h
+&lt;IPaddr:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: IP address (default: localhost)<br>
+-p
+&lt;port:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: port (default: 8880)<br>
+-v
+&lt;verbosity:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: verbosity level (0..2)<br>
+-m &lt;mediaCachePath:str&gt; : Pathname to Media/cache
+directory (usefull to share same network directory between the
+Navigator and its Peer)</font></div>
+</li>
+</ul>
+<ul>
+<li>
+<div><font face="Arial">To run
+the RakNet Server you can specify the port, max connections and
+simulated scene<br>
+If you launch it from the same system than navigator then you have to
+change the Media/cache directory (eg. copy the default Media/cache
+directory into Media/cacheServer)<br>
+-p
+&lt;port:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: port (default: 8660)<br>
+-c &lt;maxIncomingConnections:int&gt; : maximum incoming
+connections (default: 32)<br>
+-s
+&lt;sceneNodeId:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: Scene nodeId loaded by the simulator (eg. 11112222 for Deltastation1,
+11112223 Ile, ...), look into the .xml file to update some presets<br>
+-m
+&lt;mediaCachePath:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: Pathname to Media/cache directory</font></div>
+</li>
+</ul>
+<ul>
+<li>
+<div><font face="Arial">To run
+the Worlds Server, check you got python installed and launch
+WorldsServer.py<br>
+Update internal host:port if you want to change default values
+localhost:8550</font></div>
+</li>
+</ul>
+</font></font> </font></font></font>
+<h2><font><font face="Arial"><font><a name="HELP"></a><a name="Build"></a>HOW
+TO BUILD</font></font></font></h2>
+<font><font face="Arial"><font>
+</font></font></font>
+<h3><font><font face="Arial"><font>Visual
+Studio</font></font></font></h3>
+<font><font face="Arial"><font><font>
+</font></font></font></font>
+<ul>
+<font><font face="Arial"><font><font>
+<li>
+<div><font face="Arial">vcX
+stands for Visual config (vc7 or vc8 or vc9), be aware vc7 projects are
+no more up-to-date so it s at your own risk</font></div>
+</li>
+<li>
+<div><font face="Arial">To
+define environment variables <br>
+Under XP : press [WINDOWS]+[PAUSE] / Advanced / Env. Var.<br>
+under Vista : press [WINDOWS]+[PAUSE] ; clic on Modify Parameters link
+; / Advanced / Env. Var.<br>
+</font></div>
+<font ?arial="" face=""> </font>
+</li>
+<li>
+<div><font ?arial="" face="">
+Install Visual Studio 2005 + SP1 package or VS 2008s</font></div>
+</li>
+</font></font></font></font>
+</ul>
+<font><font face="Arial"><font>
+</font></font></font>
+<h3><font><font face="Arial"><font>Visual
+Studio Express (free version)</font></font></font></h3>
+<font><font face="Arial"><font><font>
+</font></font></font></font>
+<p><font><font face="Arial"><font><font><font face="Arial">If you are using Visual Studio Express 2005,
+upgrade it with the SP1 package<br>
+Update the default Visual Studio COREWIN properties XML file to add
+system libraries:<br>
+&nbsp;VSExpress2005 C:\Program Files\Microsoft Visual Studio
+8\VC\VCProjectDefaults\corewin_express.vsprops<br>
+&nbsp;VSExpress2008 C:\Program Files\Microsoft Visual Studio
+9.0\VC\VCProjectDefaults\CoreWin.vsprops<br>
+&nbsp;replace this line :<br>
+<br>
+&nbsp; <strong>
+AdditionalDependencies="kernel32.lib"/&gt;<br>
+</strong>&nbsp;by this line :<br>
+<br>
+&nbsp; <strong>AdditionalDependencies="kernel32.lib
+user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib
+ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/&gt;</strong></font></font></font></font></font></p>
+<font><font face="Arial"><font><font>
+</font></font></font></font>
+<h3><font><font face="Arial"><font><font>DirectX</font></font></font></font></h3>
+<font><font face="Arial"><font><font><font>
+</font></font></font></font></font>
+<p><font><font face="Arial"><font><font><font><font face="Arial"> Check you installed correctly the DirectX SDK
+August 2007 (at least ;-) )</font></font></font></font></font></font></p>
+<font><font face="Arial"><font><font><font><font face="Arial">
+<ul>
+<li>
+<div>C:\Program Files\Microsoft DirectX SDK
+(August 2007) is present</div>
+</li>
+<li>
+<div> the env. var. <strong>DXSDK_DIR</strong>
+is defined (eg. "<strong>C:\Program Files\Microsoft DirectX SDK
+(November 2007)\</strong> " )
+<p><a href="readme.htm#Config">CONFIG</a></p>
+<p><a href="readme.htm#PREREQUISITES">PREREQUISITES</a></p>
+<p><a href="readme.htm#HELP">HELP</a></p>
+<p><a href="readme.htm#Build">HOW
+TO BUILD</a> </p>
+</div>
+</li>
+</ul>
+<h3>Ogres</h3>
+<p>You can use either Ogre direct sources or
+Orge SDK</p>
+</font> </font></font></font></font></font>
+<blockquote style="margin-right: 0px;" dir="ltr"><font><font face="Arial"><font><font><font>
+</font></font></font></font></font>
+<h4><font><font face="Arial"><font><font><font>Sources</font></font></font></font></font></h4>
+</blockquote>
+<font><font face="Arial"><font><font><font><font><font>
+</font></font></font></font></font></font></font>
+<ul>
+<font><font face="Arial"><font><font><font><font><font>
+<li>
+<div><font face="Arial">Download
+Ogre source package (branch 1.6) <a href="http://www.ogre3d.org/download/source">http://www.ogre3d.org/download/source</a>&nbsp;&nbsp;
+<br>
+</font><font face="Arial">Tested
+fine with v1.6.0, and 1.6.1</font></div>
+</li>
+<li>
+<div>unzip it where you want (ex : <strong>c:\your_OgrePath</strong>
+must contain the directory <strong>c:\your_OgrePath\OgreMain</strong>
+)</div>
+</li>
+<li>
+<div><font face="Arial">Download
+Ogre Dependencies for VSX.X&nbsp;that can be found in&nbsp; the
+same page <br>
+</font><font face="Arial">and
+unzip them into Ogre (ex : <strong>c:\your_OgrePath\Dependencies</strong>
+and <strong>c:\your_OgrePath\Samples</strong> )</font></div>
+</li>
+<li>
+<div>Take care of which version of visual
+C++ you have. Here are the current links (please modify this readme if
+changes occured)</div>
+</li>
+</font></font></font></font></font></font></font>
+<ul>
+<font><font face="Arial"><font><font><font><font><font>
+<li>
+<div><a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC71SP1_Eihort_20071227.zip">Visual
+C++.Net 2003 (7.1) Precompiled Dependencies</a>&nbsp; with
+Visual Studio .Net 2003</div>
+</li>
+<li>
+<div></div>
+</li>
+</font></font></font></font></font></font></font>
+</ul>
+</ul>
+</td>
+</tr>
+<tr>
+<td valign="top"><a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC8SP1_Eihort_20071227.zip">Visual
+C++.Net 2005 (8.0) SP1 Precompiled Dependencies</a>&nbsp;
+with Visual Studio Express 2005 or VS2005Pro <li>
+<div>
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td valign="top"><a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC9_Eihort_20080203.zip">Visual
+C++.Net 2008 (9.0) Precompiled Dependencies </a>with Visual
+Studio Express 2008 <li>
+<div>
+<p><font face="Arial">Build
+the Orge Package</font></p>
+</div>
+</li>
+<ul>
+<li>
+<div><font face="Arial">Open<strong>
+c:\your_OgrePath/Ogre_vc8.sln </strong>for Visual 2005
+(Orge_vc9.sln for 2008...)</font></div>
+</li>
+<li>
+<div>Check that the directX sdk
+install have well setted the visual studio properties :</div>
+</li>
+<ul>
+<li>
+<div>In VisualStudio, open <strong>Tools
+Menu/Options</strong></div>
+</li>
+<li>
+<div><font face="Arial">In
+The Properties Tree Open the "Project and Solutions/VC++ Directories"</font></div>
+</li>
+<li>
+<div><font face="Arial">Open
+The <strong>Show Directories for :</strong> combo box and
+select <strong>Includes Files</strong> </font></div>
+</li>
+<li>
+<div><font face="Arial">Check
+that the includes pathes begin with <strong>"C:\Program
+Files\Microsoft DirectX SDK (August 2007)\Include"&nbsp;&nbsp; </strong>(same
+as<strong> "$(DXSDK_DIR)\include"</strong> )</font></div>
+</li>
+<strong></strong><font face="Arial"> <li>
+<div><font face="Arial">Open
+The <strong>Show Directories for :</strong> combo box and
+select <strong>Library Files</strong> </font></div>
+</li>
+</font><font face="Arial">
+<li>
+<div> <font face="Arial">Check
+that the library pathes begin with <strong>"C:\Program
+Files\Microsoft DirectX SDK (August 2007)\Lib\x86" </strong>(same
+as <strong>"$(DXSDK_DIR)\lib\x86" </strong> ) <br>
+</font></div>
+</li>
+</font>
+</ul>
+<font face="Arial"><font face="Arial"> <li>
+<div> <font face="Arial">Batch
+build all (Debug+Release)<br>
+It can take a long time, ogre dependencies are quite not well set<br>
+</font></div>
+</li>
+</font></font>
+</ul>
+<font face="Arial"><font face="Arial"> <li>
+<p><font face="Arial">Define
+the OGRE_HOME env. var.<br>
+If you are compiling Ogre from source code<br>
+<strong>&nbsp;OGRE_HOME =</strong>
+<strong>C:\your_OgrePath</strong></font></p>
+</li>
+</font></font><a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC90.exe?use_mirror=">OGRE
+1.6.1 SDK for Visual C++ .Net 2008 (9.0)</a><br>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<h4>or SDK</h4>
+</blockquote>
+<ul>
+<li>
+<div>Download the SDK <a href="http://www.ogre3d.org/download/sdk">http://www.ogre3d.org/download/sdk</a></div>
+</li>
+</ul>
+<font><font> </font></font>
+<p><font><font> </font></font></p>
+<ul>
+<font><font> <li>
+<div><font face="Arial">WARNING:
+If you are using 1 prebuilt release of Ogre SDK, take care this release
+was built with same<br>
+release of Visual Studio you will use, examples:</font></div>
+</li>
+</font></font>
+<ul>
+<font><font> <li>
+<div></div>
+</li>
+</font></font>
+</ul>
+</ul>
+<font><font><font face="Arial">with
+Visual Studio Express 2008</font> <li>
+<div></div>
+</li>
+</font></font><font><font>with
+Visual Studio Express 2005 or VS2005Pro</font> <li>
+<div></div>
+</li>
+</font><font>&nbsp; with
+Visual Studio .Net 2003<br>
+</font>
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td><li> The sdk still
+contains dependencies, just install it. It will defines the good
+Environment variables </li>
+<li>&nbsp;<strong>OGRE_HOME</strong>
+= C:\OgreSDK<br>
+</li>
+<p></p>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<h4>Zlib for Ogre SDK</h4>
+<font><font>
+<p><font face="Arial">ZLib:
+If you are using 1 prebuilt release of Ogre SDK, ZLib is not embedded,
+download last version on </font><a href="http://www.zlib.net/"><font face="Arial">http://www.zlib.net</font></a><font face="Arial">,<br>
+open visualc6/zlib.dsw, upgrade, Edit the LIB_Debug and LIB_Release
+project settings and in the Resources|General section, remove the
+resource name,<br>
+build LIB_Debug and LIB_Release configs, copy zlib.h and zconf.h into
+ogrenew/Dependencies/include, copy zlib.lib and zlibd.lib from
+visualc6/Win32_LIB_&lt;config&gt;<br>
+into ogrenew/Dependencies/lib/&lt;config&gt;</font></p>
+</font></font></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<font face="Arial"><font face="Arial"><br>
+<li>
+<p><a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC80.exe?use_mirror=">OGRE
+1.6.1 SDK for Visual C++ .Net 2005 (8.0) SP1</a></p>
+</li>
+<br>
+<br>
+<li></li>
+</font></font><a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC71.exe?use_mirror=">OGRE
+1.6.1 SDK for Visual C++ .Net 2003 (7.1)</a><br>
+<br>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<h4>or SDK</h4>
+</blockquote>
+<ul>
+<li>
+<div>Download the SDK <a href="http://www.ogre3d.org/download/sdk">http://www.ogre3d.org/download/sdk</a></div>
+</li>
+</ul>
+<font><font> </font></font>
+<p><font><font> </font></font></p>
+<ul>
+<font><font> <li>
+<div><font face="Arial">WARNING:
+If you are using 1 prebuilt release of Ogre SDK, take care this release
+was built with same<br>
+release of Visual Studio you will use, examples:</font></div>
+</li>
+</font></font>
+<ul>
+<font><font> <li>
+<div></div>
+</li>
+</font></font>
+</ul>
+</ul>
+<font><font><font face="Arial">with
+Visual Studio Express 2008</font> <li>
+<div></div>
+</li>
+</font></font><font><font>with
+Visual Studio Express 2005 or VS2005Pro</font> <li>
+<div></div>
+</li>
+</font><font>&nbsp; with
+Visual Studio .Net 2003<br>
+</font>
+<table style="height: 201px; width: 907px;" align="center" border="0" cellpadding="3" cellspacing="0">
+<tbody>
+<tr>
+<td><li> The sdk still
+contains dependencies, just install it. It will defines the good
+Environment variables </li>
+<li>&nbsp;<strong>OGRE_HOME</strong>
+= C:\OgreSDK<br>
+</li>
+<p></p>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<h4>Zlib for Ogre SDK</h4>
+
+<p><font face="Arial">ZLib:
+If you are using 1 prebuilt release of Ogre SDK, ZLib is not embedded,
+download last version on </font><a href="http://www.zlib.net/"><font face="Arial">http://www.zlib.net</font></a><font face="Arial">,<br>
+open visualc6/zlib.dsw, upgrade, Edit the LIB_Debug and LIB_Release
+project settings and in the Resources|General section, remove the
+resource name,<br>
+build LIB_Debug and LIB_Release configs, copy zlib.h and zconf.h into
+ogrenew/Dependencies/include, copy zlib.lib and zlibd.lib from
+visualc6/Win32_LIB_&lt;config&gt;<br>
+into ogrenew/Dependencies/lib/&lt;config&gt;</font></p><p></p><p></p><p><font>
+<h3>VoiceEngine:</h3>
+</font>
+</p><h4>Boost</h4>
+<font>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<p><br>
+Download the BOOST package release 1.34.1 (<a href="http://sourceforge.net/">http://sourceforge.net</a>,
+search boost c++ libraries, download 1.34.1)<br>
+&nbsp;(because some bugs found into pool&lt;&gt; in 1.35),</p>
+<p>unzip it and define your <strong>BOOST_ROOT</strong>
+env. var. (eg. "C:\boost_1_34_1")</p>
+<p> 1.37 seems to work fine.</p>
+</blockquote>
+</font>
+<h4> Fmod</h4>
+<font>
+<blockquote style="margin-right: 0px;" dir="ltr">
+<p> <br>
+Download the FMOD EX package (<a href="http://www.fmod.org/index.php/download">http://www.fmod.org/index.php/download</a>),<br>
+&nbsp;install it and define your <strong>FMOD_PATH</strong>
+env. var. (eg. "C:\Program Files\FMOD SoundSystem\FMOD Programmers API
+Win32\api")</p>
+</blockquote>
+</font>
+<h3>PhysX</h3>
+<font><font>
+<p><font face="Arial"> Peer module is
+using Ageia PhysX </font></p>
+<ul><li>
+<div><font face="Arial">&nbsp;Download
+2 packages runtime &amp; SDK on </font><a href="http://devsupport.ageia.com/"><font face="Arial">http://devsupport.ageia.com</font></a></div>
+</li><ul><li>
+<div><font face="Arial">&nbsp;Download
+runtime : PhysX_8.05.26_SystemSoftware or PhysX_8.10.29_SystemSoftware
+if your graphic hardware manage physics (NVidia 8Series, 9Series and
+CT200series)&nbsp; </font></div>
+</li><li>
+<div><font face="Arial">&nbsp;Download
+SDK : PhysX_2.8.1_SDK_Core.msi </font></div>
+</li></ul><li>
+<div>Install Both packages</div>
+</li></ul>
+<ul><li>
+<div><font face="Arial">Defines your
+PHYSX_DIR env. var. (eg. C:\Program Files\NVIDIA Corporation\NVIDIA
+PhysX SDK\v2.8.1)<br>
+&nbsp; </font></div>
+</li><li>
+<div><font face="Arial">After
+compilation, run CopyPhysXFiles.bat to copy dedicated DLLs into your
+Common\bin<br>
+</font></div>
+</li><li>
+<div><font face="Arial">Last
+repository: </font><a href="http://developer.nvidia.com/object/physx_downloads.html"><font face="Arial">http://developer.nvidia.com/object/physx_downloads.html</font></a></div>
+</li></ul>
+</font></font>
+<h3>Build Sollipsis</h3>
+<font><font> </font></font>
+<ul><font><font> <li>
+<div><font face="Arial">Get SVN
+repository for Solipsis</font></div>
+</li>
+<li>
+<div><font face="Arial">Open
+solipsis_vcX.sln (depending on your visual studio version)</font></div>
+</li>
+<font face="Arial"> <li>
+<div>Build The solution</div>
+</li>
+</font></font></font></ul>
+<font><font><font face="Arial"> </font></font></font>
+<p><font><font><font face="Arial">This
+solution contains :</font></font></font></p>
+<font><font><font face="Arial"> </font></font></font>
+<ul><font><font><font face="Arial"> <li>
+<div>The Navigator (main client application,
+contains peer in NCS configs)</div>
+</li>
+<li>
+<div>The Peer (not used in NCS configs)</div>
+</li>
+<li>
+<div>Rak Net Server</div>
+</li>
+</font></font></font></ul>
+<font><font><font face="Arial"> </font></font></font>
+<ul><font><font><font face="Arial"> <li>
+<div>and all project libraries and 3rd Parties
+libraries</div>
+</li>
+</font></font></font></ul>
+<font><font><font face="Arial"> </font></font></font>
+<p><font><font><font face="Arial"><font face="Arial">In Network configs, before launching, don t
+forget to run :</font></font></font></font></p>
+<font><font><font face="Arial"> </font></font></font>
+<p><font><font><font face="Arial">
+</font></font></font></p>
+<ul><font><font><font face="Arial"> <li>
+<div><font face="Arial">navigatorModuleOnlyNav\copyFirefoxPlugins.bat</font></div>
+</li>
+<li>
+<div><font face="Arial">peerModuleRakNet\copyPhysXFiles.bat</font></div>
+</li>
+</font></font></font></ul>
+<font><font><font face="Arial"> </font></font></font>
+<p></p>
+<font><font><font face="Arial"> </font></font></font>
+<p><font><font><font face="Arial"><font face="Arial">In NCS configs, before launching, don t forget
+to run :</font></font></font></font></p>
+<font><font><font face="Arial"> </font></font></font>
+<p><font><font><font face="Arial">
+</font></font></font></p>
+<ul><font><font><font face="Arial"> <li>
+<div><font face="Arial">navigatorModuleOnlyNav\copyNCSPhysXFiles.bat</font></div>
+</li>
+</font></font></font></ul>
+<h2>VNC</h2>
+<p>If you're using the visual studio express, t<font><font><font face="Arial">o build the VNC plugin afx is needed so define
+the directories of the PSDK into the VS options,<br>
+Tools/Options menu, Projects and solutions, VC++ directories, Include
+files + C:\Program Files\Microsoft Platform SDK\Include + C:\Program
+Files\Microsoft Platform SDK\Include\mfc,<br>
+Library files + C:\Program Files\Microsoft Platform SDK\Lib</font></font></font></p>
+<h3>Launching the navigator</h3>
+<font><font>
+<p><font face="Arial">Check into the
+Navigator project settings you set correctly the <strong>Debug/Working
+directory</strong> to <strong> $(TargetDir)<br>
+</strong>Press F5 to run the Release binary OR launch
+directly navigator/bin/Release/Navigator.exe</font></p>
+<p>In NCS configs peer is included into the navigator</p>
+<p>In other configs peer should be launched before.
+see the Help section for options.</p>
+</font></font>
+<h3>Building Documentation</h3>
+<font><font>
+<p><font face="Arial">To generate HTML
+documentation :</font></p>
+<ul><li>
+<div><font face="Arial">&nbsp;Download
+Doxygen Tool (doxygen.exe)</font></div>
+</li><li>
+<div><font face="Arial">&nbsp;Define
+your DOXYGEN_PATH env. var. on directory containing doxygen.exe (eg.
+C:\doxygen)</font></div>
+</li><li>
+<div><font face="Arial">&nbsp;Run
+Docs\doxygen\doxygen.bat</font></div>
+</li></ul>
+<p>To generate the dependencies graph, install
+graphviz and run</p><p></p></font></font><h3>Building Setup</h3>
+<font><font>
+<p><font face="Arial">To generate setup
+from NSIS: (unfortunately the vdproj are not supported by Express
+editions so we use NSIS, not so bad after all ;-)<br>
+&nbsp;Download NSIS on nsis.sourceforge.net<br>
+&nbsp;Define your NSIS_PATH env. var. on directory containing
+makensis.exe (eg. C:\Program Files\NSIS)<br>
+&nbsp;Run setup\nsis\makensis.bat or setup\nsis\makensisNCS.bat
+(files are taken from the Release directory so check you really build
+all)</font></p>
+<p>Before creating a setup, don't forget to clean up
+your realse directory by deleting it completly, then launch a rebuild.</p>
+<p>The resulting setup should be put in a directory
+containing the following directories and files :</p>
+<ul><li>
+<div>Solipsis-X.X.X-win32.exe (result of nsis
+generation)</div>
+</li><li>
+<div>Solipsis_Building_Guide_v1_0.pdf</div>
+</li><li>
+<div>Solipsis_Installation_Guide_v1_0.pdf</div>
+</li><li>
+<div>VCRedistx86\ (directory of visual c++ redist)</div>
+</li><ul><li>
+<div>vs2005SP1\</div>
+</li><ul><li>
+<div>vcredist_x86.exe (install of visual c++
+redist)</div>
+</li></ul></ul><li>
+<div>Python\</div>
+</li><ul><li>
+<div>python-2.5.2.msi</div>
+</li></ul><li>
+<div>PhysX\</div>
+</li><ul><li>
+<div>PhysX_7.11.13_SystemSoftware.exe</div>
+</li></ul><li>
+<div>DirectX\ (DirectX 9.0c setup directory)</div>
+</li><ul><li>contains DXSETUP.exe, Dll and all .cab
+associated.</li></ul></ul>
+</font></font>
+<h3>Preprocessor Definitions</h3>
+<font><font>
+<p><font face="Arial">COMPILATION
+DEFINES (add 1 starting 'N' char to unset it):<br>
+UIDEBUG&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Set/Unset the debug user interface panel<br>
+DEMO_NAVI1&nbsp;&nbsp;&nbsp;&nbsp; Set/Unset Navi demo1
+(1 panel on YouTube video, 1 panel on gpl.txt + 1 knot mesh with google
+homepage)<br>
+DEMO_NAVI2&nbsp;&nbsp;&nbsp;&nbsp; Set/Unset Navi demo2
+(demo with 1 panel on YouTube video)<br>
+DEMO_VNC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Set/Unset VNC demo (demo with 1 panel on VNC viewer)<br>
+DEMO_VLC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Set/Unset VLC demo (demo with 1 panel on VLC player)<br>
+DEMO_VOICE&nbsp;&nbsp;&nbsp;&nbsp; Set/Unset Voice chat
+demo<br>
+DEMO_PHYSICS1&nbsp; Set/Unset Physics demo (1 cube will drop into
+the spatialStation)<br>
+NSHADOWS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Set/Unset shadows (hm hm just test, still lot of stuff)<br>
+LOGSNDRCV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Set/Unset
+traces on sent/received XML msgs</font></p>
+<p>&nbsp;</p>
+<p><font face="Arial">About
+Navi/LLMozLib Debug assertion, to avoid them:<br>
+Define the XPCOM_DEBUG_BREAK syst. env. var.<br>
+&nbsp;XPCOM_DEBUG_BREAK = warn</font></p>
+<p><font face="Arial">LLMozLib was
+originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll,
+msvcr71.dll, msvcr71d.dll<br>
+are necessary when Solipsis is compiled/linked in Debug mode on VC
+&gt; 7.1, unfortunately those DLLs were not<br>
+packaged in a redistributable, you can find them into
+DevTools\llmozlib\libraries\i686-win32\vc71redist OR<br>
+run navigatorModuleOnlyNav\copyDebugVC71RedistFiles.bat</font></p>
+<h2><a name="HELP"></a>Medias
+cache......</h2>
+<font>
+<h2>Modules description and dependencies</h2>
+<p><a href="Docs/Html/ModulesSummary.htm">Follow
+This link for a simple summary of solipsis modules</a></p>
+<font>
+<p>&nbsp;</p>
+</font></font></font></font><font><font><p></p></font></font>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</td>
+<td valign="top"></td>
+</tr>
+</tbody>
+</table>
+<p></p>
+<font> </font>
+<p><font>&nbsp;</font></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<p align="center"> <a href="http://www.agence-nationale-recherche.fr/"><font face="Arial"><img src="./Docs/HTML/images/s_anr.jpg" border="0" height="32"></font></a><font face="Arial"> </font> <a href="http://www.images-et-reseaux.com/"><font face="Arial"><img src="./Docs/HTML/images/s_imr.jpg" border="0" height="32"></font></a><font face="Arial"> </font> <a href="http://rd.francetelecom.com/fr/groupe/rd/"><font face="Arial"><img src="./Docs/HTML/images/s_orange.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; </font> <a href="http://www.irisa.fr/"><font face="Arial"><img src="./Docs/HTML/images/s_inria.jpg" border="0" height="32"></font></a><font face="Arial">
+&nbsp; </font> <a href="http://www.archivideo.com/"><font face="Arial"><img src="./Docs/HTML/images/s_archivideo.jpg" border="0" height="32"></font></a><font face="Arial">
+&nbsp; </font> <a href="http://www.artefacto.fr/"><font face="Arial"><img src="./Docs/HTML/images/s_artefacto.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; </font> <a href="http://www.uhb.fr/sc_humaines/las/"><font face="Arial"><img src="./Docs/HTML/images/s_rennes2.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; </font> </p>
+</td>
+</tr>
+</tbody>
+</table>
+</body></html>

@@ -85,7 +85,9 @@ public:
         NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
+#ifdef DECLARATIVE_MODELER
 		NAVI_MODELERSCENEFROMTEXT,
+#endif
         NAVI_AVATARMAIN,
         NAVI_AVATARPROP,
 #ifdef UIDEBUG
@@ -98,8 +100,10 @@ public:
         ME_NOOBJECTSELECTED,    // No object3D selected
         ME_TEXTUREALREADYOPEN,  // Texture already open
         ME_FILENOTFOUND,
+#ifdef DECLARATIVE_MODELER
 		ME_DECLARATIVEMODELINGERROR, // decl. mod. error
-    };
+#endif
+   };
     static const std::string ms_ModelerErrors[];
 
 protected:
@@ -189,12 +193,13 @@ public:
     void avatarPropHide();
     void avatarPropUnload();
 
+#ifdef DECLARATIVE_MODELER
 	// Scene From Text Modeler Panel
 	void modelerSceneFromTextShow();
     bool isModelerSceneFromTextVisible();
     void modelerSceneFromTextHide();
     void modelerSceneFromTextUnload();
-
+#endif
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
@@ -266,8 +271,9 @@ protected:
     void modelerMainCreateTorus(const NaviData& naviData);
     void modelerMainCreateTube(const NaviData& naviData);
     void modelerMainCreateRing(const NaviData& naviData);
+#ifdef DECLARATIVE_MODELER
     void modelerMainCreateSceneFromText(const NaviData& naviData);
-
+#endif
     // Modeler fake right click callbacks
     void modelerActionDelete(const NaviData& naviData);
     void modelerActionMove(const NaviData& naviData);
@@ -404,11 +410,12 @@ protected:
 	void avatarPropResetColour(const NaviData& naviData);
 	void avatarPropSound(const NaviData& naviData);
 
+#ifdef DECLARATIVE_MODELER
 	// Modeler Scene From Text Setup properties page callbacks
     void modelerSceneFromTextPageLoaded(const NaviData& naviData);
 	void modelerSceneFromTextExec(const NaviData& naviData);	
 	void modelerSceneFromTextCancelled(const NaviData& naviData);
-
+#endif
 public:
     // Modeler properties updates
     void modelerTabberLoad(unsigned pTab);

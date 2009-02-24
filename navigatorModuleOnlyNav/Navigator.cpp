@@ -2125,6 +2125,8 @@ bool Navigator::createRing()
 	return mModeler->createRing(entityUID, entityUID, plpos + dep, pldir);
 }
 
+#ifdef DECLARATIVE_MODELER
+
 bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, std::string& warnMsg )
 {
 	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
@@ -2144,6 +2146,8 @@ bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, 
     //String name = XmlHelpers::convertUIntToHexString(entityUID);
 	return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
 }
+#endif
+
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
 {

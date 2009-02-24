@@ -326,8 +326,10 @@ public:
     bool createTube();
     /** Create a ring. */
     bool createRing();
+#ifdef DECLARATIVE_MODELER
     /** Create a Scene from text. */
 	bool createSceneFromText( const std::string&, std::string& errMsg, std::string& warnMsg );
+#endif
     /** Create a mesh. */
     bool createMesh();
     /** Import a mesh file.*/

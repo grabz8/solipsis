@@ -66,7 +66,9 @@ const std::string NavigatorGUI::ms_NavisNames[] = {
     "uictxtvnc",
     "uimdlrmain",
     "uimdlrprop",
-    "uimdlrscenefromtext",
+#ifdef DECLARATIVE_MODELER
+   "uimdlrscenefromtext",
+#endif
     "uiavatarmain",
     "uiavatarprop",
 #ifdef UIDEBUG
@@ -78,7 +80,9 @@ const std::string NavigatorGUI::ms_ModelerErrors[] = {
     "You have to select an object3D.",
     "This Texture is already open.",
     "File not found.",
+#ifdef DECLARATIVE_MODELER
 	"Something went wrong with declarative modeling. Please re-formulate your text."
+#endif
 };
 
 //-------------------------------------------------------------------------------------
@@ -407,9 +411,10 @@ void NavigatorGUI::modelerMainShow()
     if (mNavisStates[NAVI_MODELERPROP] == NSCreated)
         modelerPropHide();
 
+#ifdef DECLARATIVE_MODELER
 	if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] == NSCreated)
         modelerSceneFromTextUnload();
-
+#endif
     if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
     {
         // Create Navi UI modeler
@@ -436,7 +441,9 @@ void NavigatorGUI::modelerMainShow()
 		navi->bind("CreateTorus", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTorus)); 
 		navi->bind("CreateTube", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTube)); 
 		navi->bind("CreateRing", NaviDelegate(this, &NavigatorGUI::modelerMainCreateRing)); 
+#ifdef DECLARATIVE_MODELER
 		navi->bind("CreateSceneFromText", NaviDelegate(this, &NavigatorGUI::modelerMainCreateSceneFromText)); 
+#endif
 
 		navi->bind("ActionDelete", NaviDelegate(this, &NavigatorGUI::modelerActionDelete)); 
 		navi->bind("ActionMove", NaviDelegate(this, &NavigatorGUI::modelerActionMove)); 
@@ -484,8 +491,9 @@ void NavigatorGUI::modelerMainUnload()
 
 		mNavigator->endModeling();
 		modelerPropUnload();
+#ifdef DECLARATIVE_MODELER
 		modelerSceneFromTextUnload();
-
+#endif
 		// Remove temporary files & folder of the thumbnails
 		std::string path ( "NaviLocal\\NaviTmpTexture" );
 		std::vector<std::string> fileList;
@@ -2534,13 +2542,14 @@ void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef DECLARATIVE_MODELER
 void NavigatorGUI::modelerMainCreateSceneFromText(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateSceneFromText()");
 	modelerSceneFromTextShow();
 //	mNavigator->createSceneFromText( "A red ball is on a green box." );
 }
-
+#endif
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 {
@@ -3866,10 +3875,11 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (mNavisStates[NAVI_AVATARPROP] == NSCreated)
         navi->show(true);
+#ifdef DECLARATIVE_MODELER
 
 	std::string msg = "AvatarProp window loaded";
 	MessageBox(0, msg.c_str(), "NavigatorGUI Avatar", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -5240,6 +5250,7 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
 }
 
 //-------------------------------------------------------------------------------------
+#ifdef DECLARATIVE_MODELER
 void NavigatorGUI::modelerSceneFromTextShow()
 {
 
@@ -5339,3 +5350,4 @@ void NavigatorGUI::modelerSceneFromTextUnload()
         mNavisStates[NAVI_MODELERSCENEFROMTEXT] = NSNotCreated;
     }
 }
+#endif

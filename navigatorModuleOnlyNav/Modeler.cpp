@@ -45,7 +45,9 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
     mModelerCallbacks = modelerCallbacks;
     mOnGizmo = 0;
 
+#ifdef DECLARATIVE_MODELER
 	mDeclarativeModeler = NULL;
+#endif
 
 	mExecPath = _getcwd(NULL, 0);
 	SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
@@ -77,9 +79,10 @@ Modeler::~Modeler(void)
 	// delete the selection manager
 	delete mSelection;
 
+#ifdef DECLARATIVE_MODELER
 	if( mDeclarativeModeler != NULL )
 		delete mDeclarativeModeler;
-
+#endif
 }
 
 Modeler* Modeler::getSingletonPtr()
@@ -524,6 +527,8 @@ bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3
 	return true;
 }
 
+#ifdef DECLARATIVE_MODELER
+
 /// Create a 3D scene from text
 bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg )
 {
@@ -585,6 +590,7 @@ bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name
 	return true;
 
 }
+#endif
 
 /// Create a mesh. 
 bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
