@@ -1,0 +1,572 @@
+\documentclass{article}
+\newcommand{\df}[1]{\footnote{\textbf{Davide: }#1}}
+\newcommand{\inlinedf}[1]{\textit{\textbf{Davide:} #1}}
+\usepackage{xspace}
+\usepackage{amsmath}
+%\usepackage{algpseudocode}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{enumerate}
+\usepackage[english]{babel}
+\usepackage{amsfonts,amsmath,amssymb,amstext,latexsym}
+\usepackage{boxedminipage}
+\usepackage{subfigure}
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{floatflt}
+
+\usepackage[vlined]{algorithm2e}
+% \usepackage[vlined,boxed]{algorithm2e}
+%\incmargin{1em}
+%\linesnumbered
+\dontprintsemicolon
+\SetKwInOut{Input}{parameters}
+\SetKwInOut{Output}{returns}
+
+\usepackage{graphicx}
+\usepackage {subfigure}
+\newcommand{\sol}{\emph{Solipsis}\xspace}
+
+\title{RayNet Specification}
+
+\begin{document}
+\newcommand{\toadd}[1]{\textbf{To Add: }#1}
+\newcommand{\id}[1]{\ensuremath{\textsc{#1}}}
+%\input{intro}
+
+%\input{arch}
+
+%\section{Introduction}
+
+
+\maketitle
+
+This purpose of this document is to specify the behavior of the RayNet
+overlay~\cite{}. Some basic design issues are also discussed, thus
+providing a starting point for the implementation of RayNet in a
+real-world setting. The document is structured as follows. 
+ In Section~\ref{sec:gbps}
+we present the general skeleton of gossip-based view maintenance
+protocols. In Section~\ref{sec:rps} we present two such protocols that
+constitute the basis of Raynet, and finally in Section~\ref{} we
+present the architecture of Raynet and discuss the details of its
+operation.
+
+
+
+
+\section{Gossip-Based View Maintenance}
+\label{sec:rps}
+The behavior of RayNet follows the general scheme of a Gossip-Based
+overlay maintenance service. Specifically, Raynet is based on the
+combination of two gossip-based view-maintenance components that
+contribute to building its fault-tolerant proximity-aware overlay
+structure. In the following, we describe the general protocol
+framework that lies at the basis of each of these view maintenance
+protocols. 
+
+A gossip-based view maintenance protocol, also referred to as
+peer-sampling service, maintains an unstructured overlay network using
+a gossiping procedure. Each peer maintains a data structure consisting
+of a list of other peers, its neighbors. This list, normally referred
+to as \emph{view}, is constantly refreshed using information exchanged
+with other nodes in the overlay.
+
+As described in~\cite{}, the skeleton of gossip-based peer sampling
+protocols conforms to a simple general model and mainly differ in the
+way in which the view is updated with each gossip exchange. The rest
+of this section provides a description of this framework, while
+Sections~\ref{sec:rps} and~\ref{} instantiate it into the building
+blocks of RayNet. 
+
+\paragraph{Peer-Sampling Framework}
+In general, each network node is associated with an address (e.g. IP
+and port) that is needed for sending a message to that node. In
+addition it may also be associated with information needed in specific
+peer-sampling instances. Each node maintains a membership table,
+\emph{view}, representing its knowledge of the global membership.
+This view is a list of $c$ \emph{node descriptors}.  Parameter $c$
+represents the size of the list and is the same for all nodes.
+
+A node descriptor contains the information associated to the node (as
+defined above) and an \emph{age value} that represents the freshness
+of the given node descriptor.  The partial view is a list data
+structure, and accordingly, the usual list operations is defined on
+it. The protocol also ensures that there is at most one descriptor
+for the same node in every view.
+
+The purpose of the gossiping algorithm, executed periodically on each
+node and resulting in two peers exchanging their membership
+information, is to update the partial views to reflect the dynamics of
+the system.  Each node executes the same protocol, of which the
+skeleton is shown in Algorithm~\ref{algo:prot}.  The protocol responds to
+two events: a periodic timer event triggers the execution of the
+active cycle initiating communication with other nodes, while the
+receipt of a message invokes the  passive cycle responsible for
+answering other nodes' requests.
+
+
+
+\begin{algorithm}
+\textbf{global variables:}\\
+\textbf{set}[node] lastSent\\
+
+\vspace{3ex}
+\textbf{activeCycle}
+\Begin{
+  peer = select random peer from view\;
+  message = create new message \;
+  message.buffer = \id{selectToSend}(peer)\;
+  m.sender=\textbf{self}\;
+  lastSent=message.buffer\;
+  \textbf{send} message \textbf{to} peer\;
+}
+
+
+\vspace{3ex}
+\textbf{passiveCycle(Message m)}
+\Begin{
+  \If {\textbf{not} m \textbf{is} Response}{
+    response = create new Response\;
+    response.sender=\textbf{self}\;
+    response.buffer = \id{selectToSend}(peer)\;
+    lastSent=response.buffer\;
+    \textbf{send} response \textbf{to} m.sender\;
+  } 
+  \id{selectToKeep}(m.buffer, lastSent)
+}
+
+
+
+\vspace{3ex}
+\textbf{main active thread}
+\Begin{
+  \While{\textbf{true}}{
+    activeCycle()\;
+    sleep(\textbf{gossipInterval})\;
+  }
+}
+\vspace{3ex}
+\textbf{main passive thread}
+\Begin{
+  \While {\textbf{true}}{
+    receive (message, sender)\;
+    passiveCycle(message, sender)\;
+  }
+}
+
+
+\caption{Skeleton of a gossip-based view-maintenance protocol}
+\label{algo:prot}
+\end{algorithm}
+
+
+\paragraph{Active Cycle}
+
+The active cycle is activated exactly once every $T$ time units.
+First, it selects random node from the view  to exchange membership information
+with.%   This selection is implemented by the method \id{selectPeer()}
+% that returns the address of a node in the peer sampling's view.  This
+% method is a parameter of the generic protocol. 
+
+% Second, the peers exchange the membership information according to a
+% communication strategy: either only one of the peer sends information
+% to the other one (boolean parameter \id{push} is true if the active
+% peer send its information, \id{pull} is true otherwise) or the two
+% peers exchanged their information (\id{pushpull} is true).  
+
+Second, the peer executing the active cycle exchanges membership
+information with the selected peer by generating a gossip message. The
+content of this message is determined by the
+\id{selectToSend(recipient)} method. Choosing a specific
+implementation of this method, allows each protocol instance to
+determine the which peers to include in propagated messages,
+ultimately controlling the characteristics of the resulting overlay.
+
+Finally, at the end of the cycle, the age of each peer in the local
+view is incremented by one. 
+
+
+\paragraph{Passive Cycle}
+The passive cycle reacts to the receipt of a message from another
+peer. The message may either be a spontaneous message (i.e. sent in
+the active cycle), or a response (sent in the passive cycle as
+described in the following). In the first case, the protocol generates
+a response message whose content is again determined by invoking the
+\id{selectToSend(recipient)} method. 
+
+After sending the message, or after determining that the received
+message was already a response, the protocol proceeds to updating the
+local view using the another protocol-specific method,
+\id{selectToKeep(buffer, lastSent)}. The method takes as parameters
+the list of node descriptors received with the gossip message being
+processed, as well as the list of descriptors sent in the last gossip
+message to the peer whose message is being processed. The first
+parameter allows it to update the view with the new nodes; the second
+allows the update mechanism to take into account the information
+exchanged with the other peer. When removing descriptors from the view, it
+is in fact beneficial to remove those that have been sent to another
+peer, as this minimizes the overall loss of information.
+
+Finally, as in the case of the active cycle, the age of each peer in
+the local view is incremented by one.
+
+
+\section{Instantiating the Peer Sampling}
+The generic protocol described above is characterized by three
+properties: namely, the selection of the peer to gossip with, the
+selection of the information to be gossiped, and the computation of
+the new membership table based on the exchanged information. In the
+following, we present the two instances of the generic protocol that
+constitute the raynet overlay.
+
+\subsection{Kleinberg-Like Link Maintenance}
+The first instance we consider is a mechanism to sample the nodes in
+the network, so that each peer obtains a set of neighbors such that
+the resulting overlay has the characteristics of a small world
+network.  This is, in fact, at the basis of RayNet's ability to route
+to any node in space in polylogarithmic time. In the following, we
+present the protocol by describing the instantiation of the two
+generic methods in the protocol framework.
+
+% \paragraph{selectPeer}
+% The selectPeer operation simply returns a random peer to gossip with
+% from the currently available local view. 
+
+\paragraph{selectToSend}
+The \id{selectToSend(recipient)} operation is designed to return a set
+of peers that are not immediately useful for the local peer's
+view. This is convenient as these peers will be later removed by the
+\id{selectToKeep} call. To achieve this biased peer selection, the
+method first computes a temporary view $V'$ by removing the peer
+selected by selectPeer (the destination of the gossip message) from
+the local view.
+
+Then each peer $p$ in $V'$ is associated with a probability of being
+chosen $P_c(p)$ that depends on its distance from the local node. In
+the context of \sol this is effectively the cartesian distance between
+the locations of the site nodes. The probability follows a harmonic
+distribution and is computed with the following formula where $d(n,
+p)$ denotes the distance between the local node and the peer being
+considered.
+
+$$ P_c(p) = \frac{\frac{1}{d(n,p)^2}}{\sum_{p\in V'} \frac{1}{d(n,p)^2}} $$
+
+After associating these probability with the peers in the view, the
+function uses them to extract a set $K$ of $c/2$ peers that are of
+interest to the current node. The remaining peers, that is $V' \setminus K$
+are then returned to the generic protocol. 
+
+\paragraph{selectToKeep}
+The method \id{selectToKeep(buffer, lastSent)} modifies the local view
+based on the received buffer with the objective to keep the most
+interesting peer for the local node. To achieve this, it first appends
+the received buffer to the view. Then it eliminates duplicate entries
+from the view, and finally it removes items from the view starting
+with the items contained in \id{lastSent} until the size of the view
+is equal to $c$.
+
+
+\subsection{RayNet Architecture}
+The RayNet protocol can also be described as a gossip-based view
+maintenance protocol. However, during its operation, it also exploits
+information contained in the views of the kleinberg peer sampling
+protocol described above. In the following we will refer the kleinberg
+view as $V_K$, while the RayNet view consisting of the voronoy
+neighbors will instead be referred to as $V_V$ In order to guarantee
+successful routing, the size of $V_V$ is set equal to $c= 10$.
+
+% \paragraph{selectPeer}
+% As in the case of the previous protocols, the select peer operation
+% returns a random peer from $V_V$. 
+
+\subsubsection{selectToSend}
+The method returns a random subset of $V_V$ containing $c/2$ nodes and
+not containing the node selected by select peer. 
+
+\subsubsection{selectToKeep}
+The selectToKeep operation is the core of the RayNet
+protocol. Different, from the previous protocol, in RayNet this
+method evaluates the goodness of a view as whole, rather than
+examining each peer individually.
+
+The protocol operates by constructing a set $\id{rays}$ of $R$
+\emph{rays} whose starting point is the local peer and whose and
+directions are drawn uniformly at random on the unit hyper-sphere.
+This is achieved using the method described
+in~\cite{Knuth81The-Art-of-Computer-QF} that provides uniform
+probability distribution of points on the hyper-sphere. More
+precisely, the function $\id{createRays}(R)$ generates $R$ points
+uniformly distributed on the surface of the sphere centered at the
+local node, according to virtual world coordinates. Each ray is then
+univocally determined by the one point in the sphere and the local
+node.
+
+
+ \begin{figure}[t]
+  \centering
+  \includegraphics[width=0.52\linewidth]{figs/schemas/rayons2d}
+  \caption{Volume estimation using rays (o is the central point
+    corresponding to the local node).}
+  \label{fig.rayons2d}
+\end{figure}
+
+
+Rays (dashed lines starting from $o$ on Figure~\ref{fig.rayons2d})
+will act as \emph{probes}, to discover the closest intersection point
+$p_{int}$ lying on the ray $r$ with a (virtual) Voronoï cell of
+another node in the configuration, this node being the node $n'$ for
+which $\lambda = d(p_{int},n) = d(p_{int},n')$, where $n$ is the local
+node, is minimal. This allows Algorithm~\ref{algo:volume} to compute
+the estimated value of the voronoi cell associated with a set of
+nodes. Specifically, in the algorithm, the function compDistOnRay() in
+Algorithm~\ref{algo:volume} simply computes, for a pair consisting of
+a ray and a node $n$, the point on the ray such that $\lambda =
+d(p_{int},n) = d(p_{int},n')$ and returns the value of $\lambda$.
+
+
+
+% Distances $\lambda = ||p_{int},n'||$ are
+% represented by discontinuous lines from $n'$ to the intersection
+% $p_{int}$ on Figure~\ref{fig.rayons2d}. 
+
+
+\begin{algorithm}[h]
+
+
+\textit{the set rays is essentially a set of points: set[Point] where
+  Point x, represents a point x in the virtual world}
+
+\textit{\textbf{calcVolume(set[nodes] config)}}\\
+  \Begin{
+        \textsc{double} $\Lambda[] \leftarrow \emptyset$ \;
+    $\id{rays} \leftarrow $ \textit{createRays}(R)\;
+    \lnlset{InResA}{(a)}\For{$r \in rays$}{
+        double $\lambda \leftarrow \infty$ \;
+        \For{node $n_j \in$ config}{
+             double l $\leftarrow$ compDistOnRay($r$,$n_j$)\;
+             \If{l < dist}{
+                 $\lambda \leftarrow l$\;
+             }
+        }
+        % lambda calculated at this point
+        \lnlset{InResB}{(b)}$\Lambda \leftarrow \Lambda \cdot \lambda $ \;
+    }
+    % sum all lambdas
+    \textit{/* BallVol contains the unit Ball volume in dimension $d$ */}\;
+    \lnlset{InResC}{(c)}\Return{$\frac{BallVol \times \sum_{\lambda \in \Lambda} (\lambda^d)}{R}$}
+  }
+
+
+
+\caption{Monte-Carlo algorithm for estimating the volume of the cell for node~$n$~.}
+\label{algo:volume}
+\end{algorithm}
+
+Lines~(a)~to~(b) of Algorithm~\ref{algo:volume} present the
+selection of the closest peers for each ray. The function keeps all $\lambda$
+values for each ray (set $\Lambda$), and uses them to compute the
+estimation of the cell volume as follows (line~(c) of
+Algorithm~\ref{algo:volume}).  Each ray $r$ is associated to a
+\emph{ball} of radius $\lambda_r$ whose volume is given by $(BallVol
+\times (\lambda_r)^{d}) / R$, where $BallVol$ is the volume of the
+unit ball in dimension $d$.  The volume of the estimated cell is the
+average value, for all rays, of volumes of such balls (the
+contribution for each ray is represented as grey cones on
+Figure~\ref{fig.rayons2d}). Such an estimator of the volume of the
+Voronoï cell is clearly unbiased, so that the estimated volume
+converges to the volume of the Voronoï cell when $R \rightarrow
++\infty$. Nevertheless, the convergence strongly depends on the shape
+of the Voronoï cell, thus imposing the use of a large enough number of
+rays ($10^3$).
+
+
+\paragraph{Computing the best configuration}
+The algorithm to compute the best configuration is shown in
+Algorithm~\ref{algo:eff1}.  The algorithm maintains a bipartite graph
+$best$ containing on one side the nodes in $V_V$, and on the other
+side the rays $R$.  We denote by $best_n(r)$ the Voronoï neighbour
+$n_r$ of $n$ according to ray $r$: it is the node $n_r$ such that a
+ray issued from $n$ and whose direction is $r$ first reaches the
+Voronoï cell of $n_r$ (this entry is never empty). Similarly, we
+denote by $\{best_R(n^*)\}$ the set of rays for which $n^*$ is the
+current Voronoï neighbour of $n$ (this set may be empty).
+
+The objective is as follows: to compute the new view, for each node
+$n_j$ in $buffer \setminus V_V$ (\textit{i.e.} all peers for which
+$\{best_R(n_j)\}$ does not contain any information), we determine the
+set of rays for which $n_j$ is the Voronoï neighbour of the local
+node, $n$, in the augmented view Voronoï diagram.  This operation is
+described by lines~(a)~to~(b) of Algorithm~\ref{algo:eff1}.  Peers
+found to be a Voronoï neighbour of $n$ for a given ray are stored in
+the set $improve$, which has the same semantic as $best$, except
+that entries for some rays can be empty.
+
+On line~(c), either $improve $ or $best$ has information, for each
+ray, about which peer in the augmented view is a Voronoï neighbour of
+$n$.  The next step is to compute to which extent each peer is needed
+in the new configuration. More precisely, given a peer $n_x$, we
+compute the volume of the cell of $n$ with all peers \emph{but} $n_x$
+(lines~(c)-(d)).  If the volume of the cell increases dramatically,
+that means that peer $n_x$ was mandatory to ensure closeness and
+proximity.  On the other hand, if the volume remains the same, then
+peer $n_x$ has no contribution to coverage nor closeness.
+
+ 
+Volumes associated to each peer (\textit{i.e.} the volume without that
+peer in the configuration) are stored in the map $volumes$.  This map
+is then sorted by decreasing volume values~: starting from entries of
+peers that contributes highly to coverage and closeness, to entries of
+peers that have no or few contribution to coverage and closeness.  The
+new configuration is built from the $c$ peers that presents the
+maximum contribution, \textit{i.e.} peers of the first $c$ entries of
+$volume$.
+
+\begin{algorithm}[t]
+
+\textit{\id{selectToKeep}(\textsc{set}[nodes] $buffer$,
+  \textsc{set}[nodes] lastSent )}\\
+/* lastSent is not used in this protocol */
+  
+  \textbf{Local variables:}\\
+  ~~~~improve~(map ray $\rightarrow$ node) init $\emptyset$ /*improve has the same semantic as $best_n$*/\\
+  ~~~~volumes~(list of pairs (node,volume)) init $\emptyset$\\
+  \Begin{
+    \lnlset{InResAb}{(a)} \ForEach{ray $r \in o.rays$}{
+       double $best_\lambda = \perp$\;
+       node $imp = \perp$\;
+
+       \ForEach{node $n_j \in (buffer \cup V_K \setminus V_V)$}{
+         $\lambda \leftarrow $ distOnRay($r,n_j$)\;
+         \If{$\lambda < \left\{ \begin{array}{rcl} best_n(r) & \emph{if} & best_\lambda = \perp \\ best_\lambda & \emph{if} & best_\lambda \neq \perp \end{array}\right.$}{
+           $imp \leftarrow n_j$\;
+           $best_\lambda = \lambda$\;
+         }
+       }
+       \If{$best_\lambda \neq \perp$}{
+         % si on a trouve mieux
+         \lnlset{InResBb}{(b)}improve[r] $= imp$ \;
+       }
+    }
+    \lnlset{InResCb}{(c)}\ForEach{node $n_x \in V_V \cup (buffer \cup V_K
+      \setminus V_V)$}{
+       \lnlset{InResDb}{(d)}volumes $\leftarrow$ volumes $\cup$
+       pair($n_x$,calcVolumeImproved($best \cup improve, (buffer \cup V_K
+       \setminus V_V) \smallsetminus \{ n_x \}$))\;
+    }
+    sort volumes by decreasing volume\;
+    $V_V \leftarrow \{volumes[1], \dots , volumes[c]\}$\;
+    update $best_n$ and $best_R$\;
+  }
+
+%\vspace{2mm}
+\caption{Update of node's view $V_V$. Sets $best_N$ and $best_R$ are constructed and coherent i.r.t. the current $V_V$ when starting the algorithm.}
+\label{algo:eff1}
+\end{algorithm}
+
+
+
+\section{Initialization}
+An important point when dealing with view maintenance protocols like
+raynet, is the initialization of their views. In the case of RayNet
+this process requires the insertion of a set of descriptors of known
+nodes (at least one) in both the Kleinberg and the RayNet view, that
+is in both $V_K$ and $V_V$. Both views may be initialized with the
+same set.
+
+\section{Routing in the RayNet}
+The interface operation supported by the RayNet is \id{route(Message
+  m, Point p)}
+that routes a message to the node whose voronoi cell contains point
+p. This is achieved by the simple steps shown in
+Algorithm~\ref{algo:route}.
+
+
+\begin{algorithm}[h]
+
+
+
+\textit{\textbf{route(Message m)}}\\
+  \Begin{
+    \textbf{double} d=$\infty$\;
+    \textbf{node} closest=\textbf{null}\;
+    \textbf{Point} p=m.dest\;
+        \ForEach{node $n_j \in V_K \cup V_V \cup \{n\}$}{
+             \If {d > $d(n_j,p)$}{
+               d=$d(n_j,p)$\;
+               closest=$n_j$\;
+             }
+        }
+        % lambda calculated at this point
+        
+    \If{closest=n}{
+      \textbf{return} m to application
+    } \Else {
+      \textbf{send} m \textbf{to} closest
+    }
+    % sum all lambdas
+
+  }
+\vspace{3ex}
+\textit{\textbf{receive(Message m)}}\\
+  \Begin{
+    route (m)
+  }
+
+
+\caption{Routing a message to a point.}
+\label{algo:route}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+% on two types view exchange
+% operations. The first constitutes the active phase of the RayNet
+% protocol and is executed periodically by each peer. The second,
+% implements its behavior triggered by the receipt of a message. The
+% active phase allows peers in the RayNet protocol to initiate the
+% dissemination of information about other peers in a gossip fashion.
+% The passive phase, on the other hand, allows peers to respond to the
+% messages sent by other peers in their view exchange operations. 
+
+% \paragraph{Active Phase}
+% The active phase of the RayNet protocol is executed periodically and 
+
+
+% \paragraph{Passive Phase}
+% The passive phase of the protocol allows \rn peers to process
+% information received by other peers in the overlay and to use it to
+% maintain their own sets of neighbors. 
+
+
+% \section{Voronoi-cell estimation}
+% The key characteristic of RayNet is the ability to select each peer's
+% view so that it contains those that constitute its neighbor in the
+% Delaunay graph. This is achieved by means of a simple algorithm that
+% estimates the size of the voronoi-cell resulting from the choice of a
+% given view. Each peer then seeks to maintain the view that minimizes
+% the size of this cell so that its view eventually converges to its set
+% of neighbors in the Voronoy/Delaunay graph. 
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
