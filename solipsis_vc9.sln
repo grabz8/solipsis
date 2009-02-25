@@ -182,7 +182,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetObjects", "RakNetObje
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigatorConfigDialog", "navigatorConfigDialog\navigatorConfigDialog_vc9.vcproj", "{6FE81BEF-D89F-45ED-B044-D8CC0975A825}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngineFModSpeex", "voiceEngine\voiceEngineFModSpeex\voiceEngineFModSpeex_vc9.vcproj", "{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngineFModSpeex", "Voice\voiceEngine\voiceEngineFModSpeex\voiceEngineFModSpeex_vc9.vcproj", "{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C} = {938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}
 		{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2} = {E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}
@@ -192,7 +192,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngineFModSpeex", "voi
 		{2517A49B-1219-4823-8178-2A8B6D5FC63C} = {2517A49B-1219-4823-8178-2A8B6D5FC63C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineClient", "voiceEngine\Client\VoiceEngineClient_vc9.vcproj", "{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineClient", "Voice\voiceEngine\Client\VoiceEngineClient_vc9.vcproj", "{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C} = {938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}
 		{2517A49B-1219-4823-8178-2A8B6D5FC63C} = {2517A49B-1219-4823-8178-2A8B6D5FC63C}
@@ -208,26 +208,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "navigator_plugins", "naviga
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdparty", "3rdparty", "{B9826B29-BAAB-4CE4-94C1-77589DFB67EE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngine", "voiceEngine\voiceEngine_vc9.vcproj", "{5F784299-72E2-4482-941D-12485DE80C30}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngine", "Voice\voiceEngine\voiceEngine_vc9.vcproj", "{5F784299-72E2-4482-941D-12485DE80C30}"
 	ProjectSection(ProjectDependencies) = postProject
 		{38512799-B050-49D0-8025-C7623D2D1CF1} = {38512799-B050-49D0-8025-C7623D2D1CF1}
 		{2517A49B-1219-4823-8178-2A8B6D5FC63C} = {2517A49B-1219-4823-8178-2A8B6D5FC63C}
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyPhonetizer", "DummyPhonetizer\DummyPhonetizer_vc9.vcproj", "{C0E62EB8-7D34-43BE-BAEA-50AA8F4C224E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DummyPhonetizer", "Voice\DummyPhonetizer\DummyPhonetizer_vc9.vcproj", "{C0E62EB8-7D34-43BE-BAEA-50AA8F4C224E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
 		{38512799-B050-49D0-8025-C7623D2D1CF1} = {38512799-B050-49D0-8025-C7623D2D1CF1}
 		{2517A49B-1219-4823-8178-2A8B6D5FC63C} = {2517A49B-1219-4823-8178-2A8B6D5FC63C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phonetizer", "Phonetizer\Phonetizer_vc9.vcproj", "{38512799-B050-49D0-8025-C7623D2D1CF1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Phonetizer", "Voice\Phonetizer\Phonetizer_vc9.vcproj", "{38512799-B050-49D0-8025-C7623D2D1CF1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2517A49B-1219-4823-8178-2A8B6D5FC63C} = {2517A49B-1219-4823-8178-2A8B6D5FC63C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleVoiceEngineProtocol", "voiceEngine\SimpleVoiceEngineProtocol\SimpleVoiceEngineProtocol_vc9.vcproj", "{CCDFA8B2-DA14-4F21-BA0A-5140FA39AF3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleVoiceEngineProtocol", "Voice\voiceEngine\SimpleVoiceEngineProtocol\SimpleVoiceEngineProtocol_vc9.vcproj", "{CCDFA8B2-DA14-4F21-BA0A-5140FA39AF3B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DD2704DC-41CA-4FBB-99FC-204FA6942500} = {DD2704DC-41CA-4FBB-99FC-204FA6942500}
 	EndProjectSection
@@ -236,7 +236,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspeex", "DevTools\speex\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiconv", "DevTools\libiconv\libiconv_vc9.vcproj", "{F726EB96-A5D1-402A-980C-E4D09ED1BB3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceController", "FaceController\FaceController_vc9.vcproj", "{DC8D9E2C-7686-4902-8D07-367C902812E4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceController", "Voice\FaceController\FaceController_vc9.vcproj", "{DC8D9E2C-7686-4902-8D07-367C902812E4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VLCPlugin", "VLCPlugin\VLCPlugin_vc9.vcproj", "{C477314D-972B-4524-95C3-25DA9471A3C3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -281,9 +281,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antlr2.7.6", "DevTools\Antl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gecode-2.2.0", "DevTools\gecode-2.2.0\gecode-2.2.0_vc9.vcproj", "{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineSimpleServer", "voiceEngine\SimpleServer\VoiceEngineSimpleServer_vc9.vcproj", "{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineSimpleServer", "Voice\voiceEngine\SimpleServer\VoiceEngineSimpleServer_vc9.vcproj", "{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestServer", "voiceEngine\TestServer\TestServer_vc9.vcproj", "{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestServer", "Voice\voiceEngine\TestServer\TestServer_vc9.vcproj", "{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376} = {FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}
 	EndProjectSection
