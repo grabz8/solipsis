@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\P2NClient;..\..\Dependencies\protocols\XmlDatas\include;..\P2NServer"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\P2NServer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;P2NNULLCLIENTSERVER_EXPORTS;P2NCLIENT_SELF_BUILD;P2NSERVER_SELF_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,7 +65,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib"
+				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -94,7 +94,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\protocols\P2NNullClientServer&quot; mkdir &quot;..\..\Dependencies\protocols\P2NNullClientServer&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\P2NServer\IP2NServer.h ..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\P2NClient\IP2NClient.h ..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NNullClientServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NNullClientServer&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\P2NServer\IP2NServer.h ..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\P2NClient\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;..\..\Dependencies\xmlrpc++\include&quot;;..\P2NClient;..\..\Dependencies\protocols\XmlDatas\include;..\P2NServer"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\P2NServer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;P2NNULLCLIENTSERVER_EXPORTS;P2NCLIENT_SELF_BUILD;P2NSERVER_SELF_BUILD"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -144,7 +144,7 @@
 				AdditionalDependencies="pthreadVC.lib"
 				OutputFile="$(OutDir)/P2NNullClientServer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib"
+				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -175,7 +175,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\Dependencies\protocols\P2NNullClientServer&quot; mkdir &quot;..\..\Dependencies\protocols\P2NNullClientServer&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\P2NServer\IP2NServer.h ..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\P2NClient\IP2NClient.h ..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NNullClientServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NNullClientServer&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\P2NServer\IP2NServer.h ..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\P2NClient\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NNullClientServer\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

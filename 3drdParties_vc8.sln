@@ -31,7 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulxmlrpcpp", "DevTools\ulxm
 		{50FC458E-425A-487F-83E5-E77F18C25C5C} = {50FC458E-425A-487F-83E5-E77F18C25C5C}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc8.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc8.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetDLL", "DevTools\RakNet\Lib\DLL\RakNetDLL_vc8.vcproj", "{BC75CD23-CB75-4233-A305-B7328825A9A5}"
 EndProject
@@ -43,11 +43,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspeex", "DevTools\speex\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiconv", "DevTools\libiconv\libiconv_vc8.vcproj", "{F726EB96-A5D1-402A-980C-E4D09ED1BB3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "VNCPlugin\vncviewer\libjpeg\libjpeg_vc8.vcproj", "{B6F84561-61FE-477D-AE2E-D4152A247FB1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\libjpeg\libjpeg_vc8.vcproj", "{B6F84561-61FE-477D-AE2E-D4152A247FB1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "VNCPlugin\vncviewer\omnithread\omnithread_vc8.vcproj", "{0434BF2B-6310-4BB5-804E-F7A11C074CA2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\omnithread\omnithread_vc8.vcproj", "{0434BF2B-6310-4BB5-804E-F7A11C074CA2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogreMax_vc8", "DevTools\ogreMax\script\ogreMax_vc8.vcproj", "{48AFAAA6-65AB-47B1-8DFA-79E9F99948C5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hikari", "DevTools\hikari\Hikari_vc8.vcproj", "{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}"
 EndProject

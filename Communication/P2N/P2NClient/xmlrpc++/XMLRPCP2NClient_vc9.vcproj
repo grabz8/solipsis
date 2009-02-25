@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\..\Dependencies\pthreads\include;..\..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;XMLRPCP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 				AdditionalDependencies="tinyxmld.lib pthreadVC_d.lib wsock32.lib XmlRpc_d.lib XmlDatas.lib"
 				OutputFile="$(OutDir)/XMLRPCP2NClient.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\tinyxml\lib;&quot;..\..\..\Dependencies\xmlrpc++\lib&quot;;&quot;..\..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\Dependencies\pthreads\lib;..\..\..\..\Dependencies\tinyxml\lib;&quot;..\..\..\..\Dependencies\xmlrpc++\lib&quot;;&quot;..\..\..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -95,7 +95,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\..\Dependencies\pthreads\include;..\..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\..\Dependencies\protocols\XmlDatas\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;XMLRPCP2NCLIENT_EXPORTS;P2NCLIENT_SELF_BUILD"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -145,7 +145,7 @@
 				AdditionalDependencies="tinyxml.lib pthreadVC.lib wsock32.lib XmlRpc.lib XmlDatas.lib"
 				OutputFile="$(OutDir)/XMLRPCP2NClient.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\tinyxml\lib;&quot;..\..\..\Dependencies\xmlrpc++\lib&quot;;&quot;..\..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\Dependencies\pthreads\lib;..\..\..\..\Dependencies\tinyxml\lib;&quot;..\..\..\..\Dependencies\xmlrpc++\lib&quot;;&quot;..\..\..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -176,7 +176,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient&quot;&#x0D;&#x0A;copy ..\IP2NClient.h ..\..\..\..\Dependencies\protocols\P2NClient&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\protocols\P2NClient\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

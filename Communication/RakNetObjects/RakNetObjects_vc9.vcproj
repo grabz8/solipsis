@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9.00"
 	Name="RakNetObjects"
 	ProjectGUID="{F3C1AD5F-9D9A-4D93-B427-01A2F2031D50}"
 	RootNamespace="RakNetObjects"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -39,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\RakNet\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;..\..\Dependencies\RakNet\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -74,8 +75,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\Dependencies\RakNetObjects\include&quot; mkdir &quot;..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;copy *.h &quot;..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;if not exist &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot; mkdir &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
+				Description="Copying debug runtime files ..\..."
+				CommandLine="if not exist &quot;..\..\Dependencies\RakNetObjects\include&quot; mkdir &quot;..\..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;copy *.h &quot;..\..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -103,7 +104,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Dependencies\pthreads\include;..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\Dependencies\CommonTools\include;..\Dependencies\protocols\XmlDatas\include;..\Dependencies\RakNet\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;..\..\Dependencies\RakNet\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NLOGRAKNET"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -136,8 +137,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\Dependencies\RakNetObjects\include&quot; mkdir &quot;..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;copy *.h &quot;..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;if not exist &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot; mkdir &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
+				Description="Copying release runtime files ..\..."
+				CommandLine="if not exist &quot;..\..\Dependencies\RakNetObjects\include&quot; mkdir &quot;..\..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;copy *.h &quot;..\..\Dependencies\RakNetObjects\include&quot;&#x0D;&#x0A;if not exist &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot; mkdir &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

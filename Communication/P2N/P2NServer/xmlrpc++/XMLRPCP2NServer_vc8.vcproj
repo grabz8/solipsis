@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8,00"
 	Name="XMLRPCP2NServer"
 	ProjectGUID="{3F9BA22F-03A7-4931-8C20-96909D9EC03E}"
 	RootNamespace="XMLRPCP2NServer"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -42,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\P2NServer"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\..\Dependencies\pthreads\include;..\..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\..\Dependencies\protocols\XmlDatas\include;..\..\P2NServer"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;XMLRPCP2NSERVER_EXPORTS;P2NSERVER_SELF_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,11 +64,9 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib wsock32.lib XmlRpc_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;&quot;..\..\..\Dependencies\xmlrpc++\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\Dependencies\pthreads\lib;&quot;..\..\..\..\Dependencies\xmlrpc++\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/XMLRPCP2NServer.lib"
 				TargetMachine="1"
 			/>
@@ -92,9 +89,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\IP2NServer.h ..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\IP2NServer.h ..\..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,7 +122,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\P2NServer"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\..\Dependencies\pthreads\include;..\..\..\..\Dependencies\tinyxml\include;&quot;..\..\..\..\Dependencies\xmlrpc++\include&quot;;..\..\P2NClient;..\..\..\..\Dependencies\protocols\XmlDatas\include;..\..\P2NServer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;XMLRPCP2NSERVER_EXPORTS;P2NSERVER_SELF_BUILD"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -144,13 +144,11 @@
 				AdditionalDependencies="pthreadVC.lib wsock32.lib XmlRpc.lib"
 				OutputFile="$(OutDir)/XMLRPCP2NServer.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;&quot;..\..\..\Dependencies\xmlrpc++\lib&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\Dependencies\pthreads\lib;&quot;..\..\..\..\Dependencies\xmlrpc++\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/XMLRPCP2NServer.lib"
 				TargetMachine="1"
 			/>
@@ -173,9 +171,12 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if not exist &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\IP2NServer.h ..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
+				CommandLine="if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++&quot;&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer&quot;&#x0D;&#x0A;copy ..\IP2NServer.h ..\..\..\..\Dependencies\protocols\P2NServer&#x0D;&#x0A;if not exist &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot; mkdir &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

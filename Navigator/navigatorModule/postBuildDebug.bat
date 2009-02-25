@@ -1,7 +1,9 @@
+
+
 set dst="..\..\Common\bin\navigator\Debug"
 set vc="%1"
 
-if not exist "..\Dependencies\navigatorModule\include" mkdir ..\..\Dependencies\navigatorModule\include
+if not exist "..\..\Dependencies\navigatorModule\include" mkdir ..\..\Dependencies\navigatorModule\include
 copy .\NavigatorModule.h ..\..\Dependencies\navigatorModule\include\. /y
 copy .\Event.h ..\..\Dependencies\navigatorModule\include\. /y
 copy .\IApplication.h ..\..\Dependencies\navigatorModule\include\. /y
@@ -89,3 +91,5 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
 :quake3settings_exist
 xcopy "..\..\Media\resources.cfg" "%dst%" /s /y
 copy "..\..\readmeUser.txt" "%dst%\readme.txt" /y
+
+pause
