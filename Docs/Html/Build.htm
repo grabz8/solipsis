@@ -12,6 +12,11 @@
 
 <img src="../HTML/images/header.jpg" border="0" height="216" hspace="0" width="776"></p><br><br><br><h2>HOW
 TO BUILD</h2>
+To
+define environment variables <br><ul><li>
+Under XP : press [WINDOWS]+[PAUSE] / Advanced / Env. Var.</li><li>
+under Vista : press [WINDOWS]+[PAUSE] ; clic on Modify Parameters link
+; / Advanced / Env. Var.</li></ul>
 
 
 <h3>Visual
@@ -23,17 +28,8 @@ vcX
 stands for Visual config (vc7 or vc8 or vc9), be aware vc7 projects are
 no more up-to-date so it s at your own risk
 </li><li>
-To
-define environment variables <br>
-Under XP : press [WINDOWS]+[PAUSE] / Advanced / Env. Var.<br>
-under Vista : press [WINDOWS]+[PAUSE] ; clic on Modify Parameters link
-; / Advanced / Env. Var.<br>
 
- 
-</li><li>
-
-Install Visual Studio 2005 + SP1 package or VS 2008s
-</li></ul>
+Install Visual Studio 2005 + SP1 package or VS 2008, 2003 (.Net) is no more supported.</li></ul>
 
 
 <h3>Visual
@@ -41,22 +37,22 @@ Studio Express (free version)</h3>
 
 
 <p>If you are using Visual Studio Express 2005,
-upgrade it with the SP1 package<br>
+upgrade it with the SP1 package</p><p>
 Update the default Visual Studio COREWIN properties XML file to add
-system libraries:<br>
-&nbsp;VSExpress2005 C:\Program Files\Microsoft Visual Studio
-8\VC\VCProjectDefaults\corewin_express.vsprops<br>
-&nbsp;VSExpress2008 C:\Program Files\Microsoft Visual Studio
-9.0\VC\VCProjectDefaults\CoreWin.vsprops<br>
+system libraries:<br></p><ul><li>
+&nbsp;<span style="font-weight: bold;">VSExpress2005</span> C:\Program Files\Microsoft Visual Studio
+8\VC\VCProjectDefaults\corewin_express.vsprops</li></ul><p></p><ul><li>
+&nbsp;<span style="font-weight: bold;">VSExpress2008</span> C:\Program Files\Microsoft Visual Studio
+9.0\VC\VCProjectDefaults\CoreWin.vsprops</li></ul><p>
 &nbsp;replace this line :<br>
 <br>
 &nbsp; 
-AdditionalDependencies="kernel32.lib"/&gt;
+<span style="font-weight: bold;">AdditionalDependencies</span>="kernel32.lib"/&gt;
 &nbsp;by this line :<br>
 <br>
-&nbsp; AdditionalDependencies="kernel32.lib
+&nbsp; <span style="font-weight: bold;">AdditionalDependencies</span>="kernel32.lib
 user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib
-ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/&gt;</p><br><h3>DirectX</h3><br><p> Check you installed correctly the DirectX SDK
+ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/&gt;</p><h3>DirectX</h3><p> Check you installed correctly the DirectX SDK
 August 2007 (at least ;-) )</p>
 
 <ul><li>
@@ -72,7 +68,7 @@ Orge SDK</p>
  
 
 
-<h4 style="margin-left: 40px;">Sources</h4><br><ul><li>
+<h4 style="margin-left: 40px;">Sources</h4><ul><li>
 Download
 Ogre source package (branch 1.6) <a href="http://www.ogre3d.org/download/source">http://www.ogre3d.org/download/source</a>&nbsp;&nbsp;
 
@@ -94,11 +90,7 @@ and c:\your_OgrePath\Samples )
 Take care of which version of visual
 C++ you have. Here are the current links (please modify this readme if
 changes occured)
-<ul><li>
-<a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC71SP1_Eihort_20071227.zip">Visual
-C++.Net 2003 (7.1) Precompiled Dependencies</a>&nbsp; with
-Visual Studio .Net 2003
-</li><li>
+<br><ul><li>
 <a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC8SP1_Eihort_20071227.zip">Visual
 C++.Net 2005 (8.0) SP1 Precompiled Dependencies</a>&nbsp;
 with Visual Studio Express 2005 or VS2005Pro</li><li><a href="http://downloads.sourceforge.net/ogre/OgreDependencies_VC9_Eihort_20080203.zip">Visual
@@ -147,9 +139,9 @@ C:\your_OgrePath</li></ul><br><h4>or SDK</h4><br><ul><li>Download the SDK <a hre
 If you are using 1 prebuilt release of Ogre SDK, take care this release
 was built with same<br>
 release of Visual Studio you will use, examples:<br><br><ul><li>with
-Visual Studio Express 2008 
+Visual Studio Express 2008 or Visual 2008 Pro : : 
 </li><li>with
-Visual Studio Express 2005 or VS2005Pro&nbsp;<a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC80.exe?use_mirror=">OGRE
+Visual Studio Express 2005 or VS2005 Pro : <a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC80.exe?use_mirror=">OGRE
 1.6.1 SDK for Visual C++ .Net 2005 (8.0) SP1</a> 
 &nbsp; </li></ul>The sdk still
 contains dependencies, just install it. It will defines the good
