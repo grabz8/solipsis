@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head>
+<meta name="GENERATOR" content="PageBreeze Free HTML Editor (http://www.pagebreeze.com)">
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"><title>Solipsis Readme</title>
+
+<link rel="stylesheet" href="Docs/Html/styles.css" type="text/css"></head>
+<body style="background-color: rgb(255, 255, 255);">
+
+
+
+
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+<tbody>
+<tr>
+<td>
+<p align="center">
+
+
+
+
+
+<img src="./Docs/HTML/images/header.jpg" border="0" height="216" hspace="0" width="776"></p>
+</td>
+</tr>
+<tr>
+<td><span style="font-weight: bold;"><br></span><h1><span style="font-weight: bold;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+S O L I P S I S &nbsp;Readme User</span></h1><br>Solipsis is an opensource decentralized Metaverse platform<br>For the latest info, see http://www.solipsis.org/<br><br><h2>CONFIG</h2><br>Visual C++ 2005 Redist x86 libraries package<br>Python 2.5.2 or later package to run the Worlds Server<br>DirectX 9.0 or later package<br>Ageia PhysX drivers 7.11.13 or later<br><br><br><h2>HELP</h2><h3>Camera:</h3>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First-Person view mode<br>2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+First-Person view mode with mouse to interact<br>3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Third-Person view mode<br>4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Third-Person view mode with camera orbit<br>MOUSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cursor mode (3rd person) / View mode (1st person)<br>MOUSE DBL LCLICK In plugins mode, you have to double-click left mouse to enter/leave FirstPerson mouse mode<br><br><br>Move (french keyboard letters):<br>UP/Z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Move forward<br>DOWN/S&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Move backward<br>LEFT/Q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turn left (3rd person) / Straff left (1st person)<br>RIGHT/D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Turn right (3rd person) / Straff right (1st person)<br>PGUP/E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fly up (+ deactivate gravity)<br>PGDOWN/C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fly down<br>END&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Activate gravity<br><br><h3>Panels:</h3>MOUSE RCLICK&nbsp;&nbsp;&nbsp;&nbsp; Display context panel (avatar, WWW navi, VLC, ...)<br>ESC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Hit ESCAPE 2 times to defocus current panel (WWW Navi, VNC, ...)<br>F7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle CHAT panel<br>F8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle AVATAR main panel<br>F9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Toggle MODELER main panel<br><br><br><h2>APPLICATIONS/ARGUMENTS</h2><br>To run the Peer application you can specify host, port and verbosity of the Peer/Navigator XMLRPC server,<br>additionally
+you have to specify host, port of the RakNet server, in NCS configs
+those parameters should be passed to the Navigator application:<br>-h &lt;IPaddr:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : IP address (default: localhost)<br>-p &lt;port:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : port (default: 8880)<br>-v &lt;verbosity:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : verbosity level (0..2)<br>-m
+&lt;mediaCachePath:str&gt; : Pathname to Media/cache directory (usefull
+to share same network directory between the Navigator and its Peer)<br><br><br>To run the RakNet Server you can specify the port, max connections and simulated scene<br>If
+you launch it from the same system than navigator then you have to
+change the Media/cache directory (eg. copy the default Media/cache
+directory into Media/cacheServer)<br>-p
+&lt;port:int&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: port (default: 8660)<br>-c &lt;maxIncomingConnections:int&gt; : maximum incoming connections (default: 32)<br>-s
+&lt;sceneNodeId:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+: Scene nodeId loaded by the simulator (eg. 11112222 for Delta Station,
+11112223 Children Island, ...), look into the .xml file to update some
+presets<br>-m &lt;mediaCachePath:str&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : Pathname to Media/cache directory<br><br><br>To run the Worlds Server, check you got python installed and launch WorldsServer.py<br>Update internal host:port if you want to change default values localhost:8550<br></td>
+</tr>
+<tr>
+<td>
+<p align="center"> <a href="http://www.agence-nationale-recherche.fr/"><img src="./Docs/HTML/images/s_anr.jpg" border="0" height="32"></a><a href="http://www.images-et-reseaux.com/"><img src="./Docs/HTML/images/s_imr.jpg" border="0" height="32"></a><a href="http://rd.francetelecom.com/fr/groupe/rd/"><img src="./Docs/HTML/images/s_orange.jpg" border="0" height="32"></a> &nbsp; <a href="http://www.irisa.fr/"><img src="./Docs/HTML/images/s_inria.jpg" border="0" height="32"></a>
+&nbsp; <a href="http://www.archivideo.com/"><img src="./Docs/HTML/images/s_archivideo.jpg" border="0" height="32"></a>
+&nbsp; <a href="http://www.artefacto.fr/"><img src="./Docs/HTML/images/s_artefacto.jpg" border="0" height="32"></a> &nbsp; <a href="http://www.uhb.fr/sc_humaines/las/"><img src="./Docs/HTML/images/s_rennes2.jpg" border="0" height="32"></a> &nbsp; </p>
+</td>
+</tr>
+</tbody>
+</table>
+</body></html>
