@@ -161,6 +161,7 @@ void AvatarNode::onNewEntity(Entity* entity)
         else
             xmlEntity->setFlags(xmlEntity->getFlags() & ~EFGravity);
         mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAFlags);
+        // Here we re-create character physics, we could only reset character position instead of
         ((Entity*)mEntity)->createPhysics(Peer::getSingleton().getPhysicsScene());
         ((Entity*)mEntity)->applyGravity(true);
         onUpdatedEntity((Entity*)mEntity);
