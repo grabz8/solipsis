@@ -74,7 +74,7 @@ rmdir Dependencies\speex /S /Q
 rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 rmdir Dependencies\vlc /S /Q
-rmdir Dependencies\plugin_3ds /S /Q
+rmdir Dependencies\Navigator\NavigatorPlugins\plugin_3ds /S /Q
 rmdir Dependencies\plugin_skp /S /Q
 rmdir Dependencies\RakNet /S /Q
 rmdir Dependencies\curl /S /Q
@@ -93,243 +93,224 @@ rmdir Dependencies\ogreMax /S /Q
 rmdir Dependencies\hikari /S /Q
 rmdir Dependencies\DeclarativeModeler /S /Q
 
-rmdir DevTools\llmozlib\Debug_vc7 /S /Q
-rmdir DevTools\llmozlib\Debug_vc8 /S /Q
-rmdir DevTools\llmozlib\Debug_vc9 /S /Q
-rmdir DevTools\llmozlib\Release_vc7 /S /Q
-rmdir DevTools\llmozlib\Release_vc8 /S /Q
-rmdir DevTools\llmozlib\Release_vc9 /S /Q
-rmdir DevTools\lua\lib /S /Q
-rmdir DevTools\navi\Navi\Objects_vc7 /S /Q
-rmdir DevTools\navi\Navi\Objects_vc8 /S /Q
-rmdir DevTools\navi\Navi\Objects_vc9 /S /Q
-rmdir DevTools\navi\Navi\lib_vc7 /S /Q
-rmdir DevTools\navi\Navi\lib_vc8 /S /Q
-rmdir DevTools\navi\Navi\lib_vc9 /S /Q
-rmdir DevTools\navi\NaviDemo\Objects_vc7 /S /Q
-rmdir DevTools\navi\NaviDemo\Objects_vc8 /S /Q
-rmdir DevTools\navi\NaviDemo\Objects_vc9 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\debug_vc7 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\debug_vc8 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\debug_vc9 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\release_vc7 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\release_vc8 /S /Q
-rmdir DevTools\navi\NaviDemo\Bin\release_vc9 /S /Q
-rmdir DevTools\OgreMax\script\lib /S /Q
-rmdir DevTools\OgreMax\script\Debug /S /Q
-rmdir DevTools\OgreMax\script\Release /S /Q
-rmdir DevTools\OgreOde\lib\debug /S /Q
-rmdir DevTools\OgreOde\lib\release /S /Q
-rmdir DevTools\OgreOde\obj\Debug /S /Q
-rmdir DevTools\OgreOde\obj\Release /S /Q
-rmdir DevTools\OgreOde\ode\lib\debuglib /S /Q
-rmdir DevTools\OgreOde\ode\lib\releaselib /S /Q
-rmdir DevTools\OgreOde\ode\build\vs2003\obj /S /Q
-rmdir DevTools\OgreOde\ode\build\vs2005\obj /S /Q
-rmdir DevTools\OgreOde\ode\build\vs2008\obj /S /Q
-del DevTools\pthreads\pthreadVC* /S /Q
-del DevTools\pthreads\BuildLog.htm /Q
-del DevTools\pthreads\mt.dep /Q
-del DevTools\pthreads\pthread.obj /Q
-del DevTools\pthreads\version.res /Q
-rmdir DevTools\tinyxml\Debug /S /Q
-rmdir DevTools\tinyxml\Release /S /Q
-rmdir DevTools\tokamak\lib\debugdll /S /Q
-rmdir DevTools\tokamak\lib\releasedll /S /Q
-rmdir DevTools\tokamak\tokamaksrc\tokamakdll /S /Q
-del DevTools\xmlrpc++\lib\*.lib /S /Q
-rmdir DevTools\xmlrpc++\Debug /S /Q
-rmdir DevTools\xmlrpc++\Release /S /Q
-rmdir DevTools\brep\Debug /S /Q
-rmdir DevTools\brep\Release /S /Q
-rmdir DevTools\brep\lib /S /Q
-rmdir DevTools\CSG\Debug /S /Q
-rmdir DevTools\CSG\Release /S /Q
-rmdir DevTools\CSG\lib /S /Q
-rmdir DevTools\expat\win32\bin /S /Q
-rmdir DevTools\expat\win32\tmp /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Debug /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Release /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Debug /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Debug /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
-rmdir DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Release /S /Q
-rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
-rmdir DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
-rmdir DevTools\libiconv\Debug /S /Q
-rmdir DevTools\libiconv\Release /S /Q
-rmdir DevTools\vnc_winsrc\winvnc\Debug /S /Q
-rmdir DevTools\vnc_winsrc\winvnc\Release /S /Q
-rmdir DevTools\vnc_winsrc\vncviewer\Debug /S /Q
-rmdir DevTools\vnc_winsrc\vncviewer\Release /S /Q
-rmdir DevTools\speex\win32\libspeex\Debug /S /Q
-rmdir DevTools\speex\win32\libspeex\Release /S /Q
-rmdir DevTools\RakNet\Lib\DLL\Debug /S /Q
-rmdir DevTools\RakNet\Lib\DLL\Release /S /Q
-del DevTools\RakNet\Lib\*.* /Q
-rmdir DevTools\curl\lib\Debug /S /Q
-rmdir DevTools\curl\lib\Release /S /Q
-rmdir DevTools\md5wrapper\Debug /S /Q
-rmdir DevTools\md5wrapper\Release /S /Q
-rmdir DevTools\hikari\lib /S /Q
-rmdir DevTools\hikari\objects /S /Q
-rmdir DevTools\Antlr2.7.6\Debug /S /Q
-rmdir DevTools\Antlr2.7.6\Release /S /Q
-rmdir DevTools\Gecode-2.2.0\Debug /S /Q
-rmdir DevTools\Gecode-2.2.0\Release /S /Q
+rmdir Sources\DevTools\llmozlib\Debug_vc7 /S /Q
+rmdir Sources\DevTools\llmozlib\Debug_vc8 /S /Q
+rmdir Sources\DevTools\llmozlib\Debug_vc9 /S /Q
+rmdir Sources\DevTools\llmozlib\Release_vc7 /S /Q
+rmdir Sources\DevTools\llmozlib\Release_vc8 /S /Q
+rmdir Sources\DevTools\llmozlib\Release_vc9 /S /Q
+rmdir Sources\DevTools\lua\lib /S /Q
+rmdir Sources\DevTools\navi\Navi\Objects_vc7 /S /Q
+rmdir Sources\DevTools\navi\Navi\Objects_vc8 /S /Q
+rmdir Sources\DevTools\navi\Navi\Objects_vc9 /S /Q
+rmdir Sources\DevTools\navi\Navi\lib_vc7 /S /Q
+rmdir Sources\DevTools\navi\Navi\lib_vc8 /S /Q
+rmdir Sources\DevTools\navi\Navi\lib_vc9 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Objects_vc7 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Objects_vc8 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Objects_vc9 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\debug_vc7 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\debug_vc8 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\debug_vc9 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\release_vc7 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\release_vc8 /S /Q
+rmdir Sources\DevTools\navi\NaviDemo\Bin\release_vc9 /S /Q
+rmdir Sources\DevTools\OgreMax\script\lib /S /Q
+rmdir Sources\DevTools\OgreMax\script\Debug /S /Q
+rmdir Sources\DevTools\OgreMax\script\Release /S /Q
+rmdir Sources\DevTools\OgreOde\lib\debug /S /Q
+rmdir Sources\DevTools\OgreOde\lib\release /S /Q
+rmdir Sources\DevTools\OgreOde\obj\Debug /S /Q
+rmdir Sources\DevTools\OgreOde\obj\Release /S /Q
+rmdir Sources\DevTools\OgreOde\ode\lib\debuglib /S /Q
+rmdir Sources\DevTools\OgreOde\ode\lib\releaselib /S /Q
+rmdir Sources\DevTools\OgreOde\ode\build\vs2003\obj /S /Q
+rmdir Sources\DevTools\OgreOde\ode\build\vs2005\obj /S /Q
+rmdir Sources\DevTools\OgreOde\ode\build\vs2008\obj /S /Q
+del Sources\DevTools\pthreads\pthreadVC* /S /Q
+del Sources\DevTools\pthreads\BuildLog.htm /Q
+del Sources\DevTools\pthreads\mt.dep /Q
+del Sources\DevTools\pthreads\pthread.obj /Q
+del Sources\DevTools\pthreads\version.res /Q
+rmdir Sources\DevTools\tinyxml\Debug /S /Q
+rmdir Sources\DevTools\tinyxml\Release /S /Q
+rmdir Sources\DevTools\tokamak\lib\debugdll /S /Q
+rmdir Sources\DevTools\tokamak\lib\releasedll /S /Q
+rmdir Sources\DevTools\tokamak\tokamaksrc\tokamakdll /S /Q
+del Sources\DevTools\xmlrpc++\lib\*.lib /S /Q
+rmdir Sources\DevTools\xmlrpc++\Debug /S /Q
+rmdir Sources\DevTools\xmlrpc++\Release /S /Q
+rmdir Sources\DevTools\brep\Debug /S /Q
+rmdir Sources\DevTools\brep\Release /S /Q
+rmdir Sources\DevTools\brep\lib /S /Q
+rmdir Sources\DevTools\CSG\Debug /S /Q
+rmdir Sources\DevTools\CSG\Release /S /Q
+rmdir Sources\DevTools\CSG\lib /S /Q
+rmdir Sources\DevTools\expat\win32\bin /S /Q
+rmdir Sources\DevTools\expat\win32\tmp /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Debug /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc71\ulxmlrpcpp\Release /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Debug /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Debug /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\Release /S /Q
+rmdir Sources\DevTools\ulxmlrpcpp\msvc9\ulxmlrpcpp\Release /S /Q
+rmdir Sources\DevTools\zlib123\projects\visualc6\Win32_LIB_Debug /S /Q
+rmdir Sources\DevTools\zlib123\projects\visualc6\Win32_LIB_Release /S /Q
+rmdir Sources\DevTools\libiconv\Debug /S /Q
+rmdir Sources\DevTools\libiconv\Release /S /Q
+rmdir Sources\DevTools\vnc_winsrc\winvnc\Debug /S /Q
+rmdir Sources\DevTools\vnc_winsrc\winvnc\Release /S /Q
+rmdir Sources\DevTools\vnc_winsrc\vncviewer\Debug /S /Q
+rmdir Sources\DevTools\vnc_winsrc\vncviewer\Release /S /Q
+rmdir Sources\DevTools\speex\win32\libspeex\Debug /S /Q
+rmdir Sources\DevTools\speex\win32\libspeex\Release /S /Q
+rmdir Sources\DevTools\RakNet\Lib\DLL\Debug /S /Q
+rmdir Sources\DevTools\RakNet\Lib\DLL\Release /S /Q
+del Sources\DevTools\RakNet\Lib\*.* /Q
+rmdir Sources\DevTools\curl\lib\Debug /S /Q
+rmdir Sources\DevTools\curl\lib\Release /S /Q
+rmdir Sources\DevTools\md5wrapper\Debug /S /Q
+rmdir Sources\DevTools\md5wrapper\Release /S /Q
+rmdir Sources\DevTools\hikari\lib /S /Q
+rmdir Sources\DevTools\hikari\objects /S /Q
+rmdir Sources\DevTools\Antlr2.7.6\Debug /S /Q
+rmdir Sources\DevTools\Antlr2.7.6\Release /S /Q
+rmdir Sources\DevTools\Gecode-2.2.0\Debug /S /Q
+rmdir Sources\DevTools\Gecode-2.2.0\Release /S /Q
 
 rmdir Docs\doxygen\html /S /Q
 
-rmdir CommonTools\Debug /S /Q
-rmdir CommonTools\Release /S /Q
+rmdir Sources\CommonTools\Debug /S /Q
+rmdir Sources\CommonTools\Release /S /Q
 
-rmdir MdlrTools\obj /S /Q
-rmdir AvatarTools\obj /S /Q
+rmdir Sources\Modelers\MdlrTools\obj /S /Q
+rmdir Sources\Modelers\AvatarTools\obj /S /Q
 
-rmdir navigator\Debug /S /Q
-rmdir navigator\Release /S /Q
-rmdir navigator\DebugNCS /S /Q
-rmdir navigator\ReleaseNCS /S /Q
+rmdir Sources\Navigator\NavigatorLauncher\Debug /S /Q
+rmdir Sources\Navigator\NavigatorLauncher\Release /S /Q
+rmdir Sources\Navigator\NavigatorLauncher\DebugNCS /S /Q
+rmdir Sources\Navigator\NavigatorLauncher\ReleaseNCS /S /Q
 
-rmdir navigatorModule\Debug /S /Q
-rmdir navigatorModule\Release /S /Q
+rmdir Sources\Navigator\navigatorModule\Debug /S /Q
+rmdir Sources\Navigator\navigatorModule\Release /S /Q
 
-rmdir navigatorPhysics\navigatorODE\Debug /S /Q
-rmdir navigatorPhysics\navigatorODE\Release /S /Q
-rmdir navigatorPhysics\navigatorPhysX\Debug /S /Q
-rmdir navigatorPhysics\navigatorPhysX\Release /S /Q
-rmdir navigatorPhysics\navigatorTokamak\Debug /S /Q
-rmdir navigatorPhysics\navigatorTokamak\Release /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Debug_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Debug_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Debug_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Release_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Release_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Release_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Debug_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Debug_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Debug_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Release_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Release_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\Release_vc9 /S /Q
+del Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\nsINavigatorPlugin.xpt /Q
+del Sources\Navigator\WebPlugins\navigatorPlugin\navigatorPlugin\SolipsisNavigator.xpt /Q
 
-rmdir navigatorPlugin\navigatorActiveX\Debug_vc7 /S /Q
-rmdir navigatorPlugin\navigatorActiveX\Debug_vc8 /S /Q
-rmdir navigatorPlugin\navigatorActiveX\Debug_vc9 /S /Q
-rmdir navigatorPlugin\navigatorActiveX\Release_vc7 /S /Q
-rmdir navigatorPlugin\navigatorActiveX\Release_vc8 /S /Q
-rmdir navigatorPlugin\navigatorActiveX\Release_vc9 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Debug_vc7 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Debug_vc8 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Debug_vc9 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Release_vc7 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Release_vc8 /S /Q
-rmdir navigatorPlugin\navigatorPlugin\Release_vc9 /S /Q
-del navigatorPlugin\navigatorPlugin\nsINavigatorPlugin.xpt /Q
-del navigatorPlugin\navigatorPlugin\SolipsisNavigator.xpt /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Release_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Release_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerAx\Release_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc9 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc7 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc8 /S /Q
+rmdir Sources\Navigator\WebPlugins\navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc9 /S /Q
 
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc7 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc8 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Debug_vc9 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc7 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc8 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerAx\Release_vc9 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc7 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc8 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Debug_vc9 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc7 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc8 /S /Q
-rmdir navigatorRunnerPlugin\navigatorRunnerMoz\Release_vc9 /S /Q
+rmdir Sources\Communication\XmlDatas\Debug /S /Q
+rmdir Sources\Communication\XmlDatas\Release /S /Q
+rmdir Sources\Communication\P2N\P2NClient\xmlrpc++\Debug /S /Q
+rmdir Sources\Communication\P2N\P2NClient\xmlrpc++\Release /S /Q
+rmdir Sources\Communication\P2N\P2NClient\ulxmlrpcpp\Debug /S /Q
+rmdir Sources\Communication\P2N\P2NClient\ulxmlrpcpp\Release /S /Q
+rmdir Sources\Communication\P2N\P2NServer\xmlrpc++\Debug /S /Q
+rmdir Sources\Communication\P2N\P2NServer\xmlrpc++\Release /S /Q
+rmdir Sources\Communication\P2N\P2NServer\ulxmlrpcpp\Debug /S /Q
+rmdir Sources\Communication\P2N\P2NServer\ulxmlrpcpp\Release /S /Q
+rmdir Sources\Communication\P2N\P2NNullClientServer\Debug /S /Q
+rmdir Sources\Communication\P2N\P2NNullClientServer\Release /S /Q
 
-rmdir node\bin /S /Q
+rmdir Sources\Communication\RakNetObjects\Debug /S /Q
+rmdir Sources\Communication\RakNetObjects\Release /S /Q
 
-rmdir protocols\XmlDatas\Debug /S /Q
-rmdir protocols\XmlDatas\Release /S /Q
-rmdir protocols\P2NClient\xmlrpc++\Debug /S /Q
-rmdir protocols\P2NClient\xmlrpc++\Release /S /Q
-rmdir protocols\P2NClient\ulxmlrpcpp\Debug /S /Q
-rmdir protocols\P2NClient\ulxmlrpcpp\Release /S /Q
-rmdir protocols\P2NServer\xmlrpc++\Debug /S /Q
-rmdir protocols\P2NServer\xmlrpc++\Release /S /Q
-rmdir protocols\P2NServer\ulxmlrpcpp\Debug /S /Q
-rmdir protocols\P2NServer\ulxmlrpcpp\Release /S /Q
-rmdir protocols\P2NNullClientServer\Debug /S /Q
-rmdir protocols\P2NNullClientServer\Release /S /Q
+rmdir Sources\Peer\PeerModuleRakNet\Debug /S /Q
+rmdir Sources\Peer\PeerModuleRakNet\Release /S /Q
+rmdir Sources\Peer\PeerModuleRakNet\DebugNCS /S /Q
+rmdir Sources\Peer\PeerModuleRakNet\ReleaseNCS /S /Q
 
-rmdir RakNetObjects\Debug /S /Q
-rmdir RakNetObjects\Release /S /Q
+rmdir Sources\Peer\PeerPhysX\peerPhysX\Debug /S /Q
+rmdir Sources\Peer\PeerPhysX\peerPhysX\Release /S /Q
+rmdir Sources\Peer\PeerPhysX\peerPhysX\DebugNCS /S /Q
+rmdir Sources\Peer\PeerPhysX\peerPhysX\ReleaseNCS /S /Q
 
-rmdir peerModuleRakNet\Debug /S /Q
-rmdir peerModuleRakNet\Release /S /Q
-rmdir peerModuleRakNet\DebugNCS /S /Q
-rmdir peerModuleRakNet\ReleaseNCS /S /Q
+rmdir Sources\Navigator\navigatorConfigDialog\Debug /S /Q
+rmdir Sources\Navigator\navigatorConfigDialog\Release /S /Q
 
-rmdir peerModuleSimulator\Debug /S /Q
-rmdir peerModuleSimulator\Release /S /Q
-rmdir peerModuleSimulator\DebugNCS /S /Q
-rmdir peerModuleSimulator\ReleaseNCS /S /Q
+rmdir Peer\PeerLauncher\Debug /S /Q
+rmdir Peer\PeerLauncher\Release /S /Q
 
-rmdir peerPhysics\peerPhysX\Debug /S /Q
-rmdir peerPhysics\peerPhysX\Release /S /Q
-rmdir peerPhysics\peerPhysX\DebugNCS /S /Q
-rmdir peerPhysics\peerPhysX\ReleaseNCS /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\omnithread\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\omnithread\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\libjpeg\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\libjpeg\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\zlib\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\zlib\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\vncviewer\Release /S /Q
 
-rmdir navigatorConfigDialog\Debug /S /Q
-rmdir navigatorConfigDialog\Release /S /Q
+rmdir Sources\Voice\voiceEngine\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\Release /S /Q
+rmdir Sources\Voice\voiceEngine\SimpleVoiceEngineProtocol\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\SimpleVoiceEngineProtocol\Release /S /Q
+rmdir Sources\Voice\voiceEngine\Client\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\Client\Release /S /Q
+rmdir Sources\Voice\voiceEngine\SimpleServer\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\SimpleServer\Release /S /Q
+rmdir Sources\Voice\voiceEngine\TestClient\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\TestClient\Release /S /Q
+rmdir Sources\Voice\voiceEngine\TestServer\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\TestServer\Release /S /Q
+rmdir Sources\Voice\voiceEngine\voiceEngineFModSpeex\Debug /S /Q
+rmdir Sources\Voice\voiceEngine\voiceEngineFModSpeex\Release /S /Q
 
-rmdir navigatorModuleOnlyNav\Debug /S /Q
-rmdir navigatorModuleOnlyNav\Release /S /Q
-rmdir navigatorModuleOnlyNav\DebugNCS /S /Q
-rmdir navigatorModuleOnlyNav\ReleaseNCS /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Debug /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Release /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_3ds\Debug /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_3ds\Release /S /Q
 
-rmdir peer\Debug /S /Q
-rmdir peer\Release /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_skp\Debug /S /Q
+rmdir Navigator\NavigatorPlugins\plugin_skp\Release /S /Q
 
-rmdir VNCPlugin\Debug /S /Q
-rmdir VNCPlugin\Release /S /Q
-rmdir VNCPlugin\vncviewer\omnithread\Debug /S /Q
-rmdir VNCPlugin\vncviewer\omnithread\Release /S /Q
-rmdir VNCPlugin\vncviewer\libjpeg\Debug /S /Q
-rmdir VNCPlugin\vncviewer\libjpeg\Release /S /Q
-rmdir VNCPlugin\vncviewer\zlib\Debug /S /Q
-rmdir VNCPlugin\vncviewer\zlib\Release /S /Q
-rmdir VNCPlugin\vncviewer\Debug /S /Q
-rmdir VNCPlugin\vncviewer\Release /S /Q
+rmdir Sources\RakNetServer\Debug /S /Q
+rmdir Sources\RakNetServer\Release /S /Q
 
-rmdir voiceEngine\Debug /S /Q
-rmdir voiceEngine\Release /S /Q
-rmdir voiceEngine\SimpleVoiceEngineProtocol\Debug /S /Q
-rmdir voiceEngine\SimpleVoiceEngineProtocol\Release /S /Q
-rmdir voiceEngine\Client\Debug /S /Q
-rmdir voiceEngine\Client\Release /S /Q
-rmdir voiceEngine\SimpleServer\Debug /S /Q
-rmdir voiceEngine\SimpleServer\Release /S /Q
-rmdir voiceEngine\TestClient\Debug /S /Q
-rmdir voiceEngine\TestClient\Release /S /Q
-rmdir voiceEngine\TestServer\Debug /S /Q
-rmdir voiceEngine\TestServer\Release /S /Q
-rmdir voiceEngine\voiceEngineFModSpeex\Debug /S /Q
-rmdir voiceEngine\voiceEngineFModSpeex\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VLCPlugin\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\VLCPlugin\Release /S /Q
 
-rmdir plugin_3ds\3dsftk3\SOURCE\Debug /S /Q
-rmdir plugin_3ds\3dsftk3\SOURCE\Release /S /Q
-rmdir plugin_3ds\Debug /S /Q
-rmdir plugin_3ds\Release /S /Q
+rmdir Sources\Navigator\authentFB\Debug /S /Q
+rmdir Sources\Navigator\authentFB\Release /S /Q
 
-rmdir plugin_skp\Debug /S /Q
-rmdir plugin_skp\Release /S /Q
+rmdir Sources\Voice\Phonetizer\Debug /S /Q
+rmdir Sources\Voice\Phonetizer\Release /S /Q
+rmdir Sources\Voice\DummyPhonetizer\Debug /S /Q
+rmdir Sources\Voice\DummyPhonetizer\Release /S /Q
+rmdir Sources\Voice\FaceController\Debug /S /Q
+rmdir Sources\Voice\FaceController\Release /S /Q
+rmdir Sources\Modelers\DeclarativeModeler\Debug /S /Q
+rmdir Sources\Modelers\DeclarativeModeler\Release /S /Q
 
-rmdir RakNetServer\Debug /S /Q
-rmdir RakNetServer\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_swf\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_swf\Release /S /Q
 
-rmdir VLCPlugin\Debug /S /Q
-rmdir VLCPlugin\Release /S /Q
-
-rmdir authentFB\Debug /S /Q
-rmdir authentFB\Release /S /Q
-
-rmdir Phonetizer\Debug /S /Q
-rmdir Phonetizer\Release /S /Q
-rmdir DummyPhonetizer\Debug /S /Q
-rmdir DummyPhonetizer\Release /S /Q
-rmdir FaceController\Debug /S /Q
-rmdir FaceController\Release /S /Q
-rmdir DeclarativeModeler\Debug /S /Q
-rmdir DeclarativeModeler\Release /S /Q
-
-rmdir plugin_swf\Debug /S /Q
-rmdir plugin_swf\Release /S /Q
-
-rmdir StereoPlugin\Debug /S /Q
-rmdir StereoPlugin\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\StereoPlugin\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\StereoPlugin\Release /S /Q
 
 del setup\nsis\Solipsis-*-win32.exe
 
