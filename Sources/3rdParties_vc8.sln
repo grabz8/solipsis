@@ -26,11 +26,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "DevTools\zlib123\pr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "expat", "DevTools\expat\lib\expat_vc8.vcproj", "{50FC458E-425A-487F-83E5-E77F18C25C5C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ulxmlrpcpp", "DevTools\ulxmlrpcpp\msvc8\ulxmlrpcpp\ulxmlrpcpp.vcproj", "{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{50FC458E-425A-487F-83E5-E77F18C25C5C} = {50FC458E-425A-487F-83E5-E77F18C25C5C}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc8.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetDLL", "DevTools\RakNet\Lib\DLL\RakNetDLL_vc8.vcproj", "{BC75CD23-CB75-4233-A305-B7328825A9A5}"
@@ -104,10 +99,6 @@ Global
 		{50FC458E-425A-487F-83E5-E77F18C25C5C}.Debug|Win32.Build.0 = Debug|Win32
 		{50FC458E-425A-487F-83E5-E77F18C25C5C}.Release|Win32.ActiveCfg = Release|Win32
 		{50FC458E-425A-487F-83E5-E77F18C25C5C}.Release|Win32.Build.0 = Release|Win32
-		{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}.Debug|Win32.Build.0 = Debug|Win32
-		{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}.Release|Win32.ActiveCfg = Release|Win32
-		{D1B5E526-900B-4C9F-9F42-8A15862B9A3C}.Release|Win32.Build.0 = Release|Win32
 		{B15BDA35-0972-428E-B5DA-F5EE528E36F0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B15BDA35-0972-428E-B5DA-F5EE528E36F0}.Debug|Win32.Build.0 = Debug|Win32
 		{B15BDA35-0972-428E-B5DA-F5EE528E36F0}.Release|Win32.ActiveCfg = Release|Win32

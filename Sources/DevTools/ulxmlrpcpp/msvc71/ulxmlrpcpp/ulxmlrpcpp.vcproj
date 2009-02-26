@@ -21,7 +21,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..;../..;../../ulxmlrpcpp;../../../../Dependencies/expat/include"
+				AdditionalIncludeDirectories="..;../..;../../ulxmlrpcpp;../../../../../Dependencies/expat/include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;__NO_WSTRING__;_STATIC"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -40,7 +40,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib uuid.lib libexpat.lib"
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
-				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"/>
+				AdditionalLibraryDirectories="../../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -82,7 +82,7 @@ copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..;../..;../../ulxmlrpcpp;../../../../Dependencies/expat/include"
+				AdditionalIncludeDirectories="..;../..;../../ulxmlrpcpp;../../../../../Dependencies/expat/include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;__NO_WSTRING__;ULXR_MAKING_DLL"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -101,7 +101,7 @@ copy &quot;$(TargetDir)$(TargetName).lib&quot; &quot;..\..\..\..\..\Dependencies
 				Name="VCLinkerTool"
 				AdditionalDependencies="ws2_32.lib uuid.lib libexpat.lib"
 				OutputFile="$(OutDir)\ulxmlrpcpp_23.dll"
-				AdditionalLibraryDirectories="../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
+				AdditionalLibraryDirectories="../../../../../Dependencies/expat/lib/$(ConfigurationName)DLL"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>

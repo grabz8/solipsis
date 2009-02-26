@@ -24,6 +24,7 @@
 #include "NaviManager.h"
 #include <ctype.h>
 #include <utf8.h>
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #include <direct.h>
 #include <stdlib.h>

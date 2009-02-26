@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -110,7 +110,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\all\utf8-cpp&quot;;&quot;$(ProjectDir)..\..\..\..\Dependencies\llmozlib\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
