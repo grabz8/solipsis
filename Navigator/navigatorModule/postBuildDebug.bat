@@ -1,5 +1,3 @@
-
-
 set dst="..\..\Common\bin\navigator\Debug"
 set vc="%1"
 
@@ -69,8 +67,8 @@ xcopy "..\..\Dependencies\protocols\P2NClient\xmlrpc++\DebugDLL\XMLRPCP2NClient.
 xcopy "..\..\Dependencies\protocols\P2NClient\ulxmlrpcpp\DebugDLL\ULXMLRPCPPP2NClient.dll" "%dst%" /s /y
 if exist "..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\ulxmlrpcpp_23.dll" xcopy "..\..\Dependencies\ulxmlrpcpp\lib\DebugDLL\ulxmlrpcpp_23.dll" "%dst%" /s /y
 if exist "..\..\Dependencies\expat\lib\DebugDLL\libexpat.dll" xcopy "..\..\Dependencies\expat\lib\DebugDLL\libexpat.dll" "%dst%" /s /y
-if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
-if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
+if not exist "%dst%\NaviLocal\" xcopy "..\..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
+if not exist "%dst%\lua\" xcopy "..\..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodexL.dll" xcopy "%FMOD_PATH%\fmodexL.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds_d.dll" xcopy "..\..\Dependencies\plugin_3ds\lib\plugin_3ds_d.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_skp_d.dll" xcopy "..\..\Dependencies\plugin_skp\include\Debug\*.dll" "%dst%" /s /y

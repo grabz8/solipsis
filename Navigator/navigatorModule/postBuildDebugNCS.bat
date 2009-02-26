@@ -66,8 +66,8 @@ xcopy "..\..\Dependencies\protocols\XmlDatas\lib\DebugDLL\XmlDatas.dll" "%dst%" 
 xcopy "..\..\Dependencies\protocols\P2NNullClientServer\DebugDLL\P2NNullClientServer.dll" "%dst%" /s /y
 xcopy "..\..\Dependencies\peerModule\lib\Debug\Peer.dll" "%dst%" /s /y
 if exist "..\..\Dependencies\expat\lib\DebugDLL\libexpat.dll" xcopy "..\..\Dependencies\expat\lib\DebugDLL\libexpat.dll" "%dst%" /s /y
-if not exist "%dst%\NaviLocal\" xcopy "..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
-if not exist "%dst%\lua\" xcopy "..\Media\lua\*.*" "%dst%\lua" /s /y /i
+if not exist "%dst%\NaviLocal\" xcopy "..\..\Media\NaviLocal\*.*" "%dst%\NaviLocal" /s /y /i
+if not exist "%dst%\lua\" xcopy "..\..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodexL.dll" xcopy "%FMOD_PATH%\fmodexL.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds_d.dll" xcopy "..\..\Dependencies\plugin_3ds\lib\plugin_3ds_d.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_skp_d.dll" xcopy "..\..\Dependencies\plugin_skp\include\Debug\*.dll" "%dst%" /s /y
