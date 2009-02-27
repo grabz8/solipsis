@@ -1,0 +1,197 @@
+digraph G 
+{
+	compound = true
+	
+	subgraph cluster_SharedLibraries 
+	{
+		node [shape=box, style=filled, fontsize=10];
+
+		label = "SharedLibraries";
+		
+		CommonTools [fontsize=30]
+	}
+	
+	subgraph cluster_3rdParties
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "3rdParties";
+		
+		PhysX
+		
+		Ogre [fontsize=30] 
+		"3dsftk3"
+		"Antlr2.7.6"
+		brep
+		csg -> brep
+		curlib
+		"geCode-2.2.0"
+		Hikari -> Ogre
+		libiconv
+		libjpeg
+		lua
+		libspeex
+		llmozlib
+		md5wrapper
+		Navi
+		ogreMax
+		ogreMax
+		omnithread
+		pthread
+		rakNetDLL
+		tinyxml
+		XMLRpc
+		zlib
+		OIS
+		fmodex
+	}
+		
+	subgraph cluster_Communication
+	{
+		node [shape=box, style=filled, fontsize=10]
+		
+		subgraph cluster_P2N
+		{
+			node [shape=box, style=filled, fontsize=10];
+			label = "P2N";
+			
+			P2NNullClientServer 
+			XMLRPCP2NClient
+			XMLRPCP2NServer
+		};
+			
+		label = "Communication"
+		
+		XmlDatas [fontsize=30] 	
+		XmlDatas
+		RakNetObjects
+
+	}	
+	
+	subgraph cluster_Modelers
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "Modelers";
+			
+		AvatarTools
+		
+		DeclarativeModeler
+		
+		MdlrTools
+	}
+	
+	
+	subgraph cluster_Navigator
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "Navigator";
+	
+		authentFB
+		Navigator
+		
+		navigatorConfigDialog
+		
+		navigatorModule [fontsize=30] 
+	}	
+	
+	subgraph cluster_Peer
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "Peer";
+			
+		peerModuleRakNet
+		peer
+		peerPhysX
+	}	
+	
+	subgraph cluster_Voice
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "Voice";
+			
+		DummyPhonetizer
+		FaceController
+		Phonetizer
+		SimpleVoiceEngineProtocol
+		voiceEngine
+		voiceEngineFModSpeex		
+		VoiceEngineSimpleServer	
+		voiceEngineTestServer
+	}	
+	
+	subgraph clustern_navigator_plugins
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "navigator plugins";
+	
+		plugin_3ds	
+		Plugin_skp	
+		SWFPlugin 	
+		VNCPlugin			
+		vncviewer
+	}	
+	
+	subgraph cluster8 
+	{
+		node [shape=box, style=filled, fontsize=10];
+		label = "WorldServer";
+	
+		RakNetServer
+	}	
+	
+	
+	csg -> brep
+	Hikari -> Ogre
+	Navi -> llmozlib	
+	ogreMax -> { tinyxml Ogre}
+
+	P2NNullClientServer -> {pthread XmlDatas}
+	
+	XMLRPCP2NClient -> {pthread XMLRpc XmlDatas}
+	XMLRPCP2NServer -> {pthread XMLRpc XmlDatas}
+	XmlDatas -> {tinyxml libiconv Ogre}
+	RakNetObjects -> {XmlDatas CommonTools}[color=purple] ;
+
+
+	Navigator -> {pthread CommonTools navigatorModule}[color=blue2] ;
+
+	navigatorConfigDialog -> Ogre [color=blue3]
+	
+	navigatorModule -> {
+							pthread		tinyxml		XmlDatas		XMLRPCP2NClient		Ogre		
+							OIS		llmozlib		Navi		lua		CommonTools		brep		
+							csg		MdlrTools		zlib		AvatarTools		fmodex		
+							plugin_3ds Plugin_skp		authentFB		FaceController			
+							ogreMax		DeclarativeModeler		md5wrapper		curlib
+							navigatorConfigDialog P2NNullClientServer Phonetizer voiceEngine} 	[color=blue] ;
+	
+	peerModuleRakNet -> {	pthread		tinyxml		Ogre		CommonTools 		XmlDatas 		
+							XMLRPCP2NServer		rakNetDLL 		RakNetObjects}[color=firebrick1] ;
+	
+	
+	peer -> {peerModuleRakNet		XmlDatas		XMLRPCP2NClient} [color=firebrick] ;
+	peerPhysX -> {PhysX		Ogre		peerModuleRakNet	} [color=firebrick4] ;
+	
+	DummyPhonetizer -> {Phonetizer		Ogre}	[color=deeppink4] ;	
+	voiceEngine -> 	{		Phonetizer		VoiceEngineClient	}
+	[color=deeppink3] ;	
+	voiceEngineFModSpeex -> {	pthread		CommonTools		libspeex		VoiceEngineClient		
+								Ogre		Phonetizer		SimpleVoiceEngineProtocol		fmodex	}
+	[color=deeppink1] ;
+
+	voiceEngineTestServer -> {pthread	CommonTools	SimpleVoiceEngineProtocol	VoiceEngineSimpleServer}
+	[color=deeppink2] ;	
+
+	plugin_3ds ->{ Ogre	"3dsftk3"}[color=green4 ]
+	Plugin_skp -> Ogre[color=green2 ]
+	SWFPlugin -> {Ogre	pthread	Ogre Hikari}[color=greenyellow ]
+	VNCPlugin -> {Ogre	omnithread	vncviewer}	[color=green3 ]	
+	vncviewer -> {libjpeg	zlib	omnithread	}[color=green1 ]	
+	
+	RakNetServer -> {pthread	tinyxml	Ogre	CommonTools	XmlDatas	rakNetDLL	RakNetObjects}[color=gold    ]	
+	DeclarativeModeler -> {"Antlr2.7.6"		"geCode-2.2.0"}[color=goldenrod4    ]	
+		
+		
+}
+
+
+		
