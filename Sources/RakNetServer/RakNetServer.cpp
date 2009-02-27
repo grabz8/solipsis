@@ -41,6 +41,7 @@ RakNetServer* RakNetServer::ms_Singleton = 0;
 //-------------------------------------------------------------------------------------
 RakNetServer::RakNetServer(int argc, char** argv) :
     mMediaCachePath(""),
+    mStatsPath(".\\stats"),
     mRakNetConnection(&mConnectionFactory, true, "localhost", 8660, 32),
     mSiteNodeId("11112222"),
     mSiteNode(0),
@@ -73,6 +74,12 @@ RakNetServer::RakNetServer(int argc, char** argv) :
             mMediaCachePath = argv[iarg];
             continue;
         }
+        if ((strstr(argv[iarg], "-S") != 0) && (argc > iarg+1))
+        {
+            iarg++;
+            mStatsPath = argv[iarg];
+            continue;
+        }
     }
 
     // Retrieve Media/Cache path
@@ -81,7 +88,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
 
     ms_Singleton = this;
 
-    mStatsManager.initialize();
+    mStatsManager.initialize(mStatsPath);
     mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_START, "");
 }
 

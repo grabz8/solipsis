@@ -45,6 +45,8 @@ protected:
     NodeId mSiteNodeId;
     /// Media cache path
     std::string mMediaCachePath;
+    /// Statistics path
+    std::string mStatsPath;
 
     /// Instance of the class that creates the object we use to represent connections
     RM2ConnectionFactory mConnectionFactory;
