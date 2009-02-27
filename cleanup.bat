@@ -74,7 +74,7 @@ rmdir Dependencies\speex /S /Q
 rmdir Dependencies\VoiceEngineClient /S /Q
 rmdir Dependencies\VoiceEngineSimpleServer /S /Q
 rmdir Dependencies\vlc /S /Q
-rmdir Dependencies\Navigator\NavigatorPlugins\plugin_3ds /S /Q
+rmdir Dependencies\plugin_3ds /S /Q
 rmdir Dependencies\plugin_skp /S /Q
 rmdir Dependencies\RakNet /S /Q
 rmdir Dependencies\curl /S /Q
@@ -178,7 +178,9 @@ rmdir Sources\DevTools\Antlr2.7.6\Release /S /Q
 rmdir Sources\DevTools\Gecode-2.2.0\Debug /S /Q
 rmdir Sources\DevTools\Gecode-2.2.0\Release /S /Q
 
-rmdir Docs\doxygen\html /S /Q
+pushd Docs\doxygen
+call cleanup.bat
+popd
 
 rmdir Sources\CommonTools\Debug /S /Q
 rmdir Sources\CommonTools\Release /S /Q

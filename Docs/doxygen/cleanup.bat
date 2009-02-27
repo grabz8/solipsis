@@ -29,4 +29,4 @@ del Voice\html /S /Q
 rmdir Voice /S /Q
 
 echo ============== Done! ===============
-pause
+
