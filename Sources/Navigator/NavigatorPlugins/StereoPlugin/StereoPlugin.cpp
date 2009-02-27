@@ -172,11 +172,19 @@ bool StereoPlugin::frameStarted(const FrameEvent& evt)
         RenderWindow *window2 = NULL;
 		Viewport *viewport2 = NULL;
 		NameValuePairList miscParams;
-		miscParams["monitorIndex"] = "2";
+		miscParams["monitorIndex"] = "1";
 			
-		window2 = Root::getSingleton().createRenderWindow("StereoPlugin right window", 
+		window2 = Root::getSingleton().createRenderWindow("Solipsis - StandAlone Navigator - Right", 
 			window->getWidth(), window->getHeight(), window->isFullScreen(), &miscParams);
-		viewport2 = window2->addViewport(viewport->getCamera());
+
+#ifdef WIN32
+        HWND hwnd;
+        window2->getCustomAttribute("WINDOW", (void*)&hwnd);
+        LONG iconID   = (LONG)LoadIcon( GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON1) );
+        SetClassLong( hwnd, GCL_HICON, iconID );
+#endif
+
+        viewport2 = window2->addViewport(viewport->getCamera());
 
 		// tells the listener to change the focus of the second window when the focus
 		// of the first windows has changed

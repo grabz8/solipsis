@@ -34,6 +34,8 @@ For the latest info, see http://www.ogre3d.org/
 #ifndef _STEREOPLUGIN_H_
 #define _STEREOPLUGIN_H_
 
+#define IDI_ICON1                       101 // According to StereoPlugin
+
 #include "Ogre.h"
 #include "OgrePlugin.h"
 #include "StereoManager.h"
