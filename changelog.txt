@@ -999,16 +999,30 @@ WorldsServer.py version set to 1.0.9
 
 VLCinstance do not play auto on creation + play handleEvt added to let material user responsible of
 Modeler: mrl and remoteMrl are tested before embedding media (MRL) into SOF file (webcam, webtv, webradio, streamed media, ...)
+
+---------------------------
+RELEASE 1.0.9
+
+---------------------------
+19/02/09
+
 Talk crash fix, FModSpeexEngine VoicePacketListener calls are now thread-safe
 VoipServer bad address bug fix
 New mainmenu Action > Talk added
 
 ---------------------------
-24/02/09
+26/02/09
 
-Instantiated the declarative modeling tool. Panels > Modeler > Create > Scene from text.
-Still have to wait about 2 minutes at first launch (load of language models). A little bit unstable at this time, 
-but should not make the app crash!
- - Added DeclarativeModeling/models/model.bidir.* to Media
- - Merged Modeler (.h .cpp), Navigator (.h .cpp) NavigatorUI (.h .cpp)
+Trunk files organization improved
+Storing not/no more used sources into 1 dedicated oldSources dir
+Some files/dirs removals/cleans applied
 
+---------------------------
+27/02/09
+
+CallsFlows doc added
+Calls flows with 2 connected avatars + avatar customization + object creation added
+Statistics readme.txt added
+Now add -S arg to specify where RakNetServer will store their statistics (usefull when having several servers on 1 host)
+
+---------------------------
