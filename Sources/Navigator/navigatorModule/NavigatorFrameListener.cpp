@@ -294,7 +294,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             }
             OgreFrameListener::keyPressed(evt);
             break;
-        }
+            }
     }
 
     // is editing the avatar ?
@@ -318,7 +318,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     }
 
     // Navi focused -> key processed by the navi
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState()!=Navigator::SModeling)
         return true;
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
