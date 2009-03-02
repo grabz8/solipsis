@@ -150,12 +150,9 @@ digraph G
 	XMLRPCP2NServer -> {pthread XMLRpc XmlDatas}
 	XmlDatas -> {tinyxml libiconv Ogre}
 	RakNetObjects -> {XmlDatas CommonTools}[color=purple] ;
-
-
 	Navigator -> {pthread CommonTools navigatorModule}[color=blue2] ;
 
 	navigatorConfigDialog -> Ogre [color=blue3]
-	
 	navigatorModule -> {
 							pthread		tinyxml		XmlDatas		XMLRPCP2NClient		Ogre		
 							OIS		llmozlib		Navi		lua		CommonTools		brep		

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="DeclarativeModeler"
 	ProjectGUID="{94B5ED03-E8F8-4168-911A-BFC102D080BF}"
 	RootNamespace="DeclarativeModeler"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

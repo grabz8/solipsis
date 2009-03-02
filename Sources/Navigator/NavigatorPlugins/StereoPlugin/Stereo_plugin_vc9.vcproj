@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Plugin_StereoManager"
 	ProjectGUID="{01B403C3-D24C-4CCE-84BD-037A8E51C801}"
 	RootNamespace="Stereo_plugin"

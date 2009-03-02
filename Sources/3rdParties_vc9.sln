@@ -1,55 +1,55 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc8", "DevTools\llmozlib\llmozlib_vc8.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc9", "DevTools\llmozlib\llmozlib_vc9.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc8", "DevTools\navi\Navi\Navi_vc8.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc9", "DevTools\navi\Navi\Navi_vc9.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B464AB9E-C9ED-4797-9179-77282A916378} = {B464AB9E-C9ED-4797-9179-77282A916378}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread", "DevTools\pthreads\pthread_vc8.vcproj", "{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pthread", "DevTools\pthreads\pthread_vc9.vcproj", "{938D2C05-A26E-4C35-8EC0-44F1B7B06B8C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "DevTools\tinyxml\tinyxml_lib_vc8.vcproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "DevTools\tinyxml\tinyxml_lib_vc9.vcproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "DevTools\xmlrpc++\XmlRpc_vc8.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XmlRpc", "DevTools\xmlrpc++\XmlRpc_vc9.vcproj", "{C9C8B7B0-2509-4B8A-9224-9FF04297C33B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblua_vc8", "DevTools\lua\scripts\liblua_vc8.vcproj", "{E737AF5B-9F63-4095-BA6F-25F173DF34E2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblua_vc9", "DevTools\lua\scripts\liblua_vc9.vcproj", "{E737AF5B-9F63-4095-BA6F-25F173DF34E2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brep_vc8", "DevTools\brep\brep_vc8.vcproj", "{39A9638B-D487-471A-BA44-D5B81C0E91A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "brep_vc9", "DevTools\brep\brep_vc9.vcproj", "{39A9638B-D487-471A-BA44-D5B81C0E91A4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csg_vc8", "DevTools\CSG\csg_vc8.vcproj", "{9CCBCFF0-C83F-4E6C-A2B8-7C23409ECFF9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "csg_vc9", "DevTools\CSG\csg_vc9.vcproj", "{9CCBCFF0-C83F-4E6C-A2B8-7C23409ECFF9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{39A9638B-D487-471A-BA44-D5B81C0E91A4} = {39A9638B-D487-471A-BA44-D5B81C0E91A4}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "DevTools\zlib123\projects\visualc6\zlib_vc8.vcproj", "{E366FE8F-0CD1-47C5-BEE2-943E4667816B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "DevTools\zlib123\projects\visualc6\zlib_vc9.vcproj", "{E366FE8F-0CD1-47C5-BEE2-943E4667816B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc8.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3dsftk3", "Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\3dsftk3_vc9.vcproj", "{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetDLL", "DevTools\RakNet\Lib\DLL\RakNetDLL_vc8.vcproj", "{BC75CD23-CB75-4233-A305-B7328825A9A5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RakNetDLL", "DevTools\RakNet\Lib\DLL\RakNetDLL_vc9.vcproj", "{BC75CD23-CB75-4233-A305-B7328825A9A5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curllib", "DevTools\curl\lib\curllib_vc8.vcproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curllib", "DevTools\curl\lib\curllib_vc9.vcproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "md5wrapper", "DevTools\md5wrapper\md5wrapper_vc8.vcproj", "{98EBB16F-044B-4054-801E-3268A830C994}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "md5wrapper", "DevTools\md5wrapper\md5wrapper_vc9.vcproj", "{98EBB16F-044B-4054-801E-3268A830C994}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspeex", "DevTools\speex\win32\libspeex\libspeex_vc8.vcproj", "{40B5BFB6-29B2-455B-8A5F-5331657D4F93}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libspeex", "DevTools\speex\win32\libspeex\libspeex_vc9.vcproj", "{40B5BFB6-29B2-455B-8A5F-5331657D4F93}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiconv", "DevTools\libiconv\libiconv_vc8.vcproj", "{F726EB96-A5D1-402A-980C-E4D09ED1BB3C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiconv", "DevTools\libiconv\libiconv_vc9.vcproj", "{F726EB96-A5D1-402A-980C-E4D09ED1BB3C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\libjpeg\libjpeg_vc8.vcproj", "{B6F84561-61FE-477D-AE2E-D4152A247FB1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\libjpeg\libjpeg_vc9.vcproj", "{B6F84561-61FE-477D-AE2E-D4152A247FB1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\omnithread\omnithread_vc8.vcproj", "{0434BF2B-6310-4BB5-804E-F7A11C074CA2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "omnithread", "Navigator\NavigatorPlugins\VNCPlugin\vncviewer\omnithread\omnithread_vc9.vcproj", "{0434BF2B-6310-4BB5-804E-F7A11C074CA2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogreMax_vc8", "DevTools\ogreMax\script\ogreMax_vc8.vcproj", "{48AFAAA6-65AB-47B1-8DFA-79E9F99948C5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ogreMax_vc9", "DevTools\ogreMax\script\ogreMax_vc9.vcproj", "{48AFAAA6-65AB-47B1-8DFA-79E9F99948C5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hikari", "DevTools\hikari\Hikari_vc8.vcproj", "{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hikari", "DevTools\hikari\Hikari_vc9.vcproj", "{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antlr2.7.6", "DevTools\Antlr2.7.6\Antlr2.7.6_vc8.vcproj", "{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Antlr2.7.6", "DevTools\Antlr2.7.6\Antlr2.7.6_vc9.vcproj", "{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gecode-2.2.0", "DevTools\gecode-2.2.0\gecode-2.2.0_vc8.vcproj", "{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gecode-2.2.0", "DevTools\gecode-2.2.0\gecode-2.2.0_vc9.vcproj", "{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
