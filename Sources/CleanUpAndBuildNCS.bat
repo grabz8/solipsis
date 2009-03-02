@@ -5,9 +5,9 @@ call cleanup.bat
 popd
 
 devenv "3rdParties_vc8.sln" /build "Release|Win32" /out buildLog.log
-devenv "3rdParties_vc8.sln" /build "Debug|Win32" /out buildLog.log
-
 devenv "solipsis_vc8.sln" /build "ReleaseNCS|Win32" /out buildLog.log 
+
+devenv "3rdParties_vc8.sln" /build "Debug|Win32" /out buildLog.log
 devenv "solipsis_vc8.sln" /build "DebugNCS|Win32" /out buildLog.log
 
 pause

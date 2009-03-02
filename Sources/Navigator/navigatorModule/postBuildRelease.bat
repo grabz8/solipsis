@@ -88,8 +88,6 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
  if exist "%OGRE_HOME%\bin\release\quake3settings.cfg" xcopy "%OGRE_HOME%\bin\release\quake3settings.cfg" "%dst%" /s /y
 :quake3settings_exist
 xcopy "..\..\..\Media\resources.cfg" "%dst%" /s /y
-copy "..\..\..\readmeUser.htm" "%dst%\readmeUser.htm" /y
-xcopy "..\..\..\Docs\Html\images\*.jpg" "%dst%\Docs\Html\images\" /s /y
 
-
+call copyDocumentation.bat
 call copyFirefoxPlugins.bat

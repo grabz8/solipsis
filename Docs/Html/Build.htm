@@ -139,11 +139,9 @@ C:\your_OgrePath</li></ul><h4 style="margin-left: 40px;">or SDK</h4><ul style="m
 If you are using 1 prebuilt release of Ogre SDK, take care this release
 was built with same<br>
 release of Visual Studio you will use, examples:</div><ul style="margin-left: 40px;"><li>with
-Visual Studio Express 2008 or Visual 2008 Pro : : 
+Visual Studio Express 2008 or Visual 2008 Pro : &nbsp;<a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC90.exe?use_mirror=">OGRE 1.6.1 SDK for Visual C++ .Net 2008 (9.0)</a> 
 </li><li>with
-Visual Studio Express 2005 or VS2005 Pro : <a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC80.exe?use_mirror=">OGRE
-1.6.1 SDK for Visual C++ .Net 2005 (8.0) SP1</a> 
-&nbsp; </li></ul><div style="margin-left: 40px;">The sdk still
+Visual Studio Express 2005 or VS2005 Pro :&nbsp;<a href="http://downloads.sourceforge.net/ogre/OgreSDKSetup1.6.1_VC80.exe?use_mirror=">OGRE 1.6.1 SDK for Visual C++ .Net 2005 (8.0) SP1</a> </li></ul><div style="margin-left: 40px;">The sdk still
 contains dependencies, just install it. It will defines the good
 Environment variables 
 &nbsp;OGRE_HOME
@@ -244,7 +242,14 @@ Rak Net Server
  
 <ul><li>
 and all project libraries&nbsp;
-</li></ul><br><h3>VNC</h3>
+</li></ul>LLMozLib was
+originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll,
+msvcr71.dll, msvcr71d.dll<br>
+are necessary when Solipsis is compiled/linked in Debug mode on VC
+&gt; 7.1, unfortunately those DLLs were not<br>
+packaged in a redistributable, you can find them into
+DevTools\llmozlib\libraries\i686-win32\vc71redist OR<br>
+run navigatorModule\copyDebugVC71RedistFiles.ba<h3>VNC</h3>
 <p>If you're using the visual studio express, to build the VNC plugin afx is needed so define
 the directories of the PSDK into the VS options,<br>
 Tools/Options menu, Projects and solutions, VC++ directories, Include
@@ -278,14 +283,7 @@ traces on sent/received XML msgs</p>
 Navi/LLMozLib Debug assertion, to avoid them:<br>
 Define the XPCOM_DEBUG_BREAK syst. env. var.<br>
 &nbsp;XPCOM_DEBUG_BREAK = warn</p>
-<p>LLMozLib was
-originally compiled/linked on VC7.1 so msvcp71.dll, msvcp71d.dll,
-msvcr71.dll, msvcr71d.dll<br>
-are necessary when Solipsis is compiled/linked in Debug mode on VC
-&gt; 7.1, unfortunately those DLLs were not<br>
-packaged in a redistributable, you can find them into
-DevTools\llmozlib\libraries\i686-win32\vc71redist OR<br>
-run navigatorModuleOnlyNav\copyDebugVC71RedistFiles.ba</p>
+<p><br></p>
 <h2>Debugging</h2>
 
 <p>Check into the
