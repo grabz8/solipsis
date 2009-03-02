@@ -92,3 +92,4 @@ copy "..\..\..\readmeUser.htm" "%dst%\readmeUser.htm" /y
 xcopy "..\..\..\Docs\Html\images\*.jpg" "%dst%\Docs\Html\images\" /s /y
 
 
+call copyFirefoxPlugins.bat

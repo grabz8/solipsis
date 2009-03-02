@@ -168,6 +168,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeclarativeModeler", "Modelers\DeclarativeModeler\DeclarativeModeler_vc9.vcproj", "{94B5ED03-E8F8-4168-911A-BFC102D080BF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineSimpleServer", "Voice\voiceEngine\SimpleServer\VoiceEngineSimpleServer_vc9.vcproj", "{FB8ECE98-9645-48FE-B3B3-8E2B8F19A376}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F784299-72E2-4482-941D-12485DE80C30} = {5F784299-72E2-4482-941D-12485DE80C30}
+		{CCDFA8B2-DA14-4F21-BA0A-5140FA39AF3B} = {CCDFA8B2-DA14-4F21-BA0A-5140FA39AF3B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "voiceEngineTestServer", "Voice\voiceEngine\TestServer\TestServer_vc9.vcproj", "{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -187,6 +191,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Voice", "Voice", "{E169F470-6552-4C2B-B5DF-FCB5049D7CEC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_StereoManager", "Navigator\NavigatorPlugins\StereoPlugin\Stereo_plugin_vc9.vcproj", "{01B403C3-D24C-4CCE-84BD-037A8E51C801}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

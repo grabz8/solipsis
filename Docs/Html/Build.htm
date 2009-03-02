@@ -41,7 +41,7 @@ upgrade it with the SP1 package</p><p>
 Update the default Visual Studio COREWIN properties XML file to add
 system libraries:<br></p><ul><li>
 &nbsp;<span style="font-weight: bold;">VSExpress2005</span> C:\Program Files\Microsoft Visual Studio
-8\VC\VCProjectDefaults\corewin_express.vsprops</li></ul><p></p><ul><li>
+8\VC\VCProjectDefaults\corewin_express.vsprops</li></ul><ul><li>
 &nbsp;<span style="font-weight: bold;">VSExpress2008</span> C:\Program Files\Microsoft Visual Studio
 9.0\VC\VCProjectDefaults\CoreWin.vsprops</li></ul><p>
 &nbsp;replace this line :<br>
@@ -135,7 +135,7 @@ build all (Debug+Release)<br>
 It can take a long time, ogre dependencies are quite not well set</li></ul><ul><li>Define
 the OGRE_HOME env. var.<br>If you are compiling Ogre from source code<br>
 &nbsp;OGRE_HOME =
-C:\your_OgrePath</li></ul><br><h4 style="margin-left: 40px;">or SDK</h4><ul style="margin-left: 40px;"><li>Download the SDK <a href="http://www.ogre3d.org/download/sdk">http://www.ogre3d.org/download/sdk</a></li></ul><div style="margin-left: 40px;">WARNING:
+C:\your_OgrePath</li></ul><h4 style="margin-left: 40px;">or SDK</h4><ul style="margin-left: 40px;"><li>Download the SDK <a href="http://www.ogre3d.org/download/sdk">http://www.ogre3d.org/download/sdk</a></li></ul><div style="margin-left: 40px;">WARNING:
 If you are using 1 prebuilt release of Ogre SDK, take care this release
 was built with same<br>
 release of Visual Studio you will use, examples:</div><ul style="margin-left: 40px;"><li>with
@@ -222,14 +222,13 @@ repository: <a href="http://developer.nvidia.com/object/physx_downloads.html">ht
 </li></ul>
 
 <h3>Build Sollipsis</h3>
- The time to build the project is finally come<br><br><br>
+ The time to build the project is finally come<br><br>
 <ul><li>
 Get SVN
-repository for Solipsis</li><li>open the 3rd Parties solution  (depending on your visual studio version)&nbsp; </li><li>Open
+repository for Solipsis</li><li>open the 3rd Parties solution  (depending on your visual studio version)&nbsp;</li><li>Batch build all modules. </li><li>Open
 solipsis_vcX.sln (depending on your visual studio version)
 </li><li>
-Build The solution
-</li></ul>
+Build The solution.</li><ul><li>NCS is for Null Client server, peer and Navigator are gathered into the same exe</li></ul></ul>
  
 <p>This
 solution contains :</p>
@@ -245,27 +244,7 @@ Rak Net Server
  
 <ul><li>
 and all project libraries&nbsp;
-</li></ul>
- 
-<p>In Network configs, before launching, don t
-forget to run :</p>
- 
-
-<ul><li>
-navigatorModuleOnlyNav\copyFirefoxPlugins.bat
-</li><li>
-peerModuleRakNet\copyPhysXFiles.bat
-</li></ul>
- 
-
- 
-<p>In NCS configs, before launching, don t forget
-to run&nbsp;<span style="font-weight: bold;">navigatorModuleOnlyNav\copyNCSPhysXFiles.bat</span>
-</p>
- 
-
-
-<h3>VNC</h3>
+</li></ul><br><h3>VNC</h3>
 <p>If you're using the visual studio express, to build the VNC plugin afx is needed so define
 the directories of the PSDK into the VS options,<br>
 Tools/Options menu, Projects and solutions, VC++ directories, Include
@@ -333,7 +312,7 @@ C:\doxygen)
 &nbsp;Run
 Docs\doxygen\doxygen.bat</li></ul>
 <p>To generate the dependencies graph, install
-graphviz and run the associated batch file :</p><p>\Docs\doxygen\GraphViz_Dependencies.bat<br>On dependencie change, modify the </p><p></p><p></p><p></p><p></p><h2>Building Setup</h2>
+graphviz and run the associated batch file :</p><p>\Docs\doxygen\GraphViz_Dependencies.bat<br><br>On dependencie change, modify the file Docs/doxygen/ModuleDependenciesGraph.gv<br></p><h2>Building Setup</h2>
 
 <p>To generate setup
 from NSIS: (unfortunately the vdproj are not supported by Express

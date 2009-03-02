@@ -317,4 +317,4 @@ rmdir Sources\Navigator\NavigatorPlugins\StereoPlugin\Release /S /Q
 del setup\nsis\Solipsis-*-win32.exe
 
 echo ============== Done! ===============
-pause
+

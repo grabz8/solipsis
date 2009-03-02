@@ -33,3 +33,5 @@ if exist "%dst%\Plugins.cfg" goto Plugins_exist
 :Plugins_exist
 xcopy "..\..\..\Media\resources.cfg" "%dst%" /s /y
 copy "readme.txt" "%dst%" /y
+
+call copyPhysXFiles.bat
