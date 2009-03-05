@@ -2,6 +2,8 @@
 // Microsoft Developer Studio generated include file.
 // Used by vncviewer.rc
 //
+#define IDC_STATIC                        -1
+
 #define IDR_TRAY                        101
 #define IDD_HELP                        101
 #define ID_CONN_CTLESC                  102

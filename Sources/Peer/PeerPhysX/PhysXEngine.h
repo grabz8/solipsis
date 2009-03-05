@@ -42,7 +42,7 @@ private:
     IPhysicsEngineLogger* mLogger;
 
 public:
-    PhysXEngine() {}
+    PhysXEngine() {mLogger = NULL;}
 
     /// @copydoc IPhysicsEngine::getName
     virtual const String& getName() const;
