@@ -369,51 +369,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\BigInt.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DebugNCS|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseNCS|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\CameraSupport.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\navigatorModule\CameraSupportManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DebugHelpers.cpp"
 				>
 			</File>
 			<File
@@ -556,14 +516,6 @@
 				RelativePath=".\Scene.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\SoundIcon.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SoundIcon.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -579,19 +531,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\BigInt.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\CameraSupport.h"
 				>
 			</File>
 			<File
 				RelativePath="..\navigatorModule\CameraSupportManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DebugHelpers.h"
 				>
 			</File>
 			<File
@@ -834,6 +778,66 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Media\NaviLocal\uioptions.html"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Tools"
+			>
+			<File
+				RelativePath=".\Tools\DebugHelpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools\DebugHelpers.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="OgreGraphicObjects"
+			>
+			<File
+				RelativePath=".\OgreGraphicObjects\SoundIcon.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\SoundIcon.h"
 				>
 			</File>
 		</Filter>

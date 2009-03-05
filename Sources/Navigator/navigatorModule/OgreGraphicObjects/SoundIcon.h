@@ -56,6 +56,7 @@ protected:
 	BillboardSet* m_SoundIcon; 
 
 	SceneNode* m_pParentNode;
+	SceneManager* m_pMgr;
 
 	SoundIcon_Status m_status;
 	Real m_animationTime;

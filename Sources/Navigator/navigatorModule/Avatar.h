@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovableText.h"
 #include "Event.h"
 
-#include "SoundIcon.h"
+#include "OgreGraphicObjects/SoundIcon.h"
 
 using namespace Ogre;
 

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ExternalTextureSourceEx.h"
 #include "NavigatorFrameListener.h"
 #include "OgreHelpers.h"
-#include "DebugHelpers.h"
+#include "Tools/DebugHelpers.h"
 #include "OrbitalCameraSupport.h"
 #include "FirstPersonCameraSupport.h"
 

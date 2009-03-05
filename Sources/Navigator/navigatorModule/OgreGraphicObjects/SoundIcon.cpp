@@ -28,8 +28,9 @@ using namespace Solipsis;
 
 SoundIcon::SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos)
 {
+	m_pMgr = pMgr;
 	// Sound Icon
-	m_SoundIcon = pMgr->createBillboardSet(name + "_Sound_Icon", 1);
+	m_SoundIcon = pMgr->createBillboardSet(name, 1);
 	Billboard *pBoard = m_SoundIcon->createBillboard(0,yPos,0);
 	m_SoundIcon->setMaterialName("Solipsis/Sound");
 	pBoard->setDimensions(0.5,0.3);
@@ -64,6 +65,7 @@ void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
 SoundIcon::~SoundIcon()
 {
 	m_pParentNode->detachObject(m_SoundIcon);
+	m_pMgr->destroyBillboardSet(m_SoundIcon);
 }
 
 void SoundIcon::animate(Real timeSinceLastFrame)
