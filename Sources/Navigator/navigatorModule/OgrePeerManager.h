@@ -26,10 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <map>
 #include <list>
+#include <tinyxml.h>
+#include <Ogre.h>
+
 #include "XmlDatas.h"
-#include "tinyxml.h"
-#include "Ogre.h"
-#include <Modeler.h>
+#include "World/Modeler.h"
 #include "IOgrePeerManagerCallbacks.h"
 
 using namespace Ogre;

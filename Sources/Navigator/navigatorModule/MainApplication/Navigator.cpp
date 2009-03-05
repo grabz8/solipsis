@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
-#include "OgreHelpers.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "Tools/DebugHelpers.h"
 #include <CTSystem.h>
@@ -32,10 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 #include <CTIO.h>
 #include "Navi.h"
-#include "NaviLua.h"
-#include "FirstPersonCameraSupport.h"
-#include "OrbitalCameraSupport.h"
-#include <Modeler.h>
+#include "Scripting/NaviLua.h"
+#include "Cameras/FirstPersonCameraSupport.h"
+#include "Cameras/OrbitalCameraSupport.h"
+#include <World/Modeler.h>
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
 #include <CharacterInstance.h>

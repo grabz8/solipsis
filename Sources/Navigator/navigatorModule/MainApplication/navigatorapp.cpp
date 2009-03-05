@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorApp.h"
 #include "Navigator.h"
-#include "Platform.h"
+#include "Platforms/Platform.h"
 #include <VoiceEngineManager.h>
 #include <PhonetizerManager.h>
 #include <FaceControlSystemManager.h>

@@ -24,23 +24,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Navigator_h__
 #define __Navigator_h__
 
-#include "Instance.h"
+#include "MainApplication/Instance.h"
 #include <CTLog.h>
 #include "NavigatorXMLRPCClient.h"
 #include "NodeEventListener.h"
-#include "Avatar.h"
-#include "Scene.h"
-#include "Object.h"
+#include "World/Avatar.h"
+#include "World/Scene.h"
+#include "World/Object.h"
 #include "OgrePeerManager.h"
 #include "NavigatorGUI.h"
-#include "LuaBinding.h"
-#include "NavigatorLua.h"
+#include "Scripting/LuaBinding.h"
+#include "Scripting/NavigatorLua.h"
 #include "Selection.h"
 #include "Transformations.h"
-#include "Event.h"
+#include "Tools/Event.h"
 #include "NavigatorSound.h"
 #include "AvatarEditor.h"
-#include "CameraSupportManager.h"
+#include "Cameras/CameraSupportManager.h"
 
 
 

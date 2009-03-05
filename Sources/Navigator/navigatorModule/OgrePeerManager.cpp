@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "OgrePeerManager.h"
-#include "Avatar.h"
-#include "Scene.h"
-#include "Object.h"
-#include "Navigator.h"
-#include "OgreHelpers.h"
-#include <Modeler.h>
+#include "World/Avatar.h"
+#include "World/Scene.h"
+#include "World/Object.h"
+#include "MainApplication/Navigator.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
+#include "World/Modeler.h"
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
 #include <CTLog.h>

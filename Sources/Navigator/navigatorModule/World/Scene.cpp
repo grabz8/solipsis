@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "Scene.h"
-#include "Navigator.h"
+#include "MainApplication/Navigator.h"
 #include "OgreOSMScene.h"
-#include "OgreHelpers.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
 
 using namespace Solipsis;
 using namespace CommonTools;

@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <map>
 #include "Ogre.h"
-#include "LuaBinding.h"
+#include "Scripting/LuaBinding.h"
 
 using namespace Ogre;
 

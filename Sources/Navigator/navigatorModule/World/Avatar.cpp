@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Prerequisites.h"
 #include "Avatar.h"
-#include "OgreHelpers.h"
-#include "Navigator.h"
-#include "OrbitalCameraSupport.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
+#include "MainApplication/Navigator.h"
+#include "Cameras/OrbitalCameraSupport.h"
 #include <CTStringHelpers.h>
 #include <CharacterManager.h>
 #include <Character.h>

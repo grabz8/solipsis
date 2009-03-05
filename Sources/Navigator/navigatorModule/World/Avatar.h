@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterInstance.h>
 #include <IVoiceEngine.h>
 #include "KeyMotion.h"
-#include "MovableText.h"
-#include "Event.h"
+#include "OgreGraphicObjects/MovableText.h"
+#include "Tools/Event.h"
 
 #include "OgreGraphicObjects/SoundIcon.h"
 

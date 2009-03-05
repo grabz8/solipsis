@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorXMLRPCClient.h"
 #include "tinyxml.h"
 #include <CTLog.h>
-#include "DebugHelpers.h"
-#include "Platform.h"
+#include "Tools/DebugHelpers.h"
+#include "Platforms/Platform.h"
 
 using namespace Solipsis;
 using namespace CommonTools;

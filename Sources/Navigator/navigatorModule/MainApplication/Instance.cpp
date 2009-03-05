@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Prerequisites.h"
 #include "Instance.h"
-#include "AutoCreatedWindow.h"
-#include "Platform.h"
-#include "OgreHelpers.h"
+#include "MainApplication/AutoCreatedWindow.h"
+#include "Platforms/Platform.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
 
 using namespace Solipsis;
 

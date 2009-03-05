@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <pthread.h>
 #include "IInstance.h"
 #include "IWindow.h"
-#include "Queue.h"
-#include "Event.h"
+#include "Tools/Queue.h"
+#include "Tools/Event.h"
 
 #include "OgreApplication.h"
 #include "OgreFrameListener.h"

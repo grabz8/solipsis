@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Ogre.h"
 #include "OgreStringConverter.h"
 #include "OgreException.h"
-#include "Event.h"
+#include "Tools/Event.h"
 
 using namespace Ogre;
 

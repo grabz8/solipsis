@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __NavigatorFrameListener_h__
 
 #include "OgreFrameListener.h"
-#include "Navigator.h"
+#include "MainApplication/Navigator.h"
 
 namespace Solipsis {
 

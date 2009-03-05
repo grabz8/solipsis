@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "Object.h"
-#include "OgreHelpers.h"
-#include "Navigator.h"
-#include "Modeler.h"
+#include "OgreGraphicObjects/OgreHelpers.h"
+#include "MainApplication/Navigator.h"
+#include "World/Modeler.h"
 #include <CTStringHelpers.h>
 #include <Navi.h>
 

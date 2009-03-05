@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <Facebook.h>
 #include "NaviManager.h"
-#include "Modeler.h"
+#include "World/Modeler.h"
 #include "ModifiableMaterialObject.h"
 
 using namespace NaviLibrary;

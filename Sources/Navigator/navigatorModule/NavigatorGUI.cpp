@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "NavigatorGUI.h"
-#include "Navigator.h"
+#include "MainApplication/Navigator.h"
 #include "NavigatorFrameListener.h"
 #include "Tools/DebugHelpers.h"
 #include <OgreTimer.h>
@@ -32,13 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTNetSocket.h>
 #include <CTSystem.h>
 #include <Navi.h>
-#include <Modeler.h>
+#include "World/Modeler.h"
 #include <AvatarEditor.h>
 #include <CharacterManager.h>
 #include <Character.h>
 #include <CharacterInstance.h>
 #include <VoiceEngineManager.h>
-#include "Avatar.h"
+#include "World/Avatar.h"
 
 #ifdef _MSC_VER
  #pragma warning (disable:4355)

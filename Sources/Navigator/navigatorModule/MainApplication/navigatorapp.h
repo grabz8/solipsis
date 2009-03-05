@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <vector>
 #include <CTBasicThread.h>
-#include "OgreApplication.h"
-#include "Instance.h"
+#include "MainApplication/OgreApplication.h"
+#include "MainApplication/Instance.h"
 
 using CommonTools::BasicThread;
 

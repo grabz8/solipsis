@@ -361,51 +361,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\navigatorModule\AutoCreatedWindow.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Avatar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\CameraSupport.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\CameraSupportManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\FirstPersonCameraSupport.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\Instance.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\KeyMotion.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\LuaBinding.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Modeler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\MovableText.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Navigator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorApp.cpp"
 				>
 			</File>
 			<File
@@ -417,10 +373,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NavigatorLua.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\NavigatorSound.cpp"
 				>
 			</File>
@@ -429,27 +381,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\NaviLua.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\NodeEventListener.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Object.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreApplication.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\OgreFrameListener.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreHelpers.cpp"
 				>
 			</File>
 			<File
@@ -462,10 +398,6 @@
 			</File>
 			<File
 				RelativePath=".\OgrePeerManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OrbitalCameraSupport.cpp"
 				>
 			</File>
 			<File
@@ -512,10 +444,6 @@
 				RelativePath=".\Prerequisites.h"
 				>
 			</File>
-			<File
-				RelativePath=".\Scene.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -523,43 +451,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\navigatorModule\AutoCreatedWindow.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Avatar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\CameraSupport.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\CameraSupportManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\Event.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ExternalTextureSourceEx.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\FirstPersonCameraSupport.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\IApplication.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\IInstance.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\Instance.h"
 				>
 			</File>
 			<File
@@ -571,23 +463,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\IWindow.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\KeyMotion.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\LuaBinding.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Modeler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\MovableText.h"
 				>
 			</File>
 			<File
@@ -607,10 +483,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\NavigatorLua.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\NavigatorModule.h"
 				>
 			</File>
@@ -623,27 +495,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\NaviLua.h"
-				>
-			</File>
-			<File
 				RelativePath=".\NodeEventListener.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Object.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreApplication.h"
-				>
-			</File>
-			<File
 				RelativePath="..\navigatorModule\OgreFrameListener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreHelpers.h"
 				>
 			</File>
 			<File
@@ -656,18 +512,6 @@
 			</File>
 			<File
 				RelativePath=".\OgrePeerManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OrbitalCameraSupport.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\Queue.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Scene.h"
 				>
 			</File>
 		</Filter>
@@ -797,6 +641,22 @@
 			Name="OgreGraphicObjects"
 			>
 			<File
+				RelativePath=".\OgreGraphicObjects\MovableText.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\MovableText.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\OgreHelpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\OgreHelpers.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OgreGraphicObjects\SoundIcon.cpp"
 				>
 				<FileConfiguration
@@ -838,6 +698,350 @@
 			</File>
 			<File
 				RelativePath=".\OgreGraphicObjects\SoundIcon.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="MainApplication"
+			>
+			<File
+				RelativePath=".\MainApplication\AutoCreatedWindow.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\MainApplication\AutoCreatedWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\IApplication.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\IInstance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\Instance.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\MainApplication\Instance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\IWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\Navigator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\navigator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\navigatorapp.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\navigatorapp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgreApplication.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgreApplication.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Cameras"
+			>
+			<File
+				RelativePath=".\Cameras\CameraSupport.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\CameraSupport.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\CameraSupportManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\CameraSupportManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\FirstPersonCameraSupport.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\FirstPersonCameraSupport.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\OrbitalCameraSupport.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Cameras\OrbitalCameraSupport.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Platform"
+			>
+			<File
+				RelativePath=".\Platforms\Platform.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="World"
+			>
+			<File
+				RelativePath=".\World\Avatar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\World\Avatar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\World\Modeler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\World\Modeler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\World\Object.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\World\Object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\World\Scene.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\World\Scene.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Scripting"
+			>
+			<File
+				RelativePath=".\Scripting\LuaBinding.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Scripting\LuaBinding.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Scripting\NavigatorLua.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Scripting\NavigatorLua.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Scripting\NaviLua.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Scripting\NaviLua.h"
 				>
 			</File>
 		</Filter>
