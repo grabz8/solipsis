@@ -36,9 +36,7 @@ SoundIcon::SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, R
 	
 	m_pParentNode = pNode;
 	m_pParentNode->attachObject(m_SoundIcon);
-	m_SoundIcon->setVisible(false);
-
-	m_status = Invisible;
+	setStatus(Invisible);
 }
 
 void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
@@ -47,7 +45,9 @@ void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
 	switch(status)
 	{
 	case Invisible:
-		m_SoundIcon->setVisible(false);
+// 		m_SoundIcon->setVisible(false);
+		m_SoundIcon->getMaterial().get()->setAmbient(1, 0, 0);
+		m_SoundIcon->setVisible(true);
 		break;
 	case Showed:
 		m_SoundIcon->getMaterial().get()->setAmbient(1, 1, 1);
