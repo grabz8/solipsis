@@ -360,158 +360,24 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath="..\navigatorModule\KeyMotion.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorFrameListener.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorGUI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorSound.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorXMLRPCClient.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NodeEventListener.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreFrameListener.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\oSceneLoader\src\OgreOSMScene.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OgrePeer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OgrePeerManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Prerequisites.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="Prerequisites.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="Prerequisites.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="DebugNCS|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="Prerequisites.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseNCS|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-						PrecompiledHeaderThrough="Prerequisites.h"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Prerequisites.h"
-				>
-			</File>
 		</Filter>
 		<Filter
-			Name="Fichiers d&apos;en-tête"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			Name="oSceneLoader"
 			>
 			<File
-				RelativePath=".\ExternalTextureSourceEx.h"
+				RelativePath=".\oSceneLoader\include\IOSMSceneCallbacks.h"
 				>
 			</File>
 			<File
-				RelativePath=".\IOgrePeerManagerCallbacks.h"
+				RelativePath=".\oSceneLoader\src\OgreOSMScene.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\oSceneLoader\include\IOSMSceneCallbacks.h"
+				RelativePath=".\oSceneLoader\include\OgreOSMScene.h"
 				>
 			</File>
 			<File
-				RelativePath="..\navigatorModule\KeyMotion.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Navigator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorApp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorFrameListener.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorGUI.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\NavigatorModule.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorSound.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NavigatorXMLRPCClient.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NodeEventListener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\OgreFrameListener.h"
-				>
-			</File>
-			<File
-				RelativePath="..\navigatorModule\oSceneLoader\include\OgreOSMScene.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OgrePeer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OgrePeerManager.h"
+				RelativePath=".\oSceneLoader\include\OSMAnimSerializer.h"
 				>
 			</File>
 		</Filter>
@@ -646,14 +512,6 @@
 			</File>
 			<File
 				RelativePath=".\OgreGraphicObjects\MovableText.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OgreGraphicObjects\OgreHelpers.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OgreGraphicObjects\OgreHelpers.h"
 				>
 			</File>
 			<File
@@ -801,7 +659,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MainApplication\IOgrePeerManagerCallbacks.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainApplication\IWindow.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\KeyMotion.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\KeyMotion.h"
 				>
 			</File>
 			<File
@@ -818,6 +688,46 @@
 			</File>
 			<File
 				RelativePath=".\MainApplication\navigatorapp.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorFrameListener.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorFrameListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorGUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorGUI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorSound.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorSound.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorXMLRPCClient.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NavigatorXMLRPCClient.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NodeEventListener.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\NodeEventListener.h"
 				>
 			</File>
 			<File
@@ -862,6 +772,30 @@
 			</File>
 			<File
 				RelativePath=".\MainApplication\OgreApplication.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgreFrameListener.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgreFrameListener.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgrePeer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgrePeer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgrePeerManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MainApplication\OgrePeerManager.h"
 				>
 			</File>
 		</Filter>
@@ -1045,6 +979,106 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="OgreTools"
+			>
+			<File
+				RelativePath=".\OgreTools\ExternalTextureSourceEx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreTools\OgreHelpers.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseNCS|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\OgreTools\OgreHelpers.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\NavigatorModule.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Prerequisites.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+					PrecompiledHeaderThrough="Prerequisites.h"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+					PrecompiledHeaderThrough="Prerequisites.h"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="DebugNCS|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+					PrecompiledHeaderThrough="Prerequisites.h"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="ReleaseNCS|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="1"
+					PrecompiledHeaderThrough="Prerequisites.h"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath=".\Prerequisites.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

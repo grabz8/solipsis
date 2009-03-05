@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Navi.h>
 #include <OgreTimer.h>
 #include <OgreExternalTextureSourceManager.h>
-#include "ExternalTextureSourceEx.h"
+#include "OgreTools/ExternalTextureSourceEx.h"
 #include "NavigatorFrameListener.h"
-#include "OgreGraphicObjects/OgreHelpers.h"
+#include "OgreTools/OgreHelpers.h"
 #include "Tools/DebugHelpers.h"
 #include "Cameras/OrbitalCameraSupport.h"
 #include "Cameras/FirstPersonCameraSupport.h"

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 
 OgreHelpers OgreHelpers::mSingleton;
-
+  
 //-------------------------------------------------------------------------------------
 void OgreHelpers::changeConfigOption(RenderSystem& renderSystem, const String& name, const String& oldValue, const String& newValue)
 {

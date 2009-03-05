@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Avatar_h__
 #define __Avatar_h__
 
-#include "OgrePeer.h"
+#include "MainApplication/OgrePeer.h"
 #include <CharacterInstance.h>
 #include <IVoiceEngine.h>
-#include "KeyMotion.h"
+#include "MainApplication/KeyMotion.h"
 #include "OgreGraphicObjects/MovableText.h"
 #include "Tools/Event.h"
 

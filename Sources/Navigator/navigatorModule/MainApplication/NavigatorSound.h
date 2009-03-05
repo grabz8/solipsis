@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "fmod.hpp"
 #include "fmod_errors.h"
 #include <Ogre.h>
-#include "ExternalTextureSourceEx.h"
+#include "OgreTools/ExternalTextureSourceEx.h"
 #include <pthread.h>
 #include <VoiceEngineManager.h>
 

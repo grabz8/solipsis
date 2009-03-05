@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Scene_h__
 #define __Scene_h__
 
-#include "OgrePeer.h"
+#include "MainApplication/OgrePeer.h"
+// from ogre max
 #include "OgreMaxScene.hpp"
 
 using namespace Ogre;

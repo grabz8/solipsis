@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
-#include "OgreGraphicObjects/OgreHelpers.h"
+#include "OgreTools/OgreHelpers.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "Tools/DebugHelpers.h"
 #include <CTSystem.h>

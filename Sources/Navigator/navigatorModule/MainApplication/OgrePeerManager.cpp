@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World/Scene.h"
 #include "World/Object.h"
 #include "MainApplication/Navigator.h"
-#include "OgreGraphicObjects/OgreHelpers.h"
+#include "OgreTools/OgreHelpers.h"
 #include "World/Modeler.h"
 #include <AvatarEditor.h>
 #include <CharacterManager.h>

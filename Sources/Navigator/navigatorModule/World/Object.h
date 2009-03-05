@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Object_h__
 #define __Object_h__
 
-#include "OgrePeer.h"
+#include "MainApplication/OgrePeer.h"
 #include <Selection.h>
 
 using namespace Ogre;
