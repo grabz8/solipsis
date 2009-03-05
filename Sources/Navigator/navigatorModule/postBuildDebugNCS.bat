@@ -89,7 +89,6 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
 :quake3settings_exist
 xcopy "..\..\..\Media\resources.cfg" "%dst%" /s /y
 
-
-call copyDocumentation.bat
-call copyNCSPhysXFiles.bat
-call copyDebugVC71RedistFiles.bat
+rem call copyDocumentation.bat
+rem call copyNCSPhysXFiles.bat
+rem call copyDebugVC71RedistFiles.bat

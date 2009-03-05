@@ -19,8 +19,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+*/  
 
+#include "Prerequisites.h"
 #include "Avatar.h"
 #include "OgreHelpers.h"
 #include "Navigator.h"
@@ -71,6 +72,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mAnimationState(0),
     mNameLabel(0),
 	mChatLabel(0),
+	m_pSoundIcon(0),
     mSelectionObject(0),
     mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
@@ -154,6 +156,12 @@ Avatar::~Avatar()
         getSceneNode()->detachObject(mChatLabel);
         delete mChatLabel;
     }
+
+	if (m_pSoundIcon != 0)
+	{
+		delete m_pSoundIcon;
+	}
+
     CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
 
 #ifdef POOL
@@ -182,35 +190,45 @@ void Avatar::onSceneNodeChanged()
     Vector3 avatarSize = entityBbox.getSize();
     Vector3 avatarHalfSize = entityBbox.getHalfSize();
 
-    // Name Label
-    if (mNameLabel == 0)
-    {
-        mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false, "BerlinSans32");
-        mNameLabel->setScale(0.1f);
-        mNameLabel->setCharacterHeight(1);
+	// Name Label
+	if (mNameLabel == 0)
+	{
+		mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false, "BerlinSans32");
+		mNameLabel->setScale(0.1f);
+		mNameLabel->setCharacterHeight(1);
 		mNameLabel->setSpaceWidth(1);
-        mNameLabel->setColor(ColourValue::White);
-        mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
-        mNameLabel->showOnTop(true);
-    }
-    mNameLabel->setAdditionalHeight(avatarSize.y);
-    getSceneNode()->attachObject(mNameLabel);
+		mNameLabel->setColor(ColourValue::White);
+		mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+		mNameLabel->showOnTop(true);
+	}
+	mNameLabel->setAdditionalHeight(avatarSize.y);
+	getSceneNode()->attachObject(mNameLabel);
 
 	// Chat Label
-    if (mChatLabel == 0)
-    {
-//        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
-        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "DejaVuSans");
-        mChatLabel->setScale(0.12f);
-        mChatLabel->setCharacterHeight(1);
+	if (mChatLabel == 0)
+	{
+		//        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
+		mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "DejaVuSans");
+		mChatLabel->setScale(0.12f);
+		mChatLabel->setCharacterHeight(1);
 		mChatLabel->setSpaceWidth(1);
-        mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, 0.0f));
-        mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
-        mChatLabel->showOnTop(true);
-        mChatLabelAlphaTimer = 0.0f;
-    }
+		mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, 0.0f));
+		mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+		mChatLabel->showOnTop(true);
+		mChatLabelAlphaTimer = 0.0f;
+	}
 	mChatLabel->setAdditionalHeight(avatarSize.y + 0.2f);
 	getSceneNode()->attachObject(mChatLabel);
+
+	// Sound Icon
+	if (m_pSoundIcon == 0) 
+	{
+		m_pSoundIcon = new SoundIcon(getSceneMgr(), getSceneNode(), mXmlEntity->getUid() + "Billboard_Sound", avatarSize.y+0.5);
+	}
+
+	//m_pSoundIcon->setStatus(SoundIcon::Showed);
+
+	//setNameVisibility(!isLocal());
 
     // Picking
 /* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
@@ -293,6 +311,8 @@ void Avatar::onAvatarSave()
 void Avatar::setNameVisibility(bool visible)
 {
     mNameLabel->setVisible(visible);
+	mChatLabel->setVisible(visible);
+	//m_SoundIcon->setVisible(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -380,6 +400,11 @@ void Avatar::update(Real timeSinceLastFrame)
         if (smoothAngle >= 0.0f)
             mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
     }
+
+	if (m_pSoundIcon)
+	{	
+		m_pSoundIcon->animate(timeSinceLastFrame);
+	}
 }
 
 //-------------------------------------------------------------------------------------

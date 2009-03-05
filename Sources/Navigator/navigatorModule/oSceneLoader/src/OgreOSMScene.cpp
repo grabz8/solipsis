@@ -16,6 +16,7 @@
  *>	Copyright (c) 2006, All Rights Reserved.
  **********************************************************************/
 
+#include "Prerequisites.h"
 #include "OgreOSMScene.h"
 
 using namespace Ogre;

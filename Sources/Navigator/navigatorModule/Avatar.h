@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MovableText.h"
 #include "Event.h"
 
+#include "SoundIcon.h"
+
 using namespace Ogre;
 
 namespace Solipsis {
@@ -72,10 +74,15 @@ protected:
     SceneNode* mCamerasSceneNode;
     /// Current animation state
     Ogre::AnimationState* mAnimationState;
+
     /// Name label
     MovableText* mNameLabel;
 	/// Chat label
     MovableText* mChatLabel;
+
+	// soundIcon if needed
+	SoundIcon * m_pSoundIcon; 
+
 	/// Chat label alpha timer
     Real mChatLabelAlphaTimer;
     /// Selection object
@@ -145,8 +152,10 @@ public:
     CharacterInstance* getCharacterInstance();
     /** Set the character instance. */
     void setCharacterInstance(CharacterInstance* characterInstance);
-    /** Get the scene node. */
-    inline SceneNode* getSceneNode() { return mCharacterInstance->getSceneNode(); }
+	/** Get the scene node. */
+	inline SceneNode* getSceneNode() { return mCharacterInstance->getSceneNode(); }
+	/** Get the scene Manager. */
+	inline SceneManager* getSceneMgr() { return mCharacterInstance->getSceneMgr(); }
     /** Get the entity. */
     inline Entity* getEntity() { return mCharacterInstance->getEntity(); }
 
@@ -212,6 +221,35 @@ public:
 
     /** Rotate the avatar around the Y-axis. */
     void yaw(const Radian& angle);
+
+	// from IVoiceEngine
+	/** Called when avatar voice is created.
+	@remarks An implementation must be supplied for this method to uniquely identify the engine.
+	*/
+	virtual void onVoiceCreation()
+	{
+		m_pSoundIcon->setStatus(SoundIcon::Showed);
+	}
+
+	/** Called when avatar voice is destroyed.
+	@remarks An implementation must be supplied for this method to uniquely identify the engine.
+	*/
+	virtual void onVoiceDestruction()
+	{
+		m_pSoundIcon->setStatus(SoundIcon::Invisible);
+	};
+
+	/** Called when avatar is talking or not.
+	@param talking TRUE if avatar is speaking, FALSE otherwise
+	@remarks An implementation must be supplied for this method to uniquely identify the engine.
+	*/
+	virtual void onTalking(bool talking)
+	{
+		if (talking)
+			m_pSoundIcon->setStatus(SoundIcon::Animated);
+		else
+			m_pSoundIcon->setStatus(SoundIcon::Showed);
+	}
 
 protected:
     /** Update the avatar properties into the voice engine. */

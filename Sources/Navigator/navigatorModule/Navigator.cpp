@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "Prerequisites.h"
 
 #include "Navigator.h"
 #include "NavigatorFrameListener.h"
@@ -2441,7 +2442,7 @@ void Navigator::setCameraMode(int mode)
 		}
     }
     mUserAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
-    mUserAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
+    //mUserAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
     if (mNavigatorGUI != 0)
     {
         // Hide mouse only on 1st person camera mode
