@@ -365,7 +365,6 @@ bool FModSpeexVoipHandler::setRecordCodec(CodecPtr& codec)
 #ifdef TEST_PLAY_SOUND
     mLastPos = 0;
     FMOD_RESULT fmodResult = mSystem->createSound("C:\\Acer\\AcerTour\\Music\\main.wav", FMOD_LOOP_OFF | FMOD_2D | FMOD_SOFTWARE, 0, &mRecordSound);
-//    FMOD_RESULT fmodResult = mSystem->createSound("D:\\devpt\\gnet\\world\\sounds\\mp3s\\JerryC-Canon-Rock.mp3", FMOD_LOOP_OFF | FMOD_2D | FMOD_SOFTWARE, 0, &mRecordSound);
     if (fmodResult == FMOD_OK)
         return true;
 #else

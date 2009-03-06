@@ -144,6 +144,7 @@
 				AdditionalLibraryDirectories="..\..\..\Dependencies\Phonetizer\lib\release"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

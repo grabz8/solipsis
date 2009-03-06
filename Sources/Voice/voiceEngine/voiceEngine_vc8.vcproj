@@ -142,6 +142,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="Phonetizer.lib"
 				AdditionalLibraryDirectories="..\..\..\Dependencies\Phonetizer\lib\release"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
