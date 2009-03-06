@@ -28,6 +28,31 @@ using namespace Ogre;
 
 namespace Solipsis {
 
+class ColorInterpolator
+{
+public:
+	ColorInterpolator(const ColourValue & from, const ColourValue & to)
+	{
+		mFrom = from; 
+		mTo = to;
+	}
+	const ColourValue & getResult(Real fRatio)
+	{
+		Real invert = (1-fRatio);
+		mResult.r = mTo.r *fRatio + mFrom.r*invert;
+		mResult.g = mTo.g *fRatio + mFrom.g*invert;
+		mResult.b = mTo.b *fRatio + mFrom.b*invert;
+		mResult.a = mTo.a *fRatio + mFrom.a*invert;
+
+		return mResult;
+	}
+
+private:
+	ColourValue mFrom;
+	ColourValue mTo;
+	ColourValue mResult;
+};
+
 /** This class represents an The sound icon shown above the avatar.
 */
 class SoundIcon 
@@ -40,7 +65,7 @@ public:
 		Animated
     };
 
-	SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos);
+	SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos = 0, Real xSize = 0.5, Real ySize = 0.3);
 	~SoundIcon();
 
 	void setStatus(SoundIcon_Status status);
@@ -54,11 +79,14 @@ public:
 protected:
 	// the billboard set
 	BillboardSet* m_SoundIcon; 
+	Billboard *m_pBoard;
 
 	SceneNode* m_pParentNode;
 	SceneManager* m_pMgr;
 
 	SoundIcon_Status m_status;
+
+	ColorInterpolator mCInterpolator;
 	Real m_animationTime;
 };
 

@@ -24,16 +24,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 #include "SoundIcon.h"
 
+
 using namespace Solipsis;
 
-SoundIcon::SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos)
+SoundIcon::SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos, Real xSize, Real ySize)
+			: mCInterpolator(ColourValue(0,0.8,0,1), ColourValue(1,1,1,0.5))
 {
 	m_pMgr = pMgr;
 	// Sound Icon
-	m_SoundIcon = pMgr->createBillboardSet(name, 1);
-	Billboard *pBoard = m_SoundIcon->createBillboard(0,yPos,0);
+	m_SoundIcon = pMgr->createBillboardSet("SoundIcon_BS_" + name, 1);
+	m_pBoard = m_SoundIcon->createBillboard(0,yPos,0);
 	m_SoundIcon->setMaterialName("Solipsis/Sound");
-	pBoard->setDimensions(0.5,0.3);
+
+	m_pBoard->setDimensions(xSize, ySize);
 	
 	m_pParentNode = pNode;
 	m_pParentNode->attachObject(m_SoundIcon);
@@ -46,21 +49,19 @@ void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
 	switch(status)
 	{
 	case Invisible:
-// 		m_SoundIcon->setVisible(false);
-		m_SoundIcon->getMaterial().get()->setAmbient(1, 0, 0);
-		m_SoundIcon->setVisible(true);
+		m_SoundIcon->setVisible(false);
 		break;
 	case Showed:
-		m_SoundIcon->getMaterial().get()->setAmbient(1, 1, 1);
 		m_SoundIcon->setVisible(true);
+		m_pBoard->setColour(ColourValue(1, 1, 1, 1));
 		break;
 	case Animated:
 		m_SoundIcon->setVisible(true);
+		m_pBoard->setColour(ColourValue(1, 1, 1, 1));
 		m_animationTime = 0;
 		break;
 	}
 }
-
 
 SoundIcon::~SoundIcon()
 {
@@ -74,8 +75,11 @@ void SoundIcon::animate(Real timeSinceLastFrame)
 	{
 		m_animationTime += timeSinceLastFrame;
 		Real fValue = Math::Sin(m_animationTime*2*Math::PI)/2 + 0.5;
-	
-		m_SoundIcon->getMaterial().get()->setAmbient(fValue, 1, fValue);
 
+
+	
+		m_pBoard->setColour(mCInterpolator.getResult(fValue));
+	
+		TRACE("fValue %f\n", fValue);
 	}
 }
