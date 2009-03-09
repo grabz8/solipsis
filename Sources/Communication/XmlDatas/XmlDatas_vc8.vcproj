@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XmlDatasBasicTypes.h"
+				>
+			</File>
+			<File
 				RelativePath=".\XmlDatasPrerequisites.h"
 				>
 			</File>
