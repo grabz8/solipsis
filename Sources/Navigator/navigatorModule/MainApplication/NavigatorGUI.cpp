@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include "NavigatorGUI.h"
@@ -28,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Tools/DebugHelpers.h"
 #include <OgreTimer.h>
 #include <CTLog.h>
+#include <CTIO.h>
 #include <CTStringHelpers.h>
 #include <CTNetSocket.h>
 #include <CTSystem.h>
@@ -136,7 +138,8 @@ bool NavigatorGUI::startup()
 
     // Load Lua default GUI
     lua_State* luaState = mNavigator->getLuaState();
-    if (luaL_loadfile(luaState, "lua\\defaultGUI.lua") != 0)
+    std::string defaultGUIluaFilename = std::string("lua") + IO::getPathSeparator() + "defaultGUI.lua";
+    if (luaL_loadfile(luaState, defaultGUIluaFilename.c_str()) != 0)
     {
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::startup() Unable to load defaultGUI.lua, error: %s", lua_tostring(luaState, -1));
         return false;
@@ -228,6 +231,9 @@ bool NavigatorGUI::isMessageBoxVisible()
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::login()
 {
+    // Hide any message box
+    hideMessageBox();
+
     // Hide previous Navi UI
     hidePreviousNavi();
 
@@ -1742,6 +1748,8 @@ void NavigatorGUI::messageBoxResponse(const NaviData& naviData)
         // Display the Worlds Server info page
         worldsServerInfo();
         break;
+    case MBD_CONNECTIONLOSTERROR:
+        break;
     }
     mMsgBoxDisplayed = MBD_NONE;
 }
@@ -2402,6 +2410,15 @@ void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
     mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
     // Call connect
     bool connected = mNavigator->connect();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::connectionLostError()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionLostError()");
+
+    showMessageBox("Network error", "Peer lost its connection, re-connection in progress ...", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_EXCLAMATION);
+    mMsgBoxDisplayed = MBD_CONNECTIONLOSTERROR;
 }
 
 //-------------------------------------------------------------------------------------
@@ -3140,9 +3157,9 @@ void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
-        obj->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+//        obj->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
 		obj->setAlpha( atoi(value.c_str())/100. );
-		obj->getMaterialManager()->getModifiedMaterial()->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
+//		obj->getMaterialManager()->getModifiedMaterial()->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
 }
 
@@ -4737,9 +4754,9 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
 	{
-        material->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+//        material->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
         material->setAlpha( atoi(value.c_str())/100. );
-		material->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
+//		material->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
 }
 //-------------------------------------------------------------------------------------

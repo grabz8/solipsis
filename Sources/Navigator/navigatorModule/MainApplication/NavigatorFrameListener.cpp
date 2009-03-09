@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include <NaviManager.h>
@@ -72,16 +73,16 @@ bool NavigatorFrameListener::frameStarted(const FrameEvent& evt)
     if (mNavigator->isNaviSupported())
         NaviManager::Get().Update();
 
-    if (mNavigator->isConnected()) {
-        // Process received events
+    // Process received events
+    if (mNavigator->isConnected())
         mNavigator->processEvents();
 
-        // Update peers
-        mNavigator->getOgrePeerManager()->frameStarted(evt);
+    // Update peers
+    mNavigator->getOgrePeerManager()->frameStarted(evt);
 
-        // Send events
+    // Send events
+    if (mNavigator->isConnected())
         mNavigator->sendEvents();
-    }
 
     // Updating sound
     if (mNavigator->getNavigatorSound() != 0)
@@ -295,7 +296,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             }
             OgreFrameListener::keyPressed(evt);
             break;
-            }
+        }
     }
 
     // is editing the avatar ?

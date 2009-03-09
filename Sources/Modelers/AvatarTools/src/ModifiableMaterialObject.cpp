@@ -84,7 +84,7 @@ void ModifiableMaterialObjectBase::removeTexture(TexturePtr texture)
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 ModifiableMaterialObject::ModifiableMaterialObject(ModifiableMaterialObjectBase* modifiableMaterialObjectBase) :
-mModifiableMaterialObjectBase(modifiableMaterialObjectBase)
+mModifiableMaterialObjectBase(modifiableMaterialObjectBase), mGhost(false)
 {
 	mModifiedMaterial = NULL;
 }
@@ -107,7 +107,8 @@ void ModifiableMaterialObject::initialise(const MaterialPtr& material)
 	mBackDiffuse = getColourDiffuse();
 	mBackSpecular = getColourSpecular();
 	mBackShininess = getShininess();
-	mBackTranparency = getTransparency();
+	mBackAlpha = mModifiedMaterial->getAlpha();
+    mAlpha = mBackAlpha;
 
 	if (mModifiedMaterial->hasATexture())
 	{
@@ -185,15 +186,23 @@ void ModifiableMaterialObject::setColourSpecular(const ColourValue& colour)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-const float ModifiableMaterialObject::getTransparency()
+const float ModifiableMaterialObject::getAlpha()
 {
-	return mModifiedMaterial->getAlpha();
+    return mAlpha;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiableMaterialObject::setTransparency(const float opacity)
+void ModifiableMaterialObject::setAlpha(const float opacity)
 {
-	mModifiedMaterial->setAlpha(opacity);
+    mAlpha = opacity;
+    mModifiedMaterial->setAlpha(opacity*(mGhost ? 0.5f : 1.0f));
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void ModifiableMaterialObject::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    mModifiedMaterial->setAlpha(mAlpha*(mGhost ? 0.5f : 1.0f));
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -217,7 +226,7 @@ void ModifiableMaterialObject::resetColour()
 	setColourDiffuse( mBackDiffuse );
 	setColourSpecular( mBackSpecular );
 	setShininess( mBackShininess );
-	setTransparency( mBackTranparency );
+	setAlpha( mBackAlpha );
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

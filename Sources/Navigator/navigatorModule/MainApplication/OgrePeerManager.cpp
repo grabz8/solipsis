@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include "OgrePeerManager.h"
@@ -101,22 +102,27 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-bool OgrePeerManager::remove(const EntityUID& entity, bool local)
+bool OgrePeerManager::remove(const EntityUID& entity)
 {
-    bool peerFound = false;
     for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
     {
-        if (ogrePeer->second->isLocal() != local) continue;
-        if (ogrePeer->second->getXmlEntity()->getUid() == entity)
-        {
+        if (ogrePeer->second->getXmlEntity()->getUid() != entity)
+            continue;
 #ifdef POOL
 #else
-            delete ogrePeer->second->getXmlEntity();
+        delete ogrePeer->second->getXmlEntity();
 #endif
-            delete ogrePeer->second;
-            mOgrePeersMap.erase(ogrePeer);
-            return true;
+        switch (ogrePeer->second->getXmlEntity()->getType())
+        {
+        case ETSite:
+            if (mCallbacks != 0)
+                mCallbacks->onSceneNodeDestroy(ogrePeer->second);
+            break;
         }
+
+        delete ogrePeer->second;
+        mOgrePeersMap.erase(ogrePeer);
+        return true;
     }
     return false;
 }

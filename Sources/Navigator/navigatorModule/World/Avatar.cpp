@@ -81,7 +81,8 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
     mVoiceMinDist(1.0f),
-    mVoiceMaxDist(100.0f)
+    mVoiceMaxDist(100.0f),
+    mGhost(false)
 {
     for (int a = 0;a < ASAvatarAnimCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
@@ -156,12 +157,10 @@ Avatar::~Avatar()
         getSceneNode()->detachObject(mChatLabel);
         delete mChatLabel;
     }
-
-	if (m_pSoundIcon != 0)
-	{
-		delete m_pSoundIcon;
-	}
-
+    if (m_pSoundIcon != 0)
+    {
+        delete m_pSoundIcon;
+    }
     CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
 
 #ifdef POOL
@@ -180,6 +179,7 @@ CharacterInstance* Avatar::getCharacterInstance()
 void Avatar::setCharacterInstance(CharacterInstance* characterInstance)
 {
     mCharacterInstance = characterInstance;
+    mCharacterInstance->setGhost(mGhost);
     onSceneNodeChanged();
 }
 
@@ -190,45 +190,45 @@ void Avatar::onSceneNodeChanged()
     Vector3 avatarSize = entityBbox.getSize();
     Vector3 avatarHalfSize = entityBbox.getHalfSize();
 
-	// Name Label
-	if (mNameLabel == 0)
-	{
-		mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false, "BerlinSans32");
-		mNameLabel->setScale(0.1f);
-		mNameLabel->setCharacterHeight(1);
-		mNameLabel->setSpaceWidth(1);
-		mNameLabel->setColor(ColourValue::White);
-		mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
-		mNameLabel->showOnTop(true);
-	}
-	mNameLabel->setAdditionalHeight(avatarSize.y);
-	getSceneNode()->attachObject(mNameLabel);
+    // Name Label
+    if (mNameLabel == 0)
+    {
+        mNameLabel = new MovableText(mXmlEntity->getUid() + "Label", mXmlEntity->getName().substr(0, 16), false, "BerlinSans32");
+        mNameLabel->setScale(0.1f);
+        mNameLabel->setCharacterHeight(1);
+        mNameLabel->setSpaceWidth(1);
+        mNameLabel->setColor(ColourValue::White);
+        mNameLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+        mNameLabel->showOnTop(true);
+    }
+    mNameLabel->setAdditionalHeight(avatarSize.y);
+    getSceneNode()->attachObject(mNameLabel);
 
-	// Chat Label
-	if (mChatLabel == 0)
-	{
-		//        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
-		mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "DejaVuSans");
-		mChatLabel->setScale(0.12f);
-		mChatLabel->setCharacterHeight(1);
-		mChatLabel->setSpaceWidth(1);
-		mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, 0.0f));
-		mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
-		mChatLabel->showOnTop(true);
-		mChatLabelAlphaTimer = 0.0f;
-	}
+    // Chat Label
+    if (mChatLabel == 0)
+    {
+//        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "BerlinSans32");
+        mChatLabel = new MovableText(mXmlEntity->getUid() + "ChatLabel", " ", false, "DejaVuSans");
+        mChatLabel->setScale(0.12f);
+        mChatLabel->setCharacterHeight(1);
+        mChatLabel->setSpaceWidth(1);
+        mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, 0.0f));
+        mChatLabel->setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+        mChatLabel->showOnTop(true);
+        mChatLabelAlphaTimer = 0.0f;
+    }
 	mChatLabel->setAdditionalHeight(avatarSize.y + 0.2f);
 	getSceneNode()->attachObject(mChatLabel);
 
-	// Sound Icon
-	if (m_pSoundIcon == 0) 
-	{
-		m_pSoundIcon = new SoundIcon(getSceneMgr(), getSceneNode(), mXmlEntity->getUid() + "Billboard_Sound", avatarSize.y+0.5);
-	}
+    // Sound Icon
+    if (m_pSoundIcon == 0) 
+    {
+        m_pSoundIcon = new SoundIcon(getSceneMgr(), getSceneNode(), mXmlEntity->getUid() + "Billboard_Sound", avatarSize.y+0.5);
+    }
 
-	//m_pSoundIcon->setStatus(SoundIcon::Showed);
+    //m_pSoundIcon->setStatus(SoundIcon::Showed);
 
-	//setNameVisibility(!isLocal());
+    //setNameVisibility(!isLocal());
 
     // Picking
 /* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
@@ -311,8 +311,16 @@ void Avatar::onAvatarSave()
 void Avatar::setNameVisibility(bool visible)
 {
     mNameLabel->setVisible(visible);
-	mChatLabel->setVisible(visible);
-	//m_SoundIcon->setVisible(false);
+    mChatLabel->setVisible(visible);
+    //m_SoundIcon->setVisible(false);
+}
+
+//-------------------------------------------------------------------------------------
+void Avatar::setGhost(bool ghost)
+{
+    if (ghost == mGhost) return;
+    mGhost = ghost;
+    mCharacterInstance->setGhost(ghost);
 }
 
 //-------------------------------------------------------------------------------------
@@ -401,10 +409,10 @@ void Avatar::update(Real timeSinceLastFrame)
             mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
     }
 
-	if (m_pSoundIcon)
-	{	
-		m_pSoundIcon->animate(timeSinceLastFrame);
-	}
+    if (m_pSoundIcon)
+    {	
+        m_pSoundIcon->animate(timeSinceLastFrame);
+    }
 }
 
 //-------------------------------------------------------------------------------------

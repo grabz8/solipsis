@@ -31,7 +31,7 @@ using namespace Solipsis;
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 GoodyModelInstance::GoodyModelInstance(GoodyModel* goodyModel, GoodyInstance* owner) :
 ModifiableMaterialObject(goodyModel),
-mGoodyModel(goodyModel), mOwner(owner)
+mGoodyModel(goodyModel), mOwner(owner), mGhost(false)
 {
     mEntity = mGoodyModel->mEntity->clone(mOwner->getOwner()->getUid() + mGoodyModel->getName());
     String s = "Material" + mOwner->getOwner()->getUid() + mGoodyModel->mOwner->getName() + mGoodyModel->mName;
@@ -50,6 +50,13 @@ GoodyModelInstance::~GoodyModelInstance()
 /*    const MaterialPtr& clonedMaterial = mGoodyModel->mEntity->getSubEntity(0)->getMaterial();
     MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);*/
     mOwner->getOwner()->getSceneMgr()->destroyEntity(mEntity);
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyModelInstance::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    ModifiableMaterialObject::setGhost(ghost);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

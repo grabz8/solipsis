@@ -80,8 +80,8 @@ protected:
 	/// Chat label
     MovableText* mChatLabel;
 
-	// soundIcon if needed
-	SoundIcon * m_pSoundIcon; 
+    // soundIcon if needed
+    SoundIcon * m_pSoundIcon; 
 
 	/// Chat label alpha timer
     Real mChatLabelAlphaTimer;
@@ -91,6 +91,8 @@ protected:
     bool mGravity;
     /// Voice min and max distances
     float mVoiceMinDist, mVoiceMaxDist;
+    /// Ghost attribute
+    bool mGhost;
 
 private:
     /// Animation name for Idle
@@ -152,10 +154,10 @@ public:
     CharacterInstance* getCharacterInstance();
     /** Set the character instance. */
     void setCharacterInstance(CharacterInstance* characterInstance);
-	/** Get the scene node. */
-	inline SceneNode* getSceneNode() { return mCharacterInstance->getSceneNode(); }
-	/** Get the scene Manager. */
-	inline SceneManager* getSceneMgr() { return mCharacterInstance->getSceneMgr(); }
+    /** Get the scene node. */
+    inline SceneNode* getSceneNode() { return mCharacterInstance->getSceneNode(); }
+    /** Get the scene Manager. */
+    inline SceneManager* getSceneMgr() { return mCharacterInstance->getSceneMgr(); }
     /** Get the entity. */
     inline Entity* getEntity() { return mCharacterInstance->getEntity(); }
 
@@ -169,6 +171,11 @@ public:
 
     /** Set whether the name is visible or not. */
     void setNameVisibility(bool visible);
+
+    /** Get the ghost attribute. */
+    bool getGhost() { return mGhost; }
+    /** Set ghost state. */
+    void setGhost(bool ghost);
 
     /** Set the current state. */
     void setState(AnimationState state);
@@ -222,34 +229,34 @@ public:
     /** Rotate the avatar around the Y-axis. */
     void yaw(const Radian& angle);
 
-	// from IVoiceEngine
-	/** Called when avatar voice is created.
-	@remarks An implementation must be supplied for this method to uniquely identify the engine.
-	*/
-	virtual void onVoiceCreation()
-	{
-		m_pSoundIcon->setStatus(SoundIcon::Showed);
-	}
+    // from IVoiceEngine
+    /** Called when avatar voice is created.
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onVoiceCreation()
+    {
+        m_pSoundIcon->setStatus(SoundIcon::Showed);
+    }
 
-	/** Called when avatar voice is destroyed.
-	@remarks An implementation must be supplied for this method to uniquely identify the engine.
-	*/
-	virtual void onVoiceDestruction()
-	{
-		m_pSoundIcon->setStatus(SoundIcon::Invisible);
-	};
+    /** Called when avatar voice is destroyed.
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onVoiceDestruction()
+    {
+        m_pSoundIcon->setStatus(SoundIcon::Invisible);
+    };
 
-	/** Called when avatar is talking or not.
-	@param talking TRUE if avatar is speaking, FALSE otherwise
-	@remarks An implementation must be supplied for this method to uniquely identify the engine.
-	*/
-	virtual void onTalking(bool talking)
-	{
-		if (talking)
-			m_pSoundIcon->setStatus(SoundIcon::Animated);
-		else
-			m_pSoundIcon->setStatus(SoundIcon::Showed);
-	}
+    /** Called when avatar is talking or not.
+    @param talking TRUE if avatar is speaking, FALSE otherwise
+    @remarks An implementation must be supplied for this method to uniquely identify the engine.
+    */
+    virtual void onTalking(bool talking)
+    {
+        if (talking)
+            m_pSoundIcon->setStatus(SoundIcon::Animated);
+        else
+            m_pSoundIcon->setStatus(SoundIcon::Showed);
+    }
 
 protected:
     /** Update the avatar properties into the voice engine. */

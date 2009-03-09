@@ -62,7 +62,7 @@ C:\Program Files\Microsoft DirectX SDK
  the env. var. DXSDK_DIR
 is defined (eg. "C:\Program Files\Microsoft DirectX SDK
 (November 2007)\ " )</li></ul>
-<h3>Ogres</h3>
+<h3>Ogre</h3>
 <p>You can use either Ogre direct sources or
 Orge SDK</p>
  
@@ -163,7 +163,15 @@ ogrenew/Dependencies/include, </li><li>copy zlib.lib and zlibd.lib from
 visualc6/Win32_LIB_&lt;config&gt;</li><li>
 into ogrenew/Dependencies/lib/&lt;config&gt;</li></ul><p style="margin-left: 40px;"></p><blockquote style="margin-right: 0px;" dir="ltr">
 </blockquote>
-<h3>VoiceEngine:</h3>
+<h3>RakNet</h3>
+<p> Peer module and RakNetServer are using RakNet SDK to
+deal with network.</p>
+<ul><li>Download the RakNet package release 3.401 (or 
+later)</li>
+<li>Unzip it and define your RAKNET_PATH env. var. (eg. 
+    "C:\RakNet-3.401")</li>
+</ul>
+<h3>VoiceEngine</h3>
 
 <h4>Boost</h4>
 
@@ -214,7 +222,7 @@ PhysX SDK\v2.8.1)<br>
 repository: <a href="http://developer.nvidia.com/object/physx_downloads.html">http://developer.nvidia.com/object/physx_downloads.html</a>
 </li></ul>
 
-<h3>Build Sollipsis</h3>
+<h3>Build Solipsis</h3>
  The time to build the project is finally come<br><br>
 <ul><li>
 Get SVN
@@ -319,7 +327,7 @@ makensis.exe (eg. C:\Program Files\NSIS)<br>
 (files are taken from the Release directory so check you really build
 all)</p>
 <p>Before creating a setup, don't forget to clean up
-your realse directory by deleting it completly, then launch a rebuild.</p>
+your release directory by deleting it completly, then launch a rebuild.</p>
 <p>The resulting setup should be put in a directory
 containing the following directories and files :</p>
 <ul><li>

@@ -32,7 +32,8 @@ using namespace Solipsis;
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPartInstance::BodyPartInstance(BodyPart* pBodyPart, CharacterInstance* owner) :
 	mBodyPart(pBodyPart),
-    mOwner(owner)
+    mOwner(owner),
+    mGhost(false)
 {
 	mCurrentBodyPartModelIterator = mBodyPart->mDefaultBodyPartModelIterator;
     if (mCurrentBodyPartModelIterator->second != 0)
@@ -135,6 +136,7 @@ void BodyPartInstance::setCurrentBodyPartModel(const String& bodyPartModelName)
         mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
 		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
 		bodyPartModelSubEntity->setVisible(true);
+        mCurrentBodyPartModelInstance->setGhost(mGhost);
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,6 +158,7 @@ void BodyPartInstance::setPreviousBodyPartModelAsCurrent()
         mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
 		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
 		bodyPartModelSubEntity->setVisible(true);
+        mCurrentBodyPartModelInstance->setGhost(mGhost);
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -177,6 +180,7 @@ void BodyPartInstance::setNextBodyPartModelAsCurrent()
         mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
 		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
 		bodyPartModelSubEntity->setVisible(true);
+        mCurrentBodyPartModelInstance->setGhost(mGhost);
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -197,6 +201,7 @@ void BodyPartInstance::setDefaultBodyPartModelAsCurrent()
         mCurrentBodyPartModelInstance = new BodyPartModelInstance(mCurrentBodyPartModelIterator->second, this);
 		SubEntity* bodyPartModelSubEntity = mCurrentBodyPartModelInstance->getSubEntity();
 		bodyPartModelSubEntity->setVisible(true);
+        mCurrentBodyPartModelInstance->setGhost(mGhost);
 	}
 }
 #if 0 //GREG
@@ -223,6 +228,14 @@ void BodyPartInstance::resetModifications()
 	resetCouplesOfPoses();
 #endif //GREG
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartInstance::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    if (mCurrentBodyPartModelInstance != 0)
+        mCurrentBodyPartModelInstance->setGhost(ghost);
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPart::BodyPart(const String& name, const String& defaultBodyPartModelSubEntityName, const String& defaultBodyPartModelCompleteName, Character* owner) :
 mName(name), mOwner(owner), mCanHaveNoBodyPartModel(false)

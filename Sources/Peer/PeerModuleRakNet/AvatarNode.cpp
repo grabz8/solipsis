@@ -36,7 +36,9 @@ AvatarNode::AvatarNode() :
     mMutex(PTHREAD_MUTEX_INITIALIZER),
     mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
     mFrozen(true),
-    Node("avatar")
+    mConnectionLost(false),
+    Node("avatar"),
+    mEntity(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
 }
@@ -76,6 +78,9 @@ TiXmlElement* AvatarNode::getSavedElt()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::getSavedElt() saving entity of avatar node with nodeId:%s", mNodeId.c_str());
 
+    if (mEntity == 0)
+        return 0;
+
     // Get root node
     TiXmlElement* nodeElt = Node::getSavedElt();
     // Add avatar entity
@@ -110,12 +115,10 @@ void AvatarNode::onNewEntity(Entity* entity)
         ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
     {
         pthread_mutex_lock(&mMutex);
-#ifdef PHYSICSPLUGINS
         // create physics of the entity
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s, freezing", entity->getXmlEntity()->getUid().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
         entity->createPhysics(Peer::getSingleton().getPhysicsScene());
         entity->applyGravity(true);
-#endif
         pthread_mutex_unlock(&mMutex);
     }
 
@@ -165,6 +168,7 @@ void AvatarNode::onNewEntity(Entity* entity)
         ((Entity*)mEntity)->createPhysics(Peer::getSingleton().getPhysicsScene());
         ((Entity*)mEntity)->applyGravity(true);
         onUpdatedEntity((Entity*)mEntity);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() unfreezing");
         freeze(false);
     }
 }
@@ -203,7 +207,10 @@ void AvatarNode::onLostEntity(Entity* entity)
 {
     // me ?
     if (entity == mEntity)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onLostEntity() me ! freezing");
         freeze(true);
+    }
 
     pthread_mutex_lock(&mMutex);
     RakNetEntity::RakNetEntityMap::iterator it = mOwnedEntities.find(entity->getXmlEntity()->getUid());
@@ -222,11 +229,13 @@ void AvatarNode::onLostEntity(Entity* entity)
         xmlEvt->setType(ETLostEntity);
         RefCntPoolPtr<XmlEntity> xmlEntity;
         xmlEntity->setUid(entity->getXmlEntity()->getUid());
+        xmlEntity->setType(entity->getXmlEntity()->getType());
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
 #else
         XmlEvt* xmlEvt = new XmlEvt(ETLostEntity);
         XmlEntity* xmlEntity = new XmlEntity();
         xmlEntity->setUid(entity->getXmlEntity()->getUid());
+        xmlEntity->setType(entity->getXmlEntity()->getType());
         xmlEvt->setDatas(entity->getXmlEntity());
 #endif
         pthread_mutex_lock(&mEvtsMutex);
@@ -530,6 +539,36 @@ bool AvatarNode::freeze(bool frozen)
     mFrozen = frozen;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void AvatarNode::setConnectionLost(bool lost)
+{
+    if (mConnectionLost == lost) return;
+    mConnectionLost = lost;
+
+    // Send connection lost event to navigator
+#ifdef POOL
+    RefCntPoolPtr<XmlEvt> xmlEvt;
+    xmlEvt->setType(lost ? ETConnectionLost : ETConnectionRestored);
+#else
+    XmlEvt* xmlEvt = new XmlEvt(lost ? ETConnectionLost : ETConnectionRestored);
+#endif
+    pthread_mutex_lock(&mEvtsMutex);
+    mEvtsToHandleList.push_back(xmlEvt);
+    pthread_mutex_unlock(&mEvtsMutex);
+
+    if (!lost) return;
+
+    // Destroy other avatar entities
+    RakNetEntity::RakNetEntityMap entities = RakNetEntity::getEntities();
+    std::list<RakNetEntity*> avatars;
+    for (RakNetEntity::RakNetEntityMap::iterator it = entities.begin(); it != entities.end(); ++it)
+        if ((it->second->getXmlEntity()->getType() == ETAvatar) &&
+            (mEntity != 0) && (it->second->getXmlEntity()->getUid() != mEntity->getXmlEntity()->getUid()))
+            avatars.push_back(it->second);
+    for (std::list<RakNetEntity*>::iterator a = avatars.begin(); a != avatars.end(); ++a)
+        RakNetEntity::removeEntity(*a);
 }
 
 //-------------------------------------------------------------------------------------

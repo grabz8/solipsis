@@ -31,7 +31,7 @@ using namespace Solipsis;
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 BodyPartModelInstance::BodyPartModelInstance(BodyPartModel* bodyPartModel, BodyPartInstance* owner) :
 ModifiableMaterialObject(bodyPartModel),
-mBodyPartModel(bodyPartModel), mOwner(owner)
+mBodyPartModel(bodyPartModel), mOwner(owner), mGhost(false)
 {
     mSubEntity = mOwner->getOwner()->getEntity()->getSubEntity(mBodyPartModel->mSubEntityName);
 	String s = "Material" + mOwner->getOwner()->getUid() + mBodyPartModel->mOwner->getName() + mBodyPartModel->mName;
@@ -49,6 +49,13 @@ BodyPartModelInstance::~BodyPartModelInstance()
     // Cloned material should be freed when no more referenced
 /*    const MaterialPtr& clonedMaterial = mBodyPartModel->mSubEntity->getMaterial();
     MaterialManager::getSingleton().remove((ResourcePtr&)clonedMaterial);*/
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void BodyPartModelInstance::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    ModifiableMaterialObject::setGhost(ghost);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

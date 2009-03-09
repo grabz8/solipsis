@@ -60,10 +60,14 @@ public:
 	///return Entity representing the GoodyModel.
     Entity* getEntity() { return mEntity; }
 
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
+
 private:
 	GoodyModel* mGoodyModel;							///brief GoodyModel associated to the GoodyModelInstance.
 	GoodyInstance* mOwner;								///brief Owner of the GoodyModelInstance.
 	Entity* mEntity;									///brief Entity associated to the GoodyModel.
+    bool mGhost;											///brief Ghost flag.
 };
 
 

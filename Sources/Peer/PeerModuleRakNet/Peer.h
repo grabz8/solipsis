@@ -38,10 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <RakNetConnection.h>
 #include "RM2Connection.h"
 
-#ifdef PHYSICSPLUGINS
 #include "IPhysicsScene.h"
 #include "PhysicsEngineManager.h"
-#endif
 
 using CommonTools::BasicThread;
 
@@ -75,12 +73,10 @@ protected:
 	IP2NServer* mP2NServer;
     PhysicsEngineManager* mPhysicsEngineManager;
 
-#ifdef PHYSICSPLUGINS
     /// Physics scene
     IPhysicsScene* mPhysicsScene;
     /// Mutex physics
     pthread_mutex_t mPhysicsMutex;
-#endif
 
     /// Node identifier
     NodeId mNodeId;
@@ -142,9 +138,7 @@ public:
     /** Load 1 entity */
     Entity* loadEntity(TiXmlElement* entityElt);
 
-#ifdef PHYSICSPLUGINS
     IPhysicsScene* getPhysicsScene();
-#endif
 
     /** Registers a TimeListener which will be called back every tick.
         @remarks
@@ -207,6 +201,8 @@ protected:
 
     /** Create the avatar node */
     void createAvatarNode();
+    /** Reconnect the avatar node */
+    void reconnectAvatarNode();
 };
 
 } // namespace Solipsis

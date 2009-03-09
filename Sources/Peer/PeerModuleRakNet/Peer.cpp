@@ -124,7 +124,7 @@ Peer::Peer(const char* appPath, int argc, char** argv) :
 
     // Retrieve Media/Cache path
     if (mMediaCachePath.empty())
-        mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+        mMediaCachePath = IO::getCWD() + IO::getPathSeparator() + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     mPhysicsEngineManager = new PhysicsEngineManager();
 }
@@ -138,11 +138,9 @@ Peer::~Peer()
     delete mPhysicsEngineManager;
 }
 
-#ifdef PHYSICSPLUGINS
 //-------------------------------------------------------------------------------------
 IPhysicsScene* Peer::getPhysicsScene()
 {
-#ifdef PHYSICSPLUGINS
     pthread_mutex_lock(&mPhysicsMutex);
     if (mPhysicsScene == 0)
     {
@@ -166,11 +164,9 @@ IPhysicsScene* Peer::getPhysicsScene()
         }
     }
     pthread_mutex_unlock(&mPhysicsMutex);
-#endif
 
     return mPhysicsScene;
 }
-#endif
 
 //-----------------------------------------------------------------------
 void Peer::addTimeListener(TimeListener* newListener)
@@ -212,6 +208,8 @@ bool Peer::destroy()
 //-----------------------------------------------------------------------
 void Peer::run()
 {
+    time_t lastConnectionAttempt = 0;
+    time_t lastLoopTime = 0;
     float tickDuration = 1.0f/60.0f;
     mResetTime = true;
     while (!mStopRequested)
@@ -233,14 +231,33 @@ void Peer::run()
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_NO_FREE_INCOMING_CONNECTIONS from %s", packet->systemAddress.ToString());
                     break;
                 case ID_CONNECTION_REQUEST_ACCEPTED:
-                    {
-                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_REQUEST_ACCEPTED from %s", packet->systemAddress.ToString());
-                        // Set notifications interval for big file transfer
-                        RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
-                        // Store the server address
-                        mRakNetConnection.setServerSystemAddress(packet->systemAddress);
-                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ServerSystemAddress:%s", mRakNetConnection.getServerSystemAddress().ToString());
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_REQUEST_ACCEPTED from %s", packet->systemAddress.ToString());
+                    // Set notifications interval for big file transfer
+                    RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
+                    // Store the server address
+                    mRakNetConnection.setServerSystemAddress(packet->systemAddress);
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ServerSystemAddress:%s", mRakNetConnection.getServerSystemAddress().ToString());
+                    if ((mAvatarNode != 0) && mAvatarNode->isConnectionLost())
+                        reconnectAvatarNode();
+                    else
                         createAvatarNode();
+                    break;
+                case ID_DISCONNECTION_NOTIFICATION:
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_DISCONNECTION_NOTIFICATION from %s", packet->systemAddress.ToString());
+                    // Connection lost
+                    if (mRakNetConnection.isClientConnected())
+                    {
+                        mAvatarNode->setConnectionLost(true);
+                        time(&lastConnectionAttempt);
+                    }
+                    break;
+                case ID_CONNECTION_LOST:
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_CONNECTION_LOST from %s", packet->systemAddress.ToString());
+                    // Connection lost
+                    if (mRakNetConnection.isClientConnected())
+                    {
+                        mAvatarNode->setConnectionLost(true);
+                        time(&lastConnectionAttempt);
                     }
                     break;
                 case RakNetConnection::ID_REQUESTING_FILETRANSFER:
@@ -258,11 +275,9 @@ void Peer::run()
                     }
                     break;
                 case RakNetConnection::ID_ACTION_ON_ENTITY:
-                    {
-                        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
-                        BitStream bitStream(packet->data + 1, packet->length - 1, false);
-                        mAvatarNode->onActionOnEntity(&bitStream);
-                    }
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_ACTION from %s", packet->systemAddress.ToString());
+                    BitStream bitStream(packet->data + 1, packet->length - 1, false);
+                    mAvatarNode->onActionOnEntity(&bitStream);
                     break;
                 }
             }
@@ -285,6 +300,31 @@ void Peer::run()
             result = mAvatarNode->processEvt(xmlEvt, xmlRespStr);
         }
         pthread_mutex_unlock(&mEvtsToProcessMutex);
+
+        if ((mAvatarNode != 0) && mAvatarNode->isConnectionLost())
+        {
+            time_t now;
+            time(&now);
+            if (mRakNetConnection.isClientConnected() && (now - lastConnectionAttempt > 5))
+            {
+                lastConnectionAttempt = now;
+                pthread_mutex_lock(&mRakNetMutex);
+                LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::run() Re-connecting to %s ...", mRakNetConnection.getServerSystemAddress().ToString());
+                mRakNetConnection.disconnectClient();
+                mRakNetConnection.connectClient();
+                pthread_mutex_unlock(&mRakNetMutex);
+            }
+            
+        }
+
+        // checking if this loop was not too long ...
+        time_t now;
+        time(&now);
+        if (lastLoopTime == 0)
+            lastLoopTime = now;
+        if (now - lastLoopTime > 5)
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() Connection lost risk detected, last loop duration = %d sec", now - lastLoopTime);
+        lastLoopTime = now;
 
         System::sleep(tickDuration*1000.0f);
 
@@ -371,15 +411,16 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
         if (!mAvatarNode->saveNode(mMediaCachePath))
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::logout() Unable to save avatar node with nodeId:%s !", mAvatarNode->getNodeId().c_str());
 
+    pthread_mutex_lock(&mPhysicsMutex);
     Entity::cleanUpEntities();
-  
+    pthread_mutex_unlock(&mPhysicsMutex);
+
     if (mAvatarNode != 0)
     {
         delete mAvatarNode;
         mAvatarNode = 0;
     }
 
-#ifdef PHYSICSPLUGINS
     pthread_mutex_lock(&mPhysicsMutex);
     if (mPhysicsScene != 0)
     {
@@ -388,11 +429,10 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
         mPhysicsScene = 0;
     }
     pthread_mutex_unlock(&mPhysicsMutex);
-#endif
 
     pthread_mutex_lock(&mRakNetMutex);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.getServerSystemAddress().ToString());
-    mRakNetConnection.getRakPeer()->CloseConnection(mRakNetConnection.getServerSystemAddress(), true);
+    mRakNetConnection.disconnectClient();
     pthread_mutex_unlock(&mRakNetMutex);
 
     return IP2NClient::RCOk;
@@ -477,7 +517,6 @@ bool Peer::_initialize()
 {
     OgreHelpers::initialize();
 
-#ifdef PHYSICSPLUGINS
     PhysicsEngineManager::getSingleton().selectEngine("PhysX engine");
 //    PhysicsEngineManager::getSingleton().selectEngine("ODE engine");
 //    PhysicsEngineManager::getSingleton().selectEngine("Tokamak engine");
@@ -488,7 +527,6 @@ bool Peer::_initialize()
     }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->init();
     PhysicsEngineManager::getSingleton().getSelectedEngine()->setLogger(&mPhysicsEngineLogger);
-#endif
 
     // create and start the Node server
     mP2NServer = IP2NServer::createServer(this, mHost, mPort, mVerbosity, "nthreads=8 persistent=1");
@@ -521,7 +559,7 @@ void Peer::_finalize()
 
     delete mP2NServer;
 
-#ifdef PHYSICSPLUGINS
+    pthread_mutex_lock(&mPhysicsMutex);
     if (mPhysicsScene != 0)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::_finalize() destroying physics scene");
@@ -529,7 +567,7 @@ void Peer::_finalize()
         mPhysicsScene = 0;
     }
     PhysicsEngineManager::getSingleton().getSelectedEngine()->shutdown();
-#endif
+    pthread_mutex_unlock(&mPhysicsMutex);
 
     OgreHelpers::shutdown();
 
@@ -552,31 +590,25 @@ bool Peer::_fireTick(Real timeSinceLastTick)
     }
     mRemovedTimeListeners.clear();
 
-#ifdef PHYSICSPLUGINS
     pthread_mutex_lock(&mPhysicsMutex);
     // Step physics part 1
     if (mPhysicsScene != 0)
         mPhysicsScene->preStep(timeSinceLastTick);
-#endif
 
     // Tell all listeners
     for (i= mTimeListeners.begin(); i != mTimeListeners.end(); ++i)
     {
         if (!(*i)->tick(timeSinceLastTick))
         {
-#ifdef PHYSICSPLUGINS
             pthread_mutex_unlock(&mPhysicsMutex);
-#endif
             return false;
         }
     }
 
-#ifdef PHYSICSPLUGINS
     // Step physics part 2
     if (mPhysicsScene != 0)
         mPhysicsScene->postStep();
     pthread_mutex_unlock(&mPhysicsMutex);
-#endif
 
     return true;
 }
@@ -644,17 +676,57 @@ void Peer::createAvatarNode()
         avatarEntity->setSystemAddress(mRakNetConnection.getMySystemAddress());
         avatarEntity->getXmlEntity()->fromXmlElt(xmlAvatarDoc.RootElement());
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::createAvatarNode() initializing avatar node name:%s with character:%s", avatarEntity->getXmlEntity()->getName().c_str(), safFilenames[safIdx].c_str());
-        mAvatarNode->setEntity(avatarEntity);
         avatarEntity->addFilesInCacheManager();
         avatarEntity->mDirty = true;
+        mAvatarNode->setEntity(avatarEntity);
         RakNetEntity::addEntity(avatarEntity);
-        /// Client can serialize
+        // Client can serialize
         avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
         // Entity managed by the Replica2 plugin
         avatarEntity->SetReplicaManager(mRakNetConnection.getReplicaManager());
         // Send out this new entity to all systems
         avatarEntity->BroadcastConstruction();
     }
+}
+
+//-------------------------------------------------------------------------------------
+void Peer::reconnectAvatarNode()
+{
+    Entity* avatarEntity = (Entity*)mAvatarNode->getEntity();
+#ifdef POOL
+    RefCntPoolPtr<XmlEntity> savedXmlEntity = avatarEntity->getXmlEntity();
+#else
+    XmlEntity* savedXmlEntity = avatarEntity->getXmlEntity();
+#endif
+    avatarEntity->mDirty = false;
+    pthread_mutex_lock(&mPhysicsMutex);
+    Entity::cleanUpEntities();
+    pthread_mutex_unlock(&mPhysicsMutex);
+
+    pthread_mutex_lock(&mPhysicsMutex);
+    if (mPhysicsScene != 0)
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::reconnectAvatarNode() destroying physics scene");
+        PhysicsEngineManager::getSingleton().getSelectedEngine()->destroyScene(mPhysicsScene);
+        mPhysicsScene = 0;
+    }
+    pthread_mutex_unlock(&mPhysicsMutex);
+
+    avatarEntity = new Entity();
+    avatarEntity->setSystemAddress(mRakNetConnection.getMySystemAddress());
+    avatarEntity->setXmlEntity(savedXmlEntity);
+    avatarEntity->addFilesInCacheManager();
+    avatarEntity->mDirty = false;
+    mAvatarNode->setEntity(avatarEntity);
+    RakNetEntity::addEntity(avatarEntity);
+    // Client can serialize
+    avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
+    // Entity managed by the Replica2 plugin
+    avatarEntity->SetReplicaManager(mRakNetConnection.getReplicaManager());
+    // Send out this new entity to all systems
+    avatarEntity->BroadcastConstruction();
+
+    mAvatarNode->setConnectionLost(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -677,7 +749,7 @@ Entity* Peer::loadEntity(TiXmlElement* entityElt)
     entity->addFilesInCacheManager();
     entity->mDirty = true;
     RakNetEntity::addEntity(entity);
-    /// Client can serialize
+    // Client can serialize
     entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
     // Entity managed by the Replica2 plugin
     entity->SetReplicaManager(mRakNetConnection.getReplicaManager());

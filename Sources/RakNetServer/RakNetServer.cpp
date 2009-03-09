@@ -41,7 +41,7 @@ RakNetServer* RakNetServer::ms_Singleton = 0;
 //-------------------------------------------------------------------------------------
 RakNetServer::RakNetServer(int argc, char** argv) :
     mMediaCachePath(""),
-    mStatsPath(".\\stats"),
+    mStatsPath("stats"),
     mRakNetConnection(&mConnectionFactory, true, "localhost", 8660, 32),
     mSiteNodeId("11112222"),
     mSiteNode(0),
@@ -60,6 +60,12 @@ RakNetServer::RakNetServer(int argc, char** argv) :
         {
             iarg++;
             mRakNetConnection.setMaxIncomingConnections(atoi(argv[iarg]));
+            continue;
+        }
+        if ((strstr(argv[iarg], "-t") != 0) && (argc > iarg+1))
+        {
+            iarg++;
+            mRakNetConnection.setTimeoutTime(atoi(argv[iarg]));
             continue;
         }
         if ((strstr(argv[iarg], "-s") != 0) && (argc > iarg+1))
@@ -84,7 +90,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
 
     // Retrieve Media/Cache path
     if (mMediaCachePath.empty())
-        mMediaCachePath = IO::getCWD() + "\\" + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
+        mMediaCachePath = IO::getCWD() + IO::getPathSeparator() + IO::retrieveRelativePathByDescendingCWD(std::string("Media\\cache"));
 
     ms_Singleton = this;
 
@@ -148,12 +154,10 @@ void RakNetServer::run()
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_REQUEST_ACCEPTED from %s", packet->systemAddress.ToString());
                 break;
             case ID_NEW_INCOMING_CONNECTION:
-                {
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NEW_INCOMING_CONNECTION from %s", packet->systemAddress.ToString());
-                    mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_CONNECTION, std::string(packet->systemAddress.ToString()));
-                    // Set notifications interval for big file transfer
-                    RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
-                }
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NEW_INCOMING_CONNECTION from %s", packet->systemAddress.ToString());
+                mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_CONNECTION, std::string(packet->systemAddress.ToString()));
+                // Set notifications interval for big file transfer
+                RakPeer->SetSplitMessageProgressInterval(RAKNETCONNECTION_DEFAULT_SPLITMSGPROGRESSINTERVAL_BYTES/RakPeer->GetMTUSize(packet->systemAddress));
                 break;
             case ID_DISCONNECTION_NOTIFICATION:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_DISCONNECTION_NOTIFICATION from %s", packet->systemAddress.ToString());

@@ -42,9 +42,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarEditor.h"
 #include "Cameras/CameraSupportManager.h"
 
-
-
-
 namespace Solipsis {
 
 // Define Navigator version
@@ -294,6 +291,8 @@ public:
     virtual void onAvatarNodeCreate(OgrePeer* ogrePeer);
     /** See IOgrePeerManagerCallbacks. */
     virtual void onSceneNodeCreate(OgrePeer* ogrePeer);
+    /** See IOgrePeerManagerCallbacks. */
+    virtual void onSceneNodeDestroy(OgrePeer* ogrePeer);
 
     // Modeler part
 

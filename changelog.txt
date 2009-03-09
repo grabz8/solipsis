@@ -1026,3 +1026,12 @@ Statistics readme.txt added
 Now add -S arg to specify where RakNetServer will store their statistics (usefull when having several servers on 1 host)
 
 ---------------------------
+06/03/09
+
+RakNet connections lost: timeout param increased to 15s + re-connection
+RakNet connections lost: error dlg msg added + disconnect/re-connect
+RakNet connections lost: ghost avatar/character added + Kevin.saf alpha_rejection param removed
+Cache Manager: now files transfers are performed by chunks of 4Kb to avoid bandwidth saturation
+CommonTools: added path separator accessor
+
+---------------------------

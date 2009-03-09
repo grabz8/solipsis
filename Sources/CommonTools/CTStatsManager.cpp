@@ -41,7 +41,7 @@ StatsManager& StatsManager::getSingleton(void)
 
 //-------------------------------------------------------------------------------------
 StatsManager::StatsManager() :
-    mPathname(".\\stats"),
+    mPathname("stats"),
     mLastFlush(0),
     mNextFlush(0)
 {
@@ -102,8 +102,9 @@ void StatsManager::flush(time_t now, bool force)
             return;
     char statsFilename[256];
     struct tm *stm = localtime(&mLastFlush);
-    _snprintf(statsFilename, sizeof(statsFilename) - 1, "%s\\%d%02d%02d%02d%02d%02d.sta",
+    _snprintf(statsFilename, sizeof(statsFilename) - 1, "%s%c%d%02d%02d%02d%02d%02d.sta",
         mPathname.c_str(),
+        IO::getPathSeparator(),
         stm->tm_year + 1900, stm->tm_mon + 1, stm->tm_mday, stm->tm_hour, stm->tm_min, stm->tm_sec);
     FILE *statsFile = fopen(statsFilename, "w");
     if (statsFile == 0)

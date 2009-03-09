@@ -95,7 +95,7 @@ public:
     /** Initialize.
     @param pathname Location where statistics file are stored
     */
-    void initialize(const std::string& pathname = ".\\stats", unsigned int flushPeriodSec = 60*60);
+    void initialize(const std::string& pathname = "stats", unsigned int flushPeriodSec = 60*60);
     /** Finalize. */
     void finalize();
 

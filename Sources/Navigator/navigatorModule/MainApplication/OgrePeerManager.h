@@ -91,8 +91,8 @@ public:
     // Get the scene object filename
     const String& getXmlObjectFilename();
 
-    // Remove 1 peer according to its ID and if it is local or networked
-    bool remove(const EntityUID& entity, bool local);
+    // Remove 1 peer according to its ID
+    bool remove(const EntityUID& entity);
 
     // Remove all peers (locals or networked)
     void removeAll(bool local);

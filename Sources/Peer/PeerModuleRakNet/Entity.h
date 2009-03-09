@@ -27,12 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <RakNetEntity.h>
 #include "Ogre.h"
 #include "XmlDatas.h"
-#ifdef PHYSICSPLUGINS
 #include "IPhysicsScene.h"
-#endif
-#ifdef PHYSICSPLUGINS
 #include "IPhysicsCharacter.h"
-#endif
 
 namespace Solipsis {
 
@@ -43,10 +39,8 @@ class Entity : public RakNetEntity
 protected:
     /// Whether to apply the gravity
     bool mGravity;
-#ifdef PHYSICSPLUGINS
     /// Physics scene
     IPhysicsScene* mPhysicsScene;
-#endif
 
     /// Collision mesh filename (Site)
     std::string mCollisionMeshFilename;
@@ -54,10 +48,8 @@ protected:
     Ogre::Real mRadius;
     /// Height (Avatar)
     Ogre::Real mHeight;
-#ifdef PHYSICSPLUGINS
     /// Physics Character (Avatar)
     IPhysicsCharacter* mPhysicsCharacter;
-#endif
 
 public:
     /// Dirty flag (Avatar)
@@ -92,14 +84,12 @@ public:
     void setGravity(bool enabled);
     /** Determines whether the gravity is applied or not. */
     bool isGravityEnabled();
-#ifdef PHYSICSPLUGINS
     /** Get the physics scene. */
     IPhysicsScene* getPhysicsScene();
     /** Create physics. */
     virtual void createPhysics(IPhysicsScene* physicsScene);
     /** Destroy physics. */
     virtual void destroyPhysics();
-#endif
 
     /** Update. */
     virtual bool update(Ogre::Real timeSinceLastFrame);

@@ -173,6 +173,11 @@ public:
 	*/
 	IFaceController* getFaceController( void ) {return mFaceController; }
 
+    /// brief Get the ghost attribute
+    bool getGhost();
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
+
 protected:
     String mUid;										///brief UID string.
 	Character* mCharacter;								///brief Character of our instance.
@@ -189,6 +194,7 @@ protected:
 	Entity* mEntity;									///brief Ogre entity associated to the character.
 	SceneNode* mSceneNode;								///brief Scene node on which the entity is attached.
 	IFaceController*	mFaceController;				///brief The face controller associated with this character instance (owned)
+    bool mGhost;										///brief Ghost flag.
 
     BodyPartInstancesMap mBodyPartInstances;
 	BodyPartInstance* mBodyPartInstance;

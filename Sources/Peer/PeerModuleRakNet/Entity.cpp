@@ -37,12 +37,8 @@ namespace Solipsis {
 Entity::Entity() :
     RakNetEntity(),
     mCollisionMeshFilename("")
-#ifdef PHYSICSPLUGINS
     ,mPhysicsScene(0)
-#endif
-#ifdef PHYSICSPLUGINS
     ,mPhysicsCharacter(0)
-#endif
     ,mDirty(true)
 {
     applyGravity(true);
@@ -55,9 +51,7 @@ Entity::~Entity()
 
     removeEntity(this);
 
-#ifdef PHYSICSPLUGINS
     destroyPhysics();
-#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -132,7 +126,6 @@ bool Entity::isGravityEnabled()
     return mGravity;
 }
 
-#ifdef PHYSICSPLUGINS
 //-------------------------------------------------------------------------------------
 IPhysicsScene* Entity::getPhysicsScene()
 {
@@ -164,9 +157,9 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
             return;
 
         // Create the resource group
-        String resourceGroup = mXmlEntity->getUid() + "Resources";
+        String resourceGroup = mXmlEntity->getUid() + "PeerResources";
         ResourceGroupManager::getSingleton().createResourceGroup(resourceGroup);
-        ResourceGroupManager::getSingleton().addResourceLocation(Peer::getSingleton().getMediaCachePath() + "\\" + lodContent0File->mFilename, "Zip", resourceGroup);
+        ResourceGroupManager::getSingleton().addResourceLocation(Peer::getSingleton().getMediaCachePath() + IO::getPathSeparator() + lodContent0File->mFilename, "Zip", resourceGroup);
 
         // Load .osm or .scene
         TiXmlDocument osmFileDoc;
@@ -321,12 +314,10 @@ void Entity::destroyPhysics()
 
     mPhysicsScene = 0;
 }
-#endif
 
 //-------------------------------------------------------------------------------------
 bool Entity::update(Real timeSinceLastFrame)
 {
-#ifdef PHYSICSPLUGINS
     // Move physics character
     if (mPhysicsCharacter != 0)
     {
@@ -340,7 +331,6 @@ bool Entity::update(Real timeSinceLastFrame)
             mDirty = true;
         mXmlEntity->setPosition(newPosition);
     }
-#endif
 
     return true;
 }

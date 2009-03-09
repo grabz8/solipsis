@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 #include <RakPeerInterface.h>
 #include <FileListTransferCBInterface.h>
+#include <IncrementalReadInterface.h>
 #include <XmlDatas.h>
+#include "RakNetConnection.h"
 
 namespace Solipsis {
-
-class RakNetConnection;
 
 /** This class defines the callback interface of the cache manager.
 */
@@ -47,7 +47,7 @@ public:
 
 /** This class manages 1 files cache.
 */
-class CacheManager : public FileListTransferCBInterface
+class CacheManager : public FileListTransferCBInterface, public IncrementalReadInterface
 {
 public:
     /// Entry state
@@ -90,6 +90,9 @@ protected:
     /// Map of files in cache
     CacheMap mCache;
 
+    /// Cache filename
+    static const std::string ms_CacheFilename;
+
 public:
     /** Constructor.
     @param connection The RakNet connection (server or client)
@@ -104,6 +107,12 @@ public:
     void initialize(const std::string& cachePath);
     /** Finalize cache management by saving current state. */
     void finalize();
+
+#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
+#else
+    /** See IncrementalReadInterface. */
+	virtual unsigned int GetFilePart( char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context);
+#endif
 
     /** See FileListTransferCBInterface. */
     virtual bool OnFile(OnFileStruct *onFileStruct);
@@ -135,6 +144,13 @@ public:
     @param version The version of the sent file
     */
     void sendFile(const SystemAddress& recipient, unsigned short fileListTransferSetID, std::string& filename, const FileVersion& version);
+
+protected:
+    /** Retrieve the pathname of 1 file into the cache directory.
+    @param filename The file name
+    @param pathname The pathname of the file into the cache directory
+    */
+    void getCachePathname(const std::string& filename, std::string& pathname);
 };
 
 } // namespace Solipsis

@@ -34,6 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <FileListTransfer.h>
 #include <Ogre.h>
 
+// Define RakNet version used
+#define RAKNET_VERSION_MAJOR 3
+//#define RAKNET_VERSION_MINOR 24
+#define RAKNET_VERSION_MINOR 401
+#define RAKNET_VERSION_COMPLETE ((RAKNET_VERSION_MAJOR << 16) | RAKNET_VERSION_MINOR)
+
 namespace Solipsis {
 
 class CacheManager;
@@ -60,6 +66,8 @@ protected:
     unsigned short mPort;
     /// Maximum incoming connections
     unsigned short mMaxIncomingConnections;
+    /// Timeout in milliseconds before declaring 1 connection lost
+    unsigned int mTimeoutTimeMS;
     /// RakNet peer interface
     RakPeerInterface *mRakPeer;
     /// Address of the RakNet server
@@ -76,6 +84,8 @@ protected:
     FileListTransfer mFileListTransfer;
     /// Cache manager
     CacheManager *mCacheManager;
+    /// Client connected ?
+    bool mClientConnected;
 
 private:
     /// Singleton instance
@@ -110,6 +120,10 @@ public:
     unsigned short getMaxIncomingConnections() { return mMaxIncomingConnections; }
     /// Set maximum incoming connections
     void setMaxIncomingConnections(unsigned short maxIncomingConnections) { mMaxIncomingConnections = maxIncomingConnections; }
+    /// Get the timeout in milliseconds before declaring 1 connection lost
+    unsigned int getTimeoutTime() { return mTimeoutTimeMS; }
+    /// Set the timeout in milliseconds before declaring 1 connection lost
+    void setTimeoutTime(unsigned int timeoutTimeMS) { mTimeoutTimeMS = timeoutTimeMS; }
     /// Get RakNet peer interface
     RakPeerInterface* getRakPeer() { return mRakPeer; }
     /// Get my address (external system)
@@ -134,6 +148,10 @@ public:
     virtual void initialize(const std::string& cachePath);
     /** Connect the client. */
     virtual bool connectClient();
+    /** Disconnect the client. */
+    virtual bool disconnectClient();
+    /** Return true if client is connected. */
+    bool isClientConnected() { return mClientConnected; }
     /** Finalize the connection. */
     virtual void finalize();
 

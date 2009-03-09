@@ -62,10 +62,14 @@ public:
 	///return Entity representing the BodyPartModel.
     SubEntity* getSubEntity() { return mSubEntity; }
 
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
+
 private:
 	BodyPartModel* mBodyPartModel;							///brief BodyPartModel associated to the BodyPartModelInstance.
 	BodyPartInstance* mOwner;								///brief Owner of the BodyPartModelInstance.
 	SubEntity* mSubEntity;									///brief SubEntity associated to the BodyPartModel.
+    bool mGhost;											///brief Ghost flag.
 };
 
 /// brief This is the class of a model of a body part of a character. It is associated to one or more SubMesh of the character's SubMesh. It could be for example a clown noze if te BodyPart is a noze. It is a modifiable material object so it derives from the class ModifiableMaterialObject.

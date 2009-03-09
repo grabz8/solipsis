@@ -41,10 +41,12 @@ RakNetConnection::RakNetConnection(Connection_RM2Factory* connectionFactory, boo
     mHost(host),
     mPort(port),
     mMaxIncomingConnections(maxIncomingConnections),
+    mTimeoutTimeMS(15*1000),
     mRakPeer(0),
     mServerSystemAddress(UNASSIGNED_SYSTEM_ADDRESS),
     mConnectionFactory(connectionFactory),
-    mCacheManager(0)
+    mCacheManager(0),
+    mClientConnected(false)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetConnection::RakNetConnection()");
 
@@ -68,6 +70,9 @@ void RakNetConnection::initialize(const std::string& cachePath)
 
     // Get 1 instance of the RakNet peer interface
     mRakPeer = RakNetworkFactory::GetRakPeerInterface();
+    // Set the time, in MS, to use before considering ourselves disconnected after not being able to deliver a reliable packet
+    // packet is either the internal ping or any user reliable packet
+    mRakPeer->SetTimeoutTime(mTimeoutTimeMS, UNASSIGNED_SYSTEM_ADDRESS);
     // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
     mRakPeer->SetNetworkIDManager(&mNetworkIdManager);
     // The network ID authority is the system that creates the common numerical identifier used to lookup pointers.
@@ -118,7 +123,20 @@ bool RakNetConnection::connectClient()
 
     if (mRakPeer == 0)
         return false;
-    return mRakPeer->Connect(mHost.c_str(), mPort, 0, 0, 0);
+    mClientConnected = mRakPeer->Connect(mHost.c_str(), mPort, 0, 0, 0);
+    return mClientConnected;
+}
+
+//-------------------------------------------------------------------------------------
+bool RakNetConnection::disconnectClient()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetConnection::disconnectClient()");
+
+    if (mRakPeer == 0)
+        return false;
+    mRakPeer->CloseConnection(mServerSystemAddress, true);
+    mClientConnected = false;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------

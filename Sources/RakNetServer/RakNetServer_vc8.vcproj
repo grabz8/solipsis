@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;..\..\Dependencies\RakNet\include;..\..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;&quot;$(RAKNET_PATH)\Source&quot;;..\..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;..\..\Dependencies\RakNet\lib;&quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;$(RAKNET_PATH)\lib&quot;;&quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -120,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;..\..\Dependencies\RakNet\include;..\..\Dependencies\RakNetObjects\include"
+				AdditionalIncludeDirectories="..\..\Dependencies\pthreads\include;..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\Dependencies\CommonTools\include;..\..\Dependencies\protocols\XmlDatas\include;&quot;$(RAKNET_PATH)\Source&quot;;..\..\Dependencies\RakNetObjects\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;NLOGRAKNET"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -141,7 +141,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="pthreadVC.lib tinyxml.lib OgreMain.lib CommonTools.lib XmlDatas.lib RakNetDLL.lib RakNetObjects.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;..\..\Dependencies\RakNet\lib;&quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;$(RAKNET_PATH)\lib&quot;;&quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

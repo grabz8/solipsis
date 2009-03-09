@@ -62,7 +62,8 @@ public:
         MBD_WORLDSSERVERERROR,
         MBD_WORLDSSERVERCOMPATIBILITYERROR,
         MBD_AUTHENTFBERROR,
-        MBD_AUTHENTWSERROR
+        MBD_AUTHENTWSERROR,
+        MBD_CONNECTIONLOSTERROR
     };
 
     enum NaviPanel {
@@ -206,6 +207,8 @@ public:
     void debugRefreshUrl();
     void debugRefreshDemoVoiceTalkButtonName();
 #endif
+
+    void connectionLostError();
 
 protected:
     // Handlers

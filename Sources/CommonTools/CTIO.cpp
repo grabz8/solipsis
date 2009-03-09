@@ -84,6 +84,28 @@ bool IO::createDirectory(const std::string& pathname)
 }
 
 //-------------------------------------------------------------------------------------
+long IO::getFileSize(const std::string& filename)
+{
+    FILE *fp = fopen(filename.c_str(), "rb");
+    if (fp == 0) return -1;
+    fseek(fp, 0, SEEK_END);
+    long length = ftell(fp);
+	fclose(fp);
+    return length;
+}
+
+//-------------------------------------------------------------------------------------
+std::string IO::getFileName(const std::string& pathname)
+{
+    std::string::size_type sep = pathname.find_last_of(getPathSeparator());
+    if (sep == std::string::npos)
+        return pathname;
+    if (sep == pathname.length() - 1)
+        return std::string();
+    return pathname.substr(sep + 1);
+}
+
+//-------------------------------------------------------------------------------------
 bool IO::copyFile(const std::string& srcFilename, const std::string& dstFilename)
 {
     std::ifstream in(srcFilename.c_str(), std::ios::in | std::ios::binary);
@@ -132,13 +154,13 @@ std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
     char *cwd = GETCWD(NULL, 0);
     std::string currentPath = cwd;
     std::string relativePath = pathname;
-    while (currentPath.find_last_of("\\") != std::string::npos)
+    while (currentPath.find_last_of(getPathSeparator()) != std::string::npos)
     {
-        fullPath = currentPath + "\\" + pathname;
+        fullPath = currentPath + getPathSeparator() + pathname;
         if (isDirectoryExists(fullPath))
             return relativePath;
-        currentPath = currentPath.substr(0, currentPath.find_last_of("\\"));
-        relativePath = "..\\" + relativePath;
+        currentPath = currentPath.substr(0, currentPath.find_last_of(getPathSeparator()));
+        relativePath = ".." + getPathSeparator() + relativePath;
     }
     return "";
 }

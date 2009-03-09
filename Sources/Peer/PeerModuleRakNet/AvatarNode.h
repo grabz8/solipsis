@@ -55,6 +55,8 @@ protected:
     XmlEvtToHandleList mEvtsToHandleList;
     /// Frozen state
     bool mFrozen;
+    /// Connection lost
+    bool mConnectionLost;
 
 protected:
     /// Map of owned entities
@@ -114,6 +116,12 @@ public:
 #endif
     /** Freeze. */
     virtual bool freeze(bool frozen);
+    /** Is frozen ? */
+    bool isFrozen() { return mFrozen; }
+    /** Set connection lost. */
+    virtual void setConnectionLost(bool lost);
+    /** Is connection lost ? */
+    bool isConnectionLost() { return mConnectionLost; }
 
     /** See Solipsis::TimeListener. */
     virtual bool tick(Ogre::Real timeSinceLastTick);

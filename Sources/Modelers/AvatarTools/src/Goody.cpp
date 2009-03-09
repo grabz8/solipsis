@@ -33,7 +33,8 @@ GoodyInstance::GoodyInstance(Goody* pGoody, CharacterInstance* owner) :
 	mGoody(pGoody),
 	mCurrentRotationsAnglesScrollPositions(Vector3(0.5,0.5,0.5)),
 	mCurrentPositionScrollPositions(Vector3(0.5,0.5,0.5)),
-    mOwner(owner)
+    mOwner(owner),
+    mGhost(false)
 {
     mCurrentGoodyModelIterator = mGoody->mDefaultGoodyModelIterator;
     mCurrentGoodyModelInstance = 0;
@@ -327,6 +328,7 @@ void GoodyInstance::setCurrentGoodyModel(const String& goodyModelName)
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+        mCurrentGoodyModelInstance->setGhost(mGhost);
 	}
 }
 
@@ -354,6 +356,7 @@ void GoodyInstance::setPreviousGoodyModelAsCurrent()
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+        mCurrentGoodyModelInstance->setGhost(mGhost);
 	}
 }
 
@@ -381,6 +384,7 @@ void GoodyInstance::setNextGoodyModelAsCurrent()
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+        mCurrentGoodyModelInstance->setGhost(mGhost);
 	}
 }
 
@@ -407,6 +411,7 @@ void GoodyInstance::setDefaultGoodyModelAsCurrent()
         mCurrentGoodyModelInstance = new GoodyModelInstance(mCurrentGoodyModelIterator->second, this);
 		Entity* goodyModelEntity = mCurrentGoodyModelInstance->getEntity();
 		characterEntity->attachObjectToBone(mGoody->mBoneName,goodyModelEntity,getCurrentOrientation(),getCurrentPosition());
+        mCurrentGoodyModelInstance->setGhost(mGhost);
 	}
 }
 
@@ -420,6 +425,14 @@ void GoodyInstance::resetModifications()
 
 	resetCurrentPosition();	
 	resetCurrentRotation();
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+void GoodyInstance::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    if (mCurrentGoodyModelInstance != 0)
+        mCurrentGoodyModelInstance->setGhost(ghost);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

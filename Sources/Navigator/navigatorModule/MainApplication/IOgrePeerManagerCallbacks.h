@@ -38,6 +38,9 @@ public:
 
 	// Called when a scene should be created
 	virtual void onSceneNodeCreate(OgrePeer* ogrePeer) {}
+
+	// Called when a scene should be destroyed
+    virtual void onSceneNodeDestroy(OgrePeer* ogrePeer) {}
 };
 
 } // namespace Solipsis

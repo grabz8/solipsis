@@ -200,6 +200,9 @@ public:
 	///brief Method which reset all modifications of the Goody i. e. which reset all GoodyModels, set the default GoodyModel.
 	void resetModifications();
 
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
+
 private:
 	Goody* mGoody;														///brief Goody of our instance.
 
@@ -211,6 +214,8 @@ private:
 	Vector3 mCurrentRotationsAnglesScrollPositions;						///brief Current rotations angles. In fact it is the 3 scroll positions, between 0 and 1, representing the current yaw, pitch and roll angles values. Each component of this vector is between 0 and 1 : if it is 0 the corresponding rotation angle (x component : yaw angle, y : pitch,  z: roll) is the minimum angle (taken in the vector mMinRotationsAngles). If it is 0.5 the angle is the default angle (mDefaultRotationsAngles) and if it's 1 the angle is the max angle (mMaxRotationsAngles). All the others angles values are calculated by a linear interpolation.		
 
 	Vector3 mCurrentPositionScrollPositions;							///brief Current position of the GoodyModel. In fact it is the 3 scroll positions, between 0 and 1, representing the current x, y, z values of the current position. Each component of this vector is between 0 and 1 : if it is 0 the corresponding position component is the minimum x position (taken in the vector mMinPositions). If it is 0.5 the position component is the default position (mDefaultPositions) and if it's 1 the position component is the max positions (mMaxPosition). All the others position component values are calculated by a linear interpolation.		
+
+    bool mGhost;														///brief Ghost flag.
 };
 
 /// brief This is the class representing a goody of an character. A goody is an accessory, which will be attached to a bone of the mesh of the character. The goody will be represented by any of its GoodyModel (It has a collection of GoodyModels). For example, we can have a Goody named "Watch" and GoodyModel "Rolex","Swatch"...  The user will be able to move this Goody and orientate as he wants. He will also able to change his colour, if the xml nature file allows it, which will be taken as the colour of the submesh 0 of the mesh of the current GoodyModel used to represent the Goody. Same thing for the texture.

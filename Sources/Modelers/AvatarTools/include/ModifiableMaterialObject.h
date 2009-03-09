@@ -149,12 +149,15 @@ public:
 	///param shininess Shininess to apply to the object.
 	void setShininess(const float shininess);
 
-	///brief Method which return the opacity of the object.
-	///return opacity of the object.
-	const float getTransparency();
-	///brief Method which set the opacity of the object.
-	///param opacity Opacity to apply to the object.
-	void setTransparency(const float opacity);
+    ///brief Method which return the opacity (alpha) of the object.
+    ///return opacity (alpha) of the object.
+	const float getAlpha();
+    ///brief Method which set the opacity (alpha) of the object.
+    ///param opacity Opacity (alpha) to apply to the object.
+	void setAlpha(const float opacity);
+
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
 
 	///brief Method which reset the colour of the object, i. e. the colour is set to RGBA = 0.5 0.5 0.5 1
 	void resetColour();
@@ -202,7 +205,9 @@ private:
 	ColourValue mBackDiffuse;
 	ColourValue mBackSpecular;
 	Real mBackShininess;
-	Real mBackTranparency;
+	Real mBackAlpha;
+    bool mGhost;
+	Real mAlpha;
 };
 
 }

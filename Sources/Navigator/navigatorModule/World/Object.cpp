@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include "Object.h"
@@ -27,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MainApplication/Navigator.h"
 #include "World/Modeler.h"
 #include <CTStringHelpers.h>
+#include <CTIO.h>
 #include <Navi.h>
 
 using namespace Solipsis;
@@ -151,7 +153,7 @@ bool Object::update(XmlEntity* xmlEntity)
         XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
         for (XmlLodContent::LodContentFileList::const_iterator it = lodContentFileList.begin(); it != lodContentFileList.end(); ++it)
             if (it->mFilename.find(".sof") == it->mFilename.length() - 4)
-                pathname = Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + it->mFilename;
+                pathname = Navigator::getSingletonPtr()->getMediaCachePath() + IO::getPathSeparator() + it->mFilename;
 
         mResourceLocation = pathname;
         ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);

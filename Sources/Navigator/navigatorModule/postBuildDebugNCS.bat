@@ -71,7 +71,7 @@ if not exist "%dst%\lua\" xcopy "..\..\..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodexL.dll" xcopy "%FMOD_PATH%\fmodexL.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds_d.dll" xcopy "..\..\..\Dependencies\plugin_3ds\lib\plugin_3ds_d.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_skp_d.dll" xcopy "..\..\..\Dependencies\plugin_skp\include\Debug\*.dll" "%dst%" /s /y
-if not exist "%dst%\RakNetDebug.dll" xcopy "..\..\..\Dependencies\RakNet\lib\RakNetDebug.dll" "%dst%" /s /y
+if not exist "%dst%\RakNetDebug.dll" xcopy "%RAKNET_PATH%\Lib\RakNetDebug.dll" "%dst%" /s /y
 if not exist "%dst%\libcurld.dll" xcopy "..\..\..\Dependencies\curl\lib\DebugDLL\libcurld.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\navigatorConfigDialog\lib\WIN32\Debug\navigatorConfigDialog.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\VoiceEngine\lib\Debug\voiceEngine.dll" "%dst%" /s /y
@@ -89,6 +89,6 @@ if exist "%dst%\quake3settings.cfg" goto quake3settings_exist
 :quake3settings_exist
 xcopy "..\..\..\Media\resources.cfg" "%dst%" /s /y
 
-rem call copyDocumentation.bat
-rem call copyNCSPhysXFiles.bat
-rem call copyDebugVC71RedistFiles.bat
+call copyDocumentation.bat
+call copyNCSPhysXFiles.bat
+call copyDebugVC71RedistFiles.bat

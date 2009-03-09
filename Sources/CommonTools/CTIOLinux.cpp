@@ -29,6 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace CommonTools {
 
 //-------------------------------------------------------------------------------------
+char IO::getPathSeparator()
+{
+    return '/';
+}
+
+//-------------------------------------------------------------------------------------
 bool IO::getFilenames(const std::string& pathname, FilenameVector& filenames)
 {
     struct dirent *dirEntry;

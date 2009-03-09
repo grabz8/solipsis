@@ -47,6 +47,12 @@ public:
     static bool isDirectoryExists(const std::string& pathname);
     /// Returns true if a directory was created
     static bool createDirectory(const std::string& pathname);
+    /// Returns the size of a file
+    static long getFileSize(const std::string& filename);
+    /// Returns the path separator
+    static char getPathSeparator();
+    /// Returns the filename without path
+    static std::string getFileName(const std::string& pathname);
     /// Copy a file
     static bool copyFile(const std::string& srcFilename, const std::string& dstFilename);
     /// Delete a file

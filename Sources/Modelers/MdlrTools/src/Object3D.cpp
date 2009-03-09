@@ -273,8 +273,8 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	setShininess( value);
 	from_string(e->FirstChildElement("matopac")->Attribute("value"),value);
 	setAlpha(value);
-    if (value < 1.0)
-        setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+/*    if (value < 1.0)
+        setSceneBlendType(SBT_TRANSPARENT_ALPHA);*/
     int cullingMode;
     TiXmlElement* element = e->FirstChildElement("matdblside");
     if( element )
@@ -1969,7 +1969,7 @@ float Object3D::getAlpha()
 {
 	return mModifiedMaterialManager->getAlpha() ;
 }
-//-------------------------------------------------------------------------------------
+/*//-------------------------------------------------------------------------------------
 void Object3D::setSceneBlendType(SceneBlendType pSceneBlendType)
 {
 	mModifiedMaterialManager->setSceneBlendType(pSceneBlendType);
@@ -1987,7 +1987,7 @@ void Object3D::setSceneBlendType(SceneBlendType pSceneBlendType)
 SceneBlendType Object3D::getSceneBlendType()
 {
 	return mModifiedMaterialManager->getSceneBlendType() ;
-}
+}*/
 //-------------------------------------------------------------------------------------
 bool Object3D::addCommand( TCommand &pCommandNew, Command &pCommandOld, bool pForSave ) 
 {

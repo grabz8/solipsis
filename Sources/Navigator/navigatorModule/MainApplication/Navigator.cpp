@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include "Navigator.h"
@@ -1440,9 +1441,6 @@ bool Navigator::disconnect()
 
     if (mSceneMgr)
     {
-        // destroy the sun light
-        if (mSceneMgr->hasLight("SunLight"))
-            mSceneMgr->destroyLight("SunLight");
         // destroy the skybox
         fakeSurroundingArea(0);
     }
@@ -1654,7 +1652,7 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUid().c_str());
 
-    if (!mOgrePeerManager->remove(xmlEntity->getUid(), false))
+    if (!mOgrePeerManager->remove(xmlEntity->getUid()))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
 }
 
@@ -1760,6 +1758,13 @@ void Navigator::processEvents()
             onPeerAction((XmlAction*)((*xmlEvt)->getDatas()));
 #endif
             break;
+        case ETConnectionLost:
+            mNavigatorGUI->connectionLostError();
+            mUserAvatar->setGhost(true);
+            break;
+        case ETConnectionRestored:
+            mUserAvatar->setGhost(false);
+            break;
         default: // Caller already check type consistency
             break;
         }
@@ -1821,6 +1826,14 @@ void Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
 #ifdef SHADOWS
     sunLight->setCastShadows(true);
 #endif
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::onSceneNodeDestroy(OgrePeer* ogrePeer)
+{
+    // destroy the sun light
+    if (mSceneMgr->hasLight("SunLight"))
+        mSceneMgr->destroyLight("SunLight");
 }
 
 //-------------------------------------------------------------------------------------

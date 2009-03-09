@@ -344,8 +344,18 @@ void ModifiedMaterial::setAlpha(float pValue)
 	ColourValue colour = mPass->getDiffuse();
 	colour.a = pValue;
 	mPass->setDiffuse(colour);
-
+    if (colour.a < 1.0f)
+    {
+        mPass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        mPass->setDepthWriteEnabled(false);
+    }
+    else
+    {
+        mPass->setSceneBlending(Ogre::SBT_REPLACE);
+        mPass->setDepthWriteEnabled(true);
+    }
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 float ModifiedMaterial::getAlpha()
 {

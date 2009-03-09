@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Node.h"
 #include <CTLog.h>
+#include <CTIO.h>
 
 using namespace CommonTools;
 
@@ -60,7 +61,7 @@ bool Node::loadNode(const std::string& mediaCachePath)
     if (mNodeId.empty())
         return false;
 
-    std::string nodeIdFilename = mediaCachePath + "\\" + mNodeId + ".xml";
+    std::string nodeIdFilename = mediaCachePath + IO::getPathSeparator() + mNodeId + ".xml";
     TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
     if (!xmlNodeIdFileDoc.LoadFile())
         return false;
@@ -77,7 +78,7 @@ bool Node::loadNode(const std::string& mediaCachePath)
 //-------------------------------------------------------------------------------------
 bool Node::saveNode(const std::string& mediaCachePath)
 {
-    std::string nodeIdFilename = mediaCachePath + "\\" + mNodeId + ".xml";
+    std::string nodeIdFilename = mediaCachePath + IO::getPathSeparator() + mNodeId + ".xml";
     TiXmlDocument xmlNodeIdFileDoc(nodeIdFilename.c_str());
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Node::saveNode() saving node with nodeId:%s into %s", mNodeId.c_str(), nodeIdFilename.c_str());

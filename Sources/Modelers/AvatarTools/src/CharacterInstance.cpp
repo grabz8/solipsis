@@ -45,6 +45,7 @@ CharacterInstance::CharacterInstance(const String& pFileName, const String& pUid
 	mEntity(NULL),
 	mSceneNode(NULL),
 	mFaceController(NULL),
+	mGhost(false),
 	mCurrentAnimationState(NULL),
 	mCustomizationAnimationState(NULL),
  	mCustomizationKeyFrame(NULL),
@@ -328,10 +329,10 @@ void CharacterInstance::loadModified()
 				if (attribute != NULL)
 					bodyPartModelInst->setShininess(StringConverter::parseInt(String(attribute)));
 
-				//Checking bodyPartModel Transparency
+				//Checking bodyPartModel Alpha
 				attribute = bodyPartElement->Attribute("alpha");
 				if (attribute != NULL)
-					bodyPartModelInst->setTransparency(StringConverter::parseReal(String(attribute)));
+					bodyPartModelInst->setAlpha(StringConverter::parseReal(String(attribute)));
 			}
 
 			//Checking bodyPartModel textures
@@ -446,10 +447,10 @@ void CharacterInstance::loadModified()
 				if (name != NULL)
 					goodyModelInst->setShininess(StringConverter::parseInt(String(name)));
 
-				//Checking GoodyModel Transparency
+				//Checking GoodyModel Alpha
 				name = goodyElement->Attribute("alpha");
 				if (name != NULL)
-					goodyModelInst->setTransparency(StringConverter::parseReal(String(name)));
+					goodyModelInst->setAlpha(StringConverter::parseReal(String(name)));
 			}
 
 			//Checking GoodyModel textures
@@ -520,7 +521,7 @@ void CharacterInstance::saveModified()
 				bodyPartElement.SetAttribute("diffuse",StringConverter::toString(bodyPartModelInst->getColourDiffuse()).c_str());
 				bodyPartElement.SetAttribute("specular",StringConverter::toString(bodyPartModelInst->getColourSpecular()).c_str());
 				bodyPartElement.SetAttribute("shininess",StringConverter::toString(bodyPartModelInst->getShininess()).c_str());
-				bodyPartElement.SetAttribute("alpha",StringConverter::toString(bodyPartModelInst->getTransparency()).c_str());
+				bodyPartElement.SetAttribute("alpha",StringConverter::toString(bodyPartModelInst->getAlpha()).c_str());
 			}
 			if (bodyPartModel->isTextureModifiable()) 
 				bodyPartElement.SetAttribute("texture",bodyPartModelInst->getCurrentTexture()->getName().c_str());
@@ -566,7 +567,7 @@ void CharacterInstance::saveModified()
 				goodyElement.SetAttribute("diffuse",StringConverter::toString(goodyModelInst->getColourDiffuse()).c_str());
 				goodyElement.SetAttribute("specular",StringConverter::toString(goodyModelInst->getColourSpecular()).c_str());
 				goodyElement.SetAttribute("shininess",StringConverter::toString(goodyModelInst->getShininess()).c_str());
-				goodyElement.SetAttribute("alpha",StringConverter::toString(goodyModelInst->getTransparency()).c_str());
+				goodyElement.SetAttribute("alpha",StringConverter::toString(goodyModelInst->getAlpha()).c_str());
 			}
 			if (goodyModel->isTextureModifiable()) 
 				goodyElement.SetAttribute("texture",goodyModelInst->getCurrentTexture()->getName().c_str());
@@ -1038,6 +1039,22 @@ GoodyInstance* CharacterInstance::setPreviousGoodyAsCurrent()
     setCurrentGoody(goody);
 
 	return mGoodyInstance;
+}
+
+//---------------------------------------------------------------------------------
+bool CharacterInstance::getGhost()
+{
+    return mGhost;
+}
+
+//---------------------------------------------------------------------------------
+void CharacterInstance::setGhost(bool ghost)
+{
+    mGhost = ghost;
+    for(BodyPartInstancesMap::iterator it = mBodyPartInstances.begin(); it != mBodyPartInstances.end(); ++it)
+        it->second->setGhost(ghost);
+    for(GoodyInstancesMap::iterator it = mGoodyInstances.begin(); it != mGoodyInstances.end(); ++it)
+        it->second->setGhost(ghost);
 }
 
 //---------------------------------------------------------------------------------

@@ -319,12 +319,12 @@ public:
 	///brief Get the alpha value of the object
 	///return the value of alpha
 	float getAlpha();
-	///brief Sets the scene blending type to be applied to this object and all it children. 
+/*	///brief Sets the scene blending type to be applied to this object and all it children. 
 	///param pSceneBlendType scene blending type
     void setSceneBlendType(Ogre::SceneBlendType pSceneBlendType);
 	///brief Get the scene blending type of the object
 	///return the scene blending type
-	Ogre::SceneBlendType getSceneBlendType();
+	Ogre::SceneBlendType getSceneBlendType();*/
 
 	//brief Get Vertex number
 	int getVertexCount() {return (int)mVertexCount;};

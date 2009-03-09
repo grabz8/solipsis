@@ -128,6 +128,9 @@ public:
 	///brief Method which reset all modifications of the BodyPart i. e. which reset all BodyPartModels, set the default BodyPartModel and reset all couples of poses.
 	void resetModifications();
 
+    /// brief Set the ghost attribute
+    void setGhost(bool ghost);
+
 private:
 	BodyPart* mBodyPart;												///brief BodyPart of our instance.
 
@@ -135,6 +138,8 @@ private:
 
 	BodyPartModelsMap::iterator mCurrentBodyPartModelIterator;			///brief Map iterator on the BodyPartModels pointing on the current BodyPartModel.
     BodyPartModelInstance* mCurrentBodyPartModelInstance;
+
+    bool mGhost;														///brief Ghost flag.
 };
 
 

@@ -73,7 +73,6 @@ void RakNetEntity::cleanUpEntities()
     for(RakNetEntityMap::const_iterator it = ms_Entities.begin(); it != ms_Entities.end(); it = ms_Entities.begin())
     {
         RakNetEntity *entity = it->second;
-        removeEntity(entity);
         delete entity;
     }
 }

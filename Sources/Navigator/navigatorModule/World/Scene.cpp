@@ -20,12 +20,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
 #include "Prerequisites.h"
 
 #include "Scene.h"
 #include "MainApplication/Navigator.h"
 #include "OgreOSMScene.h"
 #include "OgreTools/OgreHelpers.h"
+#include <CTIO.h>
 
 using namespace Solipsis;
 using namespace CommonTools;
@@ -63,7 +65,7 @@ Scene::~Scene()
 }
 
 //-------------------------------------------------------------------------------------
-void Scene::update(Ogre::Real timeSinceLastFrame)
+void Scene::update(Real timeSinceLastFrame)
 {
     if(mOgreMaxScene != 0)
         mOgreMaxScene->Update( timeSinceLastFrame );
@@ -102,7 +104,7 @@ bool Scene::update(XmlEntity* xmlEntity)
 
         // Create the resource group
         mResourceGroup = xmlEntity->getUid() + "Resources";
-        mResourceLocation = Navigator::getSingletonPtr()->getMediaCachePath() + "\\" + lodContent0File->mFilename;
+        mResourceLocation = Navigator::getSingletonPtr()->getMediaCachePath() + IO::getPathSeparator() + lodContent0File->mFilename;
         ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
         ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
         ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
@@ -167,7 +169,7 @@ bool Scene::update(XmlEntity* xmlEntity)
 sceneMgr->setShadowTextureSelfShadow(false);
             //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
             sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
-            Ogre::SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = Ogre::SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
+            SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
 //sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
 sceneMgr->setShadowColour(ColourValue(.7, .75, .85, 1.));
 sceneMgr->setShadowFarDistance(100.);
@@ -214,6 +216,8 @@ void Scene::destroy()
     if (sceneMgr == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::update");
 
+    bool resetAmbientViewportsSkiesAndLights = false;
+
     if (mStaticGeometry != 0)
     {
         sceneMgr->destroyStaticGeometry(mStaticGeometry);
@@ -236,6 +240,8 @@ void Scene::destroy()
             delete mOgreMaxScene;
             mOgreMaxScene = 0;
         }
+
+        resetAmbientViewportsSkiesAndLights = true;
 
 	    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
@@ -266,6 +272,26 @@ else if (1 && mOgreMaxScene != 0)
     {
         OgreHelpers::removeAndDestroySceneNode(mSceneNode);
         mSceneNode = 0;
+    }
+
+    if (resetAmbientViewportsSkiesAndLights)
+    {
+        // Reset ambient light to black
+        sceneMgr->setAmbientLight(ColourValue::Black);
+        // Reset background color to black
+        RenderWindow *win = Navigator::getSingletonPtr()->getRenderWindowPtr();
+        int numViewports = win->getNumViewports();
+        if (numViewports)
+        {
+	        for(int i=0; i<numViewports; ++i)
+                win->getViewport(i)->setBackgroundColour(ColourValue::Black);
+        }
+        // Destroy skies
+        sceneMgr->setSkyPlane(false, Plane(-Vector3::UNIT_Y, 0), "");
+        sceneMgr->setSkyBox(false, "");
+        sceneMgr->setSkyDome(false, "");
+        // Destroy lights
+        sceneMgr->destroyAllLights();
     }
 }
 
