@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 #include "SoundIcon.h"
 
-
 using namespace Solipsis;
 
 SoundIcon::SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos, Real xSize, Real ySize)
@@ -76,10 +75,6 @@ void SoundIcon::animate(Real timeSinceLastFrame)
 		m_animationTime += timeSinceLastFrame;
 		Real fValue = Math::Sin(m_animationTime*2*Math::PI)/2 + 0.5;
 
-
-	
 		m_pBoard->setColour(mCInterpolator.getResult(fValue));
-	
-		TRACE("fValue %f\n", fValue);
 	}
 }
