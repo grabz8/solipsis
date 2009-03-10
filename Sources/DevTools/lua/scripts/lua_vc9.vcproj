@@ -93,6 +93,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying debug runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\debug&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\debug&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\debug\.&quot; /y"
 			/>
 		</Configuration>
 		<Configuration
@@ -170,6 +172,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Copying release runtime files ..."
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\release&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\release&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\lua\bin\release\.&quot; /y"
 			/>
 		</Configuration>
 	</Configurations>
