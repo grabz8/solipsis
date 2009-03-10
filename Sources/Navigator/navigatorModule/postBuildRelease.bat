@@ -3,12 +3,12 @@ set vc="%1"
 
 if not exist "..\..\..\Dependencies\navigatorModule\include" mkdir ..\..\..\Dependencies\navigatorModule\include
 copy .\NavigatorModule.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\Event.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\IApplication.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\IInstance.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\IWindow.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\OgreHelpers.h ..\..\..\Dependencies\navigatorModule\include\. /y
-copy .\ExternalTextureSourceEx.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\Tools\Event.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\MainApplication\IApplication.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\MainApplication\IInstance.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\MainApplication\IWindow.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\OgreTools\OgreHelpers.h ..\..\..\Dependencies\navigatorModule\include\. /y
+copy .\OgreTools\ExternalTextureSourceEx.h ..\..\..\Dependencies\navigatorModule\include\. /y
 
 if not exist ..\..\..\Dependencies\navigatorModule\lib\Release mkdir ..\..\..\Dependencies\navigatorModule\lib\Release
 copy Release\Navigator.lib ..\..\..\Dependencies\navigatorModule\lib\Release\. /y
