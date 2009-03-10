@@ -61,6 +61,8 @@ protected:
 protected:
     /// Map of owned entities
     RakNetEntity::RakNetEntityMap mOwnedEntities;
+    /// Last site where avatar was connected
+    EntityUID mLastSiteUid;
 
     /// Entity
     RakNetEntity *mEntity;

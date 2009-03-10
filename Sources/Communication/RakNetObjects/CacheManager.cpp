@@ -114,8 +114,6 @@ void CacheManager::finalize()
     xmlFileDoc.SaveFile();
 }
 
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-#else
 //-------------------------------------------------------------------------------------
 unsigned int CacheManager::GetFilePart(char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context)
 {
@@ -126,7 +124,6 @@ unsigned int CacheManager::GetFilePart(char *filename, unsigned int startReadByt
     getCachePathname(std::string(filename), pathname);
     return IncrementalReadInterface::GetFilePart((char *)pathname.c_str(), startReadBytes, numBytesToRead, preallocatedDestination, context);
 }
-#endif
 
 //-------------------------------------------------------------------------------------
 bool CacheManager::OnFile(OnFileStruct *onFileStruct)
@@ -155,23 +152,15 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
         FileList fileList;
         std::string pathname;
         getCachePathname(filename, pathname);
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-        fileList.AddFile(pathname.c_str(), filename.c_str(), 0);
-#else
         long filesize = IO::getFileSize(pathname);
         if (filesize == -1)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
         fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#endif
         PendingUploadList& pendingUploadList = entryIt->second.mPendingUploadList;
         for (PendingUploadList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
         {
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() Sending now file %s, version:%d to recipient:%s, fileListTransferSetID:%d", filename.c_str(), entryIt->second.mVersion, pendingUploadIt->mRecipient.ToString(), pendingUploadIt->mFileListTransferSetID);
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-            mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mRecipient, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false);
-#else
             mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mRecipient, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
-#endif
         }
         pendingUploadList.clear();
     }
@@ -284,19 +273,11 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
         FileList fileList;
         std::string pathname;
         getCachePathname(filename, pathname);
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-        fileList.AddFile(pathname.c_str(), filename.c_str(), 0);
-#else
         long filesize = IO::getFileSize(pathname);
         if (filesize == -1)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
         fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#endif
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-        mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), recipient, fileListTransferSetID, LOW_PRIORITY, 0, false);
-#else
         mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), recipient, fileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
-#endif
     }
     else
     {

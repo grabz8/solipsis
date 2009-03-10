@@ -1035,3 +1035,9 @@ Cache Manager: now files transfers are performed by chunks of 4Kb to avoid bandw
 CommonTools: added path separator accessor
 
 ---------------------------
+09/03/09
+
+Avatar appears now on last position if scene is the last visited one (new connection + re-connection)
+Added version control lua script (eg. RakNetVersion.h with string version)
+
+---------------------------

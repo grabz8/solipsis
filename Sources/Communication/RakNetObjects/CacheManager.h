@@ -108,11 +108,8 @@ public:
     /** Finalize cache management by saving current state. */
     void finalize();
 
-#if (RAKNET_VERSION_MAJOR <= 3 && RAKNET_VERSION_MINOR < 401)
-#else
     /** See IncrementalReadInterface. */
 	virtual unsigned int GetFilePart( char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context);
-#endif
 
     /** See FileListTransferCBInterface. */
     virtual bool OnFile(OnFileStruct *onFileStruct);

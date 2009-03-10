@@ -154,18 +154,19 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
         mLastDeserializedDefinedAttributes = XmlEntity::DAUid;
 
 #ifdef LOGRAKNET
-/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
-        "RakNetEntity::Serialize() mSystemAddress:%s, uid:%s, name:%s, owner:%s, defAttr:0x%08x, ctxType:%d, recip@:%s, pos(%.2f,%.2f,%.2f)",
-        mSystemAddress.ToString(),
-        mXmlEntity->getUid().c_str(),
-        mXmlEntity->getName().c_str(),
-        mXmlEntity->getOwner().c_str(),
-        definedAttributes,
-        serializationContext->serializationType,
-        serializationContext->recipientAddress.ToString(),
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);*/
+    if (definedAttributes != XmlEntity::DAUid)
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+            "RakNetEntity::Serialize() mSystemAddress:%s, uid:%s, name:%s, owner:%s, defAttr:0x%08x, ctxType:%d, recip@:%s, pos(%.2f,%.2f,%.2f)",
+            mSystemAddress.ToString(),
+            mXmlEntity->getUid().c_str(),
+            mXmlEntity->getName().c_str(),
+            mXmlEntity->getOwner().c_str(),
+            definedAttributes,
+            serializationContext->serializationType,
+            serializationContext->recipientAddress.ToString(),
+            (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
+            (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
+            (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
 #endif
 
     bitStream->Write(definedAttributes);

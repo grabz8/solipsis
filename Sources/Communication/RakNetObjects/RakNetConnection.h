@@ -34,12 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <FileListTransfer.h>
 #include <Ogre.h>
 
-// Define RakNet version used
-#define RAKNET_VERSION_MAJOR 3
-//#define RAKNET_VERSION_MINOR 24
-#define RAKNET_VERSION_MINOR 401
-#define RAKNET_VERSION_COMPLETE ((RAKNET_VERSION_MAJOR << 16) | RAKNET_VERSION_MINOR)
-
 namespace Solipsis {
 
 class CacheManager;

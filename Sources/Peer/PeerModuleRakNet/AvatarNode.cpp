@@ -38,6 +38,7 @@ AvatarNode::AvatarNode() :
     mFrozen(true),
     mConnectionLost(false),
     Node("avatar"),
+    mLastSiteUid(""),
     mEntity(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
@@ -70,6 +71,11 @@ bool AvatarNode::loadFromElt(TiXmlElement* nodeElt)
         return false;
     mEntity = entity;
 
+    // Load last site uid where avatar was connected ?
+    TiXmlElement* lastSiteUidElt = nodeElt->FirstChildElement("lastSiteUid");
+    if (lastSiteUidElt != 0)
+        mLastSiteUid = lastSiteUidElt->GetText();
+
     return true;
 }
 
@@ -85,6 +91,12 @@ TiXmlElement* AvatarNode::getSavedElt()
     TiXmlElement* nodeElt = Node::getSavedElt();
     // Add avatar entity
     mEntity->getXmlEntity()->toXmlElt(*nodeElt);
+
+    // Add last site uid where avatar was connected
+    TiXmlElement* lastSiteUidElt = new TiXmlElement("lastSiteUid");
+    TiXmlText* lastSiteUid = new TiXmlText(mLastSiteUid.c_str());
+    lastSiteUidElt->LinkEndChild(lastSiteUid);
+    nodeElt->LinkEndChild(lastSiteUidElt); 
 
     return nodeElt;
 }
@@ -143,27 +155,35 @@ void AvatarNode::onNewEntity(Entity* entity)
     if ((entity->getXmlEntity()->getType() == ETSite) && (mEntity != 0))
     {
         // Reset avatar orientation and displacement
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Resetting avatar: orientation, displacement, position on entryGate");
 #ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity = mEntity->getXmlEntity();
 #else
         XmlEntity* xmlEntity = mEntity->getXmlEntity();
 #endif
-        xmlEntity->setOrientation(Ogre::Quaternion::IDENTITY);
-        mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAOrientation);
         xmlEntity->setDisplacement(Ogre::Vector3::ZERO);
-        // Move avatar on the entry gate of the scene + gravity
-        RefCntPoolPtr<XmlSceneContent> xmlSceneContent = entity->getXmlEntity()->getContent()->getDatas();
-        // Randomize position
-        int rand = time(NULL)%9;
-        xmlEntity->setPosition(xmlSceneContent->getEntryGate().mPosition + Ogre::Vector3(rand/3 - 1, 0, rand%3 - 1));
-        mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAPosition);
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Creating physics, applying gravity, unfreezing");
-        if (xmlSceneContent->getEntryGate().mGravity)
-            xmlEntity->setFlags(xmlEntity->getFlags() | EFGravity);
+        if (entity->getXmlEntity()->getUid() == mLastSiteUid)
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Resetting avatar: orientation, displacement, position with latest values");
+        }
         else
-            xmlEntity->setFlags(xmlEntity->getFlags() & ~EFGravity);
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Resetting avatar: orientation, displacement, position on entryGate");
+            mLastSiteUid = entity->getXmlEntity()->getUid();
+            xmlEntity->setOrientation(Ogre::Quaternion::IDENTITY);
+            // Move avatar on the entry gate of the scene + gravity
+            RefCntPoolPtr<XmlSceneContent> xmlSceneContent = entity->getXmlEntity()->getContent()->getDatas();
+            // Randomize position
+            int rand = time(NULL)%9;
+            xmlEntity->setPosition(xmlSceneContent->getEntryGate().mPosition + Ogre::Vector3(rand/3 - 1, 0, rand%3 - 1));
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() Creating physics, applying gravity, unfreezing");
+            if (xmlSceneContent->getEntryGate().mGravity)
+                xmlEntity->setFlags(xmlEntity->getFlags() | EFGravity);
+            else
+                xmlEntity->setFlags(xmlEntity->getFlags() & ~EFGravity);
+        }
         mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAFlags);
+        mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAPosition);
+        mEntity->addLastDeserializedDefinedAttributes(XmlEntity::DAOrientation);
         // Here we re-create character physics, we could only reset character position instead of
         ((Entity*)mEntity)->createPhysics(Peer::getSingleton().getPhysicsScene());
         ((Entity*)mEntity)->applyGravity(true);
