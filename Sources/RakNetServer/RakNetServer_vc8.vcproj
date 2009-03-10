@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib RakNetDLL.lib RakNetObjects.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Dependencies\pthreads\lib;..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;$(RAKNET_PATH)\lib&quot;;&quot;..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
 				GenerateDebugInformation="true"
