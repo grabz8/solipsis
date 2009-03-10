@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLL.lib RakNetObjects.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib XMLRPCP2NServer.lib ws2_32.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\$(ConfigurationName)&quot;;&quot;..\..\..\Dependencies\CommonTools\lib\$(ConfigurationName)&quot;;&quot;..\..\..\Dependencies\protocols\XmlDatas\lib\$(ConfigurationName)DLL&quot;;&quot;..\..\..\Dependencies\protocols\P2NServer\xmlrpc++\$(ConfigurationName)DLL&quot;;&quot;..\..\..\Dependencies\protocols\P2NServer\ulxmlrpcpp\$(ConfigurationName)DLL&quot;;&quot;$(RAKNET_PATH)\lib&quot;;&quot;..\..\..\Dependencies\RakNetObjects\lib\$(ConfigurationName)&quot;"
@@ -223,7 +223,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLL.lib RakNetObjects.lib"
+				AdditionalDependencies="pthreadVC_d.lib tinyxmld.lib OgreMain_d.lib CommonTools.lib XmlDatas.lib P2NNullClientServer.lib ws2_32.lib RakNetDLLDebug.lib RakNetObjects.lib"
 				OutputFile="$(OutDir)\Peer.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\Dependencies\pthreads\lib;..\..\..\Dependencies\tinyxml\lib;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;;..\..\..\Dependencies\CommonTools\lib\Debug;..\..\..\Dependencies\protocols\XmlDatas\lib\DebugDLL;..\..\..\Dependencies\protocols\P2NNullClientServer\DebugDLL;&quot;$(RAKNET_PATH)\lib&quot;;..\..\..\Dependencies\RakNetObjects\lib\Debug"
