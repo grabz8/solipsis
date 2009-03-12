@@ -509,6 +509,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OgreGraphicObjects\ProgressBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\ProgressBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OgreGraphicObjects\SoundIcon.cpp"
 				>
 				<FileConfiguration
