@@ -204,6 +204,7 @@ void Avatar::onSceneNodeChanged()
     mNameLabel->setAdditionalHeight(avatarSize.y);
     getSceneNode()->attachObject(mNameLabel);
 
+
     // Chat Label
     if (mChatLabel == 0)
     {
@@ -219,6 +220,12 @@ void Avatar::onSceneNodeChanged()
     }
 	mChatLabel->setAdditionalHeight(avatarSize.y + 0.2f);
 	getSceneNode()->attachObject(mChatLabel);
+
+	if (isLocal())
+	{
+		mChatLabel->setVisible(false);
+		mNameLabel->setVisible(false);
+	}
 
     // Sound Icon
     if (m_pSoundIcon == 0) 
