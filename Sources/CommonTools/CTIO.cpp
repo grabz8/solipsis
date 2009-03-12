@@ -160,7 +160,7 @@ std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
         if (isDirectoryExists(fullPath))
             return relativePath;
         currentPath = currentPath.substr(0, currentPath.find_last_of(getPathSeparator()));
-        relativePath = ".." + getPathSeparator() + relativePath;
+        relativePath = std::string("..") + getPathSeparator() + relativePath;
     }
     return "";
 }
