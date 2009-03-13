@@ -1026,6 +1026,13 @@ Statistics readme.txt added
 Now add -S arg to specify where RakNetServer will store their statistics (usefull when having several servers on 1 host)
 
 ---------------------------
+04/03/09
+
+Navigator :
+
+Added a sound icon on the top of avatars when taking 
+No more label for your own avatar
+---------------------------
 06/03/09
 
 RakNet connections lost: timeout param increased to 15s + re-connection
@@ -1039,5 +1046,9 @@ CommonTools: added path separator accessor
 
 Avatar appears now on last position if scene is the last visited one (new connection + re-connection)
 Added version control lua script (eg. RakNetVersion.h with string version)
+---------------------------
+04/03/09
 
+Cache Manager :
+Correction of the crash when the file is no more on the disk
 ---------------------------

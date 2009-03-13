@@ -21,7 +21,7 @@
 
 <img src="../HTML/images/header.jpg" border="0" height="216" hspace="0" width="776"></p>
 </td>
-</tr><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%"><tbody><tr><td><h2>CONFIG</h2>
+</tr></tbody></table><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%"><tbody><tr><td><h2>CONFIG</h2>
 
 <ul><li>
 Ogre
@@ -191,14 +191,14 @@ demoPhysics1&nbsp;&nbsp; Launch DEMO_PHYSICS1 (refer below)
 Demos Tips/Tricks:</h3>
 
 <ul><li>
-into
-Common\bin\navigator\XXXX\NaviLocal\uilogin.html, you can uncomment
-line under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS<br>
-into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update
-the position of the demoNavi2 panel<br>
-into Media\lua\boot.lua, you can tune default connection params into
-the line navigator:setConnectionParams("localhost", 8880, "me")
-</li></ul>
+into <span style="font-weight: bold;">Media\lua\boot.lua</span> You can specify some important things :</li><ul><li><span style="font-weight: bold;">PeerAddress</span> : for peer communication. must be localhost, so don't touch it</li><li><span style="font-weight: bold;">WorldsServerAddress</span> : &nbsp;the location of the WorldsServer.&nbsp;</li><li><span style="font-weight: bold;">LocalWorldAddress</span>
+: The location of the world adress and port. (the same as returned by
+the worldsServer, you can copy the string returned by the world adress
+in the login page for your first connection)</li><li><span style="font-weight: bold;">Login</span> : the default login</li><li><span style="font-weight: bold;">Password </span>: the default login</li><li><span style="font-weight: bold;">VoIPServerAddress</span> : location of the vo-ip server</li></ul></ul><ul><li><span style="font-weight: bold;">
+</span>into<span style="font-weight: bold;">
+Common\bin\navigator\XXXX\NaviLocal\uilogin.html</span>, you can uncomment
+line under // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS<br></li><li>into Common\bin\navigator\XXXX\NaviLocal\uichat.html, you can update
+the position of the demoNavi2 panel</li></ul>
 <ul><li>
 About
 HTTP proxy, you can now define it into the options panel, the resulting
@@ -261,12 +261,12 @@ the Worlds Server, check you got python installed and launch
 WorldsServer.py<br>
 Update internal host:port if you want to change default values
 localhost:8550
-</li></ul><br></td></tr></tbody></table><tr>
-<td>
+</li></ul><br></td></tr></tbody></table>
+
 <p align="center"> <a href="http://www.agence-nationale-recherche.fr/"><img src="../HTML/images/s_anr.jpg" border="0" height="32"></a><a href="http://www.images-et-reseaux.com/"><img src="../HTML/images/s_imr.jpg" border="0" height="32"></a><a href="http://rd.francetelecom.com/fr/groupe/rd/"><img src="../HTML/images/s_orange.jpg" border="0" height="32"></a> &nbsp; <a href="http://www.irisa.fr/"><img src="../HTML/images/s_inria.jpg" border="0" height="32"></a>
 &nbsp; <a href="http://www.archivideo.com/"><img src="../HTML/images/s_archivideo.jpg" border="0" height="32"></a>
 &nbsp; <a href="http://www.artefacto.fr/"><img src="../HTML/images/s_artefacto.jpg" border="0" height="32"></a> &nbsp; <a href="http://www.uhb.fr/sc_humaines/las/"><img src="../HTML/images/s_rennes2.jpg" border="0" height="32"></a> &nbsp; </p>
-</td>
-</tr>
-</tbody>
-</table><br><br><br><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%"></table></body></html>
+
+
+
+<br><br><br><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%"></table></body></html>

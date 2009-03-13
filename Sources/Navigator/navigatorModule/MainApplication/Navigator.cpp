@@ -377,7 +377,12 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
         mLogin = varValue;
         return true;
     }
-    if (varName == "FixedNodeId")
+	if (varName == "Password")
+	{
+		mPwd = varValue;
+		return true;
+	} 
+	if (varName == "FixedNodeId")
     {
         mFixedNodeId = varValue;
         if (!mFixedNodeId.empty())

@@ -210,7 +210,7 @@
 				AdditionalOptions="-Zm112"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\DeclarativeModeler\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;SHADOWS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
