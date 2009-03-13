@@ -1663,7 +1663,7 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUid().c_str());
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid()))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer !", "Navigator::onPeerLost");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
 }
 
 //-------------------------------------------------------------------------------------
@@ -1676,7 +1676,7 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
     if (!mOgrePeerManager->update(xmlEntity))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer !", "Navigator::onPeerUpdated");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer " + xmlEntity->getUid() + " !", "Navigator::onPeerUpdated");
 }
 
 //-------------------------------------------------------------------------------------
@@ -1689,7 +1689,7 @@ void Navigator::onPeerAction(XmlAction* xmlAction)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerAction()");
 
     if (!mOgrePeerManager->action(xmlAction))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peer !", "Navigator::onPeerAction");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peers (" + xmlAction->getSourceEntityUid() + " -> " + xmlAction->getTargetEntityUid() + ") !", "Navigator::onPeerAction");
 }
 
 //-------------------------------------------------------------------------------------
