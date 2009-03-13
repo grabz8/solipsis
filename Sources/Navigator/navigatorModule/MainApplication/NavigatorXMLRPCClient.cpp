@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tinyxml.h"
 #include <CTLog.h>
 #include "Tools/DebugHelpers.h"
-#include "Platforms/Platform.h"
 
 using namespace Solipsis;
 using namespace CommonTools;
