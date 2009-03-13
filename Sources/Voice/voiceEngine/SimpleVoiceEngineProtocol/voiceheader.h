@@ -46,12 +46,10 @@ static char* VoicePacketTypeName[4] = {
 // ---------------------------------------------------------------------------
 // Packet flags
 
-enum VoicePacketFlags
-{
-    VPF_NONE = 0x00,
-    VPF_POSDIRVEL = 1,
-    VPF_DISTANCES = VPF_POSDIRVEL<<1
-};
+typedef unsigned char VoicePacketFlags;
+static const VoicePacketFlags VPF_NONE = 0;
+static const VoicePacketFlags VPF_POSDIRVEL = 1;
+static const VoicePacketFlags VPF_DISTANCES = VPF_POSDIRVEL<<1;
 
 // ---------------------------------------------------------------------------
 // Audio data headers
