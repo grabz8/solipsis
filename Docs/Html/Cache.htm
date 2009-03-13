@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html><head>
+<meta name="GENERATOR" content="PageBreeze Free HTML Editor (http://www.pagebreeze.com)">
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+
+<title>Solipsis Cache description</title><style type="text/css">
+<!--
+a.navwhite:link { text-decoration: none; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navwhite:visited { text-decoration: none; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navwhite:hover { text-decoration: underline; color: #ffffff; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:link { text-decoration: none; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:visited { text-decoration: none; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+a.navblack:hover { text-decoration: underline; color: #000000; font-family: Verdana, Arial, sans-serif; font-size: 10px; font-weight: bold; }
+
+h1 { font-family: Arial, sans-serif; font-size: 30px; color: #627E9A;}
+h2 { font-family: Arial, sans-serif; font-size: 18px; color: #62CC3C;}
+h3 { font-family: Arial, sans-serif; font-size: 14px; color: #5C8096;}
+
+body,p,b,i,em,dt,dd,dl,sl,caption,th,td,tr,u,blink,select,option,form,div,li { font-family: Arial, sans-serif; font-size: 12px; }
+.style2 {color: #627E9A}
+.style3 {color: #62CC3C}
+.style6 {color: #5C8096}
+.style7 {color: #888888}
+
+
+-->
+  </style></head>
+<body bgcolor="#ffffff">
+<table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+  <tbody><tr>
+    <td>
+      <p align="center"><font face="Arial"><img src="./images/header.jpg" border="0" height="216" hspace="0" width="776"></font></p></td></tr>
+  <tr>
+    <td><div style="text-align: center;">
+      </div><p></p><div style="text-align: center;">
+      </div><p><table align="center" border="0" cellpadding="3" cellspacing="0" width="100%">
+        
+        <tbody><tr>
+          <td><div style="text-align: center;">
+      </div><h1 style="text-align: center;"><font face="Arial">Cache Description </font></h1>The
+cache &nbsp;has exactly the same fucntionality on the server and on teh
+peer (and navigator for rcs option, the peer is embedded)<br>The unique class handling the cache is the cache manager (Communication\RakNetObjects\CacheManager.cpp)<br>It is used by both server and client side.<br><br><h2>Directory location&nbsp;</h2><br>At startup both modules search for a "<span style="font-weight: bold;">Media\Cache"</span> directory in the current working directory (by default the directory where reside the exe)<br>If not found it will search in parent directories with untill this directory is found. <br><br>If you use the server and the Peer/Navigator on the same computer
+please copy the Media/cache directory &nbsp;into the Navigator directory.<br><h2>Directory content</h2>this directory should contain a <span style="font-weight: bold;">cache.xml </span>file
+referencing all resources files and its version number. If the file is
+not found a empty file is created (all already preset files are then
+ignored)<br>each file is a zipped ogre resource directory. <br><ul><li><span style="font-weight: bold;">ssf</span> for scenes</li><li><span style="font-weight: bold;">saf</span> for avatars</li><li><span style="font-weight: bold;">sof</span> for objects</li></ul>rename it with the .zip extension to view its content. <br>It contains :<br><ul><li>meshes (.mesh) </li><li>material script descriptions (.material), </li><li>textures (.jpg and .png), </li><li>scene description(.osm), </li><li>avatar skeleton(.skeleton) </li><li>and avatar nature (.nature)</li></ul><br><a href="http://www.ogre3d.org/wiki/index.php/Main_Page">see ogre forum and tutorial for more infos about these formats. </a><br><br>The
+server also use this directory to maintains scene content (avatar and
+objects status and positions) via the SceneID.xml files.<br>The Navigator&nbsp;client maintains the last avatar status via another xml file.<br><br>The
+***_Ref.xml files are references files. Xml files are modified during a
+server session, to recover the initial state maunch the cleancache.bat.
+It will delete all xml file and recover the initial states using this
+ref files. <br><br><h2>Resources Files </h2>each file is a zipped ogre resource directory. <br><ul><li><span style="font-weight: bold;">ssf</span> for scenes</li><li><span style="font-weight: bold;">saf</span> for avatars</li><li><span style="font-weight: bold;">sof</span> for objects</li></ul>rename it with the .zip extension to view its content. <br>It contains :<br><ul><li>meshes (.mesh) </li><li>material script descriptions (.material), </li><li>textures (.jpg and .png), </li><li>scene description(.osm), </li><li>avatar skeleton(.skeleton) </li><li>and avatar nature (.nature)</li></ul><br><a href="http://www.ogre3d.org/wiki/index.php/Main_Page">see ogre forum and tutorial for more infos about these formats. </a><br><br><br></td>
+            <td valign="top">
+            <p>s&nbsp;</p></td></tr></tbody></table></p>
+      <p><font face="Arial"></font>&nbsp;</p></td></tr>
+  <tr>
+    <td>
+    
+  	<p align="center">
+		<a href="http://www.agence-nationale-recherche.fr/"><font face="Arial"><img src="./images/s_anr.jpg" border="0" height="32"></font></a><font face="Arial"> </font>
+		<a href="http://www.images-et-reseaux.com/"><font face="Arial"><img src="./images/s_imr.jpg" border="0" height="32"></font></a><font face="Arial"> </font>
+
+		<a href="http://rd.francetelecom.com/fr/groupe/rd/"><font face="Arial"><img src="./images/s_orange.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; </font> 
+		<a href="http://www.irisa.fr/"><font face="Arial"><img src="./images/s_inria.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; 
+      </font> 
+		<a href="http://www.archivideo.com/"><font face="Arial"><img src="./images/s_archivideo.jpg" border="0" height="32"></font></a><font face="Arial"> 
+      &nbsp; </font> 
+		<a href="http://www.artefacto.fr/"><font face="Arial"><img src="./images/s_artefacto.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; 
+      </font> 
+		<a href="http://www.uhb.fr/sc_humaines/las/"><font face="Arial"><img src="./images/s_rennes2.jpg" border="0" height="32"></font></a><font face="Arial"> &nbsp; 
+      </font> 
+		</p>  
+    
+    </td></tr></tbody></table>
+</body></html>
