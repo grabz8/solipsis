@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc9", "DevTools\llmozlib\llmozlib_vc9.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc9", "DevTools\navi\Navi\Navi_vc9.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"

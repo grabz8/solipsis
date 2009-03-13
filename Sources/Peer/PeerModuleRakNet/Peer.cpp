@@ -209,7 +209,7 @@ bool Peer::destroy()
 void Peer::run()
 {
     time_t lastConnectionAttempt = 0;
-    time_t lastLoopTime = 0;
+    time_t lastLoopTime = 0; 
     float tickDuration = 1.0f/60.0f;
     mResetTime = true;
     while (!mStopRequested)
@@ -352,6 +352,12 @@ void Peer::OgreLogger::log(int level, const char* msg)
 { 
     if (level > mVerbosity) return;
     OGRE_LOG(std::string(msg));
+
+#ifdef _WINDOWS
+#ifdef _DEBUG
+	OutputDebugString( msg);
+#endif
+#endif
 }
 
 //-------------------------------------------------------------------------------------

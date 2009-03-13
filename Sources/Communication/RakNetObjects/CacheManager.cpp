@@ -38,15 +38,15 @@ const std::string CacheManager::ms_CacheFilename = "cache.xml";
 //-------------------------------------------------------------------------------------
 CacheManager::CacheManager(RakNetConnection* connection) :
     mConnection(connection),
-    mCachePath("")
+    mCachePath("") 
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::CacheManager()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::CacheManager()");
 }
 
 //-------------------------------------------------------------------------------------
 CacheManager::~CacheManager()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::~CacheManager()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::~CacheManager()");
 }
 
 //-------------------------------------------------------------------------------------
@@ -76,6 +76,7 @@ void CacheManager::initialize(const std::string& cachePath)
                 LodContentFileStruct lodContentFileStruct;
                 if (!XmlHelpers::fromXmlEltLodContentFileStruct(fileElt, lodContentFileStruct))
                     throw std::string("Parsing error");
+
                 addFile(lodContentFileStruct.mFilename, lodContentFileStruct.mVersion);
             }
         }
@@ -85,6 +86,10 @@ void CacheManager::initialize(const std::string& cachePath)
         LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::initialize() Unable to read/parse cache from %s, Resetting it.", filename);
         mCache.clear();
     }
+
+	// write the new cache file.
+	// if there where errors (file not found, they will be removed)
+	CacheManager::finalize();
 }
 
 //-------------------------------------------------------------------------------------
@@ -183,20 +188,24 @@ void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCo
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() filename:%s state:%d", filename.c_str(), entryIt->second.mState);
     }
 }
-
+ 
 //-------------------------------------------------------------------------------------
 void CacheManager::addFile(const std::string& filename, const FileVersion& version)
 {
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-    {
-        Entry entry;
-        entry.mVersion = version;
-        entry.mState = ESTransferComplete;
-        mCache[filename] = entry;
-        entryIt = mCache.find(filename);
-    }
-    entryIt->second.mVersion = version;
+	// check if the file is present
+	if (IO::isFileExists(mCachePath + IO::getPathSeparator() + filename)) 
+	{
+		CacheMap::iterator entryIt = mCache.find(filename);
+		if (entryIt == mCache.end())
+		{
+			Entry entry;
+			entry.mVersion = version;
+			entry.mState = ESTransferComplete;
+			mCache[filename] = entry;
+			entryIt = mCache.find(filename);
+		}
+		entryIt->second.mVersion = version;
+	}
 }
 
 //-------------------------------------------------------------------------------------
@@ -233,7 +242,16 @@ void CacheManager::requestFile(const SystemAddress& sender, const std::string& f
         mConnection->getRakPeer()->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, sender, false);
     }
     else if (entryIt->second.mState == ESTransferComplete)
-        callback->onTransferComplete(filename);
+	{
+		// to prevent internal errors, check that the file is really here
+		if (IO::isFileExists(mCachePath + IO::getPathSeparator() + filename)) 
+	        callback->onTransferComplete(filename);
+		else
+		{
+			// back to request
+			entryIt->second.mState = ESTransferToRequest;
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------

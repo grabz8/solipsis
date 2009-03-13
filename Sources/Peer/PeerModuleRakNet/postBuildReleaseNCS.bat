@@ -10,3 +10,5 @@ copy PhysicsEngineManager.h ..\..\..\Dependencies\peerModule\include\. /y
 if not exist ..\..\..\Dependencies\peerModule\lib\Release mkdir ..\..\..\Dependencies\peerModule\lib\Release
 copy ReleaseNCS\Peer.lib ..\..\..\Dependencies\peerModule\lib\Release\. /y
 copy ReleaseNCS\Peer.dll ..\..\..\Dependencies\peerModule\lib\Release\. /y
+
+xcopy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "..\..\..\Common\bin\navigator\Release" /s /y
