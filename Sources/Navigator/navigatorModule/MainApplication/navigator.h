@@ -64,16 +64,13 @@ public:
 		SModeling,      // GUI displayed when user is modeling an object
 		SAvatarEdit     // GUI displayed when user is editing his avatar
     };
-    enum QueryFlags
-    {
-        QFNaviPanel = 1<<0,
-        QFVLCPanel = QFNaviPanel<<1,
-        QFVNCPanel = QFVLCPanel<<1,
-        QFSWFPanel = QFVNCPanel<<1,
-        QFAvatar = QFSWFPanel<<1,
-        QFObject = QFAvatar<<1,
-        QFGizmo = QFObject<<1
-    };
+    static const uint32 QFNaviPanel = 1;
+    static const uint32 QFVLCPanel = QFNaviPanel<<1;
+    static const uint32 QFVNCPanel = QFVLCPanel<<1;
+    static const uint32 QFSWFPanel = QFVNCPanel<<1;
+    static const uint32 QFAvatar = QFSWFPanel<<1;
+    static const uint32 QFObject = QFAvatar<<1;
+    static const uint32 QFGizmo = QFObject<<1;
     enum NavigationInterface
     {
         NIMouseKeyboard,
