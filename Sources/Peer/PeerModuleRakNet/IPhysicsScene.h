@@ -45,12 +45,10 @@ public:
     static const int CG_COLLIDABLE_MASK = (1<<CG_COLLIDABLE_NON_PUSHABLE) | (1<<CG_COLLIDABLE_PUSHABLE);
 
     /// Debug flags helpfull to visualize physics
-    enum DebugFlag
-    {
-        DF_NONE = 0,
-        DF_CONTACTS = 1,
-        DF_GEOMETRIES = DF_CONTACTS<<1
-    };
+    typedef unsigned char DebugFlag;
+    static const DebugFlag DF_NONE = 0;
+    static const DebugFlag DF_CONTACTS = 1;
+    static const DebugFlag DF_GEOMETRIES = DF_CONTACTS<<1;
 
 public:
     IPhysicsScene() {}
