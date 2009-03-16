@@ -190,7 +190,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\PoolEntry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\XmlDatas.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlHelpers.cpp"
 				>
 			</File>
 		</Filter>
@@ -209,6 +217,10 @@
 			</File>
 			<File
 				RelativePath=".\XmlDatasPrerequisites.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlHelpers.h"
 				>
 			</File>
 		</Filter>

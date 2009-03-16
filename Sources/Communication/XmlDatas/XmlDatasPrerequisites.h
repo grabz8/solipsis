@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __XmlDatasPrerequisites_h__
 #define __XmlDatasPrerequisites_h__
 
+#define POOL
+
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
