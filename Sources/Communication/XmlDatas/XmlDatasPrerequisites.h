@@ -53,20 +53,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _XMLDATAS_IMPORT __attribute__((dllimport))
 
 #if defined(XMLDATAS_SELF_BUILD)
-#  	define XMLDATAS_EXPORT _XMLDATAS_EXPORT
-#  	define XMLDATAS_CW_EXPORT
+    #define XMLDATAS_EXPORT _XMLDATAS_EXPORT
+    #define XMLDATAS_CW_EXPORT
 #else
-#  	define XMLDATAS_EXPORT
-#  	define XMLDATAS_CW_EXPORT _XMLDATAS_IMPORT
+    #define XMLDATAS_EXPORT
+    #define XMLDATAS_CW_EXPORT _XMLDATAS_IMPORT
 #endif
 
 #endif
-
 
 #define XMLDATASDIRECT_EXPORT _XMLDATAS_EXPORT
-
-namespace Solipsis {
-
-} // namespace Solipsis
 
 #endif // #ifndef __XmlDatasPrerequisites_h__

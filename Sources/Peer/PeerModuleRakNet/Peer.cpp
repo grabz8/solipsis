@@ -352,12 +352,6 @@ void Peer::OgreLogger::log(int level, const char* msg)
 { 
     if (level > mVerbosity) return;
     OGRE_LOG(std::string(msg));
-
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	OutputDebugString( msg);
-#endif
-#endif
 }
 
 //-------------------------------------------------------------------------------------

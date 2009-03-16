@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XmlDatasTypedefs.h"
+				>
+			</File>
+			<File
 				RelativePath=".\XmlHelpers.h"
 				>
 			</File>

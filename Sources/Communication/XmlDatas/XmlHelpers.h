@@ -24,15 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __XmlHelpers_h__
 #define __XmlHelpers_h__
 
-// 
-// #include <list>
-// #include <map>
-// #include <ostream>
-#include "XmlDatasPrerequisites.h"
-#include "XmlDatasBasicTypes.h"
 #include <Ogre.h>
 #include <tinyxml.h>
 
+#include "XmlDatasPrerequisites.h"
+#include "XmlDatasBasicTypes.h"
+#include "XmlDatasTypedefs.h"
 
 namespace Solipsis 
 {
@@ -82,6 +79,8 @@ public:
     static inline std::string convertAnimationStateToHexString(AnimationState animationState) { return XmlHelpers::convertUCharToHexString(animationState); }
     static inline AnimationState convertHexStringToAnimationState(const char* str) { return XmlHelpers::convertHexStringToUChar(str); }
 };
+
+
 
 
 } // namespace Solipsis

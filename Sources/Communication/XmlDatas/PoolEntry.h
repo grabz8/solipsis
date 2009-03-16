@@ -30,7 +30,6 @@ namespace Solipsis
 #ifdef POOL
 
 #include <list>
-#include <pthread.h>
 
 template<class T> 
 class RefCntPoolPtr;

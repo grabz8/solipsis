@@ -24,24 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __XmlDatas_h__
 #define __XmlDatas_h__
 
+#include <pthread.h>
+
+#include <Ogre.h>
 #include <list>
 #include <map>
 #include <ostream>
+
 #include "XmlDatasPrerequisites.h"
 #include "XmlDatasBasicTypes.h"
 #include "PoolEntry.h"
+
 #include "XmlHelpers.h"
 
-
-#include <tinyxml.h>
-
-
-#ifdef POOL
-
-#endif
-
-namespace Solipsis {
-
+namespace Solipsis 
+{
+    
 #ifdef POOL
     class XMLDATAS_EXPORT XmlData : public PoolEntry
 #else
