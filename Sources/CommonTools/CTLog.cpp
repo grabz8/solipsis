@@ -78,11 +78,10 @@ public:
         log[sizeof(log) - 2] = '\n';
         log[sizeof(log) - 1] = '\0';
 
-#ifdef USE_WINDOWS_DEBUG
+#if defined(USE_WINDOWS_DEBUG) || (defined(_WINDOWS) && defined(_DEBUG))
         OutputDebugString(log);
-#else
-        std::cout << log; 
 #endif
+        std::cout << log; 
 
         if (mLogFile != 0)
         {
