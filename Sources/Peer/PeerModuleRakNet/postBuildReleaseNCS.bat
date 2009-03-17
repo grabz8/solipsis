@@ -11,4 +11,4 @@ if not exist ..\..\..\Dependencies\peerModule\lib\Release mkdir ..\..\..\Depende
 copy ReleaseNCS\Peer.lib ..\..\..\Dependencies\peerModule\lib\Release\. /y
 copy ReleaseNCS\Peer.dll ..\..\..\Dependencies\peerModule\lib\Release\. /y
 
-xcopy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "..\..\..\Common\bin\navigator\Release" /s /y
+xcopy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "..\..\..\Common\bin\navigator\Release\." /s /y

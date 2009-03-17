@@ -11,4 +11,4 @@ if not exist ..\..\..\Dependencies\peerModule\lib\Debug mkdir ..\..\..\Dependenc
 copy DebugNCS\Peer.lib ..\..\..\Dependencies\peerModule\lib\Debug\. /y
 copy DebugNCS\Peer.dll ..\..\..\Dependencies\peerModule\lib\Debug\. /y
 
-xcopy "..\..\..\Dependencies\peerModule\lib\Debug\Peer.dll" "..\..\..\Common\bin\navigator\Debug" /s /y
+xcopy "..\..\..\Dependencies\peerModule\lib\Debug\Peer.dll" "..\..\..\Common\bin\navigator\Debug\." /s /y
