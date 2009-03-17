@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Solipsis {
 
 // secure logMessage macro
-#ifdef USE_WINDOWS_DEBUG
+#if defined(USE_WINDOWS_DEBUG) || (defined(_WINDOWS) && defined(_DEBUG))
     #define OGRE_LOG(message) { \
         if (Solipsis::OgreHelpers::getSingletonPtr() != 0)  Solipsis::OgreHelpers::getSingletonPtr()->logMessage(message); \
         OutputDebugString((message + String("\n")).c_str()); \
