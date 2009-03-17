@@ -49,10 +49,11 @@ void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
 	{
 	case Invisible:
 		m_SoundIcon->setVisible(false);
+		m_pBoard->setColour(ColourValue(1, 0, 0, 1));
 		break;
 	case Showed:
 		m_SoundIcon->setVisible(true);
-		m_pBoard->setColour(ColourValue(1, 1, 1, 1));
+		m_pBoard->setColour(ColourValue(1, 1, 1, 0.5));
 		break;
 	case Animated:
 		m_SoundIcon->setVisible(true);
