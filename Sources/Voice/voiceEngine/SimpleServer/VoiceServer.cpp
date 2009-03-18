@@ -87,7 +87,7 @@ bool VoiceServer::bindAndListen(int port, int backlog /*= 5*/)
 // Process client requests for the specified time
 void VoiceServer::work(double msTime)
 {
-  VoiceServerUtil::log(2, "VoiceServer::work: waiting for a connection");
+  //VoiceServerUtil::log(2, "VoiceServer::work: waiting for a connection");
   _disp.work(msTime);
 }
 
