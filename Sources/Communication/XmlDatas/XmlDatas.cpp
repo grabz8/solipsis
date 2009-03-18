@@ -352,7 +352,9 @@ std::string XmlEntity::toXmlString() const
 {
     std::stringstream s;
     if (!mDefinedAttributes & DAUid) return s.str();
+
     s << "<entity uid=\"" << mUid << "\"";
+
     if (mDefinedAttributes & DAOwner) s << " owner=\"" << mOwner << "\"";
     if (mDefinedAttributes & DAType) s << " type=\"" << mType << "\"";
     if (mDefinedAttributes & DAName) s << " name=\"" << mName << "\"";
@@ -370,6 +372,8 @@ std::string XmlEntity::toXmlString() const
         XmlHelpers::ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
         s << "</aabb>";
     }
+    if (mDefinedAttributes & DAProgress) s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
+     
 #ifdef POOL
     if (!mShape.isNull()) s << mShape->toXmlString();
     if (!mContent.isNull()) s << mContent->toXmlString();
@@ -416,6 +420,13 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
         aabbElt->LinkEndChild(XmlHelpers::toXmlEltVector3("max", mAABoundingBox.getMaximum()));
         entityElt->LinkEndChild(aabbElt);
     }
+    if (mDefinedAttributes & DAProgress)
+    {
+         TiXmlElement* elt = new TiXmlElement("DownloadProgress");
+        elt->SetAttribute("value", mDownloadProgress);
+        entityElt->LinkEndChild(elt);
+    }
+
 #ifdef POOL
     if (!mShape.isNull()) mShape->toXmlElt(*entityElt);
     if (!mContent.isNull()) mContent->toXmlElt(*entityElt);
@@ -523,6 +534,11 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
 #endif
         mDefinedAttributes |= DAContent;
     }
+    if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
+    {
+        mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
+        mDefinedAttributes |= DAProgress;
+    }
 
     return true;
 }
@@ -543,6 +559,9 @@ void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEnti
         dstXmlEntity->setAnimation(srcXmlEntity->getAnimation());
     if (definedAttributes & XmlEntity::DAContent)
         dstXmlEntity->setContent(srcXmlEntity->getContent());
+    if (definedAttributes & XmlEntity::DAProgress)
+        dstXmlEntity->setDownloadProgress(srcXmlEntity->getDownloadProgress());
+    
 }
 
 //-------------------------------------------------------------------------------------

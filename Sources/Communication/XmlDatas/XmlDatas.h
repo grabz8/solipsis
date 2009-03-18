@@ -318,6 +318,7 @@ public:
     static const DefinedAttributes DAAnimation = (DefinedAttributes)(DAOrientation << 1);
     static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAAnimation << 1);
     static const DefinedAttributes DAContent = (DefinedAttributes)(DAAABoundingBox << 1);
+    static const DefinedAttributes DAProgress = (DefinedAttributes)(DAContent << 1);
 
 protected:
     DefinedAttributes mDefinedAttributes;
@@ -332,6 +333,8 @@ protected:
     Ogre::Quaternion mOrientation;
     AnimationState mAnimationState;
     Ogre::AxisAlignedBox mAABoundingBox;
+    float mDownloadProgress;
+
 #ifdef POOL
     RefCntPoolPtr<XmlData> mShape;
     RefCntPoolPtr<XmlContent> mContent;
@@ -353,6 +356,7 @@ public:
       mPosition(Ogre::Vector3::ZERO),
       mOrientation(Ogre::Quaternion::IDENTITY),
       mAnimationState(ASNone),
+      mDownloadProgress(0),
 #ifdef POOL
       mShape(RefCntPoolPtr<XmlData>::nullPtr),
       mContent(RefCntPoolPtr<XmlContent>::nullPtr)
@@ -447,6 +451,9 @@ public:
 
     void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
     const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
+
+    void setDownloadProgress(const float progress) { mDownloadProgress = progress; mDefinedAttributes |= DAProgress; }
+    const float getDownloadProgress() { return mDownloadProgress; }
 
 #ifdef POOL
     void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }

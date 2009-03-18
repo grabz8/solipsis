@@ -75,6 +75,16 @@ unsigned int XmlHelpers::convertHexStringToUInt(const char* str)
     return value;
 }
 
+
+//-------------------------------------------------------------------------------------
+float XmlHelpers::convertStringToFloat(const char* str)
+{
+    float value;
+    sscanf(str, "%d", &value);
+    return value;
+}
+
+
 //-------------------------------------------------------------------------------------
 std::string XmlHelpers::convertBoolToString(bool value)
 {

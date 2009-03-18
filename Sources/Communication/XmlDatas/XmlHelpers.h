@@ -42,6 +42,7 @@ public:
     static unsigned char convertHexStringToUChar(const char* str);
     static std::string convertUIntToHexString(unsigned int value);
     static unsigned int convertHexStringToUInt(const char* str);
+    static float convertStringToFloat(const char* str);
     static std::string convertBoolToString(bool value);
     static bool convertStringToBool(const char* str);
     static std::string xmlEscape(const std::string &str);
