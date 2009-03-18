@@ -90,3 +90,49 @@ material Solipsis/SkyBox3
 		}
 	}
 }
+
+
+material Solipsis/Box
+{
+	technique
+	{
+		pass
+		{
+			ambient 1 1 1 1
+			diffuse 1 1 1 1
+			specular 0 0 0 0
+			emissive 0 0 0
+			
+			scene_blend alpha_blend
+			depth_write off
+	
+			texture_unit
+			{
+				texture ProgressBar.png
+			}
+		}
+	}
+}
+
+
+material Solipsis/ProgressBar
+{
+	technique
+	{
+		pass
+		{
+			ambient 1 1 1 1
+			diffuse 1 1 1 1
+			specular 0 0 0 0
+			emissive 0 0 0
+			
+			scene_blend alpha_blend
+			depth_write off
+	
+			texture_unit
+			{
+				texture ProgressBar.png
+			}
+		}
+	}
+}

@@ -6,8 +6,6 @@
 #include "OgreGraphicObjects/SoundIcon.h"
 #include "OgreGraphicObjects/MovableBox.h"
 
-
-
 using namespace Solipsis;
 class RTTListener : public ExampleFrameListener
 {
