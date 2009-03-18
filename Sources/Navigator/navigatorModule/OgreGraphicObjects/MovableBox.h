@@ -64,6 +64,12 @@ public:
     void attach(SceneManager* pMgr, SceneNode *pNode);
     void detach();
 
+    void showInnerfaces(bool show)
+    {
+        mInnerFaces =  show;
+        mNeedUpdateGeometry = true;
+    }
+
 protected:
 	// from MovableText, create the object
 	void    _setupGeometry();
@@ -106,6 +112,8 @@ private:
 	bool mNeedUpdateGeometry;
 	bool mNeedUpdateMaterial;
 	bool mApplyParentScale;
+
+    bool mInnerFaces;
 
 	Vector3 mSize;
 	Real mRotateSpeed;

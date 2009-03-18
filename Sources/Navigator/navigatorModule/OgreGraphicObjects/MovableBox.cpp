@@ -46,6 +46,7 @@ MovableBox::MovableBox(const Ogre::String & name, const Vector3 & size, bool app
 
 	mNeedUpdateMaterial = true;
 	mNeedUpdateGeometry = true;
+    mInnerFaces = false;
 
 	_setupGeometry();
 
@@ -78,7 +79,11 @@ void MovableBox::_setupGeometry()
 
 	assert(!mpMaterial.isNull());
 
-	unsigned int vertexCount = 2*6*3;
+    unsigned int vertexCount = 2*6*3;
+    if (mInnerFaces)
+    {
+        vertexCount = vertexCount*2;
+    }
 
 	if (mRenderOp.vertexData)
 	{
@@ -136,94 +141,108 @@ void MovableBox::_setupGeometry()
     float front = -mSize.z/2;
     float back = mSize.z/2;
 
-    float beginTexture = 0;
-    float endTexture = 1;
 
     // each vert is (x, y, z, u, v)
 
-    // BACK
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;   
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = endTexture;
-
     // FRONT
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 1;    *pVert++ = endTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;   
-    *pVert++ = 0;    *pVert++ = endTexture;
+    *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;   *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;   *pVert++ = 1;
+    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;    *pVert++ = 1;   *pVert++ = 0;
+    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;    *pVert++ = 1;   *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;   *pVert++ = 1;
+    *pVert++ = right;    *pVert++ = bottom; *pVert++ = back;    *pVert++ = 1;   *pVert++ = 1;
+
+    // BACK
+    *pVert++ = left;    *pVert++ = top;     *pVert++ = front;   *pVert++ = 1;   *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;   *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;   *pVert++ = 1;
+    *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;   *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;   *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;   *pVert++ = 1;
 
     //RIGHT
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
+    *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 1;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;    *pVert++ = 1;
+    *pVert++ = right;   *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;    *pVert++ = 1;
+    *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;    *pVert++ = 1;
 
     //LEFT
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = endTexture;
+    *pVert++ = left;    *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;    *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 1;    *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 1;    *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;    *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 1;    *pVert++ = 1;
 
     // TOP
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
+    *pVert++ = left;    *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 1;
+    *pVert++ = right;   *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 0;
 
     // Bottom
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 0;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = back;
-    *pVert++ = 1;    *pVert++ = beginTexture;
-    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
-    *pVert++ = right;    *pVert++ = bottom;    *pVert++ = front;
-    *pVert++ = 0;    *pVert++ = endTexture;
+    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 0;
+    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 1;
+    *pVert++ = right;   *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 1;
+    *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 0;
+    *pVert++ = right;   *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 1;
+
+
+    if (mInnerFaces)
+    {
+        *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;   *pVert++ = 0;
+        *pVert++ = right;    *pVert++ = top;    *pVert++ = back;    *pVert++ = 1;   *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;   *pVert++ = 1;
+        *pVert++ = right;    *pVert++ = top;    *pVert++ = back;    *pVert++ = 1;   *pVert++ = 0;
+        *pVert++ = right;    *pVert++ = bottom; *pVert++ = back;    *pVert++ = 1;   *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;   *pVert++ = 1;
+
+        // BACK
+        *pVert++ = left;    *pVert++ = top;     *pVert++ = front;   *pVert++ = 1;   *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;   *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;   *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;   *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;   *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;   *pVert++ = 1;
+
+        //RIGHT
+        *pVert++ = right;   *pVert++ = top;     *pVert++ = front;   *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;    *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = top;     *pVert++ = back;    *pVert++ = 0;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 1;    *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 0;    *pVert++ = 1;
+
+        //LEFT
+        *pVert++ = left;    *pVert++ = top;     *pVert++ = front;   *pVert++ = 0;    *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;    *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = top;     *pVert++ = back;    *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = back;    *pVert++ = 1;    *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = bottom;  *pVert++ = front;   *pVert++ = 0;    *pVert++ = 1;
+
+        // TOP
+        *pVert++ = left;    *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 0;
+        *pVert++ = left;    *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = top;    *pVert++ = back;     *pVert++ = 0;    *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = top;    *pVert++ = front;    *pVert++ = 1;    *pVert++ = 1;
+
+        // Bottom
+        *pVert++ = left;    *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 0;
+        *pVert++ = right;   *pVert++ = bottom;    *pVert++ = back;     *pVert++ = 1;    *pVert++ = 1;
+        *pVert++ = right;   *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 1;
+        *pVert++ = left;    *pVert++ = bottom;    *pVert++ = front;    *pVert++ = 0;    *pVert++ = 0;
+    }
+
 
 	// Unlock vertex buffer
 	ptbuf->unlock();
