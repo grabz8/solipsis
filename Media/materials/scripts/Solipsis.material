@@ -91,7 +91,6 @@ material Solipsis/SkyBox3
 	}
 }
 
-
 material Solipsis/Box
 {
 	technique
@@ -108,12 +107,11 @@ material Solipsis/Box
 	
 			texture_unit
 			{
-				texture ProgressBar.png
+				texture glass.png
 			}
 		}
 	}
 }
-
 
 material Solipsis/ProgressBar
 {
