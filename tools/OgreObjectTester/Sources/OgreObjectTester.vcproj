@@ -252,6 +252,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\MyApplication.h"
+			>
+		</File>
+		<File
+			RelativePath=".\MyFrameListener.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Prerequisites.cpp"
 			>
 			<FileConfiguration

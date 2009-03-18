@@ -1,5 +1,5 @@
 #include "Prerequisites.h"
-#include "ExampleApplication.h"
+#include "MyApplication.h"
 
 #include "OgreGraphicObjects/ProgressBar.h"
 #include "OgreGraphicObjects/MovableText.h"
@@ -7,11 +7,11 @@
 #include "OgreGraphicObjects/MovableBox.h"
 
 using namespace Solipsis;
-class RTTListener : public ExampleFrameListener
+class RTTListener : public MyFrameListener
 {
 public:
 	RTTListener(RenderWindow *win, Camera *cam, ProgressBarWithText * pBar, MovableBox * pBox) 
-		: ExampleFrameListener(win, cam)
+		: MyFrameListener(win, cam)
 	{
         mBar = pBar;
         mBox = pBox;
@@ -27,7 +27,7 @@ public:
         if (mBox)
             mBox->animate(evt.timeSinceLastFrame);
 
-		return ExampleFrameListener::frameStarted(evt);
+		return MyFrameListener::frameStarted(evt);
 	}
 
 protected:
@@ -37,7 +37,7 @@ protected:
     MovableBox * mBox;
 };
 
-class RTTApplication : public ExampleApplication, public RenderTargetListener
+class RTTApplication : public MyApplication, public RenderTargetListener
 {
 protected:
 	SceneNode		*mPlaneNode;
@@ -52,7 +52,7 @@ protected:
 
 		// Position the camera
 		mCamera->setNearClipDistance(0.1);
-		mCamera->setPosition(0, 0, -200);
+		mCamera->setPosition(0, 0, -2);
 		mCamera->lookAt(0, 0, 0);
 
 		SceneNode* myManualObjectNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("manual1_node"); 
@@ -81,8 +81,9 @@ protected:
 	//	SoundIcon * pIcon = new SoundIcon(mSceneMgr, myManualObjectNode, "narden");
 
 
-        pBox = new MovableBox("narden", Vector3(100,100,100), true);
-        pBox->setRotateSpeed(0.5);
+        pBox = new MovableBox("narden", Vector3(1,1,1), true);
+        pBox->setRotateSpeed(3);
+        pBox->showInnerfaces(true);
 
         myManualObjectNode->attachObject(pBox);	
 
@@ -93,6 +94,7 @@ protected:
 	{
 		mFrameListener = new RTTListener(mWindow, mCamera, pBar, pBox);
 		mRoot->addFrameListener(mFrameListener);
+        mFrameListener->setCameraMode(false);
 	}
 
 	void preRenderTargetUpdate(const RenderTargetEvent &evt)
