@@ -1046,9 +1046,18 @@ CommonTools: added path separator accessor
 
 Avatar appears now on last position if scene is the last visited one (new connection + re-connection)
 Added version control lua script (eg. RakNetVersion.h with string version)
+
 ---------------------------
 04/03/09
 
 Cache Manager :
 Correction of the crash when the file is no more on the disk
+
 ---------------------------
+19/03/09
+
+Added a sample TerrainModeler into the Sources/Modelers section.
+Not yet integrated in the Navigator GUI though.
+ 
+---------------------------
+ 
