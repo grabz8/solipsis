@@ -369,6 +369,7 @@ ProgressBarWithText::ProgressBarWithText(const Ogre::String & name, const Ogre::
     mName = name;
     mBarPos = 0;
     mpNode = NULL;
+    mbShowTime = true;
 
 }
 

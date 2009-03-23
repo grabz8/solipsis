@@ -174,6 +174,8 @@ private:
     SceneNode * mpNode;
     Ogre::String mName;
     Real mBarPos;
+
+    bool mbShowTime;
 };
 
 
