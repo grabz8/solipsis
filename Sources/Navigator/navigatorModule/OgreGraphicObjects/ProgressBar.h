@@ -56,6 +56,12 @@ public:
 		mNeedUpdateGeometry = true;
 	};
 
+
+    void setAdditionalHeight(float addedHeight)
+    {
+        mAdditionalHeight = addedHeight;
+    }
+
 	void setProgress(Real value);
 	Real getProgress() {return mProgress;}
 	void showOnTop(bool show);
@@ -99,9 +105,10 @@ private:
 	Ogre::LightList			mLList;
 	Ogre::Camera            *mpCam;
 
-	bool mNeedUpdateGeometry;
-	bool mNeedUpdateMaterial;
-	bool mApplyParentScale;
+	bool                    mNeedUpdateGeometry;
+	bool                    mNeedUpdateMaterial;
+	bool                    mApplyParentScale;
+    float                   mAdditionalHeight;
 
 	Real mwidth, mheight;
 	bool mOnTop;
@@ -112,8 +119,9 @@ private:
 class ProgressBarWithText
 {
 public:
-	ProgressBarWithText(const Ogre::String & name, const Ogre::String & caption);
+	ProgressBarWithText(const Ogre::String & name, const Ogre::String & caption, bool applyParentScale = true);
 	~ProgressBarWithText();
+
 
 	void setBarMaterial(const Ogre::String & materialName) {m_Bar.setMaterial(materialName);}
 	void setBarSize(Real width = 200, Real height = 20) {m_Bar.setSize(width, height);}
@@ -131,10 +139,20 @@ public:
 		m_Txt.setSpaceWidth(spacewidth);
 	}
 
+    void setBarPosition(Real pos = 0)
+    {
+        m_Bar.setAdditionalHeight(pos);
+    }
+
 	void setTxtPosition(Real pos = 0)
 	{
 		m_Txt.setAdditionalHeight(pos);
 	}
+
+    void setTxtScale(float scale)
+    {
+        m_Txt.setScale(scale);
+    }
 
 	void setProgress(Real value);
 

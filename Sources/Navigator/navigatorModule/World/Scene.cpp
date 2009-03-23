@@ -54,7 +54,8 @@ Scene::Scene(XmlEntity* xmlEntity, bool isLocal) :
     OgrePeer(xmlEntity, isLocal),
     mSceneNode(0),
     mStaticGeometry(0),
-    mOgreMaxScene(0)
+    mOgreMaxScene(0),
+    mpBar(0)
 {
 }
 
@@ -69,6 +70,7 @@ void Scene::update(Real timeSinceLastFrame)
 {
     if(mOgreMaxScene != 0)
         mOgreMaxScene->Update( timeSinceLastFrame );
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -197,6 +199,38 @@ sceneMgr->setShadowFarDistance(100.);
     }
     if (definedAttributes & XmlEntity::DAProgress)
     {
+        if (xmlEntity->getDownloadProgress() < 1)
+        {
+            Avatar* pUserAvatar = Navigator::getSingletonPtr()->getUserAvatar();
+            if (pUserAvatar)
+            {
+                if (!mpBar)
+                {
+                    mpBar = new ProgressBarWithText("MainSceneBar", "Scene Loading : ", false);
+                    mpBar->setBarSize(3,0.3);
+                    mpBar->setTxtPosition(1.4);
+                    mpBar->setBarPosition(1.5);
+                    
+                    mpBar->setFont("BerlinSans32", 1, ColourValue::White, 0.5);
+                    mpBar->setTxtScale(0.14f);
+                    mpBar->attach(pUserAvatar->getSceneNode()); 
+                } 
+                else
+                {
+                    mpBar->setProgress(xmlEntity->getDownloadProgress());
+                }
+            }
+        }
+        else
+        {
+            if (mpBar)
+            {
+                mpBar->detach();
+                delete mpBar;
+                mpBar = 0;
+            }
+        }
+   
         OGRE_LOG("Progress for Scene " + 
             xmlEntity->getUid() + " : " + 
             StringConverter::toString((Real) xmlEntity->getDownloadProgress()));

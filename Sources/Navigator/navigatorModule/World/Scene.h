@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // from ogre max
 #include "OgreMaxScene.hpp"
 
+#include "OgreGraphicObjects/ProgressBar.h"
+
 using namespace Ogre;
 
 namespace Solipsis {
@@ -47,6 +49,8 @@ protected:
     StaticGeometry* mStaticGeometry;
     /// OgreMax scene
     OgreMax::OgreMaxScene* mOgreMaxScene;
+    // progress Bar for loading
+    ProgressBarWithText * mpBar;
 
 public:
 #ifdef POOL

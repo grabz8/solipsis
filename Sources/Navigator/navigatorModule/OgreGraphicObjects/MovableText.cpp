@@ -347,7 +347,7 @@ void MovableText::_setupGeometry()
             // Upper left
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = uvRect.left;
             *pVert++ = uvRect.top;
 
@@ -356,7 +356,7 @@ void MovableText::_setupGeometry()
             // Bottom left
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = uvRect.left;
             *pVert++ = uvRect.bottom;
 
@@ -366,7 +366,7 @@ void MovableText::_setupGeometry()
             // Top right
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = uvRect.right;
             *pVert++ = uvRect.top;
             //-------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ void MovableText::_setupGeometry()
             // Top right (again)
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = uvRect.right;
             *pVert++ = uvRect.top;
 
@@ -387,7 +387,7 @@ void MovableText::_setupGeometry()
             // Bottom left (again)
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ =0;
             *pVert++ = uvRect.left;
             *pVert++ = uvRect.bottom;
 
@@ -396,7 +396,7 @@ void MovableText::_setupGeometry()
             // Bottom right
             *pVert++ = left;
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = uvRect.right;
             *pVert++ = uvRect.bottom;
             //-------------------------------------------------------------------------------------
@@ -407,7 +407,7 @@ void MovableText::_setupGeometry()
             captionWidth = (left - captionLeft > captionWidth) ? left - captionLeft : captionWidth;
         }
         if (mHorizontalAlignment == H_CENTER)
-        {
+        { 
             pVert = pVertBuf;
             float leftShift = captionWidth*0.5f;
             for (i = mCaption.begin(); i != iend; ++i)
@@ -464,7 +464,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u1;
             *pVert++ = v1;
 
@@ -494,7 +494,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u1;
             *pVert++ = v2;
 
@@ -516,7 +516,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u2;
             *pVert++ = v1;
             //-------------------------------------------------------------------------------------
@@ -539,7 +539,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u2;
             *pVert++ = v1;
 
@@ -557,7 +557,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u1;
             *pVert++ = v2;
 
@@ -574,7 +574,7 @@ void MovableText::_setupGeometry()
             else
                 *pVert++ = left - (len / 2);
             *pVert++ = top;
-            *pVert++ = -1.0;
+            *pVert++ = 0;
             *pVert++ = u2;
             *pVert++ = v2;
             //-------------------------------------------------------------------------------------

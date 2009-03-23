@@ -123,6 +123,7 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
     if (voiceEngine != 0)
         voiceEngine->setAvatarHandler(mXmlEntity->getUid(), this);
+
     // Update initial properties of user avatar in the voice engine
     if (isLocal)
         updateVoiceEngine(true, true);

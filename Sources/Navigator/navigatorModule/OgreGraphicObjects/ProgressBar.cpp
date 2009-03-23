@@ -44,8 +44,9 @@ ProgressBar::ProgressBar(const Ogre::String & name, Real width, Real height, boo
 	mheight = height;
 	mOnTop = false;
 	mProgress = 0;
+    mAdditionalHeight = 0;
 
-	mMaterialName = "Examples/ProgressBar";
+	mMaterialName = "Solipsis/ProgressBar";
 
 	mNeedUpdateMaterial = true;
 	mNeedUpdateGeometry = true;
@@ -71,33 +72,11 @@ ProgressBar::~ProgressBar()
 		delete mRenderOp.vertexData;
 }
 
-/*
-
-ManualObject* myManualObject =  mSceneMgr->createManualObject("manual1"); 
-SceneNode* myManualObjectNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("manual1_node"); 
-
-MaterialPtr myManualObjectMaterial = MaterialManager::getSingleton().create("manual1Material","debugger"); 
-myManualObjectMaterial->setReceiveShadows(false); 
-myManualObjectMaterial->getTechnique(0)->setLightingEnabled(true); 
-myManualObjectMaterial->getTechnique(0)->getPass(0)->setDiffuse(0,0,1,0); 
-myManualObjectMaterial->getTechnique(0)->getPass(0)->setAmbient(0,0,1); 
-myManualObjectMaterial->getTechnique(0)->getPass(0)->setSelfIllumination(0,0,1); 
-
-myManualObject->begin("manual1Material", Ogre::RenderOperation::OT_LINE_LIST); 
-myManualObject->position(3, 2, 1); 
-myManualObject->position(4, 1, 0); 
-// etc 
-myManualObject->end(); 
-
-myManualObjectNode->attachObject(myManualObject);
-
-*/
 void ProgressBar::_setupMaterial()
 {
 	if (!mpMaterial.isNull())
 	{
 		mpMaterial->unload();
-//		MaterialManager::getSingleton().unload(mpMaterial);
 	}
 	
 	mpMaterial = MaterialManager::getSingleton().load(mMaterialName, "Examples");
@@ -163,8 +142,8 @@ void ProgressBar::_setupGeometry()
 	float left = -mwidth/2;
 	float right = mwidth/2;
 
-	float top = mheight/2;
-	float bottom = -mheight/2;
+	float top = mheight/2 + mAdditionalHeight;
+	float bottom = -mheight/2 + mAdditionalHeight;
 	float beginTexture = 0.55;
 	float endTexture = 1;
 
@@ -175,21 +154,21 @@ void ProgressBar::_setupGeometry()
 	// Upper left
 	*pVert++ = left;
 	*pVert++ = top;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = beginTexture;
 
 	// Bottom left
 	*pVert++ = left;
 	*pVert++ = bottom;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = endTexture;
 
 	// Top right
 	*pVert++ = right;
 	*pVert++ = top;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = beginTexture;
 	//-------------------------------------------------------------------------------------
@@ -200,21 +179,21 @@ void ProgressBar::_setupGeometry()
 	// Top right (again)
 	*pVert++ = right;
 	*pVert++ = top;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = beginTexture;
 
 	// Bottom left (again)
 	*pVert++ = left;
 	*pVert++ = bottom;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = endTexture;
 
 	// Bottom right
 	*pVert++ = right;
 	*pVert++ = bottom;
-	*pVert++ = -1.0;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = endTexture;
 	//-------------------------------------------------------------------------------------
@@ -232,21 +211,21 @@ void ProgressBar::_setupGeometry()
 	// Upper left
 	*pVert++ = left;
 	*pVert++ = top;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = beginTexture;
 
 	// Bottom left
 	*pVert++ = left;
 	*pVert++ = bottom;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = endTexture;
 
 	// Top right
 	*pVert++ = right;
 	*pVert++ = top;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = beginTexture;
 	//-------------------------------------------------------------------------------------
@@ -257,21 +236,21 @@ void ProgressBar::_setupGeometry()
 	// Top right (again)
 	*pVert++ = right;
 	*pVert++ = top;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = beginTexture;
 
 	// Bottom left (again)
 	*pVert++ = left;
 	*pVert++ = bottom;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 0;
 	*pVert++ = endTexture;
 
 	// Bottom right
 	*pVert++ = right;
 	*pVert++ = bottom;
-	*pVert++ = -1;
+	*pVert++ = 0;
 	*pVert++ = 1;
 	*pVert++ = endTexture;
 	//-------------------------------------------------------------------------------------
@@ -298,7 +277,6 @@ void ProgressBar::showOnTop(bool show)
 		mpMaterial->setDepthWriteEnabled(mOnTop);
 	}
 }
-
 
 const Ogre::Quaternion & ProgressBar::getWorldOrientation(void) const
 {
@@ -381,13 +359,19 @@ void ProgressBar::visitRenderables(Renderable::Visitor* visitor, bool debugRende
 
 ////////////////////// the Progress Bar with Text //////////////////////////////////////
 
-ProgressBarWithText::ProgressBarWithText(const Ogre::String & name, const Ogre::String & caption)
-: m_Bar(name + "_Bar"), m_Txt(name + "_BarText", caption, true, "BlueHighway", 10)
+ProgressBarWithText::ProgressBarWithText(const Ogre::String & name, const Ogre::String & caption, bool applyParentScale )
+: m_Bar(name + "_Bar", 200,20, applyParentScale), m_Txt(name + "_BarText", caption, applyParentScale, "BlueHighway", 10)
 {
 	mCaption = caption;
 	m_Txt.setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+    m_Bar.showOnTop(true);
+    m_Txt.showOnTop(true);
 }
 
+ProgressBarWithText::~ProgressBarWithText()
+{
+
+}
 
 void ProgressBarWithText::setProgress(Real value)
 {
@@ -406,23 +390,5 @@ void ProgressBarWithText::detach()
 	m_Bar.detatchFromParent();
 	m_Txt.detatchFromParent();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif
