@@ -127,9 +127,10 @@ public:
 	void setBarSize(Real width = 200, Real height = 20) 
     {
         m_Bar.setSize(width, height);
-        m_Txt.setXpos(-width/2);
-
     }
+
+ 
+
 	void setCaption(const Ogre::String & caption) 
 	{
 		m_Txt.setCaption(caption); 
@@ -156,15 +157,31 @@ public:
         }
     }
 
+ 
+
     void showRemainingTime(bool bShow)
     {
         mbShowTime = bShow;
     }
 
-	void setTxtPosition(Real pos = 0)
+	void setTxtVerticalPos(Real pos = 0)
 	{
 		m_Txt.setAdditionalHeight(pos);
 	}
+
+    void setTxtHozizontalPosition(bool bCenter, Real xPos) 
+    {
+        if (bCenter)
+        {
+            m_Txt.setXpos(0);
+            m_Txt.setTextAlignment(MovableText::H_CENTER, MovableText::V_BELOW);
+        }
+        else
+        {
+            m_Txt.setXpos(xPos);
+            m_Txt.setTextAlignment(MovableText::H_LEFT, MovableText::V_BELOW);
+        }
+    }
 
     void setTxtScale(float scale)
     {

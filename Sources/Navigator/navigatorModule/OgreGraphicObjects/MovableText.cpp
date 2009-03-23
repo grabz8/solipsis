@@ -266,7 +266,7 @@ void MovableText::_setupGeometry()
     float *pVert = static_cast<float*>(ptbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
     float *pVertBuf = pVert;
-    float left = mXPos;;
+    float left = mXPos * mScale;
     float top = 1.0;
     float captionLeft = left;
     float captionWidth = 0;
