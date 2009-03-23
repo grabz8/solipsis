@@ -9,7 +9,9 @@
             img.src = "uiauthentws.png";
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uiauthentws'}).send();
+                new NaviData('pageLoaded').add({naviName:'uiauthentws'}).send();	
+				// autoclose in 3 seconds				
+				setTimeout("buttonPressed('ok')", 3000); 
             }
             function buttonPressed(buttonName)
             {
