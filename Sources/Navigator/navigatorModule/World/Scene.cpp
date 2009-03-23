@@ -207,15 +207,15 @@ sceneMgr->setShadowFarDistance(100.);
                 if (!mpBar)
                 {
                     mpBar = new ProgressBarWithText("MainSceneBar", "Scene Loading : ", false);
-                    mpBar->setBarSize(3,0.3);
-                    mpBar->setTxtPosition(1.4);
-                    mpBar->setBarPosition(1.5);
-                    
-                    mpBar->setFont("BerlinSans32", 1, ColourValue::White, 0.5);
+                    mpBar->setBarSize(2.5,0.3);
+                    mpBar->setTxtPosition(-0.2);
+                    mpBar->setPosition(1.7);
+                     
+                    mpBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
                     mpBar->setTxtScale(0.14f);
-                    mpBar->attach(pUserAvatar->getSceneNode()); 
-                } 
-                else
+                    mpBar->attach(pUserAvatar->getSceneNode());  
+                }    
+                else 
                 {
                     mpBar->setProgress(xmlEntity->getDownloadProgress());
                 }
@@ -223,7 +223,7 @@ sceneMgr->setShadowFarDistance(100.);
         }
         else
         {
-            if (mpBar)
+            if (mpBar) 
             {
                 mpBar->detach();
                 delete mpBar;

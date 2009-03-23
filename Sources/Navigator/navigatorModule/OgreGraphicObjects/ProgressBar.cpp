@@ -366,6 +366,10 @@ ProgressBarWithText::ProgressBarWithText(const Ogre::String & name, const Ogre::
 	m_Txt.setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
     m_Bar.showOnTop(true);
     m_Txt.showOnTop(true);
+    mName = name;
+    mBarPos = 0;
+    mpNode = NULL;
+
 }
 
 ProgressBarWithText::~ProgressBarWithText()
@@ -381,8 +385,12 @@ void ProgressBarWithText::setProgress(Real value)
 
 void ProgressBarWithText::attach(SceneNode *pNode)
 {
-	pNode->attachObject(&m_Bar);	
-	pNode->attachObject(&m_Txt);
+    if (!mpNode)
+    {
+        mpNode = pNode->createChildSceneNode(mName + "_Node", Vector3(0,mBarPos,0));
+    }
+    mpNode->attachObject(&m_Bar);	
+    mpNode->attachObject(&m_Txt);
 }
 
 void ProgressBarWithText::detach()

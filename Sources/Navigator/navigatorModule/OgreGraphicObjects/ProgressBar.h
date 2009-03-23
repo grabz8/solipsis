@@ -139,9 +139,16 @@ public:
 		m_Txt.setSpaceWidth(spacewidth);
 	}
 
-    void setBarPosition(Real pos = 0)
+    void setPosition(Real pos)
     {
-        m_Bar.setAdditionalHeight(pos);
+        if (mpNode)
+        {
+            mpNode->setPosition(0,pos,0);
+        }
+        else
+        {
+            mBarPos = pos;
+        }
     }
 
 	void setTxtPosition(Real pos = 0)
@@ -164,6 +171,9 @@ private:
 
 	ProgressBar m_Bar;
 	MovableText m_Txt;
+    SceneNode * mpNode;
+    Ogre::String mName;
+    Real mBarPos;
 };
 
 
