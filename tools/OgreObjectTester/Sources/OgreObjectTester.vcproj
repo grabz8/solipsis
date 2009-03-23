@@ -283,6 +283,10 @@
 			RelativePath=".\Prerequisites.h"
 			>
 		</File>
+		<File
+			RelativePath="..\Media\materials\scripts\Solipsis.material"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

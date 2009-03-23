@@ -46,13 +46,20 @@ protected:
 	void createScene()
 	{
 		// Set ambient light
-	//	mSceneMgr->setAmbientLight(ColourValue(0.2f, 0.2f, 0.2f));
+		mSceneMgr->setAmbientLight(ColourValue(0.2f, 0.2f, 0.2f));
 
 		mSceneMgr->setSkyBox(true,"Examples/StormySkyBox");
+		Entity *ent1 = mSceneMgr->createEntity( "Robot", "robot.mesh" );
+		ent1->setCastShadows(true);
+		mSceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_ADDITIVE);
+
+		SceneNode *node1 = mSceneMgr->getRootSceneNode()->createChildSceneNode( "RobotNode" );
+		node1->attachObject( ent1 );
+        node1->setScale(0.1,0.1,0.1);
 
 		// Position the camera
 		mCamera->setNearClipDistance(0.1);
-		mCamera->setPosition(0, 0, -2);
+		mCamera->setPosition(0, 0, -20);
 		mCamera->lookAt(0, 0, 0);
 
 		SceneNode* myManualObjectNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("manual1_node"); 
@@ -66,12 +73,12 @@ protected:
 
 	//	myManualObjectNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("manual2_node"); 
  		pBar = new ProgressBarWithText("myfuckinbar", "DTC : ");
-        pBar->setBarSize(100,10);
-// 		pBar->attach(myManualObjectNode);
-// 		pBar->setFont("BerlinSans32", 5, ColourValue::White);
-// 		pBar->setTxtPosition(0);
+        pBar->setBarSize(10,1);
+		pBar->attach(myManualObjectNode);
+ 		pBar->setFont("BerlinSans32", 1, ColourValue::White);
+ 		pBar->setTxtPosition(0);
 
-    //    myManualObjectNode->setScale(100,100,100);
+        //   myManualObjectNode->setScale(100,100,100);
 
     //    SoundIcon * pIcon =  new SoundIcon(mSceneMgr, myManualObjectNode, "icone", 0);
     //    pIcon->setStatus(SoundIcon::Showed);
@@ -85,7 +92,7 @@ protected:
         pBox->setRotateSpeed(3);
         pBox->showInnerfaces(true);
 
-        myManualObjectNode->attachObject(pBox);	
+     //   myManualObjectNode->attachObject(pBox);	
 
 	}
 
