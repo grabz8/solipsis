@@ -124,7 +124,12 @@ public:
 
 
 	void setBarMaterial(const Ogre::String & materialName) {m_Bar.setMaterial(materialName);}
-	void setBarSize(Real width = 200, Real height = 20) {m_Bar.setSize(width, height);}
+	void setBarSize(Real width = 200, Real height = 20) 
+    {
+        m_Bar.setSize(width, height);
+        m_Txt.setXpos(-width/2);
+
+    }
 	void setCaption(const Ogre::String & caption) 
 	{
 		m_Txt.setCaption(caption); 
@@ -141,14 +146,19 @@ public:
 
     void setPosition(Real pos)
     {
-        if (mpNode)
+        if (mpNodeAll)
         {
-            mpNode->setPosition(0,pos,0);
+            mpNodeAll->setPosition(0,pos,0);
         }
         else
         {
             mBarPos = pos;
         }
+    }
+
+    void showRemainingTime(bool bShow)
+    {
+        mbShowTime = bShow;
     }
 
 	void setTxtPosition(Real pos = 0)
@@ -165,17 +175,23 @@ public:
 
 	void attach(SceneNode *pNode);
 	void detach();
+    void resetTime()
+    {
+        beginTime = -1;
+    }
 	
 private:
 	Ogre::String mCaption; 
 
 	ProgressBar m_Bar;
 	MovableText m_Txt;
-    SceneNode * mpNode;
+    SceneNode * mpNodeAll;
     Ogre::String mName;
     Real mBarPos;
 
     bool mbShowTime;
+    Real beginTime;
+    Real beginValue;
 };
 
 

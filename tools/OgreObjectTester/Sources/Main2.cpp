@@ -22,7 +22,8 @@ public:
 	{
 		time += evt.timeSinceLastFrame;
 		if (mBar)
-            mBar->setProgress(Math::Sin(time)/2 +0.5);
+            mBar->setProgress(std::min(1.0f,time/10));
+//             mBar->setProgress(Math::Sin(time/2 - 90)/2 +0.5);
 
         if (mBox)
             mBox->animate(evt.timeSinceLastFrame);
@@ -77,6 +78,7 @@ protected:
 		pBar->attach(myManualObjectNode);
  		pBar->setFont("BerlinSans32", 1, ColourValue::White);
  		pBar->setTxtPosition(0);
+        pBar->showRemainingTime(true);
 
         //   myManualObjectNode->setScale(100,100,100);
 

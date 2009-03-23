@@ -64,6 +64,7 @@ protected:
 
     float                   mRadius;
     float                   mAdditionalHeight;
+    float                   mXPos;
 
     Ogre::Camera            *mpCam;
     Ogre::Font              *mpFont;
@@ -88,6 +89,7 @@ public:
     void    setSpaceWidth(unsigned int width);
     void    setTextAlignment(const HorizontalAlignment & horizontalAlignment, const VerticalAlignment & verticalAlignment);
     void    setAdditionalHeight( float height );
+    void    setXpos( float xpos);
     void    showOnTop(bool show = true);
     void    setScale(float scale);
 

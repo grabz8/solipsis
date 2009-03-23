@@ -363,35 +363,62 @@ ProgressBarWithText::ProgressBarWithText(const Ogre::String & name, const Ogre::
 : m_Bar(name + "_Bar", 200,20, applyParentScale), m_Txt(name + "_BarText", caption, applyParentScale, "BlueHighway", 10)
 {
 	mCaption = caption;
-	m_Txt.setTextAlignment(MovableText::H_CENTER, MovableText::V_ABOVE);
+	m_Txt.setTextAlignment(MovableText::H_LEFT, MovableText::V_ABOVE);
     m_Bar.showOnTop(true);
     m_Txt.showOnTop(true);
+    m_Txt.setXpos(-100);
     mName = name;
     mBarPos = 0;
-    mpNode = NULL;
-    mbShowTime = true;
+    mpNodeAll = NULL;
+    mbShowTime = false;
 
+    beginTime  = -1;
 }
 
 ProgressBarWithText::~ProgressBarWithText()
 {
-
+    
 }
 
 void ProgressBarWithText::setProgress(Real value)
 {
-	m_Bar.setProgress(value);
-	m_Txt.setCaption(mCaption + StringConverter::toString((int)(value*100)) +" %");
+    m_Bar.setProgress(value);
+    if (beginTime == -1 || !mbShowTime)
+    {
+        beginValue = value;
+        beginTime = (Real) ::GetTickCount()/1000;
+        m_Txt.setCaption(mCaption + StringConverter::toString((int)(value*100)) +" %");
+    }
+    else
+    {
+        Real deltaTime = (Real) ::GetTickCount()/1000 - beginTime;
+        Real deltaValue = value - beginValue;
+        if (deltaValue > 0)
+        {
+            Real remaining = (1-value)*deltaTime/deltaValue;
+            int min = Math::Floor(remaining/60);
+            int sec = Math::Floor(remaining-min*60);
+
+            m_Txt.setCaption(mCaption + 
+                StringConverter::toString((int)(value*100)) +" % (" + 
+                StringConverter::toString(min) + ":" + 
+                StringConverter::toString(sec) + ")");
+        }
+        else
+        {
+            m_Txt.setCaption(mCaption + StringConverter::toString((int)(value*100)) +" %");
+        }
+    }
 }
 
 void ProgressBarWithText::attach(SceneNode *pNode)
 {
-    if (!mpNode)
+    if (!mpNodeAll)
     {
-        mpNode = pNode->createChildSceneNode(mName + "_Node", Vector3(0,mBarPos,0));
+        mpNodeAll = pNode->createChildSceneNode(mName + "_Node", Vector3(0,mBarPos,0));
     }
-    mpNode->attachObject(&m_Bar);	
-    mpNode->attachObject(&m_Txt);
+    mpNodeAll->attachObject(&m_Bar);	
+    mpNodeAll->attachObject(&m_Txt);
 }
 
 void ProgressBarWithText::detach()

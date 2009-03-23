@@ -62,6 +62,7 @@ MovableText::MovableText(const Ogre::String & name, const Ogre::UTFString & capt
 , mHorizontalAlignment(H_LEFT)
 , mVerticalAlignment(V_BELOW)
 , mAdditionalHeight(0.0)
+, mXPos(0.0)
 , mViewportAspectCoef (0.75) //set the attribute value before the first _setupGeometry call
 {
     if (name == "")
@@ -175,6 +176,16 @@ void MovableText::setAdditionalHeight( float height )
     }
 }
 
+
+void MovableText::setXpos( float xPos )
+{
+    if( mXPos != xPos )
+    {
+        mXPos = xPos;
+        mNeedUpdate = true;
+    }
+}
+
 void MovableText::showOnTop(bool show)
 {
     if( mOnTop != show && !mpMaterial.isNull() )
@@ -255,7 +266,7 @@ void MovableText::_setupGeometry()
     float *pVert = static_cast<float*>(ptbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
     float *pVertBuf = pVert;
-    float left = -1.0;
+    float left = mXPos;;
     float top = 1.0;
     float captionLeft = left;
     float captionWidth = 0;
@@ -647,7 +658,7 @@ void MovableText::getWorldTransforms(Ogre::Matrix4 * xform) const
         mpCam->getDerivedOrientation().ToRotationMatrix(rot3x3);
 
         // parent node position
-        Ogre::Vector3 ppos = mParentNode->_getDerivedPosition() + Ogre::Vector3::UNIT_Y * mAdditionalHeight;
+        Ogre::Vector3 ppos = mParentNode->_getDerivedPosition() + Ogre::Vector3::UNIT_Y * mAdditionalHeight ;
 
         // apply scale
         if (mApplyParentScale)
