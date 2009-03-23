@@ -80,7 +80,7 @@ bool Scene::update(XmlEntity* xmlEntity)
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
-    if (definedAttributes & XmlEntity::DAContent)
+    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1)
     {
         OGRE_LOG("Scene::update() Destroy/Load new scene uid:" + mXmlEntity->getUid());
 
@@ -195,6 +195,13 @@ sceneMgr->setShadowFarDistance(100.);
         // Optimize by converting it into static geometry
         convertToStaticGeometry(sceneNode);
     }
+    if (definedAttributes & XmlEntity::DAProgress)
+    {
+        OGRE_LOG("Progress for Scene " + 
+            xmlEntity->getUid() + " : " + 
+            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+    }
+
 
     return true;
 }

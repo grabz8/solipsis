@@ -80,7 +80,7 @@ unsigned int XmlHelpers::convertHexStringToUInt(const char* str)
 float XmlHelpers::convertStringToFloat(const char* str)
 {
     float value;
-    sscanf(str, "%d", &value);
+    sscanf(str, "%f", &value);
     return value;
 }
 

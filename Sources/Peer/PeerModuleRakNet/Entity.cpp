@@ -83,6 +83,29 @@ void Entity::Deserialize(BitStream *bitStream, SerializationType serializationTy
     }
 }
 
+
+/** See CacheManagerCallback. */
+float Entity::onTransferProgress(const std::string& filename, float fProgress)
+{
+    float fGlobalProgress  = RakNetEntity::onTransferProgress(filename, fProgress);
+    mXmlEntity->setDownloadProgress(fGlobalProgress);
+    mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
+
+    RakNetEntityMap& entities = getEntities();
+    RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+    if (it == entities.end())
+    {
+        addEntity(this);
+    }
+    else
+    {
+        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
+    }
+
+    return fGlobalProgress;
+}
+
+
 //-------------------------------------------------------------------------------------
 void Entity::onTransferComplete(const std::string& filename)
 {
@@ -90,7 +113,8 @@ void Entity::onTransferComplete(const std::string& filename)
 
     if (mMissingFiles.empty())
     {
-        RakNetEntityMap& entities = getEntities();
+        mXmlEntity->setDownloadProgress(1);
+       RakNetEntityMap& entities = getEntities();
         RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
         if (it == entities.end())
         {
@@ -324,11 +348,15 @@ bool Entity::update(Real timeSinceLastFrame)
         Vector3 displacement = mXmlEntity->getDisplacement()*timeSinceLastFrame;
         if (mGravity)
             displacement.y += -9.80665f*timeSinceLastFrame;
+
         mPhysicsCharacter->move(displacement);
+
         Vector3 newPosition;
         mPhysicsCharacter->getPosition(newPosition);
+
         if ((newPosition - mXmlEntity->getPosition()).squaredLength() > 0.0001f)
             mDirty = true;
+
         mXmlEntity->setPosition(newPosition);
     }
 

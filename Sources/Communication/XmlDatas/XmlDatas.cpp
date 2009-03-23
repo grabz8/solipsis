@@ -372,14 +372,19 @@ std::string XmlEntity::toXmlString() const
         XmlHelpers::ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
         s << "</aabb>";
     }
-    if (mDefinedAttributes & DAProgress) s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
+    if (mDefinedAttributes & DAProgress) 
+        s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
      
 #ifdef POOL
-    if (!mShape.isNull()) s << mShape->toXmlString();
-    if (!mContent.isNull()) s << mContent->toXmlString();
+    if (!mShape.isNull()) 
+        s << mShape->toXmlString();
+    if (!mContent.isNull()) 
+        s << mContent->toXmlString();
 #else
-    if (mShape != 0) s << mShape->toXmlString();
-    if (mContent != 0) s << mContent->toXmlString();
+    if (mShape != 0) 
+        s << mShape->toXmlString();
+    if (mContent != 0) 
+        s << mContent->toXmlString();
 #endif
     s << "</entity>";
     return s.str();
@@ -422,17 +427,21 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
     }
     if (mDefinedAttributes & DAProgress)
     {
-         TiXmlElement* elt = new TiXmlElement("DownloadProgress");
+        TiXmlElement* elt = new TiXmlElement("DownloadProgress");
         elt->SetAttribute("value", mDownloadProgress);
         entityElt->LinkEndChild(elt);
-    }
+    } 
 
 #ifdef POOL
-    if (!mShape.isNull()) mShape->toXmlElt(*entityElt);
-    if (!mContent.isNull()) mContent->toXmlElt(*entityElt);
+    if (!mShape.isNull()) 
+        mShape->toXmlElt(*entityElt);
+    if (!mContent.isNull())
+        mContent->toXmlElt(*entityElt);
 #else
-    if (mShape != 0) mShape->toXmlElt(*entityElt);
-    if (mContent != 0) mContent->toXmlElt(*entityElt);
+    if (mShape != 0) 
+        mShape->toXmlElt(*entityElt);
+    if (mContent != 0) 
+        mContent->toXmlElt(*entityElt);
 #endif
     xmlElt.LinkEndChild(entityElt);
     return true;
@@ -537,6 +546,8 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
     {
         mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
+   //     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "XmlEntity::fromXmlElt() progress %f %%", mDownloadProgress*100);
+       
         mDefinedAttributes |= DAProgress;
     }
 

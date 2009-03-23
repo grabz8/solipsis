@@ -164,6 +164,12 @@ bool Object::update(XmlEntity* xmlEntity)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "Object::update");
         mObject3D = *(newObjects.begin());
     }
+    if (definedAttributes & XmlEntity::DAProgress)
+    {
+        OGRE_LOG("Progress for Object " + 
+            xmlEntity->getUid() + " : " + 
+            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+    }
 
     return true;
 }

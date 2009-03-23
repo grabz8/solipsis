@@ -77,6 +77,8 @@ public:
 
     /** See CacheManagerCallback. */
     virtual void onTransferComplete(const std::string& filename);
+    /** See CacheManagerCallback. */
+    virtual float onTransferProgress(const std::string& filename, float fProgress);
 
     /** Apply or not the gravity. */
     void applyGravity(bool enabled);

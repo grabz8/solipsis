@@ -574,6 +574,7 @@ void AvatarNode::setConnectionLost(bool lost)
 #else
     XmlEvt* xmlEvt = new XmlEvt(lost ? ETConnectionLost : ETConnectionRestored);
 #endif
+
     pthread_mutex_lock(&mEvtsMutex);
     mEvtsToHandleList.push_back(xmlEvt);
     pthread_mutex_unlock(&mEvtsMutex);

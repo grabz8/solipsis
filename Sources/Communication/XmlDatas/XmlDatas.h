@@ -364,7 +364,10 @@ public:
       mShape(0),
       mContent(0)
 #endif
-    {}
+    {
+    }
+
+
     XmlEntity(const EntityUID& uid) :
       mDefinedAttributes(DAUid),
       mUid(uid),
@@ -452,14 +455,28 @@ public:
     void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
     const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
 
-    void setDownloadProgress(const float progress) { mDownloadProgress = progress; mDefinedAttributes |= DAProgress; }
+    void setDownloadProgress(const float progress) 
+    { 
+        mDownloadProgress = progress; 
+        mDefinedAttributes |= DAProgress; 
+    }
     const float getDownloadProgress() { return mDownloadProgress; }
 
 #ifdef POOL
-    void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }
+    void setContent(RefCntPoolPtr<XmlContent>& content) 
+    { 
+        mContent = content; 
+        // remove Content if progress is not 100%
+        mDefinedAttributes |= DAContent; 
+    }
     RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
 #else
-    void setContent(XmlContent* content) { mContent = content; }
+    void setContent(XmlContent* content) 
+    { 
+        mContent = content; 
+        // remove Content if progress is not 100%
+        mDefinedAttributes |= DAContent; 
+    }
     XmlContent* getContent() { return mContent; }
 #endif
 };

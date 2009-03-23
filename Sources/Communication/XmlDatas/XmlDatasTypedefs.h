@@ -76,10 +76,18 @@ typedef unsigned int EntityVersion;
 typedef unsigned int Lod;
 typedef unsigned int FileVersion;
 
-typedef struct {
+class LodContentFileStruct
+{
+public:
+    LodContentFileStruct()
+    {
+        progress = 0;
+    }
+
     std::string mFilename;
     FileVersion mVersion;
-} LodContentFileStruct;
+    float progress;
+} ;
 
 typedef unsigned char AnimationState;
 static const AnimationState ASNone = (AnimationState)0;

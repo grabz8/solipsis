@@ -9,7 +9,7 @@
         <content>
             <sceneContent>
                 <entryGate gravity="true">
-                    <position x="1050" y="5" z="580" />
+                    <position x="1050.0" y="5.0" z="580.0" />
                 </entryGate>
             </sceneContent>
             <lod level="0">
@@ -20,5 +20,4 @@
             </lod>
         </content>
     </entity>
-    <presentEntities />
 </node>

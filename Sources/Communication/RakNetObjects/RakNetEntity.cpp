@@ -37,7 +37,8 @@ RakNetEntity::RakNetEntityMap RakNetEntity::ms_Entities;
 //-------------------------------------------------------------------------------------
 RakNetEntity::RakNetEntity() :
     mReplicaFlags(RFNone),
-    mLastDeserializedDefinedAttributes(XmlEntity::DANone)
+    mLastDeserializedDefinedAttributes(XmlEntity::DANone),
+    mTotalNbfiles(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::RakNetEntity()");
 }
@@ -472,8 +473,10 @@ void RakNetEntity::addFilesInCacheManager()
 #else
     XmlContent* xmlContent = mXmlEntity->getContent();
 #endif
+
     if (!(mXmlEntity->getDefinedAttributes() & XmlEntity::DAContent))
         return;
+
     XmlContent::ContentLodMap& contentLodMap = xmlContent->getContentLodMap();
     for(XmlContent::ContentLodMap::const_iterator itl = contentLodMap.begin(); itl != contentLodMap.end(); ++itl)
     {
@@ -501,37 +504,70 @@ void RakNetEntity::requestFilesFromCacheManager(const SystemAddress& sender)
 #else
     XmlContent* xmlContent = mXmlEntity->getContent();
 #endif
+
     if (!(mXmlEntity->getDefinedAttributes() & XmlEntity::DAContent))
         return;
+    
     XmlContent::ContentLodMap& contentLodMap = xmlContent->getContentLodMap();
     for(XmlContent::ContentLodMap::const_iterator itl = contentLodMap.begin(); itl != contentLodMap.end(); ++itl)
     {
+
 #ifdef POOL
         RefCntPoolPtr<XmlLodContent> xmlLodContent = itl->second;
 #else
         XmlLodContent* xmlLodContent = itl->second;
 #endif
+
         XmlLodContent::LodContentFileList& lodContentFileList = xmlLodContent->getLodContentFileList();
         for (XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
+        {
+            mTotalNbfiles++;
             mMissingFiles.push_back(*itf);
+        }
+
         for (XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
         {
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::requestFilesFromCacheManager() requesting file %s from %s", itf->mFilename.c_str(), sender.ToString());
             RakNetConnection::getSingletonPtr()->getCacheManager()->requestFile(sender, itf->mFilename, itf->mVersion, this);
         }
     }
+
 }
 
 //-------------------------------------------------------------------------------------
 void RakNetEntity::onTransferComplete(const std::string& filename)
 {
     for (XmlLodContent::LodContentFileList::iterator it = mMissingFiles.begin(); it != mMissingFiles.end(); ++it)
+    {
         if (it->mFilename == filename)
         {
             mMissingFiles.erase(it);
             return;
         }
+    }
 }
+
+/** See CacheManagerCallback. */
+float RakNetEntity::onTransferProgress(const std::string& filename, float fProgress)
+{
+    float addedprogres = mTotalNbfiles - mMissingFiles.size();
+
+    for (XmlLodContent::LodContentFileList::iterator it = mMissingFiles.begin(); it != mMissingFiles.end(); ++it)
+    {
+        if (it->mFilename == filename)
+        {
+            it->progress = fProgress;
+            addedprogres += fProgress;
+        }
+        else
+        {
+            addedprogres += it->progress;
+        }
+    }
+
+    return addedprogres/mTotalNbfiles;
+}
+
 
 //-------------------------------------------------------------------------------------
 

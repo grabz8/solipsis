@@ -31,7 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace RakNet;
 using namespace CommonTools;
 
+
 namespace Solipsis {
+
+const CacheManager::EntryState CacheManager::ESTransferToRequest = -1;
+const CacheManager::EntryState CacheManager::ESTransferComplete = 1;
 
 const std::string CacheManager::ms_CacheFilename = "cache.xml";
 
@@ -151,6 +155,7 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
         PendingDownloadList& pendingDownloadList = entryIt->second.mPendingDownloadList;
         for (PendingDownloadList::iterator pendingDownloadIt = pendingDownloadList.begin(); pendingDownloadIt != pendingDownloadList.end(); ++pendingDownloadIt)
             pendingDownloadIt->mCallback->onTransferComplete(filename);
+
         pendingDownloadList.clear();
 
         // Send pending uploads
@@ -174,18 +179,26 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
 }
 
 //-------------------------------------------------------------------------------------
-void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength)
+void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength, char *firstDataChunk)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() filename:%s", onFileStruct->fileName);
-
     std::string filename = onFileStruct->fileName;
     CacheMap::iterator entryIt = mCache.find(filename);
     if (entryIt == mCache.end())
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFileProgress() filename:%s not found in requested files !", filename.c_str());
     else
     {
-        entryIt->second.mState = (EntryState)(std::min(99, (int)(partCount*100/partTotal)));
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() filename:%s state:%d", filename.c_str(), entryIt->second.mState);
+        float progress = (float)partCount/partTotal;
+        EntryState state = entryIt->second.mState;
+        if (state == 0 || progress > state +0.01)
+        {
+            state = std::min(0.99f, progress);
+            entryIt->second.mState = state;
+      //      LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() filename:%s %f %%", onFileStruct->fileName, entryIt->second.mState*100);
+            PendingDownloadList& pendingDownloadList = entryIt->second.mPendingDownloadList;
+
+            for (PendingDownloadList::iterator pendingDownloadIt = pendingDownloadList.begin(); pendingDownloadIt != pendingDownloadList.end(); ++pendingDownloadIt)
+                pendingDownloadIt->mCallback->onTransferProgress(filename, entryIt->second.mState);
+        }
     }
 }
  

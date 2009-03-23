@@ -182,7 +182,7 @@ public:
 	/// brief set/get the Top Shear Y parameter value
 	virtual void setTopShearY(Real value);
 	Real getTopShearY() {return mTopShearY;};
-	/// brief set/get the Skew parameter value
+	/// brief set/get the Skew parameter value 
 	virtual void setSkew(Real value);
 	Real getSkew() {return mSkew;};
 	/// brief set/get the Revolutions parameter value

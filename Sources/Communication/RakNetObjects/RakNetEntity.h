@@ -67,6 +67,7 @@ protected:
 
     /// List of missing files
     XmlLodContent::LodContentFileList mMissingFiles;
+    int mTotalNbfiles;
 
 public:
     /** Constructor. */
@@ -144,6 +145,10 @@ public:
 
     /** See CacheManagerCallback. */
     virtual void onTransferComplete(const std::string& filename);
+
+    /** See CacheManagerCallback. */
+    virtual float onTransferProgress(const std::string& filename, float progress);
+
 };
 
 } // namespace Solipsis

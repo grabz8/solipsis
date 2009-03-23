@@ -467,6 +467,12 @@ bool Avatar::update(XmlEntity* xmlEntity)
         setState(xmlEntity->getAnimation());
         mXmlEntity->setAnimation(xmlEntity->getAnimation());
     }
+    if (definedAttributes & XmlEntity::DAProgress)
+    {
+        OGRE_LOG("Progress for avatar " + 
+            xmlEntity->getUid() + " : " + 
+            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+    }
     if (definedAttributes & XmlEntity::DAContent)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUid().c_str());

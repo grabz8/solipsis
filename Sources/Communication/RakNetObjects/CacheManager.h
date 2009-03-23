@@ -43,6 +43,14 @@ public:
     @param filename The filename of the received file
     */
     virtual void onTransferComplete(const std::string& filename) = 0;
+
+    /** Called when a transfer is in progress
+    @param filename The filename of the received file
+    @param fProgress The download progress of this file
+    @return should return the global progress of the entity.
+    **/
+    virtual float onTransferProgress(const std::string& filename, float fProgress) = 0;
+ 
 };
 
 /** This class manages 1 files cache.
@@ -51,9 +59,9 @@ class CacheManager : public FileListTransferCBInterface, public IncrementalReadI
 {
 public:
     /// Entry state
-    typedef char EntryState;
-    static const EntryState ESTransferToRequest = (EntryState)-1;
-    static const EntryState ESTransferComplete = (EntryState)100;
+    typedef float EntryState;
+    static const EntryState ESTransferToRequest; //(-1)
+    static const EntryState ESTransferComplete; //(1)
 
     /// Pending download
     typedef struct {
@@ -114,7 +122,7 @@ public:
     /** See FileListTransferCBInterface. */
     virtual bool OnFile(OnFileStruct *onFileStruct);
     /** See FileListTransferCBInterface. */
-    virtual void OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength);
+    virtual void OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength, char *firstDataChunk);
 
     /** Add 1 file in cache.
     @param filename The filename of the cached file
