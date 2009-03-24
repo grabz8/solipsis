@@ -122,3 +122,5 @@ to the mesh' normals direction ! Flip them resolved it.
 => fixed by adding Static functions in misc/unicode.c, misc/win32_specific.c called only once in libvlc.c + misc/messages.c msg_XXX() logs removed 
 
 - VLCPlugin : add libamem_plugin to play audio with FMod in 3D
+
+- added Progress bar for scene loading

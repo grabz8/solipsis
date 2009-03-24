@@ -81,3 +81,15 @@ nsToolkit::Startup(HMODULE hModule)
 - Linux: compilation of LLMozLib
 - Linux: compilation of Navi/NaviDemo
 => compilation OK but black screen ! (maybe opengl)
+
+- add progress bar for scene download (Tof)
+- add progress bar for object download (Tof)
+- add progress bar for avatar download (Tof)
+- add progress bar for object upload (Tof)
+
+-Replace NAVI with awesomium
+
+- add scriptin feature for objects (Olivier)
+
+
+
