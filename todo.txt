@@ -17,7 +17,7 @@ so no error is displayed -> Nav-Peer cnx should be asynchronous with 1 CNX_ACCEP
 
 - add 1 version test when connecting to RakNetServer to detect compatibility problems requiring updates
 
-- VLCPlugin : add support of 24bpp render
+- VLCPlugin : add support of 24bpp render, add libamem_plugin to play audio with FMod in 3D
 
 - To fix : pref.js causes crash at first loading after a full clean
 

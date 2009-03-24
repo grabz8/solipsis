@@ -9,8 +9,8 @@ copy IPhysics*.h ..\..\..\Dependencies\peerModule\include\. /y
 copy PhysicsEngineManager.h ..\..\..\Dependencies\peerModule\include\. /y
 
 if not exist ..\..\..\Dependencies\peerModule\lib\Debug mkdir ..\..\..\Dependencies\peerModule\lib\Debug
-copy Debug\Peer.lib ..\..\..\Dependencies\peerModule\lib\Debug\. /y
-copy Debug\Peer.dll ..\..\..\Dependencies\peerModule\lib\Debug\. /y
+xcopy Debug\Peer.lib ..\..\..\Dependencies\peerModule\lib\Debug\. /y
+xcopy Debug\Peer.dll ..\..\..\Dependencies\peerModule\lib\Debug\. /y
 
 if not exist "%dst%" mkdir "%dst%"
 copy Debug\Peer.dll "%dst%" /y
