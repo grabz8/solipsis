@@ -124,3 +124,6 @@ to the mesh' normals direction ! Flip them resolved it.
 - VLCPlugin : add libamem_plugin to play audio with FMod in 3D
 
 - added Progress bar for scene loading
+
+[WorldsServer]
+added time out for autoclosing the connected page

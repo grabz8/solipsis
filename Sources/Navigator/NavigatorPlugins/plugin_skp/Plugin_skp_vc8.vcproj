@@ -121,7 +121,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME))\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;;..\..\..\..\DDependencies\CommonTools\include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME))\Samples\Common\Include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(ProjectDir)lib\msvs2005&quot;;..\..\..\..\Dependencies\CommonTools\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_SKP_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

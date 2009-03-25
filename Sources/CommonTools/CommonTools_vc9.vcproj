@@ -284,6 +284,10 @@
 				RelativePath=".\CTSystem.h"
 				>
 			</File>
+			<File
+				RelativePath=".\direntWindows\dirent.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

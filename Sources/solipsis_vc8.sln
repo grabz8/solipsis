@@ -114,7 +114,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceEngineClient", "Voice\
 		{5F784299-72E2-4482-941D-12485DE80C30} = {5F784299-72E2-4482-941D-12485DE80C30}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applications", "applications", "{55C06D2A-37A5-4962-BB33-194388B80259}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server racknet", "Server racknet", "{55C06D2A-37A5-4962-BB33-194388B80259}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libraries", "libraries", "{5F88F72F-2AA9-4EDE-B82E-E03C7B41AD9A}"
 EndProject
@@ -195,6 +195,17 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_StereoManager", "Navigator\NavigatorPlugins\StereoPlugin\Stereo_plugin_vc8.vcproj", "{01B403C3-D24C-4CCE-84BD-037A8E51C801}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B71ED042-7AAC-48D8-9BE9-5946D194A25F} = {B71ED042-7AAC-48D8-9BE9-5946D194A25F}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text Files", "Text Files", "{2294C301-9478-49E2-912C-BF74BC985B27}"
+	ProjectSection(SolutionItems) = preProject
+		..\changelog.txt = ..\changelog.txt
+		..\cleanup.bat = ..\cleanup.bat
+		..\done.txt = ..\done.txt
+		..\licence.txt = ..\licence.txt
+		..\readme.htm = ..\readme.htm
+		..\readmeUser.htm = ..\readmeUser.htm
+		..\todo.txt = ..\todo.txt
 	EndProjectSection
 EndProject
 Global
