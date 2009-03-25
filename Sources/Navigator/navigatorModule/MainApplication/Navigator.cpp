@@ -2383,25 +2383,50 @@ void Navigator::setCameraMode(int mode)
         }
     case CM1stPerson:
         {
-            mMainCameraSupportMgr->activeCameraSupport(CM1stPerson);
             FPCameraSupport* FPSupportCam = (FPCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM1stPerson);
             FPSupportCam->resetCameraSupport();
-            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
-            FPSupportCam->yaw(Radian(-Math::PI/2));
+            CameraSupport* currentCamera=mMainCameraSupportMgr->getActiveCameraSupport();
+
+            if (mMainCameraSupportMgr->getActiveCameraSupportIndex()!=CM1stPersonWithMouse)
+            {
+                // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+                FPSupportCam->yaw(Radian(-Math::PI/2));
+            }
+            else
+            {
+                // Set the camera orientation as the last First Person Camera with mouse
+                FPSupportCam->yaw(currentCamera->getYaw());
+                FPSupportCam->pitch(currentCamera->getPitch());
+            }
+                
             // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
             FPSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
+
+            mMainCameraSupportMgr->activeCameraSupport(CM1stPerson);
             mUserAvatar->setMvtType(Avatar::MT1stPerson);
             break;
         }
     case CM1stPersonWithMouse:
         {
-            mMainCameraSupportMgr->activeCameraSupport(CM1stPersonWithMouse);
             FPCameraSupport* FPWMSupportCam = (FPCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM1stPersonWithMouse);
             FPWMSupportCam->resetCameraSupport();
-            // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
-            FPWMSupportCam->yaw(Radian(-Math::PI/2));
-            // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
+            CameraSupport* currentCamera=mMainCameraSupportMgr->getActiveCameraSupport();
+            
+            if (mMainCameraSupportMgr->getActiveCameraSupportIndex()!=CM1stPerson)
+            {
+                // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
+                FPWMSupportCam->yaw(Radian(-Math::PI/2)); 
+            }
+            else
+            {   
+                // Set the camera orientation as the last First Person Camera
+                FPWMSupportCam->yaw(currentCamera->getYaw());
+                FPWMSupportCam->pitch(currentCamera->getPitch());
+            }
+            // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)  
             FPWMSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
+
+            mMainCameraSupportMgr->activeCameraSupport(CM1stPersonWithMouse);
             mUserAvatar->setMvtType(Avatar::MT1stPerson);
             break;
         }

@@ -320,7 +320,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     }
 
     // Navi focused -> key processed by the navi
-    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused() && mNavigator->getState()!=Navigator::SModeling)
+    if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
         return true;
 
     if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
