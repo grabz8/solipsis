@@ -411,9 +411,14 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
         if (!mAvatarNode->saveNode(mMediaCachePath))
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::logout() Unable to save avatar node with nodeId:%s !", mAvatarNode->getNodeId().c_str());
 
+    pthread_mutex_lock(&mRakNetMutex);
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.getServerSystemAddress().ToString());
+    mRakNetConnection.disconnectClient();
+    pthread_mutex_unlock(&mRakNetMutex);
+
     pthread_mutex_lock(&mPhysicsMutex);
+
     Entity::cleanUpEntities();
-    pthread_mutex_unlock(&mPhysicsMutex);
 
     if (mAvatarNode != 0)
     {
@@ -421,7 +426,6 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
         mAvatarNode = 0;
     }
 
-    pthread_mutex_lock(&mPhysicsMutex);
     if (mPhysicsScene != 0)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::logout() destroying physics scene");
@@ -429,11 +433,6 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
         mPhysicsScene = 0;
     }
     pthread_mutex_unlock(&mPhysicsMutex);
-
-    pthread_mutex_lock(&mRakNetMutex);
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.getServerSystemAddress().ToString());
-    mRakNetConnection.disconnectClient();
-    pthread_mutex_unlock(&mRakNetMutex);
 
     return IP2NClient::RCOk;
 }
@@ -582,6 +581,7 @@ void Peer::_finalize()
 //-----------------------------------------------------------------------
 bool Peer::_fireTick(Real timeSinceLastTick)
 {
+    pthread_mutex_lock(&mPhysicsMutex);
     // Remove all marked listeners
     std::set<TimeListener*>::iterator i;
     for (i = mRemovedTimeListeners.begin(); i != mRemovedTimeListeners.end(); i++)
@@ -590,7 +590,6 @@ bool Peer::_fireTick(Real timeSinceLastTick)
     }
     mRemovedTimeListeners.clear();
 
-    pthread_mutex_lock(&mPhysicsMutex);
     // Step physics part 1
     if (mPhysicsScene != 0)
         mPhysicsScene->preStep(timeSinceLastTick);
@@ -700,10 +699,9 @@ void Peer::reconnectAvatarNode()
 #endif
     avatarEntity->mDirty = false;
     pthread_mutex_lock(&mPhysicsMutex);
-    Entity::cleanUpEntities();
-    pthread_mutex_unlock(&mPhysicsMutex);
 
-    pthread_mutex_lock(&mPhysicsMutex);
+    Entity::cleanUpEntities();
+
     if (mPhysicsScene != 0)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::reconnectAvatarNode() destroying physics scene");
