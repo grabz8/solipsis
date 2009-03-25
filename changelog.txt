@@ -1060,4 +1060,8 @@ Added a sample TerrainModeler into the Sources/Modelers section.
 Not yet integrated in the Navigator GUI though.
  
 ---------------------------
- 
+25/03/09
+
+Peer logout crash fix (due to bad synchronization on TimeListeners)
+
+---------------------------
