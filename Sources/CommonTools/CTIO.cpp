@@ -31,15 +31,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define GETCWD _getcwd
 #define CHDIR _chdir
 #define MKDIR _mkdir
+// we 've got our own implementation
+#include "direntWindows/dirent.h"
 #else
 #include <unistd.h>
 #include <sys/stat.h>
 #define GETCWD getcwd
 #define CHDIR chdir
 #define MKDIR _mkdir
+#include <dirent.h>
 #endif
 
 #include <fstream>
+
+#include <direct.h>
+#include <string>
 
 namespace CommonTools {
 
@@ -166,5 +172,68 @@ std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
 }
 
 //-------------------------------------------------------------------------------------
+
+
+
+bool IO::IsDirectory(const char path[]) 
+{
+    int i = strlen(path) - 1;
+    if (path[strlen(path)] == '.') 
+    {
+        return true;
+    } // exception for directories
+    // such as \. and \..
+    for(i; i >= 0; i--) 
+    {
+        if (path[i] == '.') 
+            return false; // if we first encounter a . then it's a file
+        else if (path[i] == '\\' || path[i] == '/') 
+            return true; // if we first encounter a \ it's a dir
+    }
+    return false;
+}
+
+/**
+* A recursive function to remove a directory and it's contents
+* Author: Danny Battison
+* Contact: gabehabe@gmail.com
+*/
+bool IO::RemoveDir(const std::string & path1)
+{
+    std::string path = path1;
+    if (path[path.length()-1] != '\\') path += "\\";
+    // first off, we need to create a pointer to a directory
+    DIR *pdir = NULL; // remember, it's good practice to initialise a pointer to NULL!
+    pdir = opendir (path.c_str());
+    struct dirent *pent = NULL;
+    if (pdir == NULL) { // if pdir wasn't initialised correctly
+        return false; // return false to say "we couldn't do it"
+    } // end if
+    char file[256];
+
+    int counter = 1; // use this to skip the first TWO which cause an infinite loop (and eventually, stack overflow)
+    while (pent = readdir (pdir)) { // while there is still something in the directory to list
+        if (counter > 2) {
+            for (int i = 0; i < 256; i++) file[i] = '\0';
+            strcat(file, path.c_str());
+            if (pent == NULL) { // if pent has not been initialised correctly
+                return false; // we couldn't do it
+            } // otherwise, it was initialised correctly, so let's delete the file~
+            strcat(file, pent->d_name); // concatenate the strings to get the complete path
+            if (IsDirectory(file) == true) {
+                RemoveDirectory(file);
+            } else { // it's a file, we can use remove
+                remove(file);
+            }
+        } counter++;
+    }
+
+    // finally, let's clean up
+    closedir (pdir); // close the directory
+    if (!_rmdir(path.c_str())) return false; // delete the directory
+    return true;
+}
+
+
 
 } // namespace CommonTools

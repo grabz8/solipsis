@@ -96,7 +96,13 @@ bool OgrePeerManager::load(XmlEntity* xmlEntity)
     // in order the loadTexture can retrieve this object is local (VLC textures)
     // TODO: OgrePeer should register itself in manager on constr then load is performed according its internal state
     if (xmlEntity->getType() != ETAvatar)
-        newOgrePeer->update(xmlEntity);
+    {
+        if (!newOgrePeer->updateEntity(xmlEntity))
+        {
+            // delete the object on error
+            remove(xmlEntity->getUid());
+        }
+    }
 
     return true;
 }
@@ -168,9 +174,9 @@ void OgrePeerManager::cleanUp()
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool OgrePeerManager::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+bool OgrePeerManager::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-bool OgrePeerManager::update(XmlEntity* xmlEntity)
+bool OgrePeerManager::updateEntity(XmlEntity* xmlEntity)
 #endif
 {
     OgrePeersMap::iterator it = mOgrePeersMap.find(xmlEntity->getUid());
@@ -178,7 +184,7 @@ bool OgrePeerManager::update(XmlEntity* xmlEntity)
         return false;
 
     OgrePeer* ogrePeer = it->second;
-    bool result = ogrePeer->update(xmlEntity);
+    bool result = ogrePeer->updateEntity(xmlEntity);
 
 #ifdef POOL
 #else

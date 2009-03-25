@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+using namespace CommonTools;
+
 Modeler* Modeler::ms_singletonPtr = 0;
 
 Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* modelerCallbacks)
@@ -53,9 +55,19 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
 	mExecPath = _getcwd(NULL, 0);
 	SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
 
+    // remove directory for temp files
+    std::string workDir = _getcwd(NULL, 0);
+    workDir += "\\solTmpTexture";
+    IO::RemoveDir(workDir);
+
 	ms_singletonPtr = this;
 
     ModifiedMaterialManager::setMMMTextureManager(this);
+}
+
+void cleanDirectory()
+{
+
 }
 
 Modeler::~Modeler(void)
@@ -849,6 +861,8 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				else
                 {
                     Object3D *newObject3D = createObjectWithXML(doc, texturepath, pos, orientation) ;
+                    if (!newObject3D)
+                        return false;
                     loadedObjects.push_back(newObject3D);
                 }
 			}
@@ -925,7 +939,8 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
     if (filenameToLoad.empty())
     {
 		char *fileToLoad = FileBrowser::displayWindowForLoading( 
-			" Ogre Mesh File,(*.mesh)\0*.mesh\0 3D Studio File,(*.3ds)\0*.3ds\0 Google SketchUp File,(*.skp)\0*.skp\0", string("") ); 
+//             "All supported files\0*.mesh;*.3ds;*.skp\0 3D Studio File,(*.3ds)\0*.3ds\0 Google SketchUp File,(*.skp)\0*.skp\0", string("") ); 
+        "All supported files\0*.mesh;*.3ds;*.skp\0Ogre Mesh File,(*.mesh)\0*.mesh\0 3D Studio File,(*.3ds)\0*.3ds\0 Google SketchUp File,(*.skp)\0*.skp\0", string("") ); 
         if (fileToLoad != 0)
             filenameToLoad = fileToLoad;
     }
@@ -1156,6 +1171,8 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 	}
 
     Object3D * newObject = mSelection->geLastAddedObject();
+    if (!newObject)
+        return NULL;
     newObject->loadFromFile(doc, path.c_str());
 
 	// Go back to the main directory

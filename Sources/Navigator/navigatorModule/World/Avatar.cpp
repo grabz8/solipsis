@@ -62,27 +62,28 @@ Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInsta
 #else
 Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
 #endif
-    OgrePeer(xmlEntity, isLocal),
+    OgrePeer(xmlEntity, isLocal)
 #ifdef POOL
-    mUpdatedXmlEntity((XmlEntity*)0),
+,    mUpdatedXmlEntity((XmlEntity*)0)
 #endif
-    mState(ASAvatarNone),
-    mMvtType(MT3rdPerson),
-    mCamerasSceneNode(0),
-    mAnimationState(0),
-    mNameLabel(0),
-	mChatLabel(0),
-	m_pSoundIcon(0),
-    mSelectionObject(0),
-    mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mRightKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5),
-    mVoiceMinDist(1.0f),
-    mVoiceMaxDist(100.0f),
-    mGhost(false)
+,   mState(ASAvatarNone)
+,   mMvtType(MT3rdPerson)
+,   mCamerasSceneNode(0)
+,   mAnimationState(0)
+,   mNameLabel(0)
+,   mChatLabel(0)
+, 	m_pSoundIcon(0)
+,   mpBox(0)
+,   mSelectionObject(0)
+,   mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mLeftKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mRightKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mPgupKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mPgdownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
+,   mVoiceMinDist(1.0f)
+,   mVoiceMaxDist(100.0f)
+,   mGhost(false)
 {
     for (int a = 0;a < ASAvatarAnimCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
@@ -205,7 +206,6 @@ void Avatar::onSceneNodeChanged()
     mNameLabel->setAdditionalHeight(avatarSize.y);
     getSceneNode()->attachObject(mNameLabel);
 
-
     // Chat Label
     if (mChatLabel == 0)
     {
@@ -227,6 +227,15 @@ void Avatar::onSceneNodeChanged()
 		mChatLabel->setVisible(false);
 		mNameLabel->setVisible(false);
 	}
+
+//     if (mpBox == NULL)
+//     {
+//         const Ogre::AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
+//         mpBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", bbBox.getSize(), false);
+//         getSceneNode()->attachObject(mpBox);
+//         mpBox->setPosition(avatarHalfSize.y);
+//     }
+
 
     // Sound Icon
     if (m_pSoundIcon == 0) 
@@ -291,21 +300,27 @@ void Avatar::onAvatarSave()
     XmlLodContent::LodContentFileList& lodContent0FileList = contentLodMap[0]->getLodContentFileList();
     XmlLodContent::LodContentFileList::iterator lodContent0File;
     for (lodContent0File = lodContent0FileList.begin(); lodContent0File != lodContent0FileList.end(); ++lodContent0File)
+    {
         if (lodContent0File->mFilename.find(".saf") == lodContent0File->mFilename.length() - 4)
         {
             lodContent0File->mFilename = safFilename;
             break;
         }
+    }
     if (lodContent0File == lodContent0FileList.end())
+    {
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No .saf avatar file found !", "Avatar::onAvatarSave");
+    }
 
     for (lodContent0File = lodContent0FileList.begin(); lodContent0File != lodContent0FileList.end(); ++lodContent0File)
+    {
         if (lodContent0File->mFilename.find(".sif") == lodContent0File->mFilename.length() - 4)
         {
             lodContent0File->mFilename = sifFilename;
             lodContent0File->mVersion++;
             break;
         }
+    }
     if (lodContent0File == lodContent0FileList.end())
     {
         LodContentFileStruct lodContent0FileSif;
@@ -425,9 +440,9 @@ void Avatar::update(Real timeSinceLastFrame)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool Avatar::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+bool Avatar::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-bool Avatar::update(XmlEntity* xmlEntity)
+bool Avatar::updateEntity(XmlEntity* xmlEntity)
 #endif
 {
     static int c;
@@ -438,7 +453,7 @@ bool Avatar::update(XmlEntity* xmlEntity)
     if (n - l > 10000)
     {
         Real fr = (Real)c/10.0f;
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() fr=%.2f", fr);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::updateEntity() fr=%.2f", fr);
         l = n; c = 0;
     }
 
@@ -448,6 +463,15 @@ bool Avatar::update(XmlEntity* xmlEntity)
         mXmlEntity->setFlags(xmlEntity->getFlags());
         mGravity = mXmlEntity->getFlags() & EFGravity;
     }
+//     if (definedAttributes & XmlEntity::DAAABoundingBox)
+//     {
+//         if (mpBox == NULL)
+//         {
+//             const Ogre::AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
+//             mpBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", bbBox.getSize(), false);
+//             getSceneNode()->attachObject(mpBox);
+//         }
+//     }
     if (definedAttributes & XmlEntity::DAPosition)
     {
         mLastRealPosition = xmlEntity->getPosition();
@@ -468,15 +492,9 @@ bool Avatar::update(XmlEntity* xmlEntity)
         setState(xmlEntity->getAnimation());
         mXmlEntity->setAnimation(xmlEntity->getAnimation());
     }
-    if (definedAttributes & XmlEntity::DAProgress)
+    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() > 1)
     {
-        OGRE_LOG("Progress for avatar " + 
-            xmlEntity->getUid() + " : " + 
-            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
-    }
-    if (definedAttributes & XmlEntity::DAContent)
-    {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::update() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUid().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::updateEntity() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUid().c_str());
         detachFromSceneNode();
         CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
         String defaultCharacterName = "";
@@ -486,8 +504,14 @@ bool Avatar::update(XmlEntity* xmlEntity)
                 defaultCharacterName = it->mFilename.substr(0, it->mFilename.length() - 4);
         CharacterInstance* characterInstance = CharacterManager::getSingletonPtr()->loadCharacterInstance(xmlEntity->getUid(), defaultCharacterName);
         if (characterInstance == 0)
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::updateEntity");
         setCharacterInstance(characterInstance);
+    }
+    if (definedAttributes & XmlEntity::DAProgress)
+    {
+        OGRE_LOG("Progress for avatar " + 
+            xmlEntity->getUid() + " : " + 
+            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
     }
 
 #ifdef LOGSNDRCV

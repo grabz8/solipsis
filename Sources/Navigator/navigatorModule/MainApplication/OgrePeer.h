@@ -76,9 +76,9 @@ public:
     virtual void update(Real timeSinceLastFrame) = 0;
     /** Update entity. */
 #ifdef POOL
-    virtual bool update(RefCntPoolPtr<XmlEntity>& xmlEntity) = 0;
+    virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity) = 0;
 #else
-    virtual bool update(XmlEntity* xmlEntity) = 0;
+    virtual bool updateEntity(XmlEntity* xmlEntity) = 0;
 #endif
     /** Action on entity. */
 #ifdef POOL

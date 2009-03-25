@@ -101,9 +101,9 @@ public:
 
 	// Update
 #ifdef POOL
-    bool update(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
 #else
-    bool update(XmlEntity* xmlEntity);
+    bool updateEntity(XmlEntity* xmlEntity);
 #endif
 
 	// Action

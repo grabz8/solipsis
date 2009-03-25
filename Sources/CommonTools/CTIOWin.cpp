@@ -73,4 +73,19 @@ bool IO::getFilenames(const std::string& pathname, FilenameVector& filenames)
     return true;
 }
 
+
+//------------------------------------------------------------------------------------------------
+bool IO::FolderExist(std::string strPath)
+{
+    WIN32_FIND_DATA   wfd;
+    bool rValue = false;
+    HANDLE hFind = FindFirstFile(strPath.c_str(), &wfd);
+    if ((hFind != INVALID_HANDLE_VALUE) && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+    {
+        rValue = true;   
+    }
+    FindClose(hFind);
+    return rValue;
+}
+
 } // namespace CommonTools

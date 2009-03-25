@@ -51,8 +51,9 @@ AvatarNode::~AvatarNode()
 
     pthread_mutex_lock(&mMutex);
 
-    if (!mFrozen)
-        Peer::getSingleton().removeTimeListener(this);
+//    if (!mFrozen)
+    // CF there was a crash when emptying the peer time listener list
+    Peer::getSingleton().removeTimeListener(this);
 
     pthread_mutex_unlock(&mMutex);
 }
@@ -548,10 +549,12 @@ bool AvatarNode::freeze(bool frozen)
     if (frozen != mFrozen)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::freeze() frozen:%s", LOGHANDLER_LOGBOOL(frozen));
+
         if (frozen)
             Peer::getSingleton().removeTimeListener(this);
         else
             Peer::getSingleton().addTimeListener(this);
+
         mFrozen = frozen;
     }
     pthread_mutex_unlock(&mMutex);

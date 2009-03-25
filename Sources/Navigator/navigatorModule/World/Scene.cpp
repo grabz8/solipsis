@@ -75,22 +75,22 @@ void Scene::update(Real timeSinceLastFrame)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool Scene::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-bool Scene::update(XmlEntity* xmlEntity)
+bool Scene::updateEntity(XmlEntity* xmlEntity)
 #endif
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
     if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1)
     {
-        OGRE_LOG("Scene::update() Destroy/Load new scene uid:" + mXmlEntity->getUid());
+        OGRE_LOG("Scene::updateEntity() Destroy/Load new scene uid:" + mXmlEntity->getUid());
 
         destroy();
 
         SceneManager* sceneMgr = Navigator::getSingletonPtr()->getOgrePeerManager()->getSceneManager();
         if (sceneMgr == 0)
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::updateEntity");
 
         // Get the scene content for LOD 0
         XmlContent::ContentLodMap& contentLodMap = xmlEntity->getContent()->getContentLodMap();
@@ -102,7 +102,7 @@ bool Scene::update(XmlEntity* xmlEntity)
             if (lodContent0File->mFilename.find(".ssf") == lodContent0File->mFilename.length() - 4)
                 break;
         if (lodContent0File == contentLodMap[0]->getLodContentFileList().end())
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "Scene::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "No .ssf scene file found !", "Scene::updateEntity");
 
         // Create the resource group
         mResourceGroup = xmlEntity->getUid() + "Resources";
@@ -123,10 +123,10 @@ bool Scene::update(XmlEntity* xmlEntity)
             OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
             //if (!osmScene.initialise(xmlSceneLodContent0->getMainFilename().c_str(), &osmSceneCallbacks))
             if (!osmScene.initialise(sceneFilename.c_str(), &osmSceneCallbacks))
-                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
             osmScene.declareResources();
             if (!osmScene.createScene(sceneNode))
-                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+                throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
         }
         else if( sceneFilename.find(".scene") == sceneFilename.size() - 6 )
         {
@@ -146,17 +146,17 @@ bool Scene::update(XmlEntity* xmlEntity)
 // NO STATIC_GEOM
         }
         else
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create any file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create any file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
 
         /*
         // Load from the .osm
         OSMScene osmScene(sceneMgr, Navigator::getSingletonPtr()->getRenderWindowPtr());
         OgrePeerManagerOSMSceneCallbacks osmSceneCallbacks;
         if (!osmScene.initialise(xmlSceneLodContent0->getMainFilename().c_str(), &osmSceneCallbacks))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
         osmScene.declareResources();
         if (!osmScene.createScene(sceneNode))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::update");
+            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
         */
 
 #ifdef SHADOWS
@@ -257,7 +257,7 @@ void Scene::destroy()
 {
     SceneManager* sceneMgr = Navigator::getSingletonPtr()->getOgrePeerManager()->getSceneManager();
     if (sceneMgr == 0)
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::update");
+        throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "Scene::updateEntity");
 
     bool resetAmbientViewportsSkiesAndLights = false;
 

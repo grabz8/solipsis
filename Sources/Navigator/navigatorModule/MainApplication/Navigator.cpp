@@ -1670,7 +1670,7 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 {
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
-    if (!mOgrePeerManager->update(xmlEntity))
+    if (!mOgrePeerManager->updateEntity(xmlEntity))
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer " + xmlEntity->getUid() + " !", "Navigator::onPeerUpdated");
 }
 

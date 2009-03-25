@@ -60,9 +60,9 @@ public:
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
 #ifdef POOL
-    virtual bool update(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
 #else
-    virtual bool update(XmlEntity* xmlEntity);
+    virtual bool updateEntity(XmlEntity* xmlEntity);
 #endif
     /** See OgrePeer. */
 #ifdef POOL

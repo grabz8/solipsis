@@ -60,15 +60,18 @@ public:
     }
 
     void animate(Real timeSinceLastFrame);
-    
-    void attach(SceneManager* pMgr, SceneNode *pNode);
-    void detach();
-
+   
     void showInnerfaces(bool show)
     {
         mInnerFaces =  show;
         mNeedUpdateGeometry = true;
     }
+
+    void setPosition(Real YPosition)
+    {
+        mYPosition = YPosition;
+        mNeedUpdateGeometry = true;
+   }
 
 protected:
 	// from MovableText, create the object
@@ -120,6 +123,7 @@ private:
 	Ogre::String mMaterialName;
 
     Real mCurTime;
+    Real mYPosition;
 };
 
 } // namespace Solipsis

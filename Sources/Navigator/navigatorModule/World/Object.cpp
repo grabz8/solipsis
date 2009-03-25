@@ -126,16 +126,16 @@ bool Object::action(XmlAction* xmlAction)
 
 //-------------------------------------------------------------------------------------
 #ifdef POOL
-bool Object::update(RefCntPoolPtr<XmlEntity>& xmlEntity)
+bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #else
-bool Object::update(XmlEntity* xmlEntity)
+bool Object::updateEntity(XmlEntity* xmlEntity)
 #endif
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
     if (definedAttributes & XmlEntity::DAContent)
     {
-        OGRE_LOG("Avatar::update() Destroy/Load new object uid:" + mXmlEntity->getUid());
+        OGRE_LOG("Avatar::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
 
         Modeler* modeler = Modeler::getSingletonPtr();
         if (mObject3D != 0)
@@ -161,7 +161,11 @@ bool Object::update(XmlEntity* xmlEntity)
 
         Object3DPtrList newObjects;
         if (!modeler->XMLLoad(pathname, newObjects))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "Object::update");
+        {
+            OGRE_LOG("Error : Unable to load .sof object file !");
+            return false;
+//             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "Object::update");
+        }
         mObject3D = *(newObjects.begin());
     }
     if (definedAttributes & XmlEntity::DAProgress)

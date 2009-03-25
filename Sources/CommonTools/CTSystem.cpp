@@ -25,7 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <time.h>
 
-namespace CommonTools {
+
+
+
+namespace CommonTools 
+{
 
 //-------------------------------------------------------------------------------------
 std::string System::getDateTimeYYYYMMDDHHMMSS()
@@ -39,6 +43,7 @@ std::string System::getDateTimeYYYYMMDDHHMMSS()
     return timeBuf;
 }
 
-//-------------------------------------------------------------------------------------
+
+
 
 } // namespace CommonTools

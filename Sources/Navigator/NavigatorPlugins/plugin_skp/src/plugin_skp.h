@@ -33,8 +33,9 @@ class _Plugin_skpExport Plugin_skp : public Ogre::Plugin
 {
 public:
     Plugin_skp();
+    ~Plugin_skp();
 
-    /// @copydoc Plugin::getName
+     /// @copydoc Plugin::getName
     const Ogre::String& getName() const;
 
     /// @copydoc Plugin::install
@@ -48,27 +49,31 @@ public:
 
     /// @copydoc Plugin::uninstall
     void uninstall();
-	
-		static void WriteTextureFiles(SketchUp::ISkpDocumentPtr pDoc,String szMeshPrefix, 
-										SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter);
-		static void LoadTexturesFromEntities(SketchUp::ISkpEntityProviderPtr pEntProvider,
-											SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter);
-		static void WriteMaterials(SketchUp::ISkpDocumentPtr pDoc,
-									String szMeshPrefix);
-		static void createSubMesh(Ogre::MeshPtr ogreMesh,
-									SketchUp::ISkpEntityProviderPtr pEntProvider,
-									CTransform mTransform,
-									String sMaterialName,
-									SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter,
-									Ogre::Vector3 &min,
-									Ogre::Vector3 &max,
-									Ogre::Real &maxSquaredRadius);
-		static bool convertskpToMesh(const Ogre::String & szskpFileName,
-									const Ogre::String & szMeshPrefix);
-		static bool FolderExist(std::string strPath);
-		static Ogre::Entity* createEntityFromskp(const Ogre::String & entityName, 
-												const Ogre::String & szskpFileName,
-												Ogre::SceneManager* mSceneMgr);
+
+    static void WriteTextureFiles(SketchUp::ISkpDocumentPtr pDoc,String szMeshPrefix, 
+        SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter);
+
+    static void LoadTexturesFromEntities(SketchUp::ISkpEntityProviderPtr pEntProvider,
+        SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter);
+
+    static void WriteMaterials(SketchUp::ISkpDocumentPtr pDoc,
+        String szMeshPrefix);
+
+    static void createSubMesh(Ogre::MeshPtr ogreMesh,
+        SketchUp::ISkpEntityProviderPtr pEntProvider,
+        CTransform mTransform,
+        String sMaterialName,
+        SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter,
+        Ogre::Vector3 &min,
+        Ogre::Vector3 &max,
+        Ogre::Real &maxSquaredRadius);
+
+    static bool convertskpToMesh(const Ogre::String & szskpFileName,
+        const Ogre::String & szMeshPrefix);
+
+    static Ogre::Entity* createEntityFromskp(const Ogre::String & entityName, 
+        const Ogre::String & szskpFileName,
+        Ogre::SceneManager* mSceneMgr);
 };
 
 #endif // #ifndef __Plugin_skp_h__

@@ -7,9 +7,18 @@
 #pragma   comment(lib,   "kernel32.lib") 
 #include < fstream >
 
+#include "CTIO.h"
+
+using namespace CommonTools;
+
 const String sPluginName = "Plugin_skp";
+
 //------------------------------------------------------
 Plugin_skp::Plugin_skp()
+{
+}
+
+Plugin_skp::~Plugin_skp()
 {
 }
 
@@ -65,7 +74,7 @@ void Plugin_skp::WriteTextureFiles(SketchUp::ISkpDocumentPtr pDoc,String szMeshP
 
     _bstr_t textDirBstr(sTextureFloder.c_str());
 
-	if(!FolderExist(sTextureFloder))
+    if(!IO::FolderExist(sTextureFloder))
 		CreateDirectoryW(textDirBstr,NULL);
 
 	m_pTextureWriter->WriteAllTextures(textDirBstr,0);
@@ -240,7 +249,7 @@ void Plugin_skp::WriteMaterials(SketchUp::ISkpDocumentPtr pDoc,String szMeshPref
 				textureName = textureSkpName.substr(lastSlash+1);
 			else
 			{
-				lastSlash = textureSkpName.find_last_of("\/");
+				lastSlash = textureSkpName.find_last_of("/");
 				if(lastSlash != Ogre::String::npos)
 					textureName = textureSkpName.substr(lastSlash+1);
 				else
@@ -291,7 +300,7 @@ void Plugin_skp::createSubMesh(Ogre::MeshPtr ogreMesh,
 			pFace = pFaces->GetItem(j);
 			if(pFace->GetFrontMaterial())
 			{
-				for(long k = 0;k<MaterialNames.size();k++)
+				for(unsigned long k = 0;k<MaterialNames.size();k++)
 					bMaterialExist = bMaterialExist||(MaterialNames[k]==String(pFace->GetFrontMaterial()->GetName()));
 				if(!bMaterialExist)
 					MaterialNames.push_back(String(pFace->GetFrontMaterial()->GetName()));
@@ -299,7 +308,7 @@ void Plugin_skp::createSubMesh(Ogre::MeshPtr ogreMesh,
 				
 			else if(pFace->GetBackMaterial())
 			{
-				for(long k = 0;k<MaterialNames.size();k++)
+				for(unsigned long k = 0;k<MaterialNames.size();k++)
 					bMaterialExist = bMaterialExist||(MaterialNames[k]==String(pFace->GetBackMaterial()->GetName()));
 				if(!bMaterialExist)
 					MaterialNames.push_back(String(pFace->GetBackMaterial()->GetName()));
@@ -307,7 +316,7 @@ void Plugin_skp::createSubMesh(Ogre::MeshPtr ogreMesh,
 				
 		}
 		FaceGroups.resize(MaterialNames.size());
-		for(long k = 0; k<MaterialNames.size();k++)
+		for(unsigned long k = 0; k<MaterialNames.size();k++)
 		{
 			for(j = 0; j< FacesCount; j++)
 			{
@@ -331,7 +340,7 @@ void Plugin_skp::createSubMesh(Ogre::MeshPtr ogreMesh,
 		Ogre::ManualObject mo("");
 
 		
-		for(long k = 0;k<FaceGroups.size();k++)
+		for(unsigned long k = 0;k<FaceGroups.size();k++)
 		{
 			long offset  = 0;
 			mo.begin(MaterialNames[k]);
@@ -549,9 +558,6 @@ void Plugin_skp::createSubMesh(Ogre::MeshPtr ogreMesh,
 bool Plugin_skp::convertskpToMesh(const Ogre::String & szskpFileName,
 								 const Ogre::String & szMeshPrefix)
 {
-
-
-
 	Ogre::MeshManager* pMeshMgr = Ogre::MeshManager::getSingletonPtr();
 	assert(pMeshMgr != NULL);
 
@@ -560,47 +566,42 @@ bool Plugin_skp::convertskpToMesh(const Ogre::String & szskpFileName,
 	Ogre::MeshPtr ogreMesh = pMeshMgr->createManual(Ogre::String(szMeshPrefix),
 		Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
+    static HMODULE hModuleSketchUp = NULL;
+    static SketchUp::ISkpApplicationPtr pApp = NULL;
+    typedef HRESULT (*SkpAppFunc)(SketchUp::ISkpApplication** ppApplication) ;
+    static SkpAppFunc lpAppFunc = NULL; 
+    if (hModuleSketchUp == NULL)
+    {
+        hModuleSketchUp = LoadLibraryEx("SketchUpReader.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        if(hModuleSketchUp == NULL)
+        {
+            return NULL;
+        }
 
+        lpAppFunc = (SkpAppFunc)GetProcAddress(hModuleSketchUp, "GetSketchUpSkpApplication");
+        assert(lpAppFunc != NULL);
+        if(lpAppFunc != NULL)
+        {
+            (*lpAppFunc)(&pApp);
 
-	//---------------------------------------------------------------------------------------
-
-	HMODULE hModuleSketchUp = NULL;
-	if(hModuleSketchUp == NULL)
-		hModuleSketchUp = LoadLibraryEx("SketchUpReader.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-	if(hModuleSketchUp == NULL)
-	{
-		return NULL;
-	}
-
-	SketchUp::ISkpApplicationPtr pApp;
-
-	typedef HRESULT (*SkpAppFunc)(SketchUp::ISkpApplication** ppApplication) ;
-
-	SkpAppFunc lpAppFunc = (SkpAppFunc)GetProcAddress(hModuleSketchUp, "GetSketchUpSkpApplication");
-
-	assert(lpAppFunc != NULL);
-
-	if(lpAppFunc != NULL)
-	{
-		(*lpAppFunc)(&pApp);
-
-		assert(pApp != NULL);
-	}
-	else
-	{
+            assert(pApp != NULL);
+        }
+        else
+        {
+            return NULL;
+        }
     }
-	
-	SketchUp::ISkpFileReaderPtr pFileReader = pApp;
-	
+    if(lpAppFunc == NULL)
+        return NULL;
 
-	SketchUp::ISkpDocumentPtr pDoc = pFileReader->OpenFile(_bstr_t(szskpFileName.c_str()));
+
+	SketchUp::ISkpFileReaderPtr pFileReader = pApp;
+
+    SketchUp::ISkpDocumentPtr pDoc = pFileReader->OpenFile(_bstr_t(szskpFileName.c_str()));
 
 	SketchUp::ISkpTextureWriter2Ptr m_pTextureWriter;
 
-	
 	//---------------------------------------------------------------------------------------
-
-
 	WriteTextureFiles(pDoc,szMeshPrefix,m_pTextureWriter);
 
 	WriteMaterials(pDoc,szMeshPrefix);
@@ -623,23 +624,11 @@ bool Plugin_skp::convertskpToMesh(const Ogre::String & szskpFileName,
 
 	return true;
 }
-//------------------------------------------------------------------------------------------------
-bool Plugin_skp::FolderExist(std::string strPath)
-	{
-		WIN32_FIND_DATA   wfd;
-		bool rValue = false;
-		HANDLE hFind = FindFirstFile(strPath.c_str(), &wfd);
-		if ((hFind != INVALID_HANDLE_VALUE) && (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-		{
-              rValue = true;   
-		}
-		 FindClose(hFind);
-		return rValue;
-	}
+
 //-------------------------------------------------------------------------------------------------
 Ogre::Entity* Plugin_skp::createEntityFromskp(const Ogre::String & entityName, 
 											 const Ogre::String & szskpFileName,
-											 Ogre::SceneManager* mSceneMgr)
+									 		 Ogre::SceneManager* mSceneMgr)
 {
 	
 	Ogre::String szMeshPrefix = szskpFileName.substr(0,szskpFileName.length()-4);
@@ -652,9 +641,9 @@ Ogre::Entity* Plugin_skp::createEntityFromskp(const Ogre::String & entityName,
 
 	// add the ressources location
 	Ogre::ResourceGroupManager::getSingleton().addResourceLocation(mResourceFloder,"FileSystem");
-	if(FolderExist( mResourceFloder+"texture"))
+	if(IO::FolderExist( mResourceFloder+"texture"))
 					ResourceGroupManager::getSingleton().addResourceLocation( mResourceFloder+"texture", "FileSystem");
-	if(FolderExist( mResourceFloder+"textures"))
+	if(IO::FolderExist( mResourceFloder+"textures"))
 					ResourceGroupManager::getSingleton().addResourceLocation( mResourceFloder+"textures", "FileSystem");
 
 	lastSlash = szMeshPrefix.find_last_of("\\");

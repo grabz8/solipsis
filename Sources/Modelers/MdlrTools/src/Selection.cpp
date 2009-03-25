@@ -251,10 +251,12 @@ Object3D* Selection::geLastAddedObject()
 {	
 	// last iterator should not be valid
 	Object3DPtrList::iterator itObj = mObjectList.end();
+    if (itObj == mObjectList.begin())
+        return NULL;
+
 	itObj--;
 	return (*itObj);
 }
-
 
 //-------------------------------------------------------------------------------------
 void Selection::remove3DObject(Object3D *pObj)

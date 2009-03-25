@@ -63,6 +63,16 @@ public:
     static bool getFilenames(const std::string& pathname, FilenameVector& filenames);
     /// Retrieve a relative path by descending from the current working directory
     static std::string retrieveRelativePathByDescendingCWD(const std::string& pathname);
+    
+    //check if the directory exists
+    static bool FolderExist(std::string strPath);
+    
+    // recursively remove a directory
+    static bool RemoveDir(const std::string & path);
+private:
+    // check if the path look like a directory. 
+    static bool IsDirectory(const char path[]);
+
 };
 
 } // namespace CommonTools

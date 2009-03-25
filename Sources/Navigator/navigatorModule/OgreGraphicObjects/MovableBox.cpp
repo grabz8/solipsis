@@ -52,6 +52,7 @@ MovableBox::MovableBox(const Ogre::String & name, const Vector3 & size, bool app
 
 
     mCurTime = 0;
+    mYPosition = 0;
 }
 
 MovableBox::~MovableBox()
@@ -135,8 +136,8 @@ void MovableBox::_setupGeometry()
     float left = -mSize.x/2;
     float right = mSize.x/2;
 
-    float top = mSize.y/2;
-    float bottom = -mSize.y/2;
+    float top = mSize.y/2 + mYPosition;
+    float bottom = -mSize.y/2 + mYPosition;
 
     float front = -mSize.z/2;
     float back = mSize.z/2;
@@ -273,8 +274,6 @@ void MovableBox::getWorldTransforms(Ogre::Matrix4 * xform) const
 	{
         Ogre::Matrix3 rot3x3, scale3x3 = Ogre::Matrix3::IDENTITY;
 
-
-
 		// parent node position
 		Ogre::Vector3 ppos = mParentNode->_getDerivedPosition();
 
@@ -303,13 +302,8 @@ void MovableBox::getWorldTransforms(Ogre::Matrix4 * xform) const
         {
             *xform = scale3x3;
         }
-        
-        
+
         xform->setTrans(ppos);
-
-
-
-
 	}
 }
 

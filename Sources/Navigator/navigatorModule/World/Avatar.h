@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Tools/Event.h"
 
 #include "OgreGraphicObjects/SoundIcon.h"
+#include "OgreGraphicObjects/ProgressBar.h"
+#include "OgreGraphicObjects/MovableBox.h"
 
 using namespace Ogre;
 
@@ -82,6 +84,9 @@ protected:
 
     // soundIcon if needed
     SoundIcon * m_pSoundIcon; 
+
+    // when loading this box replace the bounding box
+    MovableBox * mpBox;
 
 	/// Chat label alpha timer
     Real mChatLabelAlphaTimer;
@@ -203,9 +208,9 @@ public:
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
 #ifdef POOL
-    virtual bool update(RefCntPoolPtr<XmlEntity>& xmlEntity);
+    virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
 #else
-    virtual bool update(XmlEntity* xmlEntity);
+    virtual bool updateEntity(XmlEntity* xmlEntity);
 #endif
     /** See OgrePeer. */
 #ifdef POOL

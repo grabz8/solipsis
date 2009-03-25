@@ -56,6 +56,8 @@ public:
 
     /// Returns the current date/time formatted like "YYYYMMDDHHMMSS"
     static std::string getDateTimeYYYYMMDDHHMMSS();
+
+
 };
 
 } // namespace CommonTools
