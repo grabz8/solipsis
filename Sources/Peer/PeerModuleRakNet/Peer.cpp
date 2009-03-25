@@ -683,8 +683,8 @@ void Peer::createAvatarNode()
         avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
         // Entity managed by the Replica2 plugin
         avatarEntity->SetReplicaManager(mRakNetConnection.getReplicaManager());
-        // Send out this new entity to all systems
-        avatarEntity->BroadcastConstruction();
+        // Send out this new entity to server
+        avatarEntity->SendConstruction(mRakNetConnection.getServerSystemAddress());
     }
 }
 
@@ -721,8 +721,8 @@ void Peer::reconnectAvatarNode()
     avatarEntity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
     // Entity managed by the Replica2 plugin
     avatarEntity->SetReplicaManager(mRakNetConnection.getReplicaManager());
-    // Send out this new entity to all systems
-    avatarEntity->BroadcastConstruction();
+    // Send out this new entity to server
+    avatarEntity->SendConstruction(mRakNetConnection.getServerSystemAddress());
 
     mAvatarNode->setConnectionLost(false);
 }
@@ -751,8 +751,8 @@ Entity* Peer::loadEntity(TiXmlElement* entityElt)
     entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
     // Entity managed by the Replica2 plugin
     entity->SetReplicaManager(mRakNetConnection.getReplicaManager());
-    // Send out this new entity to all systems
-    entity->BroadcastConstruction();
+    // Send out this new entity to server
+    entity->SendConstruction(mRakNetConnection.getServerSystemAddress());
 
     return entity;
 }

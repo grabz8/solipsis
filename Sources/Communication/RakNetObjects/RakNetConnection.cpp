@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTSystem.h>
 
 using namespace RakNet;
+using namespace RakNetSolipsis;
 using namespace CommonTools;
 
 namespace Solipsis {
@@ -98,6 +99,7 @@ void RakNetConnection::initialize(const std::string& cachePath)
     }
 
     // Attach the ReplicaManager2 plugin
+    mReplicaManager.SetAutoUpdateScope(true, true);
     mRakPeer->AttachPlugin(&mReplicaManager);
     // Register our custom connection factory
     mReplicaManager.SetConnectionFactory(mConnectionFactory);

@@ -1063,5 +1063,8 @@ Not yet integrated in the Navigator GUI though.
 25/03/09
 
 Peer logout crash fix (due to bad synchronization on TimeListeners)
+RakNet Replica scoping:
+- ReplicaManager plugin moved into RakNetObjects lib (to tune it)
+- now RakNetServer is deal with avatar-avatar scoping and construct/destruct avatars' replicas according to their distance (default 50m)
 
 ---------------------------

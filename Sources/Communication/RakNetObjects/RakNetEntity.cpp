@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 
 using namespace RakNet;
+using namespace RakNetSolipsis;
 using namespace CommonTools;
 
 namespace Solipsis {
@@ -81,22 +82,25 @@ void RakNetEntity::cleanUpEntities()
 //-------------------------------------------------------------------------------------
 RakNetEntity* RakNetEntity::findByAddress(SystemAddress& systemAddress)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s", systemAddress.ToString());
-
-    std::string entitiesListStr;
+#ifdef LOGRAKNET
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s", systemAddress.ToString());
+/*    std::string entitiesListStr;
     for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
     {
         entitiesListStr += it->second->mXmlEntity->getUid() + "(" + it->second->getSystemAddress().ToString() + ")";
         if (it != ms_Entities.end())
             entitiesListStr += ", ";
     }
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() entities:%s", entitiesListStr.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() entities:%s", entitiesListStr.c_str());*/
+#endif
 
     for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
         if (it->second->getSystemAddress() == systemAddress)
             return (RakNetEntity*)it->second;
 
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s not found !", systemAddress.ToString());
+#ifdef LOGRAKNET
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s not found !", systemAddress.ToString());
+#endif
     return 0;
 }
 
@@ -105,26 +109,16 @@ void RakNetEntity::deleteByAddress(SystemAddress& systemAddress)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() systemAddress:%s", systemAddress.ToString());
 
-    std::string entitiesListStr;
-    for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
+    RakNetEntity *entity = findByAddress(systemAddress);
+    if (entity == 0)
     {
-        entitiesListStr += it->second->mXmlEntity->getUid() + "(" + it->second->getSystemAddress().ToString() + ")";
-        if (it != ms_Entities.end())
-            entitiesListStr += ", ";
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() systemAddress:%s not found !", systemAddress.ToString());
+        return;
     }
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() entities:%s", entitiesListStr.c_str());
 
-    for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
-        if (it->second->getSystemAddress() == systemAddress)
-        {
-            RakNetEntity *entity = (RakNetEntity*)it->second;
-            // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
-            entity->BroadcastDestruction();
-            delete entity;
-            return;
-        }
-
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() systemAddress:%s not found !", systemAddress.ToString());
+    // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
+    entity->BroadcastDestruction();
+    delete entity;
 }
 
 //-------------------------------------------------------------------------------------
@@ -147,7 +141,8 @@ bool RakNetEntity::Serialize(BitStream *bitStream, SerializationContext *seriali
     // case 3 : client serialize all defined attributes when it has just created the entity (eg. broadcast serialization to system)
     XmlEntity::DefinedAttributes definedAttributes = mLastDeserializedDefinedAttributes;
     if ((RakNetConnection::getSingletonPtr()->isServer() && (serializationContext->serializationType != RELAY_SERIALIZATION_TO_SYSTEMS)) || 
-        (!RakNetConnection::getSingletonPtr()->isServer() && (serializationContext->serializationType == BROADCAST_SERIALIZATION_GENERIC_TO_SYSTEM)))
+        (!RakNetConnection::getSingletonPtr()->isServer() && (serializationContext->serializationType == BROADCAST_SERIALIZATION_GENERIC_TO_SYSTEM)) ||
+        (!RakNetConnection::getSingletonPtr()->isServer() && (serializationContext->serializationType == SEND_SERIALIZATION_CONSTRUCTION_TO_SYSTEM)))
         definedAttributes = mXmlEntity->getDefinedAttributes();
 
     // client is resetting the defined/updated attributes for next updates
@@ -279,9 +274,9 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
         EntityUID uid;
         RakNetConnection::DeserializeString(bitStream, uid);
         mXmlEntity->setUid(uid);
-        // Server can serialize
+        // Server can serialize and compute visibility
         if (RakNetConnection::getSingletonPtr()->isServer())
-            mReplicaFlags |= RFSerializationAuthorized;
+            mReplicaFlags |= RFSerializationAuthorized | RFVisibilityAuthorized;
     }
     if (definedAttributes & XmlEntity::DAOwner)
     {
@@ -346,6 +341,20 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
         Ogre::AxisAlignedBox AABoundingBox(min, max);
         mXmlEntity->setAABoundingBox(AABoundingBox);
     }
+
+#ifdef LOGRAKNET
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+        "RakNetEntity::Deserialize() sender:%s, mSystemAddress:%s, uid:%s, name:%s, owner:%s, lastDeserAttr:0x%08x, pos(%.2f,%.2f,%.2f)",
+        sender.ToString(), mSystemAddress.ToString(),
+        mXmlEntity->getUid().c_str(),
+        mXmlEntity->getName().c_str(),
+        mXmlEntity->getOwner().c_str(),
+        mLastDeserializedDefinedAttributes,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
+        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
+#endif
+
     if (definedAttributes & XmlEntity::DAContent)
     {
 #ifdef POOL
@@ -424,41 +433,58 @@ void RakNetEntity::Deserialize(BitStream *bitStream, SerializationType serializa
 
         requestFilesFromCacheManager(sender);
     }
+}
 
+//-------------------------------------------------------------------------------------
+bool RakNetEntity::QueryIsConstructionAuthority(void) const
+{
+    bool result = Replica2::QueryIsConstructionAuthority();
 #ifdef LOGRAKNET
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
-        "RakNetEntity::Deserialize() sender:%s, mSystemAddress:%s, uid:%s, name:%s, owner:%s, lastDeserAttr:0x%08x, pos(%.2f,%.2f,%.2f)",
-        sender.ToString(), mSystemAddress.ToString(),
-        mXmlEntity->getUid().c_str(),
-        mXmlEntity->getName().c_str(),
-        mXmlEntity->getOwner().c_str(),
-        mLastDeserializedDefinedAttributes,
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().x : -1,
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().y : -1,
-        (definedAttributes & XmlEntity::DAPosition) ? mXmlEntity->getPosition().z : -1);
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::QueryIsConstructionAuthority() uid:%s, returning %s", mXmlEntity->getUid().c_str(), LOGHANDLER_LOGBOOL(result));
 #endif
+    return result;
 }
 
 //-------------------------------------------------------------------------------------
 bool RakNetEntity::QueryIsDestructionAuthority(void) const
 {
+    bool result;
+    if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid)
+        result = mReplicaFlags & RFSerializationAuthorized;
+    else
+//        result = Replica2::QueryIsDestructionAuthority();
+        result = false;
 #ifdef LOGRAKNET
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
-        "RakNetEntity::QueryIsDestructionAuthority() uid:%s, returning %s",
-        mXmlEntity->getUid().c_str(),
-        LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::QueryIsDestructionAuthority() uid:%s, returning %s", mXmlEntity->getUid().c_str(), LOGHANDLER_LOGBOOL(result));
 #endif
-	return mReplicaFlags & RFSerializationAuthorized;
+    return result;
+}
+
+//-------------------------------------------------------------------------------------
+bool RakNetEntity::QueryIsVisibilityAuthority(void) const
+{
+    bool result;
+    if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid)
+        result = mReplicaFlags & RFVisibilityAuthorized;
+    else
+        result = Replica2::QueryIsVisibilityAuthority();
+#ifdef LOGRAKNET
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::QueryIsVisibilityAuthority() uid:%s, returning %s", mXmlEntity->getUid().c_str(), LOGHANDLER_LOGBOOL(result));
+#endif
+    return result;
 }
 
 //-------------------------------------------------------------------------------------
 bool RakNetEntity::QueryIsSerializationAuthority(void) const
 {
+    bool result;
+    if (mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid)
+        result = mReplicaFlags & RFSerializationAuthorized;
+    else
+        result = Replica2::QueryIsSerializationAuthority();
 #ifdef LOGRAKNET
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
-        "RakNetEntity::QueryIsSerializationAuthority() uid:%s, returning %s",
-        mXmlEntity->getUid().c_str(),
-        LOGHANDLER_LOGBOOL(mReplicaFlags & RFSerializationAuthorized));
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG,
+//        "RakNetEntity::QueryIsSerializationAuthority() uid:%s, returning %s", mXmlEntity->getUid().c_str(), LOGHANDLER_LOGBOOL(result));
 #endif
 	return mReplicaFlags & RFSerializationAuthorized;
 }

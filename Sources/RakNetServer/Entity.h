@@ -44,7 +44,20 @@ public:
     virtual void onLostEntity();
 
     /** See RakNet::Replica2. */
-	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+	virtual void Deserialize(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+
+	/** See RakNet::Replica2. */
+    RakNetSolipsis::BooleanQueryResult isVisibleFrom(RakNetSolipsis::Connection_RM2 *connection);
+	/** See RakNet::Replica2. */
+    RakNetSolipsis::BooleanQueryResult QueryConstruction(RakNetSolipsis::Connection_RM2 *connection);
+	/** See RakNet::Replica2. */
+	virtual RakNetSolipsis::BooleanQueryResult QueryVisibility(RakNetSolipsis::Connection_RM2 *connection);
+
+#ifdef LOGRAKNET
+private:
+    typedef std::map<RakNetSolipsis::Connection_RM2*, int> IsVisibleFromConn;
+    IsVisibleFromConn mIsVisibleFromConn;
+#endif
 };
 
 } // namespace Solipsis

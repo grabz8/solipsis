@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __RakNetEntity_h__
 #define __RakNetEntity_h__
 
-#include <ReplicaManager2.h>
+#include "ReplicaManagerSolipsis.h"
 #include <XmlDatas.h>
 #include "CacheManager.h"
 
@@ -34,13 +34,14 @@ class AvatarNode;
 
 /** This class manages 1 RakNet entity.
 */
-class RakNetEntity : public RakNet::Replica2, public CacheManagerCallback
+class RakNetEntity : public RakNetSolipsis::Replica2, public CacheManagerCallback
 {
 public:
     /// Flags of replication
-    typedef unsigned int ReplicaFlags;
-    static const ReplicaFlags RFNone = (ReplicaFlags)0;
-    static const ReplicaFlags RFSerializationAuthorized = (ReplicaFlags)1;
+    typedef unsigned char ReplicaFlags;
+    static const ReplicaFlags RFNone = 0;
+    static const ReplicaFlags RFSerializationAuthorized = 1;
+    static const ReplicaFlags RFVisibilityAuthorized = RFSerializationAuthorized<<1;
 
     /// <EntityUID, RakNetEntity*> map
     typedef std::map<EntityUID, RakNetEntity*> RakNetEntityMap;
@@ -125,14 +126,18 @@ public:
     void addLastDeserializedDefinedAttributes(XmlEntity::DefinedAttributes definedAttributes) { mLastDeserializedDefinedAttributes |= definedAttributes; }
 
 	/** See RakNet::Replica2. */
-	virtual bool SerializeConstruction(RakNet::BitStream *bitStream, RakNet::SerializationContext *serializationContext);
+	virtual bool SerializeConstruction(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationContext *serializationContext);
 	/** See RakNet::Replica2. */
-	virtual bool Serialize(RakNet::BitStream *bitStream, RakNet::SerializationContext *serializationContext);
+	virtual bool Serialize(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationContext *serializationContext);
 	/** See RakNet::Replica2. */
-	virtual void Deserialize(RakNet::BitStream *bitStream, RakNet::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+	virtual void Deserialize(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
 
 	/** See RakNet::Replica2. */
+	virtual bool QueryIsConstructionAuthority(void) const;
+	/** See RakNet::Replica2. */
 	virtual bool QueryIsDestructionAuthority(void) const;
+	/** See RakNet::Replica2. */
+	virtual bool QueryIsVisibilityAuthority(void) const;
 	/** See RakNet::Replica2. */
 	virtual bool QueryIsSerializationAuthority(void) const;
 

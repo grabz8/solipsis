@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 
 using namespace RakNet;
+using namespace RakNetSolipsis;
 using namespace CommonTools;
 
 namespace Solipsis {

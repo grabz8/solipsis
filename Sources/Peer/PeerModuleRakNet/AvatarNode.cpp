@@ -202,6 +202,7 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() only DAUid so no ETUpdatedEntity evt sent to navigator !");
         return;
     }
+
 #ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETUpdatedEntity);
@@ -429,10 +430,12 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
         entity->addFilesInCacheManager();
         entity->mDirty = false;
         Entity::addEntity(entity);
-        // In order to use any networked member functions of Replica2, you must first call SetReplicaManager
+        // Client can serialize
+        entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
+        // Entity managed by the Replica2 plugin
         entity->SetReplicaManager(RakNetConnection::getSingletonPtr()->getReplicaManager());
-        // Send out this new user to all systems. Unlike the old system (ReplicaManager) all sends are done immediately.
-        entity->BroadcastConstruction();
+        // Send out this new entity to server
+        entity->SendConstruction(RakNetConnection::getSingletonPtr()->getServerSystemAddress());
     }
     else if (xmlEvt->getType() == ETLostEntity)
     {
@@ -606,7 +609,6 @@ bool AvatarNode::tick(Real timeSinceLastTick)
         Entity* entity = (Entity*)obj->second;
         entity->update(timeSinceLastTick);
     }
-
 
     Entity* entity = (Entity*)mEntity;
 static int c=0;

@@ -47,6 +47,8 @@ protected:
     std::string mMediaCachePath;
     /// Statistics path
     std::string mStatsPath;
+    /// Squared-distance between avatars for visiblity scoping
+    float mAvatarScopeDistance2;
 
     /// Instance of the class that creates the object we use to represent connections
     RM2ConnectionFactory mConnectionFactory;
@@ -85,6 +87,8 @@ public:
 
     /// Get the Media/cache path
     const std::string& getMediaCachePath() { return mMediaCachePath; }
+    /// Get the squared-distance between avatars for visiblity scoping
+    float getAvatarScopeDistance2() { return mAvatarScopeDistance2; }
     /// Get the site node
     SiteNode* getSiteNode();
 

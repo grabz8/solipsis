@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <RakSleep.h>
 #include <MessageIdentifiers.h>
 #include <NetworkIDManager.h>
-#include <ReplicaManager2.h>
+#include "ReplicaManagerSolipsis.h"
 #include <FileListTransfer.h>
 #include <Ogre.h>
 
@@ -71,9 +71,9 @@ protected:
     /// ReplicaManager2 requires NetworkIDManager to lookup pointers from numerical
     NetworkIDManager mNetworkIdManager;
     /// ReplicaManager2 plugin
-    RakNet::ReplicaManager2 mReplicaManager;
+    RakNetSolipsis::ReplicaManager2 mReplicaManager;
     /// Instance of the class that creates the object we use to represent connections
-    RakNet::Connection_RM2Factory *mConnectionFactory;
+    RakNetSolipsis::Connection_RM2Factory *mConnectionFactory;
     /// FileListTransfer plugin
     FileListTransfer mFileListTransfer;
     /// Cache manager
@@ -93,7 +93,7 @@ public:
     @param port The server port
     @param maxIncomingConnections The maximum number of connections supported by this server
     */
-    RakNetConnection(RakNet::Connection_RM2Factory* connectionFactory, bool server = false, const std::string& host = "localhost", unsigned short port = 8660, unsigned short maxIncomingConnections = 32);
+    RakNetConnection(RakNetSolipsis::Connection_RM2Factory* connectionFactory, bool server = false, const std::string& host = "localhost", unsigned short port = 8660, unsigned short maxIncomingConnections = 32);
     /** Destructor */
     ~RakNetConnection();
 
@@ -127,7 +127,7 @@ public:
     /// Get address of the RakNet server
     const SystemAddress& getServerSystemAddress() { return mServerSystemAddress; }
     /// Get the ReplicaManager2 plugin
-    RakNet::ReplicaManager2* getReplicaManager() { return &mReplicaManager; }
+    RakNetSolipsis::ReplicaManager2* getReplicaManager() { return &mReplicaManager; }
     /// Get FileListTransfer plugin
     FileListTransfer* getFileListTransfer() { return &mFileListTransfer; }
     /// Cache manager

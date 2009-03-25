@@ -42,6 +42,7 @@ RakNetServer* RakNetServer::ms_Singleton = 0;
 RakNetServer::RakNetServer(int argc, char** argv) :
     mMediaCachePath(""),
     mStatsPath("stats"),
+    mAvatarScopeDistance2(2500.0f),
     mRakNetConnection(&mConnectionFactory, true, "localhost", 8660, 32),
     mSiteNodeId("11112222"),
     mSiteNode(0),
@@ -84,6 +85,12 @@ RakNetServer::RakNetServer(int argc, char** argv) :
         {
             iarg++;
             mStatsPath = argv[iarg];
+            continue;
+        }
+        if ((strstr(argv[iarg], "-d") != 0) && (argc > iarg+1))
+        {
+            iarg++;
+            mAvatarScopeDistance2 = (float)atof(argv[iarg]);
             continue;
         }
     }
@@ -277,12 +284,13 @@ Entity* RakNetServer::loadEntity(TiXmlElement* entityElt)
     xmlEntity->fromXmlElt(entityElt);
     entity->addFilesInCacheManager();
     Entity::addEntity(entity);
-    // Server can serialize
-    entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
+    // Server can serialize and compute visibility
+    entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized | RakNetEntity::RFVisibilityAuthorized);
     // Entity managed by the Replica2 plugin
     entity->SetReplicaManager(mRakNetConnection.getReplicaManager());
     // Send out this new entity to all systems
-    entity->BroadcastConstruction();
+    bool newReference;
+    mRakNetConnection.getReplicaManager()->Reference(entity, &newReference);
 
     return entity;
 }

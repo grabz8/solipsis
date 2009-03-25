@@ -169,6 +169,10 @@
 				RelativePath=".\RakNetEntity.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ReplicaManagerSolipsis.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -189,6 +193,10 @@
 			</File>
 			<File
 				RelativePath=".\RakNetEntity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ReplicaManagerSolipsis.h"
 				>
 			</File>
 		</Filter>
