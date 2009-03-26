@@ -33,6 +33,7 @@ echo n: build separate Peer and Navi
 set /p type=build NCS [y/n] ? 
 echo -------------------------------------------
 set /p rebuildAll=rebuild all [y/n] ? 
+set /p builddebug=build debug version [y/n] ? 
 
 if "%type%"=="y" (
 	set ReleaseConfig=ReleaseNCS
@@ -52,12 +53,14 @@ if not "%VS90COMNTOOLS%"=="" set SUFFIX=_vc9
 if not "%VS80COMNTOOLS%"=="" set SUFFIX=_vc8
 
 echo -------------------------------------------
-echo DEVENVPATH:%DEVENVPATH%
-echo DEVENV=%DEVENV%
-echo BuildType=%BuildType%
-echo DebugConfig=%DebugConfig%
-echo ReleaseConfig=%ReleaseConfig%
-echo SUFFIX=%SUFFIX%
+echo Parameters : 
+echo * DEVENVPATH:%DEVENVPATH%
+echo * DEVENV=%DEVENV%
+echo * BuildType=%BuildType%
+echo * DebugConfig=%DebugConfig%
+echo * ReleaseConfig=%ReleaseConfig%
+echo * SUFFIX=%SUFFIX%
+echo * builddebug=%builddebug%
 echo -------------------------------------------
 
 if "%cleanup%"=="y" (
@@ -84,11 +87,14 @@ echo *************************************************
 %DEVENV% "3rdParties_vc8.sln" /%BuildType% "Release|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 
+if %builddebug%=="y" (
 echo *************************************************
 echo *********** building 3rdParties Debug ***********
 echo *************************************************
 %DEVENV% "3rdParties_vc8.sln" /%BuildType% "Debug|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
+)
+
 
 echo *************************************************
 echo *********** building solipsis Release ***********
@@ -96,11 +102,13 @@ echo *************************************************
 %DEVENV% "solipsis_vc8.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
 IF ERRORLEVEL 1 goto errorBuilding
 
+if %builddebug%=="y" (
 echo *************************************************
 echo ************ building solipsis Debug ************
 echo *************************************************
 %DEVENV% "solipsis_vc8.sln" /%BuildType% "%DebugConfig%|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
+)
 
 goto ok
 
