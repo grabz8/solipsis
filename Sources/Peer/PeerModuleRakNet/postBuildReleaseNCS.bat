@@ -7,8 +7,10 @@ copy OgreHelpers.h ..\..\..\Dependencies\peerModule\include\. /y
 copy IPhysics*.h ..\..\..\Dependencies\peerModule\include\. /y
 copy PhysicsEngineManager.h ..\..\..\Dependencies\peerModule\include\. /y
 
-if not exist ..\..\..\Dependencies\peerModule\lib\Release mkdir ..\..\..\Dependencies\peerModule\lib\Release
-xcopy ReleaseNCS\Peer.lib ..\..\..\Dependencies\peerModule\lib\Release\. /y
-xcopy ReleaseNCS\Peer.dll ..\..\..\Dependencies\peerModule\lib\Release\. /y
+if not exist "..\..\..\Dependencies\peerModule\lib\Release" mkdir ..\..\..\Dependencies\peerModule\lib\Release
+copy ReleaseNCS\Peer.lib "..\..\..\Dependencies\peerModule\lib\Release\Peer.lib" /y
+copy ReleaseNCS\Peer.dll "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" /y
 
-xcopy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "..\..\..\Common\bin\navigator\Release\." /s /y
+copy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "..\..\..\Common\bin\navigator\Release\Peer.dll" /y
+
+pause

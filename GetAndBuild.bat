@@ -2,10 +2,11 @@ echo off
 cd Sources
 
 if exist "buildLog.log" (
-echo deleting buildLog
+echo ------------------ deleting buildLog ------------------------
 del buildLog.log
 )
 
+set updateSVN=none
 set SVNPATH=https://scm.gforge.inria.fr/svn/solipsis/trunk
 if EXIST "C:\Program Files\Subversion\bin" set updateSVN=ask
 
@@ -23,7 +24,11 @@ IF "%DEVENV%" == "" goto errorNoDevenp
 IF "%updateSVN%"=="ask" (
 	echo -------------------------------------------
 	set /p updateSVN=update from SVN repository [y/n] ? 
+) ELSE (
+	echo -------------------------------------------
+	echo No Svn command line tool found !
 )
+
 REM Ask questions
 echo -------------------------------------------
 set /p cleanup=cleanUp [y/n] ? 
@@ -33,7 +38,9 @@ echo n: build separate Peer and Navi
 set /p type=build NCS [y/n] ? 
 echo -------------------------------------------
 set /p rebuildAll=rebuild all [y/n] ? 
+echo -------------------------------------------
 set /p builddebug=build debug version [y/n] ? 
+echo -------------------------------------------
 
 if "%type%"=="y" (
 	set ReleaseConfig=ReleaseNCS
@@ -87,7 +94,7 @@ echo *************************************************
 %DEVENV% "3rdParties_vc8.sln" /%BuildType% "Release|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 
-if %builddebug%=="y" (
+if "%builddebug%"=="y" (
 echo *************************************************
 echo *********** building 3rdParties Debug ***********
 echo *************************************************
@@ -102,7 +109,7 @@ echo *************************************************
 %DEVENV% "solipsis_vc8.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
 IF ERRORLEVEL 1 goto errorBuilding
 
-if %builddebug%=="y" (
+if "%builddebug%"=="y" (
 echo *************************************************
 echo ************ building solipsis Debug ************
 echo *************************************************
