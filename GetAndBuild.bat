@@ -1,10 +1,25 @@
 echo off
+
+if not exist BuildLogs mkdir BuildLogs
+
+REM set date and time
+for /F "tokens=1-4 delims=/- " %%a in ('date/T') do set CDATE=%%a%%b%%c
+set CDATE=%CDATE:~-4%_%CDATE:~2,2%_%CDATE:~0,2%
+for /F "tokens=1-4 delims=:., " %%a in ("%TIME%") do set CTIME=%%a%%b%%c
+set CTIME=%CTIME:~0,2%h%CTIME:~2,2%mn%CTIME:~4,2%s
+
+
 cd Sources
 
 if exist "buildLog.log" (
 echo ------------------ deleting buildLog ------------------------
 del buildLog.log
 )
+
+rem print date
+echo ******************************************************* >> buildLog.log
+echo ************************* %CDATE% ****************** >> buildLog.log
+echo ******************************************************* >> buildLog.log
 
 set updateSVN=none
 set SVNPATH=https://scm.gforge.inria.fr/svn/solipsis/trunk
@@ -77,6 +92,19 @@ popd
 )
 
 if "%updateSVN%"=="y" (
+echo ************ get The Svn log ***********
+echo ************ Sent to the build Log******
+
+echo ************************************************************************ >> buildLog.log
+echo ************************************ Svn log *************************** >> buildLog.log
+echo ************************************************************************ >> buildLog.log
+svn log -l 20 %SVNPATH% >> buildLog.log
+echo ************************************************************************ >> buildLog.log
+echo ************************************ END SVN log *********************** >> buildLog.log
+echo ************************************************************************ >> buildLog.log
+
+echo ************ end Svn log ***********
+
 echo ************ update from svn ***********
 pushd ..
 svn checkout %SVNPATH% . 
@@ -90,6 +118,9 @@ set BUILDERROR=noerror
 echo *************************************************
 echo ********** building 3rdParties Release **********
 echo *************************************************
+echo ************************************************** >> buildLog.log
+echo ********** building 3rdParties Release *********** >> buildLog.log
+echo ************************************************** >> buildLog.log
 
 %DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Release|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
@@ -98,6 +129,9 @@ if "%builddebug%"=="y" (
 echo *************************************************
 echo *********** building 3rdParties Debug ***********
 echo *************************************************
+echo ************************************************* >> buildLog.log
+echo *********** building 3rdParties Debug *********** >> buildLog.log
+echo ************************************************* >> buildLog.log
 %DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Debug|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 )
@@ -106,6 +140,9 @@ IF ERRORLEVEL 1 goto errorBuilding
 echo *************************************************
 echo *********** building solipsis Release ***********
 echo *************************************************
+echo ************************************************* >> buildLog.log
+echo *********** building solipsis Release *********** >> buildLog.log
+echo ************************************************* >> buildLog.log
 %DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
 IF ERRORLEVEL 1 goto errorBuilding
 
@@ -113,6 +150,9 @@ if "%builddebug%"=="y" (
 echo *************************************************
 echo ************ building solipsis Debug ************
 echo *************************************************
+echo ************************************************* >> buildLog.log
+echo ************ building solipsis Debug ************ >> buildLog.log
+echo ************************************************* >> buildLog.log
 %DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%DebugConfig%|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 )
@@ -127,26 +167,36 @@ echo ***************************************************************************
 goto end
 
 :errorSVN
-echo ************************************************************************************************************
-echo error with SVN Update, please correct it 
-echo ************************************************************************************************************
+echo #############################################################
+echo ##########  error with SVN Update, please correct it ########
+echo #############################################################
+
+echo ############################################################# >> buildLog.log
+echo ##########  error with SVN Update, please correct it ######## >> buildLog.log
+echo ############################################################# >> buildLog.log
+
 goto end
 
 :errorBuilding
-echo ************************************************************************************************************
-echo error while building solution
-echo please check the buildlog for more details
-echo ************************************************************************************************************
+echo #############################################################
+echo ############### error while building solution ############### 
+echo ############### please check the buildlog for more details ##  
+echo #############################################################
+
+echo ############################################################# >> buildLog.log
+echo ############### error while building solution ###############  >> buildLog.log
+echo ############################################################# >> buildLog.log
 goto end
 
 :ok
-echo ************************************************************************************************************
-echo ************************************************************************************************************
-echo ************************************************************************************************************
-echo build ok !!!!!!!!!!!!!!!!!!!!!!!!!
-echo ************************************************************************************************************
-echo ************************************************************************************************************
-echo ************************************************************************************************************
+echo ******************************************************************** >> buildLog.log
+echo ************* build complete successs !! *************************** >> buildLog.log
+echo ******************************************************************** >> buildLog.log
+echo ********************************************************************
+echo ************* build complete successs !! ***************************
+echo ********************************************************************
 
 :end
+copy buildLog.log ..\BuildLogs\%CDATE%_buildLog.log
+
 pause
