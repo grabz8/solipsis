@@ -11,8 +11,8 @@ set SVNPATH=https://scm.gforge.inria.fr/svn/solipsis/trunk
 if EXIST "C:\Program Files\Subversion\bin" set updateSVN=ask
 
 rem detect visual version
-IF EXIST "C:\Program Files\Microsoft Visual Studio 9.0" set DEVENVPATH=C:\Program Files\Microsoft Visual Studio 9.0
 IF EXIST "C:\Program Files\Microsoft Visual Studio 8" set DEVENVPATH=C:\Program Files\Microsoft Visual Studio 8
+IF EXIST "C:\Program Files\Microsoft Visual Studio 9.0" set DEVENVPATH=C:\Program Files\Microsoft Visual Studio 9.0
 
 IF EXIST "%DEVENVPATH%\Common7\IDE\VCExpress.exe" set DEVENV=VCExpress
 IF EXIST "%DEVENVPATH%\Common7\IDE\devenv.exe" set DEVENV=devenv
@@ -91,14 +91,14 @@ echo *************************************************
 echo ********** building 3rdParties Release **********
 echo *************************************************
 
-%DEVENV% "3rdParties_vc8.sln" /%BuildType% "Release|Win32" /out buildLog.log
+%DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Release|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 
 if "%builddebug%"=="y" (
 echo *************************************************
 echo *********** building 3rdParties Debug ***********
 echo *************************************************
-%DEVENV% "3rdParties_vc8.sln" /%BuildType% "Debug|Win32" /out buildLog.log
+%DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Debug|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 )
 
@@ -106,14 +106,14 @@ IF ERRORLEVEL 1 goto errorBuilding
 echo *************************************************
 echo *********** building solipsis Release ***********
 echo *************************************************
-%DEVENV% "solipsis_vc8.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
+%DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
 IF ERRORLEVEL 1 goto errorBuilding
 
 if "%builddebug%"=="y" (
 echo *************************************************
 echo ************ building solipsis Debug ************
 echo *************************************************
-%DEVENV% "solipsis_vc8.sln" /%BuildType% "%DebugConfig%|Win32" /out buildLog.log
+%DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%DebugConfig%|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 )
 
