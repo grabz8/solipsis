@@ -84,7 +84,11 @@ public:
     /// Clean up
     void cleanUp();
 
-    bool createPrimitive(Object3D::Type type, const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+    bool createPrimitive(Object3D::Type type, 
+        const EntityUID& entityUID, 
+        const String& name, 
+        Vector3 &player_pos, Quaternion &orientation, 
+        bool bSelectIt);
 
 // 	/ Create a plane 
 // 		bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);

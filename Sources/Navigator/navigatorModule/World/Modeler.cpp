@@ -244,7 +244,11 @@ MeshPtr Modeler::cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID&
     return mptr;
 }
 
-bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
+
+
+
+bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, 
+                              const String& name, Vector3 &player_pos, Quaternion &orientation, bool bSelectIt)
 {
     MeshPtr mptr = cloneGenericPrimitiveMesh(type, entityUID);
     if (mptr.isNull())
@@ -264,14 +268,15 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, c
 
     Object3D* obj = Object3D::createObject3D(type, entityUID, String(name), node );
     mSelection->add3DObject(obj);
-    mSelection->selectObject3D(obj);
+    if (bSelectIt)
+       mSelection->selectObject3D(obj);
     obj->mCentreSelection = player_pos;
 
     node->setPosition(player_pos);
     node->setOrientation(orientation);
 
     // quick save the created object
-    //XMLSave(false);
+    XMLSave(false);
 
     return true;
 }
@@ -861,7 +866,7 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
     EntityUID entityUID = XMLfile->FirstChildElement("objuid")->Attribute("Uid");
 	String name = XMLfile->FirstChildElement("objname")->Attribute("Name");
 
-    if (!createPrimitive(type, entityUID, name, pos, orientation))
+    if (!createPrimitive(type, entityUID, name, pos, orientation, false))
     {
         return NULL;
     }

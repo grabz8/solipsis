@@ -1880,7 +1880,7 @@ bool Navigator::createPrimitive(Object3D::Type type)
     dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-    return mModeler->createPrimitive(type, entityUID, entityUID, plpos + dep, pldir);
+    return mModeler->createPrimitive(type, entityUID, entityUID, plpos + dep, pldir, true);
 }
 
 
