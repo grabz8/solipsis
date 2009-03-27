@@ -112,6 +112,7 @@ public:
 	/// brief Destructor
 	~Object3D();
 
+    static Object3D * createObject3D(Type type, const EntityUID& entityUID, const String& name, SceneNode* node);
 
 	/// \brief Load a object3D from a file 
 	/// \param fileName = The path to the file to load

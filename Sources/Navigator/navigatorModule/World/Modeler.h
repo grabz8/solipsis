@@ -84,34 +84,36 @@ public:
     /// Clean up
     void cleanUp();
 
-	/// Create a plane 
-	bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a box 
-	bool createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a corner. 
-	bool createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a pyramid. 
-	bool createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a prism. 
-	bool createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a cylinder. 
-	bool createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a half cylinder. 
-	bool createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a cone. 
-	bool createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a Halfcone. 
-	bool createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a sphere. 
-	bool createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a half sphere. 
-	bool createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a torus. 
-	bool createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a tube. 
-	bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
-	/// Create a ring. 
-	bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+    bool createPrimitive(Object3D::Type type, const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+
+// 	/ Create a plane 
+// 		bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a box 
+// 		bool createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a corner. 
+// 		bool createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a pyramid. 
+// 		bool createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a prism. 
+// 		bool createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a cylinder. 
+// 		bool createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a half cylinder. 
+// 		bool createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a cone. 
+// 		bool createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a Halfcone. 
+// 		bool createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a sphere. 
+// 		bool createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a half sphere. 
+// 		bool createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a torus. 
+// 		bool createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a tube. 
+// 		bool createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+// 		/// Create a ring. 
+// 		bool createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
 #ifdef DECLARATIVE_MODELER
 	/// Create a 3D scene by declatative modeling
 	bool createSceneFromText( const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg );
@@ -172,6 +174,7 @@ public:
 
 private:
 	Object3D * createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos, Quaternion orientation);
+    MeshPtr cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID& entityUID);
 
 public:
     /// See TextureManager::loadTexture

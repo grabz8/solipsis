@@ -2452,7 +2452,7 @@ void NavigatorGUI::modelerMainCreatePlane(const NaviData& naviData)
 {
 	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePlane()");
 	//mNavigator->startModeling();
-	mNavigator->createPlane();
+    mNavigator->createPrimitive(Object3D::PLANE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2460,7 +2460,7 @@ void NavigatorGUI::modelerMainCreateBox(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateBox()");
 	//mNavigator->startModeling();
-	mNavigator->createBox();
+    mNavigator->createPrimitive(Object3D::BOX);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2468,7 +2468,7 @@ void NavigatorGUI::modelerMainCreateCorner(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCorner()");
 	//mNavigator->startModeling();
-	mNavigator->createCorner();
+    mNavigator->createPrimitive(Object3D::CORNER);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2476,7 +2476,7 @@ void NavigatorGUI::modelerMainCreatePyramid(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePyramid()");
 	//mNavigator->startModeling();
-	mNavigator->createPyramid();
+    mNavigator->createPrimitive(Object3D::PYRAMID);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2484,7 +2484,7 @@ void NavigatorGUI::modelerMainCreatePrism(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreatePrism()");
 	//mNavigator->startModeling();
-	mNavigator->createPrism();
+    mNavigator->createPrimitive(Object3D::PRISM);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2492,7 +2492,7 @@ void NavigatorGUI::modelerMainCreateCylinder(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCylinder()");
 	//mNavigator->startModeling();
-	mNavigator->createCylinder();
+    mNavigator->createPrimitive(Object3D::CYLINDER);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2500,7 +2500,7 @@ void NavigatorGUI::modelerMainCreateHalfCylinder(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfCylinder()");
 	//mNavigator->startModeling();
-	mNavigator->createHalfCyl();
+    mNavigator->createPrimitive(Object3D::HALF_CYLINDER);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2508,7 +2508,7 @@ void NavigatorGUI::modelerMainCreateCone(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateCone()");
 	//mNavigator->startModeling();
-	mNavigator->createCone();
+    mNavigator->createPrimitive(Object3D::CONE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2516,7 +2516,7 @@ void NavigatorGUI::modelerMainCreateHalfCone(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfCone()");
 	//mNavigator->startModeling();
-	mNavigator->createHalfCone();
+    mNavigator->createPrimitive(Object3D::HALF_CONE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2524,7 +2524,7 @@ void NavigatorGUI::modelerMainCreateSphere(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateSphere()");
 	//mNavigator->startModeling();
-	mNavigator->createSphere();
+    mNavigator->createPrimitive(Object3D::SPHERE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2532,7 +2532,7 @@ void NavigatorGUI::modelerMainCreateHalfSphere(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateHalfSphere()");
 	//mNavigator->startModeling();
-	mNavigator->createHalfSphere();
+    mNavigator->createPrimitive(Object3D::HALF_SPHERE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2540,7 +2540,7 @@ void NavigatorGUI::modelerMainCreateTorus(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTorus()");
 	//mNavigator->startModeling();
-	mNavigator->createTorus();
+    mNavigator->createPrimitive(Object3D::TORUS);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2548,7 +2548,7 @@ void NavigatorGUI::modelerMainCreateTube(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTube()");
 	//mNavigator->startModeling();
-	mNavigator->createTube();
+    mNavigator->createPrimitive(Object3D::TUBE);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2556,7 +2556,7 @@ void NavigatorGUI::modelerMainCreateRing(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateRing()");
 	//mNavigator->startModeling();
-	mNavigator->createRing();
+    mNavigator->createPrimitive(Object3D::RING);
 }
 
 //-------------------------------------------------------------------------------------

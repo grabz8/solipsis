@@ -297,34 +297,11 @@ public:
     bool startModeling();
     /** Stop the modeling mode. */
     bool endModeling();
-	/** Create a plane. */
-    bool createPlane();
-    /** Create a box. */
-    bool createBox();
-    /** Create a corner. */
-    bool createCorner();
-    /** Create a pyramid. */
-    bool createPyramid();
-    /** Create a prism. */
-    bool createPrism();
-    /** Create a cylinder. */
-    bool createCylinder();
-    /** Create a half cylinder. */
-    bool createHalfCyl();
-    /** Create a cone. */
-    bool createCone();
-    /** Create a Halfcone. */
-    bool createHalfCone();
-    /** Create a sphere. */
-    bool createSphere();
-    /** Create a half sphere. */
-    bool createHalfSphere();
-    /** Create a torus. */
-    bool createTorus();
-    /** Create a tube. */
-    bool createTube();
-    /** Create a ring. */
-    bool createRing();
+
+
+    /** the user creates a 3D primitive for the modeler **/
+    bool createPrimitive(Object3D::Type type);
+
 #ifdef DECLARATIVE_MODELER
     /** Create a Scene from text. */
 	bool createSceneFromText( const std::string&, std::string& errMsg, std::string& warnMsg );

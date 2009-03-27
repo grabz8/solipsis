@@ -37,6 +37,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
+// the factory
+Object3D * Object3D::createObject3D(Type type, const EntityUID& entityUID, const String& name, SceneNode* node)
+{
+    switch (type)
+    {
+    case PLANE:
+        return new Object3DPlane(entityUID, name, node);
+    case BOX: 
+        return new Object3DBox(entityUID, name, node);
+    case CORNER: 
+        return new Object3DCorner(entityUID, name, node);
+    case PYRAMID:
+        return new Object3DPyramid(entityUID, name, node);
+    case PRISM: 
+        return new Object3DPrism(entityUID, name, node);
+    case CYLINDER: 
+        return new Object3DCylinder(entityUID, name, node);
+    case HALF_CYLINDER: 
+        return new Object3DHalfCylinder(entityUID, name, node);
+    case CONE: 
+        return new Object3DCone(entityUID, name, node);
+    case HALF_CONE:
+        return new Object3DTube(entityUID, name, node);
+    case SPHERE: 
+        return new Object3DHalfCone(entityUID, name, node);
+    case HALF_SPHERE:
+        return new Object3DHalfSphere(entityUID, name, node);
+    case TORUS: 
+        return new Object3DTorus(entityUID, name, node);
+    case TUBE: 
+        return new Object3DTube(entityUID, name, node);
+    case RING:
+        return new Object3DRing(entityUID, name, node);
+    default:
+    case OTHER:
+        return NULL;
+    }
+}
+
+
 //-------------------------------------------------------------------------------------
 Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode)
 {

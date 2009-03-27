@@ -200,345 +200,82 @@ void Modeler::cleanUp()
     mSelection->clearObjects();
 }
 
-/// Create a plane.
-bool Modeler::createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
+MeshPtr Modeler::cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID& entityUID)
 {
-	MeshPtr mptr = mGenericPlane->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
+    MeshPtr mptr;
+    switch(type)
+    {
+    case Object3D::PLANE:
+        mptr =  mGenericPlane->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::BOX:
+    case Object3D::PYRAMID:
+        mptr =  mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::CORNER:
+        mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::PRISM:
+        mptr = mGenericPrism->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::CYLINDER:
+    case Object3D::HALF_CYLINDER:
+    case Object3D::CONE:
+    case Object3D::HALF_CONE:
+        mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::SPHERE:
+    case Object3D::HALF_SPHERE:
+        mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::TORUS:
+        mptr =  mGenericTorus->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::TUBE:
+        mptr =  mGenericTube->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    case Object3D::RING:
+        mptr =  mGenericRing->getMesh()->clone( String(entityUID) + ".mesh" );
+        break;
+    default:
+        mptr.setNull();
+    }
+
+    return mptr;
+}
+
+bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
+{
+    MeshPtr mptr = cloneGenericPrimitiveMesh(type, entityUID);
+    if (mptr.isNull())
+        return false;
+
+    Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
+    SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
+
 #ifdef SHADOWS
     entity->setCastShadows(true);
 #else
     entity->setCastShadows(false);
 #endif
+
     entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
+    node->attachObject( entity );
 
-	Object3DPlane* obj = new Object3DPlane(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
+    Object3D* obj = Object3D::createObject3D(type, entityUID, String(name), node );
+    mSelection->add3DObject(obj);
+    mSelection->selectObject3D(obj);
+    obj->mCentreSelection = player_pos;
 
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
+    node->setPosition(player_pos);
+    node->setOrientation(orientation);
+
+    // quick save the created object
+    //XMLSave(false);
 
     return true;
 }
 
-/// Create a box.
-bool Modeler::createBox(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DBox* obj = new Object3DBox(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-    return true;
-}
-
-
-/// Create a corner. 
-bool Modeler::createCorner(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	//genMeshCorner( String(entityUID) + ".mesh", 100, 100, 100 );
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DCorner* obj = new Object3DCorner(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a pyramid. 
-bool Modeler::createPyramid(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	//genMeshPyramid( String(entityUID) + ".mesh", 100, 100, 100 );
-	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DPyramid* obj = new Object3DPyramid(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a prism. 
-bool Modeler::createPrism(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	//genMeshPrism( String(entityUID) + ".mesh", 100, 100 );
-	MeshPtr mptr = mGenericPrism->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DPrism* obj = new Object3DPrism(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a cylinder. 
-bool Modeler::createCylinder(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DCylinder* obj = new Object3DCylinder(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a half cylinder. 
-bool Modeler::createHalfCyl(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DHalfCylinder* obj = new Object3DHalfCylinder(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a cone. 
-bool Modeler::createCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DCone* obj = new Object3DCone(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a Halfcone. 
-bool Modeler::createHalfCone(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericCylinder->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DHalfCone* obj = new Object3DHalfCone(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a sphere. 
-bool Modeler::createSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DSphere* obj = new Object3DSphere(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a half sphere. 
-bool Modeler::createHalfSphere(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericSphere->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DHalfSphere* obj = new Object3DHalfSphere(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a torus. 
-bool Modeler::createTorus(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericTorus->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DTorus* obj = new Object3DTorus(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a tube. 
-bool Modeler::createTube(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericTube->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DTube* obj = new Object3DTube(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
-
-/// Create a ring. 
-bool Modeler::createRing(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation)
-{
-	MeshPtr mptr = mGenericRing->getMesh()->clone( String(entityUID) + ".mesh" );
-	Entity *entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
-	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
-    entity->setQueryFlags(Navigator::QFObject);
-	node->attachObject( entity );
-
-	Object3DRing* obj = new Object3DRing(entityUID, String(name), node );
-	mSelection->add3DObject(obj);
-	obj->mCentreSelection = player_pos;
-
-	node->setPosition(player_pos);
-	node->setOrientation(orientation);
-
-	return true;
-}
 
 #ifdef DECLARATIVE_MODELER
 
@@ -1124,51 +861,10 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
     EntityUID entityUID = XMLfile->FirstChildElement("objuid")->Attribute("Uid");
 	String name = XMLfile->FirstChildElement("objname")->Attribute("Name");
 
-	switch (type) 
-	{
-        case Object3D::PLANE :
-			createPlane(entityUID, name, pos, orientation);
-			break;
-		case Object3D::BOX :
-			createBox(entityUID, name, pos, orientation);
-			break;
-		case Object3D::CORNER :
-			createCorner(entityUID, name, pos, orientation);
-			break;
-		case Object3D::PYRAMID :
-			createPyramid(entityUID, name, pos, orientation);
-			break;
-		case Object3D::PRISM :
-			createPrism(entityUID, name, pos, orientation);
-			break;
-		case Object3D::CYLINDER :
-			createCylinder(entityUID, name, pos, orientation);
-			break;
-		case Object3D::HALF_CYLINDER :
-			createHalfCyl(entityUID, name, pos, orientation);
-			break;
-		case Object3D::CONE :
-			createCone(entityUID, name, pos, orientation);
-			break;
-		case Object3D::HALF_CONE :
-			createHalfCone(entityUID, name, pos, orientation);
-			break;
-		case Object3D::SPHERE :
-			createSphere(entityUID, name, pos, orientation);
-			break;
-		case Object3D::HALF_SPHERE :
-			createHalfSphere(entityUID, name, pos, orientation);
-			break;
-		case Object3D::RING :
-			createRing(entityUID, name, pos, orientation);
-			break;
-		case Object3D::TORUS :
-			createTorus(entityUID, name, pos, orientation);
-			break;
-		case Object3D::TUBE :
-			createTube(entityUID, name, pos, orientation);
-			break;
-	}
+    if (!createPrimitive(type, entityUID, name, pos, orientation))
+    {
+        return NULL;
+    }
 
     Object3D * newObject = mSelection->geLastAddedObject();
     if (!newObject)
