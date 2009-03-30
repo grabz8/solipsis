@@ -1645,7 +1645,9 @@ void Navigator::onPeerNew(XmlEntity* xmlEntity)
         mNavigatorGUI->setTreeDirty(true);
 #endif
     if (!mOgrePeerManager->load(xmlEntity))
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onPeerNew() Unable to load entity !");
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Server command ERROR : Navigator::onPeerNew() Unable to load entity !");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1658,7 +1660,10 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUid().c_str());
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid()))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+    {
+       LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to remove lost peer %s !", xmlEntity->getUid());
+   //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1671,7 +1676,10 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
     if (!mOgrePeerManager->updateEntity(xmlEntity))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to update peer " + xmlEntity->getUid() + " !", "Navigator::onPeerUpdated");
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to update peer %s !", xmlEntity->getUid());
+        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1684,7 +1692,10 @@ void Navigator::onPeerAction(XmlAction* xmlAction)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerAction()");
 
     if (!mOgrePeerManager->action(xmlAction))
-        throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to process action on peers (" + xmlAction->getSourceEntityUid() + " -> " + xmlAction->getTargetEntityUid() + ") !", "Navigator::onPeerAction");
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "WARNING : Unable to do action on ID %s !", xmlAction->getSourceEntityUid());
+        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -1706,19 +1717,19 @@ void Navigator::onLocationChange(Navi *caller, const std::string &url)
     Entity* entity = getNaviEntity(caller->getName());
     if (entity == 0)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No entity found for navi %s !", caller->getName().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onLocationChange() No entity found for navi %s !", caller->getName().c_str());
         return;
     }
     Object3D* object3D = mModeler->getSelection()->get3DObject(entity);
     if (object3D == 0)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No object3D found for navi %s !", caller->getName().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onLocationChange() No object3D found for navi %s !", caller->getName().c_str());
         return;
     }
     Object* object = (Object*)mOgrePeerManager->getOgrePeer(object3D->getEntityUID());
     if (object == 0)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onLocationChange() No object found for navi %s !", caller->getName().c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onLocationChange() No object found for navi %s !", caller->getName().c_str());
         return;
     }
     sendURLUpdate(object->getXmlEntity()->getUid(), caller->getName(), url);

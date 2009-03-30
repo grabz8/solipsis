@@ -34,7 +34,7 @@ Exception::Exception(int num, const string& desc, const string& src) :
     number(num),
     description(desc),
     source(src)
-{
+{ 
     LogHandler::getLogHandler()->log(LogHandler::VL_CRITICAL, this->getFullDescription().c_str());
 }
 

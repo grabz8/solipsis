@@ -70,11 +70,24 @@ public:
     void log(int level, const char* msg)
     { 
         if (level > mVerbosity) return;
+        const char * pLevelStr;
+
+        switch(level)
+        {
+        case    VL_NONE: pLevelStr = "NONE"; break;
+        case    VL_CRITICAL:pLevelStr = "CRITICAL ERROR"; break;
+        case    VL_ERROR:pLevelStr = "ERROR"; break;
+        case    VL_WARNING:pLevelStr = "WARNING"; break;
+        case    VL_INFO:pLevelStr = "INFO"; break;
+        case    VL_DEBUG:pLevelStr = "DEBUG"; break;
+        default:     
+        case    VL_COUNT:pLevelStr = "UNKNOW LOG LEVEL"; break;
+        }
 
         char timeBuf[16];
         _strtime_s(timeBuf, 16);
         char log[256];
-        _snprintf(log, sizeof(log) - 2, "%s: %s\n", timeBuf, msg);
+        _snprintf(log, sizeof(log) - 2, "%s :%s: %s\n", timeBuf, msg);
         log[sizeof(log) - 2] = '\n';
         log[sizeof(log) - 1] = '\0';
 

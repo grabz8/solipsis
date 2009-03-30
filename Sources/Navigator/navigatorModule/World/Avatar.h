@@ -240,7 +240,7 @@ public:
     */
     virtual void onVoiceCreation()
     {
-        m_pSoundIcon->setStatus(SoundIcon::Showed);
+      m_pSoundIcon->setStatus(SoundIcon::Showed);
     }
 
     /** Called when avatar voice is destroyed.
@@ -248,7 +248,7 @@ public:
     */
     virtual void onVoiceDestruction()
     {
-        m_pSoundIcon->setStatus(SoundIcon::Invisible);
+          m_pSoundIcon->setStatus(SoundIcon::Invisible);
     };
 
     /** Called when avatar is talking or not.

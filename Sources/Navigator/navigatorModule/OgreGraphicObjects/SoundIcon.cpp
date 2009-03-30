@@ -65,7 +65,7 @@ void SoundIcon::setStatus(SoundIcon::SoundIcon_Status status)
 
 SoundIcon::~SoundIcon()
 {
-	m_pParentNode->detachObject(m_SoundIcon);
+//	m_pParentNode->detachObject(m_SoundIcon);
 	m_pMgr->destroyBillboardSet(m_SoundIcon);
 }
 
