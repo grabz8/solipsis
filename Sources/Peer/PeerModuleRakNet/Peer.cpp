@@ -348,7 +348,7 @@ void Peer::PhysicsEngineLogger::logMessage(const std::string& message)
 }
 
 //-------------------------------------------------------------------------------------
-void Peer::OgreLogger::log(int level, const char* msg)
+void Peer::OgreLogger::log(VerbosityLevel level, const char* msg)
 { 
     if (level > mVerbosity) return;
     OGRE_LOG(std::string(msg));
