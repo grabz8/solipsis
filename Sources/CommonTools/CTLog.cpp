@@ -36,6 +36,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace CommonTools {
 
+const char* LogHandler::ms_VerbosityLevelsStr[] = {
+    "NONE",
+    "CRITICAL",
+    "ERROR",
+    "WARNING",
+    "INFO",
+    "DEBUG"
+};
 const char* LogHandler::ms_TrueStr = "true";
 const char* LogHandler::ms_FalseStr = "false";
 
@@ -67,27 +75,14 @@ public:
         mLogFile = fopen(mLogFilename.c_str(), "w");
     }
 
-    void log(int level, const char* msg)
+    void log(VerbosityLevel level, const char* msg)
     { 
         if (level > mVerbosity) return;
-        const char * pLevelStr;
-
-        switch(level)
-        {
-        case    VL_NONE: pLevelStr = "NONE"; break;
-        case    VL_CRITICAL:pLevelStr = "CRITICAL ERROR"; break;
-        case    VL_ERROR:pLevelStr = "ERROR"; break;
-        case    VL_WARNING:pLevelStr = "WARNING"; break;
-        case    VL_INFO:pLevelStr = "INFO"; break;
-        case    VL_DEBUG:pLevelStr = "DEBUG"; break;
-        default:     
-        case    VL_COUNT:pLevelStr = "UNKNOW LOG LEVEL"; break;
-        }
 
         char timeBuf[16];
         _strtime_s(timeBuf, 16);
         char log[256];
-        _snprintf(log, sizeof(log) - 2, "%s :%s: %s\n", timeBuf, msg);
+        _snprintf(log, sizeof(log) - 2, "%s :%s: %s\n", timeBuf, getVerbosityLevelStr(level), msg);
         log[sizeof(log) - 2] = '\n';
         log[sizeof(log) - 1] = '\0';
 
@@ -123,6 +118,14 @@ LogHandler::~LogHandler()
 }
 
 //-------------------------------------------------------------------------------------
+const char* LogHandler::getVerbosityLevelStr(VerbosityLevel level)
+{
+    if ((level >= 0) && (level < VL_COUNT))
+        return ms_VerbosityLevelsStr[level];
+    return "UNKNOWN";
+}
+
+//-------------------------------------------------------------------------------------
 std::string LogHandler::getLogFilename()
 {
     ScopedMutexLock lock(mMutex);
@@ -136,7 +139,7 @@ void LogHandler::setLogFilename(const std::string& filename)
 }
 
 //-------------------------------------------------------------------------------------
-void LogHandler::logf(int level, const char* fmt, ...)
+void LogHandler::logf(VerbosityLevel level, const char* fmt, ...)
 {
     char buf[256];
     {

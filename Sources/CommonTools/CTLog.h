@@ -45,11 +45,14 @@ public:
         VL_DEBUG,
         VL_COUNT
     };
-
     /// True string
     static const char* ms_TrueStr;
     /// False string
     static const char* ms_FalseStr;
+
+protected:
+    /// Verbosity levels strings
+    static const char* ms_VerbosityLevelsStr[];
 
 protected:
     /// Current log handler
@@ -79,6 +82,7 @@ public:
     VerbosityLevel getVerbosityLevel() { return mVerbosity; }
     /// Set the verbosity level
     void setVerbosityLevel(VerbosityLevel verbosityLevel) { mVerbosity = verbosityLevel; }
+    const char* getVerbosityLevelStr(VerbosityLevel verbosityLevel);
 
     /// Returns the current log filename
     std::string getLogFilename();
@@ -86,9 +90,9 @@ public:
     virtual void setLogFilename(const std::string& filename);
 
     /// Log method to define
-    virtual void log(int level, const char* msg) = 0;
+    virtual void log(VerbosityLevel level, const char* msg) = 0;
     /// Log method with variable arguments
-    void logf(int level, const char* fmt, ...);
+    void logf(VerbosityLevel level, const char* fmt, ...);
 };
 
 #define LOGHANDLER_LOGBOOL(boolean) (boolean ? CommonTools::LogHandler::ms_TrueStr : CommonTools::LogHandler::ms_FalseStr)
