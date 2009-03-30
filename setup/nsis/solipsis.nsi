@@ -136,7 +136,7 @@ SectionEnd
 
 Section "Media" SEC07
   SetOutPath "$INSTDIR\Media"
-  File /r /x .svn /x NaviLocal /x lua "..\..\Media\*.*"
+  File /r /x .svn /x NaviLocal /x lua /x DebugHelperParameters "..\..\Media\*.*"
   CreateDirectory $INSTDIR\Media\cacheServerIsland
   CopyFiles /SILENT $INSTDIR\Media\cache\*.* $INSTDIR\Media\cacheServerIsland
   CreateDirectory $INSTDIR\Media\cacheServerDeltastation
