@@ -1311,7 +1311,7 @@ bool Navigator::setWindow(IWindow* w)
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::OgreLogger::log(int level, const char* msg)
+void Navigator::OgreLogger::log(VerbosityLevel level, const char* msg)
 { 
     if (level > mVerbosity) return;
     OGRE_LOG(std::string(msg));

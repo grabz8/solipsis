@@ -355,7 +355,7 @@ protected:
     {
     public:
         /** See CommonTools::LogHandler. */
-        void log(int level, const char* msg);
+        void log(VerbosityLevel level, const char* msg);
     };
     OgreLogger mOgreLogger;
 
