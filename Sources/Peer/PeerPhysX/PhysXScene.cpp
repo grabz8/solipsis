@@ -36,6 +36,7 @@ PhysXScene::PhysXScene(PhysXEngine* engine) :
     mNxControllerManager(0),
     mNxGeometry(0),
     mNxActor(0),
+    m_bTerrainMeshLoaded(false),
     mTimeSinceLastFrame(0.0f),
     mMaxStepInSeconds(1.0f/60.0f),
     mFirstStep(true)
@@ -175,6 +176,7 @@ bool PhysXScene::setTerrainMesh(const MeshPtr mesh,
                                 const Quaternion& orientation,
                                 const Vector3& scale)
 {
+    m_bTerrainMeshLoaded = true;
     mNxGeometry = PhysXHelpers::cookMesh(mesh, position, orientation, scale);
     if (mNxGeometry == 0)
         return false;
@@ -193,6 +195,7 @@ bool PhysXScene::setTerrainMesh(const MeshPtr mesh,
 void PhysXScene::unsetTerrainMesh()
 {
     if (mNxActor == 0) return;
+    m_bTerrainMeshLoaded = false;
     mNxScene->releaseActor(*mNxActor);
     mNxActor = 0;
 }

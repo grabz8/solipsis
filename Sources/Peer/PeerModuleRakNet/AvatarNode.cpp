@@ -219,6 +219,24 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
     XmlEntity::copyEntityDefinedAttributes(entity->getXmlEntity(), xmlEntity);
     xmlEvt->setDatas(entity->getXmlEntity());
 #endif
+
+       // Create physics of scene + my avatar
+    if ((entity->getXmlEntity()->getType() == ETSite) ||
+       ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
+    {
+        if (!entity->getPhysicsScene())
+        {
+            pthread_mutex_lock(&mMutex);
+            // create physics of the entity
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+            entity->createPhysics(Peer::getSingleton().getPhysicsScene());
+            entity->applyGravity(true);
+            pthread_mutex_unlock(&mMutex);      
+        }
+    }
+
+
+
     pthread_mutex_lock(&mEvtsMutex);
     mEvtsToHandleList.push_back(xmlEvt);
     pthread_mutex_unlock(&mEvtsMutex);

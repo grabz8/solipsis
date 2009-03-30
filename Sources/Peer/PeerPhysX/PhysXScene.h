@@ -57,6 +57,9 @@ protected:
     /// First step of simulation
     bool mFirstStep;
 
+    bool  m_bTerrainMeshLoaded;   //! return true if a terrain mesh is loaded
+
+
 public:
     PhysXScene(PhysXEngine* engine);
     virtual ~PhysXScene();
@@ -108,6 +111,12 @@ public:
     NxActor* getNxActor() { return mNxActor; }
     /// Get character controller
     NxControllerManager* getNxControllerManager() { return mNxControllerManager; }
+
+    virtual bool hasTerrainmesh()
+    {
+        return m_bTerrainMeshLoaded;
+    };
+
 };
 
 } // namespace Solipsis

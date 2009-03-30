@@ -160,13 +160,12 @@ IPhysicsScene* Entity::getPhysicsScene()
 //-------------------------------------------------------------------------------------
 void Entity::createPhysics(IPhysicsScene* physicsScene)
 {
-    destroyPhysics();
-
-    mPhysicsScene = physicsScene;
-
-    if (mXmlEntity->getType() == ETSite)
+    if (mXmlEntity->getType() == ETSite && mXmlEntity->getDownloadProgress() >= 1)
     {
-        // Get the scene content for LOD 0
+        destroyPhysics();
+        mPhysicsScene = physicsScene;
+
+       // Get the scene content for LOD 0
         XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
         RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
         // Collision ?
@@ -189,15 +188,15 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         // Load .osm or .scene
         TiXmlDocument osmFileDoc;
         DataStreamPtr pStream = ResourceGroupManager::getSingleton().openResource(xmlSceneLodContent0->getMainFilename());
-	    if (!pStream->size())
+        if (!pStream->size())
             return;
-	    size_t iSize = pStream->size();
-	    char *pBuf = new char[iSize+1];
-	    memset(pBuf, 0, iSize+1);
-	    pStream->read(pBuf, iSize);
-	    pStream.setNull();
-	    osmFileDoc.Parse(pBuf);
-	    delete[] pBuf;
+        size_t iSize = pStream->size();
+        char *pBuf = new char[iSize+1];
+        memset(pBuf, 0, iSize+1);
+        pStream->read(pBuf, iSize);
+        pStream.setNull();
+        osmFileDoc.Parse(pBuf);
+        delete[] pBuf;
 
         Vector3 position;
         Quaternion rotation;
@@ -306,7 +305,9 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
     }
     else
     {
-        // Compute radius and height of character
+        destroyPhysics();
+        mPhysicsScene = physicsScene;
+       // Compute radius and height of character
         Vector3 aabbHalfSize = mXmlEntity->getAABoundingBox().getHalfSize();
         mRadius = std::min(aabbHalfSize.x, aabbHalfSize.z);
         mHeight = aabbHalfSize.y*2;
@@ -319,6 +320,7 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
         mPhysicsCharacter = mPhysicsScene->createCharacter();
         mPhysicsCharacter->create(characterDesc);
     }
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -344,7 +346,7 @@ void Entity::destroyPhysics()
 bool Entity::update(Real timeSinceLastFrame)
 {
     // Move physics character
-    if (mPhysicsCharacter != 0)
+    if (mPhysicsCharacter != 0 && mPhysicsScene->hasTerrainmesh())
     {
         Vector3 displacement = mXmlEntity->getDisplacement()*timeSinceLastFrame;
         if (mGravity)
