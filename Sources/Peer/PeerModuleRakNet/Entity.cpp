@@ -84,11 +84,10 @@ void Entity::Deserialize(BitStream *bitStream, SerializationType serializationTy
     }
 }
 
-
-/** See CacheManagerCallback. */
+//-------------------------------------------------------------------------------------
 float Entity::onTransferProgress(const std::string& filename, float fProgress)
 {
-    float fGlobalProgress  = RakNetEntity::onTransferProgress(filename, fProgress);
+    float fGlobalProgress = RakNetEntity::onTransferProgress(filename, fProgress);
     mXmlEntity->setDownloadProgress(fGlobalProgress);
     mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
 
@@ -114,8 +113,9 @@ void Entity::onTransferComplete(const std::string& filename)
 
     if (mMissingFiles.empty())
     {
-        mXmlEntity->setDownloadProgress(1);
-       RakNetEntityMap& entities = getEntities();
+        mXmlEntity->setDownloadProgress(1.0f);
+        mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
+        RakNetEntityMap& entities = getEntities();
         RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
         if (it == entities.end())
         {

@@ -1068,3 +1068,8 @@ RakNet Replica scoping:
 - now RakNetServer is deal with avatar-avatar scoping and construct/destruct avatars' replicas according to their distance (default 50m)
 
 ---------------------------
+30/03/09
+
+Some fix about progress bar and avatar tuning
+
+---------------------------

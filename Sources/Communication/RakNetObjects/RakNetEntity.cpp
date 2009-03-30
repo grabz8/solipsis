@@ -573,7 +573,7 @@ void RakNetEntity::onTransferComplete(const std::string& filename)
     }
 }
 
-/** See CacheManagerCallback. */
+//-------------------------------------------------------------------------------------
 float RakNetEntity::onTransferProgress(const std::string& filename, float fProgress)
 {
     float addedprogres = mTotalNbfiles - mMissingFiles.size();
@@ -593,7 +593,6 @@ float RakNetEntity::onTransferProgress(const std::string& filename, float fProgr
 
     return addedprogres/mTotalNbfiles;
 }
-
 
 //-------------------------------------------------------------------------------------
 

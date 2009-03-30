@@ -82,7 +82,7 @@ bool Scene::updateEntity(XmlEntity* xmlEntity)
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
-    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1)
+    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1.0f)
     {
         OGRE_LOG("Scene::updateEntity() Destroy/Load new scene uid:" + mXmlEntity->getUid());
 
@@ -199,7 +199,7 @@ sceneMgr->setShadowFarDistance(100.);
     }
     if (definedAttributes & XmlEntity::DAProgress)
     {
-        if (xmlEntity->getDownloadProgress() < 1)
+        if (xmlEntity->getDownloadProgress() < 1.0f)
         {
             Avatar* pUserAvatar = Navigator::getSingletonPtr()->getUserAvatar();
             if (pUserAvatar)
