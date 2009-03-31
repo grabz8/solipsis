@@ -68,9 +68,11 @@ void CacheManager::initialize(const std::string& cachePath)
         TiXmlDocument xmlFileDoc(filename.c_str());
         if (!xmlFileDoc.LoadFile())
             throw std::string("Parsing error");
+
         TiXmlElement* cacheElt = xmlFileDoc.FirstChildElement("cache");
         if (cacheElt == 0)
             throw std::string("Parsing error");
+
         TiXmlElement* filesElt;
         if ((filesElt = cacheElt->FirstChildElement("files")) != 0)
         {
@@ -124,13 +126,22 @@ void CacheManager::finalize()
 }
 
 //-------------------------------------------------------------------------------------
-unsigned int CacheManager::GetFilePart(char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context)
+unsigned int CacheManager::GetFilePart(char *filename, 
+                                       unsigned int startReadBytes, unsigned int numBytesToRead, 
+                                       void *preallocatedDestination, 
+                                       FileListNodeContext context)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::IncrementalReadInterface::GetFilePart() filename:%s (%d, %d, 0x%08x, (%d, %d))",
-        filename, startReadBytes, numBytesToRead, preallocatedDestination, context.op, context.fileId);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s (%d, %d, 0x%08x, (%d, %d))",
+        filename, startReadBytes, numBytesToRead, 
+        preallocatedDestination, context.op, context.fileId);
 
     std::string pathname;
-    getCachePathname(std::string(filename), pathname);
+    long size = getCachePathname(std::string(filename), pathname);
+
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s %d %% (%d, %d, 0x%08x, (%d, %d))",
+        filename, (startReadBytes*100) /size , startReadBytes, numBytesToRead, 
+        preallocatedDestination, context.op, context.fileId);
+
     return IncrementalReadInterface::GetFilePart((char *)pathname.c_str(), startReadBytes, numBytesToRead, preallocatedDestination, context);
 }
 
@@ -205,14 +216,16 @@ void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCo
 //-------------------------------------------------------------------------------------
 void CacheManager::addFile(const std::string& filename, const FileVersion& version)
 {
+    std::string completeFileName = mCachePath + IO::getPathSeparator() + filename;
 	// check if the file is present
-	if (IO::isFileExists(mCachePath + IO::getPathSeparator() + filename)) 
+	if (IO::isFileExists(completeFileName)) 
 	{
 		CacheMap::iterator entryIt = mCache.find(filename);
 		if (entryIt == mCache.end())
 		{
-			Entry entry;
-			entry.mVersion = version;
+			CacheManagerFileEntry entry;
+            entry.mVersion = version;
+            entry.mFileSize = IO::getFileSize(completeFileName);
 			entry.mState = ESTransferComplete;
 			mCache[filename] = entry;
 			entryIt = mCache.find(filename);
@@ -222,12 +235,15 @@ void CacheManager::addFile(const std::string& filename, const FileVersion& versi
 }
 
 //-------------------------------------------------------------------------------------
-void CacheManager::requestFile(const SystemAddress& sender, const std::string& filename, const FileVersion& version, CacheManagerCallback* callback)
+void CacheManager::requestFile(const SystemAddress& sender, 
+                               const std::string& filename, 
+                               const FileVersion& version, 
+                               CacheManagerCallback* callback)
 {
     CacheMap::iterator entryIt = mCache.find(filename);
     if (entryIt == mCache.end())
     {
-        Entry entry;
+        CacheManagerFileEntry entry;
         entry.mVersion = version;
         entry.mState = ESTransferToRequest;
         mCache[filename] = entry;
@@ -256,9 +272,13 @@ void CacheManager::requestFile(const SystemAddress& sender, const std::string& f
     }
     else if (entryIt->second.mState == ESTransferComplete)
 	{
+        std::string completeFileName = mCachePath + IO::getPathSeparator() + filename;
 		// to prevent internal errors, check that the file is really here
-		if (IO::isFileExists(mCachePath + IO::getPathSeparator() + filename)) 
-	        callback->onTransferComplete(filename);
+		if (IO::isFileExists(completeFileName))
+        {
+            entryIt->second.mFileSize = IO::getFileSize(completeFileName);
+            callback->onTransferComplete(filename);
+        }
 		else
 		{
 			// back to request
@@ -274,6 +294,7 @@ void CacheManager::removeFile(const std::string& filename, CacheManagerCallback*
     if (entryIt == mCache.end())
         // entry not found !
         return;
+
     for (PendingDownloadList::iterator pendingDownloadIt = entryIt->second.mPendingDownloadList.begin(); pendingDownloadIt != entryIt->second.mPendingDownloadList.end(); ++pendingDownloadIt)
         if (pendingDownloadIt->mCallback == callback)
         {
@@ -322,9 +343,18 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
 }
 
 //-------------------------------------------------------------------------------------
-void CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
+long CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
 {
     pathname = mCachePath + IO::getPathSeparator() + filename;
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        return 0;
+    }
+    else
+    {
+        return entryIt->second.mFileSize;
+    }
 }
 
 //-------------------------------------------------------------------------------------

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MainApplication/OgrePeer.h"
 #include <Selection.h>
+#include "OgreGraphicObjects/MovableBox.h"
 
 using namespace Ogre;
 
@@ -70,6 +71,11 @@ public:
 #else
     virtual bool action(XmlAction* xmlAction);
 #endif
+
+    // when loading this box replace the bounding box
+    MovableBox * mpBox;
+    // used only for bounding box
+    SceneNode * mLocalNode;
 };
 
 } // namespace Solipsis

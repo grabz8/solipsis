@@ -92,7 +92,7 @@ NodeEventListener::EvtsList* NodeEventListener::beginProcessEvents()
     mNodeEventsListProcessing = mNodeEventsListReceiving;
     mNodeEventsListReceiving = (mNodeEventsListReceiving == &mNodeEventsList1) ? &mNodeEventsList2 : &mNodeEventsList1;
 //    if (!mNodeEventsListProcessing->empty())
-//        OGRE_LOG("NodeEventListener::beginProcessEvents() new events list in mNodeEventsListProcessing");
+//        LOGHANDLER_LOG("NodeEventListener::beginProcessEvents() new events list in mNodeEventsListProcessing");
     pthread_mutex_unlock(&mNodeEventsListsMutex);
     return mNodeEventsListProcessing;
 }

@@ -91,6 +91,8 @@ public:
 
     /// Log method to define
     virtual void log(VerbosityLevel level, const char* msg) = 0;
+    /// Log method to define
+    virtual void log(VerbosityLevel level, const std::string& msg);
     /// Log method with variable arguments
     void logf(VerbosityLevel level, const char* fmt, ...);
 };

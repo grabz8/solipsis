@@ -344,6 +344,7 @@ public:
 	bool getShowBoundingBox();
 	///brief Update the size of the bounding box.
 	void updateBoundingBox();
+    void getAABoundingBox(AxisAlignedBox & box);
 
 	/// brief Apply an action to modifiy the object
 	bool apply( Command command, Real p1 );

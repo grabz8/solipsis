@@ -100,6 +100,7 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
         }
         catch (Ogre::Exception& e)
         {
+            OGRE_LOG("OgreApplication::initialize caught Ogre::Exception " + e.getFullDescription());
             return false;
         }
     }

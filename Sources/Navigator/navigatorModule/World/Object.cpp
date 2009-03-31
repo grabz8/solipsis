@@ -40,8 +40,11 @@ Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* obje
 #else
 Object::Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D) :
 #endif
-    OgrePeer(xmlEntity, isLocal),
-    mObject3D(object3D)
+    OgrePeer(xmlEntity, isLocal)
+,   mObject3D(object3D)
+,   mpBox(0)
+,   mLocalNode(NULL)
+
 {
     mResourceGroup = xmlEntity->getUid() + "Resources";
     ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
@@ -62,6 +65,17 @@ Object::~Object()
 	        ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         if (!mResourceGroup.empty())
             ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+    }
+
+    if (!mLocalNode)
+    {
+        mLocalNode->detachAllObjects();
+        mLocalNode->getCreator()->destroySceneNode(mLocalNode->getName());
+        mLocalNode = NULL;
+    }
+    if (mpBox)
+    {
+        delete mpBox;
     }
 }
 
@@ -133,7 +147,12 @@ bool Object::updateEntity(XmlEntity* xmlEntity)
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
-    if (definedAttributes & XmlEntity::DAContent)
+    if (!mLocalNode)
+    {
+        mLocalNode = Modeler::getSceneManager()->getRootSceneNode()->createChildSceneNode( String(xmlEntity->getUid()) + "_tempObjects.node" );
+    }
+
+    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress()  >= 1)
     {
         OGRE_LOG("Avatar::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
 
@@ -156,17 +175,48 @@ bool Object::updateEntity(XmlEntity* xmlEntity)
                 pathname = Navigator::getSingletonPtr()->getMediaCachePath() + IO::getPathSeparator() + it->mFilename;
 
         mResourceLocation = pathname;
-        ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
-        ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
+        try
+        {
+            ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
+            ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
+        }
+        catch (Ogre::Exception e)
+        {
+            OGRE_LOG("Object::updateEntity caught Ogre exception : " + e.getFullDescription());
+            return false;
+        }
 
         Object3DPtrList newObjects;
+
         if (!modeler->XMLLoad(pathname, newObjects))
         {
             OGRE_LOG("Error : Unable to load .sof object file !");
             return false;
-//             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to load .sof object file !", "Object::update");
         }
         mObject3D = *(newObjects.begin());
+    }
+    if (definedAttributes & XmlEntity::DAAABoundingBox)
+    {
+//         if (mpBox == NULL)
+//         {
+//             const Ogre::AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
+//             Vector3 size = bbBox.getSize();
+//             if (size.x == 0)    
+//                 size.x = 1;
+//             if (size.y == 0)    
+//                 size.y = 1;
+//             if (size.z == 0)    
+//                 size.z = 1;
+// 
+//             size.y = 800;
+// 
+//             mpBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", size, false);
+//             mLocalNode->attachObject(mpBox);
+//         }
+    }
+    if (definedAttributes & XmlEntity::DAPosition)
+    {
+        mLocalNode->setPosition(mXmlEntity->getPosition());
     }
     if (definedAttributes & XmlEntity::DAProgress)
     {
@@ -174,6 +224,8 @@ bool Object::updateEntity(XmlEntity* xmlEntity)
             xmlEntity->getUid() + " : " + 
             StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
     }
+    
+
 
     return true;
 }

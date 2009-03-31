@@ -25,8 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Instance.h"
 #include "MainApplication/AutoCreatedWindow.h"
 #include "OgreTools/OgreHelpers.h"
+#include "CTLog.h"
 
 using namespace Solipsis;
+using namespace CommonTools;
 
 /*pthread_once_t Instance::ms_TlsKeyOnce = PTHREAD_ONCE_INIT;
 pthread_key_t Instance::ms_TlsKey = INSTANCE_TLS_NOKEY;
@@ -97,6 +99,7 @@ bool Instance::_setWindow()
         }
         catch (Ogre::Exception& e)
         {
+            OGRE_LOG("Instance::_setWindow caught Ogre::Exception " + e.getFullDescription());
             mWindow = 0;
         }
     }
@@ -184,15 +187,15 @@ bool Instance::run()
         }
         catch (Ogre::Exception e)
         {
+            LOGHANDLER_LOG(LogHandler::VL_CRITICAL, "Caught an Ogre exception, " + e.getFullDescription());
             // Hum hum TODO add a good Solipsis::exception class
-            Ogre::LogManager::getSingleton().logMessage("Caught an Ogre exception, " + e.getFullDescription());
              requestTerminate();
             mOgreApplication->unlock();
         }
         catch (std::exception e)
         {
+            LOGHANDLER_LOG(LogHandler::VL_CRITICAL, "Caught an std::exception, " + String(e.what()));
             // Hum hum TODO add a good Solipsis::exception class
-            Ogre::LogManager::getSingleton().logMessage("Caught an std::exception, " + String(e.what()));
              requestTerminate();
             mOgreApplication->unlock();
         }
@@ -200,7 +203,7 @@ bool Instance::run()
         {
             // Hum hum TODO add a good Solipsis::exception class
             mOgreApplication->unlock();
-            Ogre::LogManager::getSingleton().logMessage("Caught an exception !");
+            LOGHANDLER_LOG(LogHandler::VL_CRITICAL, "Caught an exception, ");
              requestTerminate();
             mOgreApplication->unlock();
         }

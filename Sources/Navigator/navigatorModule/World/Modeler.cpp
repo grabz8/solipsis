@@ -527,7 +527,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 {
     if (filename.empty())
         return false;
-
+ 
     // Go back to the main directory
 	_chdir(mExecPath.c_str());
 

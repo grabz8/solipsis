@@ -320,6 +320,9 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         xmlEntity->setType(ETObject);
         xmlEntity->setName(object3D->getName());
         xmlEntity->setVersion(0);
+        AxisAlignedBox box;
+        object3D->getAABoundingBox(box);
+        xmlEntity->setAABoundingBox(box);
         xmlEntity->setFlags(EFNone);
         xmlEntity->setPosition(Vector3::ZERO);
         xmlEntity->setOrientation(Quaternion::IDENTITY);

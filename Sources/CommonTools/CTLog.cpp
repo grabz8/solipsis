@@ -141,7 +141,7 @@ void LogHandler::setLogFilename(const std::string& filename)
 //-------------------------------------------------------------------------------------
 void LogHandler::logf(VerbosityLevel level, const char* fmt, ...)
 {
-    char buf[256];
+    char buf[512];
     {
         ScopedMutexLock lock(mMutex);
         va_list va;
@@ -151,6 +151,13 @@ void LogHandler::logf(VerbosityLevel level, const char* fmt, ...)
     }
     log(level, buf);
 }
+
+/// Log method to define
+void LogHandler::log(VerbosityLevel level, const std::string& msg)
+{
+    log(level, msg.c_str());
+}
+
 
 //-------------------------------------------------------------------------------------
 

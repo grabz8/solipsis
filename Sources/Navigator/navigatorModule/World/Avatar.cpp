@@ -73,7 +73,6 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
 ,   mNameLabel(0)
 ,   mChatLabel(0)
 , 	m_pSoundIcon(0)
-,   mpBox(0)
 ,   mSelectionObject(0)
 ,   mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 ,   mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
@@ -227,15 +226,6 @@ void Avatar::onSceneNodeChanged()
 		mChatLabel->setVisible(false);
 		mNameLabel->setVisible(false);
 	}
-
-//     if (mpBox == NULL)
-//     {
-//         const Ogre::AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
-//         mpBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", bbBox.getSize(), false);
-//         getSceneNode()->attachObject(mpBox);
-//         mpBox->setPosition(avatarHalfSize.y);
-//     }
-
 
     // Sound Icon
     if (m_pSoundIcon == 0) 

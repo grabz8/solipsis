@@ -1594,6 +1594,13 @@ void inline Object3D::update()
 	}
 }
 
+void Object3D::getAABoundingBox(AxisAlignedBox & box)
+{
+    getSize( mSize, mCornerMin, mCornerMax );
+    box.setMinimum(mCornerMin.x, mCornerMin.y, mCornerMin.z);
+    box.setMaximum(mCornerMax.x, mCornerMax.y, mCornerMax.z);
+}
+
 //-------------------------------------------------------------------------------------
 void inline Object3D::updateBoundingBox()
 {

@@ -420,9 +420,9 @@ bool OgreHelpers::isEntityHitByMouse(const Ray& ray, Entity* entity,
         {
             if ((closestDistance < 0.0f) || (distance < closestDistance))
             {
-//                OGRE_LOG("v0=" + StringConverter::toString(vertices[indices[i]]) + ", tc=" + StringConverter::toString(texCoords[indices[i]]));
-//                OGRE_LOG("v1=" + StringConverter::toString(vertices[indices[i + 1]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 1]]));
-//                OGRE_LOG("v2=" + StringConverter::toString(vertices[indices[i + 2]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 2]]));
+//                LOGHANDLER_LOG("v0=" + StringConverter::toString(vertices[indices[i]]) + ", tc=" + StringConverter::toString(texCoords[indices[i]]));
+//                LOGHANDLER_LOG("v1=" + StringConverter::toString(vertices[indices[i + 1]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 1]]));
+//                LOGHANDLER_LOG("v2=" + StringConverter::toString(vertices[indices[i + 2]]) + ", tc=" + StringConverter::toString(texCoords[indices[i + 2]]));
                 // this is the closest so far, save it off
                 closestDistance = distance;
                 closestUV = uv;

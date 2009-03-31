@@ -77,6 +77,10 @@ public:
 	~Modeler(void);
 
 	static Modeler* getSingletonPtr();
+    static Ogre::SceneManager *getSceneManager()
+    {
+        return ms_singletonPtr->mSceneManager;
+    };
 
 	/// Init the modeler mode
 	bool	init(const String& pPath);

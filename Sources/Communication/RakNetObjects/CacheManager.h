@@ -59,7 +59,7 @@ public:
 class CacheManager : public FileListTransferCBInterface, public IncrementalReadInterface
 {
 public:
-    /// Entry state
+    /// CacheManager File Entry state
     typedef float EntryState;
     static const EntryState ESTransferToRequest; //(-1)
     static const EntryState ESTransferComplete; //(1)
@@ -85,11 +85,13 @@ public:
     {
         FileVersion mVersion;
         EntryState mState;
+        long mFileSize;
         PendingDownloadList mPendingDownloadList;
         PendingUploadList mPendingUploadList;
-    } Entry;
-    /// Cache map of <filename, Entry>
-    typedef std::map<std::string, Entry> CacheMap;
+    } CacheManagerFileEntry;
+
+    /// Cache map of <filename, CacheManagerFileEntry>
+    typedef std::map<std::string, CacheManagerFileEntry> CacheMap;
 
 protected:
     /// Connection
@@ -153,10 +155,11 @@ public:
 
 protected:
     /** Retrieve the pathname of 1 file into the cache directory.
-    @param filename The file name
-    @param pathname The pathname of the file into the cache directory
+        @param filename The file name
+        @param pathname The pathname of the file into the cache directory
+        @return  the file size, zero if the file does not exists in the cache 
     */
-    void getCachePathname(const std::string& filename, std::string& pathname);
+    long getCachePathname(const std::string& filename, std::string& pathname);
 };
 
 } // namespace Solipsis
