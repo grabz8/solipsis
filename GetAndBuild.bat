@@ -125,6 +125,16 @@ echo ************************************************** >> buildLog.log
 %DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Release|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 
+echo *************************************************
+echo *********** building solipsis Release ***********
+echo *************************************************
+echo ************************************************* >> buildLog.log
+echo *********** building solipsis Release *********** >> buildLog.log
+echo ************************************************* >> buildLog.log
+%DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
+IF ERRORLEVEL 1 goto errorBuilding
+
+
 if "%builddebug%"=="y" (
 echo *************************************************
 echo *********** building 3rdParties Debug ***********
@@ -135,16 +145,6 @@ echo ************************************************* >> buildLog.log
 %DEVENV% "3rdParties%SUFFIX%.sln" /%BuildType% "Debug|Win32" /out buildLog.log
 IF ERRORLEVEL 1 goto errorBuilding
 )
-
-
-echo *************************************************
-echo *********** building solipsis Release ***********
-echo *************************************************
-echo ************************************************* >> buildLog.log
-echo *********** building solipsis Release *********** >> buildLog.log
-echo ************************************************* >> buildLog.log
-%DEVENV% "solipsis%SUFFIX%.sln" /%BuildType% "%ReleaseConfig%|Win32" /out buildLog.log 
-IF ERRORLEVEL 1 goto errorBuilding
 
 if "%builddebug%"=="y" (
 echo *************************************************
