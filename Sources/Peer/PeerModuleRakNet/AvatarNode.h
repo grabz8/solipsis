@@ -40,11 +40,8 @@ namespace Solipsis {
 class AvatarNode : public Node, public TimeListener
 {
 public:
-#ifdef POOL
+
     typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
-#else
-    typedef std::list<XmlEvt*> XmlEvtToHandleList;
-#endif
 
 protected:
     /// Mutex on instance
@@ -99,7 +96,7 @@ public:
 
     bool isOwnedEntity(Entity* entity);
 
-#ifdef POOL
+
     /** Process an event. */
     virtual bool processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
 
@@ -107,14 +104,6 @@ public:
     virtual RefCntPoolPtr<XmlEvt> getNextEvtToHandle();
     /** Free event (handled event). */
     virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
-#else
-    /** Process an event. */
-    virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
-    /** Get next event to handle. */
-    virtual XmlEvt* getNextEvtToHandle();
-    /** Free event (handled event). */
-    virtual bool freeEvt(XmlEvt* xmlEvt);
-#endif
 
     /** Freeze. */
     virtual bool freeze(bool frozen);

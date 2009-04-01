@@ -44,11 +44,9 @@ class OgrePeerManager : public FrameListener, public IModelerCallbacks
 public:
     typedef std::map<EntityUID, XmlEntity*> XmlEntitiesMap;
     typedef std::map<EntityUID, OgrePeer*> OgrePeersMap;
-#ifdef POOL
+
     typedef std::list<RefCntPoolPtr<XmlEvt>> EvtsList;
-#else
-    typedef std::list<XmlEvt> EvtsList;
-#endif
+
 
 private:
     // My node identifier
@@ -82,11 +80,7 @@ public:
     void setNodeId(const NodeId& nodeId);
 
     // Load
-#ifdef POOL
     bool load(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    bool load(XmlEntity* xmlEntity);
-#endif
 
     // Get the scene object filename
     const String& getXmlObjectFilename();
@@ -100,18 +94,12 @@ public:
     void cleanUp();
 
 	// Update
-#ifdef POOL
     bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    bool updateEntity(XmlEntity* xmlEntity);
-#endif
+
 
 	// Action
-#ifdef POOL
     bool action(RefCntPoolPtr<XmlAction>& xmlAction);
-#else
-    bool action(XmlAction* xmlAction);
-#endif
+
 
     /** See Ogre::FrameListener. */
     virtual bool frameStarted(const FrameEvent& evt);
@@ -140,15 +128,11 @@ public:
     EvtsList& getEvtsToSendList() { return mEvtsList; }
 
 protected:
-#ifdef POOL
+
     virtual OgrePeer* createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
     virtual OgrePeer* createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
     virtual OgrePeer* createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    virtual OgrePeer* createAvatarNode(XmlEntity* xmlEntity);
-    virtual OgrePeer* createSceneNode(XmlEntity* xmlEntity);
-    virtual OgrePeer* createObjectNode(XmlEntity* xmlEntity);
-#endif
+
 };
 
 } // namespace Solipsis

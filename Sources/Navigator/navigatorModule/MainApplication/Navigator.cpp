@@ -1336,7 +1336,7 @@ bool Navigator::connect()
     mXmlRpcClient = new NavigatorXMLRPCClient(peerHost, peerPort, 0, "nattempts=2");
 
     //Try connection
-#ifdef POOL
+
     RefCntPoolPtr<XmlLogin> xmlLogin;
     xmlLogin->setUsername(mLogin);
     std::string worldHost;
@@ -1345,14 +1345,8 @@ bool Navigator::connect()
     xmlLogin->setWorldHost(worldHost);
     xmlLogin->setWorldPort(worldPort);
     xmlLogin->setNodeId(mNodeId);
-#else
-    XmlLogin xmlLogin(mLogin, mWorldHost, mWorldPort, mNodeId);
-#endif
-#ifdef POOL
+
     bool nodeResponse = mXmlRpcClient->login(*xmlLogin, mNodeId);
-#else
-    bool nodeResponse = mXmlRpcClient->login(xmlLogin, mNodeId);
-#endif
 
     if (!nodeResponse)
     {
@@ -1562,7 +1556,7 @@ bool Navigator::sendMessage(const String& message)
     // log with locale string
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendMessage(%s)", StringHelpers::convertWStringToString(messageWStr).c_str());
 
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETActionOnEntity);
     RefCntPoolPtr<XmlAction> xmlAction;
@@ -1574,17 +1568,7 @@ bool Navigator::sendMessage(const String& message)
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
-#else
-    XmlEvt xmlEvt(ETActionOnEntity);
-    XmlAction xmlAction(ETActionOnEntity);
-    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
-    xmlAction->setTargetEntityUid(mUserAvatar->getXmlEntity()->getUid());
-    xmlAction->setType(ATChat);
-    xmlAction->setBroadcast(true);
-    xmlAction->setDesc(messageWStr);
-    std::string xmlResp;
-    return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
-#endif
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -1606,7 +1590,7 @@ bool Navigator::sendURLUpdate(const EntityUID& entityUID, const String& naviName
     // log with locale string
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendURLUpdate() %s", StringHelpers::convertWStringToString(actionWStr).c_str());
 
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETActionOnEntity);
     RefCntPoolPtr<XmlAction> xmlAction;
@@ -1618,25 +1602,12 @@ bool Navigator::sendURLUpdate(const EntityUID& entityUID, const String& naviName
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
     std::string xmlResp;
     return mXmlRpcClient->sendEvt(*xmlEvt, xmlResp);
-#else
-    XmlEvt xmlEvt(ETActionOnEntity);
-    XmlAction xmlAction(ETActionOnEntity);
-    xmlAction->setSourceEntityUid(mUserAvatar->getXmlEntity()->getUid());
-    xmlAction->setTargetEntityUid(entityUID);
-    xmlAction->setType(ATURLUpdate);
-    xmlAction->setBroadcast(true);
-    xmlAction->setDesc(actionWStr);
-    std::string xmlResp;
-    return mXmlRpcClient->sendEvt(xmlEvt, xmlResp);
-#endif
+
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-void Navigator::onPeerNew(XmlEntity* xmlEntity)
-#endif
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUid().c_str());
 
@@ -1651,11 +1622,8 @@ void Navigator::onPeerNew(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-void Navigator::onPeerLost(XmlEntity* xmlEntity)
-#endif
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerLost() uid:%s", xmlEntity->getUid().c_str());
 
@@ -1667,11 +1635,8 @@ void Navigator::onPeerLost(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 void Navigator::onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
-#endif
 {
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
@@ -1683,11 +1648,8 @@ void Navigator::onPeerUpdated(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 void Navigator::onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction)
-#else
-void Navigator::onPeerAction(XmlAction* xmlAction)
-#endif
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerAction()");
 
@@ -1747,32 +1709,18 @@ void Navigator::processEvents()
         switch ((*xmlEvt)->getType())
         {
         case ETNewEntity:
-#ifdef POOL
+
             onPeerNew(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
-#else
-            onPeerNew((XmlEntity*)((*xmlEvt)->getDatas()));
-#endif
+
             break;
         case ETLostEntity:
-#ifdef POOL
             onPeerLost(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
-#else
-            onPeerLost((XmlEntity*)((*xmlEvt)->getDatas()));
-#endif
             break;
         case ETUpdatedEntity:
-#ifdef POOL
             onPeerUpdated(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
-#else
-            onPeerUpdated((XmlEntity*)((*xmlEvt)->getDatas()));
-#endif
             break;
         case ETActionOnEntity:
-#ifdef POOL
             onPeerAction(RefCntPoolPtr<XmlAction>((*xmlEvt)->getDatas()));
-#else
-            onPeerAction((XmlAction*)((*xmlEvt)->getDatas()));
-#endif
             break;
         case ETConnectionLost:
             mNavigatorGUI->connectionLostError();
@@ -1784,10 +1732,7 @@ void Navigator::processEvents()
         default: // Caller already check type consistency
             break;
         }
-#ifdef POOL
-#else
-        delete (*xmlEvt);
-#endif
+
     }
     endProcessEvents();
 }
@@ -1805,11 +1750,7 @@ void Navigator::sendEvents()
     OgrePeerManager::EvtsList& evtsList = mOgrePeerManager->getEvtsToSendList();
     for (OgrePeerManager::EvtsList::iterator xmlEvt = evtsList.begin(); xmlEvt != evtsList.end(); ++xmlEvt)
     {
-#ifdef POOL
         if (!mXmlRpcClient->sendEvt(*(*xmlEvt), xmlResp))
-#else
-        if (!mXmlRpcClient->sendEvt((*xmlEvt), xmlResp))
-#endif
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::sendEvents() Unable to send event !");
     }
     evtsList.clear();

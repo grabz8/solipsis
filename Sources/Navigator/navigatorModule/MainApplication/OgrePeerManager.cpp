@@ -69,11 +69,8 @@ void OgrePeerManager::setNodeId(const NodeId& nodeId)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool OgrePeerManager::load(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-bool OgrePeerManager::load(XmlEntity* xmlEntity)
-#endif
 {
     OgrePeer* newOgrePeer = 0;
     switch (xmlEntity->getType())
@@ -114,10 +111,7 @@ bool OgrePeerManager::remove(const EntityUID& entity)
     {
         if (ogrePeer->second->getXmlEntity()->getUid() != entity)
             continue;
-#ifdef POOL
-#else
-        delete ogrePeer->second->getXmlEntity();
-#endif
+
         switch (ogrePeer->second->getXmlEntity()->getType())
         {
         case ETSite:
@@ -145,10 +139,7 @@ void OgrePeerManager::removeAll(bool local)
         for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
         {
             if (ogrePeer->second->isLocal() != local) continue;
-#ifdef POOL
-#else
-            delete ogrePeer->second->getXmlEntity();
-#endif
+
             delete ogrePeer->second;
             mOgrePeersMap.erase(ogrePeer);
             loopAgain = true;
@@ -173,11 +164,8 @@ void OgrePeerManager::cleanUp()
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool OgrePeerManager::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-bool OgrePeerManager::updateEntity(XmlEntity* xmlEntity)
-#endif
 {
     OgrePeersMap::iterator it = mOgrePeersMap.find(xmlEntity->getUid());
     if ((it == mOgrePeersMap.end()) || (it->second == 0))
@@ -186,20 +174,11 @@ bool OgrePeerManager::updateEntity(XmlEntity* xmlEntity)
     OgrePeer* ogrePeer = it->second;
     bool result = ogrePeer->updateEntity(xmlEntity);
 
-#ifdef POOL
-#else
-    delete xmlEntity;
-#endif
-
     return result;
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
 bool OgrePeerManager::action(RefCntPoolPtr<XmlAction>& xmlAction)
-#else
-bool OgrePeerManager::update(XmlAction* xmlAction)
-#endif
 {
     if (xmlAction->getType() == ATChat)
     {
@@ -217,11 +196,6 @@ bool OgrePeerManager::update(XmlAction* xmlAction)
     OgrePeer* ogrePeer = it->second;
     bool result = ogrePeer->action(xmlAction);
 
-#ifdef POOL
-#else
-    delete xmlAction;
-#endif
-
     return result;
 }
 
@@ -233,23 +207,17 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         it->second->update(evt.timeSinceLastFrame);
 
     // Send updated entities events to node
-#ifdef POOL
-#else
-    XmlEvt xmlEvt(ETUpdatedEntity);
-#endif
+
+
     for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
     {
-#ifdef POOL
+
         RefCntPoolPtr<XmlEntity>& updatedXmlEntity = it->second->getUpdatedXmlEntity();
         if (updatedXmlEntity.isNull()) continue;
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETUpdatedEntity);
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(updatedXmlEntity));
-#else
-        XmlEntity* updatedXmlEntity = it->second->getUpdatedXmlEntity();
-        if (updatedXmlEntity == 0) continue;
-        xmlEvt.setDatas(updatedXmlEntity);
-#endif
+
         mEvtsList.push_back(xmlEvt);
     }
 
@@ -309,11 +277,8 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         mReservedOgrePeersMap.erase(object3D->getEntityUID());
 
         // Create the Xml entity
-#ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity;
-#else
-        XmlEntity* xmlEntity = new XmlEntity();
-#endif
+
         xmlEntity->setDefinedAttributes(XmlEntity::DANone);
         xmlEntity->setUid(object3D->getEntityUID());
         xmlEntity->setOwner(mNodeId);
@@ -326,13 +291,10 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         xmlEntity->setFlags(EFNone);
         xmlEntity->setPosition(Vector3::ZERO);
         xmlEntity->setOrientation(Quaternion::IDENTITY);
-#ifdef POOL
+
         RefCntPoolPtr<XmlContent> xmlContent;
         RefCntPoolPtr<XmlLodContent> xmlLodContent0;
-#else
-        XmlContent* xmlContent = new XmlContent();
-        XmlLodContent* xmlLodContent0 = new XmlLodContent();
-#endif
+
         xmlLodContent0->setLevel(0);
         LodContentFileStruct lodContent0File;
         lodContent0File.mFilename = sofFilename;
@@ -354,14 +316,11 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         mOgrePeersMap[xmlEntity->getUid()] = peerObject;
 
         // Send new entity event
-#ifdef POOL
+
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-        XmlEvt xmlEvt(ETNewEntity);
-        xmlEvt.setDatas(xmlEntity);
-#endif
+
         mEvtsList.push_back(xmlEvt);
     }
     else
@@ -372,11 +331,9 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         object->onObjectSave();
 
         // Create the Xml entity
-#ifdef POOL
+
         RefCntPoolPtr<XmlEntity> xmlEntity;
-#else
-        XmlEntity* xmlEntity = new XmlEntity();
-#endif
+
         xmlEntity->setDefinedAttributes(XmlEntity::DANone);
         xmlEntity->setUid(object->getXmlEntity()->getUid());
         xmlEntity->setType(object->getXmlEntity()->getType());
@@ -384,14 +341,11 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         xmlEntity->setContent(object->getXmlEntity()->getContent());
 
         // Send updated entity event
-#ifdef POOL
+
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETUpdatedEntity);
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-        XmlEvt xmlEvt(ETUpdatedEntity);
-        xmlEvt.setDatas(xmlEntity);
-#endif
+
         mEvtsList.push_back(xmlEvt);
     }
 
@@ -412,24 +366,18 @@ bool OgrePeerManager::onObject3DDelete(Object3D* object3D)
     Object *object = (Object*)ogrePeer->second;
 
     // Create the Xml entity
-#ifdef POOL
     RefCntPoolPtr<XmlEntity> xmlEntity;
-#else
-    XmlEntity* xmlEntity = new XmlEntity();
-#endif
+
     xmlEntity->setDefinedAttributes(XmlEntity::DANone);
     xmlEntity->setUid(object->getXmlEntity()->getUid());
     xmlEntity->setType(object->getXmlEntity()->getType());
 
     // Send lost entity event
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETLostEntity);
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-    XmlEvt xmlEvt(ETLostEntity);
-    xmlEvt.setDatas(xmlEntity);
-#endif
+
     mEvtsList.push_back(xmlEvt);
 
     mOgrePeersMap.erase(ogrePeer);
@@ -457,11 +405,9 @@ bool OgrePeerManager::onUserAvatarSave()
     userAvatar->onAvatarSave();
 
     // Create the Xml entity
-#ifdef POOL
+
     RefCntPoolPtr<XmlEntity> xmlEntity;
-#else
-    XmlEntity* xmlEntity = new XmlEntity();
-#endif
+
     xmlEntity->setDefinedAttributes(XmlEntity::DANone);
     xmlEntity->setUid(mUserAvatar->getXmlEntity()->getUid());
     xmlEntity->setType(mUserAvatar->getXmlEntity()->getType());
@@ -469,25 +415,18 @@ bool OgrePeerManager::onUserAvatarSave()
     xmlEntity->setContent(mUserAvatar->getXmlEntity()->getContent());
 
     // Send updated entity event
-#ifdef POOL
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETUpdatedEntity);
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-    XmlEvt xmlEvt(ETUpdatedEntity);
-    xmlEvt.setDatas(xmlEntity);
-#endif
+
     mEvtsList.push_back(xmlEvt);
 
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
-#endif
 {
     if (mSceneMgr == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "No scene manager !", "OgrePeerManager::CreateAvatarNode");
@@ -533,11 +472,8 @@ OgrePeer* OgrePeerManager::createAvatarNode(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
-#endif
 {
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
     Scene* peerScene = new Scene(xmlEntity, isLocal);
@@ -549,11 +485,8 @@ OgrePeer* OgrePeerManager::createSceneNode(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-OgrePeer* OgrePeerManager::createObjectNode(XmlEntity* xmlEntity)
-#endif
 {
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
 

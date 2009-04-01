@@ -27,8 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Solipsis 
 {
 
-#ifdef POOL
-
 #include <list>
 
 template<class T> 
@@ -191,8 +189,6 @@ template<class T, class U> inline bool operator!=(RefCntPoolPtr<T> const& a, Ref
 {
     return a.get() != b.get();
 }
-#endif
-
 
 } // namespace Solipsis
 

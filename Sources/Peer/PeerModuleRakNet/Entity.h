@@ -55,11 +55,7 @@ public:
     /// Dirty flag (Avatar)
     bool mDirty;
     /// Xml Entity cache (Avatar)
-#ifdef POOL
     RefCntPoolPtr<XmlEntity> mUpdatedXmlEntity;
-#else
-    XmlEntity mUpdatedXmlEntity;
-#endif
 
 public:
     /** Constructor. */

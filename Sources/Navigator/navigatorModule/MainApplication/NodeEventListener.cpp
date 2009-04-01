@@ -57,13 +57,9 @@ void NodeEventListener::run()
     // Events processing is performed by the rendering thread to ensure synchronization with the rendering engine
     while (!isStopRequested())
     {
-#ifdef POOL
         RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
+
         if (mXmlRpcClientAsync->handleEvt(xmlEvt) && !xmlEvt.isNull())
-#else
-        XmlEvt* xmlEvt = 0;
-        if (mXmlRpcClientAsync->handleEvt(&xmlEvt) && (xmlEvt != 0))
-#endif
         {
             pthread_mutex_lock(&mNodeEventsListsMutex);
             mNodeEventsListReceiving->push_back(xmlEvt);

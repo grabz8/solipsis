@@ -83,19 +83,13 @@ bool NavigatorXMLRPCClient::isConnected()
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool NavigatorXMLRPCClient::handleEvt(RefCntPoolPtr<XmlEvt>& xmlEvt)
-#else
-bool NavigatorXMLRPCClient::handleEvt(XmlEvt** xmlEvt)
-#endif
 {
     std::string xmlResp;
 
-#ifdef POOL
     xmlEvt = RefCntPoolPtr<XmlEvt>::nullPtr;
-#else
-    *xmlEvt = 0;
-#endif
+
     IP2NClient::RetCode retCode = mP2NClient->handleEvt(xmlResp);
     if (retCode == IP2NClient::RCNoEvt)
         return true;
@@ -110,13 +104,9 @@ bool NavigatorXMLRPCClient::handleEvt(XmlEvt** xmlEvt)
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Invalid event ! xmlResp=\n%s", xmlResp.c_str());
         return false;
     }
-#ifdef POOL
+
     xmlEvt.allocate();
     xmlEvt->fromXmlElt(xmlDoc.RootElement());
-#else
-    (*xmlEvt) = new XmlEvt();
-    (*xmlEvt)->fromXmlElt(xmlDoc.RootElement());
-#endif
 
     return true;
 }

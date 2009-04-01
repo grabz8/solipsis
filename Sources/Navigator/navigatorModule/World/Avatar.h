@@ -52,11 +52,8 @@ public:
 
 protected:
     /// Updated entity
-#ifdef POOL
     RefCntPoolPtr<XmlEntity> mUpdatedXmlEntity;
-#else
-    XmlEntity* mUpdatedXmlEntity;
-#endif
+
     /// Default animation names
     static String mDefaultStateAnimName[ASAvatarAnimCount];
     /// Animation names
@@ -123,20 +120,14 @@ private:
 
 public:
     /** Constructor. */
-#ifdef POOL
     Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInstance* characterInstance);
-#else
-    Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterInstance);
-#endif
+
     /** Destructor. */
     virtual ~Avatar();
 
     /** Gets the updated entity. */
-#ifdef POOL
+
     virtual RefCntPoolPtr<XmlEntity>& getUpdatedXmlEntity()
-#else
-    virtual XmlEntity* getUpdatedXmlEntity()
-#endif
     {
         if (isLocal() && mUpdatedXmlEntity->getDefinedAttributes() & (
             XmlEntity::DAFlags |
@@ -145,11 +136,8 @@ public:
             XmlEntity::DAOrientation |
             XmlEntity::DAAnimation))
             return mUpdatedXmlEntity;
-#ifdef POOL
+
         return RefCntPoolPtr<XmlEntity>::nullPtr;
-#else
-        return 0;
-#endif
     }
 
     /** Get the character instance. */
@@ -204,17 +192,10 @@ public:
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    virtual bool updateEntity(XmlEntity* xmlEntity);
-#endif
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction);
-#else
-    virtual bool action(XmlAction* xmlAction);
-#endif
+
 
     /** Starts 1 animation. */
     void startAnimation(const String &name, bool loop = true);

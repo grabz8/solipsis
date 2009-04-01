@@ -35,11 +35,8 @@ using namespace Solipsis;
 using namespace CommonTools;
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D) :
-#else
-Object::Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D) :
-#endif
     OgrePeer(xmlEntity, isLocal)
 ,   mObject3D(object3D)
 ,   mpBox(0)
@@ -102,11 +99,8 @@ void Object::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
-#else
-bool Object::action(XmlAction* xmlAction)
-#endif
 {
     // Action applied by our local avatar ?
     if (xmlAction->getSourceEntityUid() == Navigator::getSingletonPtr()->getUserAvatar()->getXmlEntity()->getUid())
@@ -139,11 +133,8 @@ bool Object::action(XmlAction* xmlAction)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-bool Object::updateEntity(XmlEntity* xmlEntity)
-#endif
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 

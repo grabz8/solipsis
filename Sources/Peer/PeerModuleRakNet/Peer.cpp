@@ -229,7 +229,6 @@ namespace Solipsis {
                     {
                     case ID_CONNECTION_ATTEMPT_FAILED:
 //                         {
-// #ifdef POOL
 //                             RefCntPoolPtr<XmlEvt> xmlEvt;
 // 
 //                             mEvtsToHandleList.push_back(xmlEvt);
@@ -298,11 +297,9 @@ namespace Solipsis {
             pthread_mutex_lock(&mEvtsToProcessMutex);
             while (!mEvtsToProcessList.empty())
             {
-#ifdef POOL
+
                 RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
-#else
-                XmlEvt* xmlEvt = 0;
-#endif
+
                 xmlEvt = mEvtsToProcessList.front();
                 mEvtsToProcessList.pop_front();
                 bool result;
@@ -457,19 +454,11 @@ namespace Solipsis {
         {
 #endif
 
-#ifdef POOL
             RefCntPoolPtr<XmlEvt> xmlEvt = popEvtToSend();
             if (xmlEvt.isNull() && mAvatarNode != 0)
                 xmlEvt = mAvatarNode->getNextEvtToHandle();
 
             if (!xmlEvt.isNull())
-#else
-            XmlEvt* xmlEvt = popEvtToSend();
-
-            if (mAvatarNode != 0)
-                xmlEvt = mAvatarNode->getNextEvtToHandle();
-            if (xmlEvt != 0)
-#endif
             {
                 std::stringstream s;
                 s << "<solipsis>" << xmlEvt->toXmlString() << "</solipsis>";
@@ -502,11 +491,8 @@ namespace Solipsis {
             return IP2NClient::RCError;
         }
 
-#ifdef POOL
         RefCntPoolPtr<XmlEvt> xmlEvt;
-#else
-        XmlEvt* xmlEvt = new XmlEvt();
-#endif
+
         if (!xmlEvt->fromXmlElt(xmlDoc.RootElement()))
         {
             xmlRespStr = "Invalid parameters !";
@@ -701,11 +687,9 @@ namespace Solipsis {
     void Peer::reconnectAvatarNode()
     {
         Entity* avatarEntity = (Entity*)mAvatarNode->getEntity();
-#ifdef POOL
+
         RefCntPoolPtr<XmlEntity> savedXmlEntity = avatarEntity->getXmlEntity();
-#else
-        XmlEntity* savedXmlEntity = avatarEntity->getXmlEntity();
-#endif
+
         avatarEntity->mDirty = false;
         pthread_mutex_lock(&mPhysicsMutex);
 
@@ -747,11 +731,9 @@ namespace Solipsis {
     {
         Entity* entity = new Entity();
         entity->setSystemAddress(mRakNetConnection.getMySystemAddress());
-#ifdef POOL
+
         RefCntPoolPtr<XmlEntity> xmlEntity = entity->getXmlEntity();
-#else
-        XmlEntity* xmlEntity = entity->getXmlEntity();
-#endif
+
         xmlEntity->fromXmlElt(entityElt);
         entity->addFilesInCacheManager();
         entity->mDirty = true;

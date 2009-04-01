@@ -53,27 +53,16 @@ protected:
     ProgressBarWithText * mpBar;
 
 public:
-#ifdef POOL
     Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal);
-#else
-    Scene(XmlEntity* xmlEntity, bool isLocal);
-#endif
+
     virtual ~Scene();
 
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    virtual bool updateEntity(XmlEntity* xmlEntity);
-#endif
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction);
-#else
-    virtual bool action(XmlAction* xmlAction);
-#endif
 
 protected:
     void destroy();

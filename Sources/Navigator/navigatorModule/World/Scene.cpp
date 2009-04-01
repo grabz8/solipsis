@@ -46,11 +46,8 @@ class OgrePeerManagerOSMSceneCallbacks : public OSMSceneCallbacks
 };
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 Scene::Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
-#else
-Scene::Scene(XmlEntity* xmlEntity, bool isLocal) :
-#endif
     OgrePeer(xmlEntity, isLocal),
     mSceneNode(0),
     mStaticGeometry(0),
@@ -74,11 +71,8 @@ void Scene::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-bool Scene::updateEntity(XmlEntity* xmlEntity)
-#endif
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
@@ -243,11 +237,8 @@ sceneMgr->setShadowFarDistance(100.);
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Scene::action(RefCntPoolPtr<XmlAction>& xmlAction)
-#else
-bool Scene::action(XmlAction* xmlAction)
-#endif
 {
     return true;
 }

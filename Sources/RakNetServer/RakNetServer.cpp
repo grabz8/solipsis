@@ -276,11 +276,9 @@ Entity* RakNetServer::loadEntity(TiXmlElement* entityElt)
 {
     Entity* entity = new Entity();
     entity->setSystemAddress(mRakNetConnection.getMySystemAddress());
-#ifdef POOL
+
     RefCntPoolPtr<XmlEntity> xmlEntity = entity->getXmlEntity();
-#else
-    XmlEntity* xmlEntity = entity->getXmlEntity();
-#endif
+
     xmlEntity->fromXmlElt(entityElt);
     entity->addFilesInCacheManager();
     Entity::addEntity(entity);

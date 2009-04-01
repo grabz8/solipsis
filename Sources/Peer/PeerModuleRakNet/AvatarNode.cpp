@@ -138,16 +138,12 @@ void AvatarNode::onNewEntity(Entity* entity)
     if (entity->mDirty)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() sending ETNewEntity for entity uid:%s", entity->getXmlEntity()->getUid().c_str());
-#ifdef POOL
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);
         if (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAFlags)
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() ETNewEntity evt sent uid=%s flags=%08x", entity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getFlags());
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
-#else
-        XmlEvt* xmlEvt = new XmlEvt(ETNewEntity);
-        xmlEvt->setDatas(entity->getXmlEntity());
-#endif
+
         pthread_mutex_lock(&mEvtsMutex);
         mEvtsToHandleList.push_back(xmlEvt);
         pthread_mutex_unlock(&mEvtsMutex);
@@ -156,11 +152,8 @@ void AvatarNode::onNewEntity(Entity* entity)
     if ((entity->getXmlEntity()->getType() == ETSite) && (mEntity != 0))
     {
         // Reset avatar orientation and displacement
-#ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity = mEntity->getXmlEntity();
-#else
-        XmlEntity* xmlEntity = mEntity->getXmlEntity();
-#endif
+
         xmlEntity->setDisplacement(Ogre::Vector3::ZERO);
         if (entity->getXmlEntity()->getUid() == mLastSiteUid)
         {
@@ -203,7 +196,7 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
         return;
     }
 
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETUpdatedEntity);
     RefCntPoolPtr<XmlEntity> xmlEntity;
@@ -212,13 +205,6 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
     if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() ETUpdatedEntity evt sent uid=%s flags=%08x", xmlEntity->getUid().c_str(), xmlEntity->getFlags());
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-    XmlEvt* xmlEvt = new XmlEvt(ETUpdatedEntity);
-    XmlEntity* xmlEntity = new XmlEntity();
-    xmlEntity->setDefinedAttributes(entity->getLastDeserializedDefinedAttributes());
-    XmlEntity::copyEntityDefinedAttributes(entity->getXmlEntity(), xmlEntity);
-    xmlEvt->setDatas(entity->getXmlEntity());
-#endif
 
     // Create physics of scene + my avatar
     if ((entity->getXmlEntity()->getType() == ETSite) ||
@@ -264,20 +250,14 @@ void AvatarNode::onLostEntity(Entity* entity)
 
     if (entity->mDirty)
     {
-#ifdef POOL
+
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETLostEntity);
         RefCntPoolPtr<XmlEntity> xmlEntity;
         xmlEntity->setUid(entity->getXmlEntity()->getUid());
         xmlEntity->setType(entity->getXmlEntity()->getType());
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
-#else
-        XmlEvt* xmlEvt = new XmlEvt(ETLostEntity);
-        XmlEntity* xmlEntity = new XmlEntity();
-        xmlEntity->setUid(entity->getXmlEntity()->getUid());
-        xmlEntity->setType(entity->getXmlEntity()->getType());
-        xmlEvt->setDatas(entity->getXmlEntity());
-#endif
+
         pthread_mutex_lock(&mEvtsMutex);
         mEvtsToHandleList.push_back(xmlEvt);
         pthread_mutex_unlock(&mEvtsMutex);
@@ -297,7 +277,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     bitStream->Read(broadcast);
     std::string desc;
     RakNetConnection::DeserializeString(bitStream, desc);
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETActionOnEntity);
     RefCntPoolPtr<XmlAction> xmlAction;
@@ -307,17 +287,7 @@ void AvatarNode::onActionOnEntity(BitStream *bitStream)
     xmlAction->setBroadcast(broadcast);
     xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlAction));
-#else
-    XmlEvt* xmlEvt = new XmlEvt();
-    xmlEvt->setType(xmlEvt->getType());
-    XmlEvt* xmlAction = new XmlAction();
-    xmlAction->setType(actionType);
-    xmlAction->setSourceEntityUid(sourceEntityUid);
-    xmlAction->setTargetEntityUid(targetEntityUid);
-    xmlAction->setBroadcast(broadcast);
-    xmlAction->setDesc(XmlHelpers::convertUTF8ToWString("WCHAR_T", desc));
-    xmlEvt->setDatas(xmlAction);
-#endif
+
     pthread_mutex_lock(&mEvtsMutex);
     mEvtsToHandleList.push_back(xmlEvt);
     pthread_mutex_unlock(&mEvtsMutex);
@@ -331,11 +301,8 @@ bool AvatarNode::isOwnedEntity(Entity* entity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr)
-#else
-bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
-#endif
 {
     static int c;
     static unsigned long l = (unsigned long)-1;
@@ -351,11 +318,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
 
     if (xmlEvt->getType() == ETUpdatedEntity)
     {
-#ifdef POOL
         XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas().get();
-#else
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
-#endif
         if (xmlEntity == 0)
         {
             xmlRespStr = "No entity found in event !";
@@ -423,13 +386,9 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
     }
     else if (xmlEvt->getType() == ETNewEntity)
     {
-#ifdef POOL
+
         RefCntPoolPtr<XmlEntity> xmlEntity = (RefCntPoolPtr<XmlEntity>)xmlEvt->getDatas();
         if (xmlEntity.isNull())
-#else
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
-        if (xmlEntity == 0)
-#endif
         {
             xmlRespStr = "No entity found in event !";
             return false;
@@ -458,11 +417,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
     else if (xmlEvt->getType() == ETLostEntity)
     {
         // Entity was deleted
-#ifdef POOL
         XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas().get();
-#else
-        XmlEntity* xmlEntity = (XmlEntity*)xmlEvt->getDatas();
-#endif
         if (xmlEntity == 0)
         {
             xmlRespStr = "No entity found in event !";
@@ -486,11 +441,8 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
     }
     else if (xmlEvt->getType() == ETActionOnEntity)
     {
-#ifdef POOL
+
         XmlAction* xmlAction = (XmlAction*)xmlEvt->getDatas().get();
-#else
-        XmlAction* xmlAction = (XmlAction*)xmlEvt->getDatas();
-#endif
         if (xmlAction == 0)
         {
             xmlRespStr = "No action found in event !";
@@ -511,17 +463,10 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 RefCntPoolPtr<XmlEvt> AvatarNode::getNextEvtToHandle()
 {
     RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
-
-#else
-XmlEvt* AvatarNode::getNextEvtToHandle()
-{
-    XmlEvt* xmlEvt = 0;
-#endif
-
 
     pthread_mutex_lock(&mEvtsMutex);
     if (!mEvtsToHandleList.empty())
@@ -535,30 +480,17 @@ XmlEvt* AvatarNode::getNextEvtToHandle()
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool AvatarNode::freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt)
-#else
-bool AvatarNode::freeEvt(XmlEvt* xmlEvt)
-#endif
 {
     pthread_mutex_lock(&mEvtsMutex);
     Entity* entity = (Entity*)mEntity;
     if (entity != 0)
     {
-#ifdef POOL
         if (xmlEvt->getDatas() == entity->mUpdatedXmlEntity)
             entity->mUpdatedXmlEntity->setDefinedAttributes(XmlEntity::DANone);
-#else
-        if (xmlEvt->getDatas() == &entity->mUpdatedXmlEntity)
-            entity->mUpdatedXmlEntity.setDefinedAttributes(XmlEntity::DANone);
-#endif
     }
     pthread_mutex_unlock(&mEvtsMutex);
-
-#ifdef POOL
-#else
-    delete evt;
-#endif
 
     return true;
 }
@@ -592,12 +524,9 @@ void AvatarNode::setConnectionLost(bool lost)
     mConnectionLost = lost;
 
     // Send connection lost event to navigator
-#ifdef POOL
+
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(lost ? ETConnectionLost : ETConnectionRestored);
-#else
-    XmlEvt* xmlEvt = new XmlEvt(lost ? ETConnectionLost : ETConnectionRestored);
-#endif
 
     pthread_mutex_lock(&mEvtsMutex);
     mEvtsToHandleList.push_back(xmlEvt);
@@ -635,7 +564,7 @@ bool AvatarNode::tick(Real timeSinceLastTick)
         //    if ((entity != 0) && entity->mDirty)
     {
         pthread_mutex_lock(&mEvtsMutex);
-#ifdef POOL
+
         if (!entity->mUpdatedXmlEntity->getDefinedAttributes() & XmlEntity::DAUid)
         {
             RefCntPoolPtr<XmlEvt> xmlEvt;
@@ -648,17 +577,7 @@ bool AvatarNode::tick(Real timeSinceLastTick)
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s p:%s", entity->getXmlEntity()->getUid().c_str(), StringConverter::toString(entity->getXmlEntity()->getPosition()).c_str());
 #endif
             xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->mUpdatedXmlEntity));
-#else
-        if (!entity->mUpdatedXmlEntity.getDefinedAttributes() & XmlEntity::DAUid)
-        {
-            XmlEvt* xmlEvt = new XmlEvt(ETUpdatedEntity);
-            entity->mUpdatedXmlEntity.setUid(entity->getXmlEntity()->getUid());
-            entity->mUpdatedXmlEntity.setPosition(entity->getXmlEntity()->getPosition());
-#ifdef LOGSNDRCV
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s p:", entity->getXmlEntity()->getUid().c_str(), StringConverter::toString(entity->getXmlEntity()->getPosition()).c_str());
-#endif
-            xmlEvt->setDatas(&entity->mUpdatedXmlEntity);
-#endif
+
             mEvtsToHandleList.push_back(xmlEvt);
             entity->addLastDeserializedDefinedAttributes(XmlEntity::DAPosition);
             entity->mDirty = false;

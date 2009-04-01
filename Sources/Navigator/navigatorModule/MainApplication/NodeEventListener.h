@@ -39,11 +39,7 @@ class NavigatorXMLRPCClient;
 class NodeEventListener : public BasicThread
 {
 public:
-#ifdef POOL
     typedef std::list<RefCntPoolPtr<XmlEvt>> EvtsList;
-#else
-    typedef std::list<XmlEvt*> EvtsList;
-#endif
 
 protected:
     // XMLRPC client

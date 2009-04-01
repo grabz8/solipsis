@@ -46,11 +46,8 @@ protected:
 
 public:
     /** Constructor. */
-#ifdef POOL
     Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D = 0);
-#else
-    Object(XmlEntity* xmlEntity, bool isLocal, Object3D* object3D = 0);
-#endif
+
     /** Destructor. */
     virtual ~Object();
 
@@ -60,17 +57,10 @@ public:
     /** See OgrePeer. */
     virtual void update(Real timeSinceLastFrame);
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity);
-#else
-    virtual bool updateEntity(XmlEntity* xmlEntity);
-#endif
+
     /** See OgrePeer. */
-#ifdef POOL
     virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction);
-#else
-    virtual bool action(XmlAction* xmlAction);
-#endif
 
     // when loading this box replace the bounding box
     MovableBox * mpBox;

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
-#ifdef POOL
+
 Pool XmlLogin::mPool;
 Pool XmlLodContent::mPool;
 Pool XmlSceneLodContent::mPool;
@@ -55,7 +55,6 @@ Pool& XmlAction::getStaticPool() { return mPool; }
 Pool& XmlAction::getPool() const { return mPool; }
 Pool& XmlEvt::getStaticPool() { return mPool; }
 Pool& XmlEvt::getPool() const { return mPool; }
-#endif
 
 //-------------------------------------------------------------------------------------
 std::string XmlLogin::toXmlString() const
@@ -130,11 +129,9 @@ std::string XmlLodContent::toXmlString() const
 {
     std::stringstream s;
     s << "<lod level=\"" << mLevel << "\">";
-#ifdef POOL
+
     if (!mDatas.isNull()) s << mDatas->toXmlString();
-#else
-    if (mDatas != 0) s << mDatas->toXmlString();
-#endif
+
     s << "<files>";
     for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
@@ -150,11 +147,9 @@ bool XmlLodContent::toXmlElt(TiXmlElement& xmlElt) const
 {
     TiXmlElement* lodElt = new TiXmlElement("lod");
     lodElt->SetAttribute("level", mLevel);
-#ifdef POOL
+
     if (!mDatas.isNull()) mDatas->toXmlElt(*lodElt);
-#else
-    if (mDatas != 0) mDatas->toXmlElt(*lodElt);
-#endif
+
     TiXmlElement* filesElt = new TiXmlElement("files");
     for (LodContentFileList::const_iterator file = mLodContentFileList.begin(); file != mLodContentFileList.end(); ++file)
     {
@@ -169,11 +164,6 @@ bool XmlLodContent::toXmlElt(TiXmlElement& xmlElt) const
 //-------------------------------------------------------------------------------------
 bool XmlLodContent::fromXmlElt(TiXmlElement* xmlElt)
 {
-#ifdef POOL
-#else
-    delete mDatas;
-    mDatas = 0;
-#endif
     mLodContentFileList.clear();
 
     TiXmlElement* elt;
@@ -184,15 +174,11 @@ bool XmlLodContent::fromXmlElt(TiXmlElement* xmlElt)
 
     if ((elt = xmlElt->FirstChildElement("sceneLodContent")) != 0)
     {
-#ifdef POOL
+
         RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent;
         xmlSceneLodContent->fromXmlElt(elt);
         mDatas = RefCntPoolPtr<XmlData>(xmlSceneLodContent);
-#else
-        XmlSceneLodContent* sceneLodContent = new XmlSceneLodContent();
-        sceneLodContent->fromXmlElt(elt);
-        mDatas = sceneLodContent;
-#endif
+
     }
 
     if ((elt = xmlElt->FirstChildElement("files")) == 0)
@@ -245,11 +231,9 @@ std::string XmlContent::toXmlString() const
 {
     std::stringstream s;
     s << "<content>";
-#ifdef POOL
+
     if (!mDatas.isNull()) s << mDatas->toXmlString();
-#else
-    if (mDatas != 0) s << mDatas->toXmlString();
-#endif
+
     for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
     {
         s << lod->second->toXmlString();
@@ -262,11 +246,9 @@ std::string XmlContent::toXmlString() const
 bool XmlContent::toXmlElt(TiXmlElement& xmlElt) const
 {
     TiXmlElement* contentElt = new TiXmlElement("content");
-#ifdef POOL
-    if (!mDatas.isNull()) mDatas->toXmlElt(*contentElt);
-#else
-    if (mDatas != 0) mDatas->toXmlElt(*contentElt);
-#endif
+    if (!mDatas.isNull()) 
+        mDatas->toXmlElt(*contentElt);
+
     for (ContentLodMap::const_iterator lod = mContentLodMap.begin(); lod != mContentLodMap.end(); ++lod)
     {
         lod->second->toXmlElt(*contentElt);
@@ -278,25 +260,15 @@ bool XmlContent::toXmlElt(TiXmlElement& xmlElt) const
 //-------------------------------------------------------------------------------------
 bool XmlContent::fromXmlElt(TiXmlElement* xmlElt)
 {
-#ifdef POOL
-#else
-    delete mDatas;
-    mDatas = 0;
-#endif
-
     TiXmlElement* elt;
 
     if ((elt = xmlElt->FirstChildElement("sceneContent")) != 0)
     {
-#ifdef POOL
+
         RefCntPoolPtr<XmlSceneContent> xmlSceneContent;
         xmlSceneContent->fromXmlElt(elt);
         mDatas = RefCntPoolPtr<XmlData>(xmlSceneContent);
-#else
-        XmlSceneContent* sceneContent = new XmlSceneContent();
-        sceneContent->fromXmlElt(elt);
-        mDatas = sceneContent;
-#endif
+
     }
 
     mContentLodMap.clear();
@@ -375,17 +347,11 @@ std::string XmlEntity::toXmlString() const
     if (mDefinedAttributes & DAProgress) 
         s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
      
-#ifdef POOL
     if (!mShape.isNull()) 
         s << mShape->toXmlString();
     if (!mContent.isNull()) 
         s << mContent->toXmlString();
-#else
-    if (mShape != 0) 
-        s << mShape->toXmlString();
-    if (mContent != 0) 
-        s << mContent->toXmlString();
-#endif
+
     s << "</entity>";
     return s.str();
 }
@@ -432,17 +398,12 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
         entityElt->LinkEndChild(elt);
     } 
 
-#ifdef POOL
+
     if (!mShape.isNull()) 
         mShape->toXmlElt(*entityElt);
     if (!mContent.isNull())
         mContent->toXmlElt(*entityElt);
-#else
-    if (mShape != 0) 
-        mShape->toXmlElt(*entityElt);
-    if (mContent != 0) 
-        mContent->toXmlElt(*entityElt);
-#endif
+
     xmlElt.LinkEndChild(entityElt);
     return true;
 }
@@ -450,16 +411,6 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
 //-------------------------------------------------------------------------------------
 bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
 {
-#ifdef POOL
-#else
-    delete mAnimation;
-    mAnimation = 0;
-    delete mShape;
-    mShape = 0;
-    delete mContent;
-    mContent = 0;
-#endif
-
     TiXmlElement* elt;
     const char* attr = 0;
 
@@ -533,14 +484,10 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     }
     if ((elt = xmlElt->FirstChildElement("content")) != 0)
     {
-#ifdef POOL
         RefCntPoolPtr<XmlContent> xmlContent;
         xmlContent->fromXmlElt(elt);
         mContent = RefCntPoolPtr<XmlContent>(xmlContent);
-#else
-        mContent = new XmlContent();
-        mContent->fromXmlElt(elt);
-#endif
+
         mDefinedAttributes |= DAContent;
     }
     if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
@@ -625,11 +572,9 @@ std::string XmlEvt::toXmlString() const
 {
     std::stringstream s;
     s << "<evt type=\"" << mType << "\">";
-#ifdef POOL
-    if (!mDatas.isNull()) s << mDatas->toXmlString();
-#else
-    if (mDatas != 0) s << mDatas->toXmlString();
-#endif
+    if (!mDatas.isNull()) 
+        s << mDatas->toXmlString();
+
     s << "</evt>";
     return s.str();
 }
@@ -639,11 +584,9 @@ bool XmlEvt::toXmlElt(TiXmlElement& xmlElt) const
 {
     TiXmlElement* evtElt = new TiXmlElement("evt");
     evtElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
-#ifdef POOL
+
     if (!mDatas.isNull()) mDatas->toXmlElt(*evtElt);
-#else
-    if (mDatas != 0) mDatas->toXmlElt(*evtElt);
-#endif
+
     xmlElt.LinkEndChild(evtElt);
     return true;
 }
@@ -651,12 +594,6 @@ bool XmlEvt::toXmlElt(TiXmlElement& xmlElt) const
 //-------------------------------------------------------------------------------------
 bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
 {
-#ifdef POOL
-#else
-    delete mDatas;
-    mDatas = 0;
-#endif
-
     TiXmlElement* elt;
     const char* attr = 0;
 
@@ -669,27 +606,15 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
     TiXmlElement* subElt;
     if ((subElt = elt->FirstChildElement("entity")) != 0)
     {
-#ifdef POOL
         RefCntPoolPtr<XmlEntity> xmlEntity;
         xmlEntity->fromXmlElt(subElt);
         mDatas = RefCntPoolPtr<XmlData>(xmlEntity);
-#else
-        XmlEntity* xmlEntity = new XmlEntity();
-        xmlEntity->fromXmlElt(subElt);
-        mDatas = xmlEntity;
-#endif
     }
     else if ((subElt = elt->FirstChildElement("action")) != 0)
     {
-#ifdef POOL
         RefCntPoolPtr<XmlAction> xmlAction;
         xmlAction->fromXmlElt(subElt);
         mDatas = RefCntPoolPtr<XmlData>(xmlAction);
-#else
-        XmlAction* xmlAction = new XmlAction();
-        xmlAction->fromXmlElt(subElt);
-        mDatas = xmlAction;
-#endif
     }
 
     return true;

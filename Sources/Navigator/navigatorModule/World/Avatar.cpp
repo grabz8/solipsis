@@ -57,15 +57,11 @@ String Avatar::mDefaultStateAnimName[ASAvatarAnimCount] = {
 
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
-#else
-Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterInstance) :
-#endif
+
     OgrePeer(xmlEntity, isLocal)
-#ifdef POOL
-,    mUpdatedXmlEntity((XmlEntity*)0)
-#endif
+,   mUpdatedXmlEntity((XmlEntity*)0)
 ,   mState(ASAvatarNone)
 ,   mMvtType(MT3rdPerson)
 ,   mCamerasSceneNode(0)
@@ -87,18 +83,13 @@ Avatar::Avatar(XmlEntity* xmlEntity, bool isLocal, CharacterInstance* characterI
     for (int a = 0;a < ASAvatarAnimCount; ++a)
         mStateAnimName[a] = mDefaultStateAnimName[a];
 
-#ifdef POOL
+
     if (isLocal)
     {
         mUpdatedXmlEntity.allocate();
         mUpdatedXmlEntity->setDefinedAttributes(XmlEntity::DANone);
         mUpdatedXmlEntity->setUid(mXmlEntity->getUid());
     }
-#else
-    mUpdatedXmlEntity = 0;
-    if (isLocal)
-        mUpdatedXmlEntity = new XmlEntity(mXmlEntity->getUid());
-#endif
 
     setCharacterInstance(characterInstance);
 
@@ -163,11 +154,6 @@ Avatar::~Avatar()
         delete m_pSoundIcon;
     }
     CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
-
-#ifdef POOL
-#else
-    delete mUpdatedXmlEntity;
-#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -429,11 +415,8 @@ void Avatar::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Avatar::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
-#else
-bool Avatar::updateEntity(XmlEntity* xmlEntity)
-#endif
 {
     static int c;
     static unsigned long l = (unsigned long)-1;
@@ -515,11 +498,8 @@ bool Avatar::updateEntity(XmlEntity* xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef POOL
+
 bool Avatar::action(RefCntPoolPtr<XmlAction>& xmlAction)
-#else
-bool Avatar::action(XmlAction* xmlAction)
-#endif
 {
     std::wstring wlabel = xmlAction->getDesc();
     if (wlabel.size() < 1) wlabel = L" ";

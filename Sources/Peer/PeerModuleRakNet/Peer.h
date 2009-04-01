@@ -55,11 +55,7 @@ namespace Solipsis {
         static Peer* ms_Singleton;
 
     public:
-#ifdef POOL
         typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
-#else
-        typedef std::list<XmlEvt*> XmlEvtToHandleList;
-#endif
 
     protected:
         bool mInitialized;
@@ -198,17 +194,10 @@ namespace Solipsis {
         /** See IP2NServerRequestsHandler. */
         virtual IP2NClient::RetCode sendEvt(const NodeId& nodeId, const std::string& xmlEvtStr, std::string& xmlRespStr);
 
-
-#ifdef POOL
         /** Get next event to handle. */
         virtual RefCntPoolPtr<XmlEvt> popEvtToSend()
         {
             RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
-#else
-        virtual XmlEvt* popNextEvtToSend()
-        {    
-            XmlEvt* xmlEvt = 0;
-#endif
 
             pthread_mutex_lock(&mEvtsToSendMutex);
             if (!mEvtsToSendList.empty())

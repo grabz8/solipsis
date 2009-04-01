@@ -48,11 +48,8 @@ public:
 
 protected:
     /// Entity descriptor
-#ifdef POOL
+
     RefCntPoolPtr<XmlEntity> mXmlEntity;
-#else
-    XmlEntity* mXmlEntity;
-#endif
 
     /// Map of entities
     static RakNetEntityMap ms_Entities;
@@ -77,17 +74,10 @@ public:
     virtual ~RakNetEntity();
 
 	/** Return the XML entity. */
-#ifdef POOL
     RefCntPoolPtr<XmlEntity> getXmlEntity() { return mXmlEntity; }
-#else
-    XmlEntity* getXmlEntity() { return mXmlEntity; }
-#endif
+
 	/** Set the XML entity. */
-#ifdef POOL
     void setXmlEntity(RefCntPoolPtr<XmlEntity>& xmlEntity) { mXmlEntity = xmlEntity; }
-#else
-    void setXmlEntity(XmlEntity* xmlEntity) { mXmlEntity = xmlEntity; }
-#endif
 
     /** Add 1 new entity. */
     static void addEntity(RakNetEntity* entity);
