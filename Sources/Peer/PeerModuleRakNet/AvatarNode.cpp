@@ -1,6 +1,6 @@
 /*
 This source file is part of Solipsis
-    (Solipsis is an opensource decentralized Metaverse platform)
+(Solipsis is an opensource decentralized Metaverse platform)
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
@@ -31,15 +31,15 @@ using namespace CommonTools;
 
 namespace Solipsis {
 
-//-------------------------------------------------------------------------------------
-AvatarNode::AvatarNode() :
-    mMutex(PTHREAD_MUTEX_INITIALIZER),
-    mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
-    mFrozen(true),
-    mConnectionLost(false),
-    Node("avatar"),
-    mLastSiteUid(""),
-    mEntity(0)
+    //-------------------------------------------------------------------------------------
+    AvatarNode::AvatarNode() :
+mMutex(PTHREAD_MUTEX_INITIALIZER),
+mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
+mFrozen(true),
+mConnectionLost(false),
+Node("avatar"),
+mLastSiteUid(""),
+mEntity(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
 }
@@ -51,7 +51,7 @@ AvatarNode::~AvatarNode()
 
     pthread_mutex_lock(&mMutex);
 
-//    if (!mFrozen)
+    //    if (!mFrozen)
     // CF there was a crash when emptying the peer time listener list
     Peer::getSingleton().removeTimeListener(this);
 
@@ -220,9 +220,9 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
     xmlEvt->setDatas(entity->getXmlEntity());
 #endif
 
-       // Create physics of scene + my avatar
+    // Create physics of scene + my avatar
     if ((entity->getXmlEntity()->getType() == ETSite) ||
-       ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
+        ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
     {
         if (!entity->getPhysicsScene())
         {
@@ -440,7 +440,7 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
             return false;
         }
         // Create object entity
-//        xmlEntity->setOwner(mNodeId);
+        //        xmlEntity->setOwner(mNodeId);
         Entity* entity = new Entity();
         entity->setSystemAddress(RakNetConnection::getSingletonPtr()->getMySystemAddress());
         entity->setXmlEntity(xmlEntity);
@@ -513,15 +513,15 @@ bool AvatarNode::processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr)
 //-------------------------------------------------------------------------------------
 #ifdef POOL
 RefCntPoolPtr<XmlEvt> AvatarNode::getNextEvtToHandle()
+{
+    RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
+
 #else
 XmlEvt* AvatarNode::getNextEvtToHandle()
-#endif
 {
-#ifdef POOL
-    RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
-#else
     XmlEvt* xmlEvt = 0;
 #endif
+
 
     pthread_mutex_lock(&mEvtsMutex);
     if (!mEvtsToHandleList.empty())
@@ -629,10 +629,10 @@ bool AvatarNode::tick(Real timeSinceLastTick)
     }
 
     Entity* entity = (Entity*)mEntity;
-static int c=0;
-c++;
+    static int c=0;
+    c++;
     if ((entity != 0) && entity->mDirty && ((c % 3) == 0)) // 20 ups
-//    if ((entity != 0) && entity->mDirty)
+        //    if ((entity != 0) && entity->mDirty)
     {
         pthread_mutex_lock(&mEvtsMutex);
 #ifdef POOL

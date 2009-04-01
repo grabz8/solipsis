@@ -445,11 +445,14 @@ std::string XmlHelpers::convertAuthentTypeToRepr(const AuthentType& authentType)
 const std::string& XmlHelpers::convertEventTypeToRepr(const EventType& evtType)
 {
     static std::string EventTypeRepr[] = {
-        "ETNewEntity",
-        "ETLostEntity",
-        "ETUpdatedEntity",
-        "ETActionOnEntity",
-        "ETStatusReport"
+        "ETNewEntity",         /// New entity
+        "ETLostEntity",           /// Lost entity
+        "ETUpdatedEntity",       /// Updated entity
+        "ETActionOnEntity",       /// Action on entity
+        "ETConnectionRestored", /// Connection restored
+        "ETConnectionLost",      /// Connection lost
+        "ETStatusReport",        /// Status report
+        "ETConnectionFailed"     /// Connection lost
     };
     return EventTypeRepr[evtType];
 }

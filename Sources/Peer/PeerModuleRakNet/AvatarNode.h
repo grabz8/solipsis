@@ -99,23 +99,23 @@ public:
 
     bool isOwnedEntity(Entity* entity);
 
+#ifdef POOL
     /** Process an event. */
-#ifdef POOL
     virtual bool processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespStr);
-#else
-    virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
-#endif
-#ifdef POOL
+
     /** Get next event to handle. */
     virtual RefCntPoolPtr<XmlEvt> getNextEvtToHandle();
     /** Free event (handled event). */
     virtual bool freeEvt(RefCntPoolPtr<XmlEvt>& xmlEvt);
 #else
+    /** Process an event. */
+    virtual bool processEvt(XmlEvt* xmlEvt, std::string& xmlRespStr);
     /** Get next event to handle. */
     virtual XmlEvt* getNextEvtToHandle();
     /** Free event (handled event). */
     virtual bool freeEvt(XmlEvt* xmlEvt);
 #endif
+
     /** Freeze. */
     virtual bool freeze(bool frozen);
     /** Is frozen ? */

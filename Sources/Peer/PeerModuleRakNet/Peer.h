@@ -1,6 +1,6 @@
 /*
 This source file is part of Solipsis
-    (Solipsis is an opensource decentralized Metaverse platform)
+(Solipsis is an opensource decentralized Metaverse platform)
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
@@ -45,165 +45,195 @@ using CommonTools::BasicThread;
 
 namespace Solipsis {
 
-/** This class manages the Solipsis peer on 1 host.
-*/
-class Peer : public IPeer, public IP2NServerRequestsHandler, public BasicThread
-{
-    friend class IPeer;
+    /** This class manages the Solipsis peer on 1 host.
+    */
+    class Peer : public IPeer, public IP2NServerRequestsHandler, public BasicThread
+    {
+        friend class IPeer;
 
-protected:
-    static Peer* ms_Singleton;
+    protected:
+        static Peer* ms_Singleton;
 
-public:
+    public:
 #ifdef POOL
-    typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
+        typedef std::list<RefCntPoolPtr<XmlEvt>> XmlEvtToHandleList;
 #else
-    typedef std::list<XmlEvt*> XmlEvtToHandleList;
+        typedef std::list<XmlEvt*> XmlEvtToHandleList;
 #endif
 
-protected:
-    bool mInitialized;
-    Ogre::String mAppPath;
-    IPeerRenderSystemLock* mRenderSystemLock;
+    protected:
+        bool mInitialized;
+        Ogre::String mAppPath;
+        IPeerRenderSystemLock* mRenderSystemLock;
 
-    std::string mHost;
-    unsigned short mPort;
-    int mVerbosity;
+        std::string mHost;
+        unsigned short mPort;
+        int mVerbosity;
 
-	IP2NServer* mP2NServer;
-    PhysicsEngineManager* mPhysicsEngineManager;
+        IP2NServer* mP2NServer;
+        PhysicsEngineManager* mPhysicsEngineManager;
 
-    /// Physics scene
-    IPhysicsScene* mPhysicsScene;
-    /// Mutex physics
-    pthread_mutex_t mPhysicsMutex;
+        /// Physics scene
+        IPhysicsScene* mPhysicsScene;
+        /// Mutex physics
+        pthread_mutex_t mPhysicsMutex;
 
-    /// Node identifier
-    NodeId mNodeId;
-    /// Node name
-    std::string mName;
+        /// Node identifier
+        NodeId mNodeId;
+        /// Node name
+        std::string mName;
 
-    /// Avatar node
-    AvatarNode* mAvatarNode;
+        /// Avatar node
+        AvatarNode* mAvatarNode;
 
-    /// Instance of the class that creates the object we use to represent connections
-    RM2ConnectionFactory mConnectionFactory;
-    /// RakNetConnection
-    RakNetConnection mRakNetConnection;
-    /// Mutex on RakNet connection
-    pthread_mutex_t mRakNetMutex;
+        /// Instance of the class that creates the object we use to represent connections
+        RM2ConnectionFactory mConnectionFactory;
+        /// RakNetConnection
+        RakNetConnection mRakNetConnection;
+        /// Mutex on RakNet connection
+        pthread_mutex_t mRakNetMutex;
 
-    /// Mutex on events to process
-    pthread_mutex_t mEvtsToProcessMutex;
-    /// List of events to process
-    XmlEvtToHandleList mEvtsToProcessList;
+        /// Mutex on events to process
+        pthread_mutex_t mEvtsToProcessMutex;
+        /// List of events to process
+        XmlEvtToHandleList mEvtsToProcessList;
 
-    /** Set of registered frame listeners */
-    std::set<TimeListener*> mTimeListeners;
+        /// Mutex on events to process
+        pthread_mutex_t mEvtsToSendMutex;
+        /// List of events to send to Navigator
+        XmlEvtToHandleList mEvtsToSendList;
 
-    /** Set of frame listeners marked for removal*/
-    std::set<TimeListener*> mRemovedTimeListeners;
+        /** Set of registered frame listeners */
+        std::set<TimeListener*> mTimeListeners;
 
-    /// Contains the times of recently fired tick
-    unsigned long mLastTickTime;
-    bool mResetTime;
+        /** Set of frame listeners marked for removal*/
+        std::set<TimeListener*> mRemovedTimeListeners;
 
-    /// Media cache path
-    std::string mMediaCachePath;
+        /// Contains the times of recently fired tick
+        unsigned long mLastTickTime;
+        bool mResetTime;
 
-protected: 
-    Peer(const char* appPath, int argc, char** argv);
-    virtual ~Peer();
+        /// Media cache path
+        std::string mMediaCachePath;
 
-public:
-    /** See IPeer. */
-    static IPeer* createPeer(const char* appPath, int argc, char** argv);
-    /** See IPeer. */
-    virtual bool initialize(IPeerRenderSystemLock* renderSystemLock);
-    /** See IPeer. */
-    virtual bool destroy();
+    protected: 
+        Peer(const char* appPath, int argc, char** argv);
+        virtual ~Peer();
 
-    static Peer* getSingletonPtr() { return ms_Singleton; }
-    static Peer& getSingleton() { return *ms_Singleton; }
-
-    std::string& getMediaCachePath() { return mMediaCachePath; }
-    IPeerRenderSystemLock* getRenderSystemLock() { return mRenderSystemLock; }
-
-    const NodeId& getNodeId() { return mNodeId; }
-    const std::string& getName() { return mName; }
-
-    /** Retrieve the avatar node */
-    AvatarNode* getAvatarNode();
-
-    /** Load 1 entity */
-    Entity* loadEntity(TiXmlElement* entityElt);
-
-    IPhysicsScene* getPhysicsScene();
-
-    /** Registers a TimeListener which will be called back every tick.
-        @remarks
-            A TimeListener is a class which implements methods which
-            will be called every tick.
-        @par
-            See the TimeListener class for more details on the specifics
-            It is imperitive that the instance passed to this method is
-            not destroyed before either the processing loop ends, or the
-            class is removed from the listening list using
-            removeTimeListener.
-        @note
-            <br>This method can only be called after Root::initialise has
-            been called.
-    */
-    void addTimeListener(TimeListener* newListener);
-
-    /** Removes a TimeListener from the list of listening classes.
-    */
-    void removeTimeListener(TimeListener* oldListener);
-
-protected:
-    /** See BasicThread::run. */
-    virtual void run();
-
-    class P2NServerLogger : public IP2NServerLogger {
-        /** See IP2NServerLogger. */
-        virtual void logMessage(const std::string& message);
-    };
-    P2NServerLogger mP2NServerLogger;
-
-    class PhysicsEngineLogger : public IPhysicsEngineLogger {
-        /** See IPhysicsEngineLogger. */
-        virtual void logMessage(const std::string& message);
-    };
-    PhysicsEngineLogger mPhysicsEngineLogger;
-
-    class OgreLogger : public CommonTools::LogHandler
-    {
     public:
-        /** See CommonTools::LogHandler. */
-        void log(VerbosityLevel level, const char* msg);
+        /** See IPeer. */
+        static IPeer* createPeer(const char* appPath, int argc, char** argv);
+        /** See IPeer. */
+        virtual bool initialize(IPeerRenderSystemLock* renderSystemLock);
+        /** See IPeer. */
+        virtual bool destroy();
+
+        static Peer* getSingletonPtr() { return ms_Singleton; }
+        static Peer& getSingleton() { return *ms_Singleton; }
+
+        std::string& getMediaCachePath() { return mMediaCachePath; }
+        IPeerRenderSystemLock* getRenderSystemLock() { return mRenderSystemLock; }
+
+        const NodeId& getNodeId() { return mNodeId; }
+        const std::string& getName() { return mName; }
+
+        /** Retrieve the avatar node */
+        AvatarNode* getAvatarNode();
+
+        /** Load 1 entity */
+        Entity* loadEntity(TiXmlElement* entityElt);
+
+        IPhysicsScene* getPhysicsScene();
+
+        /** Registers a TimeListener which will be called back every tick.
+        @remarks
+        A TimeListener is a class which implements methods which
+        will be called every tick.
+        @par
+        See the TimeListener class for more details on the specifics
+        It is imperitive that the instance passed to this method is
+        not destroyed before either the processing loop ends, or the
+        class is removed from the listening list using
+        removeTimeListener.
+        @note
+        <br>This method can only be called after Root::initialise has
+        been called.
+        */
+        void addTimeListener(TimeListener* newListener);
+
+        /** Removes a TimeListener from the list of listening classes.
+        */
+        void removeTimeListener(TimeListener* oldListener);
+
+    protected:
+        /** See BasicThread::run. */
+        virtual void run();
+
+        class P2NServerLogger : public IP2NServerLogger {
+            /** See IP2NServerLogger. */
+            virtual void logMessage(const std::string& message);
+        };
+        P2NServerLogger mP2NServerLogger;
+
+        class PhysicsEngineLogger : public IPhysicsEngineLogger {
+            /** See IPhysicsEngineLogger. */
+            virtual void logMessage(const std::string& message);
+        };
+        PhysicsEngineLogger mPhysicsEngineLogger;
+
+        class OgreLogger : public CommonTools::LogHandler
+        {
+        public:
+            /** See CommonTools::LogHandler. */
+            void log(VerbosityLevel level, const char* msg);
+        };
+        OgreLogger mOgreLogger;
+
+        /** See IP2NServerRequestsHandler. */
+        virtual IP2NClient::RetCode login(const std::string& xmlParamsStr, NodeId& nodeId, std::string& xmlRespStr);
+        /** See IP2NServerRequestsHandler. */
+        virtual IP2NClient::RetCode logout(NodeId& nodeId);
+        /** See IP2NServerRequestsHandler. */
+        virtual IP2NClient::RetCode handleEvt(const NodeId& nodeId, std::string& xmlRespStr);
+        /** See IP2NServerRequestsHandler. */
+        virtual IP2NClient::RetCode sendEvt(const NodeId& nodeId, const std::string& xmlEvtStr, std::string& xmlRespStr);
+
+
+#ifdef POOL
+        /** Get next event to handle. */
+        virtual RefCntPoolPtr<XmlEvt> popEvtToSend()
+        {
+            RefCntPoolPtr<XmlEvt> xmlEvt(RefCntPoolPtr<XmlEvt>::nullPtr);
+#else
+        virtual XmlEvt* popNextEvtToSend()
+        {    
+            XmlEvt* xmlEvt = 0;
+#endif
+
+            pthread_mutex_lock(&mEvtsToSendMutex);
+            if (!mEvtsToSendList.empty())
+            {
+                xmlEvt = mEvtsToSendList.front();
+                mEvtsToSendList.pop_front();
+            }
+            pthread_mutex_unlock(&mEvtsToSendMutex);
+
+            return xmlEvt;
+        }
+
+
+
+    protected:
+        bool _initialize();
+        void _finalize();
+        bool _fireTick(Ogre::Real timeSinceLastTick);
+        bool _fireTick();
+
+        /** Create the avatar node */
+        void createAvatarNode();
+        /** Reconnect the avatar node */
+        void reconnectAvatarNode();
     };
-    OgreLogger mOgreLogger;
-
-    /** See IP2NServerRequestsHandler. */
-    virtual IP2NClient::RetCode login(const std::string& xmlParamsStr, NodeId& nodeId, std::string& xmlRespStr);
-    /** See IP2NServerRequestsHandler. */
-    virtual IP2NClient::RetCode logout(NodeId& nodeId);
-    /** See IP2NServerRequestsHandler. */
-    virtual IP2NClient::RetCode handleEvt(const NodeId& nodeId, std::string& xmlRespStr);
-    /** See IP2NServerRequestsHandler. */
-    virtual IP2NClient::RetCode sendEvt(const NodeId& nodeId, const std::string& xmlEvtStr, std::string& xmlRespStr);
-
-protected:
-    bool _initialize();
-    void _finalize();
-    bool _fireTick(Ogre::Real timeSinceLastTick);
-    bool _fireTick();
-
-    /** Create the avatar node */
-    void createAvatarNode();
-    /** Reconnect the avatar node */
-    void reconnectAvatarNode();
-};
 
 } // namespace Solipsis
 

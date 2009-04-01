@@ -42,9 +42,10 @@ enum EventType {
     ETLostEntity = 1,           /// Lost entity
     ETUpdatedEntity = 2,        /// Updated entity
     ETActionOnEntity = 3,       /// Action on entity
-    ETConnectionRestored = 98,  /// Connection restored
-    ETConnectionLost = 99,      /// Connection lost
-    ETStatusReport = 100        /// Status report
+    ETConnectionRestored = 4,  /// Connection restored
+    ETConnectionLost = 5,      /// Connection lost
+    ETStatusReport = 6,        /// Status report
+    ETConnectionFailed = 7,      /// Connection lost
 };
 
 enum EntityType {
