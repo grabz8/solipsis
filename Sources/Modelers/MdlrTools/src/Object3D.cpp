@@ -302,7 +302,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	from_string(e->FirstChildElement("matdiff")->Attribute("g"),cv.g);
 	from_string(e->FirstChildElement("matdiff")->Attribute("b"),cv.b);
 	from_string(e->FirstChildElement("matdiff")->Attribute("a"),cv.a);
-	setDiffus(cv);
+	setDiffuse(cv);
 	from_string(e->FirstChildElement("matspec")->Attribute("r"),cv.r);
 	from_string(e->FirstChildElement("matspec")->Attribute("g"),cv.g);
 	from_string(e->FirstChildElement("matspec")->Attribute("b"),cv.b);
@@ -546,7 +546,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave << "\t<material>" << endl;
 	ColourValue cv  = getAmbient();
 	toSave << "\t\t<matambient r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
-	cv  = getDiffus();
+	cv  = getDiffuse();
 	toSave << "\t\t<matdiff r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
 	cv  = getSpecular();
 	toSave << "\t\t<matspec r=\"" << cv.r << "\" g=\"" << cv.g << "\" b=\"" << cv.b << "\" a=\"" << cv.a << "\" />" << endl;
@@ -1873,15 +1873,15 @@ void Object3D::setAmbient( const ColourValue pColor)
 	}
 }
 //-------------------------------------------------------------------------------------
-void Object3D::setDiffus( const ColourValue pColor)
+void Object3D::setDiffuse( const ColourValue pColor)
 {
-	mModifiedMaterialManager->getModifiedMaterial()->setDiffus( pColor);
+	mModifiedMaterialManager->getModifiedMaterial()->setDiffuse( pColor);
 	if (mChildren)
 	{
 		vector< Object3D* >::iterator itr ;
 		for( itr = mChildren->begin(); itr != mChildren->end(); itr++ )
 		{
-			(*itr)->setDiffus( pColor);
+			(*itr)->setDiffuse( pColor);
 		}
 	}
 }
@@ -1917,9 +1917,9 @@ ColourValue Object3D::getAmbient()
 	return mModifiedMaterialManager->getModifiedMaterial()->getAmbient() ;
 }
 //-------------------------------------------------------------------------------------
-ColourValue Object3D::getDiffus()
+ColourValue Object3D::getDiffuse()
 {
-	return mModifiedMaterialManager->getModifiedMaterial()->getDiffus() ;
+	return mModifiedMaterialManager->getModifiedMaterial()->getDiffuse() ;
 }
 //-------------------------------------------------------------------------------------
 ColourValue Object3D::getSpecular()

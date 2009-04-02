@@ -164,13 +164,13 @@ void ModifiableMaterialObject::setColourAmbient(const ColourValue& colour)
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const ColourValue& ModifiableMaterialObject::getColourDiffuse()
 {
-	return mModifiedMaterial->getDiffus();
+	return mModifiedMaterial->getDiffuse();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setColourDiffuse(const ColourValue& colour)
 {
-	mModifiedMaterial->setDiffus(colour);
+	mModifiedMaterial->setDiffuse(colour);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

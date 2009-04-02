@@ -984,9 +984,9 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getAmbient().g * 255) + ")");
 				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getAmbient().b * 255) + ")");
 				navi->evaluateJS("$S('pAmbient').background='#" + text + "'");
-				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().r * 255) + ")");
-				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().g * 255) + ")");
-				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffus().b * 255) + ")");
+				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffuse().r * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffuse().g * 255) + ")");
+				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getDiffuse().b * 255) + ")");
 				navi->evaluateJS("$S('pDiffuse').background='#" + text + "'");
 				text = navi->evaluateJS("decToHex(" + StringConverter::toString(material->getSpecular().r * 255) + ")");
 				text += navi->evaluateJS("decToHex(" + StringConverter::toString(material->getSpecular().g * 255) + ")");
@@ -1462,9 +1462,9 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbient().g * 255) + ")");
 			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getAmbient().b * 255) + ")");
 			navi->evaluateJS("$S('pAmbient').background='#" + text + "'");
-			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().r * 255) + ")");
-			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().g * 255) + ")");
-			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffus().b * 255) + ")");
+			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffuse().r * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffuse().g * 255) + ")");
+			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getDiffuse().b * 255) + ")");
 			navi->evaluateJS("$S('pDiffuse').background='#" + text + "'");
 			text = navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getSpecular().r * 255) + ")");
 			text += navi->evaluateJS("decToHex(" + StringConverter::toString(obj->getSpecular().g * 255) + ")");
@@ -3070,7 +3070,7 @@ void NavigatorGUI::modelerColorAmbient(const NaviData& naviData)
 	{
 		obj->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
-			obj->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			obj->setDiffuse( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
 }
 
@@ -3097,7 +3097,7 @@ void NavigatorGUI::modelerColorDiffuse(const NaviData& naviData)
 	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
-		obj->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		obj->setDiffuse( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
 			obj->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
@@ -4626,7 +4626,7 @@ void NavigatorGUI::avatarColorAmbient(const NaviData& naviData)
 		//material->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 
 		if(mLockAmbientDiffuse)
-			material->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+			material->setDiffuse( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 	}
 }
 //-------------------------------------------------------------------------------------
@@ -4661,7 +4661,7 @@ void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
 	{
-		material->setDiffus( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+		material->setDiffuse( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		if(mLockAmbientDiffuse)
 		{
 			material->useAddedColour(true);

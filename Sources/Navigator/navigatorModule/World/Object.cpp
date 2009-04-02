@@ -64,7 +64,7 @@ Object::~Object()
             ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
     }
 
-    if (!mLocalNode)
+    if (mLocalNode)
     {
         mLocalNode->detachAllObjects();
         mLocalNode->getCreator()->destroySceneNode(mLocalNode->getName());

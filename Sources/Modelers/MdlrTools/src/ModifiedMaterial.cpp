@@ -108,7 +108,7 @@ const MaterialPtr& ModifiedMaterial::getOwner()
 	return mMaterial;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-const ColourValue& ModifiedMaterial::getDiffus()
+const ColourValue& ModifiedMaterial::getDiffuse()
 {
 	return mPass->getDiffuse();
 }
@@ -207,7 +207,7 @@ void ModifiedMaterial::setBlueAmbient(float blue)
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
-void ModifiedMaterial::setDiffus(const ColourValue& colour)
+void ModifiedMaterial::setDiffuse(const ColourValue& colour)
 {
 	mPass->setDiffuse(colour);
 }

@@ -67,7 +67,7 @@ public:
 	
 	///brief Return the diffus colour of the material
 	///return the diffus colour of the material
-	const ColourValue& getDiffus();
+	const ColourValue& getDiffuse();
 
 	///brief Return the ambient colour of the material
 	///return the ambient colour of the material
@@ -126,7 +126,7 @@ public:
 
 	///brief Method which set the diffus colour of the material
 	///param colour Colour to set as diffus colour of the material
-	void setDiffus(const ColourValue& colour);
+	void setDiffuse(const ColourValue& colour);
 
 	///brief Method which set the specular colour of the material
 	///param colour Colour to set as specular colour of the material

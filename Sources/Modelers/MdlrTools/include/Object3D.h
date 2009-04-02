@@ -292,11 +292,11 @@ public:
 	TextureExtParamsMap* getCurrentTextureExtParamsMap();
 
 	void setAmbient( const ColourValue pColor);
-	void setDiffus( const ColourValue pColor);
+	void setDiffuse( const ColourValue pColor);
 	void setSpecular( const ColourValue pColor);
 	void setShininess ( const float pColor);
 	ColourValue getAmbient();
-	ColourValue getDiffus();
+	ColourValue getDiffuse();
 	ColourValue getSpecular();
 	float getShininess ();
 
