@@ -1,6 +1,6 @@
 /*
 This source file is part of Solipsis
-    (Solipsis is an opensource decentralized Metaverse platform)
+(Solipsis is an opensource decentralized Metaverse platform)
 For the latest info, see http://www.solipsis.org/
 
 Copyright (C) 2006-2008 ANR-RIAM (IRISA, Archivideo, Artefacto, Rennes 2 University, Orange Labs)
@@ -49,46 +49,46 @@ Navigator* Navigator::ms_singletonPtr = 0;
 
 //-------------------------------------------------------------------------------------
 Navigator::Navigator(const String name, IApplication* application) :
-    Instance(name, application),
-    NodeEventListener(mXmlRpcClient),
-    mState(SLogin),
-    mPeerAddress("localhost:8880"),
-    mLocalWorldAddress("localhost:8660"),
-    mWorldAddress(""),
-    mWorldsServerAddress("localhost:8550"),
-    mWorldsServerTimeoutSec(8),
-    mLogin("me"),
-    mPwd(""),
-    mAuthentType(ATSolipsis),
-    mFacebookApiKey(""),
-    mFacebookSecret("695a02e3645bed085e1802c7e9952d73"), // for api key "8d81e4c64ac0039b209c4a53b21ba220"
-    mFacebookServer("api.facebook.com/restserver.php"),
-    mFacebookLoginUrl("http://api.facebook.com/login.php"),
-    mFixedNodeId(""),
-    mNodeId(""),
-    mVoIPServerAddress("localhost:30000"),
-    mVoIPSilenceLevel(5.0),
-    mVoIPSilenceLatency(5),
-    mNavigationInterface(NIMouseKeyboard),
-    mXmlRpcClient(0),
-    mOgrePeerManager(0),
-    mNavigatorGUI(0),
-    mAvatarEditor(0),
-    mMaxNaviPickingDistance(10),
-    mMaxVLCPickingDistance(10),
-    mMaxVNCPickingDistance(8),
-    mMaxSWFPickingDistance(8),
-    mMaxAvatarPickingDistance(10),
-    mMaxObjectPickingDistance(20),
-    mRaySceneQuery(0),
-    mPickedMovable(0),
-    mUserAvatar(0),
-    mNavigatorSound(0),
-    mMainCameraSupportMgr(0),
-    mModeler(0),
-    isOnLeftCTRL(false),
-    isOnRightCTRL(false),
-	isOnGizmo(false)
+Instance(name, application),
+NodeEventListener(mXmlRpcClient),
+mState(SLogin),
+mPeerAddress("localhost:8880"),
+mLocalWorldAddress("localhost:8660"),
+mWorldAddress(""),
+mWorldsServerAddress("localhost:8550"),
+mWorldsServerTimeoutSec(8),
+mLogin("me"),
+mPwd(""),
+mAuthentType(ATSolipsis),
+mFacebookApiKey(""),
+mFacebookSecret("695a02e3645bed085e1802c7e9952d73"), // for api key "8d81e4c64ac0039b209c4a53b21ba220"
+mFacebookServer("api.facebook.com/restserver.php"),
+mFacebookLoginUrl("http://api.facebook.com/login.php"),
+mFixedNodeId(""),
+mNodeId(""),
+mVoIPServerAddress("localhost:30000"),
+mVoIPSilenceLevel(5.0),
+mVoIPSilenceLatency(5),
+mNavigationInterface(NIMouseKeyboard),
+mXmlRpcClient(0),
+mOgrePeerManager(0),
+mNavigatorGUI(0),
+mAvatarEditor(0),
+mMaxNaviPickingDistance(10),
+mMaxVLCPickingDistance(10),
+mMaxVNCPickingDistance(8),
+mMaxSWFPickingDistance(8),
+mMaxAvatarPickingDistance(10),
+mMaxObjectPickingDistance(20),
+mRaySceneQuery(0),
+mPickedMovable(0),
+mUserAvatar(0),
+mNavigatorSound(0),
+mMainCameraSupportMgr(0),
+mModeler(0),
+isOnLeftCTRL(false),
+isOnRightCTRL(false),
+isOnGizmo(false)
 {
     ms_singletonPtr = this;
 
@@ -100,8 +100,8 @@ Navigator::Navigator(const String name, IApplication* application) :
     // Lua initialization
     mLuaState = lua_open();
     luaL_openlibs(mLuaState);
-//with LuaPlus    mLuaPlusState = LuaPlus::LuaState::Create(true);
-//with LuaPlus    mLuaState = mLuaPlusState->GetCState();
+    //with LuaPlus    mLuaPlusState = LuaPlus::LuaState::Create(true);
+    //with LuaPlus    mLuaState = mLuaPlusState->GetCState();
 }
 
 //-------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ Navigator::~Navigator()
 
     // Lua finalization
     lua_close(mLuaState);
-//with LuaPlus    LuaPlus::LuaState::Destroy(mLuaPlusState);
+    //with LuaPlus    LuaPlus::LuaState::Destroy(mLuaPlusState);
 
     if (mNavigatorSound != 0)
     {
@@ -377,12 +377,12 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
         mLogin = varValue;
         return true;
     }
-	if (varName == "Password")
-	{
-		mPwd = varValue;
-		return true;
-	} 
-	if (varName == "FixedNodeId")
+    if (varName == "Password")
+    {
+        mPwd = varValue;
+        return true;
+    } 
+    if (varName == "FixedNodeId")
     {
         mFixedNodeId = varValue;
         if (!mFixedNodeId.empty())
@@ -487,22 +487,22 @@ void Navigator::fakeSurroundingArea(int index)
     mCamera->getViewport()->setBackgroundColour(ColourValue::Black);
     switch (index)
     {
-        case 1:
-           mSceneMgr->setSkyBox(true, "Solipsis/SkyBox1", 1000);
-           break;
-        case 2:
-           mSceneMgr->setSkyBox(true, "Examples/SpaceSkyBox", 100, true);
-           break;
-        case 3:
-           mSceneMgr->setSkyBox(true, "Solipsis/SkyBox2", 10, true);
-           break;
-        case 4:
-           mSceneMgr->setSkyBox(true, "Solipsis/SkyBox3", 10, true);
-           break;
-        case 0:
-           mSceneMgr->setSkyBox(false, "");
-           break;
-   }
+    case 1:
+        mSceneMgr->setSkyBox(true, "Solipsis/SkyBox1", 1000);
+        break;
+    case 2:
+        mSceneMgr->setSkyBox(true, "Examples/SpaceSkyBox", 100, true);
+        break;
+    case 3:
+        mSceneMgr->setSkyBox(true, "Solipsis/SkyBox2", 10, true);
+        break;
+    case 4:
+        mSceneMgr->setSkyBox(true, "Solipsis/SkyBox3", 10, true);
+        break;
+    case 0:
+        mSceneMgr->setSkyBox(false, "");
+        break;
+    }
 }
 
 #ifdef DEMO_NAVI1
@@ -732,8 +732,8 @@ void Navigator::demoVoice(const String params)
 //-------------------------------------------------------------------------------------
 void Navigator::demoPhysics1()
 {
-/*
-#define MAX_BOXES 10
+    /*
+    #define MAX_BOXES 10
     static int nextBox = 0;
     static std::map<String, SceneNode*> boxes;
 
@@ -760,26 +760,26 @@ void Navigator::demoPhysics1()
     std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
     if (boxIt != boxes.end())
     {
-        boxNode = mSceneMgr->getSceneNode(boxNodeName);
-        boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
-        boxBody = (bodies.find(boxName))->second;
+    boxNode = mSceneMgr->getSceneNode(boxNodeName);
+    boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
+    boxBody = (bodies.find(boxName))->second;
     }
     else
     {
-        boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
-        boxNode->setScale(boxScale);
-        boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
-        boxEntity->setMaterialName("2 - Default");
-        boxNode->attachObject(boxEntity);
-        boxBody = physicsScene->createBody();
-        boxBody->createBox(boxNode, boxExtents);
-        boxes[boxName] = boxNode;
-        bodies[boxName] = boxBody;
+    boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
+    boxNode->setScale(boxScale);
+    boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
+    boxEntity->setMaterialName("2 - Default");
+    boxNode->attachObject(boxEntity);
+    boxBody = physicsScene->createBody();
+    boxBody->createBox(boxNode, boxExtents);
+    boxes[boxName] = boxNode;
+    bodies[boxName] = boxBody;
     }
     boxBody->setPosition(boxPos);
     boxBody->setLinearVelocity(Vector3::ZERO);
     boxBody->setAngularVelocity(Vector3::ZERO);
-*/
+    */
 }
 #endif
 
@@ -819,7 +819,7 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     mClosestDistance = -1.0f;
     mPickedMovable = 0;
     String movablesList;
-	isOnGizmo = false;
+    isOnGizmo = false;
 
     for (RaySceneQueryResult::iterator it = queryResult.begin(); it != queryResult.end(); ++it )
     {
@@ -843,39 +843,39 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
                     ((it->movable->getMovableType().compare("Entity") == 0) ||
                     (it->movable->getMovableType().compare("ManualObject") == 0)))
                 {
-					if (it->movable->getQueryFlags() & QFAvatar)
+                    if (it->movable->getQueryFlags() & QFAvatar)
                         continue;
 
-					// Gizmo ?
-					else if (mModeler->isOnGizmo())
-					{
-						mModeler->getSelection()->mTransformation->releasedClickForTransformation();
-//						mModeler->getSelection()->mTransformation->mDragNDrop = Vector3::ZERO;
+                    // Gizmo ?
+                    else if (mModeler->isOnGizmo())
+                    {
+                        mModeler->getSelection()->mTransformation->releasedClickForTransformation();
+                        //						mModeler->getSelection()->mTransformation->mDragNDrop = Vector3::ZERO;
 
-						//mModeler->getSelection()->mTransformation->getMode();
-						//mModeler->deselectNode();
+                        //mModeler->getSelection()->mTransformation->getMode();
+                        //mModeler->deselectNode();
 
-						string name = it->movable->getName();
-						if( name.substr(0,4) == "move")
-						{
-							isOnGizmo = true;
-							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "moveX","moveY","moveZ" );
-							break;
-						}
-						else if( name.substr(0,6) == "rotate")
-						{
-							isOnGizmo = true;
-							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "rotateX","rotateY","rotateZ" );
-							break;
-						}
-						else if( name.substr(0,5) == "scale")
-						{
-							isOnGizmo = true;
-							mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "scaleX","scaleY","scaleZ" );
-							break;
-						}
-					}
-					// Object3D
+                        string name = it->movable->getName();
+                        if( name.substr(0,4) == "move")
+                        {
+                            isOnGizmo = true;
+                            mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "moveX","moveY","moveZ" );
+                            break;
+                        }
+                        else if( name.substr(0,6) == "rotate")
+                        {
+                            isOnGizmo = true;
+                            mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "rotateX","rotateY","rotateZ" );
+                            break;
+                        }
+                        else if( name.substr(0,5) == "scale")
+                        {
+                            isOnGizmo = true;
+                            mModeler->getSelection()->mTransformation->onClickToTransformObject( queryResult, "scaleX","scaleY","scaleZ" );
+                            break;
+                        }
+                    }
+                    // Object3D
                     else if (it->movable->getQueryFlags() & QFObject)
                     {
                         if( mModeler && !mModeler->isSelectionLocked() )
@@ -993,9 +993,9 @@ bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
         naviName = NaviLibrary::NaviManager::Get().getNaviFromMtlName(mtlName)->getName();
         // compute texture coordinates of the hit
         computeNaviHit(naviName,
-                       mClosestUV,
-                       mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
-                       naviX, naviY);
+            mClosestUV,
+            mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
+            naviX, naviY);
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1NaviHitByMouse() found Navi movable=%s, naviName=%s, (naviX, naviY)=(%d, %d)", mPickedMovable->getName().c_str(), naviName.c_str(), naviX, naviY);
         return true;
     }
@@ -1026,7 +1026,7 @@ void Navigator::computeNaviHit(const String& naviName,
     navi->getExtents(naviWidth, naviHeight);
     naviX = ((int)(closestResultUV.x*naviWidth))%naviWidth;
     naviY = ((int)(closestResultUV.y*naviHeight))%naviHeight;
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
+    //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::computeNaviHit() uv=%s, dt1=%s, dt2=%s, closestResultUV=%s", StringConverter::toString(Vector2(closestUV.x, closestUV.y)).c_str(), StringConverter::toString(dt1).c_str(), StringConverter::toString(dt2).c_str(), StringConverter::toString(closestResultUV).c_str());
 }
 
 //-------------------------------------------------------------------------------------
@@ -1041,8 +1041,8 @@ bool Navigator::is1SWFHitByMouse(MovableObject*& swfMovableObj, Vector2& swfXY)
         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
         // compute texture coordinates of the hit
         computeSwfHit(mClosestUV,
-                      mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
-                      swfXY);
+            mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
+            swfXY);
 
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1SWFHitByMouse() found SWF movable=%s, swfXY=%s", mPickedMovable->getName().c_str(), StringConverter::toString(swfXY).c_str());
         return true;
@@ -1089,8 +1089,8 @@ bool Navigator::is1VNCHitByMouse(MovableObject*& vncMovableObj, Vector2& vncXY)
         vncMovableObj = mPickedMovable;
         // compute texture coordinates of the hit
         computeVncHit(mClosestUV,
-                      mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
-                      vncXY);
+            mClosestTriUV0, mClosestTriUV1, mClosestTriUV2,
+            vncXY);
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1VNCHitByMouse() found VNC movable=%s, vncXY=%s", mPickedMovable->getName().c_str(), StringConverter::toString(vncXY).c_str());
         return true;
     }
@@ -1121,8 +1121,8 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
         for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
         {
             if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
-/* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
-//            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
+            /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+            //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
             avatar = (Avatar*)ogrePeer->second;
@@ -1156,13 +1156,13 @@ bool Navigator::initialize()
     if (!Instance::initialize())
         return false;
 
-// COLOR PICKING
-/*
+    // COLOR PICKING
+    /*
     mColorPickingRT = TextureManager::getSingleton().createManual("ColorPickingRT", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, TextureType::TEX_TYPE_2D, 256, 256, 0, PixelFormat::PF_B8G8R8, TU_RENDERTARGET, NULL);
     /// Set up viewport over entire texture
     RenderTexture *rtt = mColorPickingRT->getBuffer()->getRenderTarget();
     rtt->setAutoUpdated(false);
-//    rtt->addListener(&mColorPickingRTListener);
+    //    rtt->addListener(&mColorPickingRTListener);
     Camera* camera = mWindow->getViewport(0)->getCamera();
     // Save last viewport and current aspect ratio
     Viewport* oldViewport = camera->getViewport();
@@ -1177,8 +1177,8 @@ bool Navigator::initialize()
     // Should restore last viewport, i.e. never disturb user code
     // which might based on that.
     camera->_notifyViewport(oldViewport);
-*/
-// COLOR PICKING
+    */
+    // COLOR PICKING
 
     // Create Main Camera Support Manager
     mMainCameraSupportMgr=new CameraSupportManager(mCamera);
@@ -1273,9 +1273,9 @@ void Navigator::createScene()
     // Create OgrePeer manager
     mOgrePeerManager = new OgrePeerManager(mSceneMgr, this);
 
-	// Create the Modeler 
+    // Create the Modeler 
     mModeler = new Modeler(mSceneMgr, mCamera, mOgrePeerManager);
-	mModeler->init(mMediaCachePath);
+    mModeler->init(mMediaCachePath);
 
     // Create the avatar editor
     mAvatarEditor = new AvatarEditor(mMediaCachePath, mSceneMgr);
@@ -1629,8 +1629,8 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid()))
     {
-       LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to remove lost peer %s !", xmlEntity->getUid());
-   //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to remove lost peer %s !", xmlEntity->getUid());
+        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
     }
 }
 
@@ -1638,7 +1638,7 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
 void Navigator::onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
+    //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerUpdated()");
 
     if (!mOgrePeerManager->updateEntity(xmlEntity))
     {
@@ -1700,7 +1700,7 @@ void Navigator::onLocationChange(Navi *caller, const std::string &url)
 //-------------------------------------------------------------------------------------
 void Navigator::processEvents()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::processEvents()");
+    //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::processEvents()");
 
     // Process each event
     NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
@@ -1724,11 +1724,16 @@ void Navigator::processEvents()
             break;
         case ETConnectionLost:
             mNavigatorGUI->connectionLostError();
-            mUserAvatar->setGhost(true);
+            if (mUserAvatar)
+                mUserAvatar->setGhost(true);
             break;
         case ETConnectionRestored:
-            mUserAvatar->setGhost(false);
+            if (mUserAvatar)
+                mUserAvatar->setGhost(false);
             break;
+        case ETConnectionFailed:
+            mNavigatorGUI->connectionServerError();
+
         default: // Caller already check type consistency
             break;
         }
@@ -1740,7 +1745,7 @@ void Navigator::processEvents()
 //-------------------------------------------------------------------------------------
 void Navigator::sendEvents()
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendEvents()");
+    //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::sendEvents()");
 
     if (mXmlRpcClient == 0)
         throw Exception(Exception::ERR_INTERNAL_ERROR, "Attempt to send events without XMLRPC client", "Navigator::sendEvents");
@@ -1763,7 +1768,7 @@ void Navigator::onAvatarNodeCreate(OgrePeer* ogrePeer)
     if (ogrePeer->isLocal())
     {
         mUserAvatar = (Avatar*)ogrePeer;
-        
+
         // Set the ThirdPersonCam as active
         setCameraMode(CM3rdPerson);
     }
@@ -1796,7 +1801,7 @@ void Navigator::onSceneNodeDestroy(OgrePeer* ogrePeer)
 //-------------------------------------------------------------------------------------
 bool Navigator::startModeling()
 {
-	mState = SModeling;
+    mState = SModeling;
 
     return true;
 }
@@ -1804,14 +1809,14 @@ bool Navigator::startModeling()
 //-------------------------------------------------------------------------------------
 bool Navigator::endModeling()
 {	
-	// Go back in world
-	mState = SInWorld;
+    // Go back in world
+    mState = SInWorld;
 
     // Save all owned objects
-	mdlrXMLSave(true);
+    mdlrXMLSave(true);
 
-	if (mModeler)
-		mModeler->deselectNode();
+    if (mModeler)
+        mModeler->deselectNode();
 
     return true;
 }
@@ -1840,65 +1845,65 @@ bool Navigator::createPrimitive(Object3D::Type type)
 
 bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, std::string& warnMsg )
 {
-	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
-	Radian angle = pldir.getYaw();
-	Ogre::Vector3 dep = Vector3(1.5,0,0);
+    Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+    Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+    Radian angle = pldir.getYaw();
+    Ogre::Vector3 dep = Vector3(1.5,0,0);
 
-	Real cosY = Math::Cos(angle);
-	Real sinY = Math::Sin(angle);
+    Real cosY = Math::Cos(angle);
+    Real sinY = Math::Sin(angle);
 
-	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
-	//y = point.y;							//		y' = y  
-	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
-	dep.x = x;
+    Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+    //y = point.y;							//		y' = y  
+    dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+    dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
     //String name = XmlHelpers::convertUIntToHexString(entityUID);
-	return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
+    return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
 }
 #endif
 
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
 {
-	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
-	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
-	Radian angle = pldir.getYaw();
-	Ogre::Vector3 dep = Vector3(1.5,0,0);
+    Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+    Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+    Radian angle = pldir.getYaw();
+    Ogre::Vector3 dep = Vector3(1.5,0,0);
 
-	Real cosY = Math::Cos(angle);
-	Real sinY = Math::Sin(angle);
+    Real cosY = Math::Cos(angle);
+    Real sinY = Math::Sin(angle);
 
-	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
-	//y = point.y;							//		y' = y  
-	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
-	dep.x = x;
+    Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+    //y = point.y;							//		y' = y  
+    dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+    dep.x = x;
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-	return mModeler->createMesh(entityUID, entityUID, plpos + dep, pldir);
+    return mModeler->createMesh(entityUID, entityUID, plpos + dep, pldir);
 }
 
 //-------------------------------------------------------------------------------------
 bool Navigator::startAvatarEdit()
 {
     mState = SAvatarEdit;
-  
-	return true;
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
 bool Navigator::endAvatarEdit()
 {	
-	// Go back in world
-	mState = SInWorld;
+    // Go back in world
+    mState = SInWorld;
 
     // Save avatar
-	avatarXMLSave();
+    avatarXMLSave();
 
     // Attach all camera supports to the new avatar 
     mMainCameraSupportMgr->attachAllCameraSupportsToNode(mUserAvatar->getSceneNode());
-    
+
     return true;
 }
 
@@ -1915,119 +1920,119 @@ void Navigator::onMousePressed(const MouseEvt& evt)
 //-------------------------------------------------------------------------------------
 void Navigator::onMouseReleased(const MouseEvt& evt)
 {
-	if (mModeler && !mModeler->isSelectionEmpty())
-	{
-		if (mModeler->isOnGizmo())
-		{
-			if(isOnGizmo) 
-				isOnGizmo = false;
-		}
-	}
+    if (mModeler && !mModeler->isSelectionEmpty())
+    {
+        if (mModeler->isOnGizmo())
+        {
+            if(isOnGizmo) 
+                isOnGizmo = false;
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::MdlrModifGizmo(Vector3 dep)
 {
-	SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
-	Vector3 vec;
+    SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
+    Vector3 vec;
 
-	switch (mModeler->getSelection()->mTransformation->getMode())
-	{
-	case Transformations::MOVE:
-		mModeler->updateCommand( Object3D::TRANSLATE, mModeler->getSelected() );
-		mModeler->getSelection()->move(dep.x, dep.y, dep.z);
-		node->translate(dep);
-		break;
-	case Transformations::ROTATE:
-		mModeler->updateCommand( Object3D::ROTATE, mModeler->getSelected() );
-		dep *= 5.;
-		//vec = mModeler->getSelected()->getRotate();
-		//vec += dep;
-		//mModeler->getSelection()->rotate(vec.x, vec.y, vec.z);
+    switch (mModeler->getSelection()->mTransformation->getMode())
+    {
+    case Transformations::MOVE:
+        mModeler->updateCommand( Object3D::TRANSLATE, mModeler->getSelected() );
+        mModeler->getSelection()->move(dep.x, dep.y, dep.z);
+        node->translate(dep);
+        break;
+    case Transformations::ROTATE:
+        mModeler->updateCommand( Object3D::ROTATE, mModeler->getSelected() );
+        dep *= 5.;
+        //vec = mModeler->getSelected()->getRotate();
+        //vec += dep;
+        //mModeler->getSelection()->rotate(vec.x, vec.y, vec.z);
         mModeler->getSelection()->rotate(dep.x, dep.y, dep.z);
-		break;
-	case Transformations::SCALE:
-		mModeler->updateCommand( Object3D::SCALE, mModeler->getSelected() );
+        break;
+    case Transformations::SCALE:
+        mModeler->updateCommand( Object3D::SCALE, mModeler->getSelected() );
 
-		vec = mModeler->getSelected()->getScale();
-		//vec = Vector3::UNIT_SCALE;
+        vec = mModeler->getSelected()->getScale();
+        //vec = Vector3::UNIT_SCALE;
 
-		vec += dep;
-		//mModeler->getSelection()->scaleTo(vec.x, vec.y, vec.z);
-		mModeler->getSelection()->scale(vec.x, vec.y, vec.z);
-		break;
-	case Transformations::SELECT:
-		break;
-	}
+        vec += dep;
+        //mModeler->getSelection()->scaleTo(vec.x, vec.y, vec.z);
+        mModeler->getSelection()->scale(vec.x, vec.y, vec.z);
+        break;
+    case Transformations::SELECT:
+        break;
+    }
 }
 
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLImport()
 {
-	if (mModeler)
-	{
-		Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
-		Radian angle = pldir.getYaw();
-		Ogre::Vector3 dep = Vector3(2.0,0,0);
+    if (mModeler)
+    {
+        Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+        Radian angle = pldir.getYaw();
+        Ogre::Vector3 dep = Vector3(2.0,0,0);
 
-		Real cosY = Math::Cos(angle);
-		Real sinY = Math::Sin(angle);
+        Real cosY = Math::Cos(angle);
+        Real sinY = Math::Sin(angle);
 
-		Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
-		//y = point.y;							//		y' = y  
-		dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
-		dep.x = x;
+        Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+        //y = point.y;							//		y' = y  
+        dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+        dep.x = x;
 
         EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-		return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep );
-	}
+        return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep );
+    }
 
-	return false;
+    return false;
 }
 
 //-------------------------------------------------------------------------------------
 bool Navigator::mdlrXMLSave(bool all)
 {
-	if (mModeler)
-		if (all || !mModeler->isSelectionEmpty())
+    if (mModeler)
+        if (all || !mModeler->isSelectionEmpty())
             return mModeler->XMLSave(all);
-		else
+        else
             mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
 
-	return false;
+    return false;
 }
 
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLLoad()
 {
     if (mAvatarEditor)
-		//if( mAvatarEditor->XMLLoad() )
-        {
-            // 0. store the old avatar' parameters (camera mode ...)
-            Quaternion dir = mUserAvatar->getSceneNode()->getOrientation();
-            Vector3 pos = mUserAvatar->getSceneNode()->getPosition();
+        //if( mAvatarEditor->XMLLoad() )
+    {
+        // 0. store the old avatar' parameters (camera mode ...)
+        Quaternion dir = mUserAvatar->getSceneNode()->getOrientation();
+        Vector3 pos = mUserAvatar->getSceneNode()->getPosition();
 
-            // 1. remove the current avatar' mesh + skeleton
-			// -> it's not necessary to unload because this avatar can be used by another user in the current scene !
-			// -> so just remove the Entity / Mesh from the SceneNode
+        // 1. remove the current avatar' mesh + skeleton
+        // -> it's not necessary to unload because this avatar can be used by another user in the current scene !
+        // -> so just remove the Entity / Mesh from the SceneNode
 
-            // 2. update the avatar' mesh + skeleton
+        // 2. update the avatar' mesh + skeleton
 
-            // 3. update his position & orientation
+        // 3. update his position & orientation
 
-            // 4. set the old parameters to the new avatar (camera mode ...)
+        // 4. set the old parameters to the new avatar (camera mode ...)
 
-            return true;
-        }
+        return true;
+    }
 
-	return false;
+    return false;
 }
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSave()
 {
-	if (mAvatarEditor)
+    if (mAvatarEditor)
     {
-		mAvatarEditor->getManager()->getCurrentInstance()->saveModified();
+        mAvatarEditor->getManager()->getCurrentInstance()->saveModified();
         mOgrePeerManager->onUserAvatarSave();
     }
 
@@ -2036,8 +2041,8 @@ bool Navigator::avatarXMLSave()
 //-------------------------------------------------------------------------------------
 bool Navigator::avatarXMLSaveAs()
 {
-	if (mAvatarEditor)
-	{}
+    if (mAvatarEditor)
+    {}
 
     return true;
 }
@@ -2055,14 +2060,14 @@ void Navigator::setCameraMode(int mode)
         return;
 
     if (mUserAvatar == 0) return;
-	Vector3 pos;
-	Quaternion orientation;
+    Vector3 pos;
+    Quaternion orientation;
 #if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
-     pos = mUserAvatar->getSceneNode()->getWorldPosition();
-	 orientation = mUserAvatar->getSceneNode()->getWorldOrientation();
+    pos = mUserAvatar->getSceneNode()->getWorldPosition();
+    orientation = mUserAvatar->getSceneNode()->getWorldOrientation();
 #else
-	 pos = mUserAvatar->getSceneNode()->_getDerivedPosition();
-	 orientation = mUserAvatar->getSceneNode()->_getDerivedOrientation();
+    pos = mUserAvatar->getSceneNode()->_getDerivedPosition();
+    orientation = mUserAvatar->getSceneNode()->_getDerivedOrientation();
 #endif
     Vector3 size = mUserAvatar->getEntity()->getBoundingBox().getSize();
 
@@ -2090,7 +2095,7 @@ void Navigator::setCameraMode(int mode)
                 FPSupportCam->yaw(currentCamera->getYaw());
                 FPSupportCam->pitch(currentCamera->getPitch());
             }
-                
+
             // Translate the origin of the camera support along the y axis to the eyes of the avatar (85% of the bbox)
             FPSupportCam->setCameraSupportNodePosition(Ogre::Vector3(0.0, 0.85*size.y, 0));
 
@@ -2103,7 +2108,7 @@ void Navigator::setCameraMode(int mode)
             FPCameraSupport* FPWMSupportCam = (FPCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CM1stPersonWithMouse);
             FPWMSupportCam->resetCameraSupport();
             CameraSupport* currentCamera=mMainCameraSupportMgr->getActiveCameraSupport();
-            
+
             if (mMainCameraSupportMgr->getActiveCameraSupportIndex()!=CM1stPerson)
             {
                 // As x-axis is in front of the avatar, we need to put the z-axis of the camera along it
@@ -2136,9 +2141,9 @@ void Navigator::setCameraMode(int mode)
             mUserAvatar->setMvtType(Avatar::MT3rdPerson);
             break;
         }
-        
+
     case CMAroundPerson:
-		{
+        {
             mMainCameraSupportMgr->activeCameraSupport(CMAroundPerson);
             OrbitalCameraSupport* APSupportCam = (OrbitalCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CMAroundPerson);
             APSupportCam->resetCameraSupport();
@@ -2154,10 +2159,10 @@ void Navigator::setCameraMode(int mode)
             mUserAvatar->setMvtType(Avatar::MT3rdPerson);
             break;
         }
-		
-	case CMModeling:
-		{
-			mMainCameraSupportMgr->activeCameraSupport(CMModeling);
+
+    case CMModeling:
+        {
+            mMainCameraSupportMgr->activeCameraSupport(CMModeling);
             OrbitalCameraSupport* MSupportCam = (OrbitalCameraSupport*)mMainCameraSupportMgr->getCameraSupport(CMModeling);
             MSupportCam->resetCameraSupport();
             // Translate the origin of the camera support along the y axis to the middle of the avatar bbox, and 1,5m ahead
@@ -2170,11 +2175,11 @@ void Navigator::setCameraMode(int mode)
             MSupportCam->setDistanceFromTarget(2.5*size.y);
             mUserAvatar->setMvtType(Avatar::MT3rdPerson);
             break;
-		}
-	case CMAroundObject:
-		{
-    		break;
-		}
+        }
+    case CMAroundObject:
+        {
+            break;
+        }
     }
     mUserAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
     //mUserAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
@@ -2211,12 +2216,12 @@ void Navigator::toggleVoIP()
     else
     {
         // connect to voice server
-	    EntityUID avatarUid = getUserAvatar()->getCharacterInstance()->getUid();
+        EntityUID avatarUid = getUserAvatar()->getCharacterInstance()->getUid();
         std::string voipSrvHost;
         unsigned short voipSrvPort;
         StringHelpers::getURLHostPort(getVoIPServerAddress(), voipSrvHost, voipSrvPort);
         bool connectionSuccess = voiceEngine->connect(voipSrvHost.c_str(), voipSrvPort, avatarUid);
-	    if (connectionSuccess)
+        if (connectionSuccess)
             voiceEngine->startRecording();
         else
             mNavigatorGUI->showMessageBox("Voice engine", "Unable to connect to the Voice Server !<br/>Check your Internet connection and configure your firewall<br/>(UDP port " + StringHelpers::toString(voipSrvPort) + ").", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_ERROR);

@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <RakPeerInterface.h>
 #include <FileListTransferCBInterface.h>
 #include <IncrementalReadInterface.h>
-#include <XmlDatas.h>
+
+#include <XmlSceneLodContent.h>
+#include <XmlSceneContent.h>
 
 namespace Solipsis {
 

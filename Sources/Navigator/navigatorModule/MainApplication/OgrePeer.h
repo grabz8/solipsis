@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __OgrePeer_h__
 #define __OgrePeer_h__
 
-#include "XmlDatas.h"
+#include <XmlEntity.h>
+#include <XmlAction.h>
 #include "Ogre.h"
 
 using namespace Ogre;

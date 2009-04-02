@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarNode.h"
 #include <CTSystem.h>
 #include <CTIO.h>
+#include <XmlLogin.h>
 
 using namespace RakNet;
 using namespace Ogre;
@@ -228,12 +229,13 @@ namespace Solipsis {
                     switch (packet->data[0])
                     {
                     case ID_CONNECTION_ATTEMPT_FAILED:
-//                         {
-//                             RefCntPoolPtr<XmlEvt> xmlEvt;
-// 
-//                             mEvtsToHandleList.push_back(xmlEvt);
-// 
-//                         }
+                         {
+                             pthread_mutex_lock(&mEvtsToSendMutex);
+                             RefCntPoolPtr<XmlEvt> xmlEvt;
+                             xmlEvt->setType(ETConnectionFailed);
+                             mEvtsToSendList.push_back(xmlEvt);
+                             pthread_mutex_unlock(&mEvtsToSendMutex);
+                        }
                         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() ID_CONNECTION_ATTEMPT_FAILED from %s", packet->systemAddress.ToString());
                         break;
                     case ID_NO_FREE_INCOMING_CONNECTIONS:
@@ -462,7 +464,9 @@ namespace Solipsis {
             {
                 std::stringstream s;
                 s << "<solipsis>" << xmlEvt->toXmlString() << "</solipsis>";
-                mAvatarNode->freeEvt(xmlEvt);
+                if (mAvatarNode)
+                    mAvatarNode->freeEvt(xmlEvt);
+
                 xmlRespStr = s.str();
             }
 

@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Entity.h"
 #include "TimeListener.h"
 
+#include <XmlEvt.h>
+
 namespace Solipsis {
 
 /** This class manages 1 avatar node.

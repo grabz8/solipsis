@@ -1748,8 +1748,12 @@ void NavigatorGUI::messageBoxResponse(const NaviData& naviData)
         // Display the Worlds Server info page
         worldsServerInfo();
         break;
-    case MBD_CONNECTIONLOSTERROR:
-        break;
+    case MBD_CONNECTIONERROR:
+        // when back to login a crash occurs // Gregory help me
+      //  login();
+       break;
+   case MBD_CONNECTIONLOSTERROR:
+       break;
     }
     mMsgBoxDisplayed = MBD_NONE;
 }
@@ -2410,6 +2414,14 @@ void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
     mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
     // Call connect
     bool connected = mNavigator->connect();
+}
+
+void NavigatorGUI::connectionServerError()
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionError()");
+
+    showMessageBox("Network error", "Connection to server error...", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_EXCLAMATION);
+    mMsgBoxDisplayed = MBD_CONNECTIONERROR;
 }
 
 //-------------------------------------------------------------------------------------

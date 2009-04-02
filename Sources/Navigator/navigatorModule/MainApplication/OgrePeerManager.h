@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tinyxml.h>
 #include <Ogre.h>
 
-#include "XmlDatas.h"
+#include <XmlEvt.h>
 #include "World/Modeler.h"
 #include "IOgrePeerManagerCallbacks.h"
 

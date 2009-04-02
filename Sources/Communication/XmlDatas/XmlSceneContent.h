@@ -21,42 +21,48 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __XmlDatas_h__
-#define __XmlDatas_h__
+#ifndef __XmlSceneContent_h__
+#define __XmlSceneContent_h__
 
-#include <pthread.h>
-
-#include <Ogre.h>
-#include <list>
-#include <map>
-#include <ostream>
-
-#include "XmlDatasPrerequisites.h"
-#include "XmlDatasBasicTypes.h"
-#include "PoolEntry.h"
-
-#include "XmlHelpers.h"
+#include "XmlDatas.h"
 
 namespace Solipsis 
 {
-    class XMLDATAS_EXPORT XmlData : public PoolEntry
+    class XMLDATAS_EXPORT XmlSceneContent : public XmlData
     {
-    public:
-        virtual std::string toXmlString() const = 0;
-        virtual bool toXmlElt(TiXmlElement& xmlElt) const = 0;
-        virtual bool fromXmlElt(TiXmlElement* xmlElt) = 0;
 
-        /** Function for writing to a stream.
-        */
-        inline friend std::ostream& operator<<(std::ostream& o, const XmlData& data)
+    protected:
+        static Pool mPool;
+
+    protected:
+        EntryGateStruct mEntryGate;
+
+    public:
+        XmlSceneContent()
         {
-            o << data.toXmlString();
-            return o;
+            mEntryGate.mGravity = false;
+            mEntryGate.mPosition = Ogre::Vector3::ZERO;
         }
+
+
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mEntryGate.mGravity = false;
+            mEntryGate.mPosition = Ogre::Vector3::ZERO;
+        }
+
+
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
+
+        void setEntryGate(const EntryGateStruct& entryGate) { mEntryGate = entryGate; }
+        const EntryGateStruct& getEntryGate() { return mEntryGate; }
     };
-  
-    RefCntPoolPtr<XmlData> RefCntPoolPtr<XmlData>::nullPtr((XmlData*)0);
+
+    RefCntPoolPtr<XmlSceneContent> RefCntPoolPtr<XmlSceneContent>::nullPtr((XmlSceneContent*)0);
 
 } // namespace Solipsis
 
-#endif // #ifndef __XmlDatas_h__
+#endif // #ifndef __XmlSceneContent_h__

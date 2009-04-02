@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarNode.h"
 #include "Peer.h"
 #include <CTLog.h>
+#include <XmlAction.h>
 
 using namespace RakNet;
 using namespace Ogre;

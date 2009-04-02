@@ -189,26 +189,14 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
-			<File
-				RelativePath=".\XmlDatas.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\XmlHelpers.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
+			Name="Tools"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
 				RelativePath=".\PoolEntry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\XmlDatas.h"
 				>
 			</File>
 			<File
@@ -224,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XmlHelpers.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\XmlHelpers.h"
 				>
 			</File>
@@ -233,6 +225,50 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+		</Filter>
+		<Filter
+			Name="XmlDatas"
+			>
+			<File
+				RelativePath=".\XmlAction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlContent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlDatas.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlDatas.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlEntity.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlEvt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlLodContent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlLogin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlSceneContent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XmlSceneLodContent.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

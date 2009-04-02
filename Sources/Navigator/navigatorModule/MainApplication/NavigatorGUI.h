@@ -63,7 +63,9 @@ public:
         MBD_WORLDSSERVERCOMPATIBILITYERROR,
         MBD_AUTHENTFBERROR,
         MBD_AUTHENTWSERROR,
-        MBD_CONNECTIONLOSTERROR
+        MBD_CONNECTIONLOSTERROR,
+        MBD_CONNECTIONERROR
+
     };
 
     enum NaviPanel {
@@ -209,6 +211,7 @@ public:
 #endif
 
     void connectionLostError();
+    void connectionServerError();
 
 protected:
     // Handlers

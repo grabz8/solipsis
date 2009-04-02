@@ -26,8 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 #include "IP2NClient.h"
-#include "XmlDatas.h"
 #include "Ogre.h"
+#include <XmlLogin.h>
+#include <XmlEvt.h>
 
 using namespace Ogre;
 

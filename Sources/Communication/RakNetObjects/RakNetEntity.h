@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __RakNetEntity_h__
 
 #include "ReplicaManagerSolipsis.h"
-#include <XmlDatas.h>
+#include <XmlEntity.h>
 #include "CacheManager.h"
 
 namespace Solipsis {

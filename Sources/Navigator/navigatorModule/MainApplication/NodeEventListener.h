@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 #include <CTBasicThread.h>
-#include "XmlDatas.h"
+#include <XmlEvt.h>
 
 using CommonTools::BasicThread;
 

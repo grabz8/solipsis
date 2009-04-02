@@ -20,12 +20,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "XmlDatas.h"
 #include <Ogre.h>
 
-#include "XmlDatas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <iconv.h>
+
+#include "XmlLogin.h"
+#include "XmlLodContent.h"
+#include "XmlSceneLodContent.h"
+#include "XmlContent.h"
+#include "XmlSceneContent.h"
+#include "XmlEntity.h"
+#include "XmlAction.h"
+#include "XmlEvt.h"
 
 namespace Solipsis {
 
