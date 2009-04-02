@@ -1749,8 +1749,7 @@ void NavigatorGUI::messageBoxResponse(const NaviData& naviData)
         worldsServerInfo();
         break;
     case MBD_CONNECTIONERROR:
-        // when back to login a crash occurs // Gregory help me
-      //  login();
+        Navigator::getSingletonPtr()->disconnect();
        break;
    case MBD_CONNECTIONLOSTERROR:
        break;

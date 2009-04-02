@@ -47,6 +47,16 @@ NodeEventListener::~NodeEventListener()
         delete mXmlRpcClientAsync;
 }
 
+
+// post Event to process list
+void NodeEventListener::postEvent(RefCntPoolPtr<XmlEvt>& xmlEvt)
+{
+    pthread_mutex_lock(&mNodeEventsListsMutex);
+    mNodeEventsListReceiving->push_back(xmlEvt);
+    pthread_mutex_unlock(&mNodeEventsListsMutex);
+}
+
+
 //-------------------------------------------------------------------------------------
 void NodeEventListener::run()
 {

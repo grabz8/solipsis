@@ -62,6 +62,9 @@ public:
     NodeEventListener(NavigatorXMLRPCClient*& xmlRpcClient);
     ~NodeEventListener();
 
+    // post Event to process list
+    void postEvent(RefCntPoolPtr<XmlEvt>& xmlEvt);
+
 protected:
     /** See CommonTools::BasicThread. */
     virtual void run();

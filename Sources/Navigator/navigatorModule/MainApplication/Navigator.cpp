@@ -1697,6 +1697,9 @@ void Navigator::onLocationChange(Navi *caller, const std::string &url)
     sendURLUpdate(object->getXmlEntity()->getUid(), caller->getName(), url);
 }
 
+
+
+
 //-------------------------------------------------------------------------------------
 void Navigator::processEvents()
 {
@@ -1732,8 +1735,8 @@ void Navigator::processEvents()
                 mUserAvatar->setGhost(false);
             break;
         case ETConnectionFailed:
+      //      disconnect();
             mNavigatorGUI->connectionServerError();
-
         default: // Caller already check type consistency
             break;
         }

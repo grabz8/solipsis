@@ -52,6 +52,9 @@ std::string XmlEvt::toXmlString() const
     if (!mDatas.isNull()) 
         s << mDatas->toXmlString();
 
+    if (!mCommand.size()) 
+        s << "<Command value=\"" << mCommand << "\"/>";
+
     s << "</evt>";
     return s.str();
 }
@@ -63,6 +66,12 @@ bool XmlEvt::toXmlElt(TiXmlElement& xmlElt) const
     evtElt->SetAttribute("type", Ogre::StringConverter::toString(mType).c_str());
 
     if (!mDatas.isNull()) mDatas->toXmlElt(*evtElt);
+    if (!mCommand.size()) 
+    {
+        TiXmlElement* cmdElt = new TiXmlElement("Command");
+        cmdElt->SetAttribute("value", mCommand.c_str());
+        evtElt->LinkEndChild(evtElt);
+   }
 
     xmlElt.LinkEndChild(evtElt);
     return true;
@@ -92,6 +101,11 @@ bool XmlEvt::fromXmlElt(TiXmlElement* xmlElt)
         RefCntPoolPtr<XmlAction> xmlAction;
         xmlAction->fromXmlElt(subElt);
         mDatas = RefCntPoolPtr<XmlData>(xmlAction);
+    }
+    else if ((subElt = elt->FirstChildElement("Command")) != 0)
+    {
+        XmlHelpers::getAttribute(subElt,"value", attr);
+        mCommand = attr;
     }
 
     return true;

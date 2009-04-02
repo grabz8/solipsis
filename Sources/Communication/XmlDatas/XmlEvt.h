@@ -34,39 +34,41 @@ namespace Solipsis
     protected:
         static Pool mPool;
 
-
     protected:
         EventType mType;
-
         RefCntPoolPtr<XmlData> mDatas;
+        std::string mCommand;
 
     public:
         XmlEvt() :  mType(ETNewEntity),
-                    mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+            mDatas(RefCntPoolPtr<XmlData>::nullPtr)
         {}
 
         XmlEvt(const EventType& type) :
-                    mType(type),
-                    mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+        mType(type),
+            mDatas(RefCntPoolPtr<XmlData>::nullPtr)
         {}
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mType = ETNewEntity;
-              mDatas = RefCntPoolPtr<XmlData>::nullPtr;
-          }
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mType = ETNewEntity;
+            mDatas = RefCntPoolPtr<XmlData>::nullPtr;
+        }
 
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
-          void setType(const EventType& type) { mType = type; }
-          EventType getType() { return mType; }
-          const std::string& getTypeRepr() { return XmlHelpers::convertEventTypeToRepr(mType); }
+        void setType(const EventType& type) { mType = type; }
+        EventType getType() { return mType; }
+        const std::string& getTypeRepr() { return XmlHelpers::convertEventTypeToRepr(mType); }
 
-          void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
-          RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
+        void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
+        RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
+
+        void setCommand(const std::string & cmd) { mCommand = cmd; }
+        const std::string& getCommand() { return mCommand; }
     };
 
 
