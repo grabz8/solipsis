@@ -109,6 +109,7 @@ protected:
     String mMediaCachePath;
     String mVoIPServerAddress;
     float mVoIPSilenceLevel;
+    bool mCastShadows;
     unsigned int mVoIPSilenceLatency;
 
     CameraSupportManager* mMainCameraSupportMgr;
@@ -200,6 +201,8 @@ public:
     unsigned int getVoIPSilenceLatency();
     void setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec);
     bool setNameValueVariable(const String& varName, const String& varValue);
+    bool setCastShadows(bool castShadows);
+    bool getCastShadows();
 
     void setNavigationInterface(NavigationInterface ni) { mNavigationInterface=ni; };
     NavigationInterface getNavigationInterface() { return mNavigationInterface; }; 

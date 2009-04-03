@@ -257,6 +257,7 @@ void ModifiedMaterialManager::addTexture(TexturePtr texture, const TextureExtPar
 	mTextures.push_back(texture);
     if (!textureExtParamsMap.empty())
         mTextureNameExtParamsMap[texture->getName()] = textureExtParamsMap;
+
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------

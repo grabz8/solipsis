@@ -68,6 +68,7 @@ mFixedNodeId(""),
 mNodeId(""),
 mVoIPServerAddress("localhost:30000"),
 mVoIPSilenceLevel(5.0),
+mCastShadows(false),
 mVoIPSilenceLatency(5),
 mNavigationInterface(NIMouseKeyboard),
 mXmlRpcClient(0),
@@ -348,6 +349,16 @@ void Navigator::setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec)
 }
 
 //-------------------------------------------------------------------------------------
+bool Navigator::setCastShadows(bool castShadows)
+{
+    mCastShadows = castShadows;
+}
+bool Navigator::getCastShadows(bool castShadows)
+{
+    return mCastShadows;
+}
+
+//-------------------------------------------------------------------------------------
 bool Navigator::setNameValueVariable(const String& varName, const String& varValue)
 {
     if (varName == "PeerAddress")
@@ -422,6 +433,11 @@ bool Navigator::setNameValueVariable(const String& varName, const String& varVal
     if (varName == "VoIPSilenceLevel")
     {
         mVoIPSilenceLevel = StringConverter::parseReal(varValue);
+        return true;
+    }
+    if (varName == "CastShadows")
+    {
+        mCastShadows = StringConverter::parseBool(varValue);
         return true;
     }
     if (varName == "VoIPSilenceLatency")

@@ -98,6 +98,7 @@ void CacheManager::initialize(const std::string& cachePath)
 	CacheManager::finalize();
 }
 
+
 //-------------------------------------------------------------------------------------
 void CacheManager::finalize()
 {

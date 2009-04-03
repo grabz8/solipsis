@@ -97,8 +97,9 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mStatusBarDisplayDate(0),
     mLoginInfosText(""),
     mMsgBoxDisplayed(MBD_NONE),
-    mFacebook(0),
-    mWorldsServerEventListener(this)
+    mFacebook(0), 
+    mWorldsServerEventListener(this),
+    mLockAmbientDiffuse(false)
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
@@ -2039,30 +2040,43 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 
     // Set current values
     navi->evaluateJS("setInputState('checkboxGeneralResetDisplayConfig', null, null)");
+    // Set current values
+    navi->evaluateJS("setInputState('castShadowCheckBox', null, 'checked')");
+
     bool facebookAvailable = (
         !mNavigator->getFacebookApiKey().empty() &&
         !mNavigator->getFacebookSecret().empty() &&
         !mNavigator->getFacebookServer().empty() &&
         !mNavigator->getFacebookLoginUrl().empty());
+
     sprintf(txt, "setInputState('radioIdAuthentTypeFacebook', %s, %s)", !facebookAvailable ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFacebook) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+
     sprintf(txt, "setInputState('radioIdAuthentTypeSolipsis', %s, %s)", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATSolipsis) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+
     sprintf(txt, "setInputState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
+
     sprintf(txt, "$('inputWSHost').value = '%s'", wsHost.c_str());
     navi->evaluateJS(txt);
+
     sprintf(txt, "$('inputWSPort').value = '%s'", wsPort.c_str());
     navi->evaluateJS(txt);
+
     std::string peerHost, peerPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getPeerAddress(), peerHost, peerPort);
+
     sprintf(txt, "$('inputPeerHost').value = '%s'", peerHost.c_str());
     navi->evaluateJS(txt);
+
     sprintf(txt, "$('inputPeerPort').value = '%s'", peerPort.c_str());
     navi->evaluateJS(txt);
     navi->evaluateJS("$('infosText').innerHTML = ''");
+
     std::string proxyAutoconfUrl;
     std::string proxyHttpHost;
     int proxyHttpPort;
@@ -2084,11 +2098,14 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
         sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
         navi->evaluateJS(txt);
     }
+
     Navigator::NavigationInterface ni=mNavigator->getNavigationInterface();
     sprintf(txt, "setInputState('radioControlKeyboardAndMouse', null, %s)", (ni==Navigator::NIMouseKeyboard) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+
     sprintf(txt, "setInputState('radioControlWiimoteAndNunchuk', null, %s)", (ni==Navigator::NIWiimoteNunchuk) ? "'checked'" : "null");
     navi->evaluateJS(txt);
+
     sprintf(txt, "setInputState('radioControlWiimoteAndNunchukAndIR', null, %s)", (ni==Navigator::NIWiimoteNunchukIR) ? "'checked'" : "null");
     navi->evaluateJS(txt);
 
@@ -2106,6 +2123,10 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 
     // Get options
     bool generalResetDisplayConfig = naviData["generalResetDisplayConfig"].toBool();
+    bool castShadow = naviData["castShadow"].toBool();
+
+
+
     std::string radioIdAuthentType;
     radioIdAuthentType = naviData["radioIdAuthentType"].str();
 	std::string wsHost;
@@ -3268,6 +3289,8 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture);
+       // obj->getMaterialManager()->setNextTexture();
+
 
 		modelerUpdateTextures();
 	}
@@ -3507,7 +3530,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
             {
                 if (!SOLcopyFile(mrlStr.c_str(), finalMrl.c_str()))
                 {
-                    showMessageBox("Modeler error", "Impossible de copier le fichier dans temp", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
+                    showMessageBox("Modeler error", "Unable to copy file to temporary directory", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
                 }
             }
         }
