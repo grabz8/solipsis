@@ -154,25 +154,26 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create OSM file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
         */
 
-#ifdef SHADOWS
-        if(0 && mOgreMaxScene != 0)
+        if (Navigator::getSingletonPtr()->getCastShadows())
         {
-            // use the ogreScene's shadow parameters
+            if(0 && mOgreMaxScene != 0)
+            {
+                // use the ogreScene's shadow parameters
+            }
+            else
+            {
+                //sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
+                sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
+                sceneMgr->setShadowTextureSelfShadow(false);
+                //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
+                sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
+                SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
+                //sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
+                sceneMgr->setShadowColour(ColourValue(.7, .75, .85, 1.));
+                sceneMgr->setShadowFarDistance(100.);
+                sceneMgr->setShadowCameraSetup(shadowCameraSetup);
+            }
         }
-        else
-        {
-            //sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_ADDITIVE);
-            sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
-sceneMgr->setShadowTextureSelfShadow(false);
-            //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
-            sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
-            SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
-//sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
-sceneMgr->setShadowColour(ColourValue(.7, .75, .85, 1.));
-sceneMgr->setShadowFarDistance(100.);
-            sceneMgr->setShadowCameraSetup(shadowCameraSetup);
-        }
-#endif
 
         // Destroy the scene collision mesh
         if (!xmlSceneLodContent0->getCollision().empty())

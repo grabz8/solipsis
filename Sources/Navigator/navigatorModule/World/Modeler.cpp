@@ -257,11 +257,7 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
     Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
     SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
 
-#ifdef SHADOWS
-    entity->setCastShadows(true);
-#else
-    entity->setCastShadows(false);
-#endif
+    entity->setCastShadows(Navigator::getSingletonPtr()->getCastShadows());
 
     entity->setQueryFlags(Navigator::QFObject);
     node->attachObject( entity );
@@ -353,9 +349,9 @@ bool Modeler::createMesh(const EntityUID& entityUID, const String& name, Vector3
 	MeshPtr mptr = mGenericBox->getMesh()->clone( String(entityUID) + ".mesh" );
 	Entity* entity = mSceneManager->createEntity( String(entityUID), String(entityUID) + ".mesh" );
 	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-	entity->setCastShadows(true);
-#endif
+
+	entity->setCastShadows(Navigator::getSingletonPtr()->getCastShadows());
+
     entity->setQueryFlags(Navigator::QFObject);
 	node->attachObject( entity );
 
@@ -729,11 +725,9 @@ bool Modeler::XMLImport(const EntityUID& entityUID, const String& name, const St
 #endif
         // GILLES END
         SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(entityUID) + ".node" );
-#ifdef SHADOWS
-        entity->setCastShadows(true);
-#else
-        entity->setCastShadows(false);
-#endif
+
+        entity->setCastShadows(Navigator::getSingletonPtr()->getCastShadows());
+
         entity->setQueryFlags(Navigator::QFObject);
         node->attachObject(entity);
         if ((ext == "3ds") || (ext == "skp"))

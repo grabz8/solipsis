@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Prerequisites.h"
 #include "OgreHelpers.h"
+#include "MainApplication/Navigator.h"
 
 using namespace Solipsis;
 
@@ -128,9 +129,7 @@ void OgreHelpers::removeAndDestroySceneNode(SceneNode* node)
     OgreHelpers::getMovableObjectsList(node, "", movableObjectsList);
     for (std::list<MovableObject*>::iterator movableObject = movableObjectsList.begin();movableObject != movableObjectsList.end();++movableObject)
     {
-//#ifdef SHADOWS
-        (*movableObject)->setCastShadows(false);
-//#endif
+        (*movableObject)->setCastShadows(Navigator::getSingletonPtr()->getCastShadows());
         node->detachObject(*movableObject);
         try
         {

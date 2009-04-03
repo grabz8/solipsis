@@ -445,9 +445,7 @@ OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
         // set the current user character editable by the avatar editor
         AvatarEditor::getSingletonPtr()->setCharacterInstance(characterInstance);
 
-#ifdef SHADOWS
-    characterInstance->getEntity()->setCastShadows(true);
-#endif
+    characterInstance->getEntity()->setCastShadows(Navigator::getSingletonPtr()->getCastShadows());
 
     Avatar* peerAvatar = new Avatar(xmlEntity, isLocal, characterInstance);
     peerAvatar->setStateAnimName(ASAvatarIdle, "Idle");

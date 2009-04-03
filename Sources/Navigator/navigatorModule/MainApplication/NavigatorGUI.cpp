@@ -2041,7 +2041,8 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     // Set current values
     navi->evaluateJS("setInputState('checkboxGeneralResetDisplayConfig', null, null)");
     // Set current values
-    navi->evaluateJS("setInputState('castShadowCheckBox', null, 'checked')");
+    sprintf(txt, "setInputState('castShadowCheckBox', %s,  %s)", "null", mNavigator->getCastShadows() ? "'checked'" : "null");
+    navi->evaluateJS(txt);
 
     bool facebookAvailable = (
         !mNavigator->getFacebookApiKey().empty() &&
@@ -2123,9 +2124,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 
     // Get options
     bool generalResetDisplayConfig = naviData["generalResetDisplayConfig"].toBool();
-    bool castShadow = naviData["castShadow"].toBool();
-
-
+    mNavigator->setCastShadows(naviData["castShadow"].toBool());
 
     std::string radioIdAuthentType;
     radioIdAuthentType = naviData["radioIdAuthentType"].str();

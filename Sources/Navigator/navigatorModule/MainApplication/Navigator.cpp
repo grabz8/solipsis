@@ -349,11 +349,12 @@ void Navigator::setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec)
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::setCastShadows(bool castShadows)
+void Navigator::setCastShadows(bool castShadows)
 {
     mCastShadows = castShadows;
 }
-bool Navigator::getCastShadows(bool castShadows)
+
+bool Navigator::getCastShadows()
 {
     return mCastShadows;
 }
@@ -1804,9 +1805,7 @@ void Navigator::onSceneNodeCreate(OgrePeer* ogrePeer)
     sunLight->setDirection(sunLightDir);
     sunLight->setDiffuseColour(ColourValue::White);
     sunLight->setSpecularColour(ColourValue::White);
-#ifdef SHADOWS
-    sunLight->setCastShadows(true);
-#endif
+    sunLight->setCastShadows(getCastShadows());
 }
 
 //-------------------------------------------------------------------------------------
