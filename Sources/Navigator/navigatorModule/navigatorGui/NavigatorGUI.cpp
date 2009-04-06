@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorGUI.h"
 #include "MainApplication/Navigator.h"
-#include "NavigatorFrameListener.h"
+#include "MainApplication/NavigatorFrameListener.h"
 #include "Tools/DebugHelpers.h"
 #include <OgreTimer.h>
 #include <CTLog.h>

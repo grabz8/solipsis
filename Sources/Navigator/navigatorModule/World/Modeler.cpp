@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Selection.h"
 #include "Transformations.h"
 #include "MainApplication/Navigator.h"
-#include "MainApplication/NavigatorGUI.h"
+#include "NavigatorGUI/NavigatorGUI.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "OgreTools/ExternalTextureSourceEx.h"
 #include <Navi.h>

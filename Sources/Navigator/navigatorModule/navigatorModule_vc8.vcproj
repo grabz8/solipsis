@@ -705,14 +705,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MainApplication\NavigatorGUI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MainApplication\NavigatorGUI.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MainApplication\NavigatorSound.cpp"
 				>
 			</File>
@@ -1038,6 +1030,18 @@
 			</File>
 			<File
 				RelativePath=".\Configuration\NavigatorConfiguration.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="NavigatorGui"
+			>
+			<File
+				RelativePath=".\navigatorGui\NavigatorGUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\NavigatorGUI.h"
 				>
 			</File>
 		</Filter>
