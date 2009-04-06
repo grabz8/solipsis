@@ -87,11 +87,7 @@ bool Selection::selectObject3D(Object3D* pObj)
     }
 
     // Add this object into the selected objects list since last save
-    for( itr = mListNodeSinceLastSave.begin(); itr != mListNodeSinceLastSave.end(); ++itr)
-        if ((*itr) == pObj)
-            break; 
-    if (itr == mListNodeSinceLastSave.end())
-        mListNodeSinceLastSave.push_back(pObj);
+    add3DObjectToListSinceLastSave(pObj);
 
 	return true;
 }
@@ -284,6 +280,15 @@ void Selection::remove3DObject(Object3D *pObj)
 
 	// Third => Remove it from selected list since last save
     remove3DObjectFromListSinceLastSave(pObj);
+}
+
+//-------------------------------------------------------------------------------------
+void Selection::add3DObjectToListSinceLastSave(Object3D *pObj)
+{
+    for (Object3DPtrList::iterator itObj = mListNodeSinceLastSave.begin(); itObj != mListNodeSinceLastSave.end(); ++itObj)
+        if ((*itObj) == pObj)
+            return; 
+    mListNodeSinceLastSave.push_back(pObj);
 }
 
 //-------------------------------------------------------------------------------------
