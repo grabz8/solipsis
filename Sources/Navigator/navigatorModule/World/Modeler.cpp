@@ -271,8 +271,9 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
     node->setPosition(player_pos);
     node->setOrientation(orientation);
 
-    // quick save the created object
+    // quick save the created object + re-insert it into list of selected object to save
     XMLSave(false);
+    mSelection->add3DObjectToListSinceLastSave(obj);
 
     return true;
 }
