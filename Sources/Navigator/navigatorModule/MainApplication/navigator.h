@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorSound.h"
 #include "AvatarEditor.h"
 #include "Cameras/CameraSupportManager.h"
+#include "Configuration\NavigatorConfiguration.h"
+
 
 namespace Solipsis {
 
@@ -111,6 +113,8 @@ protected:
     float mVoIPSilenceLevel;
     bool mCastShadows;
     unsigned int mVoIPSilenceLatency;
+
+    Configuration mConfiguration;
 
     CameraSupportManager* mMainCameraSupportMgr;
 
@@ -197,12 +201,14 @@ public:
     const String& getVoIPServerAddress();
     void setVoIPServerAddress(const String& address);
     float getVoIPSilenceLevel();
-    void setWorldsServerTimeout(float VoIPSilenceLevel);
+    void setVoIPSilenceLevel(float VoIPSilenceLevel);
     unsigned int getVoIPSilenceLatency();
     void setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec);
-    bool setNameValueVariable(const String& varName, const String& varValue);
     void setCastShadows(bool castShadows);
     bool getCastShadows();
+
+    void loadConfigurationValues();
+
 
     void setNavigationInterface(NavigationInterface ni) { mNavigationInterface=ni; };
     NavigationInterface getNavigationInterface() { return mNavigationInterface; }; 
@@ -243,9 +249,6 @@ public:
 #endif
 #ifdef DEMO_VOICE
     void demoVoice(const String params);
-#endif
-#ifdef DEMO_PHYSICS1
-    void demoPhysics1();
 #endif
 
     // Navi 3D panels management

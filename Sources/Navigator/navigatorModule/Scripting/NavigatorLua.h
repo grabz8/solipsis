@@ -57,11 +57,6 @@ public:
     // returns boolean
     int bind(lua_State* luaState);
 
-    // set variable by name/value
-    // params (varName:string, varValue:string)
-    // returns boolean
-    int setNameValueVariable(lua_State* luaState);
-
     // get render window metrics
     // returns (width:int, height:int, colourDepth:int, left:int, top:int)
     int getRenderWinMetrics(lua_State* luaState);

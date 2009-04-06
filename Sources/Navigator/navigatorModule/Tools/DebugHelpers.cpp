@@ -89,16 +89,6 @@ bool DebugHelpers::frameStarted(const FrameEvent& evt, Navigator* navigator, Sce
     }
 #endif
 
-#ifdef DEMO_PHYSICS1
-    // Launch demoPhysics1 ?
-    dbgCmd = debugCommands.find("demoPhysics1");
-    if (dbgCmd != debugCommands.end())
-    {
-        debugCommands.erase(dbgCmd);
-        navigator->demoPhysics1();
-    }
-#endif
-
     // Rotate sun light ?
     static bool rotateSunLight = false;
     dbgCmd = debugCommands.find("rotateSunLight");

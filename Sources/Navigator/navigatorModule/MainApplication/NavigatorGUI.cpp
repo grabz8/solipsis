@@ -2221,30 +2221,44 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
 
     Navigator::NavigationInterface controlType = Navigator::NIMouseKeyboard;
     if (radioControlType == "KeyboardAndMouse")
-        controlType=Navigator::NIMouseKeyboard;
+    {
+        controlType = Navigator::NIMouseKeyboard;
+    }
     else if (radioControlType == "WiimoteAndNunchuk")
-        controlType=Navigator::NIWiimoteNunchuk;
+    {
+        controlType = Navigator::NIWiimoteNunchuk;
+    }
     else if (radioControlType == "WiimoteAndNunchukAndIR")
-        controlType=Navigator::NIWiimoteNunchukIR;
+    {
+        controlType = Navigator::NIWiimoteNunchukIR;
+    }
 
     // Valid options ?
     if (valid_options)
     {
         if (generalResetDisplayConfig)
+        {
             mNavigator->getOgreApplication()->resetDisplayConfig();
-        if (authentType!= mNavigator->getAuthentType())
+        }
+        if (authentType != mNavigator->getAuthentType())
         {
             mNavigator->setNodeId("");
             mNavigator->setPwd("");
         }
+
         mNavigator->setAuthentType(authentType);
         mNavigator->setWorldsServerAddress(CommonTools::StringHelpers::getURL(wsHost, wsPort));
         mNavigator->setPeerAddress(CommonTools::StringHelpers::getURL(peerHost, peerPort));
+
+        // saved in Navi manager
         mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
 
         mNavigator->setNavigationInterface(controlType);
 
+        // empty info text
         navi->evaluateJS("$('infosText').innerHTML = ''");
+
+
 
         // Return to Navi UI login
         login();

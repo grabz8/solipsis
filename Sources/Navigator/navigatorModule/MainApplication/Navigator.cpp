@@ -103,6 +103,7 @@ isOnGizmo(false)
     luaL_openlibs(mLuaState);
     //with LuaPlus    mLuaPlusState = LuaPlus::LuaState::Create(true);
     //with LuaPlus    mLuaState = mLuaPlusState->GetCState();
+    loadConfigurationValues();
 }
 
 //-------------------------------------------------------------------------------------
@@ -148,6 +149,8 @@ Navigator::~Navigator()
     // Destroy Main Camera Manager
     if (mMainCameraSupportMgr != 0)
         delete mMainCameraSupportMgr;
+
+    mConfiguration.saveConfig();
 }
 
 //-------------------------------------------------------------------------------------
@@ -190,6 +193,8 @@ const String& Navigator::getPeerAddress()
 void Navigator::setPeerAddress(const String& address)
 {
     mPeerAddress = address;
+    mConfiguration.findParameter("PeerAddress")->setValueString(mPeerAddress);
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -202,6 +207,7 @@ const String& Navigator::getLocalWorldAddress()
 void Navigator::setLocalWorldAddress(const String& address)
 {
     mLocalWorldAddress = address;
+    mConfiguration.findParameter("LocalWorldAddress")->setValueString(mLocalWorldAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -226,6 +232,7 @@ const String& Navigator::getWorldsServerAddress()
 void Navigator::setWorldsServerAddress(const String& address)
 {
     mWorldsServerAddress = address;
+    mConfiguration.findParameter("WorldsServerAddress")->setValueString(mWorldsServerAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -238,6 +245,7 @@ unsigned short Navigator::getWorldsServerTimeout()
 void Navigator::setWorldsServerTimeout(unsigned short timeoutSec)
 {
     mWorldsServerTimeoutSec = timeoutSec;
+    mConfiguration.findParameter("WorldsServerTimeout")->setValueInt(mWorldsServerTimeoutSec);
 }
 
 //-------------------------------------------------------------------------------------
@@ -250,6 +258,7 @@ const String& Navigator::getLogin()
 void Navigator::setLogin(const String& login)
 {
     mLogin = login;
+    mConfiguration.findParameter("Login")->setValueString(mLogin);
 }
 
 //-------------------------------------------------------------------------------------
@@ -262,6 +271,8 @@ const String& Navigator::getPwd()
 void Navigator::setPwd(const String& pwd)
 {
     mPwd = pwd;
+    // Password is saved set but can be manually fixed in the configuration file
+    //mConfiguration.findParameter("Password")->setValueString(mLogin);
 }
 
 //-------------------------------------------------------------------------------------
@@ -286,6 +297,7 @@ const NodeId& Navigator::getFixedNodeId()
 void Navigator::setFixedNodeId(const NodeId& nodeId)
 {
     mFixedNodeId = nodeId;
+    mConfiguration.findParameter("FixedNodeId")->setValueString(mFixedNodeId);
 }
 
 //-------------------------------------------------------------------------------------
@@ -310,6 +322,7 @@ const String& Navigator::getMediaCachePath()
 void Navigator::setMediaCachePath(const String& mediaCachePath)
 {
     mMediaCachePath = mediaCachePath;
+    mConfiguration.findParameter("MediaCachePath")->setValueString(mMediaCachePath);
 }
 
 //-------------------------------------------------------------------------------------
@@ -322,6 +335,7 @@ const String& Navigator::getVoIPServerAddress()
 void Navigator::setVoIPServerAddress(const String& address)
 {
     mVoIPServerAddress = address;
+    mConfiguration.findParameter("VoIPServerAddress")->setValueString(mVoIPServerAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -331,9 +345,10 @@ float Navigator::getVoIPSilenceLevel()
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setWorldsServerTimeout(float VoIPSilenceLevel)
+void Navigator::setVoIPSilenceLevel(float VoIPSilenceLevel)
 {
     mVoIPSilenceLevel = VoIPSilenceLevel;
+    mConfiguration.findParameter("VoIPSilenceLevel")->setValueInt(mVoIPSilenceLatency);
 }
 
 //-------------------------------------------------------------------------------------
@@ -346,12 +361,14 @@ unsigned int Navigator::getVoIPSilenceLatency()
 void Navigator::setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec)
 {
     mVoIPSilenceLatency = VoIPSilenceLatencySec;
+    mConfiguration.findParameter("VoIPSilenceLatency")->setValueInt(mVoIPSilenceLatency);
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::setCastShadows(bool castShadows)
 {
     mCastShadows = castShadows;
+    mConfiguration.findParameter("CastShadows" )->setValueBool(mCastShadows);
 }
 
 bool Navigator::getCastShadows()
@@ -359,95 +376,39 @@ bool Navigator::getCastShadows()
     return mCastShadows;
 }
 
-//-------------------------------------------------------------------------------------
-bool Navigator::setNameValueVariable(const String& varName, const String& varValue)
+
+void Navigator::loadConfigurationValues()
 {
-    if (varName == "PeerAddress")
-    {
-        mPeerAddress = varValue;
-        return true;
-    }
-    if (varName == "LocalWorldAddress")
-    {
-        mLocalWorldAddress = varValue;
-        if (mWorldAddress.empty())
-            mWorldAddress = mLocalWorldAddress;
-        return true;
-    }
-    if (varName == "WorldsServerAddress")
-    {
-        mWorldsServerAddress = varValue;
-        return true;
-    }
-    if (varName == "WorldsServerTimeout")
-    {
-        mWorldsServerTimeoutSec = StringConverter::parseInt(varValue);
-        return true;
-    }
-    if (varName == "Login")
-    {
-        mLogin = varValue;
-        return true;
-    }
-    if (varName == "Password")
-    {
-        mPwd = varValue;
-        return true;
-    } 
-    if (varName == "FixedNodeId")
-    {
-        mFixedNodeId = varValue;
-        if (!mFixedNodeId.empty())
-            mAuthentType = ATFixed;
-        return true;
-    }
-    if (varName == "FacebookApiKey")
-    {
-        mFacebookApiKey = varValue;
-        return true;
-    }
-    if (varName == "FacebookSecret")
-    {
-        mFacebookSecret = varValue;
-        return true;
-    }
-    if (varName == "FacebookServer")
-    {
-        mFacebookServer = varValue;
-        return true;
-    }
-    if (varName == "FacebookLoginUrl")
-    {
-        mFacebookLoginUrl = varValue;
-        return true;
-    }
-    if (varName == "MediaCachePath")
-    {
-        mMediaCachePath = varValue;
-        return true;
-    }
-    if (varName == "VoIPServerAddress")
-    {
-        mVoIPServerAddress = varValue;
-        return true;
-    }
-    if (varName == "VoIPSilenceLevel")
-    {
-        mVoIPSilenceLevel = StringConverter::parseReal(varValue);
-        return true;
-    }
-    if (varName == "CastShadows")
-    {
-        mCastShadows = StringConverter::parseBool(varValue);
-        return true;
-    }
-    if (varName == "VoIPSilenceLatency")
-    {
-        mVoIPSilenceLatency = StringConverter::parseInt(varValue);
-        return true;
-    }
-    return false;
+    mConfiguration.loadConfig("SolipsisConfiguration.xml");
+
+    mPeerAddress = mConfiguration.findParameter("PeerAddress", "localhost:8880")->getValueString();
+    mLocalWorldAddress = mConfiguration.findParameter("LocalWorldAddress", "")->getValueString();
+    if (mWorldAddress.empty())
+        mWorldAddress = mLocalWorldAddress;
+
+    mWorldsServerAddress = mConfiguration.findParameter("WorldsServerAddress", "80.13.207.29:8550")->getValueString();
+    mWorldsServerTimeoutSec = mConfiguration.findParameter("WorldsServerTimeout", "8")->getValueInt();
+
+    mLogin = mConfiguration.findParameter("Login", "")->getValueString();
+    mPwd = mConfiguration.findParameter("Password", "")->getValueString();
+
+    mFacebookApiKey = mConfiguration.findParameter("FacebookApiKey", "8d81e4c64ac0039b209c4a53b21ba220")->getValueString();
+    mFacebookSecret = mConfiguration.findParameter("FacebookSecret", "695a02e3645bed085e1802c7e9952d73")->getValueString();
+    mFacebookServer = mConfiguration.findParameter("FacebookServer", "api.facebook.com/restserver.php")->getValueString();
+    mFacebookLoginUrl = mConfiguration.findParameter("FacebookLoginUrl", "http://api.facebook.com/login.php")->getValueString();
+
+    mFixedNodeId = mConfiguration.findParameter("FixedNodeId", "")->getValueString();
+    if (!mFixedNodeId.empty())
+        mAuthentType = ATFixed;
+
+    mMediaCachePath = mConfiguration.findParameter("MediaCachePath", "")->getValueString();
+    mVoIPServerAddress = mConfiguration.findParameter("VoIPServerAddress", "localhost:30000")->getValueString();
+    mVoIPSilenceLevel = mConfiguration.findParameter("VoIPSilenceLevel", "5.0")->getValueFloat();
+    mVoIPSilenceLatency = mConfiguration.findParameter("VoIPSilenceLatency", "5")->getValueInt();
+
+    mCastShadows = mConfiguration.findParameter("CastShadows", "false")->getValueBool();
 }
+
 
 //-------------------------------------------------------------------------------------
 OgrePeerManager* Navigator::getOgrePeerManager()
@@ -745,60 +706,7 @@ void Navigator::demoVoice(const String params)
     toggleVoIP();
 }
 #endif
-#ifdef DEMO_PHYSICS1
-//-------------------------------------------------------------------------------------
-void Navigator::demoPhysics1()
-{
-    /*
-    #define MAX_BOXES 10
-    static int nextBox = 0;
-    static std::map<String, SceneNode*> boxes;
 
-    // Create a box
-    int boxNum = nextBox;
-    nextBox = (nextBox + 1)%MAX_BOXES;
-    String boxName = "demoPhysics1box" + StringConverter::toString(boxNum);
-    String boxNodeName = boxName + "Node";
-    Vector3 boxGeomSize = Vector3(100, 100, 100);
-    Vector3 boxScale = Vector3(0.01 - boxNum*0.0005, 0.01 - boxNum*0.0005, 0.01 - boxNum*0.0005);
-    Vector3 boxExtents = boxGeomSize*boxScale;
-    Vector3 userAvatarPos = mUserAvatar->getSceneNode()->getWorldPosition();
-    Vector3 userAvatarVpn = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_X;
-    Vector3 userAvatarVup = mUserAvatar->getSceneNode()->getWorldOrientation()*Vector3::UNIT_Y;
-    Vector3 boxPos = userAvatarPos + userAvatarVpn*4.5 + userAvatarVup*4.5;
-    SceneNode* boxNode = 0;
-    Entity* boxEntity = 0;
-
-    static std::map<String, IPhysicsBody*> bodies;
-    IPhysicsScene* physicsScene = mOgrePeerManager->getPhysicsScene();
-    if (physicsScene == 0) return;
-
-    IPhysicsBody* boxBody = 0;
-    std::map<String, SceneNode*>::iterator boxIt = boxes.find(boxName);
-    if (boxIt != boxes.end())
-    {
-    boxNode = mSceneMgr->getSceneNode(boxNodeName);
-    boxEntity = (Entity*)boxNode->getAttachedObject(boxName + "Ent");
-    boxBody = (bodies.find(boxName))->second;
-    }
-    else
-    {
-    boxNode = mSceneMgr->getRootSceneNode()->createChildSceneNode(boxNodeName);
-    boxNode->setScale(boxScale);
-    boxEntity = mSceneMgr->createEntity(boxName + "Ent", "cube.mesh");
-    boxEntity->setMaterialName("2 - Default");
-    boxNode->attachObject(boxEntity);
-    boxBody = physicsScene->createBody();
-    boxBody->createBox(boxNode, boxExtents);
-    boxes[boxName] = boxNode;
-    bodies[boxName] = boxBody;
-    }
-    boxBody->setPosition(boxPos);
-    boxBody->setLinearVelocity(Vector3::ZERO);
-    boxBody->setAngularVelocity(Vector3::ZERO);
-    */
-}
-#endif
 
 //-------------------------------------------------------------------------------------
 String Navigator::getEntityNaviName(const Entity& entity)

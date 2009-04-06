@@ -1029,6 +1029,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="Configuration"
+			>
+			<File
+				RelativePath=".\Configuration\NavigatorConfiguration.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Configuration\NavigatorConfiguration.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\NavigatorModule.h"
 			>
