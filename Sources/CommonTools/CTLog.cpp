@@ -152,7 +152,7 @@ void LogHandler::logf(VerbosityLevel level, const char* fmt, ...)
     log(level, buf);
 }
 
-/// Log method to define
+//-------------------------------------------------------------------------------------
 void LogHandler::log(VerbosityLevel level, const std::string& msg)
 {
     log(level, msg.c_str());
