@@ -1073,3 +1073,8 @@ RakNet Replica scoping:
 Some fix about progress bar and avatar tuning
 
 ---------------------------
+06/04/09
+
+selected obj saved by "quick save" after primitive creation is now re-inserted into mListNodeSinceLastSave in order to save next update
+
+---------------------------
