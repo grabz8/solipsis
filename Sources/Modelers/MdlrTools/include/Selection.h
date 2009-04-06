@@ -243,6 +243,16 @@ public:
 /*
  *
  *	\brief 
+ *		Add an object to the selected objects list since last save
+ *
+ *	\param pEnt = A pointer to object to remove
+ *
+*/
+    void add3DObjectToListSinceLastSave(Object3D *pObj);
+
+/*
+ *
+ *	\brief 
  *		Remove an object from the selected objects list since last save
  *
  *	\param pEnt = A pointer to object to remove
