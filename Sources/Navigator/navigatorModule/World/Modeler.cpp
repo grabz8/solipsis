@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Transformations.h"
 #include "MainApplication/Navigator.h"
 #include "NavigatorGUI/NavigatorGUI.h"
+#include "NavigatorGui/GUI_MessageBox.h"
 #include <OgreExternalTextureSourceManager.h>
 #include "OgreTools/ExternalTextureSourceEx.h"
 #include <Navi.h>
@@ -273,7 +274,7 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
 
     // quick save the created object + re-insert it into list of selected object to save
     XMLSave(false);
-    mSelection->add3DObjectToListSinceLastSave(obj);
+    mSelection->add3DObject(obj);
 
     return true;
 }
@@ -661,7 +662,10 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 	}
 	else
 	{
-        Navigator::getSingletonPtr()->getNavigatorGUI()->showMessageBox("Modeler error", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_FILENOTFOUND] + " [" + filename + "].", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_ERROR);
+        GUI_MessageBox::getMsgBox()->show("Modeler error", 
+            NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_FILENOTFOUND] + " [" + filename + "].", 
+            GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR);
+
 		return false;	
 	}
 

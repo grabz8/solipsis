@@ -63,6 +63,12 @@
 	            left: 100px;
 	            top: 125px;
             }
+			#savepasswordInput
+            {
+	            position: absolute;
+	            left: 180px;
+	            top: 150px;
+            }
             .inputText
             {
                 background-color: #FFFFFF;
@@ -72,7 +78,7 @@
             {
 	            position: relative;
 	            left: 20px;
-                top: 155px;
+                top: 180px;
                 width: 64px;
                 height: 24px;
             }
@@ -80,13 +86,13 @@
             {
 	            position: absolute;
 	            left: 100px;
-	            top: 160px;
+	            top: 180px;
             }
             #infosText
             {
 	            position: absolute;
 	            left: 20px;
-	            top: 180px;
+	            top: 190px;
 	            width: 360px;
 	            height: 24px;
 	            font-size: 14px;
@@ -121,9 +127,15 @@
                 <div id="pwdInput">
                     <input id="inputPwd" class="inputText" name="inputPwd" value="" type="password" size="35" />
                 </div>
+				<div id="savepasswordInput">
+					<input id="savePassWordCB" name="savePassWordCB" type="checkbox" />
+					remember Password
+				</div>
             </div>
             <button id="worldButton" class="buttonWorld" name="buttonWorld" value="buttonWorld" type="button" onclick="buttonPressed('world')">World</button>
-            <div id="worldText"></div>
+			
+			
+			<div id="worldText"></div>
             <div id="infosText"></div>
             <div id="connectButton" class="button" onclick="buttonPressed('connect')"></div>
             <div id="optionsButton" class="button" onclick="buttonPressed('options')"></div>

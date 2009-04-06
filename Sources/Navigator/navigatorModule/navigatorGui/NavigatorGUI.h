@@ -57,19 +57,9 @@ public:
         MBB_ERROR,
         MBB_EXCLAMATION
     };
-    enum MsgBoxDisplayed {
-        MBD_NONE = 0,
-        MBD_WORLDSSERVERERROR,
-        MBD_WORLDSSERVERCOMPATIBILITYERROR,
-        MBD_AUTHENTFBERROR,
-        MBD_AUTHENTWSERROR,
-        MBD_CONNECTIONLOSTERROR,
-        MBD_CONNECTIONERROR
-
-    };
+ 
 
     enum NaviPanel {
-        NAVI_MSGBOX = 0,
         NAVI_LOGIN,
         NAVI_WORLDS,
         NAVI_INFOWS,
@@ -88,14 +78,18 @@ public:
         NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
+
 #ifdef DECLARATIVE_MODELER
 		NAVI_MODELERSCENEFROMTEXT,
 #endif
+
         NAVI_AVATARMAIN,
         NAVI_AVATARPROP,
+
 #ifdef UIDEBUG
         NAVI_DEBUG,
 #endif
+
         NAVI_COUNT
     };
 
@@ -119,11 +113,7 @@ protected:
     unsigned long mCurrentNaviCreationDate;
     unsigned long mStatusBarDisplayDate;
     std::string mLoginInfosText;
-    MsgBoxDisplayed mMsgBoxDisplayed;
-    std::string mMsgBoxTitleText;
-    std::string mMsgBoxMsgText;
-    MsgBoxButtons mMsgBoxButtons;
-    MsgBoxIcon mMsgBoxIcon;
+
     Facebook *mFacebook;
 #ifdef UIDEBUG
     bool mTreeDirty;
@@ -144,11 +134,6 @@ public:
     // Mouse
     void SetMouseVisibility(bool visible);
     bool isMouseVisible();
-
-    // Show a message box
-    void showMessageBox(const std::string& titleText, const std::string& msgText, MsgBoxButtons buttons, MsgBoxIcon icon);
-    void hideMessageBox();
-    bool isMessageBoxVisible();
 
     // Interfaces
     void login();
@@ -214,10 +199,6 @@ public:
     void connectionServerError();
 
 protected:
-    // Handlers
-    void messageBoxPageLoaded(const NaviData& naviData);
-    void messageBoxResponse(const NaviData& naviData);
-
     // Login/Options/InWorld callbacks
     void loginPageLoaded(const NaviData& naviData);
     void world(const NaviData& naviData);
@@ -464,11 +445,28 @@ protected:
     void naviToShowPageLoaded(const NaviData& naviData);
     void hidePreviousNavi();
     void destroyNavi(NaviPanel naviPanel);
+ 
 
 public:
     const std::string& getNaviName(NaviPanel naviPanel);
+    // 
     bool setNaviVisibility(const std::string& naviName, bool show);
+
+    // à supprimer ?
     void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
+
+    static void destroyNavi(NaviLibrary::Navi *pNavi)
+    {
+        mNaviGui->mNaviMgr->destroyNavi(pNavi);
+    }
+
+    static NaviLibrary::Navi * getNavi(const std::string& naviName)
+    {   
+        return mNaviGui->mNaviMgr->getNavi(naviName);
+    }
+
+    static NavigatorGUI * mNaviGui;
+
 };
 
 } // namespace Solipsis

@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "Navigator.h"
+#include "NavigatorGui/GUI_MessageBox.h"
+
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
 #include <OgreExternalTextureSourceManager.h>
@@ -193,7 +195,7 @@ const String& Navigator::getPeerAddress()
 void Navigator::setPeerAddress(const String& address)
 {
     mPeerAddress = address;
-    mConfiguration.findParameter("PeerAddress")->setValueString(mPeerAddress);
+    mConfiguration.findParam("PeerAddress")->setValueString(mPeerAddress);
 
 }
 
@@ -207,7 +209,7 @@ const String& Navigator::getLocalWorldAddress()
 void Navigator::setLocalWorldAddress(const String& address)
 {
     mLocalWorldAddress = address;
-    mConfiguration.findParameter("LocalWorldAddress")->setValueString(mLocalWorldAddress);
+    mConfiguration.findParam("LocalWorldAddress")->setValueString(mLocalWorldAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -220,6 +222,7 @@ const String& Navigator::getWorldAddress()
 void Navigator::setWorldAddress(const String& address)
 {
     mWorldAddress = address;
+    mConfiguration.findParam("WorldAddress")->setValueString(mWorldAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -232,7 +235,7 @@ const String& Navigator::getWorldsServerAddress()
 void Navigator::setWorldsServerAddress(const String& address)
 {
     mWorldsServerAddress = address;
-    mConfiguration.findParameter("WorldsServerAddress")->setValueString(mWorldsServerAddress);
+    mConfiguration.findParam("WorldsServerAddress")->setValueString(mWorldsServerAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -245,7 +248,7 @@ unsigned short Navigator::getWorldsServerTimeout()
 void Navigator::setWorldsServerTimeout(unsigned short timeoutSec)
 {
     mWorldsServerTimeoutSec = timeoutSec;
-    mConfiguration.findParameter("WorldsServerTimeout")->setValueInt(mWorldsServerTimeoutSec);
+    mConfiguration.findParam("WorldsServerTimeout")->setValueInt(mWorldsServerTimeoutSec);
 }
 
 //-------------------------------------------------------------------------------------
@@ -258,7 +261,7 @@ const String& Navigator::getLogin()
 void Navigator::setLogin(const String& login)
 {
     mLogin = login;
-    mConfiguration.findParameter("Login")->setValueString(mLogin);
+    mConfiguration.findParam("Login")->setValueString(mLogin);
 }
 
 //-------------------------------------------------------------------------------------
@@ -268,16 +271,20 @@ const String& Navigator::getPwd()
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::setPwd(const String& pwd)
+void Navigator::setPwd(const String& pwd, bool bSave)
 {
     mPwd = pwd;
+
     // Password is saved set but can be manually fixed in the configuration file
-    //mConfiguration.findParameter("Password")->setValueString(mLogin);
+    if (bSave)
+        mConfiguration.findParam("Password")->setProtectedValueString(mPwd);
+    else
+        mConfiguration.findParam("Password")->setProtectedValueString("");
 }
 
 //-------------------------------------------------------------------------------------
 AuthentType Navigator::getAuthentType()
-{
+{ 
     return mAuthentType;
 }
 
@@ -297,7 +304,7 @@ const NodeId& Navigator::getFixedNodeId()
 void Navigator::setFixedNodeId(const NodeId& nodeId)
 {
     mFixedNodeId = nodeId;
-    mConfiguration.findParameter("FixedNodeId")->setValueString(mFixedNodeId);
+    mConfiguration.findParam("FixedNodeId")->setValueString(mFixedNodeId);
 }
 
 //-------------------------------------------------------------------------------------
@@ -322,7 +329,7 @@ const String& Navigator::getMediaCachePath()
 void Navigator::setMediaCachePath(const String& mediaCachePath)
 {
     mMediaCachePath = mediaCachePath;
-    mConfiguration.findParameter("MediaCachePath")->setValueString(mMediaCachePath);
+    mConfiguration.findParam("MediaCachePath")->setValueString(mMediaCachePath);
 }
 
 //-------------------------------------------------------------------------------------
@@ -335,7 +342,7 @@ const String& Navigator::getVoIPServerAddress()
 void Navigator::setVoIPServerAddress(const String& address)
 {
     mVoIPServerAddress = address;
-    mConfiguration.findParameter("VoIPServerAddress")->setValueString(mVoIPServerAddress);
+    mConfiguration.findParam("VoIPServerAddress")->setValueString(mVoIPServerAddress);
 }
 
 //-------------------------------------------------------------------------------------
@@ -348,7 +355,7 @@ float Navigator::getVoIPSilenceLevel()
 void Navigator::setVoIPSilenceLevel(float VoIPSilenceLevel)
 {
     mVoIPSilenceLevel = VoIPSilenceLevel;
-    mConfiguration.findParameter("VoIPSilenceLevel")->setValueInt(mVoIPSilenceLatency);
+    mConfiguration.findParam("VoIPSilenceLevel")->setValueInt(mVoIPSilenceLatency);
 }
 
 //-------------------------------------------------------------------------------------
@@ -361,14 +368,14 @@ unsigned int Navigator::getVoIPSilenceLatency()
 void Navigator::setVoIPSilenceLatency(unsigned int VoIPSilenceLatencySec)
 {
     mVoIPSilenceLatency = VoIPSilenceLatencySec;
-    mConfiguration.findParameter("VoIPSilenceLatency")->setValueInt(mVoIPSilenceLatency);
+    mConfiguration.findParam("VoIPSilenceLatency")->setValueInt(mVoIPSilenceLatency);
 }
 
 //-------------------------------------------------------------------------------------
 void Navigator::setCastShadows(bool castShadows)
 {
     mCastShadows = castShadows;
-    mConfiguration.findParameter("CastShadows" )->setValueBool(mCastShadows);
+    mConfiguration.findParam("CastShadows" )->setValueBool(mCastShadows);
 }
 
 bool Navigator::getCastShadows()
@@ -381,32 +388,34 @@ void Navigator::loadConfigurationValues()
 {
     mConfiguration.loadConfig("SolipsisConfiguration.xml");
 
-    mPeerAddress = mConfiguration.findParameter("PeerAddress", "localhost:8880")->getValueString();
-    mLocalWorldAddress = mConfiguration.findParameter("LocalWorldAddress", "")->getValueString();
+    mPeerAddress = mConfiguration.findParam("PeerAddress", "localhost:8880")->getValueString();
+    mLocalWorldAddress = mConfiguration.findParam("LocalWorldAddress", "")->getValueString();
+    mWorldAddress = mConfiguration.findParam("WorldAddress", "")->getValueString();
+
     if (mWorldAddress.empty())
         mWorldAddress = mLocalWorldAddress;
 
-    mWorldsServerAddress = mConfiguration.findParameter("WorldsServerAddress", "80.13.207.29:8550")->getValueString();
-    mWorldsServerTimeoutSec = mConfiguration.findParameter("WorldsServerTimeout", "8")->getValueInt();
+    mWorldsServerAddress = mConfiguration.findParam("WorldsServerAddress", "80.13.207.29:8550")->getValueString();
+    mWorldsServerTimeoutSec = mConfiguration.findParam("WorldsServerTimeout", "8")->getValueInt();
 
-    mLogin = mConfiguration.findParameter("Login", "")->getValueString();
-    mPwd = mConfiguration.findParameter("Password", "")->getValueString();
+    mLogin = mConfiguration.findParam("Login", "")->getValueString();
+    mPwd = mConfiguration.findParam("Password", "")->getProtectedValueString();
+ 
+    mFacebookApiKey = mConfiguration.findParam("FacebookApiKey", "8d81e4c64ac0039b209c4a53b21ba220")->getValueString();
+    mFacebookSecret = mConfiguration.findParam("FacebookSecret", "695a02e3645bed085e1802c7e9952d73")->getValueString();
+    mFacebookServer = mConfiguration.findParam("FacebookServer", "api.facebook.com/restserver.php")->getValueString();
+    mFacebookLoginUrl = mConfiguration.findParam("FacebookLoginUrl", "http://api.facebook.com/login.php")->getValueString();
 
-    mFacebookApiKey = mConfiguration.findParameter("FacebookApiKey", "8d81e4c64ac0039b209c4a53b21ba220")->getValueString();
-    mFacebookSecret = mConfiguration.findParameter("FacebookSecret", "695a02e3645bed085e1802c7e9952d73")->getValueString();
-    mFacebookServer = mConfiguration.findParameter("FacebookServer", "api.facebook.com/restserver.php")->getValueString();
-    mFacebookLoginUrl = mConfiguration.findParameter("FacebookLoginUrl", "http://api.facebook.com/login.php")->getValueString();
-
-    mFixedNodeId = mConfiguration.findParameter("FixedNodeId", "")->getValueString();
+    mFixedNodeId = mConfiguration.findParam("FixedNodeId", "")->getValueString();
     if (!mFixedNodeId.empty())
         mAuthentType = ATFixed;
 
-    mMediaCachePath = mConfiguration.findParameter("MediaCachePath", "")->getValueString();
-    mVoIPServerAddress = mConfiguration.findParameter("VoIPServerAddress", "localhost:30000")->getValueString();
-    mVoIPSilenceLevel = mConfiguration.findParameter("VoIPSilenceLevel", "5.0")->getValueFloat();
-    mVoIPSilenceLatency = mConfiguration.findParameter("VoIPSilenceLatency", "5")->getValueInt();
+    mMediaCachePath = mConfiguration.findParam("MediaCachePath", "")->getValueString();
+    mVoIPServerAddress = mConfiguration.findParam("VoIPServerAddress", "localhost:30000")->getValueString();
+    mVoIPSilenceLevel = mConfiguration.findParam("VoIPSilenceLevel", "5.0")->getValueFloat();
+    mVoIPSilenceLatency = mConfiguration.findParam("VoIPSilenceLatency", "5")->getValueInt();
 
-    mCastShadows = mConfiguration.findParameter("CastShadows", "false")->getValueBool();
+    mCastShadows = mConfiguration.findParam("CastShadows", "false")->getValueBool();
 }
 
 
@@ -1923,7 +1932,8 @@ bool Navigator::mdlrXMLSave(bool all)
         if (all || !mModeler->isSelectionEmpty())
             return mModeler->XMLSave(all);
         else
-            mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler information", 
+            NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
 
     return false;
 }
@@ -2148,9 +2158,19 @@ void Navigator::toggleVoIP()
         StringHelpers::getURLHostPort(getVoIPServerAddress(), voipSrvHost, voipSrvPort);
         bool connectionSuccess = voiceEngine->connect(voipSrvHost.c_str(), voipSrvPort, avatarUid);
         if (connectionSuccess)
+        {
             voiceEngine->startRecording();
+        }
         else
-            mNavigatorGUI->showMessageBox("Voice engine", "Unable to connect to the Voice Server !<br/>Check your Internet connection and configure your firewall<br/>(UDP port " + StringHelpers::toString(voipSrvPort) + ").", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_ERROR);
+        {
+            GUI_MessageBox::getMsgBox()->show("Voice engine", 
+                "Unable to connect to the Voice Server !<br/>Check your Internet connection and configure your firewall<br/>(UDP port " + StringHelpers::toString(voipSrvPort) + ").", 
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_ERROR);
+        }
+
+
+
     }
 
     mNavigatorGUI->debugRefreshDemoVoiceTalkButtonName();

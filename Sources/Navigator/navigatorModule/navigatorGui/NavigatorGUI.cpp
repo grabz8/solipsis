@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "NavigatorGUI.h"
+#include "GUI_MessageBox.h"
+
 #include "MainApplication/Navigator.h"
 #include "MainApplication/NavigatorFrameListener.h"
 #include "Tools/DebugHelpers.h"
@@ -49,8 +51,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 using namespace CommonTools;
 
+NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
+
 const std::string NavigatorGUI::ms_NavisNames[] = {
-    "uimsgbox",
     "uilogin",
     "uiworlds",
     "uiinfows",
@@ -96,7 +99,6 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mCurrentNaviCreationDate(0),
     mStatusBarDisplayDate(0),
     mLoginInfosText(""),
-    mMsgBoxDisplayed(MBD_NONE),
     mFacebook(0), 
     mWorldsServerEventListener(this),
     mLockAmbientDiffuse(false)
@@ -109,6 +111,8 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
 
     for (int n=0;n<NAVI_COUNT;n++)
         mNavisStates[n] = NSNotCreated;
+
+    mNaviGui = this;
 }
 
 //-------------------------------------------------------------------------------------
@@ -199,41 +203,10 @@ bool NavigatorGUI::isMouseVisible()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::showMessageBox(const std::string& titleText, const std::string& msgText, MsgBoxButtons buttons, MsgBoxIcon icon)
-{
-    if (mNavisStates[NAVI_MSGBOX] != NSCreated)
-        hideMessageBox();
-    switchLuaNavi(NAVI_MSGBOX, true);
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
-    navi->setModal(true);
-    mMsgBoxTitleText = titleText;
-    mMsgBoxMsgText = msgText;
-    mMsgBoxButtons = buttons;
-    mMsgBoxIcon = icon;
-    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::messageBoxPageLoaded));
-    navi->bind("response", NaviDelegate(this, &NavigatorGUI::messageBoxResponse));
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::hideMessageBox()
-{
-    if (mNavisStates[NAVI_MSGBOX] != NSCreated) return;
-    switchLuaNavi(NAVI_MSGBOX, true);
-}
-
-//-------------------------------------------------------------------------------------
-bool NavigatorGUI::isMessageBoxVisible()
-{
-    if (mNavisStates[NAVI_MSGBOX] != NSCreated) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
-    return ((navi != 0) && navi->getVisibility());
-}
-
-//-------------------------------------------------------------------------------------
 void NavigatorGUI::login()
 {
     // Hide any message box
-    hideMessageBox();
+    GUI_MessageBox::getMsgBox()->hide();
 
     // Hide previous Navi UI
     hidePreviousNavi();
@@ -328,8 +301,13 @@ void NavigatorGUI::applyLoginDatas()
 	std::string pwd = navi->evaluateJS("$('inputPwd').value");
     if ((login != mNavigator->getLogin()) || (pwd != mNavigator->getPwd()))
         mNavigator->setNodeId("");
+
+    bool rememberPassword = navi->evaluateJS("$('savePassWordCB').checked") == "true";
+
     mNavigator->setLogin(login);
-    mNavigator->setPwd(pwd);
+    mNavigator->setPwd(pwd, rememberPassword);
+
+    mNavigator->saveConfiguration();
 }
 
 //-------------------------------------------------------------------------------------
@@ -355,7 +333,7 @@ void NavigatorGUI::addChatText(const std::wstring& message)
     navi->evaluateJS("$('textChat').value += '\\n'");
     navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
-
+ 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& params)
 {
@@ -1713,50 +1691,6 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 }
 #endif
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::messageBoxPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxPageLoaded()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
-
-    navi->evaluateJS("$('titleText').innerHTML = '" + mMsgBoxTitleText + "'");
-    navi->evaluateJS("$('msgText').innerHTML = '" + mMsgBoxMsgText + "'");
-    navi->evaluateJS("setButtons(" + StringHelpers::toString(mMsgBoxButtons) + ")");
-    navi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
-
-    // Show Navi UI message box
-    if (mNavisStates[NAVI_MSGBOX] == NSCreated)
-        navi->show(true);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::messageBoxResponse(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
-
-    hideMessageBox();
-
-    switch (mMsgBoxDisplayed)
-    {
-    case MBD_WORLDSSERVERERROR:
-    case MBD_AUTHENTFBERROR:
-    case MBD_AUTHENTWSERROR:
-        // Return to Navi UI login
-        login();
-        break;
-    case MBD_WORLDSSERVERCOMPATIBILITYERROR:
-        // Display the Worlds Server info page
-        worldsServerInfo();
-        break;
-    case MBD_CONNECTIONERROR:
-        Navigator::getSingletonPtr()->disconnect();
-       break;
-   case MBD_CONNECTIONLOSTERROR:
-       break;
-    }
-    mMsgBoxDisplayed = MBD_NONE;
-}
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
@@ -1782,6 +1716,9 @@ void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
     sprintf(txt, "$('worldButton').disabled = %s", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null");
     navi->evaluateJS(txt);
 
+    if (!mNavigator->getPwd().empty())
+        navi->evaluateJS("$('savePassWordCB').checked = 'true'");
+    
 	// Show Navi UI login
     if (mNavisStates[NAVI_LOGIN] == NSCreated)
         navi->show(true);
@@ -1840,9 +1777,15 @@ void NavigatorGUI::worldsServerCompatibilityError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerCompatibilityError()");
 
-    showMessageBox("Compatibility error", "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", MBB_OK, MBB_ERROR);
-    mMsgBoxDisplayed = MBD_WORLDSSERVERCOMPATIBILITYERROR;
-    mCurrentNaviCreationDate = 0;
+    login();
+    GUI_MessageBox::getMsgBox()->show(
+        "Compatibility error", 
+        "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", 
+        GUI_MessageBox::MBB_OK, 
+        GUI_MessageBox::MBB_ERROR, 
+        GUI_MessageBox::MBD_WORLDSSERVERCOMPATIBILITYERROR);
+
+    mCurrentNaviCreationDate = 0; 
 }
 
 //-------------------------------------------------------------------------------------
@@ -1850,10 +1793,15 @@ void NavigatorGUI::worldsServerError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerError()");
 
+    login();
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-    showMessageBox("Network error", "Unable to connect to the Worlds Server !<br/>Check your Internet connection and configure your firewall<br/>(TCP port " + wsPort + ").", MBB_OK, MBB_ERROR);
-    mMsgBoxDisplayed = MBD_WORLDSSERVERERROR;
+    GUI_MessageBox::getMsgBox()->show(
+        "Network error", "Unable to connect to the Worlds Server !<br/>Check your Internet connection and configure your firewall<br/>(TCP port " + wsPort + ").", 
+        GUI_MessageBox::MBB_OK, 
+        GUI_MessageBox::MBB_ERROR);
+
+
     mCurrentNaviCreationDate = 0;
 }
 
@@ -2243,7 +2191,8 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         if (authentType != mNavigator->getAuthentType())
         {
             mNavigator->setNodeId("");
-            mNavigator->setPwd("");
+            // reset password
+            mNavigator->setPwd("", true);
         }
 
         mNavigator->setAuthentType(authentType);
@@ -2258,7 +2207,7 @@ void NavigatorGUI::optionsOk(const NaviData& naviData)
         // empty info text
         navi->evaluateJS("$('infosText').innerHTML = ''");
 
-
+        mNavigator->saveConfiguration();
 
         // Return to Navi UI login
         login();
@@ -2322,8 +2271,12 @@ void NavigatorGUI::authentFacebookError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookError()");
 
-    showMessageBox("Network error", "Unable to connect to Facebook !<br/>Check your Internet connection.", MBB_OK, MBB_ERROR);
-    mMsgBoxDisplayed = MBD_AUTHENTFBERROR;
+    GUI_MessageBox::getMsgBox()->show("Network error", "Unable to connect to Facebook !<br/>Check your Internet connection.", 
+        GUI_MessageBox::MBB_OK, 
+        GUI_MessageBox::MBB_ERROR,
+        GUI_MessageBox::MBD_AUTHENTFBERROR);
+
+     login();
 }
 
 //-------------------------------------------------------------------------------------
@@ -2426,8 +2379,10 @@ void NavigatorGUI::authentWorldsServerError()
 
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-    showMessageBox("Authentication error", "Authentication failed !", MBB_OK, MBB_ERROR);
-    mMsgBoxDisplayed = MBD_AUTHENTWSERROR;
+    GUI_MessageBox::getMsgBox()->show("Authentication error", "Authentication failed !", 
+        GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR, GUI_MessageBox::MBD_AUTHENTWSERROR);
+
+    login();
 }
 
 //-------------------------------------------------------------------------------------
@@ -2452,9 +2407,13 @@ void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
 void NavigatorGUI::connectionServerError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionError()");
+    Navigator::getSingletonPtr()->disconnect();
 
-    showMessageBox("Network error", "Connection to server error...", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_EXCLAMATION);
-    mMsgBoxDisplayed = MBD_CONNECTIONERROR;
+    GUI_MessageBox::getMsgBox()->show("Network error", "Connection to server error...", 
+        GUI_MessageBox::MBB_OK, 
+        GUI_MessageBox::MBB_EXCLAMATION, 
+        GUI_MessageBox::MBD_CONNECTIONERROR);
+
 }
 
 //-------------------------------------------------------------------------------------
@@ -2462,8 +2421,11 @@ void NavigatorGUI::connectionLostError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionLostError()");
 
-    showMessageBox("Network error", "Peer lost its connection, re-connection in progress ...", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_EXCLAMATION);
-    mMsgBoxDisplayed = MBD_CONNECTIONLOSTERROR;
+    GUI_MessageBox::getMsgBox()->show(
+        "Network error", "Peer lost its connection, re-connection in progress ...", 
+        GUI_MessageBox::MBB_OK, 
+        GUI_MessageBox::MBB_EXCLAMATION,
+        GUI_MessageBox::MBD_CONNECTIONLOSTERROR);
 }
 
 //-------------------------------------------------------------------------------------
@@ -2636,7 +2598,13 @@ void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 			modeler->lockGizmo(0);
         }
 		else
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+        {
+            GUI_MessageBox::getMsgBox()->show(
+                "Modeler error", 
+                ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_INFO);
+        }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2657,7 +2625,11 @@ void NavigatorGUI::modelerActionMove(const NaviData& naviData)
         }
 	}
 	else
-        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+    {
+        GUI_MessageBox::getMsgBox()->show(
+            "Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+            GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2678,7 +2650,12 @@ void NavigatorGUI::modelerActionRotate(const NaviData& naviData)
         }
 	}
 	else
-        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+    {
+        GUI_MessageBox::getMsgBox()->show(
+            "Modeler error", 
+            ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+            GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2699,7 +2676,12 @@ void NavigatorGUI::modelerActionScale(const NaviData& naviData)
         }
 	}
 	else
-        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+    {
+        GUI_MessageBox::getMsgBox()->show(
+            "Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+            GUI_MessageBox::MBB_OK, 
+            GUI_MessageBox::MBB_INFO);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2711,7 +2693,11 @@ void NavigatorGUI::modelerActionLink(const NaviData& naviData)
 	if (!modeler->isSelectionEmpty())
 		modeler->lockLinkMode(true);
 	else
-        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+    {
+        GUI_MessageBox::getMsgBox()->show(
+            "Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+            GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -2730,7 +2716,13 @@ void NavigatorGUI::modelerActionProperties(const NaviData& naviData)
 			modelerPropShow();
 		}
 	else
-        showMessageBox("Modeler error", ms_ModelerErrors[ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+    {
+        GUI_MessageBox::getMsgBox()->show(
+            "Modeler error", 
+            ms_ModelerErrors[ME_NOOBJECTSELECTED], 
+            GUI_MessageBox::MBB_OK, 
+            GUI_MessageBox::MBB_INFO);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -3296,7 +3288,11 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler error", 
+                ms_ModelerErrors[ME_TEXTUREALREADYOPEN], 
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_INFO);
+
 			return;
 		}
 
@@ -3397,7 +3393,9 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], 
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_INFO);
 			return;
 		}
 
@@ -3479,7 +3477,9 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], 
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_INFO);
 			return;
 		}
 
@@ -3543,7 +3543,9 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
             {
                 if (!SOLcopyFile(mrlStr.c_str(), finalMrl.c_str()))
                 {
-                    showMessageBox("Modeler error", "Unable to copy file to temporary directory", NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);                
+                    GUI_MessageBox::getMsgBox()->show("Modeler error", "Unable to copy file to temporary directory", 
+                        GUI_MessageBox::MBB_OK, 
+                        GUI_MessageBox::MBB_INFO);                
                 }
             }
         }
@@ -3563,7 +3565,8 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], 
+                GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
 			return;
 		}
 
@@ -3633,7 +3636,8 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		//Test if this texture is already in the list :
 		if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
 		{
-            showMessageBox("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler error", ms_ModelerErrors[ME_TEXTUREALREADYOPEN], 
+                GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
 			return;
 		}
 
@@ -5376,11 +5380,11 @@ void NavigatorGUI::modelerSceneFromTextExec(const NaviData& naviData)
 	std::string warnMsg( "" );
 	if( !mNavigator->createSceneFromText( value, errMsg, warnMsg ) )
 		if( errMsg != "" )
-			showMessageBox( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
+			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
 		else if( warnMsg != "" )
-			showMessageBox( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
+			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
 		else 
-			showMessageBox( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
+			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
 }
 
 //-------------------------------------------------------------------------------------

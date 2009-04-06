@@ -24,6 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 #include "NavigatorConfiguration.h"
 #include "tinyxml.h"
+#include <CTBase64.h>
+
+using namespace CommonTools;
 
 typedef std::list<IParameterListener *>::iterator configurationListenerList_Iterator;
 
@@ -37,17 +40,27 @@ std::string  ConfigurationParameter::writeXml() const
     return s.str();
 }
 
+
 void ConfigurationParameter::valueChanged()
 {
-    // send to lua ???? not sure if it is useful
-
-
     // send param changed to listener
     for (configurationListenerList_Iterator it = mListeners.begin(); it != mListeners.end(); it++)
     {
         IParameterListener * pt = *it;
         pt->parameterChanged(this);
     }
+}
+
+String ConfigurationParameter::getProtectedValueString()const   
+{  
+    String str = CTBase64::decrypt(mValue);
+    return str;   
+} 
+
+void  ConfigurationParameter::setProtectedValueString(const String & strValue)   
+{  
+    mValue = CTBase64::encrypt(strValue);
+    valueChanged();
 }
 
 void ConfigurationParameter::addListener(IParameterListener * pListener)
@@ -98,7 +111,7 @@ bool Configuration::loadConfig(const String & filename)
         const char *name = elem->Attribute("name"); 
         const char *value = elem->Attribute("value"); 
         if (name)
-            findParameter(name, value);
+            findParam(name, value);
 
         elem = elem->NextSiblingElement(); // iteration 
     }
@@ -129,7 +142,7 @@ bool Configuration::saveConfig()
     return true;  
 }
 
-ConfigurationParameter * Configuration::findParameter(const String & paramName, const String & defaultValue)
+ConfigurationParameter * Configuration::findParam(const String & paramName, const String & defaultValue)
 {
     configurationParameterMap_Iterator it = mParametersMap.find(paramName);
     if (it != mParametersMap.end())

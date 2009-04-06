@@ -28,12 +28,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // #include "MainApplication/NavigatorFrameListener.h"
 // #include "Tools/DebugHelpers.h"
 // #include <OgreTimer.h>
-// #include <CTLog.h>
+#include <CTLog.h>
 // #include <CTIO.h>
-// #include <CTStringHelpers.h>
+#include <CTStringHelpers.h>
 // #include <CTNetSocket.h>
 // #include <CTSystem.h>
-// #include <Navi.h>
+#include <Navi.h>
+
 // #include "World/Modeler.h"
 // #include <AvatarEditor.h>
 // #include <CharacterManager.h>
@@ -47,17 +48,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif // _MSC_VER
 
 using namespace Solipsis;
-//using namespace CommonTools;
+using namespace CommonTools;
+
+GUI_MessageBox * GUI_MessageBox::st_GUI_MessageBox = NULL;
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::showMessageBox(const std::string& titleText, const std::string& msgText, MsgBoxButtons buttons, MsgBoxIcon icon)
+void GUI_Panel::switchLuaNavi(bool createDestroy)
 {
-    if (m_curState != NavigatorGUI::NSCreated)
-        hideMessageBox();
+    if (m_curState == NavigatorGUI::NSNotCreated)
+    {
+        // Create Navi panel
+        // Lua
+        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mPanelName.c_str());
+            return;
+        }
+        m_curState = NavigatorGUI::NSCreated;
+        // the navi panel
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+    }
+    else
+    {
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+        if (!mNavi->getVisibility())
+        {
+            mNavi->show(true);
+        }
+        else
+        {
+            if (!createDestroy)
+            {
+                mNavi->hide(true);
+                NaviManager::Get().deFocusAllNavis();
+            }
+            else
+            {
+                NavigatorGUI::destroyNavi(mNavi);
+                m_curState = NavigatorGUI::NSNotCreated;
+                mNavi = NULL;
+            }
+        }
+    }
+}
 
-    switchLuaNavi(NAVI_MSGBOX, true);
+//-------------------------------------------------------------------------------------
+void GUI_MessageBox::show(const std::string& titleText, 
+                            const std::string& msgText, 
+                            MsgBoxButtons buttons, 
+                            MsgBoxIcon icon,
+                            MsgBoxDisplayed msgBoxDisplayed)
+{
+    GUI_MessageBox * instance = getMsgBox();
+    if (instance->m_curState != NavigatorGUI::NSCreated)
+        hide();
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
+    instance->switchLuaNavi(true);
+
+    NaviLibrary::Navi* navi = NavigatorGUI::getNavi(mPanelName);
     navi->setModal(true);
 
     mMsgBoxTitleText = titleText;
@@ -65,42 +113,41 @@ void GUI_MessageBox::showMessageBox(const std::string& titleText, const std::str
     mMsgBoxButtons = buttons;
     mMsgBoxIcon = icon;
 
-    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::messageBoxPageLoaded));
-    navi->bind("response", NaviDelegate(this, &NavigatorGUI::messageBoxResponse));
+    navi->bind("pageLoaded", NaviDelegate(this, &GUI_MessageBox::messageBoxPageLoaded));
+    navi->bind("response", NaviDelegate(this, &GUI_MessageBox::messageBoxResponse));
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::hideMessageBox()
+void GUI_MessageBox::hide()
 {
-    if (mNavisStates[NAVI_MSGBOX] != NSCreated) return;
-    switchLuaNavi(NAVI_MSGBOX, true);
+    if (m_curState != NavigatorGUI::NSCreated) 
+        return;
+
+    switchLuaNavi( true);
 }
 
 //-------------------------------------------------------------------------------------
-bool GUI_MessageBox::isMessageBoxVisible()
+bool GUI_MessageBox::isVisible()
 {
-    if (mNavisStates[NAVI_MSGBOX] != NSCreated) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
-    return ((navi != 0) && navi->getVisibility());
+    if (m_curState != NavigatorGUI::NSCreated) 
+        return false;
+
+    return ((mNavi != 0) && mNavi->getVisibility());
 }
-
-
 
 //-------------------------------------------------------------------------------------
 void GUI_MessageBox::messageBoxPageLoaded(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxPageLoaded()");
 
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MSGBOX]);
-
-    navi->evaluateJS("$('titleText').innerHTML = '" + mMsgBoxTitleText + "'");
-    navi->evaluateJS("$('msgText').innerHTML = '" + mMsgBoxMsgText + "'");
-    navi->evaluateJS("setButtons(" + StringHelpers::toString(mMsgBoxButtons) + ")");
-    navi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
+    mNavi->evaluateJS("$('titleText').innerHTML = '" + mMsgBoxTitleText + "'");
+    mNavi->evaluateJS("$('msgText').innerHTML = '" + mMsgBoxMsgText + "'");
+    mNavi->evaluateJS("setButtons(" + StringHelpers::toString(mMsgBoxButtons) + ")");
+    mNavi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
 
     // Show Navi UI message box
-    if (mNavisStates[NAVI_MSGBOX] == NSCreated)
-        navi->show(true);
+    if (m_curState == NavigatorGUI::NSCreated)
+        mNavi->show(true);
 }
 
 //-------------------------------------------------------------------------------------
@@ -108,7 +155,7 @@ void GUI_MessageBox::messageBoxResponse(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
 
-    hideMessageBox();
+    hide();
 
     switch (mMsgBoxDisplayed)
     {
@@ -116,11 +163,11 @@ void GUI_MessageBox::messageBoxResponse(const NaviData& naviData)
     case MBD_AUTHENTFBERROR:
     case MBD_AUTHENTWSERROR:
         // Return to Navi UI login
-        login();
+    //    login();
         break;
     case MBD_WORLDSSERVERCOMPATIBILITYERROR:
         // Display the Worlds Server info page
-        worldsServerInfo();
+    //    worldsServerInfo();
         break;
     case MBD_CONNECTIONERROR:
         Navigator::getSingletonPtr()->disconnect();

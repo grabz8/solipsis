@@ -79,6 +79,8 @@ public:
     const String & getValueString()const   {  return mValue;   }
     void  setValueString(const String & strValue)   {  mValue = strValue;valueChanged();}
 
+    String getProtectedValueString()const;
+    void  setProtectedValueString(const String & strValue);
 
     std::string  writeXml() const;      
 
@@ -106,7 +108,7 @@ public:
     bool saveConfig();
 
     // find an existing parameter or create one if not exists
-    ConfigurationParameter * findParameter(const String & paramName, const String & defaultValue = "");
+    ConfigurationParameter * findParam(const String & paramName, const String & defaultValue = "");
 };
 
 #endif // #ifndef __LuaBinding_h__

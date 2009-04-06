@@ -89,6 +89,11 @@ public:
 		CMAroundObject
     };
 
+     void saveConfiguration()
+     {
+        mConfiguration.saveConfig();
+     }
+
 private:
     static Navigator* ms_singletonPtr;
 
@@ -181,7 +186,7 @@ public:
     const String& getLogin();
     void setLogin(const String& login);
     const String& getPwd();
-    void setPwd(const String& pwd);
+    void setPwd(const String& pwd, bool bSave);
     AuthentType getAuthentType();
     void setAuthentType(AuthentType authentType);
     const String& getFacebookApiKey() { return mFacebookApiKey; }
