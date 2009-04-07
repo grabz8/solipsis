@@ -201,6 +201,12 @@ void PhysXScene::unsetTerrainMesh()
 }
 
 //-------------------------------------------------------------------------------------
+bool PhysXScene::hasTerrainmesh()
+{
+    return m_bTerrainMeshLoaded;
+}
+
+//-------------------------------------------------------------------------------------
 IPhysicsBody* PhysXScene::createBody()
 {
     return new PhysXBody(this);

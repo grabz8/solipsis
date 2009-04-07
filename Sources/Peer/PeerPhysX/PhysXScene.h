@@ -57,7 +57,8 @@ protected:
     /// First step of simulation
     bool mFirstStep;
 
-    bool  m_bTerrainMeshLoaded;   //! return true if a terrain mesh is loaded
+    /// True if a terrain mesh is loaded
+    bool m_bTerrainMeshLoaded;
 
 
 public:
@@ -94,6 +95,8 @@ public:
                                 const Vector3& scale);
     /// @copydoc IPhysicsScene::unsetTerrainMesh
     virtual void unsetTerrainMesh();
+    /// @copydoc IPhysicsScene::hasTerrainmesh
+    virtual bool hasTerrainmesh();
 
     /// @copydoc IPhysicsScene::createBody
     virtual IPhysicsBody* createBody();
@@ -111,12 +114,6 @@ public:
     NxActor* getNxActor() { return mNxActor; }
     /// Get character controller
     NxControllerManager* getNxControllerManager() { return mNxControllerManager; }
-
-    virtual bool hasTerrainmesh()
-    {
-        return m_bTerrainMeshLoaded;
-    };
-
 };
 
 } // namespace Solipsis
