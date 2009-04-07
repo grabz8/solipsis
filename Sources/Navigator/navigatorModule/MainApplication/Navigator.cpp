@@ -383,6 +383,16 @@ bool Navigator::getCastShadows()
     return mCastShadows;
 }
 
+void Navigator::setNavigationInterface(NavigationInterface ni) 
+{ 
+    mNavigationInterface=ni; 
+    mConfiguration.findParam("NavigationInterface", "0")->setValueInt(mNavigationInterface);
+}
+
+Navigator::NavigationInterface Navigator::getNavigationInterface() 
+{ 
+    return mNavigationInterface; 
+}
 
 void Navigator::loadConfigurationValues()
 {
@@ -416,6 +426,8 @@ void Navigator::loadConfigurationValues()
     mVoIPSilenceLatency = mConfiguration.findParam("VoIPSilenceLatency", "5")->getValueInt();
 
     mCastShadows = mConfiguration.findParam("CastShadows", "false")->getValueBool();
+    mNavigationInterface = (NavigationInterface ) mConfiguration.findParam("NavigationInterface", "false")->getValueInt();
+
 }
 
 

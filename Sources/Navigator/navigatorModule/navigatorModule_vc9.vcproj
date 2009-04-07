@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm112"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\DeclarativeModeler\include"
+				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -125,7 +125,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm112"
-				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Release;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\DeclarativeModeler\include"
+				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -208,7 +208,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm112"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\DeclarativeModeler\include"
+				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -291,7 +291,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm112"
-				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Release;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\DeclarativeModeler\include"
+				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include\Debug;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\md5wrapper\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;NULLCLIENTSERVER;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -702,14 +702,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MainApplication\NavigatorGUI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MainApplication\NavigatorGUI.h"
-				>
-			</File>
-			<File
 				RelativePath=".\MainApplication\NavigatorSound.cpp"
 				>
 			</File>
@@ -1023,6 +1015,38 @@
 			</File>
 			<File
 				RelativePath=".\OgreTools\OgreHelpers.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Configuration"
+			>
+			<File
+				RelativePath=".\Configuration\NavigatorConfiguration.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Configuration\NavigatorConfiguration.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="NavigatorGui"
+			>
+			<File
+				RelativePath=".\navigatorGui\GUI_MessageBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_MessageBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\NavigatorGUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\NavigatorGUI.h"
 				>
 			</File>
 		</Filter>

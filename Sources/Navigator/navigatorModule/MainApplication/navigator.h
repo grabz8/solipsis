@@ -75,7 +75,7 @@ public:
     static const uint32 QFGizmo = QFObject<<1;
     enum NavigationInterface
     {
-        NIMouseKeyboard,
+        NIMouseKeyboard = 0,
         NIWiimoteNunchuk,
         NIWiimoteNunchukIR
     };
@@ -212,11 +212,10 @@ public:
     void setCastShadows(bool castShadows);
     bool getCastShadows();
 
+    void setNavigationInterface(NavigationInterface ni);
+    NavigationInterface getNavigationInterface(); 
+
     void loadConfigurationValues();
-
-
-    void setNavigationInterface(NavigationInterface ni) { mNavigationInterface=ni; };
-    NavigationInterface getNavigationInterface() { return mNavigationInterface; }; 
 
     OgrePeerManager* getOgrePeerManager();
     NavigatorGUI* getNavigatorGUI();

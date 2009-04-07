@@ -1777,7 +1777,7 @@ void NavigatorGUI::worldsServerCompatibilityError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerCompatibilityError()");
 
-    login();
+    worldsServerInfo();
     GUI_MessageBox::getMsgBox()->show(
         "Compatibility error", 
         "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", 
@@ -1986,10 +1986,15 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
 
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_OPTIONS]);
 
+#ifdef NULLCLIENTSERVER
+    navi->evaluateJS("showDiv('peerNCSMessage');");
+    navi->evaluateJS("hideDiv('peerConfig');");
+#endif
+
     // Set current values
     navi->evaluateJS("setInputState('checkboxGeneralResetDisplayConfig', null, null)");
-    // Set current values
-    sprintf(txt, "setInputState('castShadowCheckBox', %s,  %s)", "null", mNavigator->getCastShadows() ? "'checked'" : "null");
+
+    sprintf(txt, "setInputState('castShadow', %s,  %s)", "null", mNavigator->getCastShadows() ? "'checked'" : "null");
     navi->evaluateJS(txt);
 
     bool facebookAvailable = (
@@ -2004,16 +2009,16 @@ void NavigatorGUI::optionsPageLoaded(const NaviData& naviData)
     sprintf(txt, "setInputState('radioIdAuthentTypeSolipsis', %s, %s)", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATSolipsis) ? "'checked'" : "null");
     navi->evaluateJS(txt);
 
-    sprintf(txt, "setInputState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'disabled'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
-    navi->evaluateJS(txt);
+//      sprintf(txt, "setInputState('radioIdAuthentTypeFixed', %s, %s)", mNavigator->getFixedNodeId().empty() ? "'visible'" : "null", (mNavigator->getAuthentType() == ATFixed) ? "'checked'" : "null");
+//      navi->evaluateJS(txt);
 
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
 
-    sprintf(txt, "$('inputWSHost').value = '%s'", wsHost.c_str());
-    navi->evaluateJS(txt);
-
-    sprintf(txt, "$('inputWSPort').value = '%s'", wsPort.c_str());
+    sprintf(txt, "setInputText('inputWSHost', '%s');", wsHost.c_str());
+    navi->evaluateJS(txt); 
+ 
+    sprintf(txt, "setInputText('inputWSPort', '%s');", wsPort.c_str());
     navi->evaluateJS(txt);
 
     std::string peerHost, peerPort;
