@@ -76,6 +76,7 @@ if not "%VS80COMNTOOLS%"=="" set SUFFIX=_vc8
 
 echo -------------------------------------------
 echo Parameters : 
+echo * DEVENVPATH:%cleanup%
 echo * DEVENVPATH:%DEVENVPATH%
 echo * DEVENV=%DEVENV%
 echo * BuildType=%BuildType%
