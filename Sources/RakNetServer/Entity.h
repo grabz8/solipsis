@@ -32,6 +32,14 @@ namespace Solipsis {
 */
 class Entity : public RakNetEntity
 {
+#ifdef LOGRAKNET
+protected:
+    /// Definition of map of last visible state per connection (used only by traces)
+    typedef std::map<ConnectionRM*, int> IsVisibleFromConn;
+    /// Map of last visible state per connection (used only by traces)
+    IsVisibleFromConn mIsVisibleFromConn;
+#endif
+
 public:
     /** Constructor. */
     Entity();
@@ -43,21 +51,13 @@ public:
     /** See RakNetEntity. */
     virtual void onLostEntity();
 
-    /** See RakNet::Replica2. */
-	virtual void Deserialize(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+    /** See Replica. */
+	virtual void deserialize(RakNet::BitStream* bitStream, SerializationType serializationType, SystemAddress sender);
 
-	/** See RakNet::Replica2. */
-    RakNetSolipsis::BooleanQueryResult isVisibleFrom(RakNetSolipsis::Connection_RM2 *connection);
-	/** See RakNet::Replica2. */
-    RakNetSolipsis::BooleanQueryResult QueryConstruction(RakNetSolipsis::Connection_RM2 *connection);
-	/** See RakNet::Replica2. */
-	virtual RakNetSolipsis::BooleanQueryResult QueryVisibility(RakNetSolipsis::Connection_RM2 *connection);
-
-#ifdef LOGRAKNET
-private:
-    typedef std::map<RakNetSolipsis::Connection_RM2*, int> IsVisibleFromConn;
-    IsVisibleFromConn mIsVisibleFromConn;
-#endif
+    /** Test if this entity is visible from 1 connection. */
+    QueryResult isVisibleFrom(ConnectionRM* connection);
+    /** See Replica. */
+    virtual QueryResult queryConstruction(ConnectionRM* connection);
 };
 
 } // namespace Solipsis

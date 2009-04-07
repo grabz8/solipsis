@@ -196,7 +196,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RM2Connection.cpp"
+				RelativePath=".\RMConnection.cpp"
 				>
 			</File>
 			<File
@@ -217,7 +217,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RM2Connection.h"
+				RelativePath=".\RMConnection.h"
 				>
 			</File>
 			<File

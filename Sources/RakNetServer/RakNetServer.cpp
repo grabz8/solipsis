@@ -43,7 +43,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
     mMediaCachePath(""),
     mStatsPath("stats"),
     mAvatarScopeDistance2(2500.0f),
-    mRakNetConnection(&mConnectionFactory, true, "localhost", 8660, 32),
+    mRakNetConnection(&mConnectionRMFactory, true, "localhost", 8660, 32),
     mSiteNodeId("11112222"),
     mSiteNode(0),
     mRunning(false),
@@ -147,6 +147,10 @@ void RakNetServer::run()
         // process packets
         for (packet = RakPeer->Receive(); packet; RakPeer->DeallocatePacket(packet), packet = RakPeer->Receive())
         {
+            // Call replication manager
+            if (mRakNetConnection.getReplicationManager()->onReceive(packet) == ReplicationManager::ORR_STOP_PROCESSING)
+                continue;
+
             switch (packet->data[0])
             {
             case ID_CONNECTION_ATTEMPT_FAILED:
@@ -178,9 +182,9 @@ void RakNetServer::run()
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetEntity::deleteByAddress(packet->systemAddress);
                 break;
-            case RakNetConnection::ID_REQUESTING_FILETRANSFER:
+            case RakNetConnection::ID_CM_REQUESTING_FILETRANSFER:
                 {
-                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_REQUESTING_FILETRANSFER from %s", packet->systemAddress.ToString());
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() RakNetConnection::ID_CM_REQUESTING_FILETRANSFER from %s", packet->systemAddress.ToString());
                     mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_REQFILETRANSFER, std::string(packet->systemAddress.ToString()));
                     BitStream bitStream(packet->data, packet->length, false);
                     bitStream.IgnoreBytes(1);
@@ -226,6 +230,9 @@ void RakNetServer::run()
                 break;
             }
         }
+
+        // Update replication manager
+        mRakNetConnection.getReplicationManager()->update();
 
         System::sleep(100);
     }
@@ -281,14 +288,11 @@ Entity* RakNetServer::loadEntity(TiXmlElement* entityElt)
 
     xmlEntity->fromXmlElt(entityElt);
     entity->addFilesInCacheManager();
-    Entity::addEntity(entity);
-    // Server can serialize and compute visibility
-    entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized | RakNetEntity::RFVisibilityAuthorized);
-    // Entity managed by the Replica2 plugin
-    entity->SetReplicaManager(mRakNetConnection.getReplicaManager());
+    // Entity is ready, server can construct/serialize it
+    entity->addReplicaFlags(RakNetEntity::RFReady | RakNetEntity::RFConstructionAuthorized | RakNetEntity::RFSerializationAuthorized);
     // Send out this new entity to all systems
-    bool newReference;
-    mRakNetConnection.getReplicaManager()->Reference(entity, &newReference);
+    mRakNetConnection.getReplicationManager()->addReplica(entity);
+    Entity::addEntity(entity);
 
     return entity;
 }

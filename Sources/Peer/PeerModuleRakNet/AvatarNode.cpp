@@ -121,7 +121,7 @@ void AvatarNode::onNewEntity(Entity* entity)
         entity->setLastDeserializedDefinedAttributes(XmlEntity::DAUid);
         // For instance we only auto-update avatar entity
         if (entity->getXmlEntity()->getType() == ETAvatar)
-            entity->AddAutoSerializeTimer(1000/20); // 20 ups
+            entity->addAutoSerializeTimer(1000/20); // 20 ups
     }
 
     // Create physics of scene + my avatar
@@ -197,7 +197,6 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
         return;
     }
 
-
     RefCntPoolPtr<XmlEvt> xmlEvt;
     xmlEvt->setType(ETUpdatedEntity);
     RefCntPoolPtr<XmlEntity> xmlEntity;
@@ -221,8 +220,6 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
             pthread_mutex_unlock(&mMutex);      
         }
     }
-
-
 
     pthread_mutex_lock(&mEvtsMutex);
     mEvtsToHandleList.push_back(xmlEvt);
@@ -251,7 +248,6 @@ void AvatarNode::onLostEntity(Entity* entity)
 
     if (entity->mDirty)
     {
-
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETLostEntity);
         RefCntPoolPtr<XmlEntity> xmlEntity;
@@ -381,7 +377,7 @@ bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespS
                 entity->addLastDeserializedDefinedAttributes(XmlEntity::DAContent);
                 // add new files into the cache manager
                 entity->addFilesInCacheManager();
-                entity->BroadcastSerialize();
+                entity->broadcastSerialize();
             }
         }
     }
@@ -407,13 +403,11 @@ bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespS
         // add new files into the cache manager
         entity->addFilesInCacheManager();
         entity->mDirty = false;
+        // Entity is ready, owner client can construct/serialize it
+        entity->addReplicaFlags(RakNetEntity::RFReady | RakNetEntity::RFConstructionAuthorized | RakNetEntity::RFSerializationAuthorized);
+        // Send out this new entity to all systems
+        RakNetConnection::getSingletonPtr()->getReplicationManager()->addReplica(entity);
         Entity::addEntity(entity);
-        // Client can serialize
-        entity->addReplicaFlags(RakNetEntity::RFSerializationAuthorized);
-        // Entity managed by the Replica2 plugin
-        entity->SetReplicaManager(RakNetConnection::getSingletonPtr()->getReplicaManager());
-        // Send out this new entity to server
-        entity->SendConstruction(RakNetConnection::getSingletonPtr()->getServerSystemAddress());
     }
     else if (xmlEvt->getType() == ETLostEntity)
     {
@@ -435,8 +429,7 @@ bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespS
             pthread_mutex_lock(&mMutex);
             mOwnedEntities.erase(entity->getXmlEntity()->getUid());
             pthread_mutex_unlock(&mMutex);
-            // Unfortunately BroadcastDestruction() cannot be called automatically in the destructor of Replica2, because virtual functions can not call to derived classes.
-            entity->BroadcastDestruction();
+            RakNetConnection::getSingletonPtr()->getReplicationManager()->removeReplica(entity);
             delete entity;
         }
     }

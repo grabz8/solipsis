@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "CacheManager.h"
 #include "RakNetConnection.h"
+#include <BitStream.h>
 #include <FileList.h>
 #include <FileOperations.h>
 #include <CTLog.h>
@@ -30,7 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace RakNet;
 using namespace CommonTools;
-
 
 namespace Solipsis {
 
@@ -259,7 +259,7 @@ void CacheManager::requestFile(const SystemAddress& sender,
         entryIt->second.mVersion = version;
         entryIt->second.mState = 0;
         BitStream bitStream;
-        bitStream.Write((MessageID)RakNetConnection::ID_REQUESTING_FILETRANSFER);
+        bitStream.Write((MessageID)RakNetConnection::ID_CM_REQUESTING_FILETRANSFER);
         PendingDownload pendingDownload;
         pendingDownload.mFileListTransferSetID = mConnection->getFileListTransfer()->SetupReceive(this, false, sender);
         pendingDownload.mCallback = callback;

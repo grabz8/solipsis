@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(RAKNET_PATH)\Source&quot;;..\..\..\Dependencies\RakNetObjects\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET;USE_WINDOWS_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_WINDOWS_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;NHANDLEVTSYNC;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -202,7 +202,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(RAKNET_PATH)\Source&quot;;..\..\..\Dependencies\RakNetObjects\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;NLOGSNDRCV;NLOGRAKNET;USE_WINDOWS_DEBUG"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_WINDOWS_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;PEERMODULESIMULATOR_EXPORTS;PEERMODULE_SELF_BUILD;NLOGSNDRCV;NLOGRAKNET"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -365,7 +365,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RM2Connection.cpp"
+				RelativePath=".\RMConnection.cpp"
 				>
 			</File>
 		</Filter>
@@ -418,7 +418,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RM2Connection.h"
+				RelativePath=".\RMConnection.h"
 				>
 			</File>
 			<File

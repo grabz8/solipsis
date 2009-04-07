@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "RakNetConnection.h"
+#include "ReplicationManager.h"
 #include "CacheManager.h"
 #include <StringTable.h>
 #include <StringCompressor.h>
@@ -29,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTSystem.h>
 
 using namespace RakNet;
-using namespace RakNetSolipsis;
 using namespace CommonTools;
 
 namespace Solipsis {
@@ -37,7 +37,7 @@ namespace Solipsis {
 RakNetConnection *RakNetConnection::ms_Singleton = 0;
 
 //-------------------------------------------------------------------------------------
-RakNetConnection::RakNetConnection(Connection_RM2Factory* connectionFactory, bool server, const std::string& host, unsigned short port, unsigned short maxIncomingConnections) :
+RakNetConnection::RakNetConnection(ConnectionRMFactory* connectionRMFactory, bool server, const std::string& host, unsigned short port, unsigned short maxIncomingConnections) :
     mServer(server),
     mHost(host),
     mPort(port),
@@ -45,7 +45,7 @@ RakNetConnection::RakNetConnection(Connection_RM2Factory* connectionFactory, boo
     mTimeoutTimeMS(15*1000),
     mRakPeer(0),
     mServerSystemAddress(UNASSIGNED_SYSTEM_ADDRESS),
-    mConnectionFactory(connectionFactory),
+    mConnectionRMFactory(connectionRMFactory),
     mCacheManager(0),
     mClientConnected(false)
 {
@@ -74,12 +74,6 @@ void RakNetConnection::initialize(const std::string& cachePath)
     // Set the time, in MS, to use before considering ourselves disconnected after not being able to deliver a reliable packet
     // packet is either the internal ping or any user reliable packet
     mRakPeer->SetTimeoutTime(mTimeoutTimeMS, UNASSIGNED_SYSTEM_ADDRESS);
-    // ObjectMemberRPC and ReplicaManager2 require that you call SetNetworkIDManager()
-    mRakPeer->SetNetworkIDManager(&mNetworkIdManager);
-    // The network ID authority is the system that creates the common numerical identifier used to lookup pointers.
-    // For client/server this is the server
-    // For peer to peer this would be true on every system, and you would also have call NetworkID::peerToPeerMode=true;
-    mNetworkIdManager.SetIsNetworkIDAuthority(mServer);
     // Start RakNet
     if (mServer)
     {
@@ -98,11 +92,6 @@ void RakNetConnection::initialize(const std::string& cachePath)
         // server system address must be set by client when connection request is accepted
     }
 
-    // Attach the ReplicaManager2 plugin
-    mReplicaManager.SetAutoUpdateScope(true, true);
-    mRakPeer->AttachPlugin(&mReplicaManager);
-    // Register our custom connection factory
-    mReplicaManager.SetConnectionFactory(mConnectionFactory);
     // Attach the FileListTransfer plugin
     mRakPeer->AttachPlugin(&mFileListTransfer);
 
@@ -113,7 +102,17 @@ void RakNetConnection::initialize(const std::string& cachePath)
 	// 2nd parameter of false means a static string so it's not necessary to copy it
 	StringTable::Instance()->AddString("Entity", false);
 
-    // Initializing the cache
+    // Initializing the replication manager
+    mReplicationManager = new ReplicationManager(this);
+    // Register our custom connection factory
+    mReplicationManager->setConnectionFactory(mConnectionRMFactory);
+    // Set server as authority
+    if (mServer)
+        mReplicationManager->setAuthority(mServerSystemAddress);
+    // Set the query construction/destruction interval time
+//    mReplicationManager->setIntervalQueryConstructionMs(1*1000.0f);
+
+    // Initializing the cache manager
     mCacheManager = new CacheManager(this);
     mCacheManager->initialize(cachePath);
 }
@@ -136,8 +135,13 @@ bool RakNetConnection::disconnectClient()
 
     if (mRakPeer == 0)
         return false;
+
+    if (mReplicationManager != 0)
+        mReplicationManager->onCloseConnection(mServerSystemAddress);
+
     mRakPeer->CloseConnection(mServerSystemAddress, true);
     mClientConnected = false;
+
     return true;
 }
 
@@ -153,7 +157,15 @@ void RakNetConnection::finalize()
         mRakPeer = 0;
     }
 
-    // Finalizing the cache
+    // Finalizing the replication manager
+    if (mReplicationManager != 0)
+    {
+        mReplicationManager->onShutdown();
+        delete mReplicationManager;
+        mReplicationManager = 0;
+    }
+
+    // Finalizing the cache manager
     if (mCacheManager != 0)
     {
         mCacheManager->finalize();

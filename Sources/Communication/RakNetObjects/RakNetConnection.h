@@ -27,15 +27,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <RakPeerInterface.h>
 #include <RakNetworkFactory.h>
-#include <RakSleep.h>
 #include <MessageIdentifiers.h>
-#include <NetworkIDManager.h>
-#include "ReplicaManagerSolipsis.h"
 #include <FileListTransfer.h>
 #include <Ogre.h>
 
 namespace Solipsis {
 
+class ReplicationManager;
+class ConnectionRMFactory;
 class CacheManager;
 
 /// Default value in bytes between each progress notification for big file transfer
@@ -47,8 +46,16 @@ class RakNetConnection {
 public:
     /// Application message identifiers
     enum MessageId {
-        ID_ACTION_ON_ENTITY = ID_USER_PACKET_ENUM,
-        ID_REQUESTING_FILETRANSFER
+        // Replication Manager class messages
+        ID_RM_CONSTRUCTION = ID_USER_PACKET_ENUM,
+        ID_RM_DESTRUCTION,
+        ID_RM_SERIALIZE,
+
+        // Cache manager class messages
+        ID_CM_REQUESTING_FILETRANSFER,
+
+        // Application messages
+        ID_ACTION_ON_ENTITY
     };
 
 protected:
@@ -68,14 +75,12 @@ protected:
     SystemAddress mServerSystemAddress;
     /// Socket descriptor
     SocketDescriptor mSocketDescriptor;
-    /// ReplicaManager2 requires NetworkIDManager to lookup pointers from numerical
-    NetworkIDManager mNetworkIdManager;
-    /// ReplicaManager2 plugin
-    RakNetSolipsis::ReplicaManager2 mReplicaManager;
-    /// Instance of the class that creates the object we use to represent connections
-    RakNetSolipsis::Connection_RM2Factory *mConnectionFactory;
     /// FileListTransfer plugin
     FileListTransfer mFileListTransfer;
+    /// Instance of the class that creates the object we use to represent connections
+    ConnectionRMFactory *mConnectionRMFactory;
+    /// Replication manager
+    ReplicationManager *mReplicationManager;
     /// Cache manager
     CacheManager *mCacheManager;
     /// Client connected ?
@@ -87,13 +92,13 @@ private:
 
 public:
     /** Constructor
-    @param connectionFactory The ReplicaManager2 factory used to create instances
+    @param connectionRMFactory The Replication manager factory used to create instances
     @param server True if this connection is used as server, False with client connection
     @param host The server host
     @param port The server port
     @param maxIncomingConnections The maximum number of connections supported by this server
     */
-    RakNetConnection(RakNetSolipsis::Connection_RM2Factory* connectionFactory, bool server = false, const std::string& host = "localhost", unsigned short port = 8660, unsigned short maxIncomingConnections = 32);
+    RakNetConnection(ConnectionRMFactory* connectionRMFactory, bool server = false, const std::string& host = "localhost", unsigned short port = 8660, unsigned short maxIncomingConnections = 32);
     /** Destructor */
     ~RakNetConnection();
 
@@ -126,11 +131,11 @@ public:
     void setServerSystemAddress(const SystemAddress& serverSystemAddress) { if (!mServer) mServerSystemAddress = serverSystemAddress; }
     /// Get address of the RakNet server
     const SystemAddress& getServerSystemAddress() { return mServerSystemAddress; }
-    /// Get the ReplicaManager2 plugin
-    RakNetSolipsis::ReplicaManager2* getReplicaManager() { return &mReplicaManager; }
+    /// Get the Replication manager
+    ReplicationManager* getReplicationManager() { return mReplicationManager; }
     /// Get FileListTransfer plugin
     FileListTransfer* getFileListTransfer() { return &mFileListTransfer; }
-    /// Cache manager
+    /// Get the cache manager
     CacheManager* getCacheManager() { return mCacheManager; }
 
     /// Return true if connection is initialized

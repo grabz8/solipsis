@@ -170,7 +170,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ReplicaManagerSolipsis.cpp"
+				RelativePath=".\ReplicationManager.cpp"
 				>
 			</File>
 		</Filter>
@@ -196,7 +196,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ReplicaManagerSolipsis.h"
+				RelativePath=".\ReplicationManager.h"
 				>
 			</File>
 		</Filter>

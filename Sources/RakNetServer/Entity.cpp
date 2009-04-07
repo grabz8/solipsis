@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 
 using namespace RakNet;
-using namespace RakNetSolipsis;
 using namespace CommonTools;
 
 namespace Solipsis {
@@ -61,18 +60,18 @@ void Entity::onLostEntity()
 }
 
 //-------------------------------------------------------------------------------------
-void Entity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+void Entity::deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender)
 {
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::Deserialize()");
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::deserialize()");
 
-    bool uidNotYetInitialized = !(mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid);
-    RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
-    if (uidNotYetInitialized && (mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid))
+    RakNetEntity::deserialize(bitStream, serializationType, sender);
+
+    if (serializationType == ST_SEND_SERIALIZATION_CONSTRUCTION_TO_SYSTEM)
         addEntity(this);
 }
 
 //-------------------------------------------------------------------------------------
-BooleanQueryResult Entity::isVisibleFrom(Connection_RM2 *connection)
+Replica::QueryResult Entity::isVisibleFrom(ConnectionRM* connection)
 {
 #ifdef LOGRAKNET
     IsVisibleFromConn::iterator it = mIsVisibleFromConn.find(connection);
@@ -80,69 +79,51 @@ BooleanQueryResult Entity::isVisibleFrom(Connection_RM2 *connection)
     {
         mIsVisibleFromConn[connection] = -1;
         it = mIsVisibleFromConn.find(connection);
-    }
+   } 
     #define LOG_ONCHANGE(q, fmt, ...) if (it->second != q) { it->second = q; LogHandler::getLogHandler()->logf(LogHandler::VL_DEBUG, fmt, __VA_ARGS__); }
 #else
     #define LOG_ONCHANGE(q, fmt, ...)
 #endif
 
-    if (connection == 0)
-    {
-        LOG_ONCHANGE(0, "Entity(%s)::isVisibleFrom(0) => returning BQR_NO", mXmlEntity->getUid().c_str());
-        return BQR_NO;
-    }
-
     if (mXmlEntity->getType() != ETAvatar)
     {
-        LOG_ONCHANGE(1, "Entity(%s)::isVisibleFrom(%s) site/object entity => returning BQR_YES", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString());
-        return BQR_YES;
+        LOG_ONCHANGE(1, "Entity(%s)::isVisibleFrom(%s) site/object entity => returning QR_ALWAYS", mXmlEntity->getUid().c_str(), (connection == 0) ? "0" :connection->getSystemAddress().ToString());
+        return QR_ALWAYS;
     }
-    if (!(mXmlEntity->getDefinedAttributes() & XmlEntity::DAUid))
+    if (connection == 0)
     {
-        LOG_ONCHANGE(2, "Entity(%s)::isVisibleFrom(%s) entity UID not yet defined (sender:%s) => returning BQR_NO", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString(), mSystemAddress.ToString());
-        return BQR_NO;
+        LOG_ONCHANGE(0, "Entity(%s)::isVisibleFrom(0) => returning QR_NO", mXmlEntity->getUid().c_str());
+        return QR_NO;
     }
-    Entity* entity = (Entity*)findByAddress(connection->GetSystemAddress());
+    Entity* entity = (Entity*)findByAddress(connection->getSystemAddress());
     if (entity == 0)
     {
-        LOG_ONCHANGE(3, "Entity(%s)::isVisibleFrom(%s) entity not found => returning BQR_NO", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString());
-        return BQR_NO;
+        LOG_ONCHANGE(3, "Entity(%s)::isVisibleFrom(%s) entity not found => returning QR_NO", mXmlEntity->getUid().c_str(), connection->getSystemAddress().ToString());
+        return QR_NO;
     }
     if (entity == this)
     {
-        LOG_ONCHANGE(4, "Entity(%s)::isVisibleFrom(%s) it s me => returning BQR_YES", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString());
-        return BQR_YES;
+        LOG_ONCHANGE(4, "Entity(%s)::isVisibleFrom(%s) it s me => returning QR_YES", mXmlEntity->getUid().c_str(), connection->getSystemAddress().ToString());
+        return QR_YES;
     }
     Ogre::Real distance2 = mXmlEntity->getPosition().squaredDistance(entity->getXmlEntity()->getPosition());
     if (distance2 > RakNetServer::getSingleton().getAvatarScopeDistance2())
     {
-        LOG_ONCHANGE(5, "Entity(%s)::isVisibleFrom(%s) too far (d=%.2f) from %s => returning BQR_NO", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString(), distance2, entity->getXmlEntity()->getUid().c_str());
-        return BQR_NO;
+        LOG_ONCHANGE(5, "Entity(%s)::isVisibleFrom(%s) too far (d=%.2f) from %s => returning QR_NO", mXmlEntity->getUid().c_str(), connection->getSystemAddress().ToString(), distance2, entity->getXmlEntity()->getUid().c_str());
+        return QR_NO;
     }
 
-    LOG_ONCHANGE(6, "Entity(%s)::isVisibleFrom(%s) is visible (d=%.2f) from %s => returning BQR_YES", mXmlEntity->getUid().c_str(), connection->GetSystemAddress().ToString(), distance2, entity->getXmlEntity()->getUid().c_str());
-    return BQR_YES;
+    LOG_ONCHANGE(6, "Entity(%s)::isVisibleFrom(%s) is visible (d=%.2f) from %s => returning QR_YES", mXmlEntity->getUid().c_str(), connection->getSystemAddress().ToString(), distance2, entity->getXmlEntity()->getUid().c_str());
+    return QR_YES;
 }
 
 //-------------------------------------------------------------------------------------
-BooleanQueryResult Entity::QueryConstruction(Connection_RM2 *connection)
+Replica::QueryResult Entity::queryConstruction(ConnectionRM* connection)
 {
 #ifdef LOGRAKNET
-/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::QueryConstruction() This entity (%s) should be constructed on %s ?",
+/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::queryConstruction() This entity (%s) should be constructed on %s ?",
         mXmlEntity->getUid().c_str(),
-        connection ? (connection->GetSystemAddress().ToString()) : "0");*/
-#endif
-
-    return isVisibleFrom(connection);
-}
-
-//-------------------------------------------------------------------------------------
-BooleanQueryResult Entity::QueryVisibility(Connection_RM2 *connection)
-{
-#ifdef LOGRAKNET
-/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Entity::QueryVisibility() This entity (%s) is visible from %s?",
-        mXmlEntity->getUid().c_str(),
-        connection ? (connection->GetSystemAddress().ToString()) : "0");*/
+        connection ? (connection->getSystemAddress().ToString()) : "0");*/
 #endif
 
     return isVisibleFrom(connection);

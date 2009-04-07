@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTStatsManager.h>
 #include <XmlDatas.h>
 #include <RakNetConnection.h>
-#include "RM2Connection.h"
+#include "RMConnection.h"
 #include "SiteNode.h"
 
 namespace Solipsis {
@@ -51,7 +51,7 @@ protected:
     float mAvatarScopeDistance2;
 
     /// Instance of the class that creates the object we use to represent connections
-    RM2ConnectionFactory mConnectionFactory;
+    RMConnectionFactory mConnectionRMFactory;
     /// RakNetConnection
     RakNetConnection mRakNetConnection;
 

@@ -1078,3 +1078,10 @@ Some fix about progress bar and avatar tuning
 selected obj saved by "quick save" after primitive creation is now re-inserted into mListNodeSinceLastSave in order to save next update
 
 ---------------------------
+07/04/09
+
+RakNet ReplicaManager2 plugin replaced by 1 high-level ReplicationManager class (autoserialize, construction/destruction scope)
+Peer logout vs network loop synchro bug fix
+Release 1.1.0 set due to major network interface update
+
+---------------------------

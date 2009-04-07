@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTIO.h>
 
 using namespace RakNet;
-using namespace RakNetSolipsis;
 using namespace Ogre;
 using namespace CommonTools;
 
@@ -70,9 +69,9 @@ void Entity::onLostEntity()
 }
 
 //-------------------------------------------------------------------------------------
-void Entity::Deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender, RakNetTime timestamp)
+void Entity::deserialize(BitStream *bitStream, SerializationType serializationType, SystemAddress sender)
 {
-    RakNetEntity::Deserialize(bitStream, serializationType, sender, timestamp);
+    RakNetEntity::deserialize(bitStream, serializationType, sender);
 
     RakNetEntityMap& entities = getEntities();
     RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());

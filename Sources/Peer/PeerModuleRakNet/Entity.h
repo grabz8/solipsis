@@ -68,8 +68,8 @@ public:
     /** See RakNetEntity. */
     virtual void onLostEntity();
 
-    /** See RakNet::Replica2. */
-	virtual void Deserialize(RakNet::BitStream *bitStream, RakNetSolipsis::SerializationType serializationType, SystemAddress sender, RakNetTime timestamp);
+    /** See Replica. */
+	virtual void deserialize(RakNet::BitStream* bitStream, SerializationType serializationType, SystemAddress sender);
 
     /** See CacheManagerCallback. */
     virtual void onTransferComplete(const std::string& filename);
