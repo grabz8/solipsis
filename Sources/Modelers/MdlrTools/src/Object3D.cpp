@@ -59,9 +59,9 @@ Object3D * Object3D::createObject3D(Type type, const EntityUID& entityUID, const
     case CONE: 
         return new Object3DCone(entityUID, name, node);
     case HALF_CONE:
-        return new Object3DTube(entityUID, name, node);
-    case SPHERE: 
         return new Object3DHalfCone(entityUID, name, node);
+    case SPHERE: 
+        return new Object3DSphere(entityUID, name, node);
     case HALF_SPHERE:
         return new Object3DHalfSphere(entityUID, name, node);
     case TORUS: 

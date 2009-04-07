@@ -70,24 +70,13 @@ namespace Solipsis {
             MBB_EXCLAMATION
         };
 
-        enum MsgBoxDisplayed {
-            MBD_NONE = 0,
-            MBD_WORLDSSERVERERROR,
-            MBD_WORLDSSERVERCOMPATIBILITYERROR,
-            MBD_AUTHENTFBERROR,
-            MBD_AUTHENTWSERROR,
-            MBD_CONNECTIONLOSTERROR,
-            MBD_CONNECTIONERROR
-        };
-
-    public:
+     public:
 
         // Show a message box
         void show(const std::string& titleText, 
             const std::string& msgText, 
             MsgBoxButtons buttons, 
-            MsgBoxIcon icon,
-            MsgBoxDisplayed msgBoxDisplayed = MBD_NONE);
+            MsgBoxIcon icon);
 
         void hide();
         bool isVisible();
@@ -109,7 +98,6 @@ namespace Solipsis {
     
         static GUI_MessageBox * st_GUI_MessageBox;
 
-        MsgBoxDisplayed mMsgBoxDisplayed;
         std::string mMsgBoxTitleText;
         std::string mMsgBoxMsgText;
         MsgBoxButtons mMsgBoxButtons;

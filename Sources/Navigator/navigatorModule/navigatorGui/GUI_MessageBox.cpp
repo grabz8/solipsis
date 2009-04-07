@@ -96,8 +96,7 @@ void GUI_Panel::switchLuaNavi(bool createDestroy)
 void GUI_MessageBox::show(const std::string& titleText, 
                             const std::string& msgText, 
                             MsgBoxButtons buttons, 
-                            MsgBoxIcon icon,
-                            MsgBoxDisplayed msgBoxDisplayed)
+                            MsgBoxIcon icon)
 {
     GUI_MessageBox * instance = getMsgBox();
     if (instance->m_curState != NavigatorGUI::NSCreated)
@@ -156,24 +155,4 @@ void GUI_MessageBox::messageBoxResponse(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
 
     hide();
-
-    switch (mMsgBoxDisplayed)
-    {
-    case MBD_WORLDSSERVERERROR:
-    case MBD_AUTHENTFBERROR:
-    case MBD_AUTHENTWSERROR:
-        // Return to Navi UI login
-    //    login();
-        break;
-    case MBD_WORLDSSERVERCOMPATIBILITYERROR:
-        // Display the Worlds Server info page
-    //    worldsServerInfo();
-        break;
-    case MBD_CONNECTIONERROR:
-        Navigator::getSingletonPtr()->disconnect();
-        break;
-    case MBD_CONNECTIONLOSTERROR:
-        break;
-    }
-    mMsgBoxDisplayed = MBD_NONE;
 }

@@ -1782,8 +1782,7 @@ void NavigatorGUI::worldsServerCompatibilityError()
         "Compatibility error", 
         "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", 
         GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR, 
-        GUI_MessageBox::MBD_WORLDSSERVERCOMPATIBILITYERROR);
+        GUI_MessageBox::MBB_ERROR);
 
     mCurrentNaviCreationDate = 0; 
 }
@@ -2278,8 +2277,7 @@ void NavigatorGUI::authentFacebookError()
 
     GUI_MessageBox::getMsgBox()->show("Network error", "Unable to connect to Facebook !<br/>Check your Internet connection.", 
         GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR,
-        GUI_MessageBox::MBD_AUTHENTFBERROR);
+        GUI_MessageBox::MBB_ERROR);
 
      login();
 }
@@ -2385,7 +2383,7 @@ void NavigatorGUI::authentWorldsServerError()
     std::string wsHost, wsPort;
     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
     GUI_MessageBox::getMsgBox()->show("Authentication error", "Authentication failed !", 
-        GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR, GUI_MessageBox::MBD_AUTHENTWSERROR);
+        GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR);
 
     login();
 }
@@ -2416,8 +2414,7 @@ void NavigatorGUI::connectionServerError()
 
     GUI_MessageBox::getMsgBox()->show("Network error", "Connection to server error...", 
         GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_EXCLAMATION, 
-        GUI_MessageBox::MBD_CONNECTIONERROR);
+        GUI_MessageBox::MBB_EXCLAMATION);
 
 }
 
@@ -2429,8 +2426,7 @@ void NavigatorGUI::connectionLostError()
     GUI_MessageBox::getMsgBox()->show(
         "Network error", "Peer lost its connection, re-connection in progress ...", 
         GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_EXCLAMATION,
-        GUI_MessageBox::MBD_CONNECTIONLOSTERROR);
+        GUI_MessageBox::MBB_EXCLAMATION);
 }
 
 //-------------------------------------------------------------------------------------
