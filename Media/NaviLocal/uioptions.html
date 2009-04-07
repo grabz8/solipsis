@@ -16,8 +16,25 @@
                 document.getElementById(name).disabled = disabled;
                 document.getElementById(name).checked = checked;
             }
+			
+			function setInputText(name, txt)
+            {
+                document.getElementById(name).value = txt;
+            }
+			
+			function hideDiv(id)
+			{
+				document.getElementById(id).style.display = 'none';
+			}
+			
+			function showDiv(id)
+			{
+				document.getElementById(id).style.display = 'block';
+			}
+			
             function pageLoaded()
             {
+				
                 new NaviData('pageLoaded').send();
             }
             function buttonPressed(buttonName)
@@ -26,6 +43,8 @@
                 if (buttonName == 'ok')
                 {
                     naviData.add({generalResetDisplayConfig:document.getElementById("checkboxGeneralResetDisplayConfig").checked});
+                    naviData.add({castShadow:document.getElementById("castShadow").checked});			
+					
                     if (document.getElementById("radioIdAuthentTypeFacebook").checked)
                         naviData.add({radioIdAuthentType:'F'});
                     else if (document.getElementById("radioIdAuthentTypeSolipsis").checked)
@@ -262,6 +281,14 @@
 	            width: 110px;
 	            height: 40px;
             }
+			#peerConfig
+            {
+               display: block;
+            }
+			#peerNCSMessage
+            {
+               display: none;
+            }
             #okButton { left: 20px; }
             #backButton { left: 270px; }
         </style>
@@ -284,6 +311,10 @@
                             		<input id="checkboxGeneralResetDisplayConfig" name="checkboxGeneralResetDisplayConfig" type="checkbox" />
                             		Reset display configuration (Restart required)
                         	</div>
+							<div id="castShadowDiv">
+                            		<input id="castShadow" name="castShadow" type="checkbox" />
+                            		cast Shadow (lower framerate)
+                        	</div>
 				</div>
 				<div id="ID" class="mootabs_panel">
                         	<div id="idAuthentTypeFacebookRadio">
@@ -294,16 +325,12 @@
                             		<input id="radioIdAuthentTypeSolipsis" name="radioIdAuthentType" checked="checked" type="radio" />
                             		Solipsis authentication (Worlds server)
                         	</div>
-                        	<div id="idAuthentTypeFixedRadio">
-                            		<input id="radioIdAuthentTypeFixed" name="radioIdAuthentType" type="radio" />
-                            		Fixed authentication (boot.lua)
-                        	</div>
 				</div>
                     	<div id="Worlds" class="mootabs_panel">
                         	<div id="wsText">Server</div>
                         	<div id="wsHostText">Host</div>
                         	<div id="wsHostInput">
-                            		<input id="inputWSHost" class="inputText" name="inputWSHost" value="localhost" type="text" size="20" />
+                            		<input id="inputWSHost" class="inputText" name="inputWSHost" value="nnnnnnn" type="text" size="20" />
                         	</div>
                         	<div id="wsPortText">Port</div>
                         		<div id="wsPortInput">
@@ -311,6 +338,7 @@
                         	</div>
                     	</div>
 				<div id="Peer" class="mootabs_panel">
+					<div name="peerConfig" id="peerConfig">
                         	<div id="peerHostText">Host</div>
                         	<div id="peerHostInput">
                             		<input id="inputPeerHost" class="inputText" name="inputPeerHost" value="localhost" type="text" size="20" />
@@ -319,6 +347,10 @@
                         	<div id="peerPortInput">
                             		<input id="inputPeerPort" class="inputText" name="inputPeerPort" value="8880" type="text" size="4" />
                         	</div>
+					</div>
+					<div name="peerNCSMessage" id="peerNCSMessage">
+                          	NCS configuration (Null Client Server) : Peer is embedded into the Navigator. No peer configuration is needed !
+                    </div>
 				</div>
 				<div id="Proxy" class="mootabs_panel">
                         	<div id="proxyTypeDirectRadio">
