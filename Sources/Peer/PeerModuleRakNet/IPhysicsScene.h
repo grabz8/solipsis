@@ -105,9 +105,6 @@ public:
     */
     virtual void setGravity(Ogre::Vector3& gravity) = 0;
 
-    //! return true if a terrain mesh is loaded
-    virtual bool hasTerrainmesh() = 0;
-
     /** Set the collision mesh of the terrain.
     @remarks An implementation must be supplied for this method.
     */
@@ -119,6 +116,8 @@ public:
     @remarks An implementation must be supplied for this method.
     */
     virtual void unsetTerrainMesh() = 0;
+    //! return true if a terrain mesh is loaded
+    virtual bool hasTerrainmesh() = 0;
 
     /** Create 1 body.
     @remarks An implementation must be supplied for this method.
