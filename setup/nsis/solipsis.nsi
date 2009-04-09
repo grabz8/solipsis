@@ -126,7 +126,7 @@ SectionEnd
 Section "VoiceEngineServer" SEC05
   SetOutPath "$INSTDIR\VoiceEngineServer"
   File /r /x *.exp /x *.pdb "..\..\Common\bin\VoiceEngineServer\Release\*.*"
-  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis VoiceEngine Server.lnk" "$INSTDIR\VoiceEngineServer\TestServer.exe"
+  CreateShortCut "$SMPROGRAMS\Solipsis\Solipsis VoiceEngine Server.lnk" "$INSTDIR\VoiceEngineServer\voiceEngineTestServer.exe"
 SectionEnd
 
 Section "Statistics" SEC06
