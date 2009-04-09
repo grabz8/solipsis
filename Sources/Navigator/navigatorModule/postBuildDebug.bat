@@ -73,7 +73,7 @@ if not exist "%dst%\NaviLocal\" xcopy "..\..\..\Media\NaviLocal\*.*" "%dst%\Navi
 if not exist "%dst%\lua\" xcopy "..\..\..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodexL.dll" xcopy "%FMOD_PATH%\fmodexL.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds_d.dll" xcopy "..\..\..\Dependencies\plugin_3ds\lib\plugin_3ds_d.dll" "%dst%" /s /y
-if not exist "%dst%\plugin_skp_d.dll" xcopy "..\..\..\Dependencies\plugin_skp\include\Debug\*.dll" "%dst%" /s /y
+if not exist "%dst%\plugin_skp_d.dll" xcopy "..\..\..\Dependencies\plugin_skp\lib\Debug\*.dll" "%dst%" /s /y
 if not exist "%dst%\libcurld.dll" xcopy "..\..\..\Dependencies\curl\lib\DebugDLL\libcurld.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\navigatorConfigDialog\lib\WIN32\Debug\navigatorConfigDialog.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\VoiceEngine\lib\Debug\voiceEngine.dll" "%dst%" /s /y
