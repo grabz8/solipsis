@@ -99,6 +99,7 @@ rmdir Sources\DevTools\llmozlib\Debug_vc9 /S /Q
 rmdir Sources\DevTools\llmozlib\Release_vc7 /S /Q
 rmdir Sources\DevTools\llmozlib\Release_vc8 /S /Q
 rmdir Sources\DevTools\llmozlib\Release_vc9 /S /Q
+rmdir Sources\DevTools\lua\bin /S /Q
 rmdir Sources\DevTools\lua\lib /S /Q
 rmdir Sources\DevTools\navi\Navi\Objects_vc7 /S /Q
 rmdir Sources\DevTools\navi\Navi\Objects_vc8 /S /Q
@@ -194,7 +195,9 @@ rmdir Sources\Navigator\NavigatorLauncher\DebugNCS /S /Q
 rmdir Sources\Navigator\NavigatorLauncher\ReleaseNCS /S /Q
 
 rmdir Sources\Navigator\navigatorModule\Debug /S /Q
+rmdir Sources\Navigator\navigatorModule\DebugNCS /S /Q
 rmdir Sources\Navigator\navigatorModule\Release /S /Q
+rmdir Sources\Navigator\navigatorModule\ReleaseNCS /S /Q
 
 rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Debug_vc7 /S /Q
 rmdir Sources\Navigator\WebPlugins\navigatorPlugin\navigatorActiveX\Debug_vc8 /S /Q
@@ -245,16 +248,16 @@ rmdir Sources\Peer\PeerModuleRakNet\Release /S /Q
 rmdir Sources\Peer\PeerModuleRakNet\DebugNCS /S /Q
 rmdir Sources\Peer\PeerModuleRakNet\ReleaseNCS /S /Q
 
-rmdir Sources\Peer\PeerPhysX\peerPhysX\Debug /S /Q
-rmdir Sources\Peer\PeerPhysX\peerPhysX\Release /S /Q
-rmdir Sources\Peer\PeerPhysX\peerPhysX\DebugNCS /S /Q
-rmdir Sources\Peer\PeerPhysX\peerPhysX\ReleaseNCS /S /Q
+rmdir Sources\Peer\peerPhysX\Debug /S /Q
+rmdir Sources\Peer\peerPhysX\Release /S /Q
+rmdir Sources\Peer\peerPhysX\DebugNCS /S /Q
+rmdir Sources\Peer\peerPhysX\ReleaseNCS /S /Q
 
 rmdir Sources\Navigator\navigatorConfigDialog\Debug /S /Q
 rmdir Sources\Navigator\navigatorConfigDialog\Release /S /Q
 
-rmdir Peer\PeerLauncher\Debug /S /Q
-rmdir Peer\PeerLauncher\Release /S /Q
+rmdir Sources\Peer\PeerLauncher\Debug /S /Q
+rmdir Sources\Peer\PeerLauncher\Release /S /Q
 
 rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\Debug /S /Q
 rmdir Sources\Navigator\NavigatorPlugins\VNCPlugin\Release /S /Q
@@ -282,13 +285,13 @@ rmdir Sources\Voice\voiceEngine\TestServer\Release /S /Q
 rmdir Sources\Voice\voiceEngine\voiceEngineFModSpeex\Debug /S /Q
 rmdir Sources\Voice\voiceEngine\voiceEngineFModSpeex\Release /S /Q
 
-rmdir Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Debug /S /Q
-rmdir Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Release /S /Q
-rmdir Navigator\NavigatorPlugins\plugin_3ds\Debug /S /Q
-rmdir Navigator\NavigatorPlugins\plugin_3ds\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_3ds\3dsftk3\SOURCE\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_3ds\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_3ds\Release /S /Q
 
-rmdir Navigator\NavigatorPlugins\plugin_skp\Debug /S /Q
-rmdir Navigator\NavigatorPlugins\plugin_skp\Release /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_skp\Debug /S /Q
+rmdir Sources\Navigator\NavigatorPlugins\plugin_skp\Release /S /Q
 
 rmdir Sources\RakNetServer\Debug /S /Q
 rmdir Sources\RakNetServer\Release /S /Q
