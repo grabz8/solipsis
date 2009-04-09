@@ -1085,3 +1085,8 @@ Peer logout vs network loop synchro bug fix
 Release 1.1.0 set due to major network interface update
 
 ---------------------------
+09/04/09
+
+skp plugin dependencies updated
+
+---------------------------
