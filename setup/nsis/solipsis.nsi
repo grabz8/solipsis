@@ -28,7 +28,7 @@
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\navigator\readme.txt"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\navigator\readmeUser.htm"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
