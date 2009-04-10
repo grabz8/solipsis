@@ -891,12 +891,20 @@ void NavigatorGUI::avatarTabberLoad(unsigned pTab)
 
 				// height
 				navi->evaluateJS("height.onchange = function() {}");
+#if 0 // GILLES
 				Vector3 size = avatar->getEntity()->getBoundingBox().getSize();
 				navi->evaluateJS("height.setValue(" + StringConverter::toString(int((size.y-0.5)*100)) + ")");
 				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
 
 				navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
-
+#else
+                float height = avatar->getEntity()->getBoundingBox().getSize().y * avatar->getSceneNode()->getScale().y - 0.5;
+				navi->evaluateJS("height.setValue(" + StringConverter::toString(int(height*100.)) + ")");
+				navi->evaluateJS("height.onchange = function() {elementClicked('AvatarHeight')}");
+                char heightValue[8];
+                sprintf( heightValue, "'%1.2fm'", height+.5 );
+                navi->evaluateJS("$('HeightValue').value=" + std::string(heightValue));
+#endif
 				// bones
 				Bone* bone = avatar->getCurrentBone();
 				std::string name(bone->getName());
@@ -3657,7 +3665,8 @@ void NavigatorGUI::modelerPropTexturePrev(const NaviData& naviData)
 	if( modeler != 0 )
 	{
 		Object3D * obj = modeler->getSelected();
-		obj->getMaterialManager()->setPreviousTexture();
+        if( obj != 0 )
+		    obj->getMaterialManager()->setPreviousTexture();
 	}
     //modelerUpdateTextures();
     modelerPropTextureApply( naviData );
@@ -3670,7 +3679,7 @@ void NavigatorGUI::modelerPropTextureNext(const NaviData& naviData)
 	if( modeler != 0 )
 	{
 		Object3D * obj = modeler->getSelected();
-		if( obj->getMaterialManager()->getNbTexture() > 1 )
+		if( obj != 0 && obj->getMaterialManager()->getNbTexture() > 1 )
 			obj->getMaterialManager()->setNextTexture();
 	}
     //modelerUpdateTextures();
@@ -4054,6 +4063,15 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 
 	float height = atoi(navi->evaluateJS("height.getValue()").data()) / 100. + 0.5;
 	float scale = height / avatar->getEntity()->getBoundingBox().getSize().y;
+#if 1 // GILLES
+	SceneNode* node = mNavigator->getUserAvatar()->getSceneNode();
+	node->setScale( scale, scale, scale );
+    //mNavigator->getUserAvatar()->onSceneNodeChanged();
+
+    char heightValue[8];
+    sprintf( heightValue, "'%1.2fm'", height );
+    navi->evaluateJS("$('HeightValue').value=" + std::string(heightValue));
+#else
 	SceneNode* node = avatar->getSceneNode();
 
 //	static Node* child = node->removeChild( (unsigned short) 2 );
@@ -4061,6 +4079,7 @@ void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 	//node->addChild( child );
 	
 	navi->evaluateJS("$('HeightValue').value=height.getValue()/100.+0.5+'m'");
+#endif
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropBonePrev(const NaviData& naviData)
@@ -4699,6 +4718,7 @@ void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
 	else //if( type <= 1 ) // BodyPart
 		object = (ModifiableMaterialObject*)avatar->getCurrentBodyPart()->getCurrentBodyPartModelInstance();
 
+#if 0 // GILLES
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
 	{
@@ -4710,6 +4730,27 @@ void NavigatorGUI::avatarColorDiffuse(const NaviData& naviData)
 			//material->setAddedColour( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 		}
 	}
+#else
+    if (object != 0) 
+    {
+        ModifiedMaterial* material = object->getModifiedMaterial();
+        if (material != 0) 
+        {
+            // apply the nex color
+            material->useAddedColour(true);
+
+            ColourValue addedColor( rgb[0]/255., rgb[1]/255., rgb[2]/255., 1. );
+            material->setAddedColour( addedColor );
+            /*
+            if(mLockAmbientDiffuse) 
+            {
+                material->setAmbient( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+                material->setDiffuse( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
+            }
+            */
+        }
+    }
+#endif
 }
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarColorSpecular(const NaviData& naviData)

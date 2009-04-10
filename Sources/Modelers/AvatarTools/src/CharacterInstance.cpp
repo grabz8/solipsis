@@ -228,6 +228,19 @@ void CharacterInstance::loadModified()
 	if (characterElement == NULL) 
 		return;
 
+#if 1 // GILLES
+    //Parsing avatar's height
+    int value;
+    characterElement->Attribute("height", &value);
+    if( value > 0 )
+    {
+        float scale = value * .01;
+        SceneNode* node = getSceneNode();
+	    node->setScale( scale, scale, scale );
+        //mNavigator->getUserAvatar()->onSceneNodeChanged();
+    }
+#endif
+
 	//Parsing every Bone Element
 	Skeleton* skeleton = getEntity()->getSkeleton();
 	if( skeleton != NULL)
@@ -306,8 +319,33 @@ void CharacterInstance::loadModified()
 			{
 				//Checking bodyPartModel Colour
 				attribute = bodyPartElement->Attribute("colour");
-				if (attribute != NULL)
+#if 1 // GILLES
+                //if (bodyPartModelInst->getColour() == ColourValue(.5,.5,.5,1.))
+                {
+                    MaterialPtr material = bodyPartModelInst->getBodyPartModel()->getSubEntity()->getMaterial();
+                    Pass* pass = material->getTechnique(0)->getPass(0);
+                    unsigned short nbTextureUnit = pass->getNumTextureUnitStates();
+                    if (nbTextureUnit > 0)
+                    {
+                        if (pass->getTextureUnitState(nbTextureUnit-1)->getNumFrames() < 1)
+                        {
+                            //ColourValue addedColor = pass->getTextureUnitState(nbTextureUnit-1)->getColourBlendMode().colourArg1;
+                            ColourValue addedColor = StringConverter::parseColourValue( attribute );
+                            bodyPartModelInst->setColour( addedColor );
+                            //bodyPartModelInst->getModifiedMaterial()->setAddedColour( addedColor );
+                        }
+                        else
+                        {
+                            //std::string name = bodyPartModelInst->getBodyPartModel()->getName();
+                            ColourValue addedColor = StringConverter::parseColourValue( attribute );
+                            bodyPartModelInst->getModifiedMaterial()->setAddedColour( addedColor );
+                        }
+                    }
+                }
+#else
+                if (attribute != NULL)
 					bodyPartModelInst->setColour(StringConverter::parseColourValue(String(attribute)));
+#endif
 
 				//Checking bodyPartModel ColourAmbient
 				attribute = bodyPartElement->Attribute("ambient");
@@ -472,6 +510,10 @@ void CharacterInstance::saveModified()
 	//Creating xml configuration file
 	TiXmlElement characterElement("Character");
     characterElement.SetAttribute("name", mCharacter->getName().c_str());
+#if 1 // GILLES
+    int height = getSceneNode()->getScale().y * 100;
+    characterElement.SetAttribute("height", height);
+#endif
 
 	//Creating Bones
 	Skeleton* skeleton = getEntity()->getSkeleton();

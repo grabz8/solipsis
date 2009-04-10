@@ -78,6 +78,19 @@ OgreFrameListener::~OgreFrameListener()
 bool OgreFrameListener::frameStarted(const FrameEvent& evt)
 {
     // Override frameStarted event to process that (don't care about frameEnded)
+#if 1 // GILLES
+    if(!mWindow->isActive())// && mWindow->isVisible())
+    {
+        // update the renderer even the windows is no more focused
+        mWindow->update(); //even in background !
+
+        // Release mouse left event when we loose the focus on window
+        MouseEvt mEvt;
+        mEvt.mState.mButtons = MBLeft;
+        mEvt.mType = ETMouseReleased;
+		mouseReleased(mEvt);
+    }
+#endif
     return mContinue;
 }
 

@@ -238,7 +238,8 @@ TexturePtr ModifiableMaterialObject::getCurrentTexture()
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 void ModifiableMaterialObject::setPreviousTextureAsCurrent()
 {
-    if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.begin()) mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.end();
+    if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.begin()) 
+        mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.end();
 	mCurrentTextureIterator--;
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
@@ -247,7 +248,8 @@ void ModifiableMaterialObject::setPreviousTextureAsCurrent()
 void ModifiableMaterialObject::setNextTextureAsCurrent()
 {
 	mCurrentTextureIterator++;
-	if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.end()) mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.begin();
+	if (mCurrentTextureIterator == mModifiableMaterialObjectBase->mTextures.end()) 
+        mCurrentTextureIterator = mModifiableMaterialObjectBase->mTextures.begin();
 	mModifiedMaterial->setTexture((*mCurrentTextureIterator)->getName());
 }
 
