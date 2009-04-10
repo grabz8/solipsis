@@ -64,10 +64,6 @@ const std::string NavigatorGUI::ms_NavisContexts[] =
 };
 
 const std::string NavigatorGUI::ms_NavisNames[] = {
-
-    "uioptions",
-    "uimainmenu",
-    "uistatusbar",
     "uichat",
     "uiabout",
     "uicommands",
@@ -169,15 +165,7 @@ void NavigatorGUI::update()
         m_pCurrentPanel->update();
     }
 
-     // Status bar update
-    if ((mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
-    {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_STATUSBAR]);
-        if (navi == 0) return;
-        if (navi->getVisibility())
-            navi->hide(true);
-        mStatusBarDisplayDate = 0;
-    }
+    GUI_StatusBar::update();
 }
 
 //-------------------------------------------------------------------------------------
@@ -207,86 +195,13 @@ bool NavigatorGUI::isMouseVisible()
     return NaviLibrary::NaviMouse::Get().isVisible();
 }
 
-// -------------------------------------------------------------------------------------
-// void NavigatorGUI::login()
-// {
-//     // Hide any message box
-//     GUI_MessageBox::getMsgBox()->hide();
-// 
-//     // Hide previous Navi UI
-//     hidePreviousNavi();
-// 
-//     // Destroy context Navi UI panel
-//     contextDestroy();
-//     destroyNavi(NAVI_CTXTAVATAR);
-//     destroyNavi(NAVI_CTXTWWW);
-//     // GILLES BEGIN
-//     destroyNavi(NAVI_CTXTSWF);
-//     // GILLES END
-//     destroyNavi(NAVI_CTXTVLC);
-//     destroyNavi(NAVI_CTXTVNC);
-// 
-//     // Destroy Navi UI status bar
-//     mStatusBarDisplayDate = 0;
-//     destroyNavi(NAVI_STATUSBAR);
-// 
-//     // Destroy Navi UI chat panel
-//     destroyNavi(NAVI_CHAT);
-// 
-//     // Destroy Navi UI about panel
-//     destroyNavi(NAVI_ABOUT);
-// 
-//     // Destroy Navi UI commands
-//     destroyNavi(NAVI_COMMANDS);
-// 
-// 	// Hide the modeler panels
-// 	modelerMainUnload();
-// 	// Hide the avatar panels
-// 	avatarMainUnload();
-// 
-// #ifdef UIDEBUG
-//     // Destroy UI debug
-//     destroyNavi(NAVI_DEBUG);
-// #endif
-// 
-//     if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
-//     {
-//         // Create Navi UI login
-//         NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
-//         navi->setMovable(false);
-//         navi->setAutoUpdateOnFocus(true);
-//         navi->setMaxUPS(24);
-//         navi->hide();
-//         navi->setMask("uilogin.png");
-//         navi->setOpacity(0.75f);
-//         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
-// 	    navi->bind("world", NaviDelegate(this, &NavigatorGUI::world));
-// 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
-// 	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
-// 	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
-//         mNavisStates[NAVI_LOGIN] = NSCreated;
-// 	}
-// 
-//     // Set next Navi UI
-//     mCurrentNavi = NAVI_LOGIN;
-//     mCurrentNaviCreationDate = 0;
-// }
-
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::inWorld()
 {
     destroyAllRegisteredPanels();
 
-    showMainMenu();
-    showStatusBar();
-}
-
-void NavigatorGUI::showMainMenu()
-{
-    switchLuaNavi(NAVI_MAINMENU);
-#ifdef UIDEBUG
-    mNaviMgr->getNavi(ms_NavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
-#endif
+    GUI_MainMenu::createAndShowPanel();
+    GUI_StatusBar::createAndShowPanel();
 }
 
 void NavigatorGUI::showStatusBar()
@@ -320,15 +235,7 @@ void NavigatorGUI::showStatusBar()
 //     mNavigator->saveConfiguration();
 // }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::setStatusBarText(const std::string& statusText)
-{
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_STATUSBAR]);
-    navi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
-    mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-    if (!navi->getVisibility())
-        navi->show(true);
-}
+
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::addChatText(const std::wstring& message)
@@ -1707,122 +1614,8 @@ void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
 #endif
 
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::loginPageLoaded(const NaviData& naviData)
-{
-    char txt[256];
-
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::loginPageLoaded()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
-
-    // Set current values
-    sprintf(txt, "$('inputLogin').value = '%s'", mNavigator->getLogin().c_str());
-    navi->evaluateJS(txt);
-    sprintf(txt, "$('inputPwd').value = '%s'", mNavigator->getPwd().c_str());
-    navi->evaluateJS(txt);
-    // Show/Hide password input
-    sprintf(txt, "$('pwd').style.visibility = '%s'", (mNavigator->getAuthentType() == ATSolipsis) ? "visible" : "hidden");
-    navi->evaluateJS(txt);
-    std::string world = mNavigator->getWorldAddress();
-    sprintf(txt, "$('worldText').innerHTML = '%s'", world.empty() ? "Choose a world ..." : world.c_str());
-    navi->evaluateJS(txt);
-    // Disable World button if no world server specified
-    sprintf(txt, "$('worldButton').disabled = %s", mNavigator->getWorldsServerAddress().empty() ? "'disabled'" : "null");
-    navi->evaluateJS(txt);
-
-    if (!mNavigator->getPwd().empty())
-        navi->evaluateJS("$('savePassWordCB').checked = 'true'");
-    
-	// Show Navi UI login
-    if (mNavisStates[NAVI_LOGIN] == NSCreated)
-        navi->show(true);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::world(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::world()");
-
-    applyLoginDatas();
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
-
-    if (mNavisStates[NAVI_WORLDS] == NSNotCreated)
-    {
-        // Create Navi UI worlds
-        // Prepare the url to the world server uiworlds.html page
-        std::string uiworldsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiworlds.html";
-        uiworldsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
-        std::string localWorldHost = mNavigator->getLocalWorldAddress();
-        // Add the local world ?
-        if (!mNavigator->getLocalWorldAddress().empty())
-            uiworldsUrl += "&localWorld=" + mNavigator->getLocalWorldAddress();
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_WORLDS], "", NaviPosition(Center), 256, 256);
-        navi->setMovable(false);
-        navi->hide();
-        navi->setOpacity(0.75f);
-	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
-	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::worldOk));
-	    navi->bind("cancel", NaviDelegate(this, &NavigatorGUI::worldCancel));
-        // Add 1 event listener to detect network errors
-        navi->addEventListener(&mWorldsServerEventListener);
-        navi->navigateTo(uiworldsUrl);
-        mNavisStates[NAVI_WORLDS] = NSCreated;
-    }
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_WORLDS;
-    mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-}
 
 
-
-
-//-------------------------------------------------------------------------------------
-// void NavigatorGUI::worldOk(const NaviData& naviData)
-// {
-//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
-// 
-//     std::string world = naviData["world"].str();
-//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
-//     std::string worldHost, worldPort;
-//     CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
-//     mNavigator->setWorldAddress(world);
-// 
-//     // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
-//     if (naviData.exists("voipServer"))
-//     {
-//         std::string voipServer = naviData["voipServer"].str();
-//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
-//         mNavigator->setVoIPServerAddress(voipServer);
-//     }
-//     if (naviData.exists("vncServer"))
-//     {
-//         std::string vncServer = naviData["vncServer"].str();
-//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
-//     }
-//     if (naviData.exists("vlcServer"))
-//     {
-//         std::string vlcServer = naviData["vlcServer"].str();
-//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
-//     }
-// 
-//     // Return to Navi UI login
-//     login();
-// }
-
-
-// 
-// //-------------------------------------------------------------------------------------
-// void NavigatorGUI::worldCancel(const NaviData& naviData)
-// {
-//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
-// 
-//     // Return to Navi UI login
-//     login();
-// }
 
 
 void NavigatorGUI::connectionServerError()

@@ -67,6 +67,7 @@ void GUI_Panel::switchLuaNavi(bool createDestroy)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mPanelName.c_str());
             return;
         }
+
         m_curState = NSCreated;
         // the navi panel
         mNavi = NavigatorGUI::getNavi(mPanelName);

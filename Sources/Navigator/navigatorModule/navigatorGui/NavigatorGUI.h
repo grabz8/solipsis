@@ -70,12 +70,12 @@ public:
    };
     
     enum NaviPanel {
-
         NAVI_MAINMENU,
         NAVI_STATUSBAR,
         NAVI_CHAT,
         NAVI_ABOUT,
         NAVI_COMMANDS,
+
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
 
@@ -113,7 +113,6 @@ protected:
     int mCurrentNavi;
     int mCurrentCtxtPanel;
     unsigned long mCurrentNaviCreationDate;
-    unsigned long mStatusBarDisplayDate;
     std::string mLoginInfosText;
 
 #ifdef UIDEBUG
