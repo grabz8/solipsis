@@ -274,6 +274,8 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
 
     // quick save the created object
     XMLSave(false);
+    // add it again into list of object to save
+    mSelection->add3DObjectToListSinceLastSave(obj);
 
     return true;
 }
