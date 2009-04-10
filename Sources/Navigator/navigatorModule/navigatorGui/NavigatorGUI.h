@@ -120,7 +120,6 @@ protected:
     unsigned long mStatusBarDisplayDate;
     std::string mLoginInfosText;
 
-    Facebook *mFacebook;
 #ifdef UIDEBUG
     bool mTreeDirty;
 #endif

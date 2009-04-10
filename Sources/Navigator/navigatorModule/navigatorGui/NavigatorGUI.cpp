@@ -102,7 +102,6 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mCurrentNaviCreationDate(0),
     mStatusBarDisplayDate(0),
     mLoginInfosText(""),
-    mFacebook(0), 
     mWorldsServerEventListener(this),
     mLockAmbientDiffuse(false),
     m_pCurrentPanel(NULL)
@@ -2169,121 +2168,6 @@ void NavigatorGUI::optionsBack(const NaviData& naviData)
     login();
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentFacebook()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebook()");
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
-
-    // Create the Facebook instance
-    if (mFacebook != 0)
-        delete mFacebook;
-    mFacebook = new Facebook(mNavigator->getFacebookApiKey(), mNavigator->getFacebookSecret(), mNavigator->getFacebookServer());
-    // Grab a token from the server.
-    if ((mFacebook == 0) || !mFacebook->authenticate())
-    {
-        // Destroy Facebook instance
-        if (mFacebook != 0)
-        {
-            delete mFacebook;
-            mFacebook = 0;
-        }
-        authentFacebookError();
-        return;
-    }
-
-    if (mNavisStates[NAVI_AUTHENTFB] == NSNotCreated)
-    {
-        // Create Navi UI authentication on Facebook
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AUTHENTFB], "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
-        navi->setMovable(false);
-        navi->hide();
-        navi->setOpacity(0.75f);
-	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::authentFacebookPageLoaded));
-	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::authentFacebookOk));
-	    navi->bind("cancel", NaviDelegate(this, &NavigatorGUI::authentFacebookCancel));
-        mNavisStates[NAVI_AUTHENTFB] = NSCreated;
-    }
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_AUTHENTFB;
-    mCurrentNaviCreationDate = 0;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentFacebookError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookError()");
-
-    GUI_MessageBox::getMsgBox()->show("Network error", "Unable to connect to Facebook !<br/>Check your Internet connection.", 
-        GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR);
-
-     login();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentFacebookPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AUTHENTFB]);
-
-    navi->evaluateJS("$('msgText').innerHTML = 'Use browser to log on Facebook ... then press Ok'");
-    // Run external Web browser on the login URL
-    CommonTools::System::runExternalWebBrowser(mFacebook->getLoginUrl(mNavigator->getFacebookLoginUrl()).c_str());
-
-	// Show Navi UI authent Facebook
-    if (mNavisStates[NAVI_AUTHENTFB] == NSCreated)
-        navi->show(true);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentFacebookOk(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AUTHENTFB]);
-
-    // Session ?
-    if (!mFacebook->getSession())
-    {
-        navi->evaluateJS("$('msgText').innerHTML = 'Unable to get session ... Are you logged ?'");
-        return;
-    }
-    // Get uid
-    NodeId nodeId = mFacebook->getUid();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk() nodeId=%s", nodeId.c_str());
-    mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATFacebook) + nodeId);
-
-    // Destroy Facebook instance
-    if (mFacebook != 0)
-    {
-        delete mFacebook;
-        mFacebook = 0;
-    }
-
-    // Call connect
-    bool connected = mNavigator->connect();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentFacebookCancel(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookCancel()");
-
-    // Destroy Facebook instance
-    if (mFacebook != 0)
-    {
-        delete mFacebook;
-        mFacebook = 0;
-    }
-
-    // Return to Navi UI login
-    login();
-}
 
 
 void NavigatorGUI::connectionServerError()

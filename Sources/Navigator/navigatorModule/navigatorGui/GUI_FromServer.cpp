@@ -37,7 +37,6 @@ using namespace CommonTools;
 
 /////////////////
 
-
 GUI_FromServer::GUI_FromServer(const std::string & panelName) : GUI_Panel(panelName)
 {
     mNavigator = Navigator::getSingletonPtr();
