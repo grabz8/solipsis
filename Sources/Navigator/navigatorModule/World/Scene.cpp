@@ -77,7 +77,7 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
-    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1.0f)
+    if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
     {
         OGRE_LOG("Scene::updateEntity() Destroy/Load new scene uid:" + mXmlEntity->getUid());
 

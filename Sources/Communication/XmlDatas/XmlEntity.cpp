@@ -200,14 +200,11 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         RefCntPoolPtr<XmlContent> xmlContent;
         xmlContent->fromXmlElt(elt);
         mContent = RefCntPoolPtr<XmlContent>(xmlContent);
-
         mDefinedAttributes |= DAContent;
     }
     if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
     {
         mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
-   //     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "XmlEntity::fromXmlElt() progress %f %%", mDownloadProgress*100);
-       
         mDefinedAttributes |= DAProgress;
     }
 
@@ -232,8 +229,6 @@ void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEnti
         dstXmlEntity->setContent(srcXmlEntity->getContent());
     if (definedAttributes & XmlEntity::DAProgress)
         dstXmlEntity->setDownloadProgress(srcXmlEntity->getDownloadProgress());
-    
 }
-
 
 } // namespace Solipsis

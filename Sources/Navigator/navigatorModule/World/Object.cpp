@@ -143,7 +143,7 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         mLocalNode = Modeler::getSceneManager()->getRootSceneNode()->createChildSceneNode( String(xmlEntity->getUid()) + "_tempObjects.node" );
     }
 
-    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress()  >= 1)
+    if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
     {
         OGRE_LOG("Avatar::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
 

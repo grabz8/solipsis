@@ -465,7 +465,7 @@ bool Avatar::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         setState(xmlEntity->getAnimation());
         mXmlEntity->setAnimation(xmlEntity->getAnimation());
     }
-    if (definedAttributes & XmlEntity::DAContent && xmlEntity->getDownloadProgress() == 1.0f)
+    if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Avatar::updateEntity() Destroy/Load new character of avatar uid:%s", mXmlEntity->getUid().c_str());
         detachFromSceneNode();

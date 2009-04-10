@@ -124,9 +124,20 @@ void AvatarNode::onNewEntity(Entity* entity)
             entity->addAutoSerializeTimer(1000/20); // 20 ups
     }
 
-    // Create physics of scene + my avatar
-    if ((entity->getXmlEntity()->getType() == ETSite) ||
-        ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
+    // Create physics of my avatar
+    if ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId))
+    {
+        pthread_mutex_lock(&mMutex);
+        // create physics of the entity
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+        entity->createPhysics(Peer::getSingleton().getPhysicsScene());
+        entity->applyGravity(true);
+        pthread_mutex_unlock(&mMutex);
+    }
+    // Create physics of scene (if content is available)
+    if ((entity->getXmlEntity()->getType() == ETSite) &&
+        (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAContent) &&
+        (entity->getXmlEntity()->getDownloadProgress() >= 1.0f))
     {
         pthread_mutex_lock(&mMutex);
         // create physics of the entity
@@ -206,19 +217,18 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() ETUpdatedEntity evt sent uid=%s flags=%08x", xmlEntity->getUid().c_str(), xmlEntity->getFlags());
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
 
-    // Create physics of scene + my avatar
-    if ((entity->getXmlEntity()->getType() == ETSite) ||
-        ((entity->getXmlEntity()->getType() == ETAvatar) && (entity->getXmlEntity()->getOwner() == mNodeId)))
+    // Create physics of scene (if content is available)
+    if ((entity->getXmlEntity()->getType() == ETSite) &&
+        (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAContent) &&
+        (entity->getXmlEntity()->getDownloadProgress() >= 1.0f) &&
+        ((entity->getPhysicsScene() == 0) || !entity->getPhysicsScene()->hasTerrainmesh()))
     {
-        if (!entity->getPhysicsScene())
-        {
-            pthread_mutex_lock(&mMutex);
-            // create physics of the entity
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
-            entity->createPhysics(Peer::getSingleton().getPhysicsScene());
-            entity->applyGravity(true);
-            pthread_mutex_unlock(&mMutex);      
-        }
+        pthread_mutex_lock(&mMutex);
+        // create physics of the entity
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() creating physics of entity uid:%s", entity->getXmlEntity()->getUid().c_str());
+        entity->createPhysics(Peer::getSingleton().getPhysicsScene());
+        entity->applyGravity(true);
+        pthread_mutex_unlock(&mMutex);
     }
 
     pthread_mutex_lock(&mEvtsMutex);

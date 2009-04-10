@@ -75,10 +75,12 @@ void Entity::deserialize(BitStream *bitStream, SerializationType serializationTy
 
     RakNetEntityMap& entities = getEntities();
     RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
-    if (it != entities.end())
+    if (it == entities.end())
     {
-        // masking content updates until transfer is complete
-        mLastDeserializedDefinedAttributes &= ~XmlEntity::DAContent;
+        addEntity(this);
+    }
+    else
+    {
         Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
     }
 }
@@ -92,11 +94,7 @@ float Entity::onTransferProgress(const std::string& filename, float fProgress)
 
     RakNetEntityMap& entities = getEntities();
     RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
-    if (it == entities.end())
-    {
-        addEntity(this);
-    }
-    else
+    if (it != entities.end())
     {
         Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
     }
@@ -110,23 +108,17 @@ void Entity::onTransferComplete(const std::string& filename)
 {
     RakNetEntity::onTransferComplete(filename);
 
-    if (mMissingFiles.empty())
-    {
-        mXmlEntity->setDownloadProgress(1.0f);
-        mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
-        RakNetEntityMap& entities = getEntities();
-        RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
-        if (it == entities.end())
-        {
-            mDirty = true;
-            addEntity(this);
-        }
-        else
-        {
-            mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
-            Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
-        }
-    }
+    if (!mMissingFiles.empty())
+        return;
+
+    mXmlEntity->setDownloadProgress(1.0f);
+    mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
+    mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
+
+    RakNetEntityMap& entities = getEntities();
+    RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+    if (it != entities.end())
+        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
 }
 
 //-------------------------------------------------------------------------------------
@@ -159,11 +151,11 @@ IPhysicsScene* Entity::getPhysicsScene()
 //-------------------------------------------------------------------------------------
 void Entity::createPhysics(IPhysicsScene* physicsScene)
 {
-    if (mXmlEntity->getType() == ETSite && mXmlEntity->getDownloadProgress() >= 1)
-    {
-        destroyPhysics();
-        mPhysicsScene = physicsScene;
+    destroyPhysics();
+    mPhysicsScene = physicsScene;
 
+    if (mXmlEntity->getType() == ETSite)
+    {
        // Get the scene content for LOD 0
         XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
         RefCntPoolPtr<XmlSceneLodContent> xmlSceneLodContent0 = RefCntPoolPtr<XmlSceneLodContent>(contentLodMap[0]->getDatas());
@@ -304,8 +296,6 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
     }
     else
     {
-        destroyPhysics();
-        mPhysicsScene = physicsScene;
        // Compute radius and height of character
         Vector3 aabbHalfSize = mXmlEntity->getAABoundingBox().getHalfSize();
         mRadius = std::min(aabbHalfSize.x, aabbHalfSize.z);

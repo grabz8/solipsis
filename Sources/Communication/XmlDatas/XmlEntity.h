@@ -174,20 +174,10 @@ namespace Solipsis
           void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
           const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
 
-          void setDownloadProgress(const float progress) 
-          { 
-              mDownloadProgress = progress; 
-              mDefinedAttributes |= DAProgress; 
-          }
+          void setDownloadProgress(const float progress) { mDownloadProgress = progress; mDefinedAttributes |= DAProgress; }
           const float getDownloadProgress() { return mDownloadProgress; }
 
-
-          void setContent(RefCntPoolPtr<XmlContent>& content) 
-          { 
-              mContent = content; 
-              // remove Content if progress is not 100%
-              mDefinedAttributes |= DAContent; 
-          }
+          void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }
           RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
     };
 
