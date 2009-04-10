@@ -31,6 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Navi.h>
 
 #include "GUI_ChooseWorld.h"
+#include "GUI_Options.h"
+#include "GUI_AuthentFacebook.h"
+#include "GUI_AuthentWorldServer.h"
+
+
 
 using namespace Solipsis;
 using namespace CommonTools;
@@ -56,12 +61,13 @@ bool GUI_Login::createAndShowPanel()
 //-------------------------------------------------------------------------------------
 bool GUI_Login::show()
 {
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Login::show()");
     NavigatorGUI::destroyAllRegisteredPanels();
 
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI login
-        createNavi("uilogin", 
+        createNavi(mPanelName, 
             "local://uilogin.html", 
             NaviPosition(Center), 
             400, 300);
@@ -78,10 +84,10 @@ bool GUI_Login::show()
         mNavi->setMask("uilogin.png");
         mNavi->setOpacity(0.75f);
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Login::onPanelLoaded));
-        mNavi->bind("world", NaviDelegate(this, &GUI_Login::onWorldPressed));
-        mNavi->bind("connect", NaviDelegate(this, &GUI_Login::onConnectPressed));
-        mNavi->bind("options", NaviDelegate(this, &GUI_Login::onOptionsPressed));
-        mNavi->bind("quit", NaviDelegate(this, &GUI_Login::onQuitPressed));
+        mNavi->bind("world", NaviDelegate(this, &GUI_Login::onChooseWorld));
+        mNavi->bind("connect", NaviDelegate(this, &GUI_Login::onConnect));
+        mNavi->bind("options", NaviDelegate(this, &GUI_Login::onOptions));
+        mNavi->bind("quit", NaviDelegate(this, &GUI_Login::onQuit));
         m_curState = NSCreated;
     }
     
@@ -145,8 +151,74 @@ void GUI_Login::onPanelLoaded(const NaviData& naviData)
         mNavi->show(true);
 }
 
-void GUI_Login::onWorldPressed(const NaviData& naviData)
+void GUI_Login::onChooseWorld(const NaviData& naviData)
 {
     applyLoginDatas();
     GUI_ChooseWorld::createAndShowPanel();
+}
+
+void GUI_Login::onOptions(const NaviData& naviData)
+{
+    applyLoginDatas();
+    GUI_Options::createAndShowPanel();
+}
+
+//-------------------------------------------------------------------------------------
+void GUI_Login::onConnect(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Login::onConnect()");
+
+    applyLoginDatas();
+
+    // Check
+    bool validLogin = StringHelpers::isAValidLogin(mNavigator->getLogin());
+    if (!validLogin)
+    {
+        // Malformed login
+        mNavi->evaluateJS("$('infosText').innerHTML = 'Enter a valid login ...'");
+        return;
+    }
+    if (mNavigator->getWorldAddress().empty())
+    {
+        // Malformed login
+        mNavi->evaluateJS("$('infosText').innerHTML = 'Select a valid world ...'");
+        return;
+    }
+
+    // Authentication
+    if (mNavigator->getAuthentType() == ATFixed)
+        mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATFixed) + mNavigator->getFixedNodeId());
+    if (mNavigator->getNodeId().empty())
+    {
+        switch (mNavigator->getAuthentType())
+        {
+        case ATFacebook:
+            GUI_AuthentFacebook::createAndShowPanel();
+            break;
+        case ATSolipsis:
+            bool validPwd = StringHelpers::isAValidPassword(mNavigator->getPwd());
+            if (!validPwd)
+            {
+                // Malformed pwd
+                mNavi->evaluateJS("$('infosText').innerHTML = 'Enter a valid password ...'");
+                return;
+            }
+            GUI_AuthentWorldServer::createAndShowPanel(mNavigator->getPwd());
+            break;
+        }
+    }
+    else
+    {
+        // Call connect
+        bool connected = mNavigator->connect();
+    }
+}
+
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::quit(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::quit()");
+
+    mNavigator->quit();
 }

@@ -21,8 +21,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GUI_Login_h__
-#define __GUI_Login_h__
+#ifndef __GUI_Options_h__
+#define __GUI_Options_h__
 
 // #include <Facebook.h>
 #include "NavigatorGui.h"
@@ -39,7 +39,7 @@ namespace Solipsis
 
     /** This class manages all Graphical User Interfaces of the Navigator.
     */
-    class GUI_Login : public GUI_Panel
+    class GUI_Options : public GUI_Panel
     {
     public:
         static bool createAndShowPanel();
@@ -49,25 +49,22 @@ namespace Solipsis
         virtual void hide();
        
     protected:
-        GUI_Login();
+        GUI_Options();
 
         void applyLoginDatas(); 
 
-        void onPanelLoaded(const NaviData& naviData);
+        void onLoaded(const NaviData& naviData);
+        void onOk(const NaviData& naviData);
+        void onBack(const NaviData& naviData);
 
+        ~GUI_Options();
 
-        void onChooseWorld(const NaviData& naviData);
-        void onConnect(const NaviData& naviData);
-        void onOptions(const NaviData& naviData);
-        void onQuit(const NaviData& naviData);
-
-        ~GUI_Login();
-
-        static GUI_Login * stGUI_Login;
+        static GUI_Options * stGUI_Options;
 
         Navigator * mNavigator;
+        NaviManager* mNaviMgr;
     };
 
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_Login_h__
+#endif // #ifndef __GUI_Options_h__

@@ -71,10 +71,6 @@ public:
     
     enum NaviPanel {
 
-        NAVI_OPTIONS,
-
-
- //       NAVI_AUTHENTFB,
         NAVI_MAINMENU,
         NAVI_STATUSBAR,
         NAVI_CHAT,
@@ -457,6 +453,13 @@ public:
     {   
         return mNaviGui->mNaviMgr->getNavi(naviName);
     }
+
+
+    static NaviManager* getNaviMgr()
+    {   
+        return mNaviGui->mNaviMgr;
+    }
+    
     ///////////////////////////////////////////////
 
     static NavigatorGUI * mNaviGui;
