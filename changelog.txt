@@ -1097,6 +1097,7 @@ Release 1.1.0 Pre-Version
 
 TestServer replaced by VoiceEngineTestServer in NSIS setup
 scene download bug fix
+quick save obj selection to save bug fix
 Release 1.1.0 new delivery
 
 ---------------------------
