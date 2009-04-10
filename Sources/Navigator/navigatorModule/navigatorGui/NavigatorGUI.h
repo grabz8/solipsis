@@ -70,12 +70,11 @@ public:
    };
     
     enum NaviPanel {
-   //     NAVI_LOGIN,
-    //    NAVI_WORLDS,
-    //    NAVI_INFOWS,
+
         NAVI_OPTIONS,
-        NAVI_AUTHENTFB,
-        NAVI_AUTHENTWS,
+
+
+ //       NAVI_AUTHENTFB,
         NAVI_MAINMENU,
         NAVI_STATUSBAR,
         NAVI_CHAT,

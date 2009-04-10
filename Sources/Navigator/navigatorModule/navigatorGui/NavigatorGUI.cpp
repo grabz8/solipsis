@@ -64,17 +64,10 @@ const std::string NavigatorGUI::ms_NavisContexts[] =
 };
 
 const std::string NavigatorGUI::ms_NavisNames[] = {
-  //  "uilogin",
-
- //   "uiworlds",
-
-  //  "uiinfows",
-
-
 
     "uioptions",
     "uiauthentfb",
-    "uiauthentws",
+//    "uiauthentws",
     "uimainmenu",
     "uistatusbar",
     "uichat",
@@ -179,18 +172,7 @@ void NavigatorGUI::update()
         m_pCurrentPanel->update();
     }
 
-    // needed to be reported 
-
-
-    // Worlds server page loaded ?
-    if (((mCurrentNavi == NAVI_WORLDS) ||
-         (mCurrentNavi == NAVI_AUTHENTWS) ||
-         (mCurrentNavi == NAVI_INFOWS)) &&
-        (mCurrentNaviCreationDate != 0) &&
-        (now - mCurrentNaviCreationDate > (unsigned long)mNavigator->getWorldsServerTimeout()*1000))
-        worldsServerError();
-
-    // Status bar update
+     // Status bar update
     if ((mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
     {
         NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_STATUSBAR]);
@@ -2303,69 +2285,6 @@ void NavigatorGUI::authentFacebookCancel(const NaviData& naviData)
     login();
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentWorldsServer(const std::string& pwd)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServer()");
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
-
-    if (mNavisStates[NAVI_AUTHENTWS] == NSNotCreated)
-    {
-        // Create Navi UI authentication on Worlds server
-        // Prepare the url to the world server uiauthentws.html page
-        std::string uiauthentwsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiauthentws.html";
-        uiauthentwsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
-        uiauthentwsUrl += "&login=" + mNavigator->getLogin() + "&pwd=" + pwd;
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_AUTHENTWS], "", NaviPosition(Center), 256, 128);
-        navi->setMovable(false);
-        navi->hide();
-        navi->setOpacity(0.75f);
-	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
-	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::authentWorldsServerOk));
-        // Add 1 event listener to detect network errors
-        navi->addEventListener(&mWorldsServerEventListener);
-        navi->navigateTo(uiauthentwsUrl);
-        mNavisStates[NAVI_AUTHENTWS] = NSCreated;
-    }
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_AUTHENTWS;
-    mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentWorldsServerError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerError()");
-
-    std::string wsHost, wsPort;
-    CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-    GUI_MessageBox::getMsgBox()->show("Authentication error", "Authentication failed !", 
-        GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR);
-
-    login();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::authentWorldsServerOk(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk()");
-
-    std::string result = naviData["result"].str();
-    NodeId nodeId = naviData["nodeId"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() result=%s, nodeId=%s", result.c_str(), nodeId.c_str());
-    if (nodeId.empty())
-    {
-        login();
-        return;
-    }
-
-    mNavigator->setNodeId(XmlHelpers::convertAuthentTypeToRepr(ATSolipsis) + nodeId);
-    // Call connect
-    bool connected = mNavigator->connect();
-}
 
 void NavigatorGUI::connectionServerError()
 {
