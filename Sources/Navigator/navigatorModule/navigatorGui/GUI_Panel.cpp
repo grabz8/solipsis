@@ -36,6 +36,8 @@ GUI_Panel::GUI_Panel(const std::string & panelName)
     mPanelName = panelName;
     m_curState = NSNotCreated;
     NavigatorGUI::registerGuiPanel(this);
+    mCurrentNaviCreationDate = 0;
+
 }
 
 GUI_Panel::~GUI_Panel()
@@ -141,6 +143,9 @@ void GUI_Panel::destroy()
 void GUI_Panel::createNavi(const std::string &naviName, const std::string &homepage, const NaviPosition &naviPosition,
                 unsigned short width, unsigned short height, unsigned short zOrder)
 {
+    mCurrentNaviCreationDate = 0;
+
+
     mNavi = NaviLibrary::NaviManager::Get().createNavi(naviName, homepage, naviPosition,
         width, height, zOrder);
 }
@@ -155,21 +160,10 @@ void GUI_Panel::onPanelLoaded(const NaviData& naviData)
         mNavi->focus();
     }
 
+    // used for timeout
     mCurrentNaviCreationDate = 0;
 }
 
 
-
-//-------------------------------------------------------------------------------------
-void GUI_Panel::onNavigateComplete(Navi *caller, const std::string &url, int responseCode)
-{
-    if (responseCode >= 400 && responseCode < 600)
-    {
-        if (responseCode == 409)
-            worldsServerCompatibilityError();
-        else
-            worldsServerError();
-    }
-}
 
 

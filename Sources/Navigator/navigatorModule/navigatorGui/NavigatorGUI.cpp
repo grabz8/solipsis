@@ -69,6 +69,9 @@ const std::string NavigatorGUI::ms_NavisNames[] = {
  //   "uiworlds",
 
   //  "uiinfows",
+
+
+
     "uioptions",
     "uiauthentfb",
     "uiauthentws",
@@ -1842,45 +1845,6 @@ void NavigatorGUI::world(const NaviData& naviData)
 //     login();
 // }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::worldsServerInfo()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerInfo()");
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
-
-    if (mNavisStates[NAVI_INFOWS] == NSNotCreated)
-    {
-        // Create Navi UI worlds server info
-        // Prepare the url to the world server uiinfows.html page
-        std::string uiinfowsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiinfows.html";
-        uiinfowsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_INFOWS], "", NaviPosition(Center), 256, 256);
-        navi->setMovable(false);
-        navi->hide();
-        navi->setOpacity(0.75f);
-	    navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
-	    navi->bind("ok", NaviDelegate(this, &NavigatorGUI::worldsServerInfoOk));
-        // Add 1 event listener to detect network errors
-        navi->addEventListener(&mWorldsServerEventListener);
-        navi->navigateTo(uiinfowsUrl);
-        mNavisStates[NAVI_INFOWS] = NSCreated;
-    }
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_INFOWS;
-    mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::worldsServerInfoOk(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerInfoOk()");
-
-    // Return to Navi UI login
-    login();
-}
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::connect(const NaviData& naviData)

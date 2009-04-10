@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // #include <Facebook.h>
 #include "NavigatorGui.h"
 #include "MainApplication/Navigator.h"
-#include "GUI_Panel.h"
+#include "GUI_FromServer.h"
 // #include "World/Modeler.h"
 // #include "ModifiableMaterialObject.h"
 
@@ -37,41 +37,30 @@ namespace Solipsis
 {
     class Navigator;
 
+ 
     /** This class manages all Graphical User Interfaces of the Navigator.
     */
-    class GUI_ChooseWorld : public GUI_Panel
+    class GUI_ChooseWorld : public GUI_FromServer
     {
     public:
         static bool createAndShowPanel();
 
         // Show the page
         virtual bool show();
-        virtual void update();
 
         // ok is pressed
         void onOkPressed(const NaviData& naviData);
         void onCancelPressed(const NaviData& naviData);
 
-         
+     
     protected:
         GUI_ChooseWorld();
 
-        void worldsServerCompatibilityError();
-        void worldsServerError();
  
-        ////// NaviEventListener Interface /////////////
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
-        virtual void onLocationChange(Navi *caller, const std::string &url) {}
-        virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
-
         static GUI_ChooseWorld * stGUI_ChooseWorld;
 
-        unsigned long mCurrentNaviCreationDate;
-
-
-        Navigator * mNavigator;
     };
+
 
 } // namespace Solipsis
 

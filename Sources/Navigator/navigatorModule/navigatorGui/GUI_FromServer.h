@@ -21,36 +21,40 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GUI_WorldsServerInfo_h__
-#define __GUI_WorldsServerInfo_h__
+#ifndef __GUI_FromServer_h__
+#define __GUI_FromServer_h__
 
-#include "NavigatorGui.h"
-#include "MainApplication/Navigator.h"
-#include "GUI_FromServer.h"
+#include "GUI_Panel.h"
 
 using namespace NaviLibrary;
 
 namespace Solipsis 
 {
-    class Navigator;
 
-    class GUI_WorldsServerInfo : public GUI_FromServer
+    //! base class for gui loaded from a server (like the worlds server)
+    // error handling is common to
+    class GUI_FromServer : public GUI_Panel , public NaviEventListener
     {
     public:
-        static bool createAndShowPanel();
+        GUI_FromServer(const std::string & panelName);
 
-        // Show the page
-        virtual bool show();
+        ////// NaviEventListener Interface /////////////
+        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
+        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+        virtual void onLocationChange(Navi *caller, const std::string &url) {}
+        virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
 
-        // ok is pressed
-        void onOkPressed(const NaviData& naviData);
+        // update for timeout
+        virtual void update();
+
+        void serverCompatibilityError();
+        void serverError();
 
     protected:
-        GUI_WorldsServerInfo();
-
-        static GUI_WorldsServerInfo * stGUI_WorldsServerInfo;
-
+        Navigator * mNavigator;
     };
+
+
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_WorldsServerInfo_h__
+#endif // #ifndef __GUI_FromServer_h__

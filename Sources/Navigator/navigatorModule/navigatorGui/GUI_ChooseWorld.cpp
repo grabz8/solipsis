@@ -37,17 +37,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GUI_MessageBox.h"
 
 
-
 using namespace Solipsis;
 using namespace CommonTools;
 
+////////////////////////////////////////////////////////////////////////
+
 GUI_ChooseWorld * GUI_ChooseWorld::stGUI_ChooseWorld = NULL;
 
-GUI_ChooseWorld::GUI_ChooseWorld() : GUI_Panel("uiworlds")
+GUI_ChooseWorld::GUI_ChooseWorld() : GUI_FromServer("uiworlds")
 {
     stGUI_ChooseWorld = this;
-    mNavigator = Navigator::getSingletonPtr();
-    mCurrentNaviCreationDate = 0;
 }
 
 bool GUI_ChooseWorld::createAndShowPanel()
@@ -76,7 +75,7 @@ bool GUI_ChooseWorld::show()
         // Add the local world ?
         if (!mNavigator->getLocalWorldAddress().empty())
             uiworldsUrl += "&localWorld=" + mNavigator->getLocalWorldAddress();
-        createNavi("uiworlds", "", NaviPosition(Center), 256, 256);
+        createNavi(mPanelName, "", NaviPosition(Center), 256, 256);
         
         mNavi->setMovable(false);
         mNavi->hide();
@@ -140,51 +139,4 @@ void GUI_ChooseWorld::onCancelPressed(const NaviData& naviData)
     // Return to Navi UI login
     GUI_Login::createAndShowPanel();
 }
-
-//-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::worldsServerCompatibilityError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerCompatibilityError()");
-
-    worldsServerInfo();
-
-    GUI_MessageBox::show(
-        "Compatibility error", 
-        "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", 
-        GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR);
-
-    mCurrentNaviCreationDate = 0; 
-}
-//-------------------------------------------------
-
-//-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::worldsServerError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerError()");
-
-    GUI_Login::createAndShowPanel();
-
-    std::string wsHost, wsPort;
-    CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-    GUI_MessageBox::getMsgBox()->show(
-        "Network error", "Unable to connect to the Worlds Server !<br/>Check your Internet connection and configure your firewall<br/>(TCP port " + wsPort + ").", 
-        GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR);
-
-    mCurrentNaviCreationDate = 0;
-}
-
-void GUI_ChooseWorld::update()
-{    
-    unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-
-    // Worlds server page loaded ?
-    if ((mCurrentNaviCreationDate != 0) &&
-        (now - mCurrentNaviCreationDate > (unsigned long)mNavigator->getWorldsServerTimeout()*1000))
-    {
-        worldsServerError();
-    }
-}
-
 

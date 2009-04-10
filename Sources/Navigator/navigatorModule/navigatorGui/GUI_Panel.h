@@ -32,7 +32,7 @@ using namespace NaviLibrary;
 namespace Solipsis 
 {
     //! base class for all GUI panel in solipsis
-    class GUI_Panel : public NaviEventListener
+    class GUI_Panel
     {
     public: 
         enum NaviState {
@@ -60,11 +60,6 @@ namespace Solipsis
         // usual function on page loaded
         void onPanelLoaded(const NaviData& naviData);
 
-        ////// NaviEventListener Interface /////////////
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
-        virtual void onLocationChange(Navi *caller, const std::string &url) {}
-        virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
 
     protected:
         void switchLuaNavi(bool createDestroy);
@@ -76,7 +71,11 @@ namespace Solipsis
         std::string mPanelName;
         // the navi panel
         NaviLibrary::Navi* mNavi;
+
+        // used for timeout
+        unsigned long mCurrentNaviCreationDate;
     };
+
 
 } // namespace Solipsis
 
