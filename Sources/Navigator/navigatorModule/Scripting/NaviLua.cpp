@@ -113,6 +113,7 @@ LuaGlue (_naviMgrCreateNavi)
 }
 
 
+
 LuaGlue (_naviSetMask)
 {
 	const char *pName = luaL_checkstring(L, 1);

@@ -35,6 +35,7 @@ namespace Solipsis {
 
 class Navigator;
 class AvatarEditor;
+class GUI_Panel;
 
 /** This class manages all Graphical User Interfaces of the Navigator.
  */
@@ -57,12 +58,21 @@ public:
         MBB_ERROR,
         MBB_EXCLAMATION
     };
- 
 
+    enum NaviContext
+    {
+        NAVI_CTXTAVATAR,
+        NAVI_CTXTWWW,
+        NAVI_CTXTSWF,
+        NAVI_CTXTVLC,
+        NAVI_CTXTVNC,
+        NAVI_CTXTCOUNT
+   };
+    
     enum NaviPanel {
-        NAVI_LOGIN,
-        NAVI_WORLDS,
-        NAVI_INFOWS,
+   //     NAVI_LOGIN,
+    //    NAVI_WORLDS,
+    //    NAVI_INFOWS,
         NAVI_OPTIONS,
         NAVI_AUTHENTFB,
         NAVI_AUTHENTWS,
@@ -71,11 +81,6 @@ public:
         NAVI_CHAT,
         NAVI_ABOUT,
         NAVI_COMMANDS,
-        NAVI_CTXTAVATAR,
-        NAVI_CTXTWWW,
-        NAVI_CTXTSWF,
-        NAVI_CTXTVLC,
-        NAVI_CTXTVNC,
         NAVI_MODELERMAIN,
         NAVI_MODELERPROP,
 
@@ -107,6 +112,8 @@ protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
     static const std::string ms_NavisNames[NAVI_COUNT];
+    static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];
+
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
     int mCurrentCtxtPanel;
@@ -136,11 +143,11 @@ public:
     bool isMouseVisible();
 
     // Interfaces
-    void login();
+//     void login();
     void inWorld();
 
     // Apply informations of login panel
-    void applyLoginDatas();
+//     void applyLoginDatas();
 
     // Set text in status bar + display it for a while
     void setStatusBarText(const std::string& statusText);
@@ -152,11 +159,11 @@ public:
     void addChatText(const std::wstring& message);
 
     // Contextual panel
-    void contextShow(int x, int y, NaviPanel ctxtPanel, const String& params);
-    bool isContextVisible();
-    bool isContextFocused();
-    void contextHide();
-    void contextDestroy();
+    void contextPanelShow(int x, int y, NaviContext ctxtPanel, const String& params);
+    bool isContextPanelVisible();
+    bool isContextPanelFocused();
+    void contextPanelHide();
+    void contextPanelDestroy();
 
     // Main modeler panel
     void modelerMainShow();
@@ -206,20 +213,7 @@ protected:
     void options(const NaviData& naviData);
     void quit(const NaviData& naviData);
 
-    class WorldsServerEventListener : public NaviEventListener
-    {
-    private:
-        NavigatorGUI *mNavigatorGUI;
-	public:
-        WorldsServerEventListener(NavigatorGUI *navigatorGUI) : mNavigatorGUI(navigatorGUI) {}
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-		virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
-        virtual void onLocationChange(Navi *caller, const std::string &url) {}
-		virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
-    };
-    WorldsServerEventListener mWorldsServerEventListener;
-    void worldsServerCompatibilityError();
-    void worldsServerError();
+    
     void worldOk(const NaviData& naviData);
     void worldCancel(const NaviData& naviData);
     void worldsServerInfo();
@@ -403,6 +397,7 @@ protected:
 	void modelerSceneFromTextExec(const NaviData& naviData);	
 	void modelerSceneFromTextCancelled(const NaviData& naviData);
 #endif
+
 public:
     // Modeler properties updates
     void modelerTabberLoad(unsigned pTab);
@@ -446,27 +441,52 @@ protected:
     void hidePreviousNavi();
     void destroyNavi(NaviPanel naviPanel);
  
-
 public:
-    const std::string& getNaviName(NaviPanel naviPanel);
-    // 
     bool setNaviVisibility(const std::string& naviName, bool show);
 
-    // à supprimer ?
+    ///////////////////// à supprimer à terme
+    // à supprimer ? oui à terme
     void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
+    const std::string& getNaviName(NaviPanel naviPanel);
 
-    static void destroyNavi(NaviLibrary::Navi *pNavi)
-    {
-        mNaviGui->mNaviMgr->destroyNavi(pNavi);
-    }
+   
+//     static void destroyNavi(NaviLibrary::Navi *pNavi)
+//     {
+//         mNaviGui->mNaviMgr->destroyNavi(pNavi);
+//     }
 
     static NaviLibrary::Navi * getNavi(const std::string& naviName)
     {   
         return mNaviGui->mNaviMgr->getNavi(naviName);
     }
+    ///////////////////////////////////////////////
 
     static NavigatorGUI * mNaviGui;
 
+////////////////////////// nouvelle implémentation ////////////////////
+    // a a panel to the list
+    static void registerGuiPanel(GUI_Panel *pPanel);
+    static void unregisterGuiPanel(GUI_Panel *pPanel);
+    static void destroyAllRegisteredPanels();
+
+    static void setCurrentPanel(GUI_Panel * pCurrentPanel)
+    {
+        mNaviGui->m_pCurrentPanel = pCurrentPanel;
+        if (pCurrentPanel == NULL)
+        {
+            mNaviGui->mCurrentNaviCreationDate = 0;
+        }
+    }
+
+    static void destroyCurrentPanel();
+
+    static GUI_Panel * getCurrentPanel()
+    {
+        return mNaviGui->m_pCurrentPanel;
+    }
+
+    std::map<std::string, GUI_Panel *> m_panels;
+    GUI_Panel * m_pCurrentPanel;
 };
 
 } // namespace Solipsis

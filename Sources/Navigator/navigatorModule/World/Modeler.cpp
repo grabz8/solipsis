@@ -245,9 +245,6 @@ MeshPtr Modeler::cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID&
     return mptr;
 }
 
-
-
-
 bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, 
                               const String& name, Vector3 &player_pos, Quaternion &orientation, bool bSelectIt)
 {

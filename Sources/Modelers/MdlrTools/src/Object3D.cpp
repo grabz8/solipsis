@@ -76,7 +76,6 @@ Object3D * Object3D::createObject3D(Type type, const EntityUID& entityUID, const
     }
 }
 
-
 //-------------------------------------------------------------------------------------
 Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* pNode)
 {

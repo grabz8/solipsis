@@ -53,10 +53,22 @@ using namespace CommonTools;
 
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
+
+const std::string NavigatorGUI::ms_NavisContexts[] = 
+{
+    "uictxtavatar",
+    "uictxtwww",
+    "uictxtswf",
+    "uictxtvlc",
+    "uictxtvnc"
+};
+
 const std::string NavigatorGUI::ms_NavisNames[] = {
-    "uilogin",
-    "uiworlds",
-    "uiinfows",
+  //  "uilogin",
+
+ //   "uiworlds",
+
+  //  "uiinfows",
     "uioptions",
     "uiauthentfb",
     "uiauthentws",
@@ -65,11 +77,6 @@ const std::string NavigatorGUI::ms_NavisNames[] = {
     "uichat",
     "uiabout",
     "uicommands",
-    "uictxtavatar",
-    "uictxtwww",
-    "uictxtswf",
-    "uictxtvlc",
-    "uictxtvnc",
     "uimdlrmain",
     "uimdlrprop",
 #ifdef DECLARATIVE_MODELER
@@ -101,7 +108,8 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mLoginInfosText(""),
     mFacebook(0), 
     mWorldsServerEventListener(this),
-    mLockAmbientDiffuse(false)
+    mLockAmbientDiffuse(false),
+    m_pCurrentPanel(NULL)
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
@@ -163,6 +171,14 @@ void NavigatorGUI::update()
 {
     unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 
+    if (m_pCurrentPanel)
+    {
+        m_pCurrentPanel->update();
+    }
+
+    // needed to be reported 
+
+
     // Worlds server page loaded ?
     if (((mCurrentNavi == NAVI_WORLDS) ||
          (mCurrentNavi == NAVI_AUTHENTWS) ||
@@ -170,6 +186,7 @@ void NavigatorGUI::update()
         (mCurrentNaviCreationDate != 0) &&
         (now - mCurrentNaviCreationDate > (unsigned long)mNavigator->getWorldsServerTimeout()*1000))
         worldsServerError();
+
     // Status bar update
     if ((mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
     {
@@ -185,6 +202,12 @@ void NavigatorGUI::update()
 void NavigatorGUI::windowResized(RenderWindow* rw)
 {
     mNaviMgr->resetAllPositions();
+
+    // send new position to all registered panels
+    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); it != mNaviGui->m_panels.end(); it++)
+    {
+        it->second->windowResized(rw);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -202,113 +225,118 @@ bool NavigatorGUI::isMouseVisible()
     return NaviLibrary::NaviMouse::Get().isVisible();
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::login()
-{
-    // Hide any message box
-    GUI_MessageBox::getMsgBox()->hide();
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
-
-    // Destroy context Navi UI panel
-    contextDestroy();
-    destroyNavi(NAVI_CTXTAVATAR);
-    destroyNavi(NAVI_CTXTWWW);
-    // GILLES BEGIN
-    destroyNavi(NAVI_CTXTSWF);
-    // GILLES END
-    destroyNavi(NAVI_CTXTVLC);
-    destroyNavi(NAVI_CTXTVNC);
-
-    // Destroy Navi UI status bar
-    mStatusBarDisplayDate = 0;
-    destroyNavi(NAVI_STATUSBAR);
-
-    // Destroy Navi UI chat panel
-    destroyNavi(NAVI_CHAT);
-
-    // Destroy Navi UI about panel
-    destroyNavi(NAVI_ABOUT);
-
-    // Destroy Navi UI commands
-    destroyNavi(NAVI_COMMANDS);
-
-	// Hide the modeler panels
-	modelerMainUnload();
-	// Hide the avatar panels
-	avatarMainUnload();
-
-#ifdef UIDEBUG
-    // Destroy UI debug
-    destroyNavi(NAVI_DEBUG);
-#endif
-
-    if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
-    {
-        // Create Navi UI login
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
-        navi->setMovable(false);
-        navi->setAutoUpdateOnFocus(true);
-        navi->setMaxUPS(24);
-        navi->hide();
-        navi->setMask("uilogin.png");
-        navi->setOpacity(0.75f);
-        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
-	    navi->bind("world", NaviDelegate(this, &NavigatorGUI::world));
-	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
-	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
-	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
-        mNavisStates[NAVI_LOGIN] = NSCreated;
-	}
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_LOGIN;
-    mCurrentNaviCreationDate = 0;
-}
+// -------------------------------------------------------------------------------------
+// void NavigatorGUI::login()
+// {
+//     // Hide any message box
+//     GUI_MessageBox::getMsgBox()->hide();
+// 
+//     // Hide previous Navi UI
+//     hidePreviousNavi();
+// 
+//     // Destroy context Navi UI panel
+//     contextDestroy();
+//     destroyNavi(NAVI_CTXTAVATAR);
+//     destroyNavi(NAVI_CTXTWWW);
+//     // GILLES BEGIN
+//     destroyNavi(NAVI_CTXTSWF);
+//     // GILLES END
+//     destroyNavi(NAVI_CTXTVLC);
+//     destroyNavi(NAVI_CTXTVNC);
+// 
+//     // Destroy Navi UI status bar
+//     mStatusBarDisplayDate = 0;
+//     destroyNavi(NAVI_STATUSBAR);
+// 
+//     // Destroy Navi UI chat panel
+//     destroyNavi(NAVI_CHAT);
+// 
+//     // Destroy Navi UI about panel
+//     destroyNavi(NAVI_ABOUT);
+// 
+//     // Destroy Navi UI commands
+//     destroyNavi(NAVI_COMMANDS);
+// 
+// 	// Hide the modeler panels
+// 	modelerMainUnload();
+// 	// Hide the avatar panels
+// 	avatarMainUnload();
+// 
+// #ifdef UIDEBUG
+//     // Destroy UI debug
+//     destroyNavi(NAVI_DEBUG);
+// #endif
+// 
+//     if (mNavisStates[NAVI_LOGIN] == NSNotCreated)
+//     {
+//         // Create Navi UI login
+//         NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_LOGIN], "local://uilogin.html", NaviPosition(Center), 400, 300);
+//         navi->setMovable(false);
+//         navi->setAutoUpdateOnFocus(true);
+//         navi->setMaxUPS(24);
+//         navi->hide();
+//         navi->setMask("uilogin.png");
+//         navi->setOpacity(0.75f);
+//         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::loginPageLoaded));
+// 	    navi->bind("world", NaviDelegate(this, &NavigatorGUI::world));
+// 	    navi->bind("connect", NaviDelegate(this, &NavigatorGUI::connect));
+// 	    navi->bind("options", NaviDelegate(this, &NavigatorGUI::options));
+// 	    navi->bind("quit", NaviDelegate(this, &NavigatorGUI::quit));
+//         mNavisStates[NAVI_LOGIN] = NSCreated;
+// 	}
+// 
+//     // Set next Navi UI
+//     mCurrentNavi = NAVI_LOGIN;
+//     mCurrentNaviCreationDate = 0;
+// }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::inWorld()
 {
-    // Hide previous Navi UI
-    hidePreviousNavi();
+    destroyAllRegisteredPanels();
 
+    showMainMenu();
+    showStatusBar();
+}
+
+void NavigatorGUI::showMainMenu()
+{
     switchLuaNavi(NAVI_MAINMENU);
 #ifdef UIDEBUG
     mNaviMgr->getNavi(ms_NavisNames[NAVI_MAINMENU])->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
 #endif
+}
 
+void NavigatorGUI::showStatusBar()
+{
     // Create Navi UI status bar
     // Lua
     if (mNavisStates[NAVI_STATUSBAR] == NSNotCreated)
     {
         if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", ms_NavisNames[NAVI_STATUSBAR].c_str()))
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + ms_NavisNames[NAVI_STATUSBAR], "NavigatorGUI::inWorld()"); 
+
         mNavisStates[NAVI_STATUSBAR] = NSCreated;
     }
-
-    // Set next Navi UI
-    mCurrentNavi = NAVI_MAINMENU;
-    mCurrentNaviCreationDate = 0;
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::applyLoginDatas()
-{
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
-    if (navi == 0) return;
-	std::string login = navi->evaluateJS("$('inputLogin').value");
-	std::string pwd = navi->evaluateJS("$('inputPwd').value");
-    if ((login != mNavigator->getLogin()) || (pwd != mNavigator->getPwd()))
-        mNavigator->setNodeId("");
-
-    bool rememberPassword = navi->evaluateJS("$('savePassWordCB').checked") == "true";
-
-    mNavigator->setLogin(login);
-    mNavigator->setPwd(pwd, rememberPassword);
-
-    mNavigator->saveConfiguration();
-}
+// //-------------------------------------------------------------------------------------
+// void NavigatorGUI::applyLoginDatas()
+// {
+//     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
+//     if (navi == 0) return;
+// 	std::string login = navi->evaluateJS("$('inputLogin').value");
+// 	std::string pwd = navi->evaluateJS("$('inputPwd').value");
+//     if ((login != mNavigator->getLogin()) || (pwd != mNavigator->getPwd()))
+//         mNavigator->setNodeId("");
+// 
+//     bool rememberPassword = navi->evaluateJS("$('savePassWordCB').checked") == "true";
+// 
+//     mNavigator->setLogin(login);
+//     mNavigator->setPwd(pwd, rememberPassword);
+// 
+//     mNavigator->saveConfiguration();
+// }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::setStatusBarText(const std::string& statusText)
@@ -328,6 +356,7 @@ void NavigatorGUI::addChatText(const std::wstring& message)
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_CHAT]);
     if (navi == 0)
         return;
+
     // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
     navi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
     navi->evaluateJS("$('textChat').value += '\\n'");
@@ -335,10 +364,11 @@ void NavigatorGUI::addChatText(const std::wstring& message)
 }
  
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::contextShow(int x, int y, NaviPanel ctxtPanel, const String& params)
+void NavigatorGUI::contextPanelShow(int x, int y, NaviContext ctxtPanel, const String& params)
 {
     if (mCurrentCtxtPanel != -1)
         contextHide();
+
     // Create Navi UI context
     // Lua
     if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", ms_NavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
@@ -359,7 +389,7 @@ bool NavigatorGUI::isContextVisible()
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorGUI::isContextFocused()
+bool NavigatorGUI::isContextPanelFocused()
 {
     if (mCurrentCtxtPanel == -1) return false;
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
@@ -367,7 +397,7 @@ bool NavigatorGUI::isContextFocused()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::contextHide()
+void NavigatorGUI::contextPanelHide()
 {
     if (mCurrentCtxtPanel == -1) return;
     if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
@@ -379,10 +409,13 @@ void NavigatorGUI::contextHide()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::contextDestroy()
+void NavigatorGUI::contextPanelDestroy()
 {
-    if (mCurrentCtxtPanel == -1) return;
-    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
+    if (mCurrentCtxtPanel == -1) 
+        return;
+
+    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) 
+        return;
 
     // Destroy Navi UI context
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
@@ -1762,89 +1795,52 @@ void NavigatorGUI::world(const NaviData& naviData)
     mCurrentNaviCreationDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::WorldsServerEventListener::onNavigateComplete(Navi *caller, const std::string &url, int responseCode)
-{
-    if (responseCode >= 400 && responseCode < 600)
-        if (responseCode == 409)
-            mNavigatorGUI->worldsServerCompatibilityError();
-        else
-            mNavigatorGUI->worldsServerError();
-}
+
+
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::worldsServerCompatibilityError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerCompatibilityError()");
+// void NavigatorGUI::worldOk(const NaviData& naviData)
+// {
+//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
+// 
+//     std::string world = naviData["world"].str();
+//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
+//     std::string worldHost, worldPort;
+//     CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
+//     mNavigator->setWorldAddress(world);
+// 
+//     // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
+//     if (naviData.exists("voipServer"))
+//     {
+//         std::string voipServer = naviData["voipServer"].str();
+//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
+//         mNavigator->setVoIPServerAddress(voipServer);
+//     }
+//     if (naviData.exists("vncServer"))
+//     {
+//         std::string vncServer = naviData["vncServer"].str();
+//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
+//     }
+//     if (naviData.exists("vlcServer"))
+//     {
+//         std::string vlcServer = naviData["vlcServer"].str();
+//         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
+//     }
+// 
+//     // Return to Navi UI login
+//     login();
+// }
 
-    worldsServerInfo();
-    GUI_MessageBox::getMsgBox()->show(
-        "Compatibility error", 
-        "Your Navigator (version " + StringHelpers::getVersionString(mNavigator->getVersion()) + ") is not compatible<br/>with this Worlds Server !<br/><br/>Upgrade your Navigator and connect again.", 
-        GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR);
 
-    mCurrentNaviCreationDate = 0; 
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::worldsServerError()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerError()");
-
-    login();
-    std::string wsHost, wsPort;
-    CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-    GUI_MessageBox::getMsgBox()->show(
-        "Network error", "Unable to connect to the Worlds Server !<br/>Check your Internet connection and configure your firewall<br/>(TCP port " + wsPort + ").", 
-        GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_ERROR);
-
-
-    mCurrentNaviCreationDate = 0;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::worldOk(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
-
-    std::string world = naviData["world"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
-    std::string worldHost, worldPort;
-    CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
-    mNavigator->setWorldAddress(world);
-
-    // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
-    if (naviData.exists("voipServer"))
-    {
-        std::string voipServer = naviData["voipServer"].str();
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
-        mNavigator->setVoIPServerAddress(voipServer);
-    }
-    if (naviData.exists("vncServer"))
-    {
-        std::string vncServer = naviData["vncServer"].str();
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
-    }
-    if (naviData.exists("vlcServer"))
-    {
-        std::string vlcServer = naviData["vlcServer"].str();
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
-    }
-
-    // Return to Navi UI login
-    login();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::worldCancel(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
-
-    // Return to Navi UI login
-    login();
-}
+// 
+// //-------------------------------------------------------------------------------------
+// void NavigatorGUI::worldCancel(const NaviData& naviData)
+// {
+//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
+// 
+//     // Return to Navi UI login
+//     login();
+// }
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::worldsServerInfo()
@@ -5229,7 +5225,8 @@ void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
 void NavigatorGUI::hidePreviousNavi()
 {
     // Hide previous Navi UI
-    if (mCurrentNavi != -1) {
+    if (mCurrentNavi != -1) 
+    {
         NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentNavi]);
         navi->hide();
         mNaviMgr->destroyNavi(navi);
@@ -5262,24 +5259,41 @@ bool NavigatorGUI::setNaviVisibility(const std::string& naviName, bool show)
 {
     // Hide 1 Navi UI
     NaviPanel panel = getNaviPanel(naviName);
-    if (panel == -1) return false;
-    if (mNavisStates[panel] == NSNotCreated) return false;
+
+    if (panel == -1) 
+        return false;
+
+    if (mNavisStates[panel] == NSNotCreated) 
+        return false;
+
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(naviName);
-    if (navi == 0) return false;
+    if (navi == 0) 
+        return false;
+
     if (show)
     {
-        if (navi->getVisibility()) return true;
+        if (navi->getVisibility()) 
+            return true;
+
         navi->show(true);
         mCurrentNavi = panel;
     }
     else
     {
-        if (!navi->getVisibility()) return true;
+        if (!navi->getVisibility()) 
+            return true;
+
         navi->hide(true);
-        if (mCurrentNavi == panel) mCurrentNavi = -1;
-        if (mCurrentCtxtPanel == panel) mCurrentCtxtPanel = -1;
-        if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
+        if (mCurrentNavi == panel) 
+            mCurrentNavi = -1;
+
+        if (mCurrentCtxtPanel == panel) 
+            mCurrentCtxtPanel = -1;
+
+        if (mCurrentNavi == -1) 
+            mCurrentNaviCreationDate = 0;
     }
+
     return true;
 }
 
@@ -5421,3 +5435,29 @@ void NavigatorGUI::modelerSceneFromTextUnload()
     }
 }
 #endif
+
+void NavigatorGUI::registerGuiPanel(GUI_Panel *pPanel)
+{
+    mNaviGui->m_panels[pPanel->getPanelName()] = pPanel;
+}
+
+void NavigatorGUI::unregisterGuiPanel(GUI_Panel *pPanel)
+{
+    mNaviGui->m_panels.erase(pPanel->getPanelName());//  .remove(pPanel->getPanelName());
+}
+
+void NavigatorGUI::destroyAllRegisteredPanels()
+{
+    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); it != mNaviGui->m_panels.end(); it++)
+    {
+        it->second->destroy();
+    }
+}
+
+void NavigatorGUI::destroyCurrentPanel()
+{
+    if (mNaviGui->m_pCurrentPanel)
+    {
+        mNaviGui->m_pCurrentPanel->destroy();
+    }
+}

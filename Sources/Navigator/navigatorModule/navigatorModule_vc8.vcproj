@@ -1037,11 +1037,43 @@
 			Name="NavigatorGui"
 			>
 			<File
+				RelativePath=".\navigatorGui\GUI_ChooseWorld.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ChooseWorld.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Login.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_login.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_MessageBox.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\navigatorGui\GUI_MessageBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Panel.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Panel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_WorldsServerInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_WorldsServerInfo.h"
 				>
 			</File>
 			<File
