@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;../../../../Dependencies/tinyxml/include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;&quot;$(OGRE_HOME)/include&quot;;../../../../Dependencies/tinyxml/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_TIXML_USE_STL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -107,7 +107,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;../../../../Dependencies/tinyxml/include"
+				AdditionalIncludeDirectories="&quot;$(OGRE_HOME)/OgreMain/include&quot;;&quot;$(OGRE_HOME)/include&quot;;../../../../Dependencies/tinyxml/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_TIXML_USE_STL"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

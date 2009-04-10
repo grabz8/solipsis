@@ -3195,7 +3195,7 @@ void NavigatorGUI::modelerPropTransparency(const NaviData& naviData)
 	Object3D *obj = mNavigator->getModeler()->getSelected();
 	if( obj != 0 )
 	{
-//        obj->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+//      obj->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
 		obj->setAlpha( atoi(value.c_str())/100. );
 //		obj->getMaterialManager()->getModifiedMaterial()->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
@@ -3299,7 +3299,7 @@ void NavigatorGUI::modelerPropTextureAdd(const NaviData& naviData)
 
 		//Add texture for the object (with obj->mModifiedMaterialManager)
 		obj->addTexture(PtrTexture);
-       // obj->getMaterialManager()->setNextTexture();
+//      obj->getMaterialManager()->setNextTexture();
 
 
 		modelerUpdateTextures();
@@ -4048,7 +4048,7 @@ void NavigatorGUI::avatarPropAnimPrev(const NaviData& naviData)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::avatarPropHeight(const NaviData& naviData)
 {
-	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropAnimPrev()");
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::avatarPropHeight()");
 	CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
 	NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_AVATARPROP]);
 
@@ -4806,7 +4806,7 @@ void NavigatorGUI::avatarPropTransparency(const NaviData& naviData)
 	ModifiedMaterial* material = object->getModifiedMaterial();
 	if( material != 0 )
 	{
-//        material->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
+//      material->setSceneBlendType(SBT_TRANSPARENT_ALPHA);
         material->setAlpha( atoi(value.c_str())/100. );
 //		material->getOwner()->getTechnique(0)->getPass(0)->setDepthWriteEnabled( false );
 	}
