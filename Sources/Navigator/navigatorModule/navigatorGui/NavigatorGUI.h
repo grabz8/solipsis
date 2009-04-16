@@ -242,6 +242,9 @@ protected:
     // Modeler page callbacks
     void modelerMainFileImport(const NaviData& naviData);
     void modelerMainFileSave(const NaviData& naviData);
+#if 1 // GILLES
+    void modelerMainFileSaveAs(const NaviData& naviData);
+#endif
     void modelerMainFileExit(const NaviData& naviData);
     // Modeler object creation callbacks
 	void modelerMainCreatePlane(const NaviData& naviData);

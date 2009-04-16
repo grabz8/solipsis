@@ -344,12 +344,14 @@ void NavigatorSound::update()
     // Update the sound listener camera attributes
     if (mSoundListenerCamera != 0)
     {
+#if 0 // GILLES
         FMOD_VECTOR pos, vel, forward, up;
         convertVector3ToFModVector(mSoundListenerCamera->getDerivedPosition(), pos);
         convertVector3ToFModVector((mSoundListenerCamera->getDerivedPosition() - mLastCameraPosition)/(now  - mLastUpdateTimeMs), vel);
         convertVector3ToFModVector(mSoundListenerCamera->getDerivedDirection(), forward);
         convertVector3ToFModVector(mSoundListenerCamera->getDerivedUp(), up);
         mSoundSystem->set3DListenerAttributes(0, &pos, &vel, &forward, &up);
+#endif
         mLastCameraPosition = mSoundListenerCamera->getDerivedPosition();
     }
 
@@ -398,10 +400,28 @@ void NavigatorSound::update()
         SoundBuffer *soundBuffer = mSoundBufferVector[it->second];
         if (node == 0) continue;
         if ((soundBuffer == 0) || !soundBuffer->isPlaying()) continue;
+#if 0 // GILLES
         FMOD_VECTOR pos, vel;
         convertVector3ToFModVector(node->_getDerivedPosition(), pos);
         convertVector3ToFModVector(Ogre::Vector3::ZERO, vel);
         soundBuffer->getChannel()->set3DAttributes(&pos, &vel);
+#endif
+        Ogre::Real dist = mLastCameraPosition.distance(node->_getDerivedPosition());
+#if 1 // GILLES
+        float minDist,maxDist;
+        soundBuffer->getSound()->get3DMinMaxDistance(&minDist,&maxDist);
+        if (dist > maxDist)
+        {
+            soundBuffer->getChannel()->setVolume(0);
+        }
+        else 
+        {
+            if (dist <= minDist)
+                soundBuffer->getChannel()->setVolume(1);
+            float percent = 1. - (dist - minDist) / (maxDist - minDist);
+            soundBuffer->getChannel()->setVolume(percent);
+        }
+#endif
     }
     pthread_mutex_unlock(&mMutex);
 
@@ -490,7 +510,11 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
     exinfo.length = FRAME_COUNT*(*frameSize)*getSampleSizeFromFModSoundFormat(exinfo.format);
 
     FMOD::Sound* sound = 0;
+#if 1 // GILLES
+    if (mSoundSystem->createSound(0, /*FMOD_3D |*/FMOD_2D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
+#else
     if (mSoundSystem->createSound(0, FMOD_3D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
+#endif
     {
         return;
     }
@@ -510,6 +534,10 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
 
     // Set the sound buffer
     mSoundBufferVector[soundId]->setSound(sound);
+#if 1 // GILLES
+    //Play the sound
+    mSoundBufferVector[soundId]->play(mSoundSystem);
+#endif
 }
 
 //-------------------------------------------------------------------------------------

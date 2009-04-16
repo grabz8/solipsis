@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	#include "windows.h"
 	#include <String>
 	//#include <string.h>
-	#include <Winbase.h>
+	//#include <Winbase.h>
 #else
 	#warning "Code is not Linux compatible at the moment...."
 #endif

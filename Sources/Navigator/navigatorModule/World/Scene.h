@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgreGraphicObjects/ProgressBar.h"
 
+#define NO_OGREMAX_STATIC_GEOM          1
+#define USE_OGREMAX_SHADOWPARAM         0
+
 using namespace Ogre;
 
 namespace Solipsis {
@@ -67,6 +70,11 @@ public:
 protected:
     void destroy();
     void convertToStaticGeometry(SceneNode* sceneNode);
+
+#if 1 // GILLES
+    void scanSceneNode(SceneNode* pSceneNode);
+    std::vector<Ogre::AnimationState*> mVertexAnimationStates;
+#endif
 };
 
 } // namespace Solipsis

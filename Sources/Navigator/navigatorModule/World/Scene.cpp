@@ -64,10 +64,21 @@ Scene::~Scene()
 }
 
 //-------------------------------------------------------------------------------------
-void Scene::update(Real timeSinceLastFrame)
+void Scene::update(Ogre::Real timeSinceLastFrame)
 {
     if(mOgreMaxScene != 0)
+    {
         mOgreMaxScene->Update( timeSinceLastFrame );
+#if 1 // GILLES
+        // Load all animation states
+        std::vector<Ogre::AnimationState*>::iterator animationState = mVertexAnimationStates.begin();
+        for( ; animationState != mVertexAnimationStates.end(); animationState++ )
+        {
+            Ogre::AnimationState* animState = (*animationState);
+            animState->addTime( timeSinceLastFrame );
+        }
+#endif
+    }
 
 }
 
@@ -130,15 +141,19 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             mOgreMaxScene->Load( 
                 sceneFilename, 
                 Navigator::getSingletonPtr()->getRenderWindowPtr(),
-                OgreMax::OgreMaxScene::NO_OPTIONS,
+                (NO_OGREMAX_STATIC_GEOM==1) ? OgreMax::OgreMaxScene::NO_OPTIONS : OgreMax::OgreMaxScene::NO_ANIMATION_STATES,
                 sceneMgr,
                 sceneNode,
                 0,
                 mResourceGroup );
 
-// NO STATIC_GEOM 
-            if (1) mSceneNode = sceneNode;
-// NO STATIC_GEOM
+#if 1 // GILLES
+            // Load all animation states
+            mVertexAnimationStates.clear();
+            scanSceneNode( sceneNode );
+#endif
+
+            if (NO_OGREMAX_STATIC_GEOM) mSceneNode = sceneNode;
         }
         else
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create any file scene " + String(xmlSceneLodContent0->getMainFilename()), "Scene::updateEntity");
@@ -187,9 +202,7 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             sceneNode->setPosition(xmlEntity->getPosition());
         if (definedAttributes & XmlEntity::DAOrientation)
             sceneNode->setOrientation(xmlEntity->getOrientation());
-// NO STATIC_GEOM
-        if (1 && mOgreMaxScene != 0) return true;
-// NO STATIC_GEOM
+        if (NO_OGREMAX_STATIC_GEOM && mOgreMaxScene != 0) return true;
         // Optimize by converting it into static geometry
         convertToStaticGeometry(sceneNode);
     }
@@ -234,9 +247,53 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
     }
 
-
     return true;
 }
+
+#if 1 // GILLES
+//-------------------------------------------------------------------------------------
+void Scene::scanSceneNode(SceneNode* pSceneNode)
+{
+    if (pSceneNode->numChildren() == 0)
+    {
+        // for each entities, get their check for animationStates
+        Ogre::SceneNode::ObjectIterator object = pSceneNode->getAttachedObjectIterator();
+        for( ; object.hasMoreElements(); object.getNext() )
+        {
+            MovableObject* movable = object.peekNextValue();
+            if (movable->getMovableType().compare("Entity") == 0)
+            {
+                Entity* entity = (Entity*)movable;
+                if (entity->hasSkeleton() || entity->hasVertexAnimation())
+                {
+                    Ogre::AnimationStateSet* animations = entity->getAllAnimationStates();
+                    Ogre::AnimationStateIterator animStateIter = animations->getAnimationStateIterator();
+                    for( ; animStateIter.hasMoreElements(); animStateIter.getNext())
+                    {
+                        // get the animationState and activate it
+                        Ogre::AnimationState* animState = animStateIter.peekNextValue();
+                        animState->setEnabled( true );
+                        animState->setLoop( true );
+                        animState->setTimePosition(0.);
+                        // add this animationState to the list
+                        mVertexAnimationStates.push_back( animState );
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        // for each childNode, scan them to find their entities
+        Ogre::Node::ChildNodeIterator child = pSceneNode->getChildIterator();
+        for( ; child.hasMoreElements(); child.getNext() )
+        {
+            SceneNode* sceneNode = (SceneNode*)child.peekNextValue();
+            scanSceneNode( sceneNode );
+        }
+    }
+}
+#endif
 
 //-------------------------------------------------------------------------------------
 
@@ -272,6 +329,18 @@ void Scene::destroy()
                 sceneMgr->destroyAnimationState((*anim).first);
                 anim++;
             }
+#if 1 // GILLES
+            // remove all animation states (vertex & skeleton animations)
+            std::vector<Ogre::AnimationState*>::iterator animationState = mVertexAnimationStates.begin();
+            while( animationState != mVertexAnimationStates.end() )
+            {
+                Ogre::AnimationState* animState = (*animationState);
+                sceneMgr->destroyAnimation(animState->getAnimationName());
+                sceneMgr->destroyAnimationState(animState->getAnimationName());
+                animationState++;
+            }
+            mVertexAnimationStates.clear();
+#endif
             // remove the scene
             delete mOgreMaxScene;
             mOgreMaxScene = 0;
@@ -282,28 +351,28 @@ void Scene::destroy()
 	    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
     } 
-// NO STATIC_GEOM   
-else if (1 && mOgreMaxScene != 0)
-{
-    // remove all aniamtions & animations states from the objects attached to the scene
-    OgreMax::OgreMaxScene::AnimationStates animations = mOgreMaxScene->GetAnimationStates();
-    OgreMax::OgreMaxScene::AnimationStates::iterator anim = animations.begin();
-    while( anim != animations.end() )
-    {
-        (*anim).second->setEnabled(false);
-        (*anim).second->setLoop(false);
-        sceneMgr->destroyAnimation((*anim).first);
-        sceneMgr->destroyAnimationState((*anim).first);
-        anim++;
-    }
-    // remove the scene
-    delete mOgreMaxScene;
-    mOgreMaxScene = 0;
 
-    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-    ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
-}
-// NO STATIC_GEOM
+    else if (NO_OGREMAX_STATIC_GEOM && mOgreMaxScene != 0)
+    {
+        // remove all aniamtions & animations states from the objects attached to the scene
+        OgreMax::OgreMaxScene::AnimationStates animations = mOgreMaxScene->GetAnimationStates();
+        OgreMax::OgreMaxScene::AnimationStates::iterator anim = animations.begin();
+        while( anim != animations.end() )
+        {
+            (*anim).second->setEnabled(false);
+            (*anim).second->setLoop(false);
+            sceneMgr->destroyAnimation((*anim).first);
+            sceneMgr->destroyAnimationState((*anim).first);
+            anim++;
+        }
+        // remove the scene
+        delete mOgreMaxScene;
+        mOgreMaxScene = 0;
+
+        ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+        ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+    }
+
     if (mSceneNode != 0)
     {
         OgreHelpers::removeAndDestroySceneNode(mSceneNode);

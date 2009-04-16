@@ -43,6 +43,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CharacterInstance.h>
 #include <VoiceEngineManager.h>
 #include "World/Avatar.h"
+#if 1 // GILLES
+#include "CommDlg.h"
+#endif
 
 #ifdef _MSC_VER
  #pragma warning (disable:4355)
@@ -215,9 +218,7 @@ void NavigatorGUI::login()
     contextDestroy();
     destroyNavi(NAVI_CTXTAVATAR);
     destroyNavi(NAVI_CTXTWWW);
-    // GILLES BEGIN
     destroyNavi(NAVI_CTXTSWF);
-    // GILLES END
     destroyNavi(NAVI_CTXTVLC);
     destroyNavi(NAVI_CTXTVNC);
 
@@ -412,6 +413,7 @@ void NavigatorGUI::modelerMainShow()
         navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::naviToShowPageLoaded));
 	    navi->bind("FileImport", NaviDelegate(this, &NavigatorGUI::modelerMainFileImport));
 	    navi->bind("FileSave", NaviDelegate(this, &NavigatorGUI::modelerMainFileSave));
+	    navi->bind("FileSaveAs", NaviDelegate(this, &NavigatorGUI::modelerMainFileSaveAs));
 	    navi->bind("FileExit", NaviDelegate(this, &NavigatorGUI::modelerMainFileExit));
 		navi->bind("CreatePlane", NaviDelegate(this, &NavigatorGUI::modelerMainCreatePlane)); 
 		navi->bind("CreateBox", NaviDelegate(this, &NavigatorGUI::modelerMainCreateBox)); 
@@ -1251,6 +1253,25 @@ void NavigatorGUI::modelerUpdateTextures()
 
 		    //text += "<img src='file:///d:\\test.jpg";
 		    text += "<img src='./NaviTmpTexture/";
+#if 1 // GILLES
+            /* JAVASCRIPT version
+            var iChars = "!@#$%^&*()+=-[]\\\';,./{}|\":<>?~_"; 
+            for (var i = 0; i < data.length; i++) {
+                if (iChars.indexOf(data.charAt(i)) != -1) {
+                    alert ("Your string has special characters. \nThese are not allowed.");
+                    return false;
+                }
+            }
+            */
+
+            // remove bad characters from the fileName to be displayed as thumbnail
+            std::string badChar( "!@#$%^&()+=-[]';,{}~" );
+            for( unsigned int c=0; c<fileName.length(); c++)
+            {
+                if( badChar.find_first_of( fileName[c] ) <= badChar.length() )
+                    fileName[c] = '_';
+            }
+#endif
 		    text += fileName;
 		    text +=	"' width=100 height=100/> ";
 
@@ -1271,7 +1292,7 @@ void NavigatorGUI::modelerUpdateTextures()
 		    if( !found )
 		    {
 			    image.load( texturePath, str);
-			    image.resize( 128, 128 );
+			    image.resize( 100, 100 );
 			    image.save( "NaviLocal\\NaviTmpTexture\\" + fileName );
 		    }
         }
@@ -1294,10 +1315,10 @@ void NavigatorGUI::modelerUpdateTextures()
         String plugin = (*textureExtParamsMap)["plugin"];
         if (plugin == "www")
         {
-            navi->evaluateJS("document.getElementById('MaterialWWWUrl').value = '" + (*textureExtParamsMap)["url"] + "'");
-            navi->evaluateJS("document.getElementById('MaterialWWWWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
-            navi->evaluateJS("document.getElementById('MaterialWWWHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
-            navi->evaluateJS("document.getElementById('MaterialWWWFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
+            navi->evaluateJS("$('MaterialWWWUrl').value = '" + (*textureExtParamsMap)["url"] + "'");
+            navi->evaluateJS("$('MaterialWWWWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
+            navi->evaluateJS("$('MaterialWWWHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
+            navi->evaluateJS("$('MaterialWWWFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
         }
         else if (plugin == "vlc")
         {
@@ -1312,6 +1333,17 @@ void NavigatorGUI::modelerUpdateTextures()
             mrl = (*textureExtParamsMap)["remote_mrl"];
             StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
             navi->evaluateJS("$('MaterialVLCRemoteMrl').value = '" + mrl + "'");
+        }
+        else if (plugin == "swf")
+        {
+            std::string url = (*textureExtParamsMap)["url"];
+            StringHelpers::replaceSubStr(url, "\\", "\\\\");
+            NaviUtilities::encodeURIComponent(StringHelpers::convertStringToWString((*textureExtParamsMap)["url"]));
+            navi->evaluateJS("$('MaterialSWFUrl').value = '" + url + "'");
+            navi->evaluateJS("$('MaterialSWFWidth').value = '" + (*textureExtParamsMap)["width"] + "'");
+            navi->evaluateJS("$('MaterialSWFHeight').value = '" + (*textureExtParamsMap)["height"] + "'");
+            navi->evaluateJS("$('MaterialSWFFps').value = '" + (*textureExtParamsMap)["frames_per_second"] + "'");
+            //navi->evaluateJS("$('MaterialSWFParams').value = '" + (*textureExtParamsMap)["swf_params"] + "'");
         }
         else if (plugin == "vnc")
         {
@@ -1440,6 +1472,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 			navi->evaluateJS("document.getElementById('tags').value = '" + text + "'");
 			navi->evaluateJS("document.getElementById('modification').checked = " + obj->getCanBeModified()?"true":"false");
 			navi->evaluateJS("document.getElementById('copy').checked = " + obj->getCanBeCopied()?"true":"false");
+			modelerUpdateTextures();
 			break;
 		case 1:	// model
 			modelerUpdateDeformationSliders();
@@ -1488,7 +1521,7 @@ void NavigatorGUI::modelerTabberLoad(unsigned pTab)
 				CullingMode mode = mat->getTechnique(0)->getPass(0)->getCullingMode();
 				navi->evaluateJS("document.getElementById('doubleSide').checked = " + (mode == CULL_NONE)?"true":"false" );
 			}
-			modelerUpdateTextures();
+			//modelerUpdateTextures();
 			break;
 		case 3:	// 3D tab
 			navi->evaluateJS("document.getElementById('positionX').value = " + StringConverter::toString(obj->getPosition().x));
@@ -2454,6 +2487,60 @@ void NavigatorGUI::modelerMainFileSave(const NaviData& naviData)
 	mNavigator->mdlrXMLSave();
 }
 
+#if 1 // GILLES
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerMainFileSaveAs(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileSave()");
+	
+    // 1. backup the current working directory.
+	TCHAR currDir[MAX_PATH];
+    GetCurrentDirectory(MAX_PATH, currDir);
+
+    // 2. setup the working directory to the folder 'MesCreations' of de Enezig root dir.
+	// Get exe directory
+	std::string destination = mNavigator->getAvatarEditor()->mExecPath + "\\MyCreations\\";
+	if (GetFileAttributes(destination.c_str()) == (DWORD)-1) // Create 'MesCreations' directory if it's not exist
+		CreateDirectory(destination.c_str(), NULL);
+	SetCurrentDirectory(destination.c_str());
+
+    // Open a browser file to enter a new filename (.SOF)
+	CommonTools::System::setMouseCursorVisibility(true);
+	OPENFILENAME file;
+	char fileName[65535];
+	fileName[0] = 0;
+	memset (&file, 0, sizeof (OPENFILENAME));
+	file.hwndOwner = NULL;
+	file.lpstrFilter = "Solipsis Object File, (*.sof)\0*.sof\0";
+	file.lpstrDefExt = "sof";
+	file.lpstrTitle = "Save your Object3D";
+	file.lStructSize = sizeof(OPENFILENAME);
+	file.lpstrFile = fileName;
+	file.nMaxFile = 65535;
+	file.lpstrInitialDir = destination.c_str();
+	file.Flags = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_ENABLESIZING;
+	if (GetSaveFileName(&file) != 0)
+	{
+		CommonTools::System::setMouseCursorVisibility(false);
+
+		std::string saveDest = std::string(fileName);
+		Path path( saveDest );
+        if( !path.getLastFileName(false).empty() )
+        {
+            if( path.getExtension() != "sof" || path.getExtension().empty() )
+                saveDest += ".sof";
+
+            // save the SOF to the specified destination.
+            mNavigator->mdlrXMLSaveAs( saveDest );           
+        }
+	}
+	else
+		CommonTools::System::setMouseCursorVisibility(false);
+
+    // 3. restore the backup working dir.
+	SetCurrentDirectory(currDir);
+}
+#endif
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainFileExit(const NaviData& naviData)
 {
@@ -3412,7 +3499,7 @@ void NavigatorGUI::modelerPropWWWTextureApply(const NaviData& naviData)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
 
-        modelerUpdateTextures();
+        //modelerUpdateTextures();
 	}
 }
 
@@ -3461,14 +3548,14 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 	    std::string widthStr = navi->evaluateJS("$('MaterialSWFWidth').value");
 	    std::string heightStr = navi->evaluateJS("$('MaterialSWFHeight').value");
         std::string fpsStr = navi->evaluateJS("$('MaterialSWFFps').value");
-        //std::string sp3dStr = navi->evaluateJS("$('MaterialSWFSP3d').checked");
+        std::string sp3dStr = navi->evaluateJS("$('MaterialSWFSP3d').checked");
         std::string spMinStr = navi->evaluateJS("$('MaterialSWFSPMin').value");
         std::string spMaxStr = navi->evaluateJS("$('MaterialSWFSPMax').value");
 
         int width = atoi(widthStr.c_str());
         int height = atoi(heightStr.c_str());
         int fps = atoi(fpsStr.c_str());
-        bool sound3d = true;
+        bool sound3d = (sp3dStr == "true")?true:false;
         float sound3dMin = atof(spMinStr.c_str());
         float sound3dMax = atof(spMaxStr.c_str());
 
@@ -3496,7 +3583,7 @@ void NavigatorGUI::modelerPropSWFTextureApply(const NaviData& naviData)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
 
-        modelerUpdateTextures();
+        //modelerUpdateTextures();
     }
 }
 
@@ -3583,7 +3670,7 @@ void NavigatorGUI::modelerPropVLCTextureApply(const NaviData& naviData)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
 
-        modelerUpdateTextures();
+        //modelerUpdateTextures();
     }
 }
 
@@ -3654,7 +3741,7 @@ void NavigatorGUI::modelerPropVNCTextureApply(const NaviData& naviData)
 		obj->addTexture(PtrTexture, textureExtParamsMap);
 		obj->setCurrentTexture(PtrTexture);
 
-        modelerUpdateTextures();
+        //modelerUpdateTextures();
     }
 }
 

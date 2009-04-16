@@ -244,6 +244,16 @@ public:
 	Ogre::String &	getTags() {return mTags;}; 
 	/// Set the tags
 	void	setTags(const char *newTags) {mTags = newTags;}; 
+#if 1 // GILLES
+    /// Get the creation date
+    Ogre::String &	getCreationDate() {return mCreationDate;};
+    /// Setup the date of creation
+    void    setupCreationDate();
+    /// Get the imported mesh filename
+    Ogre::String &	getMeshImportName() {return mMeshImport;};
+    /// Setup the imported mesh filename
+    void    setMeshImportName(const char* meshName) {mMeshImport = meshName;};
+#endif
 	/// Get the modification bool 
 	bool	getCanBeModified() {return mCanBeModified;}; 
 	/// Set the modification bool 
@@ -466,6 +476,10 @@ protected:
 	Ogre::String mDesc;							
 	/// The Tags property
 	Ogre::String mTags;							
+#if 1 // GILLES
+    /// The creation date
+	Ogre::String mCreationDate;	
+ #endif
    // The mesh filename imported
     Ogre::String mMeshImport;
 	/// The modification property

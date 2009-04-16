@@ -41,6 +41,7 @@ protected:
     bool mBoundingBoxesShows;
     int mEscapeHitsB4CancellingFocus;
     unsigned long mLastEscapeHitTimer;
+    bool mMouseLeftPressed;
 	bool mMouseMiddlePressed;
 	bool mMouseRightPressed;
 

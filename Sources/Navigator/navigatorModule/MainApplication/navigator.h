@@ -322,6 +322,8 @@ public:
     bool mdlrXMLImport();
     /** Save to a XML file. */
     bool mdlrXMLSave(bool all = false);
+    /** save the selected object3D and save it to the specifdied file (.SOF) */
+    bool mdlrXMLSaveAs(const String& pDestination);
 
     /** Start editing avatar mode. */
     bool startAvatarEdit();

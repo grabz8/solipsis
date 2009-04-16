@@ -126,8 +126,12 @@ public:
 	/// Create a 3D scene by declatative modeling
 	bool createSceneFromText( const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg );
 #endif
-	/// Create a mesh. 
+	/// Create a mesh.
+#if 1 // GILLES
+    bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation, std::string pMeshName = "");
+#else
 	bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);
+#endif
 
 	/// Test if the selection is empty
 	bool isSelectionEmpty();
@@ -164,11 +168,17 @@ public:
 	/// Event for the scale gizmo
 	void eventScale();
 
+#if 1 // GILLES
+    void extractFromArchive(std::string pArchive);
+#endif
 
 	/// Load from / Save to a XML SOLIPSIS file
 	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLSave(bool all = false);
+#if 1 // GILLES
+    bool XMLSaveAs(const String& pDestination);
+#endif
 
 	/// Update the command list of the stored deformations
 	bool updateCommand(Object3D::Command pCommand, Object3D* pObject, bool pForSave = false);

@@ -49,6 +49,20 @@ mMaterial(material), mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.
 	}else{
 		mTextureUnitState = mPass->createTextureUnitState();
 	}
+
+#if 1 // GILLES
+    // mipmap level
+    //mTextureUnitState->setTextureMipmapBias(0.);
+    // set the filter anisotropic
+    //mTextureUnitState->setTextureFiltering(Ogre::FO_ANISOTROPIC, Ogre::FO_ANISOTROPIC, Ogre::FO_NONE);
+    //mTextureUnitState->setTextureAnisotropy(4);
+    mTextureUnitState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    mTextureUnitState->setTextureAnisotropy(16);
+    // set the filter ...
+    //mTextureUnitState->setTextureFiltering(Ogre::FO_NONE);
+    // set the filter ...
+    //mTextureUnitState->setTextureFiltering(Ogre::TFO_TRILINEAR);
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -101,6 +115,19 @@ void ModifiedMaterial::refreshTechPassTextUnit()
 	}else{
 		mTextureUnitState = mPass->createTextureUnitState();
 	}
+#if 1 // GILLES
+    // mipmap level
+    //mTextureUnitState->setTextureMipmapBias(0.);
+    // set the filter anisotropic
+    //mTextureUnitState->setTextureFiltering(Ogre::FO_ANISOTROPIC, Ogre::FO_ANISOTROPIC, Ogre::FO_NONE);
+    //mTextureUnitState->setTextureAnisotropy(4);
+    mTextureUnitState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
+    mTextureUnitState->setTextureAnisotropy(16);
+    // set the filter ...
+    //mTextureUnitState->setTextureFiltering(Ogre::FO_NONE);
+    // set the filter ...
+    //mTextureUnitState->setTextureFiltering(Ogre::TFO_TRILINEAR);
+#endif
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 const MaterialPtr& ModifiedMaterial::getOwner()
@@ -236,9 +263,26 @@ void ModifiedMaterial::useAddedColour(bool b)
 {
 	if (!mUseAddedColour && b) //We must create a texture unit state since before this time no added colour were used
 	{
+#if 0 // GILLES
+        mIndexAddedColourTextureUnitState = mPass->getNumTextureUnitStates();
+		
+        // if no textures : it's already an added colour TextureUnitState so don't crate another one
+        if (mIndexAddedColourTextureUnitState > 0 &&
+            mPass->getTextureUnitState(mIndexAddedColourTextureUnitState-1)->getNumFrames() < 1)
+        {
+            mAddedColourTextureUnitState = mPass->getTextureUnitState(mIndexAddedColourTextureUnitState-1);
+            mAddedColour = mAddedColourTextureUnitState->getColourBlendMode().colourArg1;
+        }
+        else
+        {
+            mAddedColourTextureUnitState = mPass->createTextureUnitState();
+		    mAddedColourTextureUnitState->setColourOperationEx(LBX_ADD_SIGNED, LBS_MANUAL, LBS_CURRENT, mAddedColour);
+        }
+#else
 		mIndexAddedColourTextureUnitState = mPass->getNumTextureUnitStates();
 		mAddedColourTextureUnitState = mPass->createTextureUnitState();
 		mAddedColourTextureUnitState->setColourOperationEx(LBX_ADD_SIGNED, LBS_MANUAL, LBS_CURRENT, mAddedColour);
+#endif
 	}
 	if (!b && mUseAddedColour) //We must delete the texture unit state since before this time it was present and now we don't want it anymore
 	{
@@ -300,6 +344,15 @@ const String& ModifiedMaterial::getTextureName()
 void ModifiedMaterial::setTexture(const String& name)
 {
     refreshTechPassTextUnit(); // Avoid a crash while reloading a web texture. 
+#if 1 // GILLES
+    std::string ext( name.substr(name.size()-3, 3) );
+    if( ext == "png" ||
+        ext == "tga" )
+    {
+        mPass->setSceneBlending( SBT_TRANSPARENT_ALPHA );
+        mPass->setDepthWriteEnabled( false );
+    }
+#endif
 	mTextureUnitState->setTextureName(name);
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------

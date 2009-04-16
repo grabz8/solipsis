@@ -146,6 +146,7 @@ Navigator::~Navigator()
         // Shutdown sound system
         mNavigatorSound->shutdown();
         delete mNavigatorSound;
+        mNavigatorSound = 0;
     }
 
     // Destroy Main Camera Manager
@@ -1946,7 +1947,20 @@ bool Navigator::mdlrXMLSave(bool all)
         else
             GUI_MessageBox::getMsgBox()->show("Modeler information", 
             NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+}
 
+//-------------------------------------------------------------------------------------
+bool Navigator::mdlrXMLSaveAs(const String& pDestination)
+{
+    if (mModeler)
+        if (!mModeler->isSelectionEmpty())
+            return mModeler->XMLSaveAs( pDestination );
+        else
+            //mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler information", 
+                NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED],
+                GUI_MessageBox::MBB_OK, 
+                GUI_MessageBox::MBB_INFO);
     return false;
 }
 

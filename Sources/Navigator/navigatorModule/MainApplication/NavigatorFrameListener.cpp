@@ -49,6 +49,7 @@ NavigatorFrameListener::NavigatorFrameListener(Navigator* navigator) :
     mBoundingBoxesShows(false),
     mEscapeHitsB4CancellingFocus(0),
     mLastEscapeHitTimer(0),
+    mMouseLeftPressed(false),
     mMouseMiddlePressed(false),
 	mMouseRightPressed(false)
 {
@@ -1096,6 +1097,9 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
 	if (evt.mState.mButtons & MBRight)
         mMouseRightPressed = true;
 
+    if (evt.mState.mButtons & MBLeft)
+        mMouseLeftPressed = true;
+
     return OgreFrameListener::mousePressed(evt);
 }
 
@@ -1214,6 +1218,9 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
 
 	if (evt.mState.mButtons & MBRight)
 		mMouseRightPressed = false;
+
+    if (evt.mState.mButtons & MBLeft)
+        mMouseLeftPressed = false;
 
     return OgreFrameListener::mouseReleased(evt);
 }

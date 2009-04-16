@@ -74,6 +74,9 @@ public:
     /// Destroy
     void destroy(bool force = false);
 
+    // Get Hikari Flash control pointer
+    FlashControl* getHikariFlashControl() {return mHikariInstance;};
+
 private:
     /// @copydoc Ogre::FrameListener::frameStarted
     bool frameStarted(const Ogre::FrameEvent& e);

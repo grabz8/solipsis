@@ -134,7 +134,7 @@ Object3D::Object3D(const EntityUID& pEntityUID, const String& pName, SceneNode* 
 	const MaterialPtr& tmpMaterial = mEntity->getSubEntity(0)->getMaterial()->clone("Material" + mEntityUID);
 	mEntity->getSubEntity(0)->setMaterialName( tmpMaterial->getName());
 	mModifiedMaterialManager->initialise(tmpMaterial);
-	TexturePtr PtrTexture = TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    TexturePtr PtrTexture = TextureManager::getSingleton().load( "default_texture.jpg", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 	mModifiedMaterialManager->addTexture(PtrTexture);
 	mModifiedMaterialManager->setCurrentTexture(PtrTexture );
 
@@ -187,6 +187,18 @@ Object3D::~Object3D()
 	delete mModifiedMaterialManager;
 }
 
+#if 1 // GILLES
+//-------------------------------------------------------------------------------------
+void    Object3D::setupCreationDate()
+{
+    char buffTmp[256];
+    GetDateFormat( LOCALE_USER_DEFAULT, NULL, NULL, "ddd dd MMM yyyy", buffTmp, 256 );
+    mCreationDate = buffTmp;
+    GetTimeFormat( LOCALE_USER_DEFAULT, NULL, NULL, "H':'mm':'ss", buffTmp, 256 );
+    mCreationDate += " - ";
+    mCreationDate += buffTmp;
+}
+#endif
 //-------------------------------------------------------------------------------------
 int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 {
@@ -199,11 +211,27 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 	mDesc = e->FirstChildElement("objdesc")->Attribute("Name");
 	mOwnerName = e->FirstChildElement("objowner")->Attribute("Name");
 	mCreatorName = e->FirstChildElement("objcreator")->Attribute("Name");
+#if 1 // GILLES
+    if ( e->FirstChildElement("objcreationdate") ) mCreationDate = e->FirstChildElement("objcreationdate")->Attribute("Name");
+#endif
 	mGroupName = e->FirstChildElement("objgroup")->Attribute("Name");
 	from_string(e->FirstChildElement("objrigths")->Attribute("mod"),mCanBeModified);
 	from_string(e->FirstChildElement("objrigths")->Attribute("cop"),mCanBeCopied);
 
 	e = doc.RootElement()->FirstChildElement("model");
+
+#if 1 // GILLES
+	std::string typeStr = std::string( e->FirstChildElement("primitive")->Attribute("Name") );
+	for(int i = 0; i<15; i++)
+		if (SOLTYPESTRING[i] == typeStr)
+			mType = (Type)i;
+
+	if (mType == OTHER)
+    {
+		std::string meshName = std::string( e->FirstChildElement("primitive")->Attribute("Mesh") );
+		mMeshImport = meshName;
+    }
+#endif
 
 	TiXmlElement *trans = e->FirstChildElement("transformation")->FirstChildElement("transfo");
 	TCommand toAdd;
@@ -323,20 +351,14 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
         setCullingMode( (CullingMode)cullingMode);
     }
 
-	//texture scroll, scale and rotate :
-	Ogre::Vector2 tmpVec;
-	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
-	from_string(e->FirstChildElement("texturescroll")->Attribute("v"),tmpVec.y);
-	setTextureScroll( tmpVec.x, tmpVec.y );
-	from_string(e->FirstChildElement("texturescale")->Attribute("u"),tmpVec.x);
-	from_string(e->FirstChildElement("texturescale")->Attribute("v"),tmpVec.y);
-	setTextureScale( tmpVec.x, tmpVec.y );
-	from_string(e->FirstChildElement("texturerotate")->Attribute("value"),value);
-	setTextureRotate( Degree(value));
 	//Textures List :
 	trans = e->FirstChildElement("texturelist")->FirstChildElement("texture");
 	TexturePtr texture ;
 	string currenttexture ;
+#if 1 // GILLES
+    TexturePtr textureUsed;
+    textureUsed.setNull();
+#endif
 	//add texture to the current list :
 	while (trans != NULL)
 	{
@@ -399,7 +421,11 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 		currenttexture = trans->Attribute("currenttexture");
 		if( currenttexture == "true" )
 		{
-			setCurrentTexture( texture );
+#if 1 // GILLES
+            textureUsed = texture;
+#else
+			//setCurrentTexture( texture );
+#endif
         }
         else
         {
@@ -423,7 +449,22 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
         }
 		trans = trans->NextSiblingElement("texture");
 	}
-	
+#if 1 // GILLES
+    if( textureUsed.isNull() )
+        textureUsed = TextureManager::getSingleton().getByName( "default_texture.jpg" );
+    setCurrentTexture( textureUsed );
+#endif
+
+    //texture scroll, scale and rotate :
+	Ogre::Vector2 tmpVec;
+	from_string(e->FirstChildElement("texturescroll")->Attribute("u"),tmpVec.x);
+	from_string(e->FirstChildElement("texturescroll")->Attribute("v"),tmpVec.y);
+	setTextureScroll( tmpVec.x, tmpVec.y );
+	from_string(e->FirstChildElement("texturescale")->Attribute("u"),tmpVec.x);
+	from_string(e->FirstChildElement("texturescale")->Attribute("v"),tmpVec.y);
+	setTextureScale( tmpVec.x, tmpVec.y );
+	from_string(e->FirstChildElement("texturerotate")->Attribute("value"),value);
+	setTextureRotate( Degree(value));
 
 	e = doc.RootElement()->FirstChildElement("threeD");
 	Vector3 tmp;
@@ -505,6 +546,9 @@ int		Object3D::saveToFile(const char* fileName)
 
 	toSave << "\t\t<objowner Name=\"" << mOwnerName << "\" />" << endl;
 	toSave << "\t\t<objcreator Name=\"" << mCreatorName << "\" />" << endl;
+#if 1 // GILLES
+    toSave << "\t\t<objcreationdate Name=\"" << mCreationDate << "\" />" << endl;
+#endif
 	toSave << "\t\t<objgroup Name=\"" << mGroupName << "\" />" << endl;
 	toSave << "\t\t<objrigths mod=\"" << mCanBeModified << "\" cop=\"" << mCanBeCopied<< "\" />" << endl;
 	EntityUID parentUid = "NULL" ;
@@ -2355,14 +2399,24 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
             String str = ResourceGroupManager::getSingleton().findGroupContainingResource(texturePath);
             std::string newFile( "solTmpTexture\\" + fileName );
 
+#if 1 // GILLES
+            if(!zz->isFilePresent(fileName))
+            {
+                Ogre::Image image;
+                image.load( texturePath, str);
+                image.save( newFile );
+                zz->writeFile( newFile );
+                SOLdeleteFile( newFile.c_str() );
+                image.~Image();
+            }
+#else
             Ogre::Image image;
             image.load( texturePath, str);
             image.save( newFile );
-
             if ( ! zz->isFilePresent( texturePath ) )
                 zz->writeFile( newFile );
-
             SOLdeleteFile( newFile.c_str() );
+#endif
         }
 
         // SWF / MOVIES (mpg, mpeg, avi, mp4, flv ...)

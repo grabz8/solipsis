@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreStringConverter.h>
 #include <OgreTextureManager.h>
 
+//#include "SolipsisEvent.h"
+#include "Event.h"
+
 using namespace Ogre;
 
 namespace Solipsis {
@@ -132,7 +135,8 @@ SWFInstance::~SWFInstance()
 
     LogManager::getSingleton().logMessage("SWFInstance::~SWFInstance() Hikari_destroy");
     
-    mHikariInstance->stop();
+    //mHikariInstance->stop();
+    mHikariInstance = NULL;
     mTextureSource = 0;
 
     delete mScreen;
@@ -207,6 +211,8 @@ String SWFInstance::handleEvt(const Event& evt)
 //-------------------------------------------------------------------------------------
 String SWFInstance::handleEvt(const String& evt)
 {
+    pthread_mutex_lock(&mUpdateMutex);
+
     String result = "";
 
     if (mHikariInstance == 0) return result;
@@ -247,16 +253,26 @@ String SWFInstance::handleEvt(const String& evt)
     else if (tokens[0].compare("playpause") == 0)
     {
         LogManager::getSingleton().logMessage("SWFInstance::handleEvt() flash_player_play/flash_player_pause");
-        if (mStopped)
-            mHikariInstance->play();
-        mStopped = !mStopped;
+        //if (mStopped)
+        //    mHikariInstance->play();
+        //else
+        //    mHikariInstance->stop();
+        //mStopped = !mStopped;
+        mHikariInstance->stop();
+        mHikariInstance->load( mUrl );
+        mHikariInstance->play();
+        mStopped = false;
+        mAlive = true;
     }
     else if (tokens[0].compare("stop") == 0)
     {
+        pthread_mutex_unlock(&mUpdateMutex);
         LogManager::getSingleton().logMessage("SWFInstance::handleEvt() flash_player_stop");
-        mHikariInstance->rewind();
-        //mHikariInstance->stop();
+        //destroy(true);
+        mHikariInstance->stop();
         mStopped = true;
+        mAlive = false;
+        pthread_mutex_lock(&mUpdateMutex);
     }
     else if (tokens[0].compare("prev") == 0)
     {
@@ -273,6 +289,8 @@ String SWFInstance::handleEvt(const String& evt)
         LogManager::getSingleton().logMessage("SWFInstance::handleEvt() flash_player_loop_toggle");
         mHikariInstance->setLoop(result.compare("true") == 0);
     }
+
+    pthread_mutex_unlock(&mUpdateMutex);
 
     return result;
 }

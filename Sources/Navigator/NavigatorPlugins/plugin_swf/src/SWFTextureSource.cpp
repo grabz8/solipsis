@@ -133,7 +133,6 @@ bool SWFTextureSource::initialise()
     dict->addParameter(Ogre::ParameterDef("url", "SWF Media Resource Link", Ogre::PT_STRING), &msCmdUrl);
     dict->addParameter(Ogre::ParameterDef("width", "Video width", Ogre::PT_INT), &msCmdWidth);
     dict->addParameter(Ogre::ParameterDef("height", "Video height", Ogre::PT_INT), &msCmdHeight);
-    dict->addParameter(Ogre::ParameterDef("height", "Video height", Ogre::PT_INT), &msCmdHeight);
     // TODO frames_per_second
     dict->addParameter(Ogre::ParameterDef("swf_params", "Additional SWF parameters", Ogre::PT_STRING), &msCmdSwfParams);
 

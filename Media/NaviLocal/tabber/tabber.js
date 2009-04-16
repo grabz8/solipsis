@@ -350,7 +350,7 @@ tabberObj.prototype.navClick = function(event)
   
   //alert('tabber : '+tabberIndex);
   new NaviData('ClickOnTabber').add({tab:tabberIndex}).send(); 
-  if( tabberIndex == 2 ) updTexture();
+  if( tabberIndex == 2 || tabberIndex == 0 ) updTexture();
 
   return false;
 };

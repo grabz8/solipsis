@@ -133,7 +133,12 @@ void SWFPlugin::deleteInstance(int id)
     pthread_mutex_lock(&mSWFInstanceMapMutex);
     SWFInstanceMap::iterator i = mSWFInstanceMap.find(id);
     if (i != mSWFInstanceMap.end())
+    {
+        mHikariMgr->destroyFlashControl(i->second->getHikariFlashControl());
+        // Update HikariManager
+        mHikariMgr->update();
         mSWFInstanceMap.erase(i);
+    }
     pthread_mutex_unlock(&mSWFInstanceMapMutex);
 }
 
@@ -172,7 +177,10 @@ TexturePtr SWFPlugin::getTextureForInstance(const int id)
     pthread_mutex_unlock(&mSWFInstanceMapMutex);
 
     // Not found
-    return TexturePtr();
+    LogManager::getSingleton().logMessage("SWFPlugin::getTextureForInstance : Texture not found");
+    TexturePtr t;
+    t.setNull();
+    return t;
 }
 
 //-------------------------------------------------------------------------------------

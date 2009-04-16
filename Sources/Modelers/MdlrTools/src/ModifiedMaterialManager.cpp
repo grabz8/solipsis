@@ -285,7 +285,21 @@ void ModifiedMaterialManager::clearTextures()
         TextureVector::iterator itText = mTextures.begin();
         TextureNameExtParamsMap::iterator it;
         while (itText != mTextures.end())
-        {           
+        {        
+#if 1 // GILLES
+            Solipsis::TextureExtParamsMap *textureExtParamsMap;
+            textureExtParamsMap = getTextureExtParamsMap((*itText));
+            if (textureExtParamsMap)
+            {
+                // Stop the old sound if any
+                if (textureExtParamsMap->find("plugin") != textureExtParamsMap->end())
+                {
+                    std::string plugin = (textureExtParamsMap->find("plugin"))->second ;
+                    if ((plugin == "swf") /*|| (plugin == "swf") || (plugin == "www" )*/)
+                        ms_MMMTextureManager->pauseEffect( this, (*itText)->getName(), *textureExtParamsMap );
+                }
+            }
+#endif
             it = mTextureNameExtParamsMap.find((*itText)->getName());
             if (it != mTextureNameExtParamsMap.end())
                 ms_MMMTextureManager->releaseTexture(this, (*itText)->getName(), it->second);
@@ -318,6 +332,20 @@ void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
         // Destroy texture
         if (ms_MMMTextureManager != 0)
         {
+#if 1 // GILLES
+            Solipsis::TextureExtParamsMap *textureExtParamsMap;
+            textureExtParamsMap = getTextureExtParamsMap(pTexture);
+            if (textureExtParamsMap)
+            {
+                // Stop the old sound if any
+                if (textureExtParamsMap->find("plugin") != textureExtParamsMap->end())
+                {
+                    std::string plugin = (textureExtParamsMap->find("plugin"))->second ;
+                    if ((plugin == "swf") /*|| (plugin == "swf") || (plugin == "www" )*/)
+                        ms_MMMTextureManager->pauseEffect( this, pTexture->getName(), *textureExtParamsMap );
+                }
+            }
+#endif
             TextureNameExtParamsMap::iterator it = mTextureNameExtParamsMap.find(pTexture->getName());
             if (it != mTextureNameExtParamsMap.end())
             {
@@ -326,7 +354,6 @@ void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
             }
             else
                 ms_MMMTextureManager->releaseTexture(this, pTexture->getName(), TextureExtParamsMap());
-
         }
         mTextures.remove( pTexture );
 	}
