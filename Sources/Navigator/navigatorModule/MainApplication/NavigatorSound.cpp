@@ -344,7 +344,7 @@ void NavigatorSound::update()
     // Update the sound listener camera attributes
     if (mSoundListenerCamera != 0)
     {
-#if 0 // GILLES
+#if 1 // GILLES
         FMOD_VECTOR pos, vel, forward, up;
         convertVector3ToFModVector(mSoundListenerCamera->getDerivedPosition(), pos);
         convertVector3ToFModVector((mSoundListenerCamera->getDerivedPosition() - mLastCameraPosition)/(now  - mLastUpdateTimeMs), vel);
@@ -400,7 +400,7 @@ void NavigatorSound::update()
         SoundBuffer *soundBuffer = mSoundBufferVector[it->second];
         if (node == 0) continue;
         if ((soundBuffer == 0) || !soundBuffer->isPlaying()) continue;
-#if 0 // GILLES
+#if 1 // GILLES
         FMOD_VECTOR pos, vel;
         convertVector3ToFModVector(node->_getDerivedPosition(), pos);
         convertVector3ToFModVector(Ogre::Vector3::ZERO, vel);
@@ -510,7 +510,7 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
     exinfo.length = FRAME_COUNT*(*frameSize)*getSampleSizeFromFModSoundFormat(exinfo.format);
 
     FMOD::Sound* sound = 0;
-#if 1 // GILLES
+#if 0 // GILLES
     if (mSoundSystem->createSound(0, /*FMOD_3D |*/FMOD_2D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
 #else
     if (mSoundSystem->createSound(0, FMOD_3D | FMOD_OPENUSER | FMOD_LOOP_NORMAL, &exinfo, &sound) != FMOD_OK)
@@ -534,7 +534,7 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
 
     // Set the sound buffer
     mSoundBufferVector[soundId]->setSound(sound);
-#if 1 // GILLES
+#if 1 // GILLES ?? required for the first loop
     //Play the sound
     mSoundBufferVector[soundId]->play(mSoundSystem);
 #endif

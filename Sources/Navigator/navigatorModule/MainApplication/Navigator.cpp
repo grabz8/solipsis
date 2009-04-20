@@ -1947,6 +1947,7 @@ bool Navigator::mdlrXMLSave(bool all)
         else
             GUI_MessageBox::getMsgBox()->show("Modeler information", 
             NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+    return false;
 }
 
 //-------------------------------------------------------------------------------------
