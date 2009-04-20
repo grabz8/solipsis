@@ -92,6 +92,9 @@ rmdir Dependencies\FaceController /S /Q
 rmdir Dependencies\ogreMax /S /Q
 rmdir Dependencies\hikari /S /Q
 rmdir Dependencies\DeclarativeModeler /S /Q
+rmdir Dependencies\TerrainModeler /S /Q
+rmdir Dependencies\postagger /S /Q
+rmdir Dependencies\Triangle /S /Q
 
 rmdir Sources\DevTools\llmozlib\Debug_vc7 /S /Q
 rmdir Sources\DevTools\llmozlib\Debug_vc8 /S /Q
@@ -178,6 +181,10 @@ rmdir Sources\DevTools\Antlr2.7.6\Debug /S /Q
 rmdir Sources\DevTools\Antlr2.7.6\Release /S /Q
 rmdir Sources\DevTools\Gecode-2.2.0\Debug /S /Q
 rmdir Sources\DevTools\Gecode-2.2.0\Release /S /Q
+rmdir Sources\DevTools\postagger\Debug /S /Q
+rmdir Sources\DevTools\postagger\Release /S /Q
+rmdir Sources\DevTools\Triangle\Debug /S /Q
+rmdir Sources\DevTools\Triangle\Release /S /Q
 
 pushd Docs\doxygen
 call cleanup.bat
@@ -310,6 +317,8 @@ rmdir Sources\Voice\FaceController\Debug /S /Q
 rmdir Sources\Voice\FaceController\Release /S /Q
 rmdir Sources\Modelers\DeclarativeModeler\Debug /S /Q
 rmdir Sources\Modelers\DeclarativeModeler\Release /S /Q
+rmdir Sources\Modelers\TerrainModeler\Debug /S /Q
+rmdir Sources\Modelers\TerrainModeler\Release /S /Q
 
 rmdir Sources\Navigator\NavigatorPlugins\plugin_swf\Debug /S /Q
 rmdir Sources\Navigator\NavigatorPlugins\plugin_swf\Release /S /Q
