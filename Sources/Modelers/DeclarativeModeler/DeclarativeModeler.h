@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <map>
 #include <vector>
 
+#include <maxent.h>
 #include "Actor.h"
 
 /**
@@ -80,6 +81,8 @@ protected:
 
 	/** \brief L'ensemble des acteurs */
 	std::vector<Actor*> m_actors;
+
+	std::vector< ME_Model > m_vme;
 
 	std::map< std::string, std::vector< std::string > > m_availableActorModels;
 

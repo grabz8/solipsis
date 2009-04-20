@@ -25,18 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TagsParser.hpp"
 #include "antlr/TokenBuffer.hpp"
 #include "AttributeComputer.h"
-#include "Tag.h"
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
 #include "DeclarativeModeler.h"
+#include <tag.h>
+
+#define DM_ME_SIZE 16
 
 DeclarativeModeler::DeclarativeModeler()
-: m_s( "" )
+: m_s( "" ), m_vme( std::vector< ME_Model >( DM_ME_SIZE ) )
 {
+
+	std::cout << "Constructor." << std::endl;
 	std::vector< std::string > properties;
 	properties.push_back( "Sphere.mesh" ); // MODEL + EXTENSION
 	m_availableActorModels["sphere"] = properties; 
@@ -62,12 +65,16 @@ DeclarativeModeler::DeclarativeModeler()
 	properties.push_back( "Tube.mesh" ); // MODEL + EXTENSION
 	m_availableActorModels["tube"] = properties; 
 
-	loadVME();
+	init( "./models/", m_vme );
+
+	std::cout << "Constructor done." << std::endl;
+
 }
 
 DeclarativeModeler::DeclarativeModeler( const std::string & s )
-: m_s( s )
+: m_s( s ), m_vme( std::vector< ME_Model >( DM_ME_SIZE ) )
 {
+
 	std::vector< std::string > properties;
 	properties.push_back( "Sphere.mesh" ); // MODEL + EXTENSION
 	m_availableActorModels["sphere"] = properties; 
@@ -105,24 +112,62 @@ DeclarativeModeler::DeclarativeModeler( const std::string & s )
 	properties.push_back( "column.mesh" ); // MODEL + EXTENSION
 	m_availableActorModels["column"] = properties; 
 
-	loadVME();
+	init( "./models/", m_vme );
+
 }
 
 DeclarativeModeler::~DeclarativeModeler(void)
 { }
+
+void extractTags(std::string & input, std::string & outFileName)
+{
+  // declaration d'une chaine qui contiendra la ligne lue
+  std::string texte = input;  
+
+  std::string tmpString = texte;
+
+  // recuperation des tags SEULS
+  std::string tags;
+
+  int indice = tmpString.find('/');
+  while(indice!=-1)
+    {
+      int ind_space = tmpString.find(' ');
+
+      tags = tags + tmpString.substr(indice+1, ind_space-indice);
+      tmpString = tmpString.substr(ind_space+1);
+      indice = tmpString.find('/');
+      ind_space = tmpString.find(' ');
+      if(ind_space==-1)
+        {
+          tags = tags + '.';
+          break;
+        }
+    }
+
+  FILE* outFile = NULL;
+  outFile = fopen(outFileName.c_str(), "w");
+  if (outFile != NULL)
+    {
+      // On l'écrit dans le fichier
+      fprintf(outFile,tags.c_str());
+      fclose(outFile);
+    }
+}
+
 
 int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std::string& warningMsg */ )
 {
 	m_s = s;
 
 	// on tag le texte
-	std::string output;		
-	tag( m_s, output /*, errorMsg */ );
+	std::string output;
+	tag( m_s, m_vme, output );
 
-  // on extrait les tags du texte taggé // TODO changer le nom pour le passage sous windows
-  // on écrit dans un fichier temporairement car ANTLR doit charger un fichier...
-  std::string fichierSortie = "tmpFile";
-  extractTags(output, fichierSortie);
+	// on extrait les tags du texte taggé // TODO changer le nom pour le passage sous windows
+	// on écrit dans un fichier temporairement car ANTLR doit charger un fichier...
+	std::string fichierSortie = "tmpFile";
+	extractTags(output, fichierSortie);
 
   ANTLR_USING_NAMESPACE(antlr)
   try {
@@ -184,10 +229,9 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
 
 	assignModelsToActors( /* errorMsg */ );
 
-	//return 0;
+	////return 0;
   }
-  catch( ANTLRException& e )
-  {
+  catch( ANTLRException& e ) {
 //    std::cerr << "ANTLRException : " << e.getMessage() << std::endl;
 //#ifdef WIN32
 //		errorMsg = e.getMessage() + "\nThere are some unknown/ununderstandable elements in the sentence. Please reformulate.";
@@ -203,7 +247,7 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
 //	    //MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
 //#endif
 //    return -4;
- }
+  }
   return 0;
 }
 

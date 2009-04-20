@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 int main(int argc , char** argv)
 {
+
+	std::cout << "Running..." << std::endl;
+
 	// le texte a analyser
 	if( argc == 1 || argc > 2 ) {
 		std::cout << "DeclarativeModeler <file_to_be_analysed>" << std::endl;
@@ -35,24 +38,34 @@ int main(int argc , char** argv)
 
 	std::string filename = argv[1];
 
+	std::cout << "File to be analysed: " << filename << std::endl;
+
 	// ouverture du texte a analyser
-	std::ifstream stream( filename.c_str(), std::ios::out );  // on ouvre en lecture
+	std::ifstream stream( filename.c_str(), std::ios::in );  // on ouvre en lecture
 	if( !stream ) {
 		std::cerr << "Impossible d'ouvrir le fichier " << filename << "." << std::endl;
 		exit( -1 );
 	}
+
+	std::cout << "File opened." << std::endl;
 
 	// on met le texte a analyser dans un string
 	std::string input;
 	getline( stream, input );
 	stream.close();
 
+	std::cout << "Text: " << input << std::endl;
+
 	// creation du modeleur
 	DeclarativeModeler modeler;
+
+	std::cout << "Modeler instantiated." << std::endl;
 
 	std::string err = "";
 	std::string warn = "";
 	// on lance la modélisation...
+
+	std::cout << "Running the modeler" << std::endl;
 	int resultat = modeler.run( input ); //, err, warn );
 
 	// l'ensemble des acteurs à charger...

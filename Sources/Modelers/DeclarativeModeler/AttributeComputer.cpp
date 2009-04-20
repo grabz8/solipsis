@@ -57,7 +57,7 @@ int AttributeComputer::compute()
 
       if(sizeConstraints.size()!=0)
         {
-          std::cout <<  "-----------------------   CONTRAINTES SUR LES TAILLES  ---------------------------" << std::endl;
+          std::cout <<  "CONSTRAINTS AGAINST SIZES  ---------------------------" << std::endl;
 
           // Ecriture des contraintes
           ConstraintWriter cw(_actors, sizeConstraints, 0);
@@ -99,7 +99,7 @@ int AttributeComputer::compute()
 
       if(positionConstraints.size()!=0)
         {
-          std::cout <<  "-----------------------   CONTRAINTES SUR LES POSITIONS  ---------------------------" << std::endl;
+          std::cout <<  "CONSTRAINTS AGAINST POSITIONS  ---------------------------" << std::endl;
           // Ecriture des contraintes
           ConstraintWriter cw = ConstraintWriter(_actors, positionConstraints, 1);
 
@@ -196,7 +196,7 @@ int AttributeComputer::compute()
       // si il y a des contraintes sur les couleurs : on les traite...
       if(colorConstraints.size()!=0)
         {
-          std::cout <<  "-----------------------   CONTRAINTES SUR LES COULEURS  ---------------------------" << std::endl;
+          std::cout <<  "CONSTRAINTS AGAINST COLORS  ---------------------------" << std::endl;
           ConstraintWriter colorCW(_actors, colorConstraints, 2);
           std::vector<std::string> colorVariableNames = colorCW.getVariableNames();
           std::vector<Constraint*> colorVariableConstraints = colorCW.getConstraintVector();
@@ -233,7 +233,7 @@ int AttributeComputer::compute()
     }
 
   // affichage des résultats
-  std::cout << "Les résultats --------------------------------------------------" << std::endl;
+  std::cout << "RESULTS  -------------------------------" << std::endl;
   for(unsigned int i=0 ; i<_actors.size() ; i++)
     {
       std::cout << "- "<<_actors[i]->name()<< std::endl;
