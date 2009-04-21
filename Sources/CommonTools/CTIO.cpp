@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <fstream>
 
 #include <direct.h>
+#include <errno.h>
 #include <string>
 
 namespace CommonTools {
@@ -86,6 +87,22 @@ bool IO::isDirectoryExists(const std::string& pathname)
 //-------------------------------------------------------------------------------------
 bool IO::createDirectory(const std::string& pathname)
 {
+    // Try creating it directly
+    if ((MKDIR(pathname.c_str()) == 0) || (errno == EEXIST))
+        return true;
+
+    // Create intermediate directories
+    std::string::size_type iSeparator = pathname.find_first_of(getPathSeparator(), 0);
+    std::string currentPath;
+    while ((iSeparator = pathname.find_first_of(getPathSeparator(), iSeparator + 1)) != std::string::npos)
+    {
+        currentPath = pathname.substr(0, iSeparator);
+        if (isDirectoryExists(currentPath))
+            continue;
+        if (MKDIR(currentPath.c_str()) != 0)
+            return false;
+    }
+
     return (MKDIR(pathname.c_str()) == 0);
 }
 
@@ -154,6 +171,20 @@ bool IO::renameFile(const std::string& srcFilename, const std::string& dstFilena
 }
 
 //-------------------------------------------------------------------------------------
+bool IO::writeFileContent(const std::string& filename, char *data, unsigned dataLength)
+{
+    if (filename.length() == 0) return false;
+    if ((data == 0) || (dataLength == 0)) return false;
+
+    FILE *fp = fopen(filename.c_str(), "wb");
+    if (fp == 0) return false;
+    fwrite(data, 1, dataLength, fp);
+    fclose(fp);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
 std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
 {
     std::string fullPath;
@@ -172,27 +203,6 @@ std::string IO::retrieveRelativePathByDescendingCWD(const std::string& pathname)
 }
 
 //-------------------------------------------------------------------------------------
-
-
-
-bool IO::IsDirectory(const char path[]) 
-{
-    int i = strlen(path) - 1;
-    if (path[strlen(path)] == '.') 
-    {
-        return true;
-    } // exception for directories
-    // such as \. and \..
-    for(i; i >= 0; i--) 
-    {
-        if (path[i] == '.') 
-            return false; // if we first encounter a . then it's a file
-        else if (path[i] == '\\' || path[i] == '/') 
-            return true; // if we first encounter a \ it's a dir
-    }
-    return false;
-}
-
 /**
 * A recursive function to remove a directory and it's contents
 * Author: Danny Battison
@@ -220,7 +230,7 @@ bool IO::RemoveDir(const std::string & path1)
                 return false; // we couldn't do it
             } // otherwise, it was initialised correctly, so let's delete the file~
             strcat(file, pent->d_name); // concatenate the strings to get the complete path
-            if (IsDirectory(file) == true) {
+            if (isDirectory(file) == true) {
                 RemoveDirectory(file);
             } else { // it's a file, we can use remove
                 remove(file);
@@ -234,6 +244,25 @@ bool IO::RemoveDir(const std::string & path1)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
+bool IO::isDirectory(const char path[]) 
+{
+    size_t i = strlen(path) - 1;
+    if (path[strlen(path)] == '.') 
+    {
+        return true;
+    } // exception for directories
+    // such as \. and \..
+    for(i; i >= 0; i--) 
+    {
+        if (path[i] == '.') 
+            return false; // if we first encounter a . then it's a file
+        else if (path[i] == '\\' || path[i] == '/') 
+            return true; // if we first encounter a \ it's a dir
+    }
+    return false;
+}
 
+//-------------------------------------------------------------------------------------
 
 } // namespace CommonTools

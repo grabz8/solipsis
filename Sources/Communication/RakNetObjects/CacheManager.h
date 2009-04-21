@@ -157,11 +157,10 @@ public:
 
 protected:
     /** Retrieve the pathname of 1 file into the cache directory.
-        @param filename The file name
-        @param pathname The pathname of the file into the cache directory
-        @return  the file size, zero if the file does not exists in the cache 
+    @param filename The file name
+    @param pathname The pathname of the file into the cache directory
     */
-    long getCachePathname(const std::string& filename, std::string& pathname);
+    void getCachePathname(const std::string& filename, std::string& pathname);
 };
 
 } // namespace Solipsis

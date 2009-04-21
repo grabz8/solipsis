@@ -59,20 +59,22 @@ public:
     static bool deleteFile(const std::string& filename);
     /// Rename a file
     static bool renameFile(const std::string& srcFilename, const std::string& dstFilename);
+    /// Write a file content
+    static bool writeFileContent(const std::string& filename, char *data, unsigned dataLength);
     /// Get filenames contained in a directory
     static bool getFilenames(const std::string& pathname, FilenameVector& filenames);
     /// Retrieve a relative path by descending from the current working directory
     static std::string retrieveRelativePathByDescendingCWD(const std::string& pathname);
     
-    //check if the directory exists
+    /// check if the directory exists
     static bool FolderExist(std::string strPath);
     
-    // recursively remove a directory
+    /// recursively remove a directory
     static bool RemoveDir(const std::string & path);
-private:
-    // check if the path look like a directory. 
-    static bool IsDirectory(const char path[]);
 
+private:
+    /// check if the path look like a directory. 
+    static bool isDirectory(const char path[]);
 };
 
 } // namespace CommonTools

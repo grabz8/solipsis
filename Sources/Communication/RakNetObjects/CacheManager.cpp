@@ -137,7 +137,12 @@ unsigned int CacheManager::GetFilePart(char *filename,
         preallocatedDestination, context.op, context.fileId);
 
     std::string pathname;
-    long size = getCachePathname(std::string(filename), pathname);
+    getCachePathname(std::string(filename), pathname);
+
+    long size = 0;
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt != mCache.end())
+        size = entryIt->second.mFileSize;
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s %d %% (%d, %d, 0x%08x, (%d, %d))",
         filename, (startReadBytes*100) /size , startReadBytes, numBytesToRead, 
@@ -154,7 +159,12 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
     std::string filename = onFileStruct->fileName;
     std::string pathname;
     getCachePathname(std::string(onFileStruct->fileName), pathname);
-    WriteFileWithDirectories(pathname.c_str(), (char*)onFileStruct->fileData, (unsigned int)onFileStruct->finalDataLength);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() writing file content into pathname:%s", pathname.c_str());
+    if (!IO::writeFileContent(pathname, (char*)onFileStruct->fileData, (unsigned int)onFileStruct->finalDataLength))
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() writeFileContent(%s) failed !", pathname.c_str());
+        return true;
+    }
 
     CacheMap::iterator entryIt = mCache.find(filename);
     if (entryIt == mCache.end())
@@ -176,7 +186,7 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
         getCachePathname(filename, pathname);
         long filesize = IO::getFileSize(pathname);
         if (filesize == -1)
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() Unable to get size of file %s !", filename.c_str());
         fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
         PendingUploadList& pendingUploadList = entryIt->second.mPendingUploadList;
         for (PendingUploadList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
@@ -217,7 +227,8 @@ void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCo
 //-------------------------------------------------------------------------------------
 void CacheManager::addFile(const std::string& filename, const FileVersion& version)
 {
-    std::string completeFileName = mCachePath + IO::getPathSeparator() + filename;
+    std::string completeFileName;
+    getCachePathname(filename, completeFileName);
 	// check if the file is present
 	if (IO::isFileExists(completeFileName)) 
 	{
@@ -273,7 +284,8 @@ void CacheManager::requestFile(const SystemAddress& sender,
     }
     else if (entryIt->second.mState == ESTransferComplete)
 	{
-        std::string completeFileName = mCachePath + IO::getPathSeparator() + filename;
+        std::string completeFileName;
+        getCachePathname(filename, completeFileName);
 		// to prevent internal errors, check that the file is really here
 		if (IO::isFileExists(completeFileName))
         {
@@ -344,18 +356,11 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
 }
 
 //-------------------------------------------------------------------------------------
-long CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
+void CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
 {
+    if (!IO::isDirectoryExists(mCachePath))
+        IO::createDirectory(mCachePath);
     pathname = mCachePath + IO::getPathSeparator() + filename;
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-    {
-        return 0;
-    }
-    else
-    {
-        return entryIt->second.mFileSize;
-    }
 }
 
 //-------------------------------------------------------------------------------------

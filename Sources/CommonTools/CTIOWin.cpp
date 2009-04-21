@@ -73,7 +73,6 @@ bool IO::getFilenames(const std::string& pathname, FilenameVector& filenames)
     return true;
 }
 
-
 //------------------------------------------------------------------------------------------------
 bool IO::FolderExist(std::string strPath)
 {
@@ -87,5 +86,7 @@ bool IO::FolderExist(std::string strPath)
     FindClose(hFind);
     return rValue;
 }
+
+//------------------------------------------------------------------------------------------------
 
 } // namespace CommonTools
