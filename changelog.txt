@@ -1101,7 +1101,12 @@ quick save obj selection to save bug fix
 Release 1.1.0 new delivery
 
 ---------------------------
+21/04/09
 
+Cache file writing bug fix
+Release 1.1.0 new delivery
+
+---------------------------
 20/04/09
 
 ANTLR sources added into DevTools to avoid VC++ version conflicts
