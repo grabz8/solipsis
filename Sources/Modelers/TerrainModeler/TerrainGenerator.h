@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern "C" {
 #define REAL float
 #define ANSI_DECLARATORS 1
-#include "triangle.h"
+#include <triangle.h>
 }
 
 namespace tege {
