@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc9", "DevTools\llmozlib\llmozlib_vc9.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc9", "DevTools\navi\Navi\Navi_vc9.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"
@@ -53,6 +53,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lua_vc9", "DevTools\lua\scr
 	ProjectSection(ProjectDependencies) = postProject
 		{E737AF5B-9F63-4095-BA6F-25F173DF34E2} = {E737AF5B-9F63-4095-BA6F-25F173DF34E2}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "postagger", "DevTools\postagger\postagger\postagger_vc9.vcproj", "{7BE28E00-A560-4C20-BE73-CC14B5CEC763}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "triangle", "DevTools\triangle\triangle_vc9.vcproj", "{FB529755-9920-41C4-B366-4F108068E2CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,6 +148,14 @@ Global
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Debug|Win32.Build.0 = Debug|Win32
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Release|Win32.ActiveCfg = Release|Win32
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Release|Win32.Build.0 = Release|Win32
+		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Debug|Win32.Build.0 = Debug|Win32
+		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Release|Win32.ActiveCfg = Release|Win32
+		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Release|Win32.Build.0 = Release|Win32
+		{FB529755-9920-41C4-B366-4F108068E2CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB529755-9920-41C4-B366-4F108068E2CF}.Debug|Win32.Build.0 = Debug|Win32
+		{FB529755-9920-41C4-B366-4F108068E2CF}.Release|Win32.ActiveCfg = Release|Win32
+		{FB529755-9920-41C4-B366-4F108068E2CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
