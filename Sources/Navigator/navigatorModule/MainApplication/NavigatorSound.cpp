@@ -534,7 +534,7 @@ void NavigatorSound::openSoundBuffer(int soundId, const Ogre::String& soundParam
 
     // Set the sound buffer
     mSoundBufferVector[soundId]->setSound(sound);
-#if 1 // GILLES ?? required for the first loop
+#if 0 // GILLES ?? required for the first loop
     //Play the sound
     mSoundBufferVector[soundId]->play(mSoundSystem);
 #endif

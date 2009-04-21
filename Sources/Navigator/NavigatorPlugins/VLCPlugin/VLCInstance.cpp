@@ -521,7 +521,13 @@ void VLCInstance::_libvlc_opensb(VLCInstance *ctx, unsigned int *frequency, unsi
 //    LogManager::getSingleton().logMessage("VLCInstance::_libvlc_opensb() " + String(tmp));
     ExternalTextureSourceExSoundHandler *soundHandler = ctx->getTextureSource()->getSoundHandler();
     if (soundHandler != 0)
+    {
         soundHandler->openSoundBuffer(ctx->getSoundId(), ctx->getSoundParams(), frequency, nbChannels, fourCCFormat, frameSize);
+#if 1 // GILLES
+        soundHandler->closeSoundBuffer(ctx->getSoundId());
+        soundHandler->openSoundBuffer(ctx->getSoundId(), ctx->getSoundParams(), frequency, nbChannels, fourCCFormat, frameSize);
+#endif
+    }
 }
 
 //-------------------------------------------------------------------------------------
