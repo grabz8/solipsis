@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+	<head>
+		<title>uimdlrterrain</title>
+		<script type="text/javascript" src="SolipsisHelpers.js"></script>
+		<script type="text/javascript" src="Navi-yui.js"></script>
+
+		<!-- <script type="text/javascript" src="mootools.js"></script> -->
+<!--
+        <link rel="stylesheet" href="selector/selector.css" type="text/css">
+        <script type="text/javascript" src="selector/selector.js"></script>
+-->
+
+		<!-- TABBERS BEGIN -->
+		<link rel="stylesheet" href="tabber/tabber.css" TYPE="text/css" MEDIA="screen">
+		<script type="text/javascript">
+		/* Optional: Temporarily hide the "tabber" class so it does not "flash"
+		on the page as plain HTML. After tabber runs, the class is changed
+		to "tabberlive" and it will appear. */
+		document.write('<style type="text/css">.tabber{display:block;}<\/style>');
+		</script>
+		<script type="text/javascript" src="tabber/tabber.js"></script>
+		<!-- TABBERS END -->
+
+		<!-- SLIDERS BEGIN -->
+		<link rel="stylesheet" href="slider/bluecurve/bluecurve.css" TYPE="text/css">
+	    <script type="text/javascript" src="slider/range.js"></script>
+	    <script type="text/javascript" src="slider/timer.js"></script>
+	    <script type="text/javascript" src="slider/slider.js"></script>
+	    <!-- SLIDERS END -->
+
+	    <!-- COLOR PICKING BEGIN -->
+	    <link rel="stylesheet" href="color/color.css" TYPE="text/css">
+	    <script type="text/javascript" src="color/color.js"></script>
+	    <!-- COLOR PICKING END -->
+
+	    <script type="text/javascript">
+            function pageLoaded()
+            {                                
+                new NaviData('pageLoaded').add({naviName:'uimdlrterrain'}).send();
+            }
+            
+            function elementClicked(elementName)
+            {
+                new NaviData(elementName).send();
+            }
+            
+            function sendMessage(message)
+            {
+                //alert(message);
+                new NaviData('sendMessage').add({msg:message}).send();
+            }  
+            
+        </script>
+
+		<style type="text/css">
+      body
+      {
+      padding-left: 11em;
+      background-color: #000000;
+      overflow: hidden;
+      font-family: Verdana;
+      font-size: small;
+      color: #000000;
+      }
+
+      #container
+      {
+      background-image: url('uimdlrterrain.png');
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 512px;
+      height: 512px;
+      }
+      #containerMenu
+      {
+      position: absolute;
+      left: 8px;
+      top: 00px;
+      width: 496px;
+      height: 512px;
+      }
+
+      /* SLIDERS BEGIN */
+      /*
+      body {
+      font:		MessageBox;
+      font:		Message-Box;
+      }
+      */
+      /*
+      input, select, button {
+      vertical-align:		middle;
+      }
+      */
+
+      #slider-1 {
+      margin:	10px;
+      width:	auto;
+      }
+
+      #slider-2 {
+      margin:	10px;
+      width:	auto;
+      }
+      /* SLIDERS END */
+    </style>
+	</head>
+	<body onload="pageLoaded()">
+		<div id="container">
+			<div id="containerMenu">
+				<div class="tabber">
+					<div class="tabbertab">
+						<!-- PROPERTIES -->
+						<h2>Terrain Sample Setup</h2>
+
+            <b>Detail - coarse <-> fine</b>
+            <div class="slider" id="granularity">
+              <input class="slider-input" id="granularityInput" />
+            </div>
+
+            <b>Noise Scale</b>
+            <div class="slider" id="noiseScale">
+              <input class="slider-input" id="noiseScaleInput" />
+            </div>
+            
+            <!-- SLIDERS BEGIN -->
+
+            <script type="text/javascript">
+
+              // definition for the model deformations
+              
+              var noiseScale = new Slider(document.getElementById("noiseScale"), document.getElementById("noiseScaleInput"));
+              noiseScale.setMinimum(1);
+              noiseScale.setMaximum(100);
+              noiseScale.setValue(5);
+
+              var granularity = new Slider(document.getElementById("granularity"), document.getElementById("granularityInput"));
+              granularity.setMinimum(0);
+              granularity.setMaximum(100);
+              granularity.setValue(50);
+
+            </script>
+            <!-- SLIDERS END -->
+
+            <table>
+              <tr>
+                <td colspan="2">
+                  <input type="button" value="OK" onclick="elementClicked('MdlrTCreate');"/>
+                  <input type="button" value="Cancel" onclick="elementClicked('MdlrTCancel');"/>
+                 <td>
+							</tr>
+            </table>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+	</body>
+</html>
