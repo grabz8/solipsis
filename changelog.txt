@@ -1104,6 +1104,7 @@ Release 1.1.0 new delivery
 21/04/09
 
 Cache file writing bug fix
+RakNet 3.401 (used in release 1.1.0) FileListTransfer plugin bug fix (i not resetted before filesToPush loop)
 Release 1.1.0 new delivery
 
 ---------------------------
