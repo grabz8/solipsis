@@ -97,7 +97,7 @@ with Visual Studio Express 2005 or VS2005Pro</li><li><a href="http://downloads.s
 C++.Net 2008 (9.0) Precompiled Dependencies </a>with Visual
 Studio Express 2008</li></ul></li></ul>
 <ul><li><h4>Build
-the Orge Package</h4></li></ul><ul style="margin-left: 80px;"><li>
+the Ogre Package</h4></li></ul><ul style="margin-left: 80px;"><li>
 Open
 c:\your_OgrePath/Ogre_vc8.sln for Visual 2005
 (Orge_vc9.sln for 2008...)
@@ -169,6 +169,20 @@ deal with network.</p>
 <ul><li>Download the RakNet package release 3.401 (or 
 later)</li>
     <li>Open RakNet solution and compile DLL project in Debug and Release configurations</li>
+</ul>
+    <p>
+        If you are using release 3.401, you have to fix 1 bug into FileListTransfer.cpp 
+        (line 645), add line i = 0;</p>
+    <p>
+        unsigned int bytesRead;<br />
+        char *dataBlocks[2];<br />
+        int lengths[2];<br />
+        RakNet::BitStream outBitstream;<br />
+        i=0;<br />
+        while (i &lt; filesToPush.Size())<br />
+        {<br />
+        ...<br />
+    <ul>
 <li>Unzip it and define your RAKNET_PATH env. var. (eg. 
     "C:\RakNet-3.401")</li><li>Build Debug and Release configuration</li><ul><li>errors
 occurs when building the solution, It's only for some sample so don't
