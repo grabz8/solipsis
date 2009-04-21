@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="TerrainModeler"
 	ProjectGUID="{E81AE9AE-4D3D-441D-AC91-87E586F3F768}"
 	RootNamespace="terrainModeler"
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\Triangle\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,7 +104,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;"
+				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\Triangle\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -157,10 +157,6 @@
 				RelativePath=".\TerrainGenerator.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\triangle.c"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -173,10 +169,6 @@
 			</File>
 			<File
 				RelativePath=".\TerrainGenerator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\triangle.h"
 				>
 			</File>
 		</Filter>
