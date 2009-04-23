@@ -156,10 +156,6 @@
 				RelativePath=".\TerrainGenerator.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\triangle.c"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -172,10 +168,6 @@
 			</File>
 			<File
 				RelativePath=".\TerrainGenerator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\triangle.h"
 				>
 			</File>
 		</Filter>
