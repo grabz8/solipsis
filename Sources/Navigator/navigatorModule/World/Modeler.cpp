@@ -35,6 +35,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTIO.h>
 #include <Plugin_3ds.h>
 #include <Plugin_skp.h>
+#ifdef TERRAIN_MODELER
+#include "TerrainGenerator.h"
+#endif
 #if 1 // GILLES
 #include "CommDlg.h"
 #endif
@@ -285,7 +288,6 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
 
 
 #ifdef DECLARATIVE_MODELER
-
 /// Create a 3D scene from text
 bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg )
 {
@@ -346,6 +348,36 @@ bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name
 
 	return true;
 
+}
+#endif
+
+#ifdef TERRAIN_MODELER
+/// Create a terrain. 
+bool Modeler::createTerrain(const EntityUID& entityUID, const String& name, Vector3 &player_pos, double steepness, double noiseScale, double granularity)
+{
+	tege::TerrainGenerator generator(8,1.0,1.0);
+	generator.generateZeroAltitude();
+	generator.generatePerlinNoise(granularity,steepness,noiseScale);
+	generator.triangulateWithMask();
+
+	String tmpName = name+"_tmp.mesh";
+	generator.prepareMesh(tmpName);
+	MeshPtr mptr = generator.getMeshPtr()->clone( String(name) + ".mesh" );
+
+	Entity *entity = mSceneManager->createEntity( String(name), String(name) + ".mesh" );
+	SceneNode* node = mSceneManager->getRootSceneNode()->createChildSceneNode( String(name) + ".node" );
+#ifdef SHADOWS
+	entity->setCastShadows(true);
+#endif
+    entity->setQueryFlags(Navigator::QFObject);
+	node->attachObject( entity );
+
+	Object3DRing* obj = new Object3DRing(entityUID, String(name), node );
+	mSelection->add3DObject(obj);
+	obj->mCentreSelection = player_pos;
+
+	node->setPosition(player_pos);
+	return true;
 }
 #endif
 

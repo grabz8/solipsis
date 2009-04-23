@@ -126,6 +126,10 @@ public:
 	/// Create a 3D scene by declatative modeling
 	bool createSceneFromText( const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg );
 #endif
+#ifdef TERRAIN_MODELER
+	/// Create a terrain. 
+	bool createTerrain( const EntityUID& entityUID, const String& name, Vector3 &player_pos, double steepness, double noiseScale, double granularity );
+#endif
 	/// Create a mesh.
 #if 1 // GILLES
     bool createMesh(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation, std::string pMeshName = "");
