@@ -57,12 +57,12 @@ Object::~Object()
     {
         Selection *selection = modeler->getSelection();
         selection->remove3DObject(mObject3D);
-
-        if (!mResourceLocation.empty())
-	        ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-        if (!mResourceGroup.empty())
-            ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
     }
+
+    if (!mResourceLocation.empty())
+        ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+    if (!mResourceGroup.empty())
+        ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
 
     if (mLocalNode)
     {
@@ -145,7 +145,7 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
     if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
     {
-        OGRE_LOG("Avatar::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
+        OGRE_LOG("Object::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
 
         Modeler* modeler = Modeler::getSingletonPtr();
         if (mObject3D != 0)
@@ -153,10 +153,9 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             Selection *selection = modeler->getSelection();
             selection->remove3DObject(mObject3D);
 
+            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
             if (!mResourceLocation.empty())
 	            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-            if (!mResourceGroup.empty())
-                ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
         }
 
         String pathname = "";
@@ -173,7 +172,10 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         }
         catch (Ogre::Exception e)
         {
-            OGRE_LOG("Object::updateEntity caught Ogre exception : " + e.getFullDescription());
+            OGRE_LOG("Object::updateEntity() caught Ogre exception : " + e.getFullDescription());
+            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
+            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+            mResourceLocation.clear();
             return false;
         }
 
@@ -181,7 +183,10 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
         if (!modeler->XMLLoad(pathname, newObjects))
         {
-            OGRE_LOG("Error : Unable to load .sof object file !");
+            OGRE_LOG("Object::updateEntity() Unable to load .sof object file !");
+            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
+            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+            mResourceLocation.clear();
             return false;
         }
         mObject3D = *(newObjects.begin());
