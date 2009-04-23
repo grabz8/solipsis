@@ -1070,18 +1070,32 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFAvatar))
     {
         // retrieve avatar instance
-        for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+//         for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+//         {
+//             if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
+//             /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//             //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
+//             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+//             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
+//             avatar = (Avatar*)ogrePeer->second;
+//             if ((avatar == mUserAvatar) && (getCameraMode() == CM1stPersonWithMouse)) continue;
+//             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
+//             return true;
+//         }
+
+        String pickedName = mPickedMovable->getName();
+        String userAvatarName = mUserAvatar->getCharacterInstance()->getUid();
+
+        if (pickedName.find(userAvatarName) != string::npos)
         {
-            if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
-            /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
-            //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
-            Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
-            if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
-            avatar = (Avatar*)ogrePeer->second;
-            if ((avatar == mUserAvatar) && (getCameraMode() == CM1stPersonWithMouse)) continue;
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
             return true;
         }
+
+        // just compares names
+        
+
+
+
     }
 
     return false;

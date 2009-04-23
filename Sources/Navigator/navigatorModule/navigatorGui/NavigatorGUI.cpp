@@ -115,10 +115,15 @@ NavigatorGUI::~NavigatorGUI()
     // Hide previous Navi UI
     hidePreviousNavi();
 
-    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); it != mNaviGui->m_panels.end(); it++)
+    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); 
+        it != mNaviGui->m_panels.end(); 
+        it++)
     {
-        it->second->destroy();
-        delete it->second;
+        GUI_Panel * pPanel = it->second;
+        pPanel->destroy();
+        // CF : should destroy the panels here, but it crashes the hash table iteration
+        // needed to be corrected
+      //  delete pPanel;
     }
 
     // Finalizing Navi

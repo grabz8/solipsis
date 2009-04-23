@@ -68,6 +68,9 @@ void GUI_MainMenu::showHide(bool bShow)
 
 bool GUI_MainMenu::show()
 {
+    if (m_curState == NSCreated)
+        return true;
+
     if (!GUI_Panel::show())
         return false;
 
