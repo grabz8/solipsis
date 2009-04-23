@@ -74,7 +74,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
