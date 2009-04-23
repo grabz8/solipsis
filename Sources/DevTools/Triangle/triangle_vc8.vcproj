@@ -74,6 +74,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if exist &quot;..\..\..\Dependencies\Triangle\include&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Triangle\include&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;triangle.h&quot; &quot;..\..\..\Dependencies\Triangle\include\&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\triangle.lib&quot; &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -136,6 +137,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if exist &quot;..\..\..\Dependencies\Triangle\include&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Triangle\include&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;triangle.h&quot; &quot;..\..\..\Dependencies\Triangle\include\&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\triangle.lib&quot; &quot;..\..\..\Dependencies\Triangle\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
