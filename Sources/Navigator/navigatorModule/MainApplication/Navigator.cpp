@@ -1789,8 +1789,8 @@ bool Navigator::createPrimitive(Object3D::Type type)
 }
 
 
+//-------------------------------------------------------------------------------------
 #ifdef DECLARATIVE_MODELER
-
 bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, std::string& warnMsg )
 {
     Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
@@ -1811,6 +1811,30 @@ bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, 
     return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
 }
 #endif
+
+//-------------------------------------------------------------------------------------
+#ifdef TERRAIN_MODELER
+bool Navigator::createTerrain(double steepness,double noiseScale,double granularity)
+{
+	Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
+	Quaternion pldir = mUserAvatar->getSceneNode()->getOrientation();
+	Radian angle = pldir.getYaw();
+	Ogre::Vector3 dep = Vector3(1.5,0,0);
+
+	Real cosY = Math::Cos(angle);
+	Real sinY = Math::Sin(angle);
+
+	Real x = dep.x * cosY + dep.z * sinY;	//		x' = x*cos(a) + z*sin(a)  
+	//y = point.y;							//		y' = y  
+	dep.z = -dep.x * sinY + dep.z * cosY;	//		z' = -x*sin(a) + z*cos(a)
+	dep.x = x;
+
+    EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
+    //String name = XmlHelpers::convertEntityUIDToHexString(entityUID);
+	return mModeler->createTerrain(entityUID, entityUID, plpos + dep,steepness,noiseScale,granularity);
+}
+#endif
+
 
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()

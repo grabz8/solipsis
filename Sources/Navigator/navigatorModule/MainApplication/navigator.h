@@ -316,6 +316,10 @@ public:
     /** Create a Scene from text. */
 	bool createSceneFromText( const std::string&, std::string& errMsg, std::string& warnMsg );
 #endif
+#ifdef TERRAIN_MODELER
+	/** Create a terrain. */
+    bool createTerrain(double steepness,double noiseScale,double granularity);
+#endif
     /** Create a mesh. */
     bool createMesh();
     /** Import a mesh file.*/
