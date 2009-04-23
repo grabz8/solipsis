@@ -39,8 +39,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\include&quot;;..\..\..\Dependencies\antlr2.7.6\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\include&quot;;..\..\..\Dependencies\antlr2.7.6\include;..\..\..\Dependencies\postagger\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;AFXDL;NO_STATIC_CONSTS;_MBC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,8 +59,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="Antlr2.7.6.lib GecodeSupport.lib GecodeSet.lib GecodeSerialization.lib GecodeSearch.lib GecodeMinimodel.lib GecodeKernel.lib GecodeInt.lib GecodeCpltSet.lib"
-				AdditionalLibraryDirectories="&quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)\&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -107,8 +105,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\include&quot;;..\..\..\Dependencies\antlr2.7.6\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;"
+				AdditionalIncludeDirectories=".;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\include&quot;;..\..\..\Dependencies\antlr2.7.6\include;..\..\..\Dependencies\postagger\include"
+				PreprocessorDefinitions="WIN32;_WINDOWS;AFXDL;NO_STATIC_CONSTS;_MBC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -164,10 +162,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\bidir.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ConstraintWriter.cpp"
 				>
 			</File>
@@ -188,14 +182,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\maxent.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\postag.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Solver.cpp"
 				>
 			</File>
@@ -209,10 +195,6 @@
 			</File>
 			<File
 				RelativePath=".\TagsParser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tokenize.cpp"
 				>
 			</File>
 			<File
@@ -238,10 +220,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Constraints.h"
 				>
 			</File>
@@ -262,19 +240,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\maxent.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Solver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Tag.h"
 				>
 			</File>
 			<File
