@@ -21,15 +21,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GUI_Options_h__
-#define __GUI_Options_h__
+#ifndef __GUI_Chat_h__
+#define __GUI_Chat_h__
 
-// #include <Facebook.h>
 #include "NavigatorGui.h"
 #include "MainApplication/Navigator.h"
 #include "GUI_Panel.h"
-// #include "World/Modeler.h"
-// #include "ModifiableMaterialObject.h"
 
 using namespace NaviLibrary;
 
@@ -37,31 +34,21 @@ namespace Solipsis
 {
     class Navigator;
 
-    /** This class manages all Graphical User Interfaces of the Navigator.
-    */
-    class GUI_Options : public GUI_Panel
+    class GUI_Chat : public GUI_Panel
     {
     public:
         static bool createAndShowPanel();
-
-       // Show the page
+        static void setStatusBarText(const std::string& statusText);
         virtual bool show();
-       
+        virtual void update();
+
     protected:
-        GUI_Options();
+        GUI_Chat();
+        static GUI_Chat * stGUI_Chat;
 
-        void applyLoginDatas(); 
+        unsigned long mStatusBarDisplayDate;
 
-        void onLoaded(const NaviData& naviData);
-        void onOk(const NaviData& naviData);
-        void onBack(const NaviData& naviData);
-
-        static GUI_Options * stGUI_Options;
-
-        Navigator * mNavigator;
-        NaviManager* mNaviMgr;
     };
-
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_Options_h__
+#endif // #ifndef __GUI_Chat_h__

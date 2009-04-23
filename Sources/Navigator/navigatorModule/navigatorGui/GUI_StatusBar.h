@@ -39,6 +39,8 @@ namespace Solipsis
     public:
         static bool createAndShowPanel();
         static void setStatusBarText(const std::string& statusText);
+        static void updateBar();
+
         virtual bool show();
         virtual void update();
 

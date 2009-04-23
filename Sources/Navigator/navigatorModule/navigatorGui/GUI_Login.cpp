@@ -35,10 +35,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GUI_AuthentFacebook.h"
 #include "GUI_AuthentWorldServer.h"
 
-
-
 using namespace Solipsis;
 using namespace CommonTools;
+
+GUI_Login * GUI_Login::stGUI_Login = NULL;
 
 GUI_Login::GUI_Login() : GUI_Panel("uilogin")
 {
@@ -216,9 +216,7 @@ void GUI_Login::onConnect(const NaviData& naviData)
 
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::quit(const NaviData& naviData)
+void GUI_Login::onQuit(const NaviData& naviData)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::quit()");
-
     mNavigator->quit();
 }

@@ -46,7 +46,7 @@ namespace Solipsis
 
        // Show the page
         virtual bool show();
-        virtual void hide();
+        //virtual void hide();
        
     protected:
         GUI_Login();
@@ -61,10 +61,7 @@ namespace Solipsis
         void onOptions(const NaviData& naviData);
         void onQuit(const NaviData& naviData);
 
-        ~GUI_Login();
-
         static GUI_Login * stGUI_Login;
-
         Navigator * mNavigator;
     };
 

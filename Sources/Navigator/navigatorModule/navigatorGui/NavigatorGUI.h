@@ -46,32 +46,8 @@ public:
         NSNotCreated,   // Navi page not created
         NSCreated       // Navi page created and not visible
     };
-
-    enum MsgBoxButtons {
-        MBB_OK = 1,
-        MBB_CANCEL = MBB_OK >> 1,
-        MBB_YESNO = MBB_CANCEL >> 1
-    };
-    enum MsgBoxIcon {
-        MBB_INFO = 0,
-        MBB_QUESTION,
-        MBB_ERROR,
-        MBB_EXCLAMATION
-    };
-
-    enum NaviContext
-    {
-        NAVI_CTXTAVATAR,
-        NAVI_CTXTWWW,
-        NAVI_CTXTSWF,
-        NAVI_CTXTVLC,
-        NAVI_CTXTVNC,
-        NAVI_CTXTCOUNT
-   };
     
     enum NaviPanel {
-        NAVI_MAINMENU,
-        NAVI_STATUSBAR,
         NAVI_CHAT,
         NAVI_ABOUT,
         NAVI_COMMANDS,
@@ -107,7 +83,6 @@ protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
     static const std::string ms_NavisNames[NAVI_COUNT];
-    static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];
 
     NaviState mNavisStates[NAVI_COUNT];
     int mCurrentNavi;
@@ -142,23 +117,13 @@ public:
     // Apply informations of login panel
 //     void applyLoginDatas();
 
-    // Set text in status bar + display it for a while
-    void setStatusBarText(const std::string& statusText);
-
     // Main menu panel
     void mainmenuSwitch();
 
     // Chat panel
     void addChatText(const std::wstring& message);
 
-    // Contextual panel
-    void contextPanelShow(int x, int y, NaviContext ctxtPanel, const String& params);
-    bool isContextPanelVisible();
-    bool isContextPanelFocused();
-    void contextPanelHide();
-    void contextPanelDestroy();
-
-    // Main modeler panel
+     // Main modeler panel
     void modelerMainShow();
     bool isModelerMainVisible();
     void modelerMainHide();

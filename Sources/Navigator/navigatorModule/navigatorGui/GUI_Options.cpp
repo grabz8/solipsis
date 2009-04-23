@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
+GUI_Options * GUI_Options::stGUI_Options = NULL;
 
 GUI_Options::GUI_Options() : GUI_Panel("uioptions")
 {

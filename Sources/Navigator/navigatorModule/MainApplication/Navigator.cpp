@@ -25,6 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Navigator.h"
 #include "NavigatorGui/GUI_MessageBox.h"
+#include "navigatorGui/GUI_login.h"
+#include "navigatorGui/GUI_ContextMenu.h"
+#include "navigatorGui/GUI_MainMenu.h"
+#include "navigatorGui/GUI_StatusBar.h"
+
+
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -1242,8 +1248,7 @@ bool Navigator::createGUI()
     if (!mNavigatorGUI->startup())
         return false;
 
-    mNavigatorGUI->login();
-
+    GUI_Login::createAndShowPanel();
     return true;
 }
 
@@ -1391,7 +1396,7 @@ bool Navigator::disconnect()
     }
 
     mState = SLogin;
-    mNavigatorGUI->login();
+    GUI_Login::createAndShowPanel();
 
     return true;
 }
@@ -1466,7 +1471,7 @@ bool Navigator::contextItemSelected(const String& item)
 
     if (mNavigatorGUI == 0) return true;
 
-    mNavigatorGUI->contextHide();
+    GUI_ContextMenu::hideMenu();
 
     // Perform action associated to item selected
     if (item == "config")
@@ -2138,12 +2143,14 @@ void Navigator::setCameraMode(int mode)
         // Set mouse exclusive mode in windowed mode (exclusive only on 1st person camera mode)
         if (!mIWindow->isFullscreen())
             mIWindow->setMouseExclusive(mode == CM1stPerson);
-        mNavigatorGUI->setNaviVisibility(mNavigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
+
+        GUI_MainMenu::showHide(mode != CM1stPerson);
+
         NaviManager::Get().deFocusAllNavis();
         if (mode == CM1stPerson)
-            mNavigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
+            GUI_StatusBar::setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
         else if (mode == CMAroundPerson || mode == CMModeling)
-            mNavigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
+            GUI_StatusBar::setStatusBarText("Click/Drag middle button to rotate ...");
     }
 }
 

@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "NavigatorGUI.h"
 #include "GUI_MessageBox.h"
+#include "GUI_StatusBar.h"
+#include "GUI_MainMenu.h"
 
 #include "MainApplication/Navigator.h"
 #include "MainApplication/NavigatorFrameListener.h"
@@ -54,29 +56,23 @@ using namespace CommonTools;
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
 
-const std::string NavigatorGUI::ms_NavisContexts[] = 
-{
-    "uictxtavatar",
-    "uictxtwww",
-    "uictxtswf",
-    "uictxtvlc",
-    "uictxtvnc"
-};
-
 const std::string NavigatorGUI::ms_NavisNames[] = {
-    "uichat",
     "uiabout",
     "uicommands",
     "uimdlrmain",
     "uimdlrprop",
+
 #ifdef DECLARATIVE_MODELER
    "uimdlrscenefromtext",
 #endif
+
     "uiavatarmain",
     "uiavatarprop",
+
 #ifdef UIDEBUG
     "uidebug"
 #endif
+
 };
 
 const std::string NavigatorGUI::ms_ModelerErrors[] = {
@@ -94,9 +90,7 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mCurrentNavi(-1),
     mCurrentCtxtPanel(-1),
     mCurrentNaviCreationDate(0),
-    mStatusBarDisplayDate(0),
     mLoginInfosText(""),
-    mWorldsServerEventListener(this),
     mLockAmbientDiffuse(false),
     m_pCurrentPanel(NULL)
 {
@@ -120,6 +114,12 @@ NavigatorGUI::~NavigatorGUI()
 
     // Hide previous Navi UI
     hidePreviousNavi();
+
+    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); it != mNaviGui->m_panels.end(); it++)
+    {
+        it->second->destroy();
+        delete it->second;
+    }
 
     // Finalizing Navi
     delete mNaviMgr;
@@ -165,7 +165,7 @@ void NavigatorGUI::update()
         m_pCurrentPanel->update();
     }
 
-    GUI_StatusBar::update();
+    GUI_StatusBar::updateBar();
 }
 
 //-------------------------------------------------------------------------------------
@@ -204,39 +204,6 @@ void NavigatorGUI::inWorld()
     GUI_StatusBar::createAndShowPanel();
 }
 
-void NavigatorGUI::showStatusBar()
-{
-    // Create Navi UI status bar
-    // Lua
-    if (mNavisStates[NAVI_STATUSBAR] == NSNotCreated)
-    {
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", ms_NavisNames[NAVI_STATUSBAR].c_str()))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + ms_NavisNames[NAVI_STATUSBAR], "NavigatorGUI::inWorld()"); 
-
-        mNavisStates[NAVI_STATUSBAR] = NSCreated;
-    }
-}
-
-// //-------------------------------------------------------------------------------------
-// void NavigatorGUI::applyLoginDatas()
-// {
-//     NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_LOGIN]);
-//     if (navi == 0) return;
-// 	std::string login = navi->evaluateJS("$('inputLogin').value");
-// 	std::string pwd = navi->evaluateJS("$('inputPwd').value");
-//     if ((login != mNavigator->getLogin()) || (pwd != mNavigator->getPwd()))
-//         mNavigator->setNodeId("");
-// 
-//     bool rememberPassword = navi->evaluateJS("$('savePassWordCB').checked") == "true";
-// 
-//     mNavigator->setLogin(login);
-//     mNavigator->setPwd(pwd, rememberPassword);
-// 
-//     mNavigator->saveConfiguration();
-// }
-
-
-
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::addChatText(const std::wstring& message)
 {
@@ -252,66 +219,6 @@ void NavigatorGUI::addChatText(const std::wstring& message)
     navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
  
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::contextPanelShow(int x, int y, NaviContext ctxtPanel, const String& params)
-{
-    if (mCurrentCtxtPanel != -1)
-        contextHide();
-
-    // Create Navi UI context
-    // Lua
-    if (!mNavigator->getNavigatorLua()->call("createGUI", "%s%d%d%s", ms_NavisNames[ctxtPanel].c_str(), x, y, params.c_str()))
-    {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", ms_NavisNames[ctxtPanel].c_str());
-        return;
-    }
-    mNavisStates[ctxtPanel] = NSCreated;
-    mCurrentCtxtPanel = ctxtPanel;
-}
-
-//-------------------------------------------------------------------------------------
-bool NavigatorGUI::isContextVisible()
-{
-    if (mCurrentCtxtPanel == -1) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
-    return ((navi != 0) && navi->getVisibility());
-}
-
-//-------------------------------------------------------------------------------------
-bool NavigatorGUI::isContextPanelFocused()
-{
-    if (mCurrentCtxtPanel == -1) return false;
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
-    return ((navi != 0) && (navi == mNaviMgr->getFocusedNavi()));
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::contextPanelHide()
-{
-    if (mCurrentCtxtPanel == -1) return;
-    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) return;
-
-    // Hide Navi UI context
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
-    navi->hide();
-    mCurrentCtxtPanel = -1;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::contextPanelDestroy()
-{
-    if (mCurrentCtxtPanel == -1) 
-        return;
-
-    if (mNavisStates[mCurrentCtxtPanel] == NSNotCreated) 
-        return;
-
-    // Destroy Navi UI context
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentCtxtPanel]);
-    mNaviMgr->destroyNavi(navi);
-    mNavisStates[mCurrentCtxtPanel] = NSNotCreated;
-    mCurrentCtxtPanel = -1;
-}
 
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerMainShow()

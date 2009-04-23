@@ -51,6 +51,20 @@ bool GUI_MainMenu::createAndShowPanel()
     return stGUI_MainMenu->show();
 }
 
+void GUI_MainMenu::showHide(bool bShow)
+{
+    if (!stGUI_MainMenu)
+    {
+        return; 
+    }
+
+    if (bShow)
+        stGUI_MainMenu->show();
+    else
+        stGUI_MainMenu->hide();
+}
+
+
 
 bool GUI_MainMenu::show()
 {

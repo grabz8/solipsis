@@ -21,15 +21,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GUI_Options_h__
-#define __GUI_Options_h__
+#ifndef __GUI_ContextMenu_h__
+#define __GUI_ContextMenu_h__
 
-// #include <Facebook.h>
 #include "NavigatorGui.h"
 #include "MainApplication/Navigator.h"
 #include "GUI_Panel.h"
-// #include "World/Modeler.h"
-// #include "ModifiableMaterialObject.h"
 
 using namespace NaviLibrary;
 
@@ -37,31 +34,40 @@ namespace Solipsis
 {
     class Navigator;
 
-    /** This class manages all Graphical User Interfaces of the Navigator.
-    */
-    class GUI_Options : public GUI_Panel
+ 
+
+    class GUI_ContextMenu : public GUI_Panel
     {
     public:
-        static bool createAndShowPanel();
+        enum NaviContext
+        {
+            NAVI_CTXTAVATAR,
+            NAVI_CTXTWWW,
+            NAVI_CTXTSWF,
+            NAVI_CTXTVLC,
+            NAVI_CTXTVNC,
 
-       // Show the page
-        virtual bool show();
-       
+            NAVI_CTXTCOUNT
+        };
+
+
+        static bool createAndShowPanel(int x, int y, NaviContext ctxtPanel, const String& params);
+        static void hideMenu();
+        static bool isContextVisible();
+        static bool isContextFocused();
+
     protected:
-        GUI_Options();
+        GUI_ContextMenu();
+        virtual bool show(int x, int y, NaviContext ctxtPanel, const String& params);
+        virtual void hide();
+        virtual void destroy();
 
-        void applyLoginDatas(); 
+        static GUI_ContextMenu * stGUI_ContextMenu;
+        static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];
 
-        void onLoaded(const NaviData& naviData);
-        void onOk(const NaviData& naviData);
-        void onBack(const NaviData& naviData);
+        NaviContext m_curContext;
 
-        static GUI_Options * stGUI_Options;
-
-        Navigator * mNavigator;
-        NaviManager* mNaviMgr;
     };
-
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_Options_h__
+#endif // #ifndef __GUI_ContextMenu_h__

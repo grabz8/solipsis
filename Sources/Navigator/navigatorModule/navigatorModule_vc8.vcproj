@@ -1037,11 +1037,43 @@
 			Name="NavigatorGui"
 			>
 			<File
+				RelativePath=".\navigatorGui\GUI_AuthentFacebook.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_AuthentFacebook.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_AuthentWorldServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_AuthentWorldServer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_ChooseWorld.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\navigatorGui\GUI_ChooseWorld.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ContextMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ContextMenu.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_FromServer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_FromServer.h"
 				>
 			</File>
 			<File
@@ -1053,6 +1085,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_MainMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_MainMenu.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_MessageBox.cpp"
 				>
 			</File>
@@ -1061,11 +1101,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_Options.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Options.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_Panel.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\navigatorGui\GUI_Panel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_StatusBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_StatusBar.h"
 				>
 			</File>
 			<File

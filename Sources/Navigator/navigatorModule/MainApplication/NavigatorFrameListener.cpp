@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Cameras/OrbitalCameraSupport.h"
 #include "Cameras/FirstPersonCameraSupport.h"
 
+#include "navigatorGui/GUI_ContextMenu.h"
+
 using namespace NaviLibrary;
 using namespace Solipsis;
 using namespace CommonTools;
@@ -323,8 +325,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
         return true;
 
-    if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
-        navigatorGUI->contextHide();
+    GUI_ContextMenu::hideMenu();
 
     // VNC panel ?
     if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
@@ -988,8 +989,8 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             // Updating Navi with the mouse pressed
             NaviManager::Get().injectMouseDown(buttonsId);
 
-        if (navigatorGUI->isContextVisible() && !navigatorGUI->isContextFocused())
-            navigatorGUI->contextHide();
+        if (GUI_ContextMenu::isContextVisible() && !GUI_ContextMenu::isContextFocused())
+            GUI_ContextMenu::hideMenu();
 
         // 3D picking of Navi panels if no 2D panel focused
         mNavigator->resetMousePicking();
@@ -1007,7 +1008,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             MovableObject* vncMovableObj = 0;
             MovableObject* swfMovableObj = 0;
             Vector2 vncXY, swfXY;
-            if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
+            if ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible())
             {
                 if (mMouseMiddlePressed && mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
                 {
@@ -1017,20 +1018,20 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 {
                     MovableObject* movableObj = 0;
                     if (mNavigator->is1AvatarHitByMouse(avatar))
-                        navigatorGUI->contextPanelShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "config#create#chat#talk");
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTAVATAR, "config#create#chat#talk");
                     else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
-                        navigatorGUI->contextPanelShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTWWW, naviName);
                     else if (mNavigator->is1VLCHitByMouse(movableObj))
                     {
                         Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
                         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                        navigatorGUI->contextPanelShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTVLC, mtlName);
                     }
                     else if (mNavigator->is1SWFHitByMouse(movableObj, swfXY))
                     {
                         Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
                         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                        navigatorGUI->contextPanelShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTSWF, mtlName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTSWF, mtlName);
                     }
                 }
             }

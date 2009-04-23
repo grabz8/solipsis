@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Prerequisites.h"
 
-#include "GUI_StatusBar.h"
+#include "GUI_Chat.h"
 #include <CTStringHelpers.h>
 #include <CTSystem.h>
 #include <Navi.h>
@@ -32,25 +32,25 @@ using namespace Solipsis;
 using namespace CommonTools;
 //-------------------------------------------------------------------------------------
 
-GUI_StatusBar * GUI_StatusBar::stGUI_StatusBar = NULL;
+GUI_Chat * GUI_Chat::stGUI_Chat = NULL;
 
-GUI_StatusBar::GUI_StatusBar() : GUI_Panel("uistatusbar")
+GUI_Chat::GUI_Chat() : GUI_Panel("uichat")
 {
-    stGUI_StatusBar = this;
+    stGUI_Chat = this;
 }
 
-bool GUI_StatusBar::createAndShowPanel()
+bool GUI_Chat::createAndShowPanel()
 {
-    if (!stGUI_StatusBar)
+    if (!stGUI_Chat)
     {
-        new GUI_StatusBar();
+        new GUI_Chat();
     }
 
-    return stGUI_StatusBar->show();
+    return stGUI_Chat->show();
 }
 
 
-bool GUI_StatusBar::show()
+bool GUI_Chat::show()
 {
     // Create Navi UI status bar
     // Lua
@@ -64,42 +64,32 @@ bool GUI_StatusBar::show()
     }
 }
 
-void GUI_StatusBar::updateBar()
+void GUI_Chat::update()
 {
-    if (!stGUI_StatusBar)
-        return;
-
-    stGUI_StatusBar->update();
-
-}
-
-void GUI_StatusBar::update()
-{
-    if (!stGUI_StatusBar)
+    if (!stGUI_Chat)
         return;
     unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 
     // Status bar update
-    if ((stGUI_StatusBar->mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
+    if ((stGUI_Chat->mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
     {
-        if (stGUI_StatusBar->mNavi == 0) return;
-        if (stGUI_StatusBar->mNavi->getVisibility())
-            stGUI_StatusBar->mNavi->hide(true);
+        if (stGUI_Chat->mNavi == 0) return;
+        if (stGUI_Chat->mNavi->getVisibility())
+            stGUI_Chat->mNavi->hide(true);
 
-        stGUI_StatusBar->mStatusBarDisplayDate = 0;
+        stGUI_Chat->mStatusBarDisplayDate = 0;
     }
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_StatusBar::setStatusBarText(const std::string& statusText)
+void GUI_Chat::setStatusBarText(const std::string& statusText)
 {
-    if (!stGUI_StatusBar)
+    if (!stGUI_Chat)
         return;
 
-    stGUI_StatusBar->mNavi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
-    stGUI_StatusBar->mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
+    stGUI_Chat->mNavi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
+    stGUI_Chat->mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
 
-    if (!stGUI_StatusBar->mNavi->getVisibility())
-        stGUI_StatusBar->mNavi->show(true);
+    if (!stGUI_Chat->mNavi->getVisibility())
+        stGUI_Chat->mNavi->show(true);
 }
-

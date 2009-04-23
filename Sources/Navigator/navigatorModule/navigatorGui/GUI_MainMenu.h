@@ -38,6 +38,7 @@ namespace Solipsis
     {
     public:
         static bool createAndShowPanel();
+        static void showHide(bool bShow);
         virtual bool show();
 
 #ifdef UIDEBUG       
