@@ -40,6 +40,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".\include\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NO_STATIC_CONSTS;AFXDL;_MBC;"
+				RuntimeLibrary="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -98,6 +99,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".\include\"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NO_STATIC_CONSTS;AFXDK;_MBC;"
+				RuntimeLibrary="2"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
