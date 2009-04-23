@@ -109,7 +109,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;AFXDL;NO_STATIC_CONSTS;_MBC"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				WarningLevel="3"
+				WarningLevel="2"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -123,8 +123,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="Antlr2.7.6.lib GecodeSupport.lib GecodeSet.lib GecodeSerialization.lib GecodeSearch.lib GecodeMinimodel.lib GecodeKernel.lib GecodeInt.lib GecodeCpltSet.lib"
-				AdditionalLibraryDirectories="&quot;..\..\..\Dependencies\antlr2.7.6\lib\$(ConfigurationName)\&quot;;&quot;..\..\..\Dependencies\gecode-2.2.0\lib&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -171,10 +169,6 @@
 			</File>
 			<File
 				RelativePath=".\Link.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\main.cpp"
 				>
 			</File>
 			<File
