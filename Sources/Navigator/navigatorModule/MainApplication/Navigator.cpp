@@ -1564,7 +1564,7 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
 #endif
     if (!mOgrePeerManager->load(xmlEntity))
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Server command ERROR : Navigator::onPeerNew() Unable to load entity !");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onPeerNew() Unable to load entity !");
     }
 }
 
@@ -1576,7 +1576,7 @@ void Navigator::onPeerLost(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
     if (!mOgrePeerManager->remove(xmlEntity->getUid()))
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to remove lost peer %s !", xmlEntity->getUid());
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Navigator::onPeerLost() Unable to remove lost peer %s !", xmlEntity->getUid().c_str());
         //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
     }
 }
@@ -1589,8 +1589,8 @@ void Navigator::onPeerUpdated(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
     if (!mOgrePeerManager->updateEntity(xmlEntity))
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Server command ERROR : Unable to update peer %s !", xmlEntity->getUid());
-        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Navigator::onPeerUpdated() Unable to update peer %s !", xmlEntity->getUid().c_str());
+        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerUpdated");
     }
 }
 
@@ -1602,8 +1602,8 @@ void Navigator::onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction)
 
     if (!mOgrePeerManager->action(xmlAction))
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "WARNING : Unable to do action on ID %s !", xmlAction->getSourceEntityUid());
-        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to remove lost peer " + xmlEntity->getUid() + " !", "Navigator::onPeerLost");
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR,  "Navigator::onPeerAction() Unable to do action on peer %s !", xmlAction->getSourceEntityUid().c_str());
+        //     throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to do action on peer " + xmlEntity->getUid() + " !", "Navigator::onPeerAction");
     }
 }
 
