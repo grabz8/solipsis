@@ -92,6 +92,9 @@ const std::string NavigatorGUI::ms_ModelerErrors[] = {
 #ifdef DECLARATIVE_MODELER
 	"Something went wrong with declarative modeling. Please re-formulate your text."
 #endif
+#ifdef TERRAIN_MODELER
+	"Something went wrong with terrain modeling."
+#endif
 };
 
 //-------------------------------------------------------------------------------------
@@ -402,6 +405,10 @@ void NavigatorGUI::modelerMainShow()
 	if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] == NSCreated)
         modelerSceneFromTextUnload();
 #endif
+#ifdef TERRAIN_MODELER
+	if (mNavisStates[NAVI_MODELERTERRAIN] == NSCreated)
+        modelerTerrainUnload();
+#endif
     if (mNavisStates[NAVI_MODELERMAIN] == NSNotCreated)
     {
         // Create Navi UI modeler
@@ -431,6 +438,9 @@ void NavigatorGUI::modelerMainShow()
 		navi->bind("CreateRing", NaviDelegate(this, &NavigatorGUI::modelerMainCreateRing)); 
 #ifdef DECLARATIVE_MODELER
 		navi->bind("CreateSceneFromText", NaviDelegate(this, &NavigatorGUI::modelerMainCreateSceneFromText)); 
+#endif
+#ifdef TERRAIN_MODELER
+		navi->bind("CreateTerrain", NaviDelegate(this, &NavigatorGUI::modelerMainCreateTerrain)); 
 #endif
 
 		navi->bind("ActionDelete", NaviDelegate(this, &NavigatorGUI::modelerActionDelete)); 
@@ -481,6 +491,9 @@ void NavigatorGUI::modelerMainUnload()
 		modelerPropUnload();
 #ifdef DECLARATIVE_MODELER
 		modelerSceneFromTextUnload();
+#endif
+#ifdef TERRAIN_MODELER
+		modelerTerrainUnload();
 #endif
 		// Remove temporary files & folder of the thumbnails
 		std::string path ( "NaviLocal\\NaviTmpTexture" );
@@ -2671,6 +2684,16 @@ void NavigatorGUI::modelerMainCreateSceneFromText(const NaviData& naviData)
 //	mNavigator->createSceneFromText( "A red ball is on a green box." );
 }
 #endif
+
+//-------------------------------------------------------------------------------------
+#ifdef TERRAIN_MODELER
+void NavigatorGUI::modelerMainCreateTerrain(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTerrain()");
+	modelerTerrainShow();
+}
+#endif
+
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::modelerActionDelete(const NaviData& naviData)
 {
@@ -4041,11 +4064,6 @@ void NavigatorGUI::avatarPropPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (mNavisStates[NAVI_AVATARPROP] == NSCreated)
         navi->show(true);
-#ifdef DECLARATIVE_MODELER
-
-	std::string msg = "AvatarProp window loaded";
-	MessageBox(0, msg.c_str(), "NavigatorGUI Avatar", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -5508,12 +5526,13 @@ void NavigatorGUI::modelerSceneFromTextExec(const NaviData& naviData)
 	std::string errMsg( "" );
 	std::string warnMsg( "" );
 	if( !mNavigator->createSceneFromText( value, errMsg, warnMsg ) )
-		if( errMsg != "" )
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
-		else if( warnMsg != "" )
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
-		else 
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
+		return;
+		//if( errMsg != "" )
+		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
+		//else if( warnMsg != "" )
+		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
+		//else 
+		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
 }
 
 //-------------------------------------------------------------------------------------
@@ -5546,6 +5565,111 @@ void NavigatorGUI::modelerSceneFromTextUnload()
         navi->hide();
         mNaviMgr->destroyNavi(navi);
         mNavisStates[NAVI_MODELERSCENEFROMTEXT] = NSNotCreated;
+    }
+}
+#endif
+
+//-------------------------------------------------------------------------------------
+#ifdef TERRAIN_MODELER
+void NavigatorGUI::modelerTerrainShow()
+{
+
+	if (mNavisStates[NAVI_MODELERTERRAIN] == NSNotCreated)
+	{
+		LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerTerrainShow()");
+    
+		// Reset the remoteMRL on local IP address with UDP
+        CommonTools::NetSocket::IPAddressVector myIPAddresses;
+        if (!CommonTools::NetSocket::getMyIP(myIPAddresses))
+            myIPAddresses.push_back("");
+        std::string firstLocalIP = myIPAddresses.front();
+
+		// Create Navi UI modeler
+		NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_MODELERTERRAIN], "local://uimdlrterrain.html" /*?localIP=" + firstLocalIP*/, NaviPosition(TopRight), 512, 512);
+		navi->setMovable(true);
+		navi->hide();
+		navi->setMask("uimdlrterrain.png");//Eliminate the black shadow at the margin of the menu
+		//navi->setOpacity(0.75f);
+
+		// page loaded
+		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::modelerTerrainPageLoaded));
+
+		navi->bind("MdlrTCreate", NaviDelegate(this, &NavigatorGUI::modelerTerrainExec));
+		navi->bind("MdlrTCancel", NaviDelegate(this, &NavigatorGUI::modelerTerrainCancelled));
+		
+		mNavisStates[NAVI_MODELERTERRAIN] = NSCreated;
+
+	}
+	else {
+		mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERTERRAIN])->show(true);
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerTerrainPageLoaded(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerTerrainPageLoaded()");
+
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERTERRAIN]);
+
+    // Show Navi UI
+    if (mNavisStates[NAVI_MODELERTERRAIN] == NSCreated)
+        navi->show(true);
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerTerrainExec(const NaviData& naviData)
+{
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerTerrainExec()");
+	
+    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERTERRAIN]);
+	
+	int nbOctaves = 5;
+
+	std::string noiseScale = navi->evaluateJS("noiseScale.getValue()");	
+	std::string msg = "noiseScale="+noiseScale;
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
+
+	std::string granularity = navi->evaluateJS("granularity.getValue()");	
+	msg = "granularity="+granularity;
+	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
+
+	modelerTerrainUnload();
+
+	mNavigator->createTerrain( nbOctaves, atoi( noiseScale.c_str() ), atof(granularity.c_str() ) / 100 );
+
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerTerrainCancelled(const NaviData& naviData)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerTerrainCancelled()");
+	modelerTerrainUnload();
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::isModelerTerrainVisible()
+{
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerTerrainHide()
+{
+    if (!isModelerPropVisible()) return;
+    mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERTERRAIN])->hide();
+}
+
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::modelerTerrainUnload()
+{
+    if (mNavisStates[NAVI_MODELERTERRAIN] != NSNotCreated)
+	{
+        // Destroy Navi UI modeler
+        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERTERRAIN]);
+        navi->hide();
+        mNaviMgr->destroyNavi(navi);
+        mNavisStates[NAVI_MODELERTERRAIN] = NSNotCreated;
     }
 }
 #endif

@@ -82,6 +82,9 @@ public:
 #ifdef DECLARATIVE_MODELER
 		NAVI_MODELERSCENEFROMTEXT,
 #endif
+#ifdef TERRAIN_MODELER
+		NAVI_MODELERTERRAIN,
+#endif
 
         NAVI_AVATARMAIN,
         NAVI_AVATARPROP,
@@ -99,6 +102,9 @@ public:
         ME_FILENOTFOUND,
 #ifdef DECLARATIVE_MODELER
 		ME_DECLARATIVEMODELINGERROR, // decl. mod. error
+#endif
+#ifdef TERRAIN_MODELER
+		ME_TERRAINMODELINGERROR, // terrain mod. error
 #endif
    };
     static const std::string ms_ModelerErrors[];
@@ -188,6 +194,13 @@ public:
     void modelerSceneFromTextHide();
     void modelerSceneFromTextUnload();
 #endif
+#ifdef TERRAIN_MODELER
+	// Scene From Text Modeler Panel
+	void modelerTerrainShow();
+    bool isModelerTerrainVisible();
+    void modelerTerrainHide();
+    void modelerTerrainUnload();
+#endif
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
@@ -263,6 +276,9 @@ protected:
     void modelerMainCreateRing(const NaviData& naviData);
 #ifdef DECLARATIVE_MODELER
     void modelerMainCreateSceneFromText(const NaviData& naviData);
+#endif
+#ifdef TERRAIN_MODELER
+    void modelerMainCreateTerrain(const NaviData& naviData);
 #endif
     // Modeler fake right click callbacks
     void modelerActionDelete(const NaviData& naviData);
@@ -405,6 +421,12 @@ protected:
     void modelerSceneFromTextPageLoaded(const NaviData& naviData);
 	void modelerSceneFromTextExec(const NaviData& naviData);	
 	void modelerSceneFromTextCancelled(const NaviData& naviData);
+#endif
+#ifdef TERRAIN_MODELER
+	// Modeler Terrain Setup properties page callbacks
+    void modelerTerrainPageLoaded(const NaviData& naviData);
+	void modelerTerrainExec(const NaviData& naviData);	
+	void modelerTerrainCancelled(const NaviData& naviData);
 #endif
 public:
     // Modeler properties updates
