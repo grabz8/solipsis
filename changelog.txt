@@ -1101,13 +1101,6 @@ quick save obj selection to save bug fix
 Release 1.1.0 new delivery
 
 ---------------------------
-20/04/09
-
-ANTLR sources added into DevTools to avoid VC++ version conflicts
-Triangle library added to DevTools as it is used by the terrain generator
-Postagger library added to DevTools
-
----------------------------
 21/04/09
 
 Cache file writing bug fix
@@ -1115,5 +1108,16 @@ RakNet 3.401 (used in release 1.1.0) FileListTransfer plugin bug fix (i not rese
 Release 1.1.0 new delivery
 
 ---------------------------
+20/04/09
 
+ANTLR sources added into DevTools to avoid VC++ version conflicts
+Triangle library added to DevTools as it is used by the terrain generator
+Postagger library added to DevTools
 
+---------------------------
+23/04/09
+
+Cantine meeting bug: ResourceGroup is now destroyed when object3D was not loaded (eg. prim type OTHER not yet supported)
+Cantine meeting bug: Bad logs %s with getUid() std::string
+
+---------------------------
