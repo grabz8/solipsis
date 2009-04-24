@@ -78,6 +78,7 @@ xcopy "..\..\..\Dependencies\VoiceEngine\lib\Release\voiceEngine.dll" "%dst%" /s
 xcopy "..\..\..\Dependencies\Phonetizer\lib\Release\Phonetizer.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\FaceController\lib\Release\FaceController.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\libiconv\lib\libiconv2.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\gecode-2.2.0\bin\*.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%dst%" /s /y
