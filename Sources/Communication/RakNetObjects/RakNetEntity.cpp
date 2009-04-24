@@ -52,6 +52,13 @@ RakNetEntity::~RakNetEntity()
 //-------------------------------------------------------------------------------------
 void RakNetEntity::addEntity(RakNetEntity* entity)
 {
+    RakNetEntityMap::const_iterator it = ms_Entities.find(entity->getXmlEntity()->getUid());
+    if (it != ms_Entities.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "RakNetEntity::addEntity() Entity already present, ignoring ...");
+        return;
+    }
+
     ms_Entities[entity->getXmlEntity()->getUid()] = entity;
     entity->onNewEntity();
 }
@@ -74,10 +81,10 @@ void RakNetEntity::cleanUpEntities()
 }
 
 //-------------------------------------------------------------------------------------
-RakNetEntity* RakNetEntity::findByAddress(SystemAddress& systemAddress)
+RakNetEntity* RakNetEntity::findByAddressAndType(SystemAddress& systemAddress, EntityType type)
 {
 #ifdef LOGRAKNET
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s", systemAddress.ToString());
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddressAndType() systemAddress:%s, type:%s", systemAddress.ToString(), XmlHelpers::convertEntityTypeToRepr(type).c_str());
 /*    std::string entitiesListStr;
     for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
     {
@@ -85,28 +92,33 @@ RakNetEntity* RakNetEntity::findByAddress(SystemAddress& systemAddress)
         if (it != ms_Entities.end())
             entitiesListStr += ", ";
     }
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() entities:%s", entitiesListStr.c_str());*/
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddressAndType() entities:%s", entitiesListStr.c_str());*/
 #endif
 
     for (RakNetEntityMap::iterator it = ms_Entities.begin(); it != ms_Entities.end(); ++it)
-        if (it->second->getSystemAddress() == systemAddress)
-            return (RakNetEntity*)it->second;
+    {
+        RakNetEntity *entity = it->second;
+        if ((entity->getSystemAddress() == systemAddress) &&
+            (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAType) &&
+            (entity->getXmlEntity()->getType() == ETAvatar))
+            return entity;
+    }
 
 #ifdef LOGRAKNET
-//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddress() systemAddress:%s not found !", systemAddress.ToString());
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::findByAddressAndType() systemAddress:%s, type:%s not found !", systemAddress.ToString(), XmlHelpers::convertEntityTypeToRepr(type).c_str());
 #endif
     return 0;
 }
 
 //-------------------------------------------------------------------------------------
-void RakNetEntity::deleteByAddress(SystemAddress& systemAddress)
+void RakNetEntity::deleteByAddressAndType(SystemAddress& systemAddress, EntityType type)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() systemAddress:%s", systemAddress.ToString());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddressAndType() systemAddress:%s, type:%s", systemAddress.ToString(), XmlHelpers::convertEntityTypeToRepr(type).c_str());
 
-    RakNetEntity *entity = findByAddress(systemAddress);
+    RakNetEntity *entity = findByAddressAndType(systemAddress, type);
     if (entity == 0)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddress() systemAddress:%s not found !", systemAddress.ToString());
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::deleteByAddressAndType() systemAddress:%s not found !", systemAddress.ToString());
         return;
     }
     RakNetConnection::getSingletonPtr()->getReplicationManager()->removeReplica(entity);

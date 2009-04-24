@@ -134,7 +134,7 @@ public:
     /// Factory function, used to create instances of your game objects
     /// Encoding is entirely up to you. \a replicaData will hold whatever was written \a bitStream in Replica::serializeConstruction()
     /// One efficient way to do it is to use StringTable.h. This allows you to send predetermined strings over the network at a cost of 9 bits, up to 65536 strings
-    virtual Replica* construct(RakNet::BitStream* replicaData, SystemAddress sender, SerializationType serializationType, ReplicationManager* replicationManager, const ReplicaUid& replicaUid) = 0;
+    virtual Replica* construct(RakNet::BitStream* replicaData, SystemAddress sender, SerializationType serializationType, ReplicationManager* replicationManager, const ReplicaUid& replicaUid, bool replicaUidCollision) = 0;
 
     /// Set the system address to use with this class instance. This is set internally when the object is created
     void setSystemAddress(SystemAddress systemAddress);

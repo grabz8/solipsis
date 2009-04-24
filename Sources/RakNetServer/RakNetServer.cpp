@@ -174,13 +174,13 @@ void RakNetServer::run()
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_DISCONNECTION_NOTIFICATION from %s", packet->systemAddress.ToString());
                 mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_DISCONNECTION, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
-                RakNetEntity::deleteByAddress(packet->systemAddress);
+                RakNetEntity::deleteByAddressAndType(packet->systemAddress, ETAvatar);
                 break;
             case ID_CONNECTION_LOST:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_LOST from %s", packet->systemAddress.ToString());
                 mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_LOST, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
-                RakNetEntity::deleteByAddress(packet->systemAddress);
+                RakNetEntity::deleteByAddressAndType(packet->systemAddress, ETAvatar);
                 break;
             case RakNetConnection::ID_CM_REQUESTING_FILETRANSFER:
                 {

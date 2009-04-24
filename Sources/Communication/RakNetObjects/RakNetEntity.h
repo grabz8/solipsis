@@ -87,10 +87,10 @@ public:
     /** Helper function to get entities. */
     static RakNetEntityMap& getEntities() { return ms_Entities; }
 
-	/** Helper function to find an entity by address. */
-	static RakNetEntity* findByAddress(SystemAddress& systemAddress);
-	/** Helper function to delete an entity by address (free on disconnections). */
-	static void deleteByAddress(SystemAddress& systemAddress);
+	/** Helper function to find an entity by address and entity type. */
+    static RakNetEntity* findByAddressAndType(SystemAddress& systemAddress, EntityType type);
+	/** Helper function to delete an entity by address and entity type (free on disconnections). */
+	static void deleteByAddressAndType(SystemAddress& systemAddress, EntityType type);
 
     /** Method called when 1 entity is created. */
     virtual void onNewEntity() {}

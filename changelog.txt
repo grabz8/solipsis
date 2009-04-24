@@ -1121,3 +1121,10 @@ Cantine meeting bug: ResourceGroup is now destroyed when object3D was not loaded
 Cantine meeting bug: Bad logs %s with getUid() std::string
 
 ---------------------------
+24/04/09
+
+Cantine meeting bug: multiple athentications of same avatar bug fix (orphelin avatars on RakNetServer),
+by adding collisionReplicaUid in ReplicationManager::receiveConstruction and ConnectionRM::construct,
+RakNetEntity::deleteByAddress replaced by RakNetEntity::deleteByAddressAndType
+
+---------------------------

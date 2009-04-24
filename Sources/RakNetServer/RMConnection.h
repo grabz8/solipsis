@@ -37,7 +37,7 @@ class RMConnection : public ConnectionRM
     /** See ConnectionRM::Construct.
     @remarks Callback used to create objects
     */
-	Replica* construct(RakNet::BitStream* replicaData, SystemAddress sender, SerializationType type, ReplicationManager* replicationManager, const ReplicaUid& replicaUid);
+	Replica* construct(RakNet::BitStream* replicaData, SystemAddress sender, SerializationType type, ReplicationManager* replicationManager, const ReplicaUid& replicaUid, bool replicaUidCollision);
 };
 
 /** This class manages 1 ReplicationManager Solipsis connection.

@@ -33,9 +33,12 @@ using namespace CommonTools;
 namespace Solipsis {
 
 //-------------------------------------------------------------------------------------
-Replica* RMConnection::construct(BitStream* replicaData, SystemAddress sender, SerializationType type, ReplicationManager* replicationManager, const ReplicaUid& replicaUid)
+Replica* RMConnection::construct(BitStream* replicaData, SystemAddress sender, SerializationType type, ReplicationManager* replicationManager, const ReplicaUid& replicaUid, bool replicaUidCollision)
 {
     char objectName[128];
+
+    if (replicaUidCollision)
+        return 0;
 
     // In our two Serialize() functions above, we used StringTable to encode the name of the class. Here we read it out, and create the desired object.
     StringTable::Instance()->DecodeString(objectName, 128, replicaData);

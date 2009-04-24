@@ -95,7 +95,7 @@ Replica::QueryResult Entity::isVisibleFrom(ConnectionRM* connection)
         LOG_ONCHANGE(0, "Entity(%s)::isVisibleFrom(0) => returning QR_NO", mXmlEntity->getUid().c_str());
         return QR_NO;
     }
-    Entity* entity = (Entity*)findByAddress(connection->getSystemAddress());
+    Entity* entity = (Entity*)findByAddressAndType(connection->getSystemAddress(), ETAvatar);
     if (entity == 0)
     {
         LOG_ONCHANGE(3, "Entity(%s)::isVisibleFrom(%s) entity not found => returning QR_NO", mXmlEntity->getUid().c_str(), connection->getSystemAddress().ToString());

@@ -110,7 +110,17 @@ void ConnectionRM::update(ReplicationManager* replicationManager)
 Replica* ConnectionRM::receiveConstruction(RakNet::BitStream* replicaData, const ReplicaUid& replicaUid, SystemAddress sender, SerializationType serializationType, ReplicationManager* replicationManager)
 {
     Replica *replica = 0;
-    replica = construct(replicaData, sender, serializationType, replicationManager, replicaUid);
+    bool replicaUidCollision = false;
+
+    // Collision (same replica already exist)
+    ReplicaMap::const_iterator replicaIt = replicationManager->mReplicaMap.find(replicaUid);
+    if (replicaIt != replicationManager->mReplicaMap.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "ConnectionRM::receiveConstruction() Collision detected, replicaUid %s already exist !", replicaUid.c_str());
+        replicaUidCollision = true;
+    }
+
+    replica = construct(replicaData, sender, serializationType, replicationManager, replicaUid, replicaUidCollision);
     if (replica != 0)
         replicationManager->addReference(replica);
 
