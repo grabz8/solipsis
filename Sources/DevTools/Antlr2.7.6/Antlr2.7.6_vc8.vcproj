@@ -69,13 +69,13 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying debug runtime files ..."
-				CommandLine="if exist &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;antlr&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="if exist &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;include\antlr\*.*&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr\.&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ProjectDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ProjectDir)$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories=".\include\"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NO_STATIC_CONSTS;AFXDK;_MBC;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NO_STATIC_CONSTS;AFXDL;_MBC;"
 				RuntimeLibrary="2"
 			/>
 			<Tool
@@ -128,7 +128,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying release runtime files ..."
-				CommandLine="if exist &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;antlr&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="if exist &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot; goto includeOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr&quot;&#x0D;&#x0A;:includeOK&#x0D;&#x0A;copy &quot;include\antlr\*.*&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\include\antlr\.&quot; /y&#x0D;&#x0A;if exist &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; goto libOK&#x0D;&#x0A;mkdir &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot;&#x0D;&#x0A;:libOK&#x0D;&#x0A;copy &quot;$(ConfigurationName)\antlr2.7.6.lib&quot; &quot;..\..\..\Dependencies\Antlr2.7.6\lib\$(ConfigurationName)&quot; /y&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
