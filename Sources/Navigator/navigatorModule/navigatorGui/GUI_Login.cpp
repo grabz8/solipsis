@@ -67,10 +67,7 @@ bool GUI_Login::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI login
-        createNavi(mPanelName, 
-            "local://uilogin.html", 
-            NaviPosition(Center), 
-            400, 300);
+        createNavi("local://uilogin.html", NaviPosition(Center), 400, 300);
 
         if (!mNavi)
         {

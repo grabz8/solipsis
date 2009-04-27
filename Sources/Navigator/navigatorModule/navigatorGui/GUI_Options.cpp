@@ -67,7 +67,7 @@ bool GUI_Options::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI options
-        createNavi(mPanelName, "local://uioptions.html", NaviPosition(Center), 400, 400);
+        createNavi("local://uioptions.html", NaviPosition(Center), 400, 400);
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setMask("uioptions.png");

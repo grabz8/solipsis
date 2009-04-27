@@ -63,10 +63,9 @@ namespace Solipsis
 
     protected:
         void switchLuaNavi(bool createDestroy);
-        void createNavi(const std::string &naviName, const std::string &homepage, const NaviPosition &naviPosition,
+        void createNavi(const std::string &homepage, const NaviPosition &naviPosition,
             unsigned short width, unsigned short height, unsigned short zOrder = 0);
 
-        
         NaviState m_curState;
         std::string mPanelName;
         // the navi panel

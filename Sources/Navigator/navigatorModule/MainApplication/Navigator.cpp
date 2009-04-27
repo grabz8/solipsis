@@ -29,8 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_ContextMenu.h"
 #include "navigatorGui/GUI_MainMenu.h"
 #include "navigatorGui/GUI_StatusBar.h"
-
-
+#include "navigatorGui/GUI_Modeler.h"
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -1375,7 +1374,7 @@ bool Navigator::disconnect()
     }
     else if (mState == SModeling)
     {
-        mNavigatorGUI->modelerMainUnload();
+        GUI_Modeler::unload();
         setCameraMode(getLastCameraMode());
     }
 
@@ -1461,11 +1460,11 @@ bool Navigator::mainMenuClick(const String& item)
         if (mState == SInWorld)
         {
             setCameraMode(CMModeling);
-            mNavigatorGUI->modelerMainShow();
+            GUI_Modeler::createAndShowPanel();
         }
         else if (mState == SModeling)
         {
-            mNavigatorGUI->modelerMainUnload();
+            GUI_Modeler::unload();
             setCameraMode(getLastCameraMode());
         }
     }
@@ -1496,7 +1495,7 @@ bool Navigator::contextItemSelected(const String& item)
     else if (item == "create")
     {
         setCameraMode(CMModeling);
-        mNavigatorGUI->modelerMainShow();
+        GUI_Modeler::createAndShowPanel();
     }
     else if (item == "chat")
     {
@@ -1964,7 +1963,7 @@ bool Navigator::mdlrXMLSave(bool all)
             return mModeler->XMLSave(all);
         else
             GUI_MessageBox::getMsgBox()->show("Modeler information", 
-            NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+            GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
 
     return false;
 }

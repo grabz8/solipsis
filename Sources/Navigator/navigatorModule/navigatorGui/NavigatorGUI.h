@@ -69,15 +69,7 @@ public:
         NAVI_COUNT
     };
 
-    enum ModelerError {
-        ME_NOOBJECTSELECTED,    // No object3D selected
-        ME_TEXTUREALREADYOPEN,  // Texture already open
-        ME_FILENOTFOUND,
-#ifdef DECLARATIVE_MODELER
-		ME_DECLARATIVEMODELINGERROR, // decl. mod. error
-#endif
-   };
-    static const std::string ms_ModelerErrors[];
+ 
 
 protected:
     Navigator* mNavigator;
@@ -123,12 +115,6 @@ public:
     // Chat panel
     void addChatText(const std::wstring& message);
 
-     // Main modeler panel
-    void modelerMainShow();
-    bool isModelerMainVisible();
-    void modelerMainHide();
-    void modelerMainUnload();
-
     // Properties modeler panel
     void modelerPropShow();
     bool isModelerPropVisible();
@@ -165,132 +151,35 @@ public:
 
 protected:
     // Login/Options/InWorld callbacks
-    void loginPageLoaded(const NaviData& naviData);
-    void world(const NaviData& naviData);
-    void connect(const NaviData& naviData);
-    void options(const NaviData& naviData);
-    void quit(const NaviData& naviData);
+//     void loginPageLoaded(const NaviData& naviData);
+//     void world(const NaviData& naviData);
+//     void connect(const NaviData& naviData);
+//     void options(const NaviData& naviData);
+//     void quit(const NaviData& naviData);
 
     
-    void worldOk(const NaviData& naviData);
-    void worldCancel(const NaviData& naviData);
-    void worldsServerInfo();
-    void worldsServerInfoOk(const NaviData& naviData);
+//     void worldOk(const NaviData& naviData);
+//     void worldCancel(const NaviData& naviData);
+//     void worldsServerInfo();
+//     void worldsServerInfoOk(const NaviData& naviData);
+// 
+//     void optionsPageLoaded(const NaviData& naviData);
+//     void optionsOk(const NaviData& naviData);
+//     void optionsBack(const NaviData& naviData);
+// 
+//     void authentFacebook();
+//     void authentFacebookError();
+//     void authentFacebookPageLoaded(const NaviData& naviData);
+//     void authentFacebookOk(const NaviData& naviData);
+//     void authentFacebookCancel(const NaviData& naviData);
+// 
+//     void authentWorldsServer(const std::string& pwd);
+//     void authentWorldsServerError();
+//     void authentWorldsServerOk(const NaviData& naviData);
 
-    void optionsPageLoaded(const NaviData& naviData);
-    void optionsOk(const NaviData& naviData);
-    void optionsBack(const NaviData& naviData);
 
-    void authentFacebook();
-    void authentFacebookError();
-    void authentFacebookPageLoaded(const NaviData& naviData);
-    void authentFacebookOk(const NaviData& naviData);
-    void authentFacebookCancel(const NaviData& naviData);
+ 
 
-    void authentWorldsServer(const std::string& pwd);
-    void authentWorldsServerError();
-    void authentWorldsServerOk(const NaviData& naviData);
-
-    // Modeler page callbacks
-    void modelerMainFileImport(const NaviData& naviData);
-    void modelerMainFileSave(const NaviData& naviData);
-    void modelerMainFileExit(const NaviData& naviData);
-    // Modeler object creation callbacks
-	void modelerMainCreatePlane(const NaviData& naviData);
-    void modelerMainCreateBox(const NaviData& naviData);
-    void modelerMainCreateCorner(const NaviData& naviData);
-    void modelerMainCreatePyramid(const NaviData& naviData);
-    void modelerMainCreatePrism(const NaviData& naviData);
-    void modelerMainCreateCylinder(const NaviData& naviData);
-    void modelerMainCreateHalfCylinder(const NaviData& naviData);
-    void modelerMainCreateCone(const NaviData& naviData);
-    void modelerMainCreateHalfCone(const NaviData& naviData);
-    void modelerMainCreateSphere(const NaviData& naviData);
-    void modelerMainCreateHalfSphere(const NaviData& naviData);
-    void modelerMainCreateTorus(const NaviData& naviData);
-    void modelerMainCreateTube(const NaviData& naviData);
-    void modelerMainCreateRing(const NaviData& naviData);
-#ifdef DECLARATIVE_MODELER
-    void modelerMainCreateSceneFromText(const NaviData& naviData);
-#endif
-    // Modeler fake right click callbacks
-    void modelerActionDelete(const NaviData& naviData);
-    void modelerActionMove(const NaviData& naviData);
-    void modelerActionRotate(const NaviData& naviData);
-    void modelerActionScale(const NaviData& naviData);
-    void modelerActionLink(const NaviData& naviData);
-    void modelerActionProperties(const NaviData& naviData);
-    void modelerActionUndo(const NaviData& naviData);
-    void modelerActionSave(const NaviData& naviData);
-
-    // Modeler properties page callbacks
-    void modelerPropPageLoaded(const NaviData& naviData);
-    void modelerPropPageClosed(const NaviData& naviData);
-    // Modeler properties callbacks
-    void modelerPropObjectName(const NaviData& naviData);
-    void modelerPropCreator(const NaviData& naviData);
-    void modelerPropOwner(const NaviData& naviData);
-    void modelerPropGroup(const NaviData& naviData);
-    void modelerPropDescription(const NaviData& naviData);
-    void modelerPropTags(const NaviData& naviData);
-    void modelerPropModification(const NaviData& naviData);
-    void modelerPropCopy(const NaviData& naviData);
-    // Modeler model callbacks
-    void modelerPropTaperX(const NaviData& naviData);
-    void modelerPropTaperY(const NaviData& naviData);
-    void modelerPropTopShearX(const NaviData& naviData);
-    void modelerPropTopShearY(const NaviData& naviData);
-    void modelerPropTwistBegin(const NaviData& naviData);
-    void modelerPropTwistEnd(const NaviData& naviData);
-    void modelerPropDimpleBegin(const NaviData& naviData);
-    void modelerPropDimpleEnd(const NaviData& naviData);
-    void modelerPropPathCutBegin(const NaviData& naviData);
-    void modelerPropPathCutEnd(const NaviData& naviData);
-    void modelerPropHoleSizeX(const NaviData& naviData);
-    void modelerPropHoleSizeY(const NaviData& naviData);
-    void modelerPropHollowShape(const NaviData& naviData);
-    void modelerPropSkew(const NaviData& naviData);
-    void modelerPropRevolution(const NaviData& naviData);
-    void modelerPropRadiusDelta(const NaviData& naviData);
-    // Modeler material callbacks
-    void modelerColorAmbient(const NaviData& naviData);
-    void modelerColorDiffuse(const NaviData& naviData);
-    void modelerColorSpecular(const NaviData& naviData);
-    void modelerColorLockAmbientDiffuse(const NaviData& naviData);
-	void modelerDoubleSide(const NaviData& naviData);
-    void modelerPropShininess(const NaviData& naviData);
-    void modelerPropTransparency(const NaviData& naviData);
-    void modelerPropScrollU(const NaviData& naviData);
-    void modelerPropScrollV(const NaviData& naviData);
-    void modelerPropScaleU(const NaviData& naviData);
-    void modelerPropScaleV(const NaviData& naviData);
-    void modelerPropRotateU(const NaviData& naviData);
-    void modelerPropTextureAdd(const NaviData& naviData);
-    void modelerPropTextureRemove(const NaviData& naviData);
-    void modelerPropTextureApply(const NaviData& naviData);
-    void modelerPropTexturePrev(const NaviData& naviData);
-    void modelerPropTextureNext(const NaviData& naviData);
-    void modelerPropWWWTextureApply(const NaviData& naviData);
-    void modelerPropSWFTextureApply(const NaviData& naviData);
-    void modelerPropSWFMrlBrowse(const NaviData& naviData);
-    void modelerPropVLCTextureApply(const NaviData& naviData);
-    void modelerPropVLCMrlBrowse(const NaviData& naviData);
-    void modelerPropVNCTextureApply(const NaviData& naviData);
-    // Modeler 3D callbacks
-    void modelerPropPositionX(const NaviData& naviData);
-    void modelerPropPositionY(const NaviData& naviData);
-    void modelerPropPositionZ(const NaviData& naviData);
-    void modelerPropOrientationX(const NaviData& naviData);
-    void modelerPropOrientationY(const NaviData& naviData);
-    void modelerPropOrientationZ(const NaviData& naviData);
-    void modelerPropScaleX(const NaviData& naviData);
-    void modelerPropScaleY(const NaviData& naviData);
-    void modelerPropScaleZ(const NaviData& naviData);
-    void modelerPropCollision(const NaviData& naviData);
-    void modelerPropGravity(const NaviData& naviData);
-
-//	void modelerProperties(const NaviData& naviData);
-    void modelerTabberChange(const NaviData& naviData);
 
     // Avatar page callbacks
 	void avatarTabberChange(const NaviData& naviData);
@@ -357,32 +246,17 @@ protected:
 #endif
 
 public:
-    // Modeler properties updates
-    void modelerTabberLoad(unsigned pTab);
-    void modelerTabberSave();
+
 	// Avatar properties updates
 	void avatarTabberLoad(unsigned pTab);
     void avatarTabberSave();
 
 protected:
-    // Update the command -> backup if the command is different from the last used
-    void modelerUpdateCommand(Object3D::Command pCommand, Object3D* pObject);
-    // Reset all deformation's sliders to the initial position
-    void modelerUpdateDeformationSliders();
-    // Add a button representing a deformation to the list of deformations in the properties panel
-    void modelerAddNewDeformation(Object3D::Command pCommand);
     // Update the list of loaded textures
-    void modelerUpdateTextures();
-	// Update the list of loaded textures
-	void avatarUpdateTextures(ModifiableMaterialObject* pObject);
-	// Update the sliders modifiers
-	void avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale);
+    void avatarUpdateTextures(ModifiableMaterialObject* pObject);
+    // Update the sliders modifiers
+    void avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale);
 
-    // Start mode link when the user click on the Menu PopUp on 'link'
-    bool mModeLink;
-    bool mLockAmbientDiffuse;
-    // ...
-    std::vector<std::string>	mDeformButton;
 
 #ifdef UIDEBUG
     // Debug callbacks

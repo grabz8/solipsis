@@ -1101,6 +1101,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_Modeler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Modeler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ModelerProperties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ModelerProperties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_Options.cpp"
 				>
 			</File>

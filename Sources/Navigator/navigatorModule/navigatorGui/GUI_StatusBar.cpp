@@ -62,6 +62,8 @@ bool GUI_StatusBar::show()
         m_curState = NSCreated;
         mNavi = NavigatorGUI::getNavi(mPanelName);
     }
+
+    return true;
 }
 
 void GUI_StatusBar::updateBar()

@@ -65,7 +65,7 @@ bool GUI_AuthentWorldServer::show(const std::string& pwd)
         std::string uiauthentwsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiauthentws.html";
         uiauthentwsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
         uiauthentwsUrl += "&login=" + mNavigator->getLogin() + "&pwd=" + pwd;
-        createNavi(mPanelName, "", NaviPosition(Center), 256, 128);
+        createNavi( "", NaviPosition(Center), 256, 128);
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setOpacity(0.75f);

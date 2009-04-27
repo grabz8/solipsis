@@ -35,6 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Cameras/FirstPersonCameraSupport.h"
 
 #include "navigatorGui/GUI_ContextMenu.h"
+#include "navigatorGui/GUI_Modeler.h"
+#include "navigatorGui/GUI_ModelerProperties.h"
+
+
+
 
 using namespace NaviLibrary;
 using namespace Solipsis;
@@ -161,7 +166,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 modeler->lockGizmo(false);
                 if (navigatorGUI != 0)
                 {
-                    navigatorGUI->modelerMainUnload();
+                    GUI_Modeler::unload();
                     mNavigator->setCameraMode(mNavigator->getLastCameraMode());
                 }
                 return OgreFrameListener::keyPressed(evt);
@@ -246,14 +251,14 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F9:
-            if (modeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
+            if (modeler->isSelectionLocked() && !GUI_Modeler::isPanelVisible())
             {
-                navigatorGUI->modelerPropHide();
-                navigatorGUI->modelerMainShow();
+                GUI_ModelerProperties::hidePanel();
+                GUI_Modeler::createAndShowPanel();
             }
             else 
             {
-                navigatorGUI->modelerMainUnload();
+                GUI_Modeler::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
@@ -280,8 +285,9 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 }
                 if (modeler->isSelectionLocked())
                 {
-                    navigatorGUI->modelerPropUnload();
-                    navigatorGUI->modelerMainShow();
+                    GUI_ModelerProperties::unload();
+                    GUI_Modeler::createAndShowPanel();
+
                 }    
             }
             return OgreFrameListener::keyPressed(evt);
@@ -374,7 +380,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         {
             if (mNavigator->getState()==Navigator::SModeling)
 			{
-				navigatorGUI->modelerMainUnload();
+				GUI_Modeler::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 			}
 			else if (mNavigator->getState()==Navigator::SAvatarEdit)
@@ -421,7 +427,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
                 mNavigator->setCameraMode(Navigator::CMModeling);
-                navigatorGUI->modelerMainShow();
+                GUI_Modeler::createAndShowPanel();
+
             }
             break;
 

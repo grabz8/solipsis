@@ -87,7 +87,7 @@ bool GUI_AuthentFacebook::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI authentication on Facebook
-        createNavi(mPanelName, "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
+        createNavi( "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setOpacity(0.75f);
