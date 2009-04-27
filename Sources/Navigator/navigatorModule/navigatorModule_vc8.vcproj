@@ -1053,6 +1053,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_Avatar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Avatar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_AvatarProperties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_AvatarProperties.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_ChooseWorld.cpp"
 				>
 			</File>

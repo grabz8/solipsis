@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_ContextMenu.h"
 #include "navigatorGui/GUI_Modeler.h"
 #include "navigatorGui/GUI_ModelerProperties.h"
+#include "navigatorGui/GUI_Avatar.h"
+#include "navigatorGui/GUI_AvatarProperties.h"
 
 
 
@@ -269,7 +271,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             return OgreFrameListener::keyPressed(evt);
 
         case KC_DELETE:
-            if (!navigatorGUI->isModelerPropVisible())
+            if (!GUI_ModelerProperties::isPanelVisible())
             {
                 if( !modeler->isSelectionEmpty() )
                 {
@@ -293,7 +295,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             return OgreFrameListener::keyPressed(evt);
 
         case KC_W:
-            if (!navigatorGUI->isModelerPropVisible())
+            if (!GUI_ModelerProperties::isPanelVisible())
             {
                 if (mNavigator->isOnLeftCTRL) 
                 {
@@ -313,14 +315,14 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F8:
-            if (/*modeler->isSelectionLocked() &&*/ !navigatorGUI->isAvatarMainVisible())
+            if (/*modeler->isSelectionLocked() &&*/ !GUI_Avatar::isPanelVisible())
             {
-                navigatorGUI->avatarPropHide();
-                navigatorGUI->avatarMainShow();
+                GUI_AvatarProperties::hidePanel();
+                GUI_Avatar::createAndShowPanel();
             }
             else 
             {
-                navigatorGUI->avatarMainUnload();
+                GUI_Avatar::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
@@ -385,7 +387,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
 			}
 			else if (mNavigator->getState()==Navigator::SAvatarEdit)
 			{
-				navigatorGUI->avatarMainUnload();
+				GUI_Avatar::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 			}
 			else
@@ -418,7 +420,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
                 mNavigator->setCameraMode(Navigator::CMAroundPerson);
-                navigatorGUI->avatarMainShow();
+                GUI_Avatar::unload();
             }
             break;
 

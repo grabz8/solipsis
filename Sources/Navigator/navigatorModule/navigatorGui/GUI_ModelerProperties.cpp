@@ -71,6 +71,23 @@ GUI_ModelerProperties::GUI_ModelerProperties() : GUI_Panel("uimdlrprop") ,
     stGUI_ModelerProperties->destroy();
 }
 
+/*static*/ bool GUI_ModelerProperties::isPanelVisible()
+{
+    return (stGUI_ModelerProperties && stGUI_ModelerProperties->isVisible());
+}
+
+/*static*/ void GUI_ModelerProperties::hidePanel()
+{
+    if (!stGUI_ModelerProperties)
+    {
+        return;
+    } 
+    
+    stGUI_ModelerProperties->hide();
+}
+
+
+
 //-------------------------------------------------------------------------------------
 bool GUI_ModelerProperties::show()
 {

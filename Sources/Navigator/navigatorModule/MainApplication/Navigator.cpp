@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_MainMenu.h"
 #include "navigatorGui/GUI_StatusBar.h"
 #include "navigatorGui/GUI_Modeler.h"
+#include "navigatorGui/GUI_Avatar.h"
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -1369,7 +1370,7 @@ bool Navigator::disconnect()
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
     if (mState == SAvatarEdit)
     {
-        mNavigatorGUI->avatarMainUnload();
+        GUI_Avatar::unload();
         setCameraMode(getLastCameraMode());
     }
     else if (mState == SModeling)
@@ -1447,11 +1448,11 @@ bool Navigator::mainMenuClick(const String& item)
         if (mState == SInWorld)
         {
             setCameraMode(CMAroundPerson);
-            mNavigatorGUI->avatarMainShow();
+            GUI_Avatar::createAndShowPanel();
         }
         else if (mState == SAvatarEdit)
         {
-            mNavigatorGUI->avatarMainUnload();
+            GUI_Avatar::unload();
             setCameraMode(getLastCameraMode());
         }
     }
@@ -1490,7 +1491,7 @@ bool Navigator::contextItemSelected(const String& item)
     if (item == "config")
     {
         setCameraMode(CMAroundPerson);
-        mNavigatorGUI->avatarMainShow();
+        GUI_Avatar::createAndShowPanel();
     }
     else if (item == "create")
     {

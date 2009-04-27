@@ -115,23 +115,6 @@ public:
     // Chat panel
     void addChatText(const std::wstring& message);
 
-    // Properties modeler panel
-    void modelerPropShow();
-    bool isModelerPropVisible();
-    void modelerPropHide();
-    void modelerPropUnload();
-
-    // Avatar panel
-    void avatarMainShow();
-    bool isAvatarMainVisible();
-    void avatarMainHide();
-    void avatarMainUnload();
-    // Properties avatar panel
-    void avatarPropShow();
-    bool isAvatarPropVisible();
-    void avatarPropHide();
-    void avatarPropUnload();
-
 #ifdef DECLARATIVE_MODELER
 	// Scene From Text Modeler Panel
 	void modelerSceneFromTextShow();
@@ -139,6 +122,7 @@ public:
     void modelerSceneFromTextHide();
     void modelerSceneFromTextUnload();
 #endif
+
 #ifdef UIDEBUG
     void switchDebug();
     void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
@@ -150,93 +134,7 @@ public:
     void connectionServerError();
 
 protected:
-    // Login/Options/InWorld callbacks
-//     void loginPageLoaded(const NaviData& naviData);
-//     void world(const NaviData& naviData);
-//     void connect(const NaviData& naviData);
-//     void options(const NaviData& naviData);
-//     void quit(const NaviData& naviData);
 
-    
-//     void worldOk(const NaviData& naviData);
-//     void worldCancel(const NaviData& naviData);
-//     void worldsServerInfo();
-//     void worldsServerInfoOk(const NaviData& naviData);
-// 
-//     void optionsPageLoaded(const NaviData& naviData);
-//     void optionsOk(const NaviData& naviData);
-//     void optionsBack(const NaviData& naviData);
-// 
-//     void authentFacebook();
-//     void authentFacebookError();
-//     void authentFacebookPageLoaded(const NaviData& naviData);
-//     void authentFacebookOk(const NaviData& naviData);
-//     void authentFacebookCancel(const NaviData& naviData);
-// 
-//     void authentWorldsServer(const std::string& pwd);
-//     void authentWorldsServerError();
-//     void authentWorldsServerOk(const NaviData& naviData);
-
-
- 
-
-
-    // Avatar page callbacks
-	void avatarTabberChange(const NaviData& naviData);
-    void avatarMainPageLoaded(const NaviData& naviData);
-    void avatarMainFileOpen(const NaviData& naviData);
-    void avatarMainFileEdit(const NaviData& naviData);
-    void avatarMainFileSave(const NaviData& naviData);
-    void avatarMainFileSaveAs(const NaviData& naviData);
-    void avatarMainFileExit(const NaviData& naviData);
-//    void avatarMainSelectPrev(const NaviData& naviData);
-//	void avatarMainSelectNext(const NaviData& naviData);
-	void avatarMainSelected(const NaviData& naviData);
-    // Avatar properties page callbacks
-    void avatarPropPageLoaded(const NaviData& naviData);
-    void avatarPropPageClosed(const NaviData& naviData);
-	// Avatar animation page callbaks
-	void avatarPropAnimPlayPause(const NaviData& naviData);
-	void avatarPropAnimStop(const NaviData& naviData);
-	void avatarPropAnimNext(const NaviData& naviData);
-	void avatarPropAnimPrev(const NaviData& naviData);
-	// Avatar bodyParts page callbacks
-	void avatarPropHeight(const NaviData& naviData);
-	void avatarPropBonePrev(const NaviData& naviData);
-	void avatarPropBoneNext(const NaviData& naviData);
-	void avatarPropBPPrev(const NaviData& naviData);
-	void avatarPropBPNext(const NaviData& naviData);
-	void avatarPropBPMPrev(const NaviData& naviData);
-	void avatarPropBPMNext(const NaviData& naviData);
-	void avatarPropBPMEdit(const NaviData& naviData);
-	void avatarPropBPMRemove(const NaviData& naviData);
-	void avatarPropAttPrev(const NaviData& naviData);
-	void avatarPropAttNext(const NaviData& naviData);
-	void avatarPropAttMPrev(const NaviData& naviData);
-	void avatarPropAttMNext(const NaviData& naviData);
-	void avatarPropAttMEdit(const NaviData& naviData);
-	void avatarPropAttMRemove(const NaviData& naviData);
-	void avatarPropSliders(const NaviData& naviData);		// multi callback !
-	void avatarPropReset(const NaviData& naviData);
-	// Avatar material page callbacks
-	void avatarColorAmbient(const NaviData& naviData);
-	void avatarColorDiffuse(const NaviData& naviData);
-	void avatarColorSpecular(const NaviData& naviData);
-	void avatarColorLockAmbientDiffuse(const NaviData& naviData);
-	void avatarDoubleSide(const NaviData& naviData);
-	void avatarPropShininess(const NaviData& naviData);
-	void avatarPropTransparency(const NaviData& naviData);
-	void avatarPropScrollU(const NaviData& naviData);
-	void avatarPropScrollV(const NaviData& naviData);
-	void avatarPropScaleU(const NaviData& naviData);
-	void avatarPropScaleV(const NaviData& naviData);
-	void avatarPropRotateU(const NaviData& naviData);
-	void avatarPropTextureAdd(const NaviData& naviData);
-	void avatarPropTextureRemove(const NaviData& naviData);
-	void avatarPropTexturePrev(const NaviData& naviData);
-	void avatarPropTextureNext(const NaviData& naviData);
-	void avatarPropResetColour(const NaviData& naviData);
-	void avatarPropSound(const NaviData& naviData);
 
 #ifdef DECLARATIVE_MODELER
 	// Modeler Scene From Text Setup properties page callbacks
@@ -244,19 +142,6 @@ protected:
 	void modelerSceneFromTextExec(const NaviData& naviData);	
 	void modelerSceneFromTextCancelled(const NaviData& naviData);
 #endif
-
-public:
-
-	// Avatar properties updates
-	void avatarTabberLoad(unsigned pTab);
-    void avatarTabberSave();
-
-protected:
-    // Update the list of loaded textures
-    void avatarUpdateTextures(ModifiableMaterialObject* pObject);
-    // Update the sliders modifiers
-    void avatarUpdateSliders(Vector3 pos, Vector3 ori, Vector3 scale);
-
 
 #ifdef UIDEBUG
     // Debug callbacks
@@ -279,19 +164,13 @@ public:
     ///////////////////// à supprimer à terme
     // à supprimer ? oui à terme
     void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
-    const std::string& getNaviName(NaviPanel naviPanel);
 
-   
-//     static void destroyNavi(NaviLibrary::Navi *pNavi)
-//     {
-//         mNaviGui->mNaviMgr->destroyNavi(pNavi);
-//     }
+    const std::string& getNaviName(NaviPanel naviPanel);
 
     static NaviLibrary::Navi * getNavi(const std::string& naviName)
     {   
         return mNaviGui->mNaviMgr->getNavi(naviName);
     }
-
 
     static NaviManager* getNaviMgr()
     {   
@@ -299,7 +178,6 @@ public:
     }
     
     ///////////////////////////////////////////////
-
     static NavigatorGUI * mNaviGui;
 
 ////////////////////////// nouvelle implémentation ////////////////////

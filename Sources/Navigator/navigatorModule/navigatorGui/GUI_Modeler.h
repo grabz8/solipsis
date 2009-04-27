@@ -71,8 +71,6 @@ namespace Solipsis
         virtual bool show();
         virtual void destroy();
 
-        bool isVisible();
-
     protected:
         GUI_Modeler();
         static GUI_Modeler * stGUI_Modeler;

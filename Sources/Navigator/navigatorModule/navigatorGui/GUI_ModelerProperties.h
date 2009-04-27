@@ -43,11 +43,11 @@ namespace Solipsis
         static bool createAndShowPanel();
         static void hidePanel();
         static void unload();
+        static bool isPanelVisible();
 
         virtual bool show();
         virtual void destroy();
 
-        bool isVisible();
     protected:
         GUI_ModelerProperties();
 
