@@ -52,25 +52,19 @@ using namespace CommonTools;
 
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
-
 const std::string NavigatorGUI::ms_NavisNames[] = {
+    "uichat",
     "uiabout",
     "uicommands",
-    "uimdlrprop",
 
 #ifdef DECLARATIVE_MODELER
    "uimdlrscenefromtext",
 #endif
 
-    "uiavatarmain",
-    "uiavatarprop",
-
 #ifdef UIDEBUG
     "uidebug"
 #endif
-
 };
-
 
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
@@ -568,7 +562,6 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
 #ifdef DECLARATIVE_MODELER
 void NavigatorGUI::modelerSceneFromTextShow()
 {
-
 	if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] == NSNotCreated)
 	{
 		LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerSceneFromTextShow()");

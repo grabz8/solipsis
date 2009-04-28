@@ -52,15 +52,9 @@ public:
         NAVI_ABOUT,
         NAVI_COMMANDS,
 
-        NAVI_MODELERMAIN,
-        NAVI_MODELERPROP,
-
 #ifdef DECLARATIVE_MODELER
 		NAVI_MODELERSCENEFROMTEXT,
 #endif
-
-        NAVI_AVATARMAIN,
-        NAVI_AVATARPROP,
 
 #ifdef UIDEBUG
         NAVI_DEBUG,
