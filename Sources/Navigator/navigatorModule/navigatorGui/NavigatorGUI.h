@@ -48,7 +48,6 @@ public:
     };
     
     enum NaviPanel {
-        NAVI_CHAT,
         NAVI_ABOUT,
         NAVI_COMMANDS,
 
@@ -100,14 +99,6 @@ public:
 //     void login();
     void inWorld();
 
-    // Apply informations of login panel
-//     void applyLoginDatas();
-
-    // Main menu panel
-    void mainmenuSwitch();
-
-    // Chat panel
-    void addChatText(const std::wstring& message);
 
 #ifdef DECLARATIVE_MODELER
 	// Scene From Text Modeler Panel

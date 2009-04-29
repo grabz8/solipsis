@@ -39,9 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_ModelerProperties.h"
 #include "navigatorGui/GUI_Avatar.h"
 #include "navigatorGui/GUI_AvatarProperties.h"
-
-
-
+#include "navigatorGui/GUI_Chat.h"
 
 using namespace NaviLibrary;
 using namespace Solipsis;
@@ -147,7 +145,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F7: // Show/Hide chat panel
-            navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+            GUI_Chat::showHide();
             break;
 #ifdef UIDEBUG
         case KC_PAUSE: // Show/Hide debug panel

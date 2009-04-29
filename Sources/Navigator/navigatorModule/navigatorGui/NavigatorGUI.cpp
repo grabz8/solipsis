@@ -53,7 +53,6 @@ using namespace CommonTools;
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
 const std::string NavigatorGUI::ms_NavisNames[] = {
-    "uichat",
     "uiabout",
     "uicommands",
 
@@ -96,15 +95,16 @@ NavigatorGUI::~NavigatorGUI()
     // Hide previous Navi UI
     hidePreviousNavi();
 
-    for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); 
-        it != mNaviGui->m_panels.end(); 
-        it++)
+    for (std::map<std::string, GUI_Panel *>::iterator it = m_panels.begin(); 
+        it != m_panels.end(); 
+        it = m_panels.begin())
     {
         GUI_Panel * pPanel = it->second;
         pPanel->destroy();
         // CF : should destroy the panels here, but it crashes the hash table iteration
         // needed to be corrected
-      //  delete pPanel;
+        m_panels.erase(it);
+        delete pPanel;
     }
 
     // Finalizing Navi
@@ -191,20 +191,6 @@ void NavigatorGUI::inWorld()
     GUI_StatusBar::createAndShowPanel();
 }
 
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::addChatText(const std::wstring& message)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_CHAT]);
-    if (navi == 0)
-        return;
-
-    // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
-    navi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
-    navi->evaluateJS("$('textChat').value += '\\n'");
-    navi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
-}
  
 
 #ifdef UIDEBUG

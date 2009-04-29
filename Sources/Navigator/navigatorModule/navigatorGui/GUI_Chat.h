@@ -37,17 +37,15 @@ namespace Solipsis
     class GUI_Chat : public GUI_Panel
     {
     public:
-        static bool createAndShowPanel();
-        static void setStatusBarText(const std::string& statusText);
+        // switch between show and hide
+        static void showHide();
+        static void addText(const std::wstring& txt);
+
         virtual bool show();
-        virtual void update();
 
     protected:
         GUI_Chat();
         static GUI_Chat * stGUI_Chat;
-
-        unsigned long mStatusBarDisplayDate;
-
     };
 } // namespace Solipsis
 

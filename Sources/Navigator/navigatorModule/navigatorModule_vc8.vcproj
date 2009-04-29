@@ -1069,6 +1069,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_Chat.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Chat.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_ChooseWorld.cpp"
 				>
 			</File>

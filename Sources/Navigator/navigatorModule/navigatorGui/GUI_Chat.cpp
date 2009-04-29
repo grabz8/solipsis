@@ -39,20 +39,22 @@ GUI_Chat::GUI_Chat() : GUI_Panel("uichat")
     stGUI_Chat = this;
 }
 
-bool GUI_Chat::createAndShowPanel()
+void GUI_Chat::showHide()
 {
     if (!stGUI_Chat)
     {
         new GUI_Chat();
     }
 
-    return stGUI_Chat->show();
+    if (stGUI_Chat->isVisible())
+        stGUI_Chat->hide();
+   else
+       stGUI_Chat->show();
 }
-
 
 bool GUI_Chat::show()
 {
-    // Create Navi UI status bar
+    // Create Navi UI Chat panel bar
     // Lua
     if (m_curState == NSNotCreated)
     {
@@ -62,34 +64,17 @@ bool GUI_Chat::show()
         m_curState = NSCreated;
         mNavi = NavigatorGUI::getNavi(mPanelName);
     }
-}
 
-void GUI_Chat::update()
-{
-    if (!stGUI_Chat)
-        return;
-    unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-
-    // Status bar update
-    if ((stGUI_Chat->mStatusBarDisplayDate != 0) && (now - mStatusBarDisplayDate > 8*1000))
-    {
-        if (stGUI_Chat->mNavi == 0) return;
-        if (stGUI_Chat->mNavi->getVisibility())
-            stGUI_Chat->mNavi->hide(true);
-
-        stGUI_Chat->mStatusBarDisplayDate = 0;
-    }
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Chat::setStatusBarText(const std::string& statusText)
+void GUI_Chat::addText(const std::wstring& message)
 {
-    if (!stGUI_Chat)
-        return;
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
-    stGUI_Chat->mNavi->evaluateJS("$('statusbarText').innerHTML = '" + statusText + "'");
-    stGUI_Chat->mStatusBarDisplayDate = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
-
-    if (!stGUI_Chat->mNavi->getVisibility())
-        stGUI_Chat->mNavi->show(true);
+    // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
+    stGUI_Chat->mNavi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
+    stGUI_Chat->mNavi->evaluateJS("$('textChat').value += '\\n'");
+    stGUI_Chat->mNavi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }

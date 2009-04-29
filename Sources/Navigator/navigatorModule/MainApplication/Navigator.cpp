@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_StatusBar.h"
 #include "navigatorGui/GUI_Modeler.h"
 #include "navigatorGui/GUI_Avatar.h"
+#include "navigatorGui/GUI_Chat.h"
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -1442,7 +1443,9 @@ bool Navigator::mainMenuClick(const String& item)
         setCameraMode(CMAroundPerson);
     // Submenu Panels
     else if (item == "Chat")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+        GUI_Chat::showHide();
+
+
     else if (item == "Avatar")
     {
         if (mState == SInWorld)
@@ -1500,7 +1503,7 @@ bool Navigator::contextItemSelected(const String& item)
     }
     else if (item == "chat")
     {
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+       GUI_Chat::showHide();
     }
     else if (item == "talk")
     {
