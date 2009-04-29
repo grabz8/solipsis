@@ -51,7 +51,7 @@ void GUI_Debug::switchPanel()
     if (!stGUI_Debug)
     {
         new GUI_Debug();
-        return stGUI_Debug->show();
+        stGUI_Debug->show();
     }
     else
     {

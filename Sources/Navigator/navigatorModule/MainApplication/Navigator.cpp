@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_Avatar.h"
 #include "navigatorGui/GUI_Chat.h"
 #include "navigatorGui/GUI_Debug.h"
+#include "navigatorGui/GUI_About.h"
+#include "navigatorGui/GUI_Commands.h"
 
 
 #include "NavigatorFrameListener.h"
@@ -1479,10 +1481,10 @@ bool Navigator::mainMenuClick(const String& item)
     }
     // Submenu Help
     else if (item == "About")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_ABOUT, true);
+        GUI_About::showHide();
     else if (item == "Commands")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_COMMANDS, true);
-
+        GUI_Commands::showHide();
+    
     return true;
 }
 

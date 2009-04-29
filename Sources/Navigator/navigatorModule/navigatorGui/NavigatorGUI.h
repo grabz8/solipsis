@@ -48,15 +48,10 @@ public:
     };
     
     enum NaviPanel {
-        NAVI_ABOUT,
-        NAVI_COMMANDS,
 
+        FAKE,
 #ifdef DECLARATIVE_MODELER
 		NAVI_MODELERSCENEFROMTEXT,
-#endif
-
-#ifdef UIDEBUG
-        NAVI_DEBUG,
 #endif
 
         NAVI_COUNT

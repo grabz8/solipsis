@@ -53,15 +53,11 @@ using namespace CommonTools;
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
 const std::string NavigatorGUI::ms_NavisNames[] = {
-    "uiabout",
-    "uicommands",
+
+    "fake"
 
 #ifdef DECLARATIVE_MODELER
    "uimdlrscenefromtext",
-#endif
-
-#ifdef UIDEBUG
-    "uidebug"
 #endif
 };
 

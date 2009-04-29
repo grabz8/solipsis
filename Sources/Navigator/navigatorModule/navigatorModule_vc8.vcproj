@@ -1037,6 +1037,14 @@
 			Name="NavigatorGui"
 			>
 			<File
+				RelativePath=".\navigatorGui\GUI_About.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_About.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_AuthentFacebook.cpp"
 				>
 			</File>
@@ -1082,6 +1090,14 @@
 			</File>
 			<File
 				RelativePath=".\navigatorGui\GUI_ChooseWorld.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Commands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_Commands.h"
 				>
 			</File>
 			<File
