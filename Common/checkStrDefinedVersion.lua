@@ -61,18 +61,45 @@ end
 print(string.format('Version %s.%s%s is OK', major, minor, patch))
 
 if outputVersionFile then
-  f = io.open(outputVersionFile, "w")
-  if not f then
-    print(string.format('Unable to create version file %s !', outputVersionFile))
-    os.exit(1)
+  writeOutputVersionFile = true
+  f = io.open(outputVersionFile)
+  if f then
+    f:close()
+    omajor = 0
+    ominor = 0
+    opatch = 0
+    for line in io.lines(outputVersionFile) do
+      match = string.match(line, 'RAKNET_VERSION_MAJOR%s+(%d+)')
+      if match then
+        omajor = match
+      end
+      match = string.match(line, 'RAKNET_VERSION_MINOR%s+(%d+)')
+      if match then
+        ominor = match
+      end
+      match = string.match(line, 'RAKNET_VERSION_PATCH%s+(%d+)')
+      if match then
+        opatch = match
+      end
+    end
+    if omajor == major and ominor == minor and opatch == patch then
+      writeOutputVersionFile = false
+    end
   end
-  f:write('/**\n')
-  f:write(string.format(' * Header file automatically created by pre-built LUA script %s\n', arg[0]))
-  f:write('**/\n')
-  f:write('\n')
-  f:write(string.format('#define RAKNET_VERSION_MAJOR %s\n', major))
-  f:write(string.format('#define RAKNET_VERSION_MINOR %s\n', minor))
-  f:write(string.format('#define RAKNET_VERSION_PATCH %s\n', patch))
-  f:close(f)
-  print(string.format('Output version file written into %s', outputVersionFile, minor))
+  if writeOutputVersionFile then
+    f = io.open(outputVersionFile, "w")
+    if not f then
+      print(string.format('Unable to create output version file %s !', outputVersionFile))
+      os.exit(1)
+    end
+    f:write('/**\n')
+    f:write(string.format(' * Header file automatically created by pre-built LUA script %s\n', arg[0]))
+    f:write('**/\n')
+    f:write('\n')
+    f:write(string.format('#define RAKNET_VERSION_MAJOR %s\n', major))
+    f:write(string.format('#define RAKNET_VERSION_MINOR %s\n', minor))
+    f:write(string.format('#define RAKNET_VERSION_PATCH %s\n', patch))
+    f:close(f)
+    print(string.format('Output version file written into %s', outputVersionFile, minor))
+  end
 end
