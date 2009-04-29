@@ -50,10 +50,6 @@ public:
     enum NaviPanel {
 
         FAKE,
-#ifdef DECLARATIVE_MODELER
-		NAVI_MODELERSCENEFROMTEXT,
-#endif
-
         NAVI_COUNT
     };
 
@@ -91,28 +87,10 @@ public:
 //     void login();
     void inWorld();
 
-
-#ifdef DECLARATIVE_MODELER
-	// Scene From Text Modeler Panel
-	void modelerSceneFromTextShow();
-    bool isModelerSceneFromTextVisible();
-    void modelerSceneFromTextHide();
-    void modelerSceneFromTextUnload();
-#endif
-
     void connectionLostError();
     void connectionServerError();
 
 protected:
-
-
-#ifdef DECLARATIVE_MODELER
-	// Modeler Scene From Text Setup properties page callbacks
-    void modelerSceneFromTextPageLoaded(const NaviData& naviData);
-	void modelerSceneFromTextExec(const NaviData& naviData);	
-	void modelerSceneFromTextCancelled(const NaviData& naviData);
-#endif
-
 
     // Helpers
     NaviPanel getNaviPanel(const std::string& naviName);

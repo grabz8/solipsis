@@ -1836,9 +1836,12 @@ bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, 
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
     //String name = XmlHelpers::convertUIntToHexString(entityUID);
+
     return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
 }
+
 #endif
+
 
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()

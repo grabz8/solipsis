@@ -28,20 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GUI_StatusBar.h"
 #include "GUI_MainMenu.h"
 
-#include "MainApplication/Navigator.h"
-#include "MainApplication/NavigatorFrameListener.h"
-#include "Tools/DebugHelpers.h"
-#include <OgreTimer.h>
-#include <CTLog.h>
 #include <CTIO.h>
-#include <CTStringHelpers.h>
-#include <CTNetSocket.h>
-#include <CTSystem.h>
 #include <Navi.h>
-#include "World/Modeler.h"
-
-#include <VoiceEngineManager.h>
-#include "World/Avatar.h"
 
 #ifdef _MSC_VER
  #pragma warning (disable:4355)
@@ -56,9 +44,6 @@ const std::string NavigatorGUI::ms_NavisNames[] = {
 
     "fake"
 
-#ifdef DECLARATIVE_MODELER
-   "uimdlrscenefromtext",
-#endif
 };
 
 //-------------------------------------------------------------------------------------
@@ -353,107 +338,6 @@ void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
     }
 }
 
-//-------------------------------------------------------------------------------------
-#ifdef DECLARATIVE_MODELER
-void NavigatorGUI::modelerSceneFromTextShow()
-{
-	if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] == NSNotCreated)
-	{
-		LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerSceneFromTextShow()");
-    
-		// Reset the remoteMRL on local IP address with UDP
-        CommonTools::NetSocket::IPAddressVector myIPAddresses;
-        if (!CommonTools::NetSocket::getMyIP(myIPAddresses))
-            myIPAddresses.push_back("");
-        std::string firstLocalIP = myIPAddresses.front();
-
-		// Create Navi UI modeler
-		NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT], "local://uimdlrscenefromtext.html" /*?localIP=" + firstLocalIP*/, NaviPosition(TopRight), 512, 512);
-		navi->setMovable(true);
-		navi->hide();
-		navi->setMask("uimdlrscenefromtext.png");//Eliminate the black shadow at the margin of the menu
-		//navi->setOpacity(0.75f);
-
-		// page loaded
-		navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::modelerSceneFromTextPageLoaded));
-
-		navi->bind("MdlrSFTCreate", NaviDelegate(this, &NavigatorGUI::modelerSceneFromTextExec));
-		navi->bind("MdlrSFTCancel", NaviDelegate(this, &NavigatorGUI::modelerSceneFromTextCancelled));
-		
-		mNavisStates[NAVI_MODELERSCENEFROMTEXT] = NSCreated;
-
-	}
-	else {
-		mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT])->show(true);
-	}
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerSceneFromTextPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerSceneFromTextPageLoaded()");
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT]);
-
-    // Show Navi UI
-    if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] == NSCreated)
-        navi->show(true);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerSceneFromTextExec(const NaviData& naviData)
-{
-	LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerSceneFromTextExec()");
-	
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT]);
-
-	std::string value = navi->evaluateJS("document.getElementById('scenedescription').value");
-
-	//modelerSceneSetUpUnload(); // no unloading of the window unless the user explicitely closes it.
-	std::string errMsg( "" );
-	std::string warnMsg( "" );
-	if( !mNavigator->createSceneFromText( value, errMsg, warnMsg ) )
-		if( errMsg != "" )
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
-		else if( warnMsg != "" )
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
-		else 
-			GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerSceneFromTextCancelled(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerSceneFromTextSetUpCancelled()");
-	modelerSceneFromTextUnload();
-}
-
-//-------------------------------------------------------------------------------------
-bool NavigatorGUI::isModelerSceneFromTextVisible()
-{
-    return false;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerSceneFromTextHide()
-{
-    if (!isModelerPropVisible()) return;
-    mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT])->hide();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::modelerSceneFromTextUnload()
-{
-    if (mNavisStates[NAVI_MODELERSCENEFROMTEXT] != NSNotCreated)
-	{
-        // Destroy Navi UI modeler
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_MODELERSCENEFROMTEXT]);
-        navi->hide();
-        mNaviMgr->destroyNavi(navi);
-        mNavisStates[NAVI_MODELERSCENEFROMTEXT] = NSNotCreated;
-    }
-}
-#endif
 
 void NavigatorGUI::registerGuiPanel(GUI_Panel *pPanel)
 {

@@ -374,12 +374,6 @@ void GUI_AvatarProperties::avatarPropPageLoaded(const NaviData& naviData)
     // Show Navi UI
     if (m_curState == NSCreated)
         mNavi->show(true);
-
-#ifdef DECLARATIVE_MODELER
-
-    std::string msg = "AvatarProp window loaded";
-    MessageBox(0, msg.c_str(), "GUI_AvatarProperties Avatar", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-#endif
 }
 
 //-------------------------------------------------------------------------------------

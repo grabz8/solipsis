@@ -61,7 +61,7 @@ GUI_ModelerProperties::GUI_ModelerProperties() : GUI_Panel("uimdlrprop") ,
     return stGUI_ModelerProperties->show();
 }
 
-/*static*/ void GUI_ModelerProperties::unload()
+/*static*/ void GUI_ModelerProperties::unloadPanel()
 {
     if (!stGUI_ModelerProperties)
     {

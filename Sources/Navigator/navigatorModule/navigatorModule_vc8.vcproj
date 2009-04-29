@@ -1165,6 +1165,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_ModelerSceneFromText.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\GUI_ModelerSceneFromText.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\GUI_Options.cpp"
 				>
 			</File>

@@ -26,8 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GUI_Modeler.h"
 #include "GUI_MessageBox.h"
 #include "GUI_ModelerProperties.h"
-
-
+#include "GUI_ModelerSceneFromText.h"
 
 #include <CTStringHelpers.h>
 #include <CTSystem.h>
@@ -41,9 +40,7 @@ const std::string GUI_Modeler::ms_ModelerErrors[] = {
     "You have to select an object3D.",
     "This Texture is already open.",
     "File not found.",
-#ifdef DECLARATIVE_MODELER
     "Something went wrong with declarative modeling. Please re-formulate your text."
-#endif
 };
 
 
@@ -124,10 +121,7 @@ bool GUI_Modeler::show()
         mNavi->bind("CreateTorus", NaviDelegate(this, &GUI_Modeler::modelerMainCreateTorus)); 
         mNavi->bind("CreateTube", NaviDelegate(this, &GUI_Modeler::modelerMainCreateTube)); 
         mNavi->bind("CreateRing", NaviDelegate(this, &GUI_Modeler::modelerMainCreateRing)); 
-#ifdef DECLARATIVE_MODELER
         mNavi->bind("CreateSceneFromText", NaviDelegate(this, &GUI_Modeler::modelerMainCreateSceneFromText)); 
-#endif
-
         mNavi->bind("ActionDelete", NaviDelegate(this, &GUI_Modeler::modelerActionDelete)); 
         mNavi->bind("ActionMove", NaviDelegate(this, &GUI_Modeler::modelerActionMove)); 
         mNavi->bind("ActionRotate", NaviDelegate(this, &GUI_Modeler::modelerActionRotate)); 
@@ -179,12 +173,8 @@ void GUI_Modeler::destroy()
 
         mNavigator->endModeling();
 
-
-        GUI_ModelerProperties::unload();
-
-#ifdef DECLARATIVE_MODELER
-        GUI_DeclarativeModeler::unload();
-#endif
+        GUI_ModelerProperties::unloadPanel();
+        GUI_ModelerSceneFromText::unloadPanel();
 
         // Remove temporary files & folder of the thumbnails
         std::string path ( "NaviLocal\\NaviTmpTexture" );
@@ -341,14 +331,15 @@ void GUI_Modeler::modelerMainCreateRing(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-#ifdef DECLARATIVE_MODELER
+
 void GUI_Modeler::modelerMainCreateSceneFromText(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateSceneFromText()");
-    modelerSceneFromTextShow();
+    GUI_ModelerSceneFromText::showPanel();
     //	mNavigator->createSceneFromText( "A red ball is on a green box." );
 }
-#endif
+
+
 //-------------------------------------------------------------------------------------
 void GUI_Modeler::modelerActionDelete(const NaviData& naviData)
 {

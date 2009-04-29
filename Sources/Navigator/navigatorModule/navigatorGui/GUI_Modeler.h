@@ -58,9 +58,7 @@ namespace Solipsis
             ME_NOOBJECTSELECTED,    // No object3D selected
             ME_TEXTUREALREADYOPEN,  // Texture already open
             ME_FILENOTFOUND,
-#ifdef DECLARATIVE_MODELER
             ME_DECLARATIVEMODELINGERROR, // decl. mod. error
-#endif
         };
         static const std::string ms_ModelerErrors[];
 
@@ -98,10 +96,7 @@ namespace Solipsis
         void modelerMainCreateTorus(const NaviData& naviData);
         void modelerMainCreateTube(const NaviData& naviData);
         void modelerMainCreateRing(const NaviData& naviData);
-#ifdef DECLARATIVE_MODELER
         void modelerMainCreateSceneFromText(const NaviData& naviData);
-#endif
-
         void modelerActionDelete(const NaviData& naviData);
         void modelerActionMove(const NaviData& naviData);
         void modelerActionRotate(const NaviData& naviData);

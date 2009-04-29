@@ -42,7 +42,7 @@ namespace Solipsis
     public:
         static bool createAndShowPanel();
         static void hidePanel();
-        static void unload();
+        static void unloadPanel();
         static bool isPanelVisible();
 
         virtual bool show();

@@ -287,9 +287,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 }
                 if (modeler->isSelectionLocked())
                 {
-                    GUI_ModelerProperties::unload();
+                    GUI_ModelerProperties::unloadPanel();
                     GUI_Modeler::createAndShowPanel();
-
                 }    
             }
             return OgreFrameListener::keyPressed(evt);
