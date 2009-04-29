@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_AvatarProperties.h"
 #include "navigatorGui/GUI_Chat.h"
 
+#include "navigatorGui/GUI_Debug.h"
+
 using namespace NaviLibrary;
 using namespace Solipsis;
 using namespace CommonTools;
@@ -149,7 +151,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             break;
 #ifdef UIDEBUG
         case KC_PAUSE: // Show/Hide debug panel
-            navigatorGUI->switchDebug();
+            GUI_Debug::switchPanel();
             break;
 #endif
         }

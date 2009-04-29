@@ -101,9 +101,7 @@ NavigatorGUI::~NavigatorGUI()
     {
         GUI_Panel * pPanel = it->second;
         pPanel->destroy();
-        // CF : should destroy the panels here, but it crashes the hash table iteration
-        // needed to be corrected
-        m_panels.erase(it);
+        // panel deletion will remove it from the list
         delete pPanel;
     }
 
@@ -191,150 +189,7 @@ void NavigatorGUI::inWorld()
     GUI_StatusBar::createAndShowPanel();
 }
 
- 
-
-#ifdef UIDEBUG
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::switchDebug()
-{
-    if (mNavisStates[NAVI_DEBUG] == NSNotCreated)
-    {
-        // Create Navi UI debug
-        NaviLibrary::Navi* navi = mNaviMgr->createNavi(ms_NavisNames[NAVI_DEBUG], "local://uidebug.html", NaviPosition(TopRight), 300, 256);
-        navi->setMovable(true);
-        navi->setAutoUpdateOnFocus(true);
-        navi->setMaxUPS(24);
-        navi->hide();
-        navi->setMask("uidebug.png");
-        navi->setOpacity(0.50f);
-        navi->bind("pageLoaded", NaviDelegate(this, &NavigatorGUI::debugPageLoaded));
-        navi->bind("pageClosed", NaviDelegate(this, &NavigatorGUI::debugPageClosed));
-        navi->bind("debugRefreshTree", NaviDelegate(this, &NavigatorGUI::debugRefreshTree));
-        navi->bind("debugCommand", NaviDelegate(this, &NavigatorGUI::debugCommand));
-        navi->bind("navCommand", NaviDelegate(this, &NavigatorGUI::navCommand));
-        mNavisStates[NAVI_DEBUG] = NSCreated;
-        mTreeDirty = true;
-    }
-    else
-    {
-        // Hide and destroy UI debug
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
-        if (navi->getVisibility()) {
-            navi->hide();
-            mNaviMgr->destroyNavi(navi);
-            mNavisStates[NAVI_DEBUG] = NSNotCreated;
-        }
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugRefreshUrl()
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshUrl()");
-
-    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
-
-#ifdef DEMO_NAVI2
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
-    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
-    if (naviDemoNavi2 == 0) return;
-    // Set current url
-    char txt[256];
-    sprintf(txt, "$('inputUrl').value = '%s'", naviDemoNavi2->getCurrentLocation().c_str());
-    navi->evaluateJS(txt);
-    // Activate/Deactivate Back/Forward buttons
-    sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
-    navi->evaluateJS(txt);
-    sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
-    navi->evaluateJS(txt);
-#endif
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugRefreshDemoVoiceTalkButtonName()
-{
-    char txt[256];
-
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshDemoVoiceTalkButtonName()");
-
-    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
-
-    navi->evaluateJS("$('inputVoice').value = '" + mNavigator->getVoIPServerAddress() + "'");
-    sprintf(txt, "$('inputVoiceSilenceLvl').value = '%.2f'", mNavigator->getVoIPSilenceLevel());
-    navi->evaluateJS(txt);
-    sprintf(txt, "$('inputVoiceSilenceLat').value = '%d'", mNavigator->getVoIPSilenceLatency());
-    navi->evaluateJS(txt);
-
-    // get voice engine
-    IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
-    if (voiceEngine == 0)
-        return;
-    sprintf(txt, "$('demoVoiceToggleTalkButton').innerHTML = '%s'", (voiceEngine->isRecording() ? "Stop" : "Start"));
-    navi->evaluateJS(txt);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
-
-    // Refresh url
-    debugRefreshUrl();
-
-    // Refresh tree datas
-    debugRefreshTree(naviData);
-
-    // Refresh voice engine state
-    debugRefreshDemoVoiceTalkButtonName();
-
-    // Show Navi UI debug
-    if (mNavisStates[NAVI_DEBUG] == NSCreated)
-        mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG])->show(true);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugPageClosed(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageClosed()");
-
-    switchDebug();
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugRefreshTree(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshTree()");
-
-    if (mNavisStates[NAVI_DEBUG] != NSCreated) return;
-    if (!mTreeDirty) return;
-
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
-
-    navi->evaluateJS("allTree.disable()");
-    navi->evaluateJS("allTree.root.clear()");
-    navi->evaluateJS("allTree.insert({text:'Scenes', id:'Scenes'})");
-    String sceneName = mNavigator->getSceneMgrPtr()->getName();
-    navi->evaluateJS("allTree.get('Scenes').insert({text:'" + sceneName + "', id:'S_" + sceneName + "'})");
-    navi->evaluateJS("allTree.insert({text:'OgrePeers', id:'OgrePeers'})");
-    for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mNavigator->getOgrePeerManager()->getOgrePeersIteratorBegin();ogrePeer != mNavigator->getOgrePeerManager()->getOgrePeersIteratorEnd();ogrePeer++)
-    {
-        String ogrePeerName = ogrePeer->second->getXmlEntity()->getName();
-        navi->evaluateJS("allTree.get('OgrePeers').insert({text:'" + ogrePeerName + "', id:'OP_" + ogrePeerName + "'})");
-    }
-    navi->evaluateJS("allTree.enable()");
-
-    mTreeDirty = false;
-}
-#endif
-
-
-
-
-
-
-void NavigatorGUI::connectionServerError()
+ void NavigatorGUI::connectionServerError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionError()");
     Navigator::getSingletonPtr()->disconnect();
@@ -358,49 +213,7 @@ void NavigatorGUI::connectionLostError()
 
 //-------------------------------------------------------------------------------------
 #ifdef UIDEBUG
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::debugCommand(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
 
-    // Get message to send
-    std::string cmd;
-    std::string params;
-    cmd = naviData["cmd"].str();
-    params = naviData["params"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
-
-    // Push debug command
-    DebugHelpers::debugCommands[String(cmd)] = String(params);
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::navCommand(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::navCommand()");
-
-    // Get command
-    std::string cmd;
-    cmd = naviData["cmd"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s", cmd.c_str());
-
-#ifdef DEMO_NAVI2
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[NAVI_DEBUG]);
-    NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
-    if (naviDemoNavi2 == 0) return;
-    if (cmd == "back")
-        naviDemoNavi2->navigateBack();
-    else if (cmd == "forward")
-        naviDemoNavi2->navigateForward();
-    else if (cmd == "stop")
-        naviDemoNavi2->navigateStop();
-    else if (cmd == "go")
-    {
-    	std::string url = navi->evaluateJS("$('inputUrl').value");
-        naviDemoNavi2->navigateTo(url);
-    }
-#endif
-}
 #endif
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)

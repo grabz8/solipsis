@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_Modeler.h"
 #include "navigatorGui/GUI_Avatar.h"
 #include "navigatorGui/GUI_Chat.h"
+#include "navigatorGui/GUI_Debug.h"
+
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -118,6 +120,9 @@ isOnGizmo(false)
 //-------------------------------------------------------------------------------------
 Navigator::~Navigator()
 {
+    if (mState != SLogin)
+        disconnect();
+
     // Stop the node events listener thread
     NodeEventListener::stop();
     NodeEventListener::finalize();
@@ -1580,9 +1585,9 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUid().c_str());
 
 #ifdef UIDEBUG
-    if (mNavigatorGUI != 0)
-        mNavigatorGUI->setTreeDirty(true);
+    GUI_Debug::setTreeDirty(true);
 #endif
+
     if (!mOgrePeerManager->load(xmlEntity))
     {
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Server command ERROR : Navigator::onPeerNew() Unable to load entity !");
@@ -1635,7 +1640,7 @@ void Navigator::onLocationChange(Navi *caller, const std::string &url)
 
 #ifdef DEMO_NAVI2
     if (caller->getName() == "demoNavi2Video")
-        mNavigatorGUI->debugRefreshUrl();
+        GUI_Debug::refreshUrl();
 #endif
 
     std::map<String, String>::iterator it = mNaviURLUpdatePending.find(caller->getName());
@@ -2204,12 +2209,9 @@ void Navigator::toggleVoIP()
                 GUI_MessageBox::MBB_OK, 
                 GUI_MessageBox::MBB_ERROR);
         }
-
-
-
     }
 
-    mNavigatorGUI->debugRefreshDemoVoiceTalkButtonName();
+    GUI_Debug::refreshDemoVoiceTalkButtonName();
 }
 
 //-------------------------------------------------------------------------------------

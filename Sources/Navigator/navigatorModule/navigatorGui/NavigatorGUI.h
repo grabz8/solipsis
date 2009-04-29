@@ -75,9 +75,6 @@ protected:
     unsigned long mCurrentNaviCreationDate;
     std::string mLoginInfosText;
 
-#ifdef UIDEBUG
-    bool mTreeDirty;
-#endif
 
 public:
     NavigatorGUI(Navigator* navigator);
@@ -108,13 +105,6 @@ public:
     void modelerSceneFromTextUnload();
 #endif
 
-#ifdef UIDEBUG
-    void switchDebug();
-    void setTreeDirty(bool dirty) { mTreeDirty = dirty; }
-    void debugRefreshUrl();
-    void debugRefreshDemoVoiceTalkButtonName();
-#endif
-
     void connectionLostError();
     void connectionServerError();
 
@@ -128,14 +118,6 @@ protected:
 	void modelerSceneFromTextCancelled(const NaviData& naviData);
 #endif
 
-#ifdef UIDEBUG
-    // Debug callbacks
-    void debugCommand(const NaviData& naviData);
-    void navCommand(const NaviData& naviData);
-    void debugPageLoaded(const NaviData& naviData);
-    void debugPageClosed(const NaviData& naviData);
-    void debugRefreshTree(const NaviData& naviData);
-#endif
 
     // Helpers
     NaviPanel getNaviPanel(const std::string& naviName);
