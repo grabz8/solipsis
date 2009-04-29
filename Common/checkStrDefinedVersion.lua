@@ -54,7 +54,7 @@ end
 
 if major < minVersionMajor or
    (major == minVersionMajor and minor < minVersionMinor) or
-   (major == minVersionMajor and minor == minVersionMinor and patch < minPatchVersion) then
+   (major == minVersionMajor and minor == minVersionMinor and patch < minVersionPatch) then
   print(string.format('Version %s.%s%s too old !', major, minor, patch))
   os.exit(1)
 end
