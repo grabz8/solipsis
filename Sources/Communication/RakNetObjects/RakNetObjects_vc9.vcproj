@@ -25,7 +25,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Checking RakNet version ..."
-				CommandLine="$(ProjectDir)..\..\..\Dependencies\lua\bin\release\lua.exe $(ProjectDir)..\..\..\Common\checkStrDefinedVersion.lua RAKNET_VERSION $(RAKNET_PATH)\Source\RakNetVersion.h 3 401"
+				CommandLine="$(ProjectDir)..\..\..\Dependencies\lua\bin\release\lua.exe $(ProjectDir)..\..\..\Common\checkStrDefinedVersion.lua RAKNET_VERSION $(RAKNET_PATH)\Source\RakNetVersion.h 3 4 01 $(ProjectDir)DependentRakNetVersion.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -92,7 +92,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Checking RakNet version ..."
-				CommandLine="$(ProjectDir)..\..\..\Dependencies\lua\bin\release\lua.exe $(ProjectDir)..\..\..\Common\checkStrDefinedVersion.lua RAKNET_VERSION $(RAKNET_PATH)\Source\RakNetVersion.h 3 401"
+				CommandLine="$(ProjectDir)..\..\..\Dependencies\lua\bin\release\lua.exe $(ProjectDir)..\..\..\Common\checkStrDefinedVersion.lua RAKNET_VERSION $(RAKNET_PATH)\Source\RakNetVersion.h 3 4 01 $(ProjectDir)DependentRakNetVersion.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

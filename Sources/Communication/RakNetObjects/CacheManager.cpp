@@ -136,16 +136,26 @@ unsigned int CacheManager::GetFilePart(char *filename,
         filename, startReadBytes, numBytesToRead, 
         preallocatedDestination, context.op, context.fileId);
 
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+    // on RakNet 3.401
+    std::string filenameStr = filename;
     std::string pathname;
-    getCachePathname(std::string(filename), pathname);
+    getCachePathname(filenameStr, pathname);
+#else
+    // on RakNet 3.51
+    std::string pathname = filename;
+    std::string filenameStr = IO::getFileName(pathname);
+#endif
 
     long size = 0;
-    CacheMap::iterator entryIt = mCache.find(filename);
+    CacheMap::iterator entryIt = mCache.find(filenameStr);
     if (entryIt != mCache.end())
         size = entryIt->second.mFileSize;
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s %d %% (%d, %d, 0x%08x, (%d, %d))",
-        filename, (startReadBytes*100) /size , startReadBytes, numBytesToRead, 
+        filenameStr.c_str(), (startReadBytes*100) /size , startReadBytes, numBytesToRead, 
         preallocatedDestination, context.op, context.fileId);
 
     return IncrementalReadInterface::GetFilePart((char *)pathname.c_str(), startReadBytes, numBytesToRead, preallocatedDestination, context);
@@ -187,7 +197,15 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
         long filesize = IO::getFileSize(pathname);
         if (filesize == -1)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() Unable to get size of file %s !", filename.c_str());
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+        // on RakNet 3.401
         fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#else
+        // on RakNet 3.51
+        fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#endif
         PendingUploadList& pendingUploadList = entryIt->second.mPendingUploadList;
         for (PendingUploadList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
         {
@@ -341,7 +359,15 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
         long filesize = IO::getFileSize(pathname);
         if (filesize == -1)
             LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+        // on RakNet 3.401
         fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#else
+        // on RakNet 3.51
+        fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#endif
         mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), recipient, fileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
     }
     else
