@@ -1128,3 +1128,8 @@ by adding collisionReplicaUid in ReplicationManager::receiveConstruction and Con
 RakNetEntity::deleteByAddress replaced by RakNetEntity::deleteByAddressAndType
 
 ---------------------------
+29/04/09
+
+RakNet version now checked + major/minor/patch written in defines into DependentRakNetVersion.h + tests about FileListTransfer updates
+
+---------------------------
