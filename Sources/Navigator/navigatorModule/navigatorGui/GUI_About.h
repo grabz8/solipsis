@@ -43,6 +43,7 @@ namespace Solipsis
         virtual bool show();
 
     protected:
+        void onClose(const NaviData& naviData);
         GUI_About();
         static GUI_About * stGUI_About;
     };

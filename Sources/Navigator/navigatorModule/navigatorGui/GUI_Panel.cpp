@@ -161,6 +161,21 @@ void GUI_Panel::onPanelLoaded(const NaviData& naviData)
     mCurrentNaviCreationDate = 0;
 }
 
+void GUI_Panel::fitOnScreen(int & w, int & h)
+{
+    unsigned int width, height, colourDepth;
+    int left, top;
+    Navigator::getSingletonPtr()->getRenderWindowPtr()->getMetrics(width, height, colourDepth, left, top);
+
+//     while (w > width && h > height)
+//     {
+//         if (w > width) w = w/2;
+//         if (h > width) h = h/2;
+//     }
+
+    w = width - 32;
+    h = height - 32;
+}
 
 
 

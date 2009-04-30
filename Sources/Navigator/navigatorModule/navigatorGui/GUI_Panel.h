@@ -60,6 +60,8 @@ namespace Solipsis
         // usual function on page loaded
         void onPanelLoaded(const NaviData& naviData);
 
+        void fitOnScreen(int & w, int & h);
+
 
     protected:
         void switchLuaNavi(bool createDestroy);

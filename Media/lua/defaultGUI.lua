@@ -173,13 +173,7 @@ function NavigatorLua:createGUI(guiName, ...)
 --  naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
 --                       "name" "url", "pos",  x, y, w, h, movable, visible, maxUpdate = 0, forceUpdate = false,zOrder = 0, opacity = 1
 	
-	if guiName == "uiabout" then
-		-- Create Navi UI about
-		x, y, w, h = fitNaviOnScreen(512, 512)
-		naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, w, h, true, true)
-		naviSetOpacity("uiabout", 0.75)
-		return true
-	elseif guiName == "uicommands" then
+	if guiName == "uicommands" then
 		-- Create Navi UI commands
 		naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
 		naviSetOpacity("uicommands", 0.75)

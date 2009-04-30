@@ -58,14 +58,47 @@ bool GUI_About::show()
     // Lua
     if (m_curState == NSNotCreated)
     {
-        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + mPanelName, "NavigatorGUI::inWorld()"); 
+//         if guiName == "uiabout" then
+//             -- Create Navi UI about
+//             x, y, w, h = fitNaviOnScreen(512, 512)
+//             naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, w, h, true, true)
+//             naviSetOpacity("uiabout", 0.75)
+//             return true
+//         else
+
+//         -- screen fitting computation
+//             function fitNaviOnScreen(w, h)
+//             local scrWidth, scrHeight = navigator:getRenderWinMetrics()
+//             while w > scrWidth or h > scrHeight do
+//         if w > scrWidth then w = w/2 end
+//             if h > scrHeight then h = h/2 end
+//                 end
+//                 local x = scrWidth/2 - w/2
+//                 local y = scrHeight/2 - h/2
+//                 return x, y, w, h
+//                 end
+
+        int w = 1024, h = 1024;  
+        fitOnScreen(w, h);
+        createNavi("local://uiabout.html", Center, w, h);
+
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->show();
+        mNavi->setMovable(true);
+        mNavi->setIgnoreBounds(true);
+        mNavi->setOpacity(0.9);
+
+        mNavi->bind("pageClosed", NaviDelegate(this, &GUI_About::onClose));
 
         m_curState = NSCreated;
-        mNavi = NavigatorGUI::getNavi(mPanelName);
     }
     else
          mNavi->show();
 
     return true;
+}
+
+void GUI_About::onClose(const NaviData& naviData)
+{
+    destroy();
 }

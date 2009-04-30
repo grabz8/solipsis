@@ -66,23 +66,6 @@ bool GUI_Chat::show()
         mNavi->setIgnoreBounds(true);
         mNavi->setOpacity(0.75);
 
-        // 
-        // -- uichat listener
-        // function uichatListener(eventType, naviName, naviDataName, param)
-        // if eventType == "Data" then
-        // if naviDataName == "pageLoaded" then
-        // naviShow(naviName)
-        // elseif naviDataName == "pageClosed" then
-        // navigator:mainMenuClick("Chat")
-        //           elseif naviDataName == "sendMessage" then
-        //           -- Reset input
-        //           naviEvaluateJS(naviName, "$('inputChat').value = ''")
-        //           -- Send the message
-        // navigator:sendMessage(param["msg"])
-        //           end
-        //           end
-        //           end
-
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Chat::onPageLoaded));
         mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Chat::onPageClosed));
         mNavi->bind("sendMessage", NaviDelegate(this, &GUI_Chat::onSendMessage));
