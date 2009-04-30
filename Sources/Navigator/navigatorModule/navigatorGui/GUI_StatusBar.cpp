@@ -56,11 +56,23 @@ bool GUI_StatusBar::show()
     // Lua
     if (m_curState == NSNotCreated)
     {
-        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + mPanelName, "NavigatorGUI::inWorld()"); 
+//         if guiName == "uistatusbar" then
+//             -- Create Navi UI status bar
+//             naviMgrCreateNavi("uistatusbar", "local://uistatusbar.html", "BottomLeft", 0, 0, 512, 16, false, false)
+//             naviSetMask("uistatusbar", "alphafade512x16.png")
+//             naviSetIgnoreBounds("uistatusbar", true)
+//             return true
+//         else
+        
+        createNavi("local://uistatusbar.html", BottomLeft, 512, 16);
+
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->setMask("alphafade512x16.png");
+        mNavi->hide();
+        mNavi->setMovable(false);
+        mNavi->setIgnoreBounds(true);
 
         m_curState = NSCreated;
-        mNavi = NavigatorGUI::getNavi(mPanelName);
     }
 
     return true;
@@ -103,5 +115,20 @@ void GUI_StatusBar::setStatusBarText(const std::string& statusText)
 
     if (!stGUI_StatusBar->mNavi->getVisibility())
         stGUI_StatusBar->mNavi->show(true);
+}
+
+
+void GUI_StatusBar::windowResized(RenderWindow* rw)
+{
+    if (mNavi)
+    {
+        //Adjust mouse clipping area
+        unsigned int width, height, depth;
+        int left, top;
+        rw->getMetrics(width, height, depth, left, top);
+        mNavi->setPosition(NaviPosition(0,height-16));
+
+    }
+
 }
 

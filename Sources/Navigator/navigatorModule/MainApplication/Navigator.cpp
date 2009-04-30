@@ -1622,9 +1622,7 @@ void Navigator::processEvents()
         switch ((*xmlEvt)->getType())
         {
         case ETNewEntity:
-
             onPeerNew(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
-
             break;
         case ETLostEntity:
             onPeerLost(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));

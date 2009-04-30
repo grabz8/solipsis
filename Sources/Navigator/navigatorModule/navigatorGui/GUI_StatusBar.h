@@ -44,6 +44,9 @@ namespace Solipsis
         virtual bool show();
         virtual void update();
 
+        virtual void windowResized(RenderWindow* rw);
+
+
     protected:
         GUI_StatusBar();
         static GUI_StatusBar * stGUI_StatusBar;
