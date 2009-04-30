@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Prerequisites.h"
 
-#include "GUI_About.h"
+#include "GUI_Commands.h"
 #include <CTStringHelpers.h>
 #include <CTSystem.h>
 #include <Navi.h>
@@ -32,53 +32,55 @@ using namespace Solipsis;
 using namespace CommonTools;
 //-------------------------------------------------------------------------------------
 
-GUI_About * GUI_About::stGUI_About = NULL;
+GUI_Commands * GUI_Commands::stGUI_Commands = NULL;
 
-GUI_About::GUI_About() : GUI_Panel("uiabout")
+GUI_Commands::GUI_Commands() : GUI_Panel("uicommands")
 {
-    stGUI_About = this;
+    stGUI_Commands = this;
 }
 
-void GUI_About::showHide()
+void GUI_Commands::showHide()
 {
-    if (!stGUI_About)
+    if (!stGUI_Commands)
     {
-        new GUI_About();
+        new GUI_Commands();
     }
 
-    if (stGUI_About->isVisible())
-        stGUI_About->hide();
+    if (stGUI_Commands->isVisible())
+        stGUI_Commands->hide();
    else
-       stGUI_About->show();
+       stGUI_Commands->show();
 }
 
-bool GUI_About::show()
+bool GUI_Commands::show()
 {
     // Create Navi UI Chat panel bar
     // Lua
     if (m_curState == NSNotCreated)
-    {
-        int w = 1024, h = 1024;  
-        fitOnScreen(w, h);
-        createNavi("local://uiabout.html", Center, w, h);
-
+    {  
+        createNavi("local://uicommands.html", Center, 512, 256);
         mNavi = NavigatorGUI::getNavi(mPanelName);
-        mNavi->show();
+        mNavi->hide();
         mNavi->setMovable(true);
-        mNavi->setIgnoreBounds(true);
-        mNavi->setOpacity(0.9);
-
-        mNavi->bind("pageClosed", NaviDelegate(this, &GUI_About::onClose));
+        mNavi->setOpacity(0.75);
 
         m_curState = NSCreated;
+
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Commands::onPageLoaded));
+        mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Commands::onPageClosed));
     }
     else
-         mNavi->show();
+        mNavi->show();
 
     return true;
 }
 
-void GUI_About::onClose(const NaviData& naviData)
+void GUI_Commands::onPageLoaded(const NaviData& naviData)
 {
-    destroy();
+    mNavi->show();
+}
+
+void GUI_Commands::onPageClosed(const NaviData& naviData)
+{
+    mNavi->hide();
 }

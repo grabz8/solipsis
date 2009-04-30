@@ -22,17 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 
 
--- uicommands listener
-function uicommandsListener(eventType, naviName, naviDataName, param)
-	if eventType == "Data" then
-		if naviDataName == "pageLoaded" then
-			naviShow(naviName)
-		elseif naviDataName == "pageClosed" then
-			navigator:mainMenuClick("Commands")
-		end
-	end
-end
-
 -- uictxtavatar listener
 function uictxtavatarListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
@@ -173,13 +162,7 @@ function NavigatorLua:createGUI(guiName, ...)
 --  naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
 --                       "name" "url", "pos",  x, y, w, h, movable, visible, maxUpdate = 0, forceUpdate = false,zOrder = 0, opacity = 1
 	
-	if guiName == "uicommands" then
-		-- Create Navi UI commands
-		naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
-		naviSetOpacity("uicommands", 0.75)
-		naviAddEventListener("uicommands", "uicommandsListener")
-		return true
-	elseif guiName == "uictxtavatar" then
+	if guiName == "uictxtavatar" then
 		-- Create Navi UI context about avatar
 		local args = { ... }
 		local x, y, items = args[1], args[2], args[3]

@@ -83,7 +83,6 @@ bool GUI_MainMenu::show()
     if (m_curState == NavigatorGUI::NSNotCreated)
     {
         // Create Navi panel
-        // Lua
         createNavi("local://uimainmenu.html", TopLeft, 512, 16);
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->setMask("alphafade512x16.png");
