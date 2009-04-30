@@ -36,7 +36,6 @@ const char NavigatorLua::className[] = "NavigatorLua";
 Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, bind),
     LunarMethod(NavigatorLua, getRenderWinMetrics),
-    LunarMethod(NavigatorLua, mainMenuClick),
     LunarMethod(NavigatorLua, contextItemSelected),
     LunarMethod(NavigatorLua, sendMessage),
     LunarMethod(NavigatorLua, hideNavi),
@@ -84,20 +83,6 @@ int NavigatorLua::getRenderWinMetrics(lua_State* luaState)
     lua_pushinteger(luaState, left);
     lua_pushinteger(luaState, top);
     return 5;
-}
-
-//-------------------------------------------------------------------------------------
-int NavigatorLua::mainMenuClick(lua_State* luaState)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::mainMenuClick()");
-
-    // Get item selected
-    std::string item = luaL_checkstring(luaState, 1);
-    // Perform action
-    int rc = mNavigator->mainMenuClick(String(item));
-
-    lua_pushboolean(luaState, rc);
-    return 1;
 }
 
 //-------------------------------------------------------------------------------------

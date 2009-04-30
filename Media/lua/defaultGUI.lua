@@ -21,16 +21,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 
--- uimainmenu listener
-function uimainmenuListener(eventType, naviName, naviDataName, param)
-	if eventType == "Data" then
-		if naviDataName == "pageLoaded" then
-			naviShow(naviName)
-		elseif naviDataName == "menuClick" then
-			navigator:mainMenuClick(param["item"])
-		end
-	end
-end
 
 -- uichat listener
 function uichatListener(eventType, naviName, naviDataName, param)
@@ -194,21 +184,12 @@ end
 
 -- GUI creation
 function NavigatorLua:createGUI(guiName, ...)
-	logMessage(string.format("NavigatorLua:createGUI(%s)", guiName))
-
-	if guiName == "uimsgbox" then
-		-- Create Navi UI message box
-		naviMgrCreateNavi("uimsgbox", "local://uimsgbox.html", "Center", 0, 0, 512, 128, true, false)
-		naviSetMask("uimsgbox", "uimsgbox.png")
-		return true
-	elseif guiName == "uimainmenu" then
-		-- Create Navi UI main menu
-		naviMgrCreateNavi("uimainmenu", "local://uimainmenu.html", "TopLeft", 0, 0, 512, 16, false, false)
-		naviSetMask("uimainmenu", "alphafade512x16.png")
-		naviSetIgnoreBounds("uimainmenu", true)
-		naviAddEventListener("uimainmenu", "uimainmenuListener")
-		return true
-	elseif guiName == "uistatusbar" then
+	logMessage(string.format("NavigatorLua:createGUI(%s)", guiName))	
+	
+--  naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
+--                       "name" "url", "pos",  x, y, w, h, movable, visible, maxUpdate = 0, forceUpdate = false,zOrder = 0, opacity = 1
+	
+    if guiName == "uistatusbar" then
 		-- Create Navi UI status bar
 		naviMgrCreateNavi("uistatusbar", "local://uistatusbar.html", "BottomLeft", 0, 0, 512, 16, false, false)
 		naviSetMask("uistatusbar", "alphafade512x16.png")

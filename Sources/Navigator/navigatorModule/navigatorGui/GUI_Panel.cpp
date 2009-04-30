@@ -47,9 +47,6 @@ GUI_Panel::~GUI_Panel()
 
 bool GUI_Panel::show()
 {
-    if (m_curState != NavigatorGUI::NSCreated)
-        hide();
-
     switchLuaNavi(true);
 
     return true;

@@ -492,6 +492,22 @@
 				RelativePath=".\Tools\DebugHelpers.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Tools\Event.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools\Queue.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools\TRACE.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Tools\TRACE.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="OgreGraphicObjects"

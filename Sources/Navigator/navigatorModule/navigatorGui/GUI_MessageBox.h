@@ -75,6 +75,8 @@ namespace Solipsis {
             st_GUI_MessageBox = this;
         }
 
+
+
         //virtual ~GUI_MessageBox();
 
         static GUI_MessageBox * st_GUI_MessageBox;

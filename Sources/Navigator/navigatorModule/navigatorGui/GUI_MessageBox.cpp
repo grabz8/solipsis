@@ -51,14 +51,21 @@ bool GUI_MessageBox::show(const std::string& titleText,
     return st_GUI_MessageBox->protectedShow(titleText, msgText, buttons, icon);
 }
 
+
 bool GUI_MessageBox::protectedShow(const std::string& titleText, 
     const std::string& msgText, 
     MsgBoxButtons buttons, 
     MsgBoxIcon icon)
 {
-    if (!GUI_Panel::show())
+    if (m_curState == NavigatorGUI::NSNotCreated)
     {
-        return true;
+        // Create Navi panel
+        // Lua
+        createNavi("local://uimsgbox.html", Center, 512, 128);
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->setMask("uimsgbox.png");
+
+        m_curState = NSCreated;
     }
 
     mNavi->setModal(true);

@@ -576,7 +576,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				FileBuffer buff = zz.readFile( zz.getName(i) );
                 ofstream file;
                 file.open( destFile.c_str(), ios::binary );
-                file.write( (const char*)buff.data, buff.size );
+                file.write( (const char*)buff.data, (std::streamsize) buff.size );
                 file.close();
             }
         }

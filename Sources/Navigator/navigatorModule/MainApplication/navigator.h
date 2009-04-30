@@ -55,16 +55,28 @@ namespace Solipsis {
 class Modeler;
 class AvatarEditor;
 
+
 /** The main class of Navigator application.
  */
 class Navigator : public Instance, public NodeEventListener, public IOgrePeerManagerCallbacks, public NaviEventListener
 {
 public:
+
+    enum CameraMode {
+        CMDetached,
+        CM1stPerson,
+        CM1stPersonWithMouse,
+        CM3rdPerson,
+        CMAroundPerson,
+        CMModeling,
+        CMAroundObject
+    };
+
     enum State {
         SLogin,         // User is choosing options, ... and finally log on world
         SInWorld,       // GUI displayed when user is in the world
-		SModeling,      // GUI displayed when user is modeling an object
-		SAvatarEdit     // GUI displayed when user is editing his avatar
+        SModeling,      // GUI displayed when user is modeling an object
+        SAvatarEdit     // GUI displayed when user is editing his avatar
     };
     static const uint32 QFNaviPanel = 1;
     static const uint32 QFVLCPanel = QFNaviPanel<<1;
@@ -79,16 +91,7 @@ public:
         NIWiimoteNunchuk,
         NIWiimoteNunchukIR
     };
-     enum CameraMode {
-        CMDetached,
-        CM1stPerson,
-        CM1stPersonWithMouse,
-        CM3rdPerson,
-        CMAroundPerson,
-		CMModeling,
-		CMAroundObject
-    };
-
+   
      void saveConfiguration()
      {
         mConfiguration.saveConfig();
@@ -283,7 +286,6 @@ public:
     bool quit();
     bool connect();
     bool disconnect();
-    bool mainMenuClick(const String& item);
     bool contextItemSelected(const String& item);
     bool sendMessage(const String& message);
     bool addNaviURLUpdatePending(const String& naviName, const String& url);

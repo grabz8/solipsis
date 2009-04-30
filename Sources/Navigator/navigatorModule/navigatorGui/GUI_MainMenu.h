@@ -34,20 +34,30 @@ namespace Solipsis
 {
     class Navigator;
 
-    class GUI_MainMenu : public GUI_Panel
+    class GUI_MainMenu : public GUI_Panel, public NaviEventListener
     {
     public:
         static bool createAndShowPanel();
         static void showHide(bool bShow);
         virtual bool show();
 
+        ////// NaviEventListener Interface /////////////
+        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData);
+        virtual void onLinkClicked(Navi *caller, const std::string &linkHref);
+        virtual void onLocationChange(Navi *caller, const std::string &url) {}
+        virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
+
 #ifdef UIDEBUG       
         void GUI_MainMenu::debugCommand(const NaviData& naviData);
 #endif
 
     protected:
+        void onClick(const String& item);
+
         GUI_MainMenu();
         static GUI_MainMenu * stGUI_MainMenu;
+        Navigator * mNavigator;
+
 
     };
 } // namespace Solipsis
