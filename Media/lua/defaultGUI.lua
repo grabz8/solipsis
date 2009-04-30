@@ -22,22 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 
 
--- uichat listener
-function uichatListener(eventType, naviName, naviDataName, param)
-	if eventType == "Data" then
-		if naviDataName == "pageLoaded" then
-			naviShow(naviName)
-		elseif naviDataName == "pageClosed" then
-			navigator:mainMenuClick("Chat")
-		elseif naviDataName == "sendMessage" then
-			-- Reset input
-			naviEvaluateJS(naviName, "$('inputChat').value = ''")
-			-- Send the message
-			navigator:sendMessage(param["msg"])
-		end
-	end
-end
-
 -- uicommands listener
 function uicommandsListener(eventType, naviName, naviDataName, param)
 	if eventType == "Data" then
@@ -189,19 +173,7 @@ function NavigatorLua:createGUI(guiName, ...)
 --  naviMgrCreateNavi("uicommands", "local://uicommands.html", "Center", 0, 16, 512, 256, true, false)
 --                       "name" "url", "pos",  x, y, w, h, movable, visible, maxUpdate = 0, forceUpdate = false,zOrder = 0, opacity = 1
 	
-    if guiName == "uistatusbar" then
-		-- Create Navi UI status bar
-		naviMgrCreateNavi("uistatusbar", "local://uistatusbar.html", "BottomLeft", 0, 0, 512, 16, false, false)
-		naviSetMask("uistatusbar", "alphafade512x16.png")
-		naviSetIgnoreBounds("uistatusbar", true)
-		return true
-	elseif guiName == "uichat" then
-		-- Create Navi UI chat
-		naviMgrCreateNavi("uichat", "local://uichat.html", "BottomLeft", 0, 0, 512, 128, true, false)
-		naviSetOpacity("uichat", 0.75)
-		naviAddEventListener("uichat", "uichatListener")
-		return true
-	elseif guiName == "uiabout" then
+	if guiName == "uiabout" then
 		-- Create Navi UI about
 		x, y, w, h = fitNaviOnScreen(512, 512)
 		naviMgrCreateNavi("uiabout", "http://www.solipsis.org", "Center", 0, 16, w, h, true, true)

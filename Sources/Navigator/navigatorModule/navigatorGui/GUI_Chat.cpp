@@ -58,11 +58,36 @@ bool GUI_Chat::show()
     // Lua
     if (m_curState == NSNotCreated)
     {
-        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
-            throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create GUI called " + mPanelName, "NavigatorGUI::inWorld()"); 
+        createNavi("local://uichat.html", BottomLeft, 512, 128);
 
-        m_curState = NSCreated;
         mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->hide();
+        mNavi->setMovable(true);
+        mNavi->setIgnoreBounds(true);
+        mNavi->setOpacity(0.75);
+
+        // 
+        // -- uichat listener
+        // function uichatListener(eventType, naviName, naviDataName, param)
+        // if eventType == "Data" then
+        // if naviDataName == "pageLoaded" then
+        // naviShow(naviName)
+        // elseif naviDataName == "pageClosed" then
+        // navigator:mainMenuClick("Chat")
+        //           elseif naviDataName == "sendMessage" then
+        //           -- Reset input
+        //           naviEvaluateJS(naviName, "$('inputChat').value = ''")
+        //           -- Send the message
+        // navigator:sendMessage(param["msg"])
+        //           end
+        //           end
+        //           end
+
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Chat::onPageLoaded));
+        mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Chat::onPageClosed));
+        mNavi->bind("sendMessage", NaviDelegate(this, &GUI_Chat::onSendMessage));
+ 
+        m_curState = NSCreated;
     }
 
     return true;
@@ -78,3 +103,26 @@ void GUI_Chat::addText(const std::wstring& message)
     stGUI_Chat->mNavi->evaluateJS("$('textChat').value += '\\n'");
     stGUI_Chat->mNavi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
+
+void GUI_Chat::onPageLoaded(const NaviData& naviData)
+{
+    mNavi->show();
+}
+
+void GUI_Chat::onPageClosed(const NaviData& naviData)
+{
+    mNavi->hide();
+}
+
+void GUI_Chat::onSendMessage(const NaviData& naviData)
+{
+    // Reset input
+    mNavi->evaluateJS("$('inputChat').value = ''");
+    //           -- Send the message
+    // navigator:sendMessage(param["msg"])
+    Navigator::getSingletonPtr()->sendMessage(naviData["msg"].str());
+}
+
+
+
+

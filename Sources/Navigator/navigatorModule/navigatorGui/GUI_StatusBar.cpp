@@ -56,15 +56,7 @@ bool GUI_StatusBar::show()
     // Lua
     if (m_curState == NSNotCreated)
     {
-//         if guiName == "uistatusbar" then
-//             -- Create Navi UI status bar
-//             naviMgrCreateNavi("uistatusbar", "local://uistatusbar.html", "BottomLeft", 0, 0, 512, 16, false, false)
-//             naviSetMask("uistatusbar", "alphafade512x16.png")
-//             naviSetIgnoreBounds("uistatusbar", true)
-//             return true
-//         else
-        
-        createNavi("local://uistatusbar.html", BottomLeft, 512, 16);
+           createNavi("local://uistatusbar.html", BottomLeft, 512, 16);
 
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->setMask("alphafade512x16.png");

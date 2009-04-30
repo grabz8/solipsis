@@ -44,7 +44,11 @@ namespace Solipsis
         virtual bool show();
 
     protected:
-        GUI_Chat();
+        void onPageLoaded(const NaviData& naviData);
+        void onPageClosed(const NaviData& naviData);
+        void onSendMessage(const NaviData& naviData);
+
+       GUI_Chat();
         static GUI_Chat * stGUI_Chat;
     };
 } // namespace Solipsis
