@@ -1060,14 +1060,6 @@
 				RelativePath=".\navigatorGui\NavigatorGUI.h"
 				>
 			</File>
-			<File
-				RelativePath=".\navigatorGui\Panel2DMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\navigatorGui\Panel2DMgr.h"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\NavigatorModule.h"
