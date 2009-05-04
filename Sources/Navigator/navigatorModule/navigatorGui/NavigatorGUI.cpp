@@ -5526,13 +5526,24 @@ void NavigatorGUI::modelerSceneFromTextExec(const NaviData& naviData)
 	std::string errMsg( "" );
 	std::string warnMsg( "" );
 	if( !mNavigator->createSceneFromText( value, errMsg, warnMsg ) )
-		return;
-		//if( errMsg != "" )
-		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + errMsg.c_str() , MBB_OK, MBB_ERROR );
-		//else if( warnMsg != "" )
-		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/>" + warnMsg.c_str() , MBB_OK, MBB_ERROR );
-		//else 
-		//	GUI_MessageBox::getMsgBox()->show( "Declarative modeling error", "Current text is:<br/>'" + value + "'<br/> UNKNOWN ERROR", MBB_OK, MBB_ERROR );
+		if( errMsg != "" )
+		    GUI_MessageBox::getMsgBox()->show(
+		        "Declarative modeling error"  , 
+				"Current typed text is: \"" + value + "\"<br>" + errMsg,
+		        GUI_MessageBox::MBB_OK, 
+		        GUI_MessageBox::MBB_ERROR);
+		else if( warnMsg != "" )
+		    GUI_MessageBox::getMsgBox()->show(
+		        "Declarative modeling warning", 
+				"Current typed text is: \"" + value + "\"<br/>" + warnMsg,
+		        GUI_MessageBox::MBB_OK, 
+		        GUI_MessageBox::MBB_ERROR);
+		else 
+		    GUI_MessageBox::getMsgBox()->show(
+		        "Declarative modeling unknown error", 
+				ms_ModelerErrors[ME_DECLARATIVEMODELINGERROR],
+		        GUI_MessageBox::MBB_OK, 
+		        GUI_MessageBox::MBB_ERROR);
 }
 
 //-------------------------------------------------------------------------------------
