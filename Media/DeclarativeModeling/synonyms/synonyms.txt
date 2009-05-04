@@ -1,0 +1,5 @@
+ball,circle,drop,globe,globule,orb,pellet,sphere,spheroid
+robot,android,automaton,machine
+box,cube,square,rectangle,prism,table
+house,home,building
+plane,ground
