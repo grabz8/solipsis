@@ -291,7 +291,7 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
 /// Create a 3D scene from text
 bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion& orientation, const std::string & s, std::string& errMsg, std::string& warnMsg )
 {
-	if( s == "" ) {
+	if( s == "" || s.empty() ) {
 		errMsg = "Cannot model from an empty text. Please type/paste some text.";
 		return false;
 	}
@@ -302,7 +302,7 @@ bool Modeler::createSceneFromText(const EntityUID& entityUID, const String& name
 	}
 
 	// launch decl. modeling
-	if( mDeclarativeModeler->run( s /*, errMsg, warnMsg */ ) != 0 ) {
+	if( mDeclarativeModeler->run( s, errMsg, warnMsg ) != 0 ) {
 		errMsg = "There are some unknown/ununderstandable elements in the text. Please reformulate.";
 		return false;
 	}
