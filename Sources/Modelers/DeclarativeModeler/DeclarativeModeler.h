@@ -44,16 +44,9 @@ class DeclarativeModeler
 public:
 
 	/**
-	 * \brief Constructeur : initialise un modeleur à partir d'une chaine de caractère
-	 * \param s : La chaine de caractère
+	 * \brief Constructeur
 	 */
 	DeclarativeModeler();
-
-	/**
-	 * \brief Constructeur : initialise un modeleur à partir d'une chaine de caractère
-	 * \param s : La chaine de caractère
-	 */
-	DeclarativeModeler( const std::string & s );
 
 	/**
 	 * \brief Destructeur
@@ -64,7 +57,7 @@ public:
 	 * \brief Lance la modélisation
 	 * \return 0 si OK, une valeur négative si problème... cf fichier AttributeComputer pour les types de retour)
 	 */
-	int run( const std::string& s /*, std::string& errorMsg, std::string& warningMsg */ );
+	int run( const std::string& s, std::string& errorMsg, std::string& warningMsg );
 
 	bool assignModelToActor( Actor* /*, std::string& msg */ );
 
@@ -76,6 +69,8 @@ public:
 
 protected:
 
+	void initSynonyms( const std::string& filepath );
+
 	/** \brief Le texte */
 	std::string m_s;
 
@@ -84,6 +79,9 @@ protected:
 
 	std::vector< ME_Model > m_vme;
 
+	std::map< std::string, std::vector< std::string > > m_confPaths;
+
+	std::vector< std::vector< std::string > > m_synonyms;
 	std::map< std::string, std::vector< std::string > > m_availableActorModels;
 
 };

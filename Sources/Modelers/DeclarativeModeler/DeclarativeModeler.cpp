@@ -21,6 +21,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include <cctype>
+#include <fstream>
+#include <iostream>
+#include <string>
+
+#include <Ogre.h>
+using namespace::Ogre;
+
 #include "TagsLexer.hpp"
 #include "TagsParser.hpp"
 #include "antlr/TokenBuffer.hpp"
@@ -39,85 +47,33 @@ DeclarativeModeler::DeclarativeModeler()
 : m_s( "" ), m_vme( std::vector< ME_Model >( DM_ME_SIZE ) )
 {
 
-	std::cout << "Constructor." << std::endl;
-	std::vector< std::string > properties;
-	properties.push_back( "Sphere.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["sphere"] = properties; 
-	m_availableActorModels["ball"] = properties; 
-	properties.clear();
-	properties.push_back( "Box.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["box"] = properties; 
-	m_availableActorModels["cube"] = properties; 
-	properties.clear();
-	properties.push_back( "Prism.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["prism"] = properties; 
-	properties.clear();
-	properties.push_back( "Cylinder.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["cylinder"] = properties; 
-	properties.clear();
-	properties.push_back( "Plane.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["plane"] = properties; 
-	properties.clear();
-	properties.push_back( "Ring.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["ring"] = properties; 
-	m_availableActorModels["torus"] = properties;
-	properties.clear();
-	properties.push_back( "Tube.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["tube"] = properties; 
+    String secName, typeName, archName;
+    ConfigFile cf;
+    cf.load("declarativemodeling.cfg");
 
-	init( "./models/", m_vme );
+	ConfigFile::SectionIterator seci = cf.getSectionIterator();
+    while( seci.hasMoreElements() ) {
+	    secName = seci.peekNextKey();
+        ConfigFile::SettingsMultiMap *settings = seci.getNext();
+        ConfigFile::SettingsMultiMap::iterator i;
+        for (i = settings->begin(); i != settings->end(); ++i) {
+		    typeName = i->first;
+            archName = i->second;
+			m_confPaths[secName].push_back( archName );
+		}
+	}
 
-	std::cout << "Constructor done." << std::endl;
+	if( !m_confPaths["LanguageModels"].empty() )
+		init( m_confPaths["LanguageModels"].front(), m_vme ); // from postagger library
+
+	if( !m_confPaths["Synonyms"].empty() )
+		initSynonyms( m_confPaths["Synonyms"].front() );
 
 }
 
-DeclarativeModeler::DeclarativeModeler( const std::string & s )
-: m_s( s ), m_vme( std::vector< ME_Model >( DM_ME_SIZE ) )
-{
 
-	std::vector< std::string > properties;
-	properties.push_back( "Sphere.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["sphere"] = properties; 
-	m_availableActorModels["ball"] = properties; 
-	properties.clear();
-	properties.push_back( "Box.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["box"] = properties; 
-	m_availableActorModels["cube"] = properties; 
-	properties.clear();
-	properties.push_back( "Prism.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["prism"] = properties; 
-	properties.clear();
-	properties.push_back( "Cylinder.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["cylinder"] = properties; 
-	properties.clear();
-	properties.push_back( "Plane.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["plane"] = properties; 
-	properties.clear();
-	properties.push_back( "Ring.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["ring"] = properties; 
-	m_availableActorModels["torus"] = properties;
-	properties.clear();
-	properties.push_back( "Tube.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["tube"] = properties; 
-	properties.clear();
-	properties.push_back( "knot.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["knot"] = properties; 
-	properties.clear();
-	properties.push_back( "ninja.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["ninja"] = properties; 
-	properties.clear();
-	properties.push_back( "tudorhouse.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["house"] = properties; 
-	properties.clear();
-	properties.push_back( "column.mesh" ); // MODEL + EXTENSION
-	m_availableActorModels["column"] = properties; 
-
-	init( "./models/", m_vme );
-
-}
-
-DeclarativeModeler::~DeclarativeModeler(void)
-{ }
+DeclarativeModeler::~DeclarativeModeler()
+{}
 
 void extractTags(std::string & input, std::string & outFileName)
 {
@@ -156,9 +112,17 @@ void extractTags(std::string & input, std::string & outFileName)
 }
 
 
-int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std::string& warningMsg */ )
+int DeclarativeModeler::run( const std::string& s, std::string& errorMsg, std::string& warningMsg )
 {
-	m_s = s;
+	if( s.empty() )
+		return 1;
+
+	m_s = s; // add a point at the end of the sentence if there is not.
+	if( m_s.find( "." ) != m_s.size()-1 ) 
+		m_s += ".";
+
+	int (*pf)(int)=tolower; // change the sentence to lower case to avoid misunderstanding of bad placed caps.
+	std::transform( m_s.begin(), m_s.end(), m_s.begin(), pf );
 
 	// on tag le texte
 	std::string output;
@@ -177,7 +141,7 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
     if (!strm.is_open())
       {
         std::cout << "impossible de charger le fichier contenant les Tags ("<<"file"<<")"<< std::endl; 
-        exit(-1);
+        return -1;
       }
 
     // le lexer
@@ -196,13 +160,13 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
     parser.program();
 
     // les acteurs de la scene
-    std::vector<Actor*> actors = parser.getActors();
+	std::vector< Actor* > actors = parser.getActors();
 
     // parcours des contraintes pour poser les équations
     std::vector<Link*> relationsInterActor = parser.getRelations();
 
     // on affecte les positions / couleurs aux acteurs
-    AttributeComputer attComputer(actors, relationsInterActor);
+    AttributeComputer attComputer( actors, relationsInterActor);
 
     // calcul et résolution de contraintes
     int res = attComputer.compute();
@@ -210,43 +174,27 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
 	strm.close();
 
 	std::string msg;
-//#ifdef WIN32
-//	if(res==-3) {
-//		warningMsg = "Le modeleur n'a pu déterminer une taille correcte pour les acteurs de la scène.";
-//	    //MessageBox(0, msg.c_str(), "Modeleur déclaratif", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-//	}
-//	if(res==-2) {
-//		warningMsg = "Le modeleur n'a pu déterminer une position correcte pour les acteurs de la scène.";
-//	    //MessageBox(0, msg.c_str(), "Modeleur déclaratif", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-//	}
-//	else if(res==-1) {
-//		warningMsg = "Le modeleur n'a pu déterminer une couleur correcte pour les acteurs de la scène.\n Une couleur par défaut a leur a été assignée.";
-//	    //MessageBox(0, msg.c_str(), "Modeleur déclaratif", MB_OK | MB_ICONERROR | MB_TASKMODAL);
-//	}
-//#endif
+	if(res==-3) {
+		warningMsg = "A correct size could not be computed for the actors of the scene.";
+	}
+	if(res==-2) {
+		warningMsg = "A correct position could not be computed for the actors of the scene.";
+	}
+	else if(res==-1) {
+		warningMsg = "A correct color could not be computed for actors of the scene. A default color has been assigned.";
+	}
 
 	m_actors = actors;
-
 	assignModelsToActors( /* errorMsg */ );
 
-	////return 0;
   }
   catch( ANTLRException& e ) {
-//    std::cerr << "ANTLRException : " << e.getMessage() << std::endl;
-//#ifdef WIN32
-//		errorMsg = e.getMessage() + "\nThere are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-//	    //MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-//#endif
-//    return -3;
-//  }
-//  catch( std::exception& e )
-//  {
-//    std::cerr << "exception : " << e.what() << std::endl;
-//#ifdef WIN32
-//	errorMsg = std::string( e.what() ) + "\nThere are some unknown/ununderstandable elements in the sentence. Please reformulate.";
-//	    //MessageBox(0, msg.c_str(), "Declarative modeling", MB_OK | MB_ICONWARNING | MB_TASKMODAL);
-//#endif
-//    return -4;
+		errorMsg = e.getMessage() + "<br/>There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
+	    return -3;
+  }
+  catch( std::exception& e ) {
+		errorMsg = std::string( e.what() ) + "<br/>There are some unknown/ununderstandable elements in the sentence. Please reformulate.";
+	    return -4;
   }
   return 0;
 }
@@ -254,10 +202,56 @@ int DeclarativeModeler::run( const std::string& s /*, std::string& errorMsg, std
 bool DeclarativeModeler::assignModelToActor( Actor* actor /*, std::string& returnedMsg*/ )
 {
 	std::string actorName = actor->getName();
-	if( !m_availableActorModels[actorName].empty() ) {
-		actor->setModelName( m_availableActorModels[actorName][0] );
-		//returnedMsg = "";
+	
+	// if group not initialised -> do it!
+	// The 'resources.cfg' file has to be available and must contain a [General] section
+	if( !ResourceGroupManager::getSingleton().isResourceGroupInitialised( "General" ) )
+		ResourceGroupManager::getSingleton().initialiseResourceGroup( "General" );
+	// if group not loaded -> do it!
+	if( !ResourceGroupManager::getSingleton().isResourceGroupLoaded( "General" ) )
+		ResourceGroupManager::getSingleton().loadResourceGroup( "General" );
+
+	// search through resources for real name
+	StringVectorPtr matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", actorName + ".mesh" );
+	// if empty set -> search through resources for matching pattern
+	if( matchingActorNames->empty() )
+		matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", actorName + "*.mesh" );
+	if( matchingActorNames->empty() )
+		matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", "*" + actorName + ".mesh" );
+	if( matchingActorNames->empty() )
+		matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", "*" + actorName + "*.mesh" );
+
+	if( matchingActorNames->empty() ) {
+		// search for synonyms through resources
+		int i = 0;
+		bool synonymFound = false;
+		while( i < m_synonyms.size() && !synonymFound ) {
+			if( std::find( m_synonyms[i].begin(), m_synonyms[i].end(), actorName ) != m_synonyms[i].end() ) {
+				int j = 0;
+				while( j < m_synonyms[i].size() && !synonymFound ) {
+					matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", m_synonyms[i][j] + ".mesh" );
+					if( matchingActorNames->empty() )
+						matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", m_synonyms[i][j] + "*.mesh" );
+					if( matchingActorNames->empty() )
+						matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", "*" + m_synonyms[i][j] + ".mesh" );
+					if( matchingActorNames->empty() )
+						matchingActorNames = ResourceGroupManager::getSingleton().findResourceNames( "General", "*" + m_synonyms[i][j] + "*.mesh" );
+					if( !matchingActorNames->empty() )
+						synonymFound = true;
+					j++;
+				}
+			}
+			i++;
+		}
 	}
+
+	if( !matchingActorNames->empty() )
+		actor->setModelName( matchingActorNames->front() );
+
+	//if( !m_availableActorModels[actorName].empty() ) {
+	//	actor->setModelName( m_availableActorModels[actorName][0] );
+	//	//returnedMsg = "";
+	//}
 	else {
 		//returnedMsg = "Le modeleur n'a pu trouver un modèle approprié pour l'acteur '" + actor->getName() + "'.";
 		return false;
@@ -278,4 +272,61 @@ bool DeclarativeModeler::assignModelsToActors( /* std::string& returnedMsg */ )
 		//	returnedMsg = currentReturnedMsg;
 	}
 	return returnedValue;
+}
+
+//std::vector<std::string> split(const std::string&, const std::string&);
+//std::vector<std::string> split(const char*, const char*);
+//std::vector<std::string> split(const std::string&, const char*);
+//std::vector<std::string> split(const char*, std::string&);
+ 
+std::vector<std::string> split(const std::string& myStr, const std::string& token){
+	std::vector<std::string> temp (0);
+	std::string s;
+	for(std::size_t i = 0; i < myStr.size(); i++){
+		if( (myStr.substr(i, token.size()).compare(token) == 0)){
+			temp.push_back(s);
+			s.clear();
+			i += token.size() - 1;
+		}else{
+			s.append(1, myStr[i]);
+			if(i == (myStr.size() - 1))
+				temp.push_back(s);
+		}
+	}
+	return temp;
+}
+
+std::vector<std::string> split (const char* lhs, const char* rhs){
+	const std::string m1 (lhs), m2 (rhs);
+	return split(m1, m2);
+}
+
+std::vector<std::string> split (const char* lhs, const std::string& rhs){
+	return split(lhs, rhs.c_str());
+}
+
+std::vector<std::string> split (const std::string& lhs, const char* rhs){
+	return split(lhs.c_str(), rhs);
+}
+
+template<class Element>
+std::ostream& displayElements(const std::vector<Element>& arg, std::ostream& output = std::cout){
+	for(std::size_t i = 0; i < arg.size(); i++)
+		output << arg[i] << "\n";
+	return output;
+}
+
+void DeclarativeModeler::initSynonyms( const std::string& filepath ) {
+
+	string line;
+	ifstream myfile( std::string( filepath + "/synonyms.txt" ).c_str() );
+	if( myfile.is_open() ) {
+	    while (! myfile.eof() ) {
+			getline( myfile, line );
+			std::vector< std::string > synonyms = split( line, "," );
+			m_synonyms.push_back( synonyms );
+	    }
+	    myfile.close();
+    }
+	else cout << "Unable to open file"; 
 }
