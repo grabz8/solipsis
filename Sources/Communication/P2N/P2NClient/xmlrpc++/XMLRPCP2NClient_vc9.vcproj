@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="XMLRPCP2NClient"
 	ProjectGUID="{DF452F0F-5CA2-44A6-BFB9-2E0520BF718A}"
 	RootNamespace="XMLRPCP2NClient"

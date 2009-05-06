@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="RakNetObjects"
 	ProjectGUID="{F3C1AD5F-9D9A-4D93-B427-01A2F2031D50}"
 	RootNamespace="RakNetObjects"

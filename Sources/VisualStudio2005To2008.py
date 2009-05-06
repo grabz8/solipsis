@@ -458,7 +458,7 @@ def Vc8ToVc9( vc8ProjFilePath, vc9ProjFilePath ):
 		raise NameError('Malformed Vc8 project file : can\'t find the tag VisualStudioProject\'s attribute named Version')
 	if versionAttr.nodeValue != '8,00' and versionAttr.nodeValue != '8.00':
 		raise NameError('Malformed Vc8 project file : expecting Version=8,00, found '+versionAttr.nodeValue)
-	versionAttr.nodeValue = '9.00'
+	versionAttr.nodeValue = '9,00'
 	#print('changed Version attribute to '+versionAttr.nodeValue)
 	
 	# add a new attribute to VisualStudioProject's attributes

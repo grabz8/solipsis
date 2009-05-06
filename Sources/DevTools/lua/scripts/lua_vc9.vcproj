@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="lua_vc9"
 	ProjectGUID="{20BC9F6A-B055-4D10-B279-0C155FC253C3}"
 	RootNamespace="lua_vc9"

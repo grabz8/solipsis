@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Navigator"
 	ProjectGUID="{38A06E51-F5AE-4B39-A04D-EB0F7F434E71}"
 	RootNamespace="OgreTutorial_1"

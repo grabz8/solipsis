@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="SWFPlugin"
 	ProjectGUID="{F2481C43-BA3A-47F1-92F8-27B0FD5C8702}"
 	RootNamespace="SWFPlugin"

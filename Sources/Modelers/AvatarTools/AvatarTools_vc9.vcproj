@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="AvatarTools"
 	ProjectGUID="{89AD7D88-16EC-4964-99FA-98E1043AC1A8}"
 	RootNamespace="MdlrTools"

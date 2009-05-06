@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Plugin_skp"
 	ProjectGUID="{CB6BE1D0-F46F-4BC2-A4B7-EC16E7944B0F}"
 	RootNamespace="Plugin_skp"

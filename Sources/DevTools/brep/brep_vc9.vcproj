@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="brep_vc9"
 	ProjectGUID="{39A9638B-D487-471A-BA44-D5B81C0E91A4}"
 	RootNamespace="brep_vc9"

@@ -5,7 +5,7 @@
 	Name="triangle"
 	ProjectGUID="{FB529755-9920-41C4-B366-4F108068E2CF}"
 	RootNamespace="triangle"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

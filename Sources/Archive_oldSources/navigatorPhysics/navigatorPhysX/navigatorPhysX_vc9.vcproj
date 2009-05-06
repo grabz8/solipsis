@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorPhysX"
 	ProjectGUID="{88F50959-2CC5-442A-B795-2A60751CD2E3}"
 	RootNamespace="navigatorPhysX"

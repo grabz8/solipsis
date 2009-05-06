@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="liblua_vc9"
 	ProjectGUID="{E737AF5B-9F63-4095-BA6F-25F173DF34E2}"
 	RootNamespace="liblua_vc9"

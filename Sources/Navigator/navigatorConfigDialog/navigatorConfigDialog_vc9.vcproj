@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorConfigDialog"
 	ProjectGUID="{6FE81BEF-D89F-45ED-B044-D8CC0975A825}"
 	RootNamespace="navigatorConfigDialog"

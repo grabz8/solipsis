@@ -5,7 +5,7 @@
 	Name="postagger"
 	ProjectGUID="{7BE28E00-A560-4C20-BE73-CC14B5CEC763}"
 	RootNamespace="postagger"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

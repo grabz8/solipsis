@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+# Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llmozlib_vc9", "DevTools\llmozlib\llmozlib_vc9.vcproj", "{B464AB9E-C9ED-4797-9179-77282A916378}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Navi_vc9", "DevTools\navi\Navi\Navi_vc9.vcproj", "{5902A470-3E2A-4159-A2F7-57BDC5614070}"
@@ -136,10 +136,6 @@ Global
 		{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}.Debug|Win32.Build.0 = Debug|Win32
 		{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}.Release|Win32.ActiveCfg = Release|Win32
 		{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}.Release|Win32.Build.0 = Release|Win32
-		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Debug|Win32.Build.0 = Debug|Win32
-		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Release|Win32.ActiveCfg = Release|Win32
-		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Release|Win32.Build.0 = Release|Win32
 		{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}.Debug|Win32.Build.0 = Debug|Win32
 		{AA4C8F77-7789-4AF7-9B69-910A984BEF1D}.Release|Win32.ActiveCfg = Release|Win32
@@ -148,6 +144,10 @@ Global
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Debug|Win32.Build.0 = Debug|Win32
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Release|Win32.ActiveCfg = Release|Win32
 		{20BC9F6A-B055-4D10-B279-0C155FC253C3}.Release|Win32.Build.0 = Release|Win32
+		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Debug|Win32.Build.0 = Debug|Win32
+		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Release|Win32.ActiveCfg = Release|Win32
+		{EF1D90D8-AE1A-47B7-8FDD-B107D29C9B74}.Release|Win32.Build.0 = Release|Win32
 		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Debug|Win32.Build.0 = Debug|Win32
 		{7BE28E00-A560-4C20-BE73-CC14B5CEC763}.Release|Win32.ActiveCfg = Release|Win32

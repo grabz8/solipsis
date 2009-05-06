@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ogreMax_vc9"
 	ProjectGUID="{48AFAAA6-65AB-47B1-8DFA-79E9F99948C5}"
 	RootNamespace="ogreMax_vc9"

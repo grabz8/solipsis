@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="3dsftk3"
 	ProjectGUID="{B15BDA35-0972-428E-B5DA-F5EE528E36F0}"
 	Keyword="Win32Proj"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorODE"
 	ProjectGUID="{123D21DE-C053-4711-9618-5E5ED1288ED6}"
 	RootNamespace="navigatorODE"

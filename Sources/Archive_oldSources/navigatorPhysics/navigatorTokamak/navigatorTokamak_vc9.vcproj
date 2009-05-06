@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorTokamak"
 	ProjectGUID="{86D89821-3C23-420F-A73B-065874F930B6}"
 	RootNamespace="navigatorTokamak"

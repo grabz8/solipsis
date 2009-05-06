@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libspeex"
 	ProjectGUID="{40B5BFB6-29B2-455B-8A5F-5331657D4F93}"
 	TargetFrameworkVersion="131072"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Hikari"
 	ProjectGUID="{EE63115E-70F7-49D4-BADD-9C6D0F4DC295}"
 	RootNamespace="Hikari"

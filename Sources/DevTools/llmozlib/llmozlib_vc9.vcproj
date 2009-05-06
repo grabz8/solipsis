@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="llmozlib_vc9"
 	ProjectGUID="{B464AB9E-C9ED-4797-9179-77282A916378}"
 	RootNamespace="llmozlib_vc9"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="XMLRPCP2NServer"
 	ProjectGUID="{3F9BA22F-03A7-4931-8C20-96909D9EC03E}"
 	RootNamespace="XMLRPCP2NServer"
