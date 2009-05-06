@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="peer"
 	ProjectGUID="{A206BD57-63BC-4848-9764-62799F867772}"
 	RootNamespace="peer"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="VoiceEngineClient"
 	ProjectGUID="{E1130C36-D33E-4D43-BD7F-7D7297D9A1B2}"
 	RootNamespace="VoiceEngineClient"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="KleinBergFunctionalTest"
 	ProjectGUID="{416FF903-06D5-4F95-9BC0-B347D69DD0F6}"
 	RootNamespace="KleinBergFunctionalTest"

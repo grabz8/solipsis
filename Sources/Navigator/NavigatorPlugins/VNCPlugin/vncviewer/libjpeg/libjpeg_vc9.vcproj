@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libjpeg"
 	ProjectGUID="{B6F84561-61FE-477D-AE2E-D4152A247FB1}"
 	RootNamespace="libjpeg"

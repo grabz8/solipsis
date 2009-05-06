@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="voiceEngineFModSpeex"
 	ProjectGUID="{148CA9AA-F955-48C0-A1A6-765AE0C6F21B}"
 	RootNamespace="voiceEngineFModSpeex"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="voiceEngineTestServer"
 	ProjectGUID="{446B08B4-8977-4FB1-AB5B-016ED9E7CA53}"
 	RootNamespace="TestServer"

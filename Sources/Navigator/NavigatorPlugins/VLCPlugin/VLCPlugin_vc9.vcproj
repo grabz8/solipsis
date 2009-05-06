@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="VLCPlugin"
 	ProjectGUID="{C477314D-972B-4524-95C3-25DA9471A3C3}"
 	RootNamespace="VLCPlugin"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="SimpleVoiceEngineProtocol"
 	ProjectGUID="{CCDFA8B2-DA14-4F21-BA0A-5140FA39AF3B}"
 	RootNamespace="SimpleVoiceEngineProtocol"

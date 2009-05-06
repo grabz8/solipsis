@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="peerPhysX"
 	ProjectGUID="{35F18913-F384-43A8-B664-624682177FBF}"
 	RootNamespace="peerPhysX"

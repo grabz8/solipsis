@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="RaynetFunctionalTest"
 	ProjectGUID="{4DF93609-DE02-42AC-9E4C-C0FEC611A9EB}"
 	RootNamespace="RaynetTest"

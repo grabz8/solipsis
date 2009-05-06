@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorActiveXPS"
 	ProjectGUID="{375429B9-3B3B-4F2D-8CB1-D3AEDAA2AD2E}"
 	Keyword="AtlPSProj"

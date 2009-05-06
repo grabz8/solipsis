@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Tools"
 	ProjectGUID="{D8F3AFC3-88A1-46B1-9693-B22F9AEBE5AF}"
 	RootNamespace="Tools"

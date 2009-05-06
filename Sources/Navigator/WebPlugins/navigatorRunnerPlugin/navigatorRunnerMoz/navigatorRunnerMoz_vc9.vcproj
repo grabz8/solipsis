@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorRunnerMoz_vc9"
 	ProjectGUID="{2D4CA5C4-937A-11DC-8314-0800200C9A66}"
 	RootNamespace="navigatorRunnerMoz_vc9"

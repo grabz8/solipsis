@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="RakNetServer"
 	ProjectGUID="{DC02C6ED-7F17-45F4-8DD6-19267655D12E}"
 	RootNamespace="RakNetServer"

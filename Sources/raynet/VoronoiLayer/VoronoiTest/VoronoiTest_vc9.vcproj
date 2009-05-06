@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="VoronoiTest"
 	ProjectGUID="{5634C74C-51C6-4A73-87A7-3356FA6D3CF3}"
 	RootNamespace="VoronoiTest"

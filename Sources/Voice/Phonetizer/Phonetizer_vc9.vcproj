@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Phonetizer"
 	ProjectGUID="{38512799-B050-49D0-8025-C7623D2D1CF1}"
 	RootNamespace="Phonetizer"
