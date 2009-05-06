@@ -50,7 +50,6 @@ namespace Solipsis
             NAVI_CTXTCOUNT
         };
 
-
         static bool createAndShowPanel(int x, int y, NaviContext ctxtPanel, const String& params);
         static void hideMenu();
         static bool isContextVisible();

@@ -76,6 +76,30 @@ void GUI_ContextMenu::hide()
     m_curState = NSNotCreated;
 }
 
+void clampNaviOnScreen(int &x, int & y, int w, int h )
+{
+    int cx = x - w/2;
+    int cy = y - h/2;
+
+    unsigned int scrWidth, scrHeight, colourDepth;
+    int left, top;
+    Navigator::getSingletonPtr()->getRenderWindowPtr()->getMetrics(scrWidth, scrHeight, colourDepth, left, top);
+
+    if (cx > ((int) scrWidth - w)) 
+        cx = ((int) scrWidth - w);
+    else if (cx < 0)
+        cx = 0;
+
+    if (cy > ((int) scrHeight - h)) 
+        cy = ((int) scrHeight - h);
+    else if (cy < 0)
+        cy = 0;
+}
+
+
+
+
+
 bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& params)
 {
     if (m_curState != NSNotCreated)
@@ -84,14 +108,77 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
     m_curContext = ctxtPanel;
     mPanelName = ms_NavisContexts[m_curContext];
 
-    // Create Navi UI context
-    // Lua
-    if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s%d%d%s", mPanelName.c_str(), x, y, params.c_str()))
+    switch (m_curContext)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", mPanelName.c_str());
-        return false;
-    }
-    mNavi = NavigatorGUI::getNavi(mPanelName);
+  /*  case NAVI_CTXTAVATAR:
+        {
+            int naviW = 256, naviH = 256;
+              // set navi position
+            clampNaviOnScreen(x, y, naviW, naviH);
+    //        CreateNavi() "", x, y, naviW, naviH, false, false);
+
+
+            createNavi("", x, y, naviW, naviH);         
+            mNavi->setMovable(false);
+            mNavi->show();
+
+            mNavi->setColorKey( "#010203", 0, "#000000");
+            mNavi->setOpacity( 0.75);
+
+            NaviLibrary::NaviData naviData("uictxtavatarDatas");
+            naviData["items"] = params;
+            naviData["itemWidth"] = "50";
+            naviData["itemHeight"] = "50";
+
+                //                 naviDatas["items"] = items
+                //                 naviDatas["itemWidth"] = itemW
+                //                 naviDatas["itemHeight"] = itemH
+                //                 naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)            mNavi->navigateTo()
+        }
+       
+
+
+        break;
+//         if guiName == "uictxtavatar" then
+//             -- Create Navi UI context about avatar
+//             local args = { ... }
+//         local x, y, items = args[1], args[2], args[3]
+//         logMessage(string.format("x, y, items = %d, %d, %s", x, y, items))
+//             local itemW, itemH = 50, 50
+//             local naviW, naviH = 256, 256
+//             x, y = clampNaviOnScreen(x, y, naviW, naviH)
+//             if not naviMgrIsNaviExists(guiName) then
+//                 naviMgrCreateNavi(guiName, "", x, y, naviW, naviH, false, false)
+//                 naviSetColorKey(guiName, "#010203", 0, "#000000")
+//                 naviSetOpacity(guiName, 0.75)
+//                 naviAddEventListener(guiName, guiName .. "Listener")
+//             else
+//             naviSetPosition(guiName, x, y)
+//             end
+
+//             local naviDatas = {}
+//             naviDatas["naviDataName"] = guiName .. "Datas"
+//                 naviDatas["items"] = items
+//                 naviDatas["itemWidth"] = itemW
+//                 naviDatas["itemHeight"] = itemH
+//                 naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)
+//                 return true
+//         else
+
+
+
+        break;*/
+
+    default:
+        // Create Navi UI context
+        // Lua
+        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s%d%d%s", mPanelName.c_str(), x, y, params.c_str()))
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::contextShow() Unable to create GUI called %s", mPanelName.c_str());
+            return false;
+        }
+        mNavi = NavigatorGUI::getNavi(mPanelName);
+   }
 
     m_curState = NSCreated;
     return true;

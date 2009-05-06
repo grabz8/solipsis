@@ -147,6 +147,17 @@ void GUI_Panel::createNavi(const std::string &homepage, const NaviPosition &navi
         width, height, zOrder);
 }
 
+
+void GUI_Panel::createNavi(const std::string &homepage, int x, int y,
+                           unsigned short width, unsigned short height, unsigned short zOrder)
+{
+    mCurrentNaviCreationDate = 0;
+
+    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, homepage, NaviPosition(x, y),
+        width, height, zOrder);
+}
+
+
 //-------------------------------------------------------------------------------------
 void GUI_Panel::onPanelLoaded(const NaviData& naviData)
 {
