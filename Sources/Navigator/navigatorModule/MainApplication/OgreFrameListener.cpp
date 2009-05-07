@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 
+// used to add or remove the debug overlay
+#undef OGRE_DEBUG_MODE
+
 //-------------------------------------------------------------------------------------
 OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManager *sceneMgr) :
     mCamera(cam), mTranslateVector(Vector3::ZERO), mWindow(win), mStatsOn(true), mNumScreenShots(0),
@@ -53,9 +56,6 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
     showDebugOverlay(true);
 #endif
 
-#if OGRE_DEBUG_MODE == 1
-    showDebugOverlay(true);
-#endif
 
     // Populate the camera and scene manager containers
     if ((cam != 0) && (cam->getParentSceneNode() != 0))
@@ -100,6 +100,7 @@ bool OgreFrameListener::frameEnded(const FrameEvent& evt)
 #if OGRE_DEBUG_MODE == 1
     updateStats();
 #endif
+
     return true;
 }
 

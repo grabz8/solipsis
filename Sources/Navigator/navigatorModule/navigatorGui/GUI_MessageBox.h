@@ -24,34 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __GUI_MessageBox_h__
 #define __GUI_MessageBox_h__
 
-// #include <Facebook.h>
 #include "NavigatorGui.h"
+#include "GUI_Panel.h"
 #include "MainApplication/Navigator.h"
-// #include "World/Modeler.h"
-// #include "ModifiableMaterialObject.h"
 
 using namespace NaviLibrary;
 
 namespace Solipsis {
-
-    class GUI_Panel
-    {
-    public: 
-        GUI_Panel(const std::string & panelName)
-        {
-            mPanelName = panelName;
-            m_curState = NavigatorGUI::NSNotCreated;
-        }
-
-    protected:
-        void switchLuaNavi(bool createDestroy);
-
-        NavigatorGUI::NaviState m_curState;
-        std::string mPanelName;
-        // the navi panel
-        NaviLibrary::Navi* mNavi;
-    };
-
     /** This class manages all Graphical User Interfaces of the Navigator.
     */
     class GUI_MessageBox : public GUI_Panel
@@ -71,15 +50,11 @@ namespace Solipsis {
         };
 
      public:
-
         // Show a message box
-        void show(const std::string& titleText, 
+        static bool show(const std::string& titleText, 
             const std::string& msgText, 
             MsgBoxButtons buttons, 
             MsgBoxIcon icon);
-
-        void hide();
-        bool isVisible();
 
         static GUI_MessageBox * getMsgBox()
         {
@@ -88,14 +63,22 @@ namespace Solipsis {
         }
 
     protected:
+        // Show a message box
+        bool protectedShow(const std::string& titleText, 
+            const std::string& msgText, 
+            MsgBoxButtons buttons, 
+            MsgBoxIcon icon);
+        
+        
         GUI_MessageBox() : GUI_Panel("uimsgbox")
         {
             st_GUI_MessageBox = this;
         }
 
-        ~GUI_MessageBox();
 
-    
+
+        //virtual ~GUI_MessageBox();
+
         static GUI_MessageBox * st_GUI_MessageBox;
 
         std::string mMsgBoxTitleText;
@@ -103,8 +86,8 @@ namespace Solipsis {
         MsgBoxButtons mMsgBoxButtons;
         MsgBoxIcon mMsgBoxIcon;
 
-        void messageBoxPageLoaded(const NaviData& naviData);
-        void messageBoxResponse(const NaviData& naviData);
+        void onPageLoaded(const NaviData& naviData);
+        void onResponse(const NaviData& naviData);
     };
 
 } // namespace Solipsis

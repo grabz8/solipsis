@@ -34,6 +34,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Cameras/OrbitalCameraSupport.h"
 #include "Cameras/FirstPersonCameraSupport.h"
 
+#include "navigatorGui/GUI_ContextMenu.h"
+#include "navigatorGui/GUI_Modeler.h"
+#include "navigatorGui/GUI_ModelerProperties.h"
+#include "navigatorGui/GUI_Avatar.h"
+#include "navigatorGui/GUI_AvatarProperties.h"
+#include "navigatorGui/GUI_Chat.h"
+
+#include "navigatorGui/GUI_Debug.h"
+
 using namespace NaviLibrary;
 using namespace Solipsis;
 using namespace CommonTools;
@@ -139,11 +148,11 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F7: // Show/Hide chat panel
-            navigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+            GUI_Chat::showHide();
             break;
 #ifdef UIDEBUG
         case KC_PAUSE: // Show/Hide debug panel
-            navigatorGUI->switchDebug();
+            GUI_Debug::switchPanel();
             break;
 #endif
         }
@@ -160,7 +169,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 modeler->lockGizmo(false);
                 if (navigatorGUI != 0)
                 {
-                    navigatorGUI->modelerMainUnload();
+                    GUI_Modeler::unload();
                     mNavigator->setCameraMode(mNavigator->getLastCameraMode());
                 }
                 return OgreFrameListener::keyPressed(evt);
@@ -245,14 +254,14 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F9:
-            if (modeler->isSelectionLocked() && !navigatorGUI->isModelerMainVisible())
+            if (modeler->isSelectionLocked() && !GUI_Modeler::isPanelVisible())
             {
-                navigatorGUI->modelerPropHide();
-                navigatorGUI->modelerMainShow();
+                GUI_ModelerProperties::hidePanel();
+                GUI_Modeler::createAndShowPanel();
             }
             else 
             {
-                navigatorGUI->modelerMainUnload();
+                GUI_Modeler::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
@@ -263,7 +272,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             return OgreFrameListener::keyPressed(evt);
 
         case KC_DELETE:
-            if (!navigatorGUI->isModelerPropVisible())
+            if (!GUI_ModelerProperties::isPanelVisible())
             {
                 if( !modeler->isSelectionEmpty() )
                 {
@@ -279,14 +288,14 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 }
                 if (modeler->isSelectionLocked())
                 {
-                    navigatorGUI->modelerPropUnload();
-                    navigatorGUI->modelerMainShow();
+                    GUI_ModelerProperties::unloadPanel();
+                    GUI_Modeler::createAndShowPanel();
                 }    
             }
             return OgreFrameListener::keyPressed(evt);
 
         case KC_W:
-            if (!navigatorGUI->isModelerPropVisible())
+            if (!GUI_ModelerProperties::isPanelVisible())
             {
                 if (mNavigator->isOnLeftCTRL) 
                 {
@@ -306,14 +315,14 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         switch (evt.mKey)
         {
         case KC_F8:
-            if (/*modeler->isSelectionLocked() &&*/ !navigatorGUI->isAvatarMainVisible())
+            if (/*modeler->isSelectionLocked() &&*/ !GUI_Avatar::isPanelVisible())
             {
-                navigatorGUI->avatarPropHide();
-                navigatorGUI->avatarMainShow();
+                GUI_AvatarProperties::hidePanel();
+                GUI_Avatar::createAndShowPanel();
             }
             else 
             {
-                navigatorGUI->avatarMainUnload();
+                GUI_Avatar::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
             }
             return OgreFrameListener::keyPressed(evt);
@@ -324,8 +333,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
         return true;
 
-    if ((navigatorGUI != 0) && navigatorGUI->isContextVisible())
-        navigatorGUI->contextHide();
+    GUI_ContextMenu::hideMenu();
 
     // VNC panel ?
     if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
@@ -374,12 +382,12 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         {
             if (mNavigator->getState()==Navigator::SModeling)
 			{
-				navigatorGUI->modelerMainUnload();
+				GUI_Modeler::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 			}
 			else if (mNavigator->getState()==Navigator::SAvatarEdit)
 			{
-				navigatorGUI->avatarMainUnload();
+				GUI_Avatar::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 			}
 			else
@@ -412,7 +420,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
                 mNavigator->setCameraMode(Navigator::CMAroundPerson);
-                navigatorGUI->avatarMainShow();
+                GUI_Avatar::unload();
             }
             break;
 
@@ -421,7 +429,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
             if(mNavigator->getState() == Navigator::SInWorld)
             {
                 mNavigator->setCameraMode(Navigator::CMModeling);
-                navigatorGUI->modelerMainShow();
+                GUI_Modeler::createAndShowPanel();
+
             }
             break;
 
@@ -989,8 +998,8 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             // Updating Navi with the mouse pressed
             NaviManager::Get().injectMouseDown(buttonsId);
 
-        if (navigatorGUI->isContextVisible() && !navigatorGUI->isContextFocused())
-            navigatorGUI->contextHide();
+        if (GUI_ContextMenu::isContextVisible() && !GUI_ContextMenu::isContextFocused())
+            GUI_ContextMenu::hideMenu();
 
         // 3D picking of Navi panels if no 2D panel focused
         mNavigator->resetMousePicking();
@@ -1008,7 +1017,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
             MovableObject* vncMovableObj = 0;
             MovableObject* swfMovableObj = 0;
             Vector2 vncXY, swfXY;
-            if ((evt.mState.mButtons & MBRight) && !navigatorGUI->isContextVisible())
+            if ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible())
             {
                 if (mMouseMiddlePressed && mNavigator->getMainCameraSupportManager()->getActiveCameraSupport()->getMode() == CameraSupport::CSMOrbital)
                 {
@@ -1018,20 +1027,20 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
                 {
                     MovableObject* movableObj = 0;
                     if (mNavigator->is1AvatarHitByMouse(avatar))
-                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTAVATAR, "config#create#chat#talk");
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTAVATAR, "config#create#chat#talk");
                     else if (mNavigator->is1NaviHitByMouse(naviName, naviX, naviY))
-                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTWWW, naviName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTWWW, naviName);
                     else if (mNavigator->is1VLCHitByMouse(movableObj))
                     {
                         Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
                         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTVLC, mtlName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTVLC, mtlName);
                     }
                     else if (mNavigator->is1SWFHitByMouse(movableObj, swfXY))
                     {
                         Entity* pickedEntity = static_cast<Entity*>(movableObj->getParentSceneNode()->getAttachedObject(0));
                         String mtlName = pickedEntity->getSubEntity(0)->getMaterialName();
-                        navigatorGUI->contextShow(evt.mState.mX, evt.mState.mY, NavigatorGUI::NAVI_CTXTSWF, mtlName);
+                        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTSWF, mtlName);
                     }
                 }
             }

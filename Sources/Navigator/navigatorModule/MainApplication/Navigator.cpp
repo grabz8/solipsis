@@ -25,6 +25,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Navigator.h"
 #include "NavigatorGui/GUI_MessageBox.h"
+#include "navigatorGui/GUI_login.h"
+#include "navigatorGui/GUI_ContextMenu.h"
+#include "navigatorGui/GUI_MainMenu.h"
+#include "navigatorGui/GUI_StatusBar.h"
+#include "navigatorGui/GUI_Modeler.h"
+#include "navigatorGui/GUI_Avatar.h"
+#include "navigatorGui/GUI_Chat.h"
+#include "navigatorGui/GUI_Debug.h"
+#include "navigatorGui/GUI_About.h"
+#include "navigatorGui/GUI_Commands.h"
+
 
 #include "NavigatorFrameListener.h"
 #include "OgreTools/OgreHelpers.h"
@@ -111,6 +122,9 @@ isOnGizmo(false)
 //-------------------------------------------------------------------------------------
 Navigator::~Navigator()
 {
+    if (mState != SLogin)
+        disconnect();
+
     // Stop the node events listener thread
     NodeEventListener::stop();
     NodeEventListener::finalize();
@@ -1065,18 +1079,32 @@ bool Navigator::is1AvatarHitByMouse(Avatar*& avatar)
     if ((mPickedMovable != 0) && (mPickedMovable->getQueryFlags() & QFAvatar))
     {
         // retrieve avatar instance
-        for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+//         for (OgrePeerManager::OgrePeersMap::iterator ogrePeer = mOgrePeerManager->getOgrePeersIteratorBegin();ogrePeer != mOgrePeerManager->getOgrePeersIteratorEnd();ogrePeer++)
+//         {
+//             if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
+//             /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
+//             //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
+//             Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
+//             if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
+//             avatar = (Avatar*)ogrePeer->second;
+//             if ((avatar == mUserAvatar) && (getCameraMode() == CM1stPersonWithMouse)) continue;
+//             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
+//             return true;
+//         }
+
+        String pickedName = mPickedMovable->getName();
+        String userAvatarName = mUserAvatar->getCharacterInstance()->getUid();
+
+        if (pickedName.find(userAvatarName) != string::npos)
         {
-            if (ogrePeer->second->getXmlEntity()->getType() != ETAvatar) continue;
-            /* instead of using the TOO big entity's bounding box, we will create 1 ManualObject's bbox smaller */
-            //            if (((Avatar*)ogrePeer->second)->getEntity() != static_cast<Entity*>(mPickedMovable)) continue;
-            Entity* pickedEntity = static_cast<Entity*>(mPickedMovable->getParentSceneNode()->getAttachedObject(0));
-            if (((Avatar*)ogrePeer->second)->getEntity() != pickedEntity) continue;
-            avatar = (Avatar*)ogrePeer->second;
-            if ((avatar == mUserAvatar) && (getCameraMode() == CM1stPersonWithMouse)) continue;
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::is1AvatarHitByMouse() found Avatar movable=%s, Entity:Uid=%s, Entity:Name=%s", mPickedMovable->getName().c_str(), avatar->getXmlEntity()->getUid().c_str(), avatar->getEntity()->getName().c_str());
             return true;
         }
+
+        // just compares names
+        
+
+
+
     }
 
     return false;
@@ -1243,8 +1271,7 @@ bool Navigator::createGUI()
     if (!mNavigatorGUI->startup())
         return false;
 
-    mNavigatorGUI->login();
-
+    GUI_Login::createAndShowPanel();
     return true;
 }
 
@@ -1352,12 +1379,12 @@ bool Navigator::disconnect()
     NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
     if (mState == SAvatarEdit)
     {
-        mNavigatorGUI->avatarMainUnload();
+        GUI_Avatar::unload();
         setCameraMode(getLastCameraMode());
     }
     else if (mState == SModeling)
     {
-        mNavigatorGUI->modelerMainUnload();
+        GUI_Modeler::unload();
         setCameraMode(getLastCameraMode());
     }
 
@@ -1392,70 +1419,7 @@ bool Navigator::disconnect()
     }
 
     mState = SLogin;
-    mNavigatorGUI->login();
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-bool Navigator::mainMenuClick(const String& item)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::mainMenuClick() item=%s", item.c_str());
-
-    if (mNavigatorGUI == 0) return true;
-
-    NavigatorFrameListener* navigatorFrameListener = (NavigatorFrameListener*)mFrameListener;
-
-    // Perform action associated to item selected
-    // Submenu File
-    if (item == "Exit")
-        disconnect();
-    // Submenu Action
-    else if (item == "Talk")
-        toggleVoIP();
-    // Submenu View
-    else if (item == "1stPerson")
-        setCameraMode(CM1stPerson);
-    else if (item == "1stPersonMouse")
-        setCameraMode(CM1stPersonWithMouse);
-    else if (item == "3rdPerson")
-        setCameraMode(CM3rdPerson);
-    else if (item == "Orbit")
-        setCameraMode(CMAroundPerson);
-    // Submenu Panels
-    else if (item == "Chat")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
-    else if (item == "Avatar")
-    {
-        if (mState == SInWorld)
-        {
-            setCameraMode(CMAroundPerson);
-            mNavigatorGUI->avatarMainShow();
-        }
-        else if (mState == SAvatarEdit)
-        {
-            mNavigatorGUI->avatarMainUnload();
-            setCameraMode(getLastCameraMode());
-        }
-    }
-    else if (item == "Modeler")
-    {
-        if (mState == SInWorld)
-        {
-            setCameraMode(CMModeling);
-            mNavigatorGUI->modelerMainShow();
-        }
-        else if (mState == SModeling)
-        {
-            mNavigatorGUI->modelerMainUnload();
-            setCameraMode(getLastCameraMode());
-        }
-    }
-    // Submenu Help
-    else if (item == "About")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_ABOUT, true);
-    else if (item == "Commands")
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_COMMANDS, true);
+    GUI_Login::createAndShowPanel();
 
     return true;
 }
@@ -1467,22 +1431,22 @@ bool Navigator::contextItemSelected(const String& item)
 
     if (mNavigatorGUI == 0) return true;
 
-    mNavigatorGUI->contextHide();
+    GUI_ContextMenu::hideMenu();
 
     // Perform action associated to item selected
     if (item == "config")
     {
         setCameraMode(CMAroundPerson);
-        mNavigatorGUI->avatarMainShow();
+        GUI_Avatar::createAndShowPanel();
     }
     else if (item == "create")
     {
         setCameraMode(CMModeling);
-        mNavigatorGUI->modelerMainShow();
+        GUI_Modeler::createAndShowPanel();
     }
     else if (item == "chat")
     {
-        mNavigatorGUI->switchLuaNavi(NavigatorGUI::NAVI_CHAT);
+       GUI_Chat::showHide();
     }
     else if (item == "talk")
     {
@@ -1559,9 +1523,9 @@ void Navigator::onPeerNew(RefCntPoolPtr<XmlEntity>& xmlEntity)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Navigator::onPeerNew() uid:%s", xmlEntity->getUid().c_str());
 
 #ifdef UIDEBUG
-    if (mNavigatorGUI != 0)
-        mNavigatorGUI->setTreeDirty(true);
+    GUI_Debug::setTreeDirty(true);
 #endif
+
     if (!mOgrePeerManager->load(xmlEntity))
     {
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Navigator::onPeerNew() Unable to load entity !");
@@ -1614,7 +1578,7 @@ void Navigator::onLocationChange(Navi *caller, const std::string &url)
 
 #ifdef DEMO_NAVI2
     if (caller->getName() == "demoNavi2Video")
-        mNavigatorGUI->debugRefreshUrl();
+        GUI_Debug::refreshUrl();
 #endif
 
     std::map<String, String>::iterator it = mNaviURLUpdatePending.find(caller->getName());
@@ -1659,9 +1623,7 @@ void Navigator::processEvents()
         switch ((*xmlEvt)->getType())
         {
         case ETNewEntity:
-
             onPeerNew(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
-
             break;
         case ETLostEntity:
             onPeerLost(RefCntPoolPtr<XmlEntity>((*xmlEvt)->getDatas()));
@@ -1808,9 +1770,12 @@ bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, 
 
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
     //String name = XmlHelpers::convertUIntToHexString(entityUID);
+
     return mModeler->createSceneFromText( entityUID, entityUID, plpos + dep, pldir, s, errMsg, warnMsg );
 }
+
 #endif
+
 
 //-------------------------------------------------------------------------------------
 #ifdef TERRAIN_MODELER
@@ -1970,7 +1935,7 @@ bool Navigator::mdlrXMLSave(bool all)
             return mModeler->XMLSave(all);
         else
             GUI_MessageBox::getMsgBox()->show("Modeler information", 
-            NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+            GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
     return false;
 }
 
@@ -1983,7 +1948,7 @@ bool Navigator::mdlrXMLSaveAs(const String& pDestination)
         else
             //mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
             GUI_MessageBox::getMsgBox()->show("Modeler information", 
-                NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED],
+                GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED],
                 GUI_MessageBox::MBB_OK, 
                 GUI_MessageBox::MBB_INFO);
     return false;
@@ -2177,12 +2142,14 @@ void Navigator::setCameraMode(int mode)
         // Set mouse exclusive mode in windowed mode (exclusive only on 1st person camera mode)
         if (!mIWindow->isFullscreen())
             mIWindow->setMouseExclusive(mode == CM1stPerson);
-        mNavigatorGUI->setNaviVisibility(mNavigatorGUI->getNaviName(NavigatorGUI::NAVI_MAINMENU), mode != CM1stPerson);
+
+        GUI_MainMenu::showHide(mode != CM1stPerson);
+
         NaviManager::Get().deFocusAllNavis();
         if (mode == CM1stPerson)
-            mNavigatorGUI->setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
+            GUI_StatusBar::setStatusBarText("Press 2,3 or 4 to return to a view with mouse ...");
         else if (mode == CMAroundPerson || mode == CMModeling)
-            mNavigatorGUI->setStatusBarText("Click/Drag middle button to rotate ...");
+            GUI_StatusBar::setStatusBarText("Click/Drag middle button to rotate ...");
     }
 }
 
@@ -2219,12 +2186,9 @@ void Navigator::toggleVoIP()
                 GUI_MessageBox::MBB_OK, 
                 GUI_MessageBox::MBB_ERROR);
         }
-
-
-
     }
 
-    mNavigatorGUI->debugRefreshDemoVoiceTalkButtonName();
+    GUI_Debug::refreshDemoVoiceTalkButtonName();
 }
 
 //-------------------------------------------------------------------------------------

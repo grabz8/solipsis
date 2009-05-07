@@ -66,11 +66,6 @@ public:
     // returns boolean
     int contextItemSelected(lua_State* luaState);
 
-    // perform action associated to menu selected
-    // params (item:string)
-    // returns boolean
-    int mainMenuClick(lua_State* luaState);
-
     // send 1 message on chat
     // params (msg:string)
     // returns boolean

@@ -111,4 +111,4 @@ public:
     ConfigurationParameter * findParam(const String & paramName, const String & defaultValue = "");
 };
 
-#endif // #ifndef __LuaBinding_h__
+#endif // #ifndef __Configuration_h__

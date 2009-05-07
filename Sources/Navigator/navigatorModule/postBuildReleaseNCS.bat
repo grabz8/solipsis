@@ -70,7 +70,7 @@ if not exist "%dst%\NaviLocal\" xcopy "..\..\..\Media\NaviLocal\*.*" "%dst%\Navi
 if not exist "%dst%\lua\" xcopy "..\..\..\Media\lua\*.*" "%dst%\lua" /s /y /i
 if not exist "%dst%\fmodex.dll" xcopy "%FMOD_PATH%\fmodex.dll" "%dst%" /s /y
 if not exist "%dst%\plugin_3ds.dll" xcopy "..\..\..\Dependencies\plugin_3ds\lib\plugin_3ds.dll" "%dst%" /s /y
-if not exist "%dst%\plugin_skp.dll" xcopy "..\..\..\Dependencies\plugin_skp\lib\Release\*.dll" "%dst%" /s /y
+if not exist "%dst%\plugin_skp.dll" xcopy "..\..\..\Dependencies\plugin_skp\include\Release\*.dll" "%dst%" /s /y
 if not exist "%dst%\RakNet.dll" xcopy "%RAKNET_PATH%\Lib\RakNet.dll" "%dst%" /s /y
 if not exist "%dst%\libcurl.dll" xcopy "..\..\..\Dependencies\curl\lib\ReleaseDLL\libcurl.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\navigatorConfigDialog\lib\WIN32\Release\navigatorConfigDialog.dll" "%dst%" /s /y

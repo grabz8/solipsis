@@ -37,6 +37,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTStringHelpers.h>
 #include <time.h>
 
+#include "navigatorGui/GUI_Chat.h"
+
 using namespace Solipsis;
 using namespace CommonTools;
 
@@ -186,7 +188,8 @@ bool OgrePeerManager::action(RefCntPoolPtr<XmlAction>& xmlAction)
         OgrePeersMap::iterator it = mOgrePeersMap.find(xmlAction->getSourceEntityUid());
         if (it != mOgrePeersMap.end())
             from = it->second->getXmlEntity()->getName();
-        Navigator::getSingletonPtr()->getNavigatorGUI()->addChatText(StringHelpers::convertStringToWString(from) + L" " + xmlAction->getDesc());
+
+        GUI_Chat::addText(StringHelpers::convertStringToWString(from) + L" " + xmlAction->getDesc());
     }
 
     OgrePeersMap::iterator it = mOgrePeersMap.find(xmlAction->getTargetEntityUid());

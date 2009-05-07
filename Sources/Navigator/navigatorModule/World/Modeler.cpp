@@ -28,6 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MainApplication/Navigator.h"
 #include "NavigatorGUI/NavigatorGUI.h"
 #include "NavigatorGui/GUI_MessageBox.h"
+#include "NavigatorGui/GUI_Modeler.h"
+
+
 #include <OgreExternalTextureSourceManager.h>
 #include "OgreTools/ExternalTextureSourceEx.h"
 #include <Navi.h>
@@ -250,9 +253,6 @@ MeshPtr Modeler::cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID&
 
     return mptr;
 }
-
-
-
 
 bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID, 
                               const String& name, Vector3 &player_pos, Quaternion &orientation, bool bSelectIt)
@@ -700,7 +700,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				FileBuffer buff = zz.readFile( zz.getName(i) );
                 ofstream file;
                 file.open( destFile.c_str(), ios::binary );
-                file.write( (const char*)buff.data, buff.size );
+                file.write( (const char*)buff.data, (std::streamsize) buff.size );
                 file.close();
             }
         }
@@ -786,7 +786,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 	else
 	{
         GUI_MessageBox::getMsgBox()->show("Modeler error", 
-            NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_FILENOTFOUND] + " [" + filename + "].", 
+            GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_FILENOTFOUND] + " [" + filename + "].", 
             GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR);
 
 		return false;	
