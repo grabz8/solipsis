@@ -83,6 +83,11 @@ public:
     // returns extTextSrcExResult:string
     int extTextSrcExHandleEvt(lua_State* luaState);
 
+    // create a 2D panel from 1 material contained by 1 navi (type 0), 1 VLC material (type 1) or 1 SWF material (type 2)
+    // params (type:int)
+    // params (name:string)
+    int createPanel2D(lua_State* luaState);
+
     //-------------------------------------------------------------------------------------
     // C++ to Lua
     // call 1 method

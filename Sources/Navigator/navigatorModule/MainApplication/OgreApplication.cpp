@@ -36,7 +36,9 @@ using namespace Solipsis;
 //-------------------------------------------------------------------------------------
 OgreApplication::OgreApplication() :
     mRoot(0),
-    mMutex(PTHREAD_MUTEX_INITIALIZER)
+    mMutex(PTHREAD_MUTEX_INITIALIZER),
+    mPanel2DFactory(0),
+    mPanel2DButtonFactory(0)
 {
 }
 
@@ -63,6 +65,12 @@ bool OgreApplication::initialize(bool configManagedByOgre, String windowTitle)
     mRoot = new Root("plugins.cfg", "ogre.cfg", "Ogre_" + CommonTools::StringHelpers::toString(CommonTools::System::getPID()) + "_" + CommonTools::System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     if (mRoot == 0)
         return false;
+
+    // Add our overlay elements factories
+    mPanel2DFactory = OGRE_NEW Panel2DOverlayElementFactory();
+    OverlayManager::getSingleton().addOverlayElementFactory(mPanel2DFactory);
+    mPanel2DButtonFactory = OGRE_NEW Panel2DButtonOverlayElementFactory();
+    OverlayManager::getSingleton().addOverlayElementFactory(mPanel2DButtonFactory);
 
     // Set default query flags to 0
     MovableObject::setDefaultQueryFlags(0);
@@ -122,6 +130,10 @@ bool OgreApplication::finalize()
 //    ResourceGroupManager::getSingleton().destroyResourceGroup("General");
 
     delete mRoot;
+
+    // Delete our overlay elements factories
+    OGRE_DELETE mPanel2DFactory;
+    OGRE_DELETE mPanel2DButtonFactory;
 
     return true;
 }

@@ -40,6 +40,7 @@ Lunar<NavigatorLua>::RegType NavigatorLua::methods[] = {
     LunarMethod(NavigatorLua, sendMessage),
     LunarMethod(NavigatorLua, hideNavi),
     LunarMethod(NavigatorLua, extTextSrcExHandleEvt),
+    LunarMethod(NavigatorLua, createPanel2D),
     {0, 0}
 };
 
@@ -121,7 +122,7 @@ int NavigatorLua::hideNavi(lua_State* luaState)
     // Get navi name
     std::string naviName = luaL_checkstring(luaState, 1);
     // Perform action
-    int rc = mNavigator->getNavigatorGUI()->setNaviVisibility(naviName, false);
+    int rc = mNavigator->getNavigatorGUI()->setNaviVisibility(String(naviName), false);
 
     lua_pushboolean(luaState, rc);
     return 1;
@@ -142,6 +143,21 @@ int NavigatorLua::extTextSrcExHandleEvt(lua_State* luaState)
     String result = vlcExtTextSrcEx->handleEvt(String(mtlName), String(extTextSrcExEvt));
 
     lua_pushstring(luaState, result.c_str());
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------
+int NavigatorLua::createPanel2D(lua_State* luaState)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorLua::createPanel2D()");
+
+    // Get parameters
+    std::string type = luaL_checkstring(luaState, 1);
+    std::string name = luaL_checkstring(luaState, 2);
+    // Perform action
+    int rc = mNavigator->getNavigatorGUI()->createPanel2D(String(type), String(name));
+
+    lua_pushboolean(luaState, rc);
     return 1;
 }
 

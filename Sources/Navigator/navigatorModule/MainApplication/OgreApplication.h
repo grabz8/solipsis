@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <pthread.h>
 #include "IApplication.h"
 #include "Ogre.h"
+#include "OgreGraphicObjects/Panel2DOverlayElement.h"
+#include "OgreGraphicObjects/Panel2DButtonOverlayElement.h"
 
 using namespace Ogre;
 
@@ -39,6 +41,8 @@ class OgreApplication : public IApplication
 private: 
     Root* mRoot;
     pthread_mutex_t mMutex;
+    Panel2DOverlayElementFactory *mPanel2DFactory;
+    Panel2DButtonOverlayElementFactory *mPanel2DButtonFactory;
 
 protected: 
     OgreApplication::OgreApplication();

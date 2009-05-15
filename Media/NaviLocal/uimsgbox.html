@@ -106,19 +106,20 @@
             .msgBoxBtnCancel { background-position: 0px -24px; }
             .msgBoxBtnYes { background-position: 0px -48px; }
             .msgBoxBtnNo { background-position: 0px -72px; }
-            .closeIcon
+            .solipsisIcons
             {
-                background-image: url(closeIcon.png);
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
                 background-repeat: no-repeat;
                 position: absolute;
-	            top: 2px;
+                top: 3px;
                 left: 495px;
-                float: left;
-                width: 16px;
-                height: 16px;
-                background-position: 0px 0px;
             }
-            .closeIcon:hover { background-position: 0px -16px; }
+            .solipsisCloseInactive { background-position: -24px -24px; }
+            .solipsisCloseActive { background-position: -24px -0px; }
+            .solipsisCloseActive:hover { background-position: -24px -72px; }
         </style>
     </head>
 
@@ -128,7 +129,7 @@
             <div id="msgText"></div>
             <div id="icon"></div>
             <div id="buttons"></div>
-            <span id="mTbIconClose" class="closeIcon" onclick="buttonPressed('close')"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="buttonPressed('close')"></span>
         </div>
     </body>
 </html>

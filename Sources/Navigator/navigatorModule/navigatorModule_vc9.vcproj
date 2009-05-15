@@ -126,7 +126,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm112"
 				AdditionalIncludeDirectories=".;..\..\..\Dependencies\pthreads\include;..\..\..\Dependencies\tinyxml\include;&quot;$(OGRE_HOME)\Dependencies\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(OGRE_HOME)\include&quot;;..\..\..\Dependencies\llmozlib\include;..\..\..\Dependencies\navi\include;..\..\..\Dependencies\lua\include;..\..\..\Dependencies\CommonTools\include;..\..\..\Dependencies\MdlrTools\include;..\..\..\Dependencies\AvatarTools\include;.\oSceneLoader\include;..\..\..\Dependencies\protocols\XmlDatas\include;..\..\..\Dependencies\protocols\P2NClient;..\..\..\Dependencies\protocols\P2NServer;&quot;$(FMOD_PATH)\inc&quot;;..\..\..\Dependencies\plugin_3ds\include;..\..\..\Dependencies\plugin_skp\include;..\..\..\Dependencies\plugin_skp\lib\Release;..\..\..\Dependencies\authentFB\include;..\..\..\Dependencies\VoiceEngine\include;..\..\..\Dependencies\Phonetizer\include;..\..\..\Dependencies\FaceController\include;..\..\..\Dependencies\navigatorConfigDialog\include;..\..\..\Dependencies\ogreMax\include;..\..\..\Dependencies\md5wrapper\include; ..\..\..\Dependencies\DeclarativeModeler\include;..\..\..\Dependencies\TerrainModeler\include;..\..\..\Dependencies\postagger\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV;DECLARATIVE_MODELER;TERRAIN_MODELER;AFXDL;NO_STATIC_CONSTS;_MBC"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NAVIGATORMODULE_EXPORTS;NAVIGATORMODULE_SELF_BUILD;UIDEBUG;DEMO_NAVI1;DEMO_NAVI2;DEMO_VNC;DEMO_VLC;DEMO_VOICE;DEMO_PHYSICS1;NSHADOWS;NLOGSNDRCV;DECLARATIVE_MODELER;TERRAIN_MODELER"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="Prerequisites.h"
@@ -515,6 +515,22 @@
 			</File>
 			<File
 				RelativePath=".\OgreGraphicObjects\MovableText.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\Panel2DButtonOverlayElement.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\Panel2DButtonOverlayElement.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\Panel2DOverlayElement.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OgreGraphicObjects\Panel2DOverlayElement.h"
 				>
 			</File>
 			<File
@@ -1223,6 +1239,38 @@
 			</File>
 			<File
 				RelativePath=".\navigatorGui\NavigatorGUI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DMgr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DExtTextSrcEx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DExtTextSrcEx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DMgr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DWWW.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\navigatorGui\Panel2DWWW.h"
 				>
 			</File>
 		</Filter>

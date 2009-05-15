@@ -292,6 +292,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CTMaths.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CTNetSocket.h"
 				>
 			</File>

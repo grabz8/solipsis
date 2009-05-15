@@ -57,6 +57,11 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
 {
     // Initializing Navi
     mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
+    mNaviMgr->setZOrderMinMax(200, 299);
+
+    // Initializing 2D Panels manager
+    mPanel2DMgr = new Panel2DMgr();
+    mPanel2DMgr->setZOrderMinMax(100, 199);
 
     // Add ourself as a Window listener
     WindowEventUtilities::addWindowEventListener(mNavigator->getRenderWindowPtr(), this);
@@ -75,6 +80,9 @@ NavigatorGUI::~NavigatorGUI()
 
     // Hide previous Navi UI
     hidePreviousNavi();
+
+    // Finalizing 2D Panels manager
+    delete mPanel2DMgr;
 
     for (std::map<std::string, GUI_Panel *>::iterator it = m_panels.begin(); 
         it != m_panels.end(); 
@@ -102,6 +110,8 @@ bool NavigatorGUI::startup()
     mouse->setDefaultCursor("default_cursor");
 	NaviCursor* moveCursor = mouse->createCursor("move", 19, 19);
 	moveCursor->addFrame(0, "cursorMove.png");
+
+    mPanel2DMgr->initializeMouseCursors();
 
     // Load Lua default GUI
     lua_State* luaState = mNavigator->getLuaState();
@@ -260,7 +270,7 @@ const std::string& NavigatorGUI::getNaviName(NaviPanel naviPanel)
 }
 
 //-------------------------------------------------------------------------------------
-bool NavigatorGUI::setNaviVisibility(const std::string& naviName, bool show)
+bool NavigatorGUI::setNaviVisibility(const String& naviName, bool show)
 {
     // Hide 1 Navi UI
     NaviPanel panel = getNaviPanel(naviName);
@@ -299,6 +309,14 @@ bool NavigatorGUI::setNaviVisibility(const std::string& naviName, bool show)
             mCurrentNaviCreationDate = 0;
     }
 
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+bool NavigatorGUI::createPanel2D(const String& type, const String& name)
+{
+    Panel2D *newPanel = mPanel2DMgr->createPanel(type, name);
+    mPanel2DMgr->focusPanel(0, 0, newPanel);
     return true;
 }
 

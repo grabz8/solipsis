@@ -52,19 +52,20 @@
 	            left: 0px;
 	            top: 20px;
             }
-            .closeIcon
+            .solipsisIcons
             {
-                background-image: url(closeIcon.png);
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
                 background-repeat: no-repeat;
                 position: absolute;
-	            top: 2px;
-                left: 497px;
-                float: left;
-                width: 16px;
-                height: 16px;
-                background-position: 0px 0px;
+                top: 3px;
+                left: 495px;
             }
-            .closeIcon:hover { background-position: 0px -16px; }
+            .solipsisCloseInactive { background-position: -24px -24px; }
+            .solipsisCloseActive { background-position: -24px -0px; }
+            .solipsisCloseActive:hover { background-position: -24px -72px; }
         </style>
     </head>
 
@@ -82,7 +83,7 @@
                     <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="78" />
                 </div>
             </form>
-            <span id="mTbIconClose" class="closeIcon" onclick="pageClosed()"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="pageClosed()"></span>
         </div>
     </body>
 </html>

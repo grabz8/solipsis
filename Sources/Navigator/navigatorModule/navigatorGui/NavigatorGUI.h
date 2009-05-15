@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NaviManager.h"
 #include "World/Modeler.h"
 #include "ModifiableMaterialObject.h"
+#include "Panel2DMgr.h"
 
 using namespace NaviLibrary;
 
@@ -58,6 +59,7 @@ public:
 protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
+    Panel2DMgr* mPanel2DMgr;
     static const std::string ms_NavisNames[NAVI_COUNT];
 
     NaviState mNavisStates[NAVI_COUNT];
@@ -99,12 +101,18 @@ protected:
     void destroyNavi(NaviPanel naviPanel);
  
 public:
-    bool setNaviVisibility(const std::string& naviName, bool show);
+    // set 1 navi visibility
+    bool setNaviVisibility(const String& naviName, bool show);
 
+    // create a 2D panel from 1 navi, 1 VLC material or 1 SWF material
+    bool createPanel2D(const String& type, const String& name);
+
+    // switch 1 navi by creating or destroying it
     ///////////////////// à supprimer à terme
     // à supprimer ? oui à terme
     void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
 
+    // get name of 1 navi panel
     const std::string& getNaviName(NaviPanel naviPanel);
 
     static NaviLibrary::Navi * getNavi(const std::string& naviName)

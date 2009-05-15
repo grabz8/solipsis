@@ -608,7 +608,7 @@ void Modeler::extractFromArchive(std::string pArchive)
                 {
                     ofstream file;
                     file.open( destination.c_str(), ios::binary );
-                    file.write( (const char*)buff.data, buff.size );
+                    file.write( (const char*)buff.data, (std::streamsize)buff.size );
                     file.close();
                 }
                 exsist.close();
@@ -631,7 +631,7 @@ void Modeler::extractFromArchive(std::string pArchive)
                 {
                     ofstream file;
                     file.open( zz.getName(i).c_str(), ios::binary );
-                    file.write( (const char*)buff.data, buff.size );
+                    file.write( (const char*)buff.data, (std::streamsize)buff.size );
                     file.close();
                 }
                 exsist.close();
@@ -700,7 +700,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				FileBuffer buff = zz.readFile( zz.getName(i) );
                 ofstream file;
                 file.open( destFile.c_str(), ios::binary );
-                file.write( (const char*)buff.data, (std::streamsize) buff.size );
+                file.write( (const char*)buff.data, (std::streamsize)buff.size );
                 file.close();
             }
         }
@@ -1376,12 +1376,16 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
     		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
         else
         {
+            // Destroy 2D panel if exist
+            Panel2DMgr::getSingleton().destroyPanel(navi->getName());
             naviMgr.destroyNavi(navi->getName());
             naviMgr.Update(); // Force the destroy
         }
     }
     else
     {
+        // Destroy 2D panel if exist
+        Panel2DMgr::getSingleton().destroyPanel(mtlName);
         if (plugin == "vlc")
         {
             TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");

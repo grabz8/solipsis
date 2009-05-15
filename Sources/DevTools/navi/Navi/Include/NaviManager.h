@@ -123,6 +123,9 @@ namespace NaviLibrary
 		int mouseXPos, mouseYPos;
 		bool mouseButtonRDown;
 		unsigned short zOrderCounter;
+// BEGIN GREG
+		unsigned short minZOrder, maxZOrder;
+// END GREG
 
 		bool focusNavi(int x, int y, Navi* selection = 0);
 		Navi* getTopNavi(int x, int y);
@@ -332,6 +335,14 @@ namespace NaviLibrary
 		* @param	naviName	The name of the Navi to focus.
 		*/
 		void focusNavi(Navi* naviToFocus);
+
+		/**
+		* Set min and max values for Z order.
+		*
+		* @param	minZOrder	The min Z order.
+		* @param	maxZOrder	The max Z order.
+		*/
+		void setZOrderMinMax(unsigned short min, unsigned short max);
 // END GREG
 
 		/**
@@ -368,6 +379,10 @@ namespace NaviLibrary
 		* @param	autoConfigURL	The URL of the autoconfig proxy (for auto-conf PAC).
 		*/
 		void setProxyConfig(int proxyType, const std::string &proxyHttp, int proxyHttpPort, const std::string autoConfigURL);
+// END GREG
+
+// BEGIN GREG
+        void recomputeZOrder();
 // END GREG
 	};
 

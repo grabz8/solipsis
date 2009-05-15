@@ -6,12 +6,99 @@ Solipsis/StandardOverlay
 		metrics_mode pixels
 		horz_align right
 		vert_align bottom
-		top -75
-		##top -78
 		left -165
+		top -75
 		width 150
 		height 75
 		material Solipsis/Logo
 	}
 }
 
+template container SolipsisPanel2D(Solipsis/Panel2DTemplate)
+{
+    metrics_mode pixels
+    left 0
+    top 0
+    width 100
+    height 100
+    border_material Solipsis/Panel2D
+    border_size 8.0 8.0 32.0 8.0
+    border_topleft_uv 0.0 0.0 0.125 0.5
+    border_topright_uv 0.875 0.0 1.0 0.5
+    border_bottomright_uv 0.875 0.875 1.0 1.0
+    border_bottomleft_uv 0.0 0.875 0.125 1.0
+    border_top_uv 0.125 0.0 0.875 0.5
+    border_right_uv 0.875 0.50 1.0 0.875
+    border_bottom_uv 0.125 0.875 0.875 1.0
+    border_left_uv 0.0 0.50 0.125 0.875
+    title_border_size 24.0
+    min_width 128
+    min_height 64
+
+    template element TextArea(Solipsis/Panel2DTemplateTitle)
+    {
+        metrics_mode pixels
+        left 8
+        top 8
+        width 84
+        height 16
+        font_name DejaVuSans
+        char_height 20
+        colour 0.0 0.0 0.0
+    }
+    template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnClose)
+    {
+        metrics_mode pixels
+        left -24
+        top 8
+        width 16
+        height 16
+        horz_align right
+        material Solipsis/Panel2DButtons
+        action close
+        uv_coords_default 0.75 0.0 1.0 0.25
+        uv_coords_inc_hover 0.0 0.25
+    }
+    template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnMaximize)
+    {
+        metrics_mode pixels
+        left -40
+        top 8
+        width 16
+        height 16
+        horz_align right
+        material Solipsis/Panel2DButtons
+        action maximize
+        action_event restore
+        uv_coords_default 0.50 0.0 0.75 0.25
+        uv_coords_event 0.50 0.50 0.75 0.75
+        uv_coords_inc_hover 0.0 0.25
+    }
+    template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnMinimize)
+    {
+        metrics_mode pixels
+        left -56
+        top 8
+        width 16
+        height 16
+        horz_align right
+        material Solipsis/Panel2DButtons
+        action minimize
+        uv_coords_default 0.25 0.0 0.50 0.25
+        uv_coords_inc_hover 0.0 0.25
+    }
+    template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnRatio11)
+    {
+        metrics_mode pixels
+        left -72
+        top 8
+        width 16
+        height 16
+        horz_align right
+        material Solipsis/Panel2DButtons
+        action ratio11
+        uv_coords_default 0.0 0.0 0.25 0.25
+        uv_coords_event 0.0 0.50 0.25 0.75
+        uv_coords_inc_hover 0.0 0.25
+    }
+}

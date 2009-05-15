@@ -65,6 +65,8 @@ function uictxtwwwListener(eventType, naviName, naviDataName, param)
     		    naviNavigateStop(ctxtNaviName)
 		    elseif cmd == "home" then
 		        naviNavigateTo(ctxtNaviName, "http://www.solipsis.org")
+		    elseif cmd == "maximize" then
+		        navigator:createPanel2D("www", ctxtNaviName)
 		    end
 			navigator:hideNavi(naviName)
 		end
@@ -93,6 +95,8 @@ function uictxtvlcListener(eventType, naviName, naviDataName, param)
 		    if cmd == "setmrl" then
 		        local mrl = naviEvaluateJS(naviName, "$('inputMrl').value")
 	            navigator:extTextSrcExHandleEvt("vlc", ctxtVLCName, "setmrl?" .. mrl)
+		    elseif cmd == "maximize" then
+		        navigator:createPanel2D("vlc", ctxtVLCName)
 		    else
 	            navigator:extTextSrcExHandleEvt("vlc", ctxtVLCName, cmd)
 	        end
@@ -123,6 +127,8 @@ function uictxtswfListener(eventType, naviName, naviDataName, param)
 		    if cmd == "seturl" then
 		        local url = naviEvaluateJS(naviName, "$('inputUrl').value")
 	            navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, "seturl?" .. url)
+		    elseif cmd == "maximize" then
+		        navigator:createPanel2D("swf", ctxtSWFName)
 		    else
 	            navigator:extTextSrcExHandleEvt("swf", ctxtSWFName, cmd)
 	        end
@@ -212,7 +218,7 @@ function NavigatorLua:createGUI(guiName, ...)
 		local args = { ... }
 		local x, y, ctxtVLCName = args[1], args[2], args[3]
 		logMessage(string.format("x, y, ctxtVLCName = %d, %d, %s", x, y, ctxtVLCName))
-		local naviW, naviH = 256, 64
+		local naviW, naviH = 286, 64
 		x, y = clampNaviOnScreen(x, y, naviW, naviH)
 		if not naviMgrIsNaviExists(guiName) then
 		    naviMgrCreateNavi(guiName, "", x, y, naviW, naviH, false, false)
@@ -234,7 +240,7 @@ function NavigatorLua:createGUI(guiName, ...)
 		local args = { ... }
 		local x, y, ctxtSWFName = args[1], args[2], args[3]
 		logMessage(string.format("x, y, ctxtSWFName = %d, %d, %s", x, y, ctxtSWFName))
-		local naviW, naviH = 256, 64
+		local naviW, naviH = 286, 64
 		x, y = clampNaviOnScreen(x, y, naviW, naviH)
 		if not naviMgrIsNaviExists(guiName) then
 		    naviMgrCreateNavi(guiName, "", x, y, naviW, naviH, false, false)

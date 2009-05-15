@@ -1133,3 +1133,11 @@ RakNetEntity::deleteByAddress replaced by RakNetEntity::deleteByAddressAndType
 RakNet version now checked + major/minor/patch written in defines into DependentRakNetVersion.h + tests about FileListTransfer updates
 
 ---------------------------
+15/05/09
+
+2D panels added (WWW, VLC, VNC)
+close icon updated
+NaviManager versus Panel2DMgr Overlays Z order improved
+New Ogre derived overlayElement for Panel2D and Panel2DButton added to use 1 template panel
+
+---------------------------

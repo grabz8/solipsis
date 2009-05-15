@@ -350,6 +350,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
         ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
         Evt vncEvt;
+        vncEvt.mType = evt.mType;
         vncEvt.mKeyboard = evt;
         vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
         return true;
@@ -613,6 +614,7 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("vnc");
         ExternalTextureSourceEx* vncExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("vnc"));
         Evt vncEvt;
+        vncEvt.mType = evt.mType;
         vncEvt.mKeyboard = evt;
         vncExtTextSrc->handleEvt(mtlName, Event(0, &vncEvt));
         return true;
@@ -625,6 +627,7 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn("swf");
         ExternalTextureSourceEx* swfExtTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource("swf"));
         Evt swfEvt;
+        swfEvt.mType = evt.mType;
         swfEvt.mKeyboard = evt;
         swfExtTextSrc->handleEvt(mtlName, Event(0, &swfEvt));
         return true;
@@ -710,6 +713,9 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
         // Here we call also the 2D version of injectMouseMove because it will refresh the mouse cursor !
         NaviManager::Get().injectMouseMove(evt.mState.mX, evt.mState.mY);
     }
+
+    // 2D Panels
+    Panel2DMgr::getSingleton().mouseMoved(evt);
 
     // VNC panel ?
     if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
@@ -992,14 +998,22 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
         if (buttonsId == MiddleMouseButton)
-            // Unfocus if middle button pressed
+        {
+            // Defocus Navi if middle button pressed
             NaviManager::Get().deFocusAllNavis();
+            // Defocus panels if middle button pressed
+            Panel2DMgr::getSingleton().defocus();
+        }
         else
             // Updating Navi with the mouse pressed
             NaviManager::Get().injectMouseDown(buttonsId);
 
         if (GUI_ContextMenu::isContextVisible() && !GUI_ContextMenu::isContextFocused())
             GUI_ContextMenu::hideMenu();
+
+        // 2D Panels
+        if (!NaviManager::Get().isAnyNaviFocused())
+            Panel2DMgr::getSingleton().mousePressed(evt);
 
         // 3D picking of Navi panels if no 2D panel focused
         mNavigator->resetMousePicking();
@@ -1220,6 +1234,9 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
         }
         else
             NaviManager::Get().injectMouseUp(buttonsId);
+
+        // 2D Panels
+        Panel2DMgr::getSingleton().mouseReleased(evt);
     }
 
 	if (evt.mState.mButtons & MBMiddle)

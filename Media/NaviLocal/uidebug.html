@@ -149,19 +149,20 @@
             #voiceSilenceLvlLatText { position: absolute; left: 0px; top: 175px; }
             #voiceSilenceLvlInput { position: absolute; left: 110px; top: 175px; }
             #voiceSilenceLatInput { position: absolute; left: 180px; top: 175px; }
-            .closeIcon
+            .solipsisIcons
             {
-                background-image: url(closeIcon.png);
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
                 background-repeat: no-repeat;
                 position: absolute;
-	            top: 8px;
+                top: 3px;
                 left: 255px;
-                float: left;
-                width: 16px;
-                height: 16px;
-                background-position: 0px 0px;
             }
-            .closeIcon:hover { background-position: 0px -16px; }
+            .solipsisCloseInactive { background-position: -24px -24px; }
+            .solipsisCloseActive { background-position: -24px -0px; }
+            .solipsisCloseActive:hover { background-position: -24px -72px; }
         </style>
     </head>
 
@@ -238,7 +239,7 @@
 				    </div>
 			    </div>
             </div>
-            <span id="mTbIconClose" class="closeIcon" onclick="pageClosed()"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="pageClosed()"></span>
         </div>
     </body>
 </html>

@@ -64,6 +64,10 @@ NaviManager::NaviManager(Ogre::RenderWindow* renderWindow, const std::string &lo
 	mouseXPos = mouseYPos = 0;
 	mouseButtonRDown = false;
 	zOrderCounter = 5;
+// BEGIN GREG
+	minZOrder = 0;
+	maxZOrder = 650;
+// END GREG
 	this->renderWindow = renderWindow;
 	this->localNaviDirectory = localNaviDirectory;
 
@@ -155,8 +159,15 @@ void NaviManager::Update()
 Navi* NaviManager::createNavi(const std::string &naviName, const std::string &homepage,  const NaviPosition &naviPosition,
 							  unsigned short width, unsigned short height, unsigned short zOrder)
 {
+// BEGIN GREG
+//	if(!zOrder)
+//		zOrder = zOrderCounter++;
 	if(!zOrder)
+	{
+		recomputeZOrder();
 		zOrder = zOrderCounter++;
+	}
+// END GREG
 
 // BEGIN GREG
 /*	if(activeNavis.find(naviName) != activeNavis.end())
@@ -449,6 +460,25 @@ Navi* NaviManager::getTopNavi(int x, int y)
 void NaviManager::focusNavi(Navi* naviToFocus)
 {
 	focusNavi(0, 0, naviToFocus);
+}
+
+void NaviManager::setZOrderMinMax(unsigned short min, unsigned short max)
+{
+	minZOrder = min;
+	maxZOrder = max;
+	recomputeZOrder();
+}
+void NaviManager::recomputeZOrder()
+{
+	std::vector<Navi*> sortedNavis;
+	for(iter = activeNavis.begin(); iter != activeNavis.end(); iter++)
+		if(!iter->second->isMaterial)
+			sortedNavis.push_back(iter->second);
+	std::sort(sortedNavis.begin(), sortedNavis.end(), compare());
+	unsigned int nbNavis = (unsigned int)sortedNavis.size();
+    zOrderCounter = (minZOrder < maxZOrder - nbNavis) ? minZOrder : maxZOrder - nbNavis;
+	for (unsigned int i = nbNavis; i > 0; i--, zOrderCounter++)
+		sortedNavis.at(i - 1)->overlay->setZOrder((zOrderCounter < minZOrder) ? minZOrder : zOrderCounter);
 }
 // END GREG
 

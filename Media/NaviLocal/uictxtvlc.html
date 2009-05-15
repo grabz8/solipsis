@@ -27,7 +27,7 @@
 	            position: absolute;
 	            left: 0px;
 	            top: 0px;
-	            width: 256px;
+	            width: 286px;
 	            height: 64px;
                 background-color: #D8DBE0;
             }
@@ -60,6 +60,20 @@
             .vlcToolbarVolume { width: 40px; height: 34px; background-position: -173px 0px; }
             .vlcToolbarVolume:hover { background-position: -173px -34px; }
             .vlcToolbarVolumeOff { width: 40px; height: 34px; background-position: -213px 0px; }
+            .solipsisIcons
+            {
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
+                background-repeat: no-repeat;
+                position: absolute;
+                top: 31px;
+                left: 256px;
+            }
+            .solipsisMaximizeInactive { background-position: 0px -24px; }
+            .solipsisMaximizeActive { background-position: 0px -0px; }
+            .solipsisMaximizeActive:hover { background-position: 0px -72px; }
             #mrlInput
             {
 	            position: absolute;
@@ -83,7 +97,7 @@
         <div id="container">
             <form id="mrlForm" action="" onsubmit="vlcCommand('setmrl');return false;">
                 <div id="mrlInput">
-                    <input id="inputMrl" class="inputText" name="inputMrl" value="" type="text" size="38"/>
+                    <input id="inputMrl" class="inputText" name="inputMrl" value="" type="text" size="43"/>
                 </div>
             </form>
             <span id="mVLCIcon" class="VLCIcon"></span>
@@ -92,6 +106,7 @@
             <span id="mTbIconPrev" class="vlcToolbarIcons vlcToolbarPrev" onclick="vlcCommand('prev')"></span>
             <span id="mTbIconNext" class="vlcToolbarIcons vlcToolbarNext" onclick="vlcCommand('next')"></span>
             <span id="mTbIconVolume" class="vlcToolbarIcons vlcToolbarVolume" onclick="vlcCommand('mute')"></span>
+            <span id="mTbIconMaximize" class="solipsisIcons solipsisMaximizeActive" onclick="vlcCommand('maximize')"></span>
         </div>
     </body>
 </html>

@@ -66,6 +66,20 @@
             .mozToolbarHomeInactive { background-position: -96px -48px; }
             .mozToolbarHomeActive { background-position: -96px -0px; }
             .mozToolbarHomeActive:hover { background-position: -96px -96px; }
+            .solipsisIcons
+            {
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
+                background-repeat: no-repeat;
+                position: relative;
+                top: 23px;
+                float: left;
+            }
+            .solipsisMaximizeInactive { background-position: 0px -24px; }
+            .solipsisMaximizeActive { background-position: 0px -0px; }
+            .solipsisMaximizeActive:hover { background-position: 0px -72px; }
             #urlInput
             {
 	            position: absolute;
@@ -93,11 +107,12 @@
                 </div>
             </form>
             <span id="mFFIcon" class="mozFFIcon"></span>
-            <span id="mTbIconBack" class="mozToolbarIcons mozToolbarBackInactive" style="left:40px;" onclick="navCommand('back')"></span>
-            <span id="mTbIconFwd" class="mozToolbarIcons mozToolbarFwdInactive" style="left:64px;" onclick="navCommand('fwd')"></span>
-            <span id="mTbIconRefresh" class="mozToolbarIcons mozToolbarRefreshActive" style="left:88px;" onclick="navCommand('refresh')"></span>
-            <span id="mTbIconStop" class="mozToolbarIcons mozToolbarStopActive" style="left:112px;" onclick="navCommand('stop')"></span>
-            <span id="mTbIconHome" class="mozToolbarIcons mozToolbarHomeActive" style="left:136px;" onclick="navCommand('home')"></span>
+            <span id="mTbIconBack" class="mozToolbarIcons mozToolbarBackInactive" style="left:30px;" onclick="navCommand('back')"></span>
+            <span id="mTbIconFwd" class="mozToolbarIcons mozToolbarFwdInactive" style="left:44px;" onclick="navCommand('fwd')"></span>
+            <span id="mTbIconRefresh" class="mozToolbarIcons mozToolbarRefreshActive" style="left:58px;" onclick="navCommand('refresh')"></span>
+            <span id="mTbIconStop" class="mozToolbarIcons mozToolbarStopActive" style="left:72px;" onclick="navCommand('stop')"></span>
+            <span id="mTbIconHome" class="mozToolbarIcons mozToolbarHomeActive" style="left:86px;" onclick="navCommand('home')"></span>
+            <span id="mTbIconMaximize" class="solipsisIcons solipsisMaximizeActive" style="left:106px;" onclick="navCommand('maximize')"></span>
         </div>
     </body>
 </html>
