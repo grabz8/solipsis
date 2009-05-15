@@ -181,7 +181,7 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
                 sceneMgr->setShadowTechnique(SHADOWTYPE_TEXTURE_MODULATIVE);
                 sceneMgr->setShadowTextureSelfShadow(false);
                 //sceneMgr->setShadowTextureSettings(512, 1, PixelFormat::PF_A4R4G4B4);
-                sceneMgr->setShadowTextureSettings(1024, 4, PixelFormat::PF_A4R4G4B4);
+                sceneMgr->setShadowTextureSettings(1024, 4, PF_A4R4G4B4);
                 SharedPtr<LiSPSMShadowCameraSetup> shadowCameraSetup = SharedPtr<LiSPSMShadowCameraSetup>(new LiSPSMShadowCameraSetup());
                 //sceneMgr->setShadowColour(ColourValue(.6, .65, .7, 1.));
                 sceneMgr->setShadowColour(ColourValue(.7, .75, .85, 1.));
