@@ -57,7 +57,7 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
     MsgBoxButtons buttons, 
     MsgBoxIcon icon)
 {
-    if (m_curState == NavigatorGUI::NSNotCreated)
+    if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
         // Lua
@@ -93,7 +93,7 @@ void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
     mNavi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
 
     // Show Navi UI message box
-    if (m_curState == NavigatorGUI::NSCreated)
+    if (m_curState == GUI_Panel::NSCreated)
         mNavi->show(true);
 }
 

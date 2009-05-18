@@ -47,7 +47,7 @@ GUI_Panel::~GUI_Panel()
 
 bool GUI_Panel::show()
 {
-    if (!mNavi || m_curState  == NavigatorGUI::NSNotCreated)
+    if (!mNavi || m_curState  == GUI_Panel::NSNotCreated)
         switchLuaNavi(true);
     else
         mNavi->show(true);
@@ -58,7 +58,7 @@ bool GUI_Panel::show()
 //-------------------------------------------------------------------------------------
 void GUI_Panel::switchLuaNavi(bool createDestroy)
 {
-    if (m_curState == NavigatorGUI::NSNotCreated)
+    if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
         // Lua
@@ -98,7 +98,7 @@ void GUI_Panel::switchLuaNavi(bool createDestroy)
 //-------------------------------------------------------------------------------------
 bool GUI_Panel::isVisible()
 {
-    if (m_curState != NavigatorGUI::NSCreated) 
+    if (m_curState != GUI_Panel::NSCreated) 
         return false;
 
     return ((mNavi != 0) && mNavi->getVisibility());
@@ -107,7 +107,7 @@ bool GUI_Panel::isVisible()
 //-----virtual fct hide can be overloaded for more actions when hidden -----------------------------------------------------------
 void GUI_Panel::hide()
 {
-    if (m_curState != NavigatorGUI::NSCreated) 
+    if (m_curState != GUI_Panel::NSCreated) 
         return;
 
     mNavi->hide();
@@ -126,7 +126,7 @@ void GUI_Panel::destroyPreviousNavi()
 
 void GUI_Panel::destroy()
 {
-    if (m_curState != NavigatorGUI::NSCreated) 
+    if (m_curState != GUI_Panel::NSCreated) 
         return;
 
     mNavi->hide();

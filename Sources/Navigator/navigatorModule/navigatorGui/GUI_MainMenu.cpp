@@ -80,7 +80,7 @@ bool GUI_MainMenu::show()
     if (m_curState == NSCreated)
         return true;
 
-    if (m_curState == NavigatorGUI::NSNotCreated)
+    if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
         createNavi("local://uimainmenu.html", TopLeft, 512, 16);

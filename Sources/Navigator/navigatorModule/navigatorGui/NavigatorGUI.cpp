@@ -40,18 +40,9 @@ using namespace CommonTools;
 
 NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 
-const std::string NavigatorGUI::ms_NavisNames[] = {
-
-    "fake"
-
-};
-
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
-    mCurrentNavi(-1),
-    mCurrentCtxtPanel(-1),
-    mCurrentNaviCreationDate(0),
     mLoginInfosText(""),
     m_pCurrentPanel(NULL)
 {
@@ -66,9 +57,6 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     // Add ourself as a Window listener
     WindowEventUtilities::addWindowEventListener(mNavigator->getRenderWindowPtr(), this);
 
-    for (int n=0;n<NAVI_COUNT;n++)
-        mNavisStates[n] = NSNotCreated;
-
     mNaviGui = this;
 }
 
@@ -77,9 +65,6 @@ NavigatorGUI::~NavigatorGUI()
 {
     // Remove ourself as a Window listener
     WindowEventUtilities::removeWindowEventListener(mNavigator->getRenderWindowPtr(), this);
-
-    // Hide previous Navi UI
-    hidePreviousNavi();
 
     // Finalizing 2D Panels manager
     delete mPanel2DMgr;
@@ -202,85 +187,11 @@ void NavigatorGUI::connectionLostError()
         GUI_MessageBox::MBB_EXCLAMATION);
 }
 
-//-------------------------------------------------------------------------------------
-#ifdef UIDEBUG
 
-#endif
-//-------------------------------------------------------------------------------------
-NavigatorGUI::NaviPanel NavigatorGUI::getNaviPanel(const std::string& naviName)
-{
-    for (int n=0; n < NAVI_COUNT; ++n)
-        if (ms_NavisNames[n] == naviName) return (NaviPanel)n;
-
-    return (NaviPanel)-1;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::naviToShowPageLoaded(const NaviData& naviData)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::naviToShowPageLoaded()");
-
-    std::string naviName;
-    naviName = naviData["naviName"].str();
-    NaviPanel naviPanel = getNaviPanel(naviName);
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "naviName=%s, naviPanel=%d", naviName.c_str(), naviPanel);
-
-    // Show Navi UI
-    if (mNavisStates[naviPanel] == NSCreated)
-    {
-        Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
-        navi->show(true);
-        navi->focus();
-    }
-
-    mCurrentNaviCreationDate = 0;
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::hidePreviousNavi()
-{
-    // Hide previous Navi UI
-    if (mCurrentNavi != -1) 
-    {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[mCurrentNavi]);
-        navi->hide();
-        mNaviMgr->destroyNavi(navi);
-        mNavisStates[mCurrentNavi] = NSNotCreated;
-        mCurrentNavi = -1;
-        mCurrentNaviCreationDate = 0;
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::destroyNavi(NaviPanel naviPanel)
-{
-    NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
-    if (navi == 0) return;
-    mNaviMgr->destroyNavi(navi);
-    mNavisStates[naviPanel] = NSNotCreated;
-    if (mCurrentNavi == naviPanel) mCurrentNavi = -1;
-    if (mCurrentCtxtPanel == naviPanel) mCurrentCtxtPanel = -1;
-    if (mCurrentNavi == -1) mCurrentNaviCreationDate = 0;
-}
-
-//-------------------------------------------------------------------------------------
-const std::string& NavigatorGUI::getNaviName(NaviPanel naviPanel)
-{
-    return ms_NavisNames[naviPanel];
-}
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::setNaviVisibility(const String& naviName, bool show)
 {
-    // Hide 1 Navi UI
-    NaviPanel panel = getNaviPanel(naviName);
-
-    if (panel == -1) 
-        return false;
-
-    if (mNavisStates[panel] == NSNotCreated) 
-        return false;
-
     NaviLibrary::Navi* navi = mNaviMgr->getNavi(naviName);
     if (navi == 0) 
         return false;
@@ -291,7 +202,6 @@ bool NavigatorGUI::setNaviVisibility(const String& naviName, bool show)
             return true;
 
         navi->show(true);
-        mCurrentNavi = panel;
     }
     else
     {
@@ -299,14 +209,6 @@ bool NavigatorGUI::setNaviVisibility(const String& naviName, bool show)
             return true;
 
         navi->hide(true);
-        if (mCurrentNavi == panel) 
-            mCurrentNavi = -1;
-
-        if (mCurrentCtxtPanel == panel) 
-            mCurrentCtxtPanel = -1;
-
-        if (mCurrentNavi == -1) 
-            mCurrentNaviCreationDate = 0;
     }
 
     return true;
@@ -319,43 +221,6 @@ bool NavigatorGUI::createPanel2D(const String& type, const String& name)
     mPanel2DMgr->focusPanel(0, 0, newPanel);
     return true;
 }
-
-//-------------------------------------------------------------------------------------
-void NavigatorGUI::switchLuaNavi(NaviPanel naviPanel, bool createDestroy)
-{
-    if (mNavisStates[naviPanel] == NSNotCreated)
-    {
-        // Create Navi panel
-        // Lua
-        if (!mNavigator->getNavigatorLua()->call("createGUI", "%s", ms_NavisNames[naviPanel].c_str()))
-        {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", ms_NavisNames[naviPanel].c_str());
-            return;
-        }
-        mNavisStates[naviPanel] = NSCreated;
-    }
-    else
-    {
-        NaviLibrary::Navi* navi = mNaviMgr->getNavi(ms_NavisNames[naviPanel]);
-        if (!navi->getVisibility())
-            navi->show(true);
-        else
-        {
-            if (!createDestroy)
-            {
-                navi->hide(true);
-                NaviManager::Get().deFocusAllNavis();
-            }
-            else
-            {
-                mNaviMgr->destroyNavi(navi);
-                mNavisStates[naviPanel] = NSNotCreated;
-
-            }
-        }
-    }
-}
-
 
 void NavigatorGUI::registerGuiPanel(GUI_Panel *pPanel)
 {

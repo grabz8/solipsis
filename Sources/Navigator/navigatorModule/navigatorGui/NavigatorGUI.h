@@ -42,32 +42,13 @@ class GUI_Panel;
  */
 class NavigatorGUI : public WindowEventListener
 {
-public:
-    enum NaviState {
-        NSNotCreated,   // Navi page not created
-        NSCreated       // Navi page created and not visible
-    };
-    
-    enum NaviPanel {
-
-        FAKE,
-        NAVI_COUNT
-    };
-
- 
 
 protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
     Panel2DMgr* mPanel2DMgr;
-    static const std::string ms_NavisNames[NAVI_COUNT];
 
-    NaviState mNavisStates[NAVI_COUNT];
-    int mCurrentNavi;
-    int mCurrentCtxtPanel;
-    unsigned long mCurrentNaviCreationDate;
     std::string mLoginInfosText;
-
 
 public:
     NavigatorGUI(Navigator* navigator);
@@ -92,14 +73,6 @@ public:
     void connectionLostError();
     void connectionServerError();
 
-protected:
-
-    // Helpers
-    NaviPanel getNaviPanel(const std::string& naviName);
-    void naviToShowPageLoaded(const NaviData& naviData);
-    void hidePreviousNavi();
-    void destroyNavi(NaviPanel naviPanel);
- 
 public:
     // set 1 navi visibility
     bool setNaviVisibility(const String& naviName, bool show);
@@ -107,14 +80,7 @@ public:
     // create a 2D panel from 1 navi, 1 VLC material or 1 SWF material
     bool createPanel2D(const String& type, const String& name);
 
-    // switch 1 navi by creating or destroying it
-    ///////////////////// à supprimer à terme
-    // à supprimer ? oui à terme
-    void switchLuaNavi(NaviPanel naviPanel, bool createDestroy = false);
-
-    // get name of 1 navi panel
-    const std::string& getNaviName(NaviPanel naviPanel);
-
+ 
     static NaviLibrary::Navi * getNavi(const std::string& naviName)
     {   
         return mNaviGui->mNaviMgr->getNavi(naviName);
@@ -137,10 +103,6 @@ public:
     static void setCurrentPanel(GUI_Panel * pCurrentPanel)
     {
         mNaviGui->m_pCurrentPanel = pCurrentPanel;
-        if (pCurrentPanel == NULL)
-        {
-            mNaviGui->mCurrentNaviCreationDate = 0;
-        }
     }
 
     static void destroyCurrentPanel();
