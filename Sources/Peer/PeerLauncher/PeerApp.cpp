@@ -35,6 +35,7 @@ using namespace Solipsis;
 // Client part
 #include <IP2NClient.h>
 #include <XmlDatas.h>
+#include <XmlLogin.h>
 
 class P2NClientLogger : public IP2NClientLogger
 {

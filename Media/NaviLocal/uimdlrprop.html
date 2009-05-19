@@ -109,6 +109,9 @@
                 document.getElementById('MaterialSWFWidth').value = '512';
                 document.getElementById('MaterialSWFHeight').value = '512';
 				document.getElementById('MaterialSWFFps').value = '25';
+                //document.getElementById('MaterialSWFSP3d').value = 'null';
+                //document.getElementById('MaterialSWFSPMin').value = '1';
+                //document.getElementById('MaterialSWFSPMax').value = '100';
                 document.getElementById('MaterialVLCMrlHelpers').options[0].selected = 'true';
                 document.getElementById('MaterialVLCWidth').value = '256';
                 document.getElementById('MaterialVLCHeight').value = '256';
@@ -282,16 +285,16 @@
 										</div>
 										<br>
 										<br>
-										<!--<b>Dimple</b> (begin/end)
+										<b>Dimple</b> (begin/end)
 										<div class="slider" id="dimpleBegin">
 											<input class="slider-input" id="dimpleBeginInput" />
 										</div>
 										<div class="slider" id="dimpleEnd">
 											<input class="slider-input" id="dimpleEndInput" />
-										</div>  CF Commented because of a crash -->
+										</div>  <!--CF Commented because of a crash -->
 									</td>
 									<td>
-										<!--<b>Path cut</b> (begin/end)
+										<b>Path cut</b> (begin/end)
 										<div class="slider" id="pathCutBegin">
 											<input class="slider-input" id="pathCutBeginInput" />
 										</div>
@@ -331,7 +334,7 @@
 										<div class="slider" id="radiusDelta">
 											<input class="slider-input" id="radiusDeltaInput" />
 										</div>
-										<br>-->
+										<br>
 										<!--
 								<input type="button" value="undo" onclick="elementClicked('ActionUndo')"><br>
 								stack : <div id="stack">0</div>
@@ -437,7 +440,7 @@
 									        <td colspan="4">
 										        <input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()"/>
 										        <input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()"/>
-										        <input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')"/>
+										        <!--<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')"/>-->
 									        <td>
 								        </tr>
 								        <tr valign="middle">
@@ -488,6 +491,14 @@
                                         <td>Fps</td><td><input type="text" size="6" id="MaterialSWFFps" value=""/></td>
                                     </tr>
 						        </table>
+                                <table>
+                                    <tr>
+                                        <td>Sound</td>
+                                        <td>3d</td><td><input type="checkbox" id="MaterialSWFSP3d" value=""/></td>
+                                        <td>MinDist</td><td><input type="text" size="6" id="MaterialSWFSPMin" value=""/></td>
+                                        <td>MaxDist</td><td><input type="text" size="6" id="MaterialSWFSPMax" value=""/></td>
+                                    </tr>
+                                </table>
 						        <table>
                                     <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplySWFTexture')"/></td></tr>
 						        </table>

@@ -1164,65 +1164,65 @@ bool Object3D::apply(Command command, Real p1, Real p2, Real p3)
 
 	case PATH_CUT_BEGIN:
 		{
-             // CF : just commented because it crash !!!!
-            return false;
-// 			if( (p1 == 0) && (mPathCutEnd == 1) ) return false;
-// 			if( (p1 - mPathCutEnd) >= 0 ) return false;
-// 			setPathCutBegin( p1 );
-// 			mAngleBegin = mPathCutBegin;
-// 			mAngleEnd = mPathCutEnd;
-// 			path_cut = true;
-// 			break;
+            // CF : just commented because it crash !!!!
+            //return false;
+			if( (p1 == 0) && (mPathCutEnd == 1) ) return false;
+			if( (p1 - mPathCutEnd) >= 0 ) return false;
+			setPathCutBegin( p1 );
+			mAngleBegin = mPathCutBegin;
+			mAngleEnd = mPathCutEnd;
+			path_cut = true;
+			break;
 		}
 	case PATH_CUT_END:
 		{
             // CF : just commented because it crash !!!!
-            return false;
-// 			if( (mPathCutBegin == 0) && (p1 == 1) ) return false;
-// 			if( (mPathCutBegin - p1) >= 0 ) return false;
-// 			setPathCutEnd( p1 );
-// 			mAngleBegin = mPathCutBegin;
-// 			mAngleEnd = mPathCutEnd;
-// 			path_cut = true;
-// 			break;
+            //return false;
+			if( (mPathCutBegin == 0) && (p1 == 1) ) return false;
+			if( (mPathCutBegin - p1) >= 0 ) return false;
+			setPathCutEnd( p1 );
+			mAngleBegin = mPathCutBegin;
+			mAngleEnd = mPathCutEnd;
+			path_cut = true;
+			break;
 		}
 
 	case DIMPLE_BEGIN:
 		{
             // CF : just commented because it crash !!!!
-            return false;
-// 			if( (p1 == 0) && (mDimpleEnd == 1) ) return false;
-// 			if( (p1 - mDimpleEnd) >= 0 ) return false;
-// 			setDimpleBegin( p1 );
-// 			mAngleBegin = mDimpleBegin;
-// 			mAngleEnd = mDimpleEnd;
-// 			dimple = true;
-// 			break;
+            //return false;
+			if( (p1 == 0) && (mDimpleEnd == 1) ) return false;
+			if( (p1 - mDimpleEnd) >= 0 ) return false;
+			setDimpleBegin( p1 );
+			mAngleBegin = mDimpleBegin;
+			mAngleEnd = mDimpleEnd;
+			dimple = true;
+			break;
 		}
 	case DIMPLE_END:
 		{
             // CF : just commented because it crash !!!!
-            return false;
-// 			if( (mDimpleBegin == 0) && (p1 == 1) ) return false;
-// 			if( (mDimpleBegin - p1) >= 0 ) return false;
-// 			setDimpleEnd( p1 );
-// 			mAngleBegin = mDimpleBegin;
-// 			mAngleEnd = mDimpleEnd;
-// 			dimple = true;
-// 			break;
+            //return false;
+			if( (mDimpleBegin == 0) && (p1 == 1) ) return false;
+			if( (mDimpleBegin - p1) >= 0 ) return false;
+			setDimpleEnd( p1 );
+			mAngleBegin = mDimpleBegin;
+			mAngleEnd = mDimpleEnd;
+			dimple = true;
+			break;
 		}
 
 	case HOLE_SIZEX:
         // CF : just commented because it crash !!!!
-        return false;
-// 		setHoleSizeX( p1 );
-// 		hole = true;
+        //return false;
+		setHoleSizeX( p1 );
+		hole = true;
 		break;
 	case HOLE_SIZEY:
         // CF : just commented because it crash !!!!
-        return false;
-// 		setHoleSizeY( p1 );
-// 		hole = true;
+        //return false;
+		setHoleSizeY( p1 );
+		hole = true;
 		break;
 	case HOLLOW_SHAPE:
 		switch( int(p1) )

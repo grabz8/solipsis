@@ -213,15 +213,22 @@ function HSVslide(d,o,e) {
 
 				if(panel == 'pAmbient') {
 					new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-					if($('lockAmbientdiffuse').checked == true)
+					/*
+                    if($('lockAmbientdiffuse').checked == true)
 						new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
+                    */
 				}
 				else if(panel == 'pDiffuse') {
 					new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-					if($('lockAmbientdiffuse').checked == true)
+					/*
+                    if($('lockAmbientdiffuse').checked == true)
 						new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
+                      */
 				}
-				else if(panel == 'pSpecular') new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
+				else if(panel == 'pSpecular') 
+                {
+                    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
+                }
 			}
 /*			else if(d=='drag') {
 				//var ds=$S(d!='drag'?d:o);
@@ -267,13 +274,20 @@ function HSVupdate(v) { v=hsv2hex(HSV=v?v:slideHSV);
 	$('plugHEX').innerHTML=rgb;
 	
 //	$S('plugCUR').background='#'+v;
-	if($('lockAmbientdiffuse').checked == true) {
-		$S('pAmbient').background='#'+v;
-		$S('pDiffuse').background='#'+v;
-	}
-	else
-		$S(panel).background='#'+v;
-		
+	
+    if(panel == 'pDiffuse' || panel == 'pAmbient')
+    {
+        if($('lockAmbientdiffuse').checked == true) 
+        {
+            $S('pAmbient').background='#'+v;
+            $S('pDiffuse').background='#'+v;
+        }
+        else
+            $S(panel).background='#'+v;
+    }
+    else
+        $S(panel).background='#'+v;
+    
 	return(v);
 }
 
