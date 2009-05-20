@@ -1141,3 +1141,12 @@ NaviManager versus Panel2DMgr Overlays Z order improved
 New Ogre derived overlayElement for Panel2D and Panel2DButton added to use 1 template panel
 
 ---------------------------
+20/05/09
+
+2D panels improved
+VNC context panel added
+Navi resize feature added + 2D panel ratio11 mode added
+NaviManager injectMouse on Navi materials improved
+Focus lost management improved by using legacy Ogre method setDeactivateOnFocusChange()
+
+---------------------------
