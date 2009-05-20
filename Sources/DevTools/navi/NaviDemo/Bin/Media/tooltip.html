@@ -1,0 +1,50 @@
+<html>
+<head>
+<script type="text/javascript">
+function setTooltip(text)
+{
+	var tipEle = document.getElementById('tip');
+	tipEle.innerText = text;
+	
+	var width = document.defaultView.getComputedStyle(tipEle, '').getPropertyValue('width');
+	var height = document.defaultView.getComputedStyle(tipEle, '').getPropertyValue('height');
+	
+	width = width.substr(0, width.indexOf("px"));
+	height = height.substr(0, height.indexOf("px"));
+	
+	if(!isNaN(width) && !isNaN(height))
+		Client.resizeTooltip(Number(width) + 14 + 4, Number(height) + 14 + 4);
+	// I'm adding 14 to the width/height because of the padding (7 * 2)-- apparently computed styles don't
+	// take into account padded dimensions.
+}
+</script>
+<style type="text/css">
+#tip {
+	font-family: Tahoma;
+	font-size: 9pt;
+	color: white;
+	background-color: rgba(10, 10, 10, 0.5);
+	padding: 7px;
+	margin: 0;
+	display: inline-block;
+	max-width: 175px;
+	text-align: center;
+	-webkit-border-radius: 7px;
+	border: 2px solid #111;
+}
+
+body {
+	margin: 0;
+	background-color: black;
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+<div style="width: 300px; height: 500px;">
+<span id="tip">
+Hello world
+</span>
+</div>
+</body>
+</html>
