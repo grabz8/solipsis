@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(SolutionDir)Dependencies\awesomium\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NAVI_DYNAMIC_LIB;NAVI_NONCLIENT_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="OgreMain_d.lib Awesomium_d.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Dependencies\awesomium\lib&quot;;&quot;$(OGRE_HOME)\lib&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\awesomium\lib;&quot;$(OGRE_HOME)\lib&quot;"
 				GenerateDebugInformation="true"
 				ImportLibrary="$(TargetDir)$(TargetName).lib"
 			/>
@@ -88,6 +88,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript&quot;&#x0D;&#x0A;&#x0D;&#x0A;copy &quot;Include\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include\.&quot; /y&#x0D;&#x0A;copy &quot;Lib\navi_d.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Lib\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\lib\Awesomium_d.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\bin\Awesomium_d.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\bin\icudt38.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin\.&quot; /y&#x0D;&#x0A;copy &quot;Javascript\Navi.js&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -115,7 +116,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;&quot;$(SolutionDir)Dependencies\awesomium\include&quot;;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NAVI_DYNAMIC_LIB;NAVI_NONCLIENT_BUILD"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -135,7 +136,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="OgreMain.lib Awesomium.lib"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)Dependencies\awesomium\lib&quot;;&quot;$(OGRE_HOME)\lib&quot;"
+				AdditionalLibraryDirectories="..\Dependencies\awesomium\lib&quot;;&quot;$(OGRE_HOME)\lib&quot;"
 				ImportLibrary="$(TargetDir)$(TargetName).lib"
 			/>
 			<Tool
@@ -161,6 +162,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin&quot;&#x0D;&#x0A;if not exist &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript&quot; mkdir &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript&quot;&#x0D;&#x0A;&#x0D;&#x0A;copy &quot;Include\*.h&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\include\.&quot; /y&#x0D;&#x0A;copy &quot;Lib\navi.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Lib\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\lib\Awesomium.lib&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\lib\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\bin\Awesomium.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin\.&quot; /y&#x0D;&#x0A;copy &quot;..\Dependencies\awesomium\bin\icudt38.dll&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\bin\.&quot; /y&#x0D;&#x0A;copy &quot;Javascript\Navi.js&quot; &quot;$(ProjectDir)..\..\..\..\Dependencies\navi\Javascript\.&quot; /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
