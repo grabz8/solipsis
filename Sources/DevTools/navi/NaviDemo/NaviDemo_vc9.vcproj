@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="NaviDemo"
 	ProjectGUID="{10BD1783-203F-4D55-883F-3C348E9044A6}"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -60,6 +61,8 @@
 				AdditionalDependencies="OgreMain_d.lib Navi_d.lib Awesomium_d.lib OIS_d.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Navi\Lib&quot;;&quot;$(SolutionDir)Dependencies\awesomium\lib&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Debug&quot;"
 				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -78,9 +81,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -129,11 +129,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/LTCG"
 				AdditionalDependencies="OgreMain.lib Navi.lib Awesomium.lib OIS.lib"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)Navi\Lib&quot;;&quot;$(SolutionDir)Dependencies\awesomium\lib&quot;;&quot;$(OGRE_HOME)\lib&quot;;&quot;$(OGRE_HOME)\Dependencies\lib\Release&quot;"
 				GenerateManifest="true"
 				GenerateDebugInformation="false"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				AllowIsolation="true"
 			/>
 			<Tool
@@ -153,9 +154,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

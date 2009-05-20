@@ -465,12 +465,14 @@ namespace NaviLibrary
 
 		bool isPointOverMe(int x, int y);
 
-		void onBeginNavigation(const std::string& url);
-		void onBeginLoading(const std::string& url, int statusCode, const std::wstring& mimeType);
+		void onBeginNavigation(const std::string& url, const std::wstring& frameName);
+		void onBeginLoading(const std::string& url, const std::wstring& frameName, int statusCode, const std::wstring& mimeType);
 		void onFinishLoading();
 		void onCallback(const std::string& name, const Awesomium::JSArguments& args);
-		void onReceiveTitle(const std::wstring& title);
+		void onReceiveTitle(const std::wstring& title, const std::wstring& frameName);
 		void onChangeTooltip(const std::wstring& tooltip);
+        void onChangeTargetURL(const std::string& url);
+
 #if defined(_WIN32)
 		void onChangeCursor(const HCURSOR& cursor);
 #endif

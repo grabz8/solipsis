@@ -849,11 +849,11 @@ void Navi::resetZoom()
 	webView->resetZoom();
 }
 
-void Navi::onBeginNavigation(const std::string& url)
+void Navi::onBeginNavigation(const std::string& url, const std::wstring& frameName)
 {
 }
 
-void Navi::onBeginLoading(const std::string& url, int statusCode, const std::wstring& mimeType)
+void Navi::onBeginLoading(const std::string& url, const std::wstring& frameName, int statusCode, const std::wstring& mimeType)
 {
 }
 
@@ -869,8 +869,15 @@ void Navi::onCallback(const std::string& name, const Awesomium::JSArguments& arg
 		i->second(this, args);
 }
 
-void Navi::onReceiveTitle(const std::wstring& title)
+void Navi::onReceiveTitle(const std::wstring& title, const std::wstring& frameName)
 {
+ 
+}
+
+
+void Navi::onChangeTargetURL(const std::string& url)
+{
+
 }
 
 void Navi::onChangeTooltip(const std::wstring& tooltip)
