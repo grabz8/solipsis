@@ -45,7 +45,7 @@ public:
         SWindowed = 0,
         SMaximized,
         SMinimized,
-        SRatio11
+        SOriginal,
     };
     /// Differents parts of the panel
     enum Part
@@ -93,6 +93,10 @@ protected:
     Panel2DButtonOverlayElement *mButtonOverMouse;
     /// Which button element was previously over the mouse
     Panel2DButtonOverlayElement *mOldButtonOverMouse;
+    /// Original width
+    int mOriginalWidth;
+    /// Original height
+    int mOriginalHeight;
     /// Saved state before maximizing panel
     State mSavedState;
     /// Saved X pos before maximizing panel
@@ -141,12 +145,15 @@ protected:
     void computePartOverMouse(int x, int y);
     bool isMouseOverMe(int x, int y);
     void getClientRelativePoint(int x, int y, int& clientX, int& clientY);
-    virtual void getOriginalTextureSize(int& textureWidth, int& textureHeight);
+    virtual void getTextureSize(int& textureWidth, int& textureHeight);
     void getTextureRelativePoint(int x, int y, int& textureX, int& textureY);
     void getTextureUVRelativePoint(int x, int y, Real& textureU, Real& textureV);
-    virtual void onFocus(bool isFocused) {}
     void updateButtons();
     void updateMouseCursor();
+
+    virtual void onFocus(bool isFocused) {}
+    virtual void onMoved() {}
+    virtual void onResized() {}
 };
 
 /** This base factory class to create 2D panel.

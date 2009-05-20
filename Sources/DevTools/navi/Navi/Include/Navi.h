@@ -102,6 +102,10 @@ namespace NaviLibrary
 		unsigned short texHeight;
 		size_t texPixelSize;
 		size_t texPitch;
+// BEGIN GREG
+		std::string maskFileName;
+		std::string maskGroupName;
+// END GREG
 
 		Navi(Ogre::RenderWindow* renderWin, std::string name, std::string homepage, const NaviPosition &naviPosition,
 			unsigned short width, unsigned short height, unsigned short zOrder);
@@ -463,6 +467,10 @@ namespace NaviLibrary
 		* @param	deltaY	The relative Y amount to move this Navi by. Positive amounts move it down.
 		*/
 		Navi* moveNavi(int deltaX, int deltaY);
+
+// BEGIN GREG
+		void resizeNavi(unsigned short width, unsigned short height);
+// END GREG
 
 		/**
 		* Retrieves the width and height that this Navi was created with.

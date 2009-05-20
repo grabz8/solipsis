@@ -283,7 +283,10 @@ bool NaviManager::injectMouseMove(int xPos, int yPos)
 {
 	bool eventHandled = false;
 
-	if(mouseButtonRDown && focusedNavi)
+// BEGIN GREG
+//	if(mouseButtonRDown && focusedNavi)
+	if(mouseButtonRDown && focusedNavi && !focusedNavi->isMaterial)
+// END GREG
 	{
 		if(focusedNavi->movable)
 			focusedNavi->moveNavi(xPos-mouseXPos, yPos-mouseYPos);
@@ -361,18 +364,26 @@ bool NaviManager::injectMouseDown(int buttonID)
 
 bool NaviManager::injectMouseUp(int buttonID)
 {
-	if(buttonID == LeftMouseButton && focusedNavi)
+// BEGIN GREG
+//	if(buttonID == LeftMouseButton && focusedNavi)
+	if(buttonID == LeftMouseButton && focusedNavi && !focusedNavi->isMaterial)
+// END GREG
 		focusedNavi->injectMouseUp(focusedNavi->getRelativeX(mouseXPos), focusedNavi->getRelativeY(mouseYPos));
 	else if(buttonID == RightMouseButton)
 	{
-		if(focusedNavi && mouseButtonRDown && NaviMouse::GetPointer()) 
+// BEGIN GREG
+		if(focusedNavi && !focusedNavi->isMaterial && mouseButtonRDown && NaviMouse::GetPointer()) 
+// END GREG
 			if(focusedNavi->movable)
 				NaviMouse::GetPointer()->activateCursor(NaviMouse::GetPointer()->defaultCursorName);
 
 		mouseButtonRDown = false;
 	}
 
-	if(focusedNavi)
+// BEGIN GREG
+//	if(focusedNavi)
+	if(focusedNavi && !focusedNavi->isMaterial)
+// END GREG
 		return true;
 
 	return false;

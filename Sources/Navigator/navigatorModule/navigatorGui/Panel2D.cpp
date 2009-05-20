@@ -91,7 +91,8 @@ bool Panel2D::create(ushort zOrder)
     mOverlay->show();
 
     // Set size according to original client size
-    resize(SRatio11);
+    getTextureSize(mOriginalWidth, mOriginalHeight);
+    resize(SOriginal);
 
     return true;
 }
@@ -198,6 +199,7 @@ void Panel2D::resize(State state)
             state = mSavedState;
             move(mSavedX, mSavedY);
             resize(mSavedW, mSavedH);
+            onResized();
         }
         else
         {
@@ -207,19 +209,20 @@ void Panel2D::resize(State state)
             int vpHeight = OverlayManager::getSingleton().getViewportHeight();
             move(0, 0);
             resize(vpWidth, vpHeight);
+            onResized();
         }
         break;
     case SMinimized:
         mSavedState = mState;
         getExtents(mSavedX, mSavedY, mSavedW, mSavedH);
         resize((int)mPanel->getMinWidth(), (int)mPanel->getMinHeight());
+        onResized();
         break;
-    case SRatio11:
-        if (mState != SRatio11)
+    case SOriginal:
+        if (mState != SOriginal)
         {
-            int textureWidth, textureHeight;
-            getOriginalTextureSize(textureWidth, textureHeight);
-            resize(textureWidth + (int)mPanel->getLeftBorderSize() + (int)mPanel->getRightBorderSize(), textureHeight + (int)mPanel->getTopBorderSize() + (int)mPanel->getBottomBorderSize());
+            resize(mOriginalWidth + (int)mPanel->getLeftBorderSize() + (int)mPanel->getRightBorderSize(), mOriginalHeight + (int)mPanel->getTopBorderSize() + (int)mPanel->getBottomBorderSize());
+            onResized();
         }
         break;
     default: // SWindowed
@@ -252,9 +255,15 @@ bool Panel2D::mousePressed(const MouseEvt& evt)
             resize(SMinimized);
             return true;
         }
+        else if (mButtonOverMouse->getAction() == "original")
+        {
+            resize(SOriginal);
+            return true;
+        }
         else if (mButtonOverMouse->getAction() == "ratio11")
         {
-            resize(SRatio11);
+            mButtonOverMouse->setEventState(!mButtonOverMouse->getEventState());
+            updateButtons();
             return true;
         }
     }
@@ -366,7 +375,7 @@ void Panel2D::getClientRelativePoint(int x, int y, int& clientX, int& clientY)
 }
 
 //-------------------------------------------------------------------------------------
-void Panel2D::getOriginalTextureSize(int& textureWidth, int& textureHeight)
+void Panel2D::getTextureSize(int& textureWidth, int& textureHeight)
 {
     textureWidth = 100;
     textureHeight = 100;
@@ -395,7 +404,7 @@ void Panel2D::getTextureRelativePoint(int x, int y, int& textureX, int& textureY
     int clientX, clientY;
     getClientRelativePoint(x, y, clientX, clientY);
     int textureWidth, textureHeight;
-    getOriginalTextureSize(textureWidth, textureHeight);
+    getTextureSize(textureWidth, textureHeight);
     textureX = (clientX*textureWidth)/clientWidth;
     textureY = (clientY*textureHeight)/clientHeight;
 }
@@ -408,7 +417,7 @@ void Panel2D::getTextureUVRelativePoint(int x, int y, Real& textureU, Real& text
     int clientX, clientY;
     getClientRelativePoint(x, y, clientX, clientY);
     int textureWidth, textureHeight;
-    getOriginalTextureSize(textureWidth, textureHeight);
+    getTextureSize(textureWidth, textureHeight);
     textureU = (Real)clientX/(Real)clientWidth;
     textureV = (Real)clientY/(Real)clientHeight;
 }
@@ -418,15 +427,15 @@ void Panel2D::updateButtons()
 {
     ButtonsMap::const_iterator btnIt;
 
-    // maximize and ratio11 event buttons
+    // maximize and original event buttons
     if (mState != mOldState)
     {
         btnIt = mButtons.find("maximize");
         if (btnIt != mButtons.end())
             btnIt->second->setEventState(mState == SMaximized);
-        btnIt = mButtons.find("ratio11");
+        btnIt = mButtons.find("original");
         if (btnIt != mButtons.end())
-            btnIt->second->setEventState(mState == SRatio11);
+            btnIt->second->setEventState(mState == SOriginal);
         mOldState = mState;
     }
 

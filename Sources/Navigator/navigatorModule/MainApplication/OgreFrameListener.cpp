@@ -67,6 +67,8 @@ OgreFrameListener::OgreFrameListener(RenderWindow* win, Camera* cam, SceneManage
     mMove = 250;
     mDirection = Vector3::ZERO;
     mContinue = true; // continue rendering
+    mFocused = mWindow->isActive();
+    mWindow->setDeactivateOnFocusChange(false);
 }
 
 //-------------------------------------------------------------------------------------
@@ -78,19 +80,23 @@ OgreFrameListener::~OgreFrameListener()
 bool OgreFrameListener::frameStarted(const FrameEvent& evt)
 {
     // Override frameStarted event to process that (don't care about frameEnded)
-#if 1 // GILLES
-    if(!mWindow->isActive())// && mWindow->isVisible())
+    if (mFocused != mWindow->isActive())
     {
-        // update the renderer even the windows is no more focused
-        mWindow->update(); //even in background !
-
-        // Release mouse left event when we loose the focus on window
-        MouseEvt mEvt;
-        mEvt.mState.mButtons = MBLeft;
-        mEvt.mType = ETMouseReleased;
-		mouseReleased(mEvt);
+        mFocused = mWindow->isActive();
+        if (!mWindow->isActive())
+        {
+            // Release mouse buttons events when we loose the focus on window
+            MouseEvt mEvt;
+            mEvt.mType = ETMouseReleased;
+            mEvt.mState.mButtons = MBLeft;
+	        mouseReleased(mEvt);
+            mEvt.mState.mButtons = MBRight;
+	        mouseReleased(mEvt);
+            mEvt.mState.mButtons = MBMiddle;
+	        mouseReleased(mEvt);
+        }
     }
-#endif
+
     return mContinue;
 }
 

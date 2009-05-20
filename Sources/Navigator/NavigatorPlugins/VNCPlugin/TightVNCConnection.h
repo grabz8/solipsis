@@ -71,6 +71,8 @@ public:
     void destroy();
 
 // GREG BEGIN
+    /// Handle 1 event
+    Ogre::String handleEvt(const Ogre::String& evt);
     void handleEvt(const Solipsis::Event& evt);
 // GREG END
 

@@ -73,6 +73,7 @@ protected:
     SceneManager *mSceneMgr;   // The current SceneManager
     SceneNode *mCamNode;   // The SceneNode the camera is currently attached to
 
+    bool mFocused;        // Whether rendering window is focused or not
     bool mContinue;        // Whether to continue rendering or not
     Vector3 mDirection;     // Value to move in the correct direction
 

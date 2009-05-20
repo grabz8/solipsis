@@ -255,6 +255,21 @@ void TightVNCTextureSystem::destroyAdvancedTexture(const Ogre::String& material,
 }
 
 // GREG BEGIN
+Ogre::String TightVNCTextureSystem::handleEvt(const Ogre::String& material, const Ogre::String& evt)
+{
+    for (IDMaterialMap::iterator materialListIt = mMaterials.begin(); materialListIt != mMaterials.end(); ++materialListIt)
+    {
+        MaterialList& materials = materialListIt->second;
+        for (MaterialList::iterator materialIt = materials.begin(); materialIt != materials.end(); ++materialIt)
+        {
+            Ogre::MaterialPtr matPtr = *materialIt;
+            if (!matPtr.isNull() && matPtr->getName() == material)
+                return mPlugin->handleEvt(materialListIt->first, evt);
+        }
+    }
+    return "";
+}
+
 void TightVNCTextureSystem::handleEvt(const Ogre::String& material, const Event& evt)
 {
     for (IDMaterialMap::iterator materialListIt = mMaterials.begin(); materialListIt != mMaterials.end(); ++materialListIt)

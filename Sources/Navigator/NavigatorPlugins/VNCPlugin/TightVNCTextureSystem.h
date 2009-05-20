@@ -95,7 +95,7 @@ protected:
 
 // GREG BEGIN
     /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
-    Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt) { return ""; }
+    Ogre::String handleEvt(const Ogre::String& material, const Ogre::String& evt);
     /// @copydoc Solipsis::ExternalTextureSourceEx::handleEvt
     void handleEvt(const Ogre::String& material, const Solipsis::Event& evt);
 // GREG END

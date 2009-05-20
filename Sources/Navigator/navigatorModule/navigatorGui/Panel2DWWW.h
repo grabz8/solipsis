@@ -60,8 +60,9 @@ protected:
     virtual bool mouseReleased(const MouseEvt& evt);
 
 protected:
-    virtual void getOriginalTextureSize(int& textureWidth, int& textureHeight);
+    virtual void getTextureSize(int& textureWidth, int& textureHeight);
     virtual void onFocus(bool isFocused);
+    virtual void onResized();
 };
 
 /** This factory class to create 2D panel for WWW material.

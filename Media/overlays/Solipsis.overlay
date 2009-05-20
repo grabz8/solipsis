@@ -56,7 +56,7 @@ template container SolipsisPanel2D(Solipsis/Panel2DTemplate)
         horz_align right
         material Solipsis/Panel2DButtons
         action close
-        uv_coords_default 0.75 0.0 1.0 0.25
+        uv_coords_default 0.50 0.0 0.625 0.25
         uv_coords_inc_hover 0.0 0.25
     }
     template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnMaximize)
@@ -70,8 +70,8 @@ template container SolipsisPanel2D(Solipsis/Panel2DTemplate)
         material Solipsis/Panel2DButtons
         action maximize
         action_event restore
-        uv_coords_default 0.50 0.0 0.75 0.25
-        uv_coords_event 0.50 0.50 0.75 0.75
+        uv_coords_default 0.375 0.0 0.50 0.25
+        uv_coords_event 0.375 0.50 0.50 0.75
         uv_coords_inc_hover 0.0 0.25
     }
     template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnMinimize)
@@ -84,7 +84,7 @@ template container SolipsisPanel2D(Solipsis/Panel2DTemplate)
         horz_align right
         material Solipsis/Panel2DButtons
         action minimize
-        uv_coords_default 0.25 0.0 0.50 0.25
+        uv_coords_default 0.25 0.0 0.375 0.25
         uv_coords_inc_hover 0.0 0.25
     }
     template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnRatio11)
@@ -97,8 +97,23 @@ template container SolipsisPanel2D(Solipsis/Panel2DTemplate)
         horz_align right
         material Solipsis/Panel2DButtons
         action ratio11
-        uv_coords_default 0.0 0.0 0.25 0.25
-        uv_coords_event 0.0 0.50 0.25 0.75
+        action_event noratio
+        uv_coords_default 0.125 0.0 0.25 0.25
+        uv_coords_event 0.125 0.50 0.25 0.75
+        uv_coords_inc_hover 0.0 0.25
+    }
+    template container SolipsisPanel2DButton(Solipsis/Panel2DTemplateBtnRatioOri)
+    {
+        metrics_mode pixels
+        left -86
+        top 8
+        width 16
+        height 16
+        horz_align right
+        material Solipsis/Panel2DButtons
+        action original
+        uv_coords_default 0.0 0.0 0.125 0.25
+        uv_coords_event 0.0 0.50 0.125 0.75
         uv_coords_inc_hover 0.0 0.25
     }
 }

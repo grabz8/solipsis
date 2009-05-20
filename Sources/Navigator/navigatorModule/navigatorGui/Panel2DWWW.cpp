@@ -129,7 +129,7 @@ bool Panel2DWWW::mouseReleased(const MouseEvt& evt)
 }
 
 //-------------------------------------------------------------------------------------
-void Panel2DWWW::getOriginalTextureSize(int& textureWidth, int& textureHeight)
+void Panel2DWWW::getTextureSize(int& textureWidth, int& textureHeight)
 {
     unsigned short w, h;
     mNavi->getExtents(w, h);
@@ -141,6 +141,25 @@ void Panel2DWWW::getOriginalTextureSize(int& textureWidth, int& textureHeight)
 void Panel2DWWW::onFocus(bool isFocused)
 {
     NaviManager::Get().focusNavi(mNavi);
+}
+
+//-------------------------------------------------------------------------------------
+void Panel2DWWW::onResized()
+{
+    Panel2D::onResized();
+
+    // Ratio 1/1 enabled ?
+    if (mState != SOriginal)
+    {
+        ButtonsMap::const_iterator btnIt = mButtons.find("ratio11");
+        if (btnIt != mButtons.end())
+            if (!btnIt->second->getEventState())
+                return;
+    }
+
+    int clientWidth, clientHeight;
+    getClientExtents(clientWidth, clientHeight);
+    mNavi->resizeNavi(clientWidth, clientHeight);
 }
 
 //-------------------------------------------------------------------------------------

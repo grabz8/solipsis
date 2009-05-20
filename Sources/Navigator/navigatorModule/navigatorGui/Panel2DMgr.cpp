@@ -412,8 +412,16 @@ bool Panel2DMgr::mouseReleased(const MouseEvt& evt)
 
     bool eventHandled = mFocusedPanel->mouseReleased(evt);
 
-    mMoving = false;
-    mSizingPart = Panel2D::PNone;
+    if (mMoving)
+    {
+        mFocusedPanel->onMoved();
+        mMoving = false;
+    }
+    if (mSizingPart != Panel2D::PNone)
+    {
+        mFocusedPanel->onResized();
+        mSizingPart = Panel2D::PNone;
+    }
 
     return eventHandled;
 }

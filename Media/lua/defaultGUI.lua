@@ -105,6 +105,28 @@ function uictxtvlcListener(eventType, naviName, naviDataName, param)
 	end
 end
 
+-- uictxtvnc listener
+function uictxtvncListener(eventType, naviName, naviDataName, param)
+	logMessage(string.format("uictxtvncListener(%s, %s, %s)", eventType, naviName, naviDataName))
+	if eventType == "Data" then
+		if naviDataName == "pageLoaded" then
+		    local ctxtVNCName = param["ctxtVNCName"]
+	        local address = navigator:extTextSrcExHandleEvt("vnc", ctxtVNCName, "getaddress")
+		    naviEvaluateJS(naviName, "$('inputAddress').value = '" .. address .. "'")
+			naviShow(naviName)
+		elseif naviDataName == "vncCommand" then
+		    local ctxtVNCName = param["ctxtVNCName"]
+		    local cmd = param["cmd"]
+		    if cmd == "maximize" then
+		        navigator:createPanel2D("vnc", ctxtVNCName)
+		    else
+	            navigator:extTextSrcExHandleEvt("vnc", ctxtVNCName, cmd)
+	        end
+			navigator:hideNavi(naviName)
+		end
+	end
+end
+
 -- uictxtswf listener
 function uictxtswfListener(eventType, naviName, naviDataName, param)
 	logMessage(string.format("uictxtswfListener(%s, %s, %s)", eventType, naviName, naviDataName))
@@ -233,6 +255,28 @@ function NavigatorLua:createGUI(guiName, ...)
 		local naviDatas = {}
 		naviDatas["naviDataName"] = guiName .. "Datas"
 		naviDatas["ctxtVLCName"] = ctxtVLCName
+		naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)
+		return true
+	elseif guiName == "uictxtvnc" then
+		-- Create Navi UI context about VNC material
+		local args = { ... }
+		local x, y, ctxtVNCName = args[1], args[2], args[3]
+		logMessage(string.format("x, y, ctxtVNCName = %d, %d, %s", x, y, ctxtVNCName))
+		local naviW, naviH = 256, 64
+		x, y = clampNaviOnScreen(x, y, naviW, naviH)
+		if not naviMgrIsNaviExists(guiName) then
+		    naviMgrCreateNavi(guiName, "", x, y, naviW, naviH, false, false)
+		    naviSetOpacity(guiName, 0.8)
+		    naviSetMaxUpdatesPerSec(guiName, 8)
+		    naviSetForceMaxUpdate(guiName, false)
+		    naviSetAutoUpdateOnFocus(guiName, true)
+		    naviAddEventListener(guiName, guiName .. "Listener")
+		else
+		    naviSetPosition(guiName, x, y)
+		end
+		local naviDatas = {}
+		naviDatas["naviDataName"] = guiName .. "Datas"
+		naviDatas["ctxtVNCName"] = ctxtVNCName
 		naviNavigateTo(guiName, "local://" .. guiName .. ".html", naviDatas)
 		return true
 	elseif guiName == "uictxtswf" then

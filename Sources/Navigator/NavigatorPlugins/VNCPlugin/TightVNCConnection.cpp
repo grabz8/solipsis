@@ -335,6 +335,33 @@ bool TightVNCConnection::frameEnded(const Ogre::FrameEvent& e)
 }
 
 // GREG BEGIN
+Ogre::String TightVNCConnection::handleEvt(const Ogre::String& evt)
+{
+    Ogre::String result = "";
+
+    if (mConn == 0) return result;
+
+    std::vector<Ogre::String> tokens;
+    std::string delimiter = "?";
+    size_t p0 = 0, p1 = Ogre::String::npos;
+    while (p0 != Ogre::String::npos)
+    {
+        p1 = evt.find_first_of(delimiter, p0);
+        if (p1 != p0)
+        {
+            Ogre::String token = evt.substr(p0, p1 - p0);
+            tokens.push_back(token);
+        }
+        p0 = evt.find_first_not_of(delimiter, p1);
+    }
+
+    if (tokens.size() < 1) return result;
+    if (tokens[0].compare("getaddress") == 0)
+        return mHost + ":" + Ogre::StringConverter::toString(mPort);
+
+    return result;
+}
+
 void TightVNCConnection::handleEvt(const Solipsis::Event& evt)
 {
     using namespace Solipsis;

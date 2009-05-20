@@ -168,6 +168,20 @@ Ogre::TexturePtr VNCPlugin::getTextureForConnection(const int id) const
 }
 
 // GREG BEGIN
+Ogre::String VNCPlugin::handleEvt(int id, const Ogre::String& evt)
+{
+    Ogre::String result;
+
+    ConnectionById::const_iterator i = mConnByID.find(id);
+    if (i != mConnByID.end())
+    {
+        ConnectionPtr conn = i->second;
+        result = conn->handleEvt(evt);
+    }
+
+    return result;
+}
+
 void VNCPlugin::handleEvt(const int id, const Event& evt)
 {
     ConnectionById::const_iterator i = mConnByID.find(id);

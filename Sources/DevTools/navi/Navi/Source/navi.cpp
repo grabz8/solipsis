@@ -808,6 +808,9 @@ Navi* Navi::setMask(std::string maskFileName, std::string groupName)
         maskTexture->setHeight(texHeight);
         maskTexture->loadImage(maskImage);
     }
+
+    this->maskFileName = maskFileName;
+    this->maskGroupName = groupName;
 // END GREG
 
 	needsUpdate = true;
@@ -982,6 +985,86 @@ Navi* Navi::moveNavi(int deltaX, int deltaY)
 		panel->setPosition(panel->getLeft()+deltaX, panel->getTop()+deltaY);
 	return this;
 }
+
+// BEGIN GREG
+void Navi::resizeNavi(unsigned short width, unsigned short height)
+{
+	if ((width == naviWidth) && (height == naviHeight))
+		return;
+
+	MaterialPtr material = MaterialManager::getSingleton().getByName(mtlName);
+
+	delete[] naviCache;
+
+	naviWidth = width;
+	naviHeight = height;
+
+	texWidth = width;
+	texHeight = height;
+
+	if(!Bitwise::isPO2(naviWidth) || !Bitwise::isPO2(naviHeight))
+	{
+		if(Root::getSingleton().getRenderSystem()->getCapabilities()->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
+		{
+			if(Root::getSingleton().getRenderSystem()->getCapabilities()->getNonPOW2TexturesLimited())
+				compensateNPOT = true;
+		}
+		else compensateNPOT = true;
+		
+		if(compensateNPOT)
+		{
+			texWidth = Bitwise::firstPO2From(naviWidth);
+			texHeight = Bitwise::firstPO2From(naviHeight);
+		}
+	}
+
+	// Unload texture then update extents
+	TextureUnitState *textureUnitState0 = material->getTechnique(0)->getPass(0)->getTextureUnitState(0);
+	TexturePtr texture = TextureManager::getSingleton().getByName(textureUnitState0->getTextureName());
+	texture->unload();
+	texture->setWidth(texWidth);
+	texture->setHeight(texHeight);
+	texture->createInternalResources();
+
+	// Fill + refresh some vars
+	HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
+	pixelBuffer->lock(HardwareBuffer::HBL_DISCARD);
+	const PixelBox& pixelBox = pixelBuffer->getCurrentLock();
+	texPixelSize = Ogre::PixelUtil::getNumElemBytes(pixelBox.format);
+	texPitch = (pixelBox.rowPitch*texPixelSize);
+
+	naviCache = new unsigned char[texHeight*texPitch];
+
+	uint8* pDest = static_cast<uint8*>(pixelBox.data);
+
+	// Fill the texture with a transparent color
+	for(size_t i = 0; i < (size_t)(texHeight*texPitch); i++)
+	{
+		if((i+1)%texPixelSize)	
+			pDest[i] = naviCache[i] = 64; // B, G, R
+		else 
+			pDest[i] = naviCache[i] = 0; // A
+	}
+
+	pixelBuffer->unlock();
+
+	LLMozLib::getInstance()->setSize(windowID, naviWidth, naviHeight);
+
+	// Update overlay ?
+	if (!isMaterial)
+	{
+		panel->setDimensions(naviWidth, naviHeight);
+		if(compensateNPOT)
+			panel->setUV(0, 0, (Real)naviWidth/(Real)texWidth, (Real)naviHeight/(Real)texHeight);	
+	}
+
+	// Update mask texture ?
+	if (usingMask)
+		setMask(maskFileName, maskGroupName);
+
+	needsUpdate = true;
+}
+// END GREG
 
 void Navi::getExtents(unsigned short &width, unsigned short &height)
 {
