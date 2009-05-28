@@ -33,10 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileBrowser.h"
 #include "Path.h"
 
-#ifdef DECLARATIVE_MODELER
-// Declarative modeling
-#include "DeclarativeModeler.h"
-#endif
 
 // Tinyxml
 #include "tinyxml.h"
@@ -49,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <XmlDatas.h>
 
 #define DIST_AVATAR_OBJECT 1.5f
+class DeclarativeModeler;
 
 namespace Solipsis {
 

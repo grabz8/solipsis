@@ -51,15 +51,35 @@ namespace Solipsis
         };
 
         static bool createAndShowPanel(int x, int y, NaviContext ctxtPanel, const String& params);
-        static void hideMenu();
+        static void destroyMenu();
         static bool isContextVisible();
         static bool isContextFocused();
 
     protected:
         GUI_ContextMenu();
         virtual bool show(int x, int y, NaviContext ctxtPanel, const String& params);
-        virtual void hide();
+        //virtual void hide();
         virtual void destroy();
+
+        // avatar callbacks
+       void onAvatarSelect(const NaviData& naviData);
+        void onPanelLoaded(const NaviData& naviData);
+
+        // WWW callbacks 
+       void onWWWPanelLoaded(const NaviData& naviData);
+       void onWWWCommand(const NaviData& naviData);
+
+       // SWF callbacks 
+       void onSWFPanelLoaded(const NaviData& naviData);
+       void onSWFCommand(const NaviData& naviData);
+
+       // VLC callbacks 
+       void onVLCPanelLoaded(const NaviData& naviData);
+       void onVLCCommand(const NaviData& naviData);
+
+       // VNC callbacks 
+       void onVNCPanelLoaded(const NaviData& naviData);
+       void onVNCCommand(const NaviData& naviData);
 
         static GUI_ContextMenu * stGUI_ContextMenu;
         static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];

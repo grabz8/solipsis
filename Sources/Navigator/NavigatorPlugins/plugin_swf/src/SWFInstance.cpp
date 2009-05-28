@@ -215,7 +215,11 @@ String SWFInstance::handleEvt(const String& evt)
 
     String result = "";
 
-    if (mHikariInstance == 0) return result;
+    if (mHikariInstance == 0) 
+    {
+        pthread_mutex_unlock(&mUpdateMutex);
+       return result;
+    }
 
     std::vector<String> tokens;
     std::string delimiter = "?";
@@ -231,12 +235,21 @@ String SWFInstance::handleEvt(const String& evt)
         p0 = evt.find_first_not_of(delimiter, p1);
     }
 
-    if (tokens.size() < 1) return result;
+    if (tokens.size() < 1)
+    {
+        pthread_mutex_unlock(&mUpdateMutex);
+        return result;
+    }
+
     if (tokens[0].compare("geturl") == 0)
-        return mUrl;
+        result == mUrl;
     else if (tokens[0].compare("seturl") == 0)
     {
-        if ((tokens.size() < 2) || tokens[1].empty()) return result;
+        if ((tokens.size() < 2) || tokens[1].empty()) 
+        {
+            pthread_mutex_unlock(&mUpdateMutex);
+            return result;
+        }
         mUrl = tokens[1];
         LogManager::getSingleton().logMessage("SWFInstance::handleEvt() flash_player_stop");
         mHikariInstance->stop();
@@ -392,21 +405,4 @@ void SWFInstance::_Hikari_exception(Hikari_exception_t *ex)
     Hikari_exception_clear(ex);
 }
 */
-//-------------------------------------------------------------------------------------
-void * SWFInstance::_Hikari_lock(SWFInstance *ctx)
-{
-//    LogManager::getSingleton().logMessage("SWFInstance::_Hikari_lock() ");
-    pthread_mutex_lock(&ctx->mUpdateMutex);
-    return ctx->mScreen;
-}
-
-//-------------------------------------------------------------------------------------
-void SWFInstance::_Hikari_unlock(SWFInstance *ctx)
-{
-//    LogManager::getSingleton().logMessage("SWFInstance::_Hikari_unlock() ");
-    pthread_mutex_unlock(&ctx->mUpdateMutex);
-}
-
-//-------------------------------------------------------------------------------------
-
 } // namespace Solipsis

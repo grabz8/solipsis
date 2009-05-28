@@ -31,6 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NavigatorGui/GUI_Modeler.h"
 
 
+// Declarative modeling
+#include "DeclarativeModeler.h"
+
+
+
 #include <OgreExternalTextureSourceManager.h>
 #include "OgreTools/ExternalTextureSourceEx.h"
 #include <Navi.h>

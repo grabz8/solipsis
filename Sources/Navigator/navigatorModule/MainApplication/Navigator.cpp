@@ -1431,7 +1431,7 @@ bool Navigator::contextItemSelected(const String& item)
 
     if (mNavigatorGUI == 0) return true;
 
-    GUI_ContextMenu::hideMenu();
+    GUI_ContextMenu::destroyMenu();
 
     // Perform action associated to item selected
     if (item == "config")

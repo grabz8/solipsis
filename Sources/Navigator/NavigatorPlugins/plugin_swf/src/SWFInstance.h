@@ -87,8 +87,8 @@ private:
     void _Hikari_exception(Hikari_exception_t *ex);
 */
     // Static callbacks used by libvlc
-    static void * _Hikari_lock(SWFInstance *ctx);
-    static void _Hikari_unlock(SWFInstance *ctx);
+//    static void * _Hikari_lock(SWFInstance *ctx);
+//    static void _Hikari_unlock(SWFInstance *ctx);
 
 private:
     /// Update mutex
