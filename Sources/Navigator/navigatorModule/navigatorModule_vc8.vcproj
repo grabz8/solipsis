@@ -984,14 +984,6 @@
 				RelativePath=".\Scripting\NavigatorLua.h"
 				>
 			</File>
-			<File
-				RelativePath=".\Scripting\NaviLua.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Scripting\NaviLua.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="OgreTools"

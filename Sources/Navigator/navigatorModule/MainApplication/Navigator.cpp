@@ -46,7 +46,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <CTLog.h>
 #include <CTIO.h>
 #include "Navi.h"
-#include "Scripting/NaviLua.h"
 #include "Cameras/FirstPersonCameraSupport.h"
 #include "Cameras/OrbitalCameraSupport.h"
 #include <World/Modeler.h>
@@ -1177,7 +1176,6 @@ bool Navigator::initPostOgreCore()
 
     // boot Lua
     DebugHelpers::initLua(mLuaState);
-    initNaviLua(mLuaState);
     Lunar<NavigatorLua>::Register(mLuaState);
     if (luaL_loadfile(mLuaState, "lua\\boot.lua") != 0)
     {
