@@ -1263,10 +1263,18 @@ TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager
 
             // SetTexture() will do it.
 
-            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*entity), url, width, height, FO_ANISOTROPIC, mtlName);
+            NaviLibrary::Navi* naviWWWTexture = NaviLibrary::NaviManager::Get().createNaviMaterial(
+                Navigator::getSingletonPtr()->getEntityNaviName(*entity), 
+                width, 
+                height, 
+                false, 70,
+                FO_ANISOTROPIC, 
+                mtlName);
+
+
+            naviWWWTexture->loadURL(url);                
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
-            naviWWWTexture->setForceMaxUpdate(fps != 0);
             naviWWWTexture->setOpacity(1.0f);
             // Add 1 listener to follow URL changes
             Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviWWWTexture->getName(), url);
@@ -1424,7 +1432,6 @@ void Modeler::pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         {
             navi->hide();
             navi->setMaxUPS(0);
-            navi->setForceMaxUpdate(false);
             navi->setOpacity(0.0f);
             // TODO : Better manage Navis !! => We must be able to delete them properly
             // Remove the texture from object texture list 
@@ -1480,10 +1487,16 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         if (navi == 0)
         {
             // recreate a Navi
-            NaviLibrary::Navi* naviWWWTexture = naviMgr.createNaviMaterial(Navigator::getSingletonPtr()->getEntityNaviName(*(object->getEntity())), url, width, height, FO_ANISOTROPIC, mtlName);
+            NaviLibrary::Navi* naviWWWTexture = naviMgr.createNaviMaterial(
+                Navigator::getSingletonPtr()->getEntityNaviName(*(object->getEntity())), 
+                width, height, 
+                false, 70,
+                FO_ANISOTROPIC, 
+                mtlName);
+
+            naviWWWTexture->loadURL(url);
             naviWWWTexture->show(true);
             naviWWWTexture->setMaxUPS(fps);
-            naviWWWTexture->setForceMaxUpdate(fps != 0);
             naviWWWTexture->setOpacity(1.0f);
             // Add 1 listener to follow URL changes
             Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviWWWTexture->getName(), url);
@@ -1496,7 +1509,6 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
             {
                 navi->show(true);
                 navi->setMaxUPS(fps);
-                navi->setForceMaxUpdate(fps != 0);
                 navi->setOpacity(1.0f);
                 naviMgr.Update();
             }

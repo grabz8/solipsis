@@ -38,7 +38,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(ProjectDir)..\Dependencies\utf8-cpp&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;NAVI_DYNAMIC_LIB;NAVI_NONCLIENT_BUILD"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -116,7 +116,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)Include&quot;;..\Dependencies\awesomium\include;&quot;$(OGRE_HOME)\include&quot;;&quot;$(OGRE_HOME)\OgreMain\include&quot;;&quot;$(ProjectDir)..\Dependencies\utf8-cpp&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;NAVI_DYNAMIC_LIB;NAVI_NONCLIENT_BUILD"
 				StringPooling="true"
 				MinimalRebuild="false"

@@ -43,7 +43,7 @@ namespace Solipsis
         virtual bool show();
 
         // ok is pressed
-        void onOkPressed(const NaviData& naviData);
+        void onOkPressed(const Awesomium::JSArguments& args);
 
     protected:
         GUI_WorldsServerInfo();

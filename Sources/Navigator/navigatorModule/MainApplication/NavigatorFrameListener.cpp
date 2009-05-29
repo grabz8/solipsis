@@ -1002,7 +1002,7 @@ bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
 {
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    if (navigatorGUI != 0)
     {
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
@@ -1139,7 +1139,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
 bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
 {
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    if (navigatorGUI != 0)
     {
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 

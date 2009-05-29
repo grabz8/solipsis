@@ -51,15 +51,15 @@ namespace Solipsis
         GUI_Avatar();
         static GUI_Avatar * stGUI_Avatar;
 
-        void avatarMainPageLoaded(const NaviData& naviData);
-        void avatarMainFileOpen(const NaviData& naviData);
-        void avatarMainFileEdit(const NaviData& naviData);
-        void avatarMainFileSave(const NaviData& naviData);
-        void avatarMainFileSaveAs(const NaviData& naviData);
-        void avatarMainFileExit(const NaviData& naviData);
-        //    void avatarMainSelectPrev(const NaviData& naviData);
-        //	void avatarMainSelectNext(const NaviData& naviData);
-        void avatarMainSelected(const NaviData& naviData);
+        void avatarMainPageLoaded(const Awesomium::JSArguments& args);
+        void avatarMainFileOpen(const Awesomium::JSArguments& args);
+        void avatarMainFileEdit(const Awesomium::JSArguments& args);
+        void avatarMainFileSave(const Awesomium::JSArguments& args);
+        void avatarMainFileSaveAs(const Awesomium::JSArguments& args);
+        void avatarMainFileExit(const Awesomium::JSArguments& args);
+        //    void avatarMainSelectPrev(const Awesomium::JSArguments& args);
+        //	void avatarMainSelectNext(const Awesomium::JSArguments& args);
+        void avatarMainSelected(const Awesomium::JSArguments& args);
 
 
         Navigator * mNavigator;

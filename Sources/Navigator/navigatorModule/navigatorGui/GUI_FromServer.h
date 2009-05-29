@@ -39,8 +39,7 @@ namespace Solipsis
         GUI_FromServer(const std::string & panelName);
 
         ////// NaviEventListener Interface /////////////
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+        virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args){}
         virtual void onLocationChange(Navi *caller, const std::string &url) {}
         virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
 

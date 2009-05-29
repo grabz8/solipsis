@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "AvatarEditor.h"
 #include "Cameras/CameraSupportManager.h"
 #include "Configuration\NavigatorConfiguration.h"
+#include "navieventlistener.h"
 
 
 namespace Solipsis {
@@ -384,13 +385,10 @@ protected:
     virtual void onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction);
 
     /** See NaviEventListener. */
-    virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-    /** See NaviEventListener. */
-    virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
-    /** See NaviEventListener. */
+    virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args);
     virtual void onLocationChange(Navi *caller, const std::string &url);
-    /** See NaviEventListener. */
-    virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
+    virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
+
 };
 
 } // namespace Solipsis

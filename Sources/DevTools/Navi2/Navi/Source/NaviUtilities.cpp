@@ -27,6 +27,9 @@
 #include <direct.h>
 #include <stdlib.h>
 #endif
+#include <utf8.h>
+
+
 
 using namespace NaviLibrary;
 
@@ -290,4 +293,55 @@ bool NaviUtilities::wildcardCompare(const std::string& wildcardTemplate, const s
 		wild++;
 
 	return !*wild;
+}
+
+
+std::wstring NaviUtilities::decodeURIComponent(std::string strToDecode)
+{
+    std::wstring result;
+    std::vector<int> temp;
+    char buffer[3] = {0, 0, 0};
+    std::string::iterator i = strToDecode.begin();
+
+    while(i != strToDecode.end())
+    {
+        if(*i == '%')
+        {
+            for(;i != strToDecode.end(); ++i)
+            {
+                if(*i == '%')
+                {
+                    if(++i == strToDecode.end()) break;
+                    if(!(('a' <= *i && 'z' >= *i) || ('A' <= *i && 'Z' >= *i) || ('0' <= *i && '9' >= *i))) break;
+
+                    buffer[0] = *i;
+
+                    if(++i == strToDecode.end()) break;
+                    if(!(('a' <= *i && 'z' >= *i) || ('A' <= *i && 'Z' >= *i) || ('0' <= *i && '9' >= *i))) break;
+
+                    buffer[1] = *i;
+                    temp.push_back(static_cast<int>(strtol(buffer, 0, 16)));
+                }
+                else break;
+            }
+
+            if(temp.size())
+            {
+                std::vector<int>::iterator tI = temp.begin();
+                try {
+                    while(utf8::distance(tI, temp.end()) > 0)
+                        result += (wchar_t)utf8::next(tI, temp.end());
+                } catch(...) {}
+
+                temp.clear();
+            }
+        }
+        else
+        {
+            result += *i;
+            ++i;
+        }
+    }
+
+    return result;
 }

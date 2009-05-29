@@ -123,22 +123,15 @@ void GUI_MainMenu::debugCommand(const NaviData& naviData)
 }
 #endif
 
-void GUI_MainMenu::onNaviDataEvent(Navi *caller, const NaviData &naviData)
+virtual void GUI_MainMenu::onCallback(const std::string& name, const Awesomium::JSArguments& args)
 {
     m_curState = NSCreated;
-   // OutputDebugTrace("GUI_MainMenu::onNaviDataEvent name %s\n" , naviData.getName().c_str());
-    if (naviData.getName() == "menuClick" && naviData.size())
+    // OutputDebugTrace("GUI_MainMenu::onNaviDataEvent name %s\n" , naviData.getName().c_str());
+    if (name == "menuClick" && args.size())
     {
-     //   OutputDebugTrace("GUI_MainMenu::onNaviDataEvent data %s\n" , naviData["item"].str().c_str());
-        onClick(naviData["item"].str());
-
+        //   OutputDebugTrace("GUI_MainMenu::onNaviDataEvent data %s\n" , naviData["item"].str().c_str());
+        onClick(args[0].str());
     }
-    //  
-}
-
-void GUI_MainMenu::onLinkClicked(Navi *caller, const std::string &linkHref)
-{
-    m_curState = NSCreated;
 }
 
 //-------------------------------------------------------------------------------------

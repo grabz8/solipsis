@@ -312,6 +312,17 @@ namespace NaviLibrary
 		}
 
 		bool wildcardCompare(const std::string& wildcardTemplate, const std::string& source);
+
+        /**
+        * This is a C++ mirror implementation that I wrote for the Javascript function 'decodeURIComponent'.
+        * For more info: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Functions:decodeURIComponent
+        *
+        * @param	strToDecode		The standard string to decode. Should be previously encoded by 'encodeURIComponent'.
+        *
+        * @return	A wide string containing the decoded version of strToDecode. You may use toMultibyte() to convert this to
+        *			a standard string.
+        */
+        std::wstring _NaviExport decodeURIComponent(std::string strToDecode);
 	}
 }
 

@@ -117,7 +117,7 @@ void GUI_AuthentFacebook::onError()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onLoaded(const NaviData& naviData)
+void GUI_AuthentFacebook::onLoaded(const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
 
