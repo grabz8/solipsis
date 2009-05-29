@@ -1,0 +1,23 @@
+<node>
+    <entity uid="11112277" owner="00000001" type="1" name="Blank" version="00000000">
+        <position x="0" y="0" z="0" />
+        <orientation x="0" y="0" z="0" w="1" />
+        <aabb>
+            <min x="0" y="0" z="0" />
+            <max x="0" y="0" z="0" />
+        </aabb>
+        <content>
+            <sceneContent>
+                <entryGate gravity="true">
+                    <position x="1050.0" y="5.0" z="580.0" />
+                </entryGate>
+            </sceneContent>
+            <lod level="0">
+                <sceneLodContent mainFilename="Blank.osm" collision="Rennes_COLLISION" />
+                <files>
+                    <file name="11112277.ssf" version="00000000" />
+                </files>
+            </lod>
+        </content>
+    </entity>
+</node>
