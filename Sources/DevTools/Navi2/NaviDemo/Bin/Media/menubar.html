@@ -1,0 +1,174 @@
+<html>
+<head>
+<script type="text/javascript" src="Navi.js"></script>
+<script type="text/javascript">
+var statusOn = false;
+var chatOn = false;
+var equipOn = false;
+var quitOn = false;
+
+function spotClicked(spotName)
+{
+	if(spotName == 'status')
+	{
+		statusOn = !statusOn;
+		if(statusOn)
+		{
+			$('statuslight').setStyle('background-image', "url('on.png')");
+			$$('.hpControl').setStyle('display','block');
+			Client.turnOn(spotName);
+		}
+		else
+		{
+			$('statuslight').setStyle('background-image', "url('off.png')");
+			$$('.hpControl').setStyle('display','none');
+			Client.turnOff(spotName);
+		}	
+	}
+	else if(spotName == 'chat')
+	{
+		chatOn = !chatOn;
+		if(chatOn)
+		{
+			$('chatlight').setStyle('background-image', "url('on.png')");
+			Client.turnOn(spotName);
+		}
+		else
+		{
+			$('chatlight').setStyle('background-image', "url('off.png')");
+			Client.turnOff(spotName);
+		}	
+	}
+	else if(spotName == 'equip')
+	{
+		equipOn = !equipOn;
+		if(equipOn)
+		{
+			$('equiplight').setStyle('background-image', "url('on.png')");
+			Client.turnOn(spotName);
+		}
+		else
+		{
+			$('equiplight').setStyle('background-image', "url('off.png')");
+			Client.turnOff(spotName);
+		}	
+	}
+	else if(spotName == 'quit')
+	{
+		quitOn = !quitOn;
+		if(quitOn)
+		{
+			$('quitlight').setStyle('background-image', "url('on.png')");
+			Client.turnOn(spotName);
+		}
+		else
+		{
+			$('quitlight').setStyle('background-image', "url('off.png')");
+			Client.turnOff(spotName);
+		}	
+	}
+}
+
+function hpChange(up)
+{
+	if(!statusOn) return;
+	
+	if(up)
+		Client.hpChange('up');
+	else
+		Client.hpChange('down');
+}
+</script>
+<style type="text/css">
+body
+{
+	background-color: #808080;
+	overflow: hidden;
+}
+#container
+{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	background-image: url('navimenu_bg.png');
+	width: 1024px;
+	height: 128px;
+}
+.light
+{
+	position: absolute;
+	width: 35px;
+	height: 35px;
+	top: 78px;
+	background-image: url('off.png');
+	-moz-opacity: 0.92;
+}
+#statuslight { left: 152px; }
+#chatlight { left: 370px; }
+#equiplight { left: 603px; }
+#quitlight { left: 832px; }
+.spot
+{
+	position: absolute;
+	width: 130px;
+	height: 100px;
+	top: 18px;
+}
+#statusspot { left: 104px; }
+#chatspot { left: 319px; }
+#equipspot { left: 557px; }
+#quitspot { left: 787px; }
+.hpControl
+{
+	position: absolute;
+	width: 48px;
+	height: 24px;
+	left: 237px;
+	display: none;
+}
+#hpUP
+{
+	top: 50px;
+	background-image: url('hp_up.png');
+}
+#hpDOWN
+{
+	top: 70px;
+	background-image: url('hp_down.png');
+}
+#googleLink
+{
+	position: absolute;
+	left: 465px;
+	top: 40px;
+	width: 65px;
+	height: 33px;
+	color: #CEF;
+	font-family: Verdana;
+	font-size: 12px;
+	text-align: center;
+	border: 1px dashed #CEF;
+	-webkit-user-select: none;
+}
+#googleLink:hover
+{
+	font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div id="container">
+<div id="googleLink" onclick="Client.openGoogle()">Open Google</div>
+<div id="statuslight" class="light"></div>
+<div id="chatlight" class="light"></div>
+<div id="equiplight" class="light"></div>
+<div id="quitlight" class="light"></div>
+<div id="statusspot" class="spot" onclick="spotClicked('status')"></div>
+<div id="chatspot" class="spot" onclick="spotClicked('chat')"></div>
+<div id="equipspot" class="spot" onclick="spotClicked('equip')"></div>
+<div id="quitspot" class="spot" onclick="spotClicked('quit')"></div>
+<div id="hpUP" class="hpControl" onclick="hpChange(true)"></div>
+<div id="hpDOWN" class="hpControl" onclick="hpChange(false)"></div>
+</div>
+</body>
+</html>

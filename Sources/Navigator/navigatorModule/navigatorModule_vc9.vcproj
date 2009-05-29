@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="navigatorModule"
 	ProjectGUID="{B71ED042-7AAC-48D8-9BE9-5946D194A25F}"
 	RootNamespace="navigatorModule"
@@ -979,14 +979,6 @@
 			</File>
 			<File
 				RelativePath=".\Scripting\NavigatorLua.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Scripting\NaviLua.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Scripting\NaviLua.h"
 				>
 			</File>
 		</Filter>
