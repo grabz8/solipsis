@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Include\NaviEventListener.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Include\NaviManager.h"
 				>
 			</File>

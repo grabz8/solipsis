@@ -849,16 +849,47 @@ void Navi::resetZoom()
 	webView->resetZoom();
 }
 
+Navi* Navi::addEventListener(NaviEventListener* newListener)
+{
+    if(newListener)
+    {
+        for(std::vector<NaviEventListener*>::iterator i = eventListeners.begin(); i != eventListeners.end(); ++i)
+            if(*i == newListener) return this;
+
+        eventListeners.push_back(newListener);
+    }
+
+    return this;
+}
+
+Navi* Navi::removeEventListener(NaviEventListener* removeListener)
+{
+    for(std::vector<NaviEventListener*>::iterator i = eventListeners.begin(); i != eventListeners.end();)
+    {
+        if(*i == removeListener)
+            i = eventListeners.erase(i);
+        else
+            ++i;
+    }
+
+    return this;
+}
+
 void Navi::onBeginNavigation(const std::string& url, const std::wstring& frameName)
 {
 }
 
 void Navi::onBeginLoading(const std::string& url, const std::wstring& frameName, int statusCode, const std::wstring& mimeType)
 {
+
+    loadingUrl = url;
+    statusCode = statusCode;
 }
 
 void Navi::onFinishLoading()
 {
+    for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+        (*nel)->onNavigateComplete(this, loadingUrl,statusCode);
 }
 
 void Navi::onCallback(const std::string& name, const Awesomium::JSArguments& args)
@@ -867,6 +898,10 @@ void Navi::onCallback(const std::string& name, const Awesomium::JSArguments& arg
 
 	if(i != delegateMap.end())
 		i->second(this, args);
+
+
+    for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+        (*nel)->onCallback(name, args);
 }
 
 void Navi::onReceiveTitle(const std::wstring& title, const std::wstring& frameName)
@@ -877,7 +912,8 @@ void Navi::onReceiveTitle(const std::wstring& title, const std::wstring& frameNa
 
 void Navi::onChangeTargetURL(const std::string& url)
 {
-
+    for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
+        (*nel)->onLocationChange(this, url);
 }
 
 void Navi::onChangeTooltip(const std::wstring& tooltip)

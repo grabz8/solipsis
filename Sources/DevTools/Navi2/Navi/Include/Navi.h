@@ -25,6 +25,7 @@
 
 #include "NaviManager.h"
 #include "NaviDelegate.h"
+#include "NaviEventListener.h"
 
 namespace NaviLibrary
 {
@@ -403,6 +404,21 @@ namespace NaviLibrary
 		*/
 		void resetZoom();
 
+
+		/**
+		* Subscribes a NaviEventListener to listen for events from this Navi.
+		*
+		* @param	newListener	The NaviEventListener to add.
+		*/
+		Navi* addEventListener(NaviEventListener* newListener);
+
+		/**
+		* Un-subscribes a NaviEventListener from this Navi.
+		*
+		* @param	removeListener	The NaviEventListener to remove.
+		*/
+		Navi* removeEventListener(NaviEventListener* removeListener);
+
 	protected:
 		Awesomium::WebView* webView;
 		std::string naviName;
@@ -440,6 +456,10 @@ namespace NaviLibrary
 		bool tooltipsEnabled, needsForceRender, alwaysReceivesKeyboard;
 		bool hasInternalKeyboardFocus;
 		std::pair<int, int> resizeParameters;
+		std::vector<NaviEventListener*> eventListeners;
+
+        std::string loadingUrl;
+        int statusCode;
 
 		friend class NaviManager;
 
