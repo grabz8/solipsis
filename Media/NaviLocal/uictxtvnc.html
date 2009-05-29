@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <title>uictxtvnc</title>
+        <script type="text/javascript" src="Navi-yui.js"></script>
+        <script type="text/javascript">
+            var ctxtVNCNameParam;
+            function pageLoaded()
+            {
+                ctxtVNCNameParam = $PND.get('ctxtVNCName');
+                $ND('pageLoaded').add({naviName:'uictxtvnc'}).add({ctxtVNCName:ctxtVNCNameParam}).send();
+            }
+            function vncCommand(command)
+            {
+                $ND('vncCommand').add({ctxtVNCName:ctxtVNCNameParam}).add({cmd:command}).send();
+            }
+        </script>
+        <style type="text/css">
+            body
+            {
+	            background-color: #000000;
+	            color: #FFFFFF;
+	            overflow: hidden;
+            }
+            #container
+            {
+	            position: absolute;
+	            left: 0px;
+	            top: 0px;
+	            width: 256px;
+	            height: 64px;
+                background-color: #D8DBE0;
+            }
+            .vncIcon
+            {
+                position: absolute;
+	            left: 4px;
+	            top: 25px;
+                width: 30px;
+                height: 34px;
+                background-image: url(vncicon.png);
+            }
+            .solipsisIcons
+            {
+                display: block;
+                width: 24px;
+                height: 24px;
+                background-image: url(solipsisIcons.png);
+                background-repeat: no-repeat;
+                position: relative;
+                top: 31px;
+                left: 226px;
+            }
+            .solipsisMaximizeInactive { background-position: 0px -24px; }
+            .solipsisMaximizeActive { background-position: 0px -0px; }
+            .solipsisMaximizeActive:hover { background-position: 0px -72px; }
+            #addressInput
+            {
+	            position: absolute;
+	            left: 1px;
+	            top: 0px;
+            }
+            .inputText
+            {
+                background-color: #000000;
+                color: #FFFFFF;
+            }
+        </style>
+    </head>
+
+    <body onload="pageLoaded()">
+        <div id="container">
+            <div id="addressInput">
+                <input id="inputAddress" class="inputText" name="inputAddress" value="" type="text" size="38"/>
+            </div>
+            <span id="mVNCIcon" class="vncIcon"></span>
+            <span id="mTbIconMaximize" class="solipsisIcons solipsisMaximizeActive" onclick="vncCommand('maximize')"></span>
+        </div>
+    </body>
+</html>
