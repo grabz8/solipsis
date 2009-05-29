@@ -271,6 +271,10 @@ namespace NaviLibrary
 		*/
 		void moveNavi(int deltaX, int deltaY);
 
+// BEGIN GREG : adapted by TOF
+        void resizeNavi(unsigned short width, unsigned short height);
+// END GREG
+
 		/**
 		* Retrieves the width and height that this Navi was created with.
 		*
@@ -419,7 +423,50 @@ namespace NaviLibrary
 		*/
 		Navi* removeEventListener(NaviEventListener* removeListener);
 
+
+// BEGIN GREG : adapted by TOF
+        /**
+        * Toggles whether or not this Navi is modal, focus cannot be lost.
+        *
+        * @param	isModal	Whether or not this Navi is modal.
+        */
+        Navi* setModal(bool isModal = false);
+
+        /**
+        * Toggles whether or not this Navi must be updated when focused.
+        *
+        * @param	isAutoUpdatedOnFocus	Whether or not this Navi should be updated when focused.
+        */
+        Navi* setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus = false);
+
+        /**
+        * Get the current location (URL).
+        *
+        * @return	The URL of the last onLocationChange event.
+        */
+        const std::string& getCurrentLocation();
+
+        /**
+        * Set focus of this Navi.
+        *
+        * @param	focus	The focus to apply on this Navi.
+        */
+        void setFocus(bool focus) { isFocused = focus; }
+
+// END GREG
 	protected:
+
+// BEGIN GREG : adapted by TOF
+        bool isModal;
+        bool isFocused;
+        bool autoUpdatedOnFocus;
+        std::string currentLocation;
+        std::string mtlName;
+        bool internalMtl;
+        std::string maskFileName;
+        std::string maskGroupName;
+// END GREG
+
 		Awesomium::WebView* webView;
 		std::string naviName;
 		unsigned short naviWidth;
@@ -466,8 +513,12 @@ namespace NaviLibrary
 		Navi(const std::string& name, unsigned short width, unsigned short height, const NaviPosition &naviPosition,
 			bool asyncRender, int maxAsyncRenderRate, Ogre::uchar zOrder, Tier tier, Ogre::Viewport* viewport);
 
-		Navi(const std::string& name, unsigned short width, unsigned short height, 
-			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering);
+// BEGIN GREG : adapted by TOF
+//         Navi(const std::string& name, unsigned short width, unsigned short height, 
+//             bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering);
+        Navi(const std::string& name, unsigned short width, unsigned short height, 
+			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering, const std::string &mtlName);
+// END GREG
 
 		~Navi();
 

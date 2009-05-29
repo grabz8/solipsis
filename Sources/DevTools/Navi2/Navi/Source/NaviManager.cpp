@@ -50,6 +50,12 @@ NaviManager::NaviManager(Ogre::Viewport* defaultViewport, const std::string &bas
 	tooltipNavi->setTransparent(true);
 	tooltipNavi->loadFile("tooltip.html");
 	tooltipNavi->bind("resizeTooltip", NaviDelegate(this, &NaviManager::onResizeTooltip));
+
+// BEGIN GREG : adapted by TOF
+    minZOrder = 0;
+    maxZOrder = 650;
+// END GREG
+
 }
 
 NaviManager::~NaviManager()
@@ -59,7 +65,16 @@ NaviManager::~NaviManager()
 	for(iter = activeNavis.begin(); iter != activeNavis.end();)
 	{
 		Navi* toDelete = iter->second;
-		iter = activeNavis.erase(iter);
+
+// BEGIN GREG : adapted by TOF
+        mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(toDelete->getMaterialName()));
+ // END GREG
+        iter = activeNavis.erase(iter);
+
+// BEGIN GREG : adapted by TOF
+        if(focusedNavi == toDelete) focusedNavi = 0;
+// END GREG
+
 		delete toDelete;
 	}
 
@@ -97,7 +112,10 @@ void NaviManager::Update()
 		if(iter->second->okayToDelete)
 		{
 			Navi* naviToDelete = iter->second;
-			iter = activeNavis.erase(iter);
+// BEGIN GREG : adapted by TOF
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(naviToDelete->getMaterialName()));
+// END GREG
+            iter = activeNavis.erase(iter);
 			if(focusedNavi == naviToDelete)
 			{
 				focusedNavi = 0;
@@ -130,10 +148,24 @@ void NaviManager::Update()
 Navi* NaviManager::createNavi(const std::string &naviName, unsigned short width, unsigned short height, const NaviPosition &naviPosition, 
 			bool asyncRender, int maxAsyncRenderRate, Tier tier, Ogre::Viewport* viewport)
 {
-	if(activeNavis.find(naviName) != activeNavis.end())
+// BEGIN GREG : adapted by TOF
+ /*   if(activeNavis.find(naviName) != activeNavis.end())
 		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
-			"NaviManager::createNavi");
+			"NaviManager::createNavi");*/
+    iter = activeNavis.find(naviName);
+    if (iter != activeNavis.end())
+        if (iter->second->okayToDelete)
+        {
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(iter->second->getMaterialName()));
+            if(focusedNavi == iter->second) focusedNavi = 0;
+            delete iter->second;
+        }
+        else
+            OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
+            "An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
+            "NaviManager::createNavi");
+
 
 	int highestZOrder = -1;
 	int zOrder = 0;
@@ -147,20 +179,47 @@ Navi* NaviManager::createNavi(const std::string &naviName, unsigned short width,
 	if(highestZOrder != -1)
 		zOrder = highestZOrder + 1;
 
-	return activeNavis[naviName] = new Navi(naviName, width, height, naviPosition, asyncRender, maxAsyncRenderRate, (Ogre::uchar)zOrder, tier, 
-		viewport? viewport : defaultViewport);
+    Navi* newNavi = new Navi(naviName, width, height, naviPosition, asyncRender, maxAsyncRenderRate, (Ogre::uchar)zOrder, tier, 
+        viewport? viewport : defaultViewport);
+	activeNavis[naviName] = newNavi;
+    mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
+
+    return newNavi;
+// END GREG
 }
 
 Navi* NaviManager::createNaviMaterial(const std::string &naviName, unsigned short width, unsigned short height, 
-			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering)
+			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering, const std::string &mtlName)
 {
-	if(activeNavis.find(naviName) != activeNavis.end())
+// BEGIN GREG : adapted by TOF
+    if(activeNavis.find(naviName) != activeNavis.end())
 		OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
 			"An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
 			"NaviManager::createNaviMaterial");
 
-	return activeNavis[naviName] = new Navi(naviName, width, height, asyncRender, maxAsyncRenderRate, texFiltering);
+
+    iter = activeNavis.find(naviName);
+    if (iter != activeNavis.end())
+        if (iter->second->okayToDelete)
+        {
+            mtlNameNaviNameMap.erase(mtlNameNaviNameMap.find(iter->second->getMaterialName()));
+            if(focusedNavi == iter->second) focusedNavi = 0;
+            delete iter->second;
+        }
+        else
+            OGRE_EXCEPT(Ogre::Exception::ERR_RT_ASSERTION_FAILED, 
+            "An attempt was made to create a Navi named '" + naviName + "' when a Navi by the same name already exists!", 
+            "NaviManager::createNaviMaterial");
+
+
+    Navi* newNavi = new Navi(naviName, width, height, asyncRender, maxAsyncRenderRate, texFiltering, mtlName);
+    activeNavis[naviName] = newNavi;
+    mtlNameNaviNameMap[newNavi->getMaterialName()] = naviName;
+    return newNavi;
+// END GREG
 }
+
+
 
 Navi* NaviManager::getNavi(const std::string &naviName)
 {
@@ -236,8 +295,11 @@ bool NaviManager::injectMouseMove(int xPos, int yPos)
 	}
 	else
 	{
-		if(mouseButtonLDown && focusedNavi)
-		{
+// BEGIN GREG : adapted by TOF
+        //	if(mouseButtonRDown && focusedNavi)
+        if(mouseButtonRDown && focusedNavi && !focusedNavi->isMaterialOnly())
+// END GREG
+        {
 			focusedNavi->injectMouseMove(focusedNavi->getRelativeX(xPos), focusedNavi->getRelativeY(yPos));
 			mouseXPos = xPos;
 			mouseYPos = yPos;
@@ -262,6 +324,14 @@ bool NaviManager::injectMouseMove(int xPos, int yPos)
 					if(tooltipParent != top)
 						handleTooltip(0, L"");
 		}
+// BEGIN GREG : adapted by TOF
+        else
+        {
+            for(iter = activeNavis.begin(); iter != activeNavis.end(); ++iter)
+                if(iter->second->ignoringBounds)
+                    iter->second->injectMouseMove(iter->second->getRelativeX(xPos), iter->second->getRelativeY(yPos));
+        }
+// END GREG
 
 		if(tooltipParent)
 			if(!tooltipParent->isMaterialOnly())
@@ -315,7 +385,10 @@ bool NaviManager::injectMouseUp(int buttonID)
 {
 	isDraggingFocusedNavi = false;
 
-	if(buttonID == LeftMouseButton)
+// BEGIN GREG : adapted by TOF
+    //	if(buttonID == LeftMouseButton && focusedNavi)
+    if(buttonID == LeftMouseButton && !focusedNavi->isMaterialOnly())
+// END GREG
 	{
 		if(focusedNavi)
 			focusedNavi->injectMouseUp(focusedNavi->getRelativeX(mouseXPos), focusedNavi->getRelativeY(mouseYPos));
@@ -323,11 +396,15 @@ bool NaviManager::injectMouseUp(int buttonID)
 		mouseButtonLDown = false;
 	}
 	else if(buttonID == RightMouseButton)
-	{
-		mouseButtonRDown = false;
+	{     
+        mouseButtonRDown = false;
 	}
 
-	if(focusedNavi)
+// BEGIN GREG : adapted by TOF
+    //	if(focusedNavi)
+    if(focusedNavi && !focusedNavi->isMaterialOnly())
+// END GREG
+
 		return true;
 
 	return false;
@@ -335,7 +412,12 @@ bool NaviManager::injectMouseUp(int buttonID)
 
 bool NaviManager::focusNavi(int x, int y, Navi* selection)
 {
-	deFocusAllNavis();
+// BEGIN GREG : adapted by TOF
+    if (focusedNavi && focusedNavi->isModal)
+        return true;
+// END GREG
+    
+    deFocusAllNavis();
 	Navi* naviToFocus = selection? selection : getTopNavi(x, y);
 
 	if(!naviToFocus)
@@ -347,6 +429,10 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
 		return false;
 	}
 
+// BEGIN GREG : adapted by TOF
+if(!naviToFocus->isMaterialOnly())
+{
+// END GRED
 	std::vector<Navi*> sortedNavis;
 
 	for(iter = activeNavis.begin(); iter != activeNavis.end(); iter++)
@@ -373,9 +459,15 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
 			sortedNavis.at(popIdx)->overlay->setZOrder(highestZ);
 		}
 	}
+// BEGIN GREG : adapted by TOF
+}
+// END GRED
 
 	focusedNavi = naviToFocus;
-	focusedNavi->webView->focus();
+// BEGIN GREG : adapted by TOF
+    focusedNavi->setFocus(true);
+// END GREG
+    focusedNavi->webView->focus();
 	isDraggingFocusedNavi = false;
 	keyboardFocusedNavi = focusedNavi->hasInternalKeyboardFocus? focusedNavi : 0;
 
@@ -490,3 +582,54 @@ void NaviManager::handleKeyboardFocusChange(Navi* caller, bool isFocused)
 		keyboardFocusedNavi = 0;
 	}
 }
+
+
+
+// BEGIN GREG : adapted by TOF
+/**
+* Retrieve a pointer to a Navi by its material name.
+*
+* @param	mtlName	The material name used by the Navi to retrieve.
+*
+* @return	If the Navi is found, returns a pointer to the Navi, otherwise returns 0.
+*/
+Navi* NaviManager::getNaviFromMtlName(const std::string &mtlName)
+{
+    std::map<std::string,std::string>::const_iterator it = mtlNameNaviNameMap.find(mtlName);
+    if(it == mtlNameNaviNameMap.end())
+        return 0;
+
+    return getNavi(it->second);
+}
+// END GREG
+
+
+
+// BEGIN GREG
+void NaviManager::focusNavi(Navi* naviToFocus)
+{
+    focusNavi(0, 0, naviToFocus);
+}
+
+void NaviManager::setZOrderMinMax(unsigned short min, unsigned short max)
+{
+    minZOrder = min;
+    maxZOrder = max;
+    recomputeZOrder();
+}
+
+
+void NaviManager::recomputeZOrder()
+{
+    std::vector<Navi*> sortedNavis;
+    for(iter = activeNavis.begin(); iter != activeNavis.end(); iter++)
+        if(!iter->second->isMaterialOnly())
+            sortedNavis.push_back(iter->second);
+    struct compare { bool operator()(Navi* a, Navi* b){ return(a->overlay->getZOrder() > b->overlay->getZOrder()); }};
+    std::sort(sortedNavis.begin(), sortedNavis.end(), compare());
+    unsigned int nbNavis = (unsigned int)sortedNavis.size();
+    zOrderCounter = (minZOrder < maxZOrder - nbNavis) ? minZOrder : maxZOrder - nbNavis;
+    for (unsigned int i = nbNavis; i > 0; i--, zOrderCounter++)
+        sortedNavis.at(i - 1)->overlay->setZOrder((zOrderCounter < minZOrder) ? minZOrder : zOrderCounter);
+}
+// END GREG

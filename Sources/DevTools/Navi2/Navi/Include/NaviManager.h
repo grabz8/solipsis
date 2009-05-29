@@ -157,8 +157,15 @@ namespace NaviLibrary
 		*
 		* @throws	Ogre::Exception::ERR_RT_ASSERTION_FAILED	Throws this if a Navi by the same name already exists.
 		*/
+// BEGIN GREG : adapted by TOF
+//		Navi* createNaviMaterial(const std::string &naviName, unsigned short width, unsigned short height,
+//			bool asyncRender = false, int maxAsyncRenderRate = 70, Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC);
 		Navi* createNaviMaterial(const std::string &naviName, unsigned short width, unsigned short height,
-			bool asyncRender = false, int maxAsyncRenderRate = 70, Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC);
+			bool asyncRender = false, int maxAsyncRenderRate = 70, 
+                        Ogre::FilterOptions texFiltering = Ogre::FO_ANISOTROPIC, 
+                        const std::string &mtlName = "");
+// END GREG
+
 
 		/**
 		* Retrieve a pointer to a Navi by name.
@@ -279,6 +286,34 @@ namespace NaviLibrary
 		*/
 		Navi* getTopNavi(int x, int y);
 
+// BEGIN GREG : adapted by TOF
+        /**
+        * Retrieve a pointer to a Navi by its material name.
+        *
+        * @param	mtlName	The material name used by the Navi to retrieve.
+        *
+        * @return	If the Navi is found, returns a pointer to the Navi, otherwise returns 0.
+        */
+        Navi* getNaviFromMtlName(const std::string &mtlName);
+
+        /**
+        * Focuses a Navi and pops it to the front of all other Navis.
+        *
+        * @param	naviName	The name of the Navi to focus.
+        */
+        void focusNavi(Navi* naviToFocus);
+
+        /**
+        * Set min and max values for Z order.
+        *
+        * @param	minZOrder	The min Z order.
+        * @param	maxZOrder	The max Z order.
+        */
+        void setZOrderMinMax(unsigned short min, unsigned short max);
+
+        void recomputeZOrder();
+// END GREG
+
 	protected:
 		friend class Navi; // Our very close friend <3
 
@@ -295,6 +330,11 @@ namespace NaviLibrary
 		double lastTooltip, tooltipShowTime;
 		bool isDraggingFocusedNavi;
 
+// BEGIN GREG : adapted by TOF
+                std::map<std::string,std::string> mtlNameNaviNameMap;
+                unsigned short minZOrder, maxZOrder;
+// END GREG
+   
 		bool focusNavi(int x, int y, Navi* selection = 0);
 		void handleKeyMessage(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 		void onResizeTooltip(Navi* Navi, const Awesomium::JSArguments& args);

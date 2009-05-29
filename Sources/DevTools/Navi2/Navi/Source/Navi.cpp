@@ -65,6 +65,16 @@ Navi::Navi(const std::string& name, unsigned short width, unsigned short height,
 	hasInternalKeyboardFocus = false;
 	resizeParameters = std::pair<int, int>(0, 0);
 
+// BEGIN GREG : adapted by TOF
+    isModal = false;
+    isFocused = false;
+    autoUpdatedOnFocus = false;
+    currentLocation = "";
+
+    mtlName = "";
+    internalMtl = false;
+// END GREG
+
 	createMaterial();
 	
 	overlay = new NaviOverlay(name + "_overlay", viewport, width, height, naviPosition, getMaterialName(), zOrder, tier);
@@ -74,9 +84,12 @@ Navi::Navi(const std::string& name, unsigned short width, unsigned short height,
 
 	createWebView(asyncRender, maxAsyncRenderRate);
 }
+           
 
+// BEGIN GREG : adapted by TOF
 Navi::Navi(const std::string& name, unsigned short width, unsigned short height, 
-			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering)
+			bool asyncRender, int maxAsyncRenderRate, Ogre::FilterOptions texFiltering, const std::string &mtlName)
+// END GREG
 {
 	webView = 0;
 	naviName = name;
@@ -111,6 +124,17 @@ Navi::Navi(const std::string& name, unsigned short width, unsigned short height,
 	hasInternalKeyboardFocus = false;
 	resizeParameters = std::pair<int, int>(0, 0);
 
+
+
+// BEGIN GREG : adapted by TOF
+    isModal = false;
+    isFocused = false;
+    autoUpdatedOnFocus = false;
+
+    this->mtlName = mtlName;
+    internalMtl = false;
+// END GREG
+
 	createMaterial();
 	createWebView(asyncRender, maxAsyncRenderRate);	
 }
@@ -126,7 +150,13 @@ Navi::~Navi()
 	if(overlay)
 		delete overlay;
 
-	MaterialManager::getSingletonPtr()->remove(naviName + "Material");
+// BEGIN GREG : adapted by TOF
+    //	MaterialManager::getSingletonPtr()->remove(naviName + "Material");
+    if (internalMtl)
+        MaterialManager::getSingletonPtr()->remove(mtlName);
+//END GREG
+    
+    MaterialManager::getSingletonPtr()->remove(naviName + "Material");
 	TextureManager::getSingletonPtr()->remove(naviName + "Texture");
 	if(usingMask) TextureManager::getSingletonPtr()->remove(naviName + "MaskTexture");
 }
@@ -177,10 +207,29 @@ void Navi::createMaterial()
 
 	pixelBuffer->unlock();
 
-	MaterialPtr material = MaterialManager::getSingleton().create(naviName + "Material", 
-		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-	matPass = material->getTechnique(0)->getPass(0);
-	matPass->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+
+
+// BEGIN GREG : adapted by TOF
+    //	MaterialPtr material = MaterialManager::getSingleton().create(naviName + "Material", 
+    //		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    MaterialPtr material;
+    if (mtlName.empty())
+    {
+        mtlName = naviName + "Material";
+        material = MaterialManager::getSingleton().create(mtlName, 
+            ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        internalMtl = true;
+    }
+    else
+    {
+        material = MaterialManager::getSingleton().getByName(mtlName);
+        material->getTechnique(0)->getPass(0)->removeAllTextureUnitStates();
+        internalMtl = false;
+    }
+// END GREG
+    
+    matPass = material->getTechnique(0)->getPass(0);
+    matPass->setSceneBlending(SBT_TRANSPARENT_ALPHA);
 	matPass->setDepthWriteEnabled(false);
 
 	baseTexUnit = matPass->createTextureUnitState(naviName + "Texture");
@@ -213,7 +262,7 @@ void Navi::update()
 {
 	resizeIfNeeded();
 
-	if(maxUpdatePS)
+    if(maxUpdatePS)
 		if(timer.getMilliseconds() - lastUpdateTime < 1000 / maxUpdatePS)
 			return;
 
@@ -230,7 +279,7 @@ void Navi::update()
 		if(!webView->isDirty())
 			return;
 
-	TexturePtr texture = TextureManager::getSingleton().getByName(naviName + "Texture");
+    TexturePtr texture = TextureManager::getSingleton().getByName(naviName + "Texture");
 	
 	HardwarePixelBufferSharedPtr pixelBuffer = texture->getBuffer();
 	pixelBuffer->lock(HardwareBuffer::HBL_DISCARD);
@@ -766,7 +815,10 @@ std::string Navi::getName()
 
 std::string Navi::getMaterialName()
 {
-	return naviName + "Material";
+// BEGIN GREG : adapted by TOF
+    //	return naviName + "Material";
+    return mtlName;
+//END GREG
 }
 
 bool Navi::getVisibility()
@@ -939,3 +991,24 @@ void Navi::onRequestDrag(Navi *caller, const Awesomium::JSArguments &args)
 	if(overlay)
 		NaviManager::Get().handleRequestDrag(this);
 }
+
+
+// BEGIN GREG : adapted by TOF
+Navi* Navi::setModal(bool isModal)
+{
+    this->isModal = isModal;
+    return this;
+}
+
+Navi* Navi::setAutoUpdateOnFocus(bool isAutoUpdatedOnFocus)
+{
+    autoUpdatedOnFocus = isAutoUpdatedOnFocus;
+    return this;
+}
+
+const std::string& Navi::getCurrentLocation()
+{
+    return currentLocation;
+}
+// END GREG
+
