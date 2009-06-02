@@ -6,13 +6,9 @@
         <script type="text/javascript">
             function pageLoaded()
             { 
-                new NaviData('pageLoaded').send();
+				Client.pageLoaded();
                 // AUTOMATIC LOGIN TO SPEED UP UNITARY TESTS
-                buttonPressed('connect')
-            }
-            function buttonPressed(buttonName)
-            {
-                new NaviData(buttonName).send();
+				Client.connect();
             }
         </script>
         <style type="text/css">
@@ -111,7 +107,7 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="loginText">Login</div>
-            <form id="loginForm" action="" onsubmit="buttonPressed('connect');return false;">
+            <form id="loginForm" action="" onsubmit="Client.connect();return false;">
                 <div id="loginInput">
                     <input id="inputLogin" class="inputText" name="inputLogin" value="me" type="text" size="35" />
                 </div>
@@ -122,12 +118,12 @@
                     <input id="inputPwd" class="inputText" name="inputPwd" value="" type="password" size="35" />
                 </div>
             </div>
-            <button id="worldButton" class="buttonWorld" name="buttonWorld" value="buttonWorld" type="button" onclick="buttonPressed('world')">World</button>
+            <button id="worldButton" class="buttonWorld" name="buttonWorld" value="buttonWorld" type="button" onclick="Client.world();">World</button>
             <div id="worldText"></div>
             <div id="infosText"></div>
-            <div id="connectButton" class="button" onclick="buttonPressed('connect')"></div>
-            <div id="optionsButton" class="button" onclick="buttonPressed('options')"></div>
-            <div id="quitButton" class="button" onclick="buttonPressed('quit')"></div>
+            <div id="connectButton" class="button" onclick="Client.connect();"></div>
+            <div id="optionsButton" class="button" onclick="Client.options();"></div>
+            <div id="quitButton" class="button" onclick="Client.quit();"></div>
         </div>
     </body>
 </html>
