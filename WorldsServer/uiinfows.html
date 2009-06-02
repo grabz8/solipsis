@@ -9,12 +9,9 @@
             img.src = "uiinfows.png";
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uiinfows'}).send();
+				Client.pageLoaded('uiinfows');
             }
-            function buttonPressed(buttonName)
-            {
-                new NaviData(buttonName).send();
-            }
+          
         </script>
         <style type="text/css">
             body
@@ -64,7 +61,7 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="infosText">infosDynamicContent</div>
-            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
+            <div id="okButton" class="button" onclick="Client.ok();"></div>
         </div>
     </body>
 </html>
