@@ -179,22 +179,19 @@ function HSVslide(d,o,e) {
 				slideHSV[2]=100-mkHSV(100,wSV,ds.top); 
 				HSVupdate();
 				
-				//alert(panel);
-				//new NaviData(panel).send();
-				//if(panel == 'pAmbient') new NaviData('MdlrAmbient').add({rgb:$S(panel).background}).send();
 				if(panel == 'pAmbient') {
-				    new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarAmbient').add({rgb:hsv2rgb(HSV)}).send();
+					Client.MdlrAmbient(hsv2rgb(HSV));
+					Client.AvatarAmbient(hsv2rgb(HSV));
 				}
 				else if(panel == 'pDiffuse') 
 				{   
-				    new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarDiffuse').add({rgb:hsv2rgb(HSV)}).send();
+					Client.MdlrDiffuse(hsv2rgb(HSV));
+					Client.AvatarDiffuse(hsv2rgb(HSV));
 				}
 				else if(panel == 'pSpecular') 
 				{
-				    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarSpecular').add({rgb:hsv2rgb(HSV)}).send();
+					Client.MdlrSpecular(hsv2rgb(HSV));
+					Client.AvatarSpecular(hsv2rgb(HSV));
 				}
 			}
 			else if(d=='Hslide') { 
@@ -211,34 +208,14 @@ function HSVslide(d,o,e) {
 				HSVupdate(z); 
 				$S('SV').backgroundColor='#'+hsv2hex([HSV[0],100,100]);
 
-				if(panel == 'pAmbient') {
-					new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-					/*
-                    if($('lockAmbientdiffuse').checked == true)
-						new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-                    */
+				if(panel == 'pAmbient') 
+				{
+					Client.MdlrAmbient(hsv2rgb(HSV));
+				
+				
 				}
 				else if(panel == 'pDiffuse') {
-					new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-					/*
-                    if($('lockAmbientdiffuse').checked == true)
-						new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-                      */
-				}
-				else if(panel == 'pSpecular') 
-                {
-                    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
-                }
-			}
-/*			else if(d=='drag') {
-				//var ds=$S(d!='drag'?d:o);
-				//var oX=parseInt(ds.left), oY=parseInt(ds.top), eX=XY(e), eY=XY(e,1);
-					 
-				//ds.left=XY(e)+oX-eX+'px'; 
-				//ds.top=XY(e,1)+oY-eY+'px';		
-				ds.left=XY(e)+'px'; 
-				ds.top=XY(e,1)+'px';		
-			}*/
+					Client.MdlrDiffuse(hsv2rgb(HSV));
 		}
 	}
 
