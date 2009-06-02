@@ -23,12 +23,9 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uimdlrmain'}).send();
+				Client.pageLoaded('uimdlrmain'); 
             }
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
-            }
+           
         </script>
         
         
@@ -118,44 +115,44 @@
                     <h3 class="toggler atStart">File</h3>
                     <div class="element atStart">
                         <ul>
-                            <li onclick="elementClicked('FileImport')">Import ...</li>
-                            <li onclick="elementClicked('FileSave')">Save</li>
-                            <li onclick="elementClicked('FileSaveAs')">Save as</li>
-                            <li onclick="elementClicked('FileExit')">Exit</li>
+                            <li onclick="Client.FileImport()">Import ...</li>
+                            <li onclick="Client.FileSave()">Save</li>
+                            <li onclick="Client.FileSaveAs()">Save as</li>
+                            <li onclick="Client.FileExit()">Exit</li>
                         </ul>
                     </div>
                     <h3 class="toggler atStart">Create</h3>
                     <div class="element atStart">
                         <ul>
-                            <li onclick="elementClicked('CreatePlane')">Plane</li>
-                            <li onclick="elementClicked('CreateBox')">Box</li>
-                            <li onclick="elementClicked('CreateCorner')">Corner</li>
-                            <li onclick="elementClicked('CreatePyramid')">Pyramid</li>
-                            <li onclick="elementClicked('CreatePrism')">Prism</li>
-                            <li onclick="elementClicked('CreateCylinder')">Cylinder</li>
-                            <li onclick="elementClicked('CreateHalfCylinder')">Half Cylinder</li>   <!--CF : Commented because of a crash in boolean operations-->
-                            <li onclick="elementClicked('CreateCone')">Cone</li>
-                            <li onclick="elementClicked('CreateHalfCone')">Half Cone</li>  <!--CF : Commented because of a crash in boolean operations-->
-                            <li onclick="elementClicked('CreateSphere')">Sphere</li>
-                            <li onclick="elementClicked('CreateHalfSphere')">Half sphere</li> <!--CF : Commented because of a crash in boolean operations-->
-                            <li onclick="elementClicked('CreateTorus')">Torus</li>
-                            <li onclick="elementClicked('CreateTube')">Tube</li>
-                            <li onclick="elementClicked('CreateRing')">Ring</li>
-							<li onclick="elementClicked('CreateSceneFromText')">Scene from text</li>
-							<li onclick="elementClicked('CreateTerrain')">Terrain sample</li>
+                            <li onclick="Client.CreatePlane()">Plane</li>
+                            <li onclick="Client.CreateBox()">Box</li>
+                            <li onclick="Client.CreateCorner()">Corner</li>
+                            <li onclick="Client.CreatePyramid()">Pyramid</li>
+                            <li onclick="Client.CreatePrism()">Prism</li>
+                            <li onclick="Client.CreateCylinder()">Cylinder</li>
+                            <li onclick="Client.CreateHalfCylinder()">Half Cylinder</li>   <!--CF : Commented because of a crash in boolean operations-->
+                            <li onclick="Client.CreateCone()">Cone</li>
+                            <li onclick="Client.CreateHalfCone()">Half Cone</li>  <!--CF : Commented because of a crash in boolean operations-->
+                            <li onclick="Client.CreateSphere()">Sphere</li>
+                            <li onclick="Client.CreateHalfSphere()">Half sphere</li> <!--CF : Commented because of a crash in boolean operations-->
+                            <li onclick="Client.CreateTorus()">Torus</li>
+                            <li onclick="Client.CreateTube()">Tube</li>
+                            <li onclick="Client.CreateRing()">Ring</li>
+							<li onclick="Client.CreateSceneFromText()">Scene from text</li>
+							<li onclick="Client.CreateTerrain()">Terrain sample</li>
                         </ul>
                     </div>
                     <h3 class="toggler atStart">Tools</h3>
                     <div class="element atStart">
                         <ul>
-                            <li onclick="elementClicked('ToolsDisplayConfig')">Display configuration</li>
+                            <li onclick="Client.ToolsDisplayConfig()">Display configuration</li>
                         </ul>
                     </div>
                     <h3 class="toggler atStart">Help</h3>
                     <div class="element atStart">
                         <ul>
-                            <li onclick="elementClicked('HelpContents')">Contents ...</li>
-                            <li onclick="elementClicked('HelpAbout')">About ...</li>
+                            <li onclick="Client.HelpContents()">Contents ...</li>
+                            <li onclick="Client.HelpAbout()">About ...</li>
                         </ul>
                     </div>
                 </div>
@@ -163,19 +160,19 @@
 		</td>
 
 		<td>
-			<input type="button" value="  Delete  " onclick="elementClicked('ActionDelete')"><br><br>
-			<input type="button" value="   Move   " onclick="elementClicked('ActionMove')"><br>
-			<input type="button" value="  Rotate  " onclick="elementClicked('ActionRotate')"><br>
-			<input type="button" value="   Scale  " onclick="elementClicked('ActionScale')"><br><br>
-			<input type="button" value="   Link   " onclick="elementClicked('ActionLink')"><br><br>
-			<input type="button" value="Properties" onclick="elementClicked('ActionProperties')">
+			<input type="button" value="  Delete  " onclick="Client.ActionDelete()"><br><br>
+			<input type="button" value="   Move   " onclick="Client.ActionMove()"><br>
+			<input type="button" value="  Rotate  " onclick="Client.ActionRotate()"><br>
+			<input type="button" value="   Scale  " onclick="Client.ActionScale()"><br><br>
+			<input type="button" value="   Link   " onclick="Client.ActionLink()"><br><br>
+			<input type="button" value="Properties" onclick="Client.ActionProperties()">
 		</td>
 	</tr>
 </table>
                 
             </div>
             
-            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="elementClicked('FileExit')"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="Client.FileExit()"></span>
         </div>
     </body>
 </html>

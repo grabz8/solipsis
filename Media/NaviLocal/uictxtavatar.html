@@ -77,7 +77,7 @@
                     var pieMenu = new Element('ul');
                     items.each(function(image, i){
                     pieMenu.adopt(new Element('li', {
-                        events: { click: function(){ $ND('contextItemSelected', {item: image}).send(); } },
+                        events: { click: function(){ Client.contextItemSelected(image); } },
                         styles: { 'background-image': "url('uictxbtn" + image + ".png')" }
                     }));
                 });
@@ -107,7 +107,7 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uictxtavatar'}).send();
+				Client.pageLoaded('uictxtavatar'); 
             }
         </script>
         <style type="text/css">

@@ -36,19 +36,15 @@
 
 	    <script type="text/javascript">
             function pageLoaded()
-            {                                
-                new NaviData('pageLoaded').add({naviName:'uimdlrterrain'}).send();
+            {     
+				Client.pageLoaded('uimdlrterrain');
             }
-            
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
-            }
+           
             
             function sendMessage(message)
             {
                 //alert(message);
-                new NaviData('sendMessage').add({msg:message}).send();
+				Client.sendMessage(message);
             }  
             
         </script>
@@ -147,8 +143,8 @@
             <table>
               <tr>
                 <td colspan="2">
-                  <input type="button" value="OK" onclick="elementClicked('MdlrTCreate');"/>
-                  <input type="button" value="Cancel" onclick="elementClicked('MdlrTCancel');"/>
+                  <input type="button" value="OK" onclick="Client.MdlrTCreate();"/>
+                  <input type="button" value="Cancel" onclick="Client.MdlrTCancel();"/>
                  <td>
 							</tr>
             </table>

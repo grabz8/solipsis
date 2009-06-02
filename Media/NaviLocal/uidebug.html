@@ -16,19 +16,19 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uidebug'}).send();
+				Client.pageLoaded('uidebug');  
             }
             function pageClosed()
             {
-                new NaviData('pageClosed').send();
+				Client.pageClosed();  
             }
             function debugCommand(command, parameters)
             {
-                new NaviData('debugCommand').add({cmd:command}).add({params:parameters}).send();
+				Client.debugCommand(command, parameters);  
             }
             function navCommand(command)
             {
-                new NaviData('navCommand').add({cmd:command}).send();
+				Client.navCommand(command);  
             }
         </script>
         <style type="text/css">
@@ -174,7 +174,7 @@
 					    <li title="Helpers">Helpers</li>
 					    <li title="Demos">Demos</li>
 					    <li title="Tests">Tests</li>
-					    <li title="Tree" onclick="new NaviData('debugRefreshTree').add({naviName:'uidebug'}).send();">Tree</li>
+					    <li title="Tree" onclick="sd">Tree</li>
 				    </ul>
 				    <div id="Helpers" class="mootabs_panel">
                         <button id="helpersToggleAxisButton" class="buttonRow1" name="buttonHelpersToggleAxis" value="buttonHelpersToggleAxis" type="button" onclick="debugCommand('toggleAxis', $('inputHelpersPosAxis').value)">toggleAxis</button>

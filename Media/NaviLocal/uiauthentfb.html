@@ -6,12 +6,7 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uiauthentfb'}).send();
-            }
-            function buttonPressed(buttonName)
-            {
-                var naviData = new NaviData(buttonName);
-                naviData.send();
+				Client.pageLoaded('uiauthentfb');
             }
         </script>
         <style type="text/css">
@@ -62,8 +57,8 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="msgText"></div>
-            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
-            <div id="cancelButton" class="button" onclick="buttonPressed('cancel')"></div>
+            <div id="okButton" class="button" onclick="Client.ok();"></div>
+            <div id="cancelButton" class="button" onclick="Client.cancel();"></div>
         </div>
     </body>
 </html>

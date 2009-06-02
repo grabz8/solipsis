@@ -36,19 +36,14 @@
 
 	    <script type="text/javascript">
             function pageLoaded()
-            {              
-                new NaviData('pageLoaded').add({naviName:'uimdlrscenefromtext'}).send();
-            }
-            
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
+            {        
+				Client.pageLoaded('uimdlrscenefromtext');
             }
             
             function sendMessage(message)
             {
                 //alert(message);
-                new NaviData('sendMessage').add({msg:message}).send();
+				Client.sendMessage(message);
             }  
             
         </script>
@@ -117,7 +112,7 @@
             <tr valign="top">
               <td>Type/paste some text here under</td>
               <td colspan="2">
-                <textarea id="scenedescription" rows="20" cols="59" onblur="elementClicked('MdlrDescription')"></textarea>
+                <textarea id="scenedescription" rows="20" cols="59" onblur="Client.MdlrDescription();"></textarea>
               </td>
             </tr>
 
@@ -134,8 +129,8 @@
             <table>
               <tr>
                 <td colspan="2">
-                  <input type="button" value="Generate" onclick="elementClicked('MdlrSFTCreate')"/>
-                  <input type="button" value="Close window (and loose text)" onclick="elementClicked('MdlrSFTCancel')"/> <!--  -->
+                  <input type="button" value="Generate" onclick="Client.MdlrSFTCreate();"/>
+                  <input type="button" value="Close window (and loose text)" onclick="Client.MdlrSFTCancel();"/> <!--  -->
                  <td>
 							</tr>
             </table>

@@ -6,15 +6,15 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').send();
+				Client.pageLoaded();
             }
             function pageClosed()
             {
-                new NaviData('pageClosed').send();
+				Client.pageClosed();
             }
             function sendMessage(message)
             {
-                new NaviData('sendMessage').add({msg:message}).send();
+				Client.sendMessage(message);
             }
         </script>
         <style type="text/css">
