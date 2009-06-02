@@ -84,7 +84,7 @@ bool GUI_Options::show()
     return true;
 }
 //-------------------------------------------------------------------------------------
-void GUI_Options::onLoaded(const NaviData& naviData)
+void GUI_Options::onLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     char txt[256];
 
@@ -173,7 +173,7 @@ void GUI_Options::onLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Options::onOk(const NaviData& naviData)
+void GUI_Options::onOk(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsOk()");
 
@@ -322,7 +322,7 @@ void GUI_Options::onOk(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Options::onBack(const NaviData& naviData)
+void GUI_Options::onBack(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsBack()");
 

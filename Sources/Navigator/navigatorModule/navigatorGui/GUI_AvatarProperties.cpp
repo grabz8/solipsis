@@ -167,7 +167,7 @@ bool GUI_AvatarProperties::show()
 
 
 //------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarTabberChange(const NaviData& naviData)
+void GUI_AvatarProperties::avatarTabberChange(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned tab;
     tab = atoi(naviData["tab"].str().c_str());
@@ -372,7 +372,7 @@ void GUI_AvatarProperties::avatarTabberSave()
 {}
 
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropPageLoaded(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropPageLoaded()");
 
@@ -385,7 +385,7 @@ void GUI_AvatarProperties::avatarPropPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropPageClosed(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropPageClosed()");
 
@@ -398,7 +398,7 @@ void GUI_AvatarProperties::avatarPropPageClosed(const NaviData& naviData)
         GUI_Avatar::unload();
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAnimPlayPause(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAnimPlayPause(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAnimPlayPause()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -425,7 +425,7 @@ void GUI_AvatarProperties::avatarPropAnimPlayPause(const NaviData& naviData)
     // ...
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAnimStop(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAnimStop(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAnimStop()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -438,7 +438,7 @@ void GUI_AvatarProperties::avatarPropAnimStop(const NaviData& naviData)
     user->stopAnimation();
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAnimNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAnimNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAnimNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -458,7 +458,7 @@ void GUI_AvatarProperties::avatarPropAnimNext(const NaviData& naviData)
     mNavi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAnimPrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAnimPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAnimPrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -478,7 +478,7 @@ void GUI_AvatarProperties::avatarPropAnimPrev(const NaviData& naviData)
     mNavi->evaluateJS("$('animationSelectTitre').innerHTML = '" + text + "'");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropHeight(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropHeight(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropHeight()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -505,7 +505,7 @@ void GUI_AvatarProperties::avatarPropHeight(const NaviData& naviData)
 #endif
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBonePrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBonePrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBonePrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -540,7 +540,7 @@ void GUI_AvatarProperties::avatarPropBonePrev(const NaviData& naviData)
     //mNavi->evaluateJS("$('oriZ').style.display='none'");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBoneNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBoneNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBoneNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -575,7 +575,7 @@ void GUI_AvatarProperties::avatarPropBoneNext(const NaviData& naviData)
     //mNavi->evaluateJS("$('oriZ').style.display='none'");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPPrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPPrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -611,7 +611,7 @@ void GUI_AvatarProperties::avatarPropBPPrev(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -647,7 +647,7 @@ void GUI_AvatarProperties::avatarPropBPNext(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPMPrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPMPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPMPrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -680,7 +680,7 @@ void GUI_AvatarProperties::avatarPropBPMPrev(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPMNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPMNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPMNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -713,7 +713,7 @@ void GUI_AvatarProperties::avatarPropBPMNext(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPMEdit(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPMEdit(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPMEdit()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -724,14 +724,14 @@ void GUI_AvatarProperties::avatarPropBPMEdit(const NaviData& naviData)
     mNavi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropBPMRemove(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropBPMRemove(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropBPMRemove()");
     //CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     //
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttPrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttPrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -768,7 +768,7 @@ void GUI_AvatarProperties::avatarPropAttPrev(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -805,7 +805,7 @@ void GUI_AvatarProperties::avatarPropAttNext(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttMPrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttMPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttMPrev()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -837,7 +837,7 @@ void GUI_AvatarProperties::avatarPropAttMPrev(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttMNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttMNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttMNext()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -869,7 +869,7 @@ void GUI_AvatarProperties::avatarPropAttMNext(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttMEdit(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttMEdit(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttMEdit()");
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
@@ -880,14 +880,14 @@ void GUI_AvatarProperties::avatarPropAttMEdit(const NaviData& naviData)
     mNavi->evaluateJS("$('avatarTabbers').tabber.tabShow(2)");
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropAttMRemove(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropAttMRemove(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropAttMRemove()");
     //CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     //
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropSliders(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropSliders(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropSliders()");
     
@@ -1062,7 +1062,7 @@ void GUI_AvatarProperties::avatarPropSliders(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropReset(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropReset(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropSliders()");
     
@@ -1073,7 +1073,7 @@ void GUI_AvatarProperties::avatarPropReset(const NaviData& naviData)
     if( type < 0) return;
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarColorAmbient(const NaviData& naviData)
+void GUI_AvatarProperties::avatarColorAmbient(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -1113,7 +1113,7 @@ void GUI_AvatarProperties::avatarColorAmbient(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarColorDiffuse(const NaviData& naviData)
+void GUI_AvatarProperties::avatarColorDiffuse(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -1176,7 +1176,7 @@ void GUI_AvatarProperties::avatarColorDiffuse(const NaviData& naviData)
 #endif
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarColorSpecular(const NaviData& naviData)
+void GUI_AvatarProperties::avatarColorSpecular(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -1209,14 +1209,14 @@ void GUI_AvatarProperties::avatarColorSpecular(const NaviData& naviData)
         material->setSpecular( ColourValue(rgb[0]/255., rgb[1]/255., rgb[2]/255.) );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarColorLockAmbientDiffuse(const NaviData& naviData)
+void GUI_AvatarProperties::avatarColorLockAmbientDiffuse(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("$('lockAmbientdiffuse').checked");
     mLockAmbientDiffuse = (value == "true")?true:false;
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarDoubleSide(const NaviData& naviData)
+void GUI_AvatarProperties::avatarDoubleSide(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("$('doubleSide').checked");
@@ -1234,7 +1234,7 @@ void GUI_AvatarProperties::avatarDoubleSide(const NaviData& naviData)
     mat->getTechnique(0)->getPass(0)->setCullingMode( (value == "true")?CULL_NONE:CULL_CLOCKWISE );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropShininess(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropShininess(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("shininess.getValue()");
@@ -1253,7 +1253,7 @@ void GUI_AvatarProperties::avatarPropShininess(const NaviData& naviData)
         material->setShininess( atoi(value.c_str())*1.28 );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropTransparency(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropTransparency(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("transparency.getValue()");
@@ -1276,7 +1276,7 @@ void GUI_AvatarProperties::avatarPropTransparency(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropResetColour(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropResetColour(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("transparency.getValue()");
@@ -1296,7 +1296,7 @@ void GUI_AvatarProperties::avatarPropResetColour(const NaviData& naviData)
     avatarTabberLoad( 2 );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropScrollU(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropScrollU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scrollU.getValue()");
@@ -1318,7 +1318,7 @@ void GUI_AvatarProperties::avatarPropScrollU(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropScrollV(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropScrollV(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scrollV.getValue()");
@@ -1340,7 +1340,7 @@ void GUI_AvatarProperties::avatarPropScrollV(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropScaleU(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropScaleU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scaleU.getValue()");
@@ -1362,7 +1362,7 @@ void GUI_AvatarProperties::avatarPropScaleU(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropScaleV(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropScaleV(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scaleV.getValue()");
@@ -1384,7 +1384,7 @@ void GUI_AvatarProperties::avatarPropScaleV(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropRotateU(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropRotateU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("rotateU.getValue()");
@@ -1404,7 +1404,7 @@ void GUI_AvatarProperties::avatarPropRotateU(const NaviData& naviData)
         material->setTextureRotate( Ogre::Radian(atoi(value.c_str())/100.*Math::TWO_PI) );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropTextureAdd(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropTextureAdd(Navi* caller, const Awesomium::JSArguments& args)
 {
     char * PathTexture = FileBrowser::displayWindowForLoading( 
         "Image Files (*.png;*.bmp;*.jpg)\0*.png;*.bmp;*.jpg\0", string("") ); 
@@ -1432,7 +1432,7 @@ void GUI_AvatarProperties::avatarPropTextureAdd(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropTextureRemove(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropTextureRemove(Navi* caller, const Awesomium::JSArguments& args)
 {
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     ModifiableMaterialObject* object;
@@ -1453,7 +1453,7 @@ void GUI_AvatarProperties::avatarPropTextureRemove(const NaviData& naviData)
     avatarUpdateTextures( object );
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropTexturePrev(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropTexturePrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     ModifiableMaterialObject* object;
@@ -1467,7 +1467,7 @@ void GUI_AvatarProperties::avatarPropTexturePrev(const NaviData& naviData)
     object->setNextTextureAsCurrent();
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropTextureNext(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropTextureNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     ModifiableMaterialObject* object;
@@ -1552,7 +1552,7 @@ void GUI_AvatarProperties::avatarUpdateTextures(ModifiableMaterialObject* pObjec
     _chdir(mNavigator->getAvatarEditor()->mExecPath.c_str());
 }
 //-------------------------------------------------------------------------------------
-void GUI_AvatarProperties::avatarPropSound(const NaviData& naviData)
+void GUI_AvatarProperties::avatarPropSound(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_AvatarProperties::avatarPropSound()");
     

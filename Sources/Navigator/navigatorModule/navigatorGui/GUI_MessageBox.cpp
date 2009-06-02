@@ -83,7 +83,7 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
 
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
+void GUI_MessageBox::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxPageLoaded()");
 
@@ -98,7 +98,7 @@ void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::onResponse(const NaviData& naviData)
+void GUI_MessageBox::onResponse(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
     destroy();

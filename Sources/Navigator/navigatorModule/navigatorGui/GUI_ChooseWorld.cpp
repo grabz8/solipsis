@@ -87,7 +87,7 @@ bool GUI_ChooseWorld::show()
 
         // Add 1 event listener to detect network errors
         mNavi->addEventListener(this);
-        mNavi->navigateTo(uiworldsUrl);
+        mNavi->loadURL(uiworldsUrl);
         m_curState = NSCreated;
     }
 
@@ -99,7 +99,7 @@ bool GUI_ChooseWorld::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::onOkPressed(const NaviData& naviData)
+void GUI_ChooseWorld::onOkPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
 
@@ -132,7 +132,7 @@ void GUI_ChooseWorld::onOkPressed(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::onCancelPressed(const NaviData& naviData)
+void GUI_ChooseWorld::onCancelPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
 

@@ -52,9 +52,9 @@ namespace Solipsis
 
         void applyLoginDatas(); 
 
-        void onLoaded(const Awesomium::JSArguments& args);
-        void onOk(const Awesomium::JSArguments& args);
-        void onBack(const Awesomium::JSArguments& args);
+        void onLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onOk(Navi* caller, const Awesomium::JSArguments& args);
+        void onBack(Navi* caller, const Awesomium::JSArguments& args);
 
         static GUI_Options * stGUI_Options;
 

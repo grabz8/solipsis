@@ -156,7 +156,7 @@ bool GUI_Modeler::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::onPageLoaded(const NaviData& naviData)
+void GUI_Modeler::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::naviToShowPageLoaded()");
 
@@ -206,7 +206,7 @@ void GUI_Modeler::destroy()
 
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainFileImport(const NaviData& naviData)
+void GUI_Modeler::modelerMainFileImport(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainFileImport()");
 
@@ -214,7 +214,7 @@ void GUI_Modeler::modelerMainFileImport(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainFileSave(const NaviData& naviData)
+void GUI_Modeler::modelerMainFileSave(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainFileSave()");
 
@@ -223,7 +223,7 @@ void GUI_Modeler::modelerMainFileSave(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainFileSaveAs(const NaviData& naviData)
+void GUI_Modeler::modelerMainFileSaveAs(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainFileSave()");
 	
@@ -276,7 +276,7 @@ void GUI_Modeler::modelerMainFileSaveAs(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainFileExit(const NaviData& naviData)
+void GUI_Modeler::modelerMainFileExit(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainFileExit()");
 
@@ -285,7 +285,7 @@ void GUI_Modeler::modelerMainFileExit(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreatePlane(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreatePlane(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreatePlane()");
     //mNavigator->startModeling();
@@ -293,7 +293,7 @@ void GUI_Modeler::modelerMainCreatePlane(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateBox(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateBox(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateBox()");
     //mNavigator->startModeling();
@@ -301,7 +301,7 @@ void GUI_Modeler::modelerMainCreateBox(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateCorner(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateCorner(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateCorner()");
     //mNavigator->startModeling();
@@ -309,7 +309,7 @@ void GUI_Modeler::modelerMainCreateCorner(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreatePyramid(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreatePyramid(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreatePyramid()");
     //mNavigator->startModeling();
@@ -317,7 +317,7 @@ void GUI_Modeler::modelerMainCreatePyramid(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreatePrism(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreatePrism(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreatePrism()");
     //mNavigator->startModeling();
@@ -325,7 +325,7 @@ void GUI_Modeler::modelerMainCreatePrism(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateCylinder(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateCylinder(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateCylinder()");
     //mNavigator->startModeling();
@@ -333,7 +333,7 @@ void GUI_Modeler::modelerMainCreateCylinder(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateHalfCylinder(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateHalfCylinder(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateHalfCylinder()");
     //mNavigator->startModeling();
@@ -341,7 +341,7 @@ void GUI_Modeler::modelerMainCreateHalfCylinder(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateCone(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateCone(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateCone()");
     //mNavigator->startModeling();
@@ -349,7 +349,7 @@ void GUI_Modeler::modelerMainCreateCone(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateHalfCone(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateHalfCone(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateHalfCone()");
     //mNavigator->startModeling();
@@ -357,7 +357,7 @@ void GUI_Modeler::modelerMainCreateHalfCone(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateSphere(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateSphere(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateSphere()");
     //mNavigator->startModeling();
@@ -365,7 +365,7 @@ void GUI_Modeler::modelerMainCreateSphere(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateHalfSphere(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateHalfSphere(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateHalfSphere()");
     //mNavigator->startModeling();
@@ -373,7 +373,7 @@ void GUI_Modeler::modelerMainCreateHalfSphere(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateTorus(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateTorus(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateTorus()");
     //mNavigator->startModeling();
@@ -381,7 +381,7 @@ void GUI_Modeler::modelerMainCreateTorus(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateTube(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateTube(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateTube()");
     //mNavigator->startModeling();
@@ -389,7 +389,7 @@ void GUI_Modeler::modelerMainCreateTube(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerMainCreateRing(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateRing(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateRing()");
     //mNavigator->startModeling();
@@ -398,7 +398,7 @@ void GUI_Modeler::modelerMainCreateRing(const NaviData& naviData)
 
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionDelete(const NaviData& naviData)
+void GUI_Modeler::modelerActionDelete(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerActionDelete()");
 
@@ -430,7 +430,7 @@ void GUI_Modeler::modelerActionDelete(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionMove(const NaviData& naviData)
+void GUI_Modeler::modelerActionMove(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if (!modeler->isSelectionEmpty())
@@ -455,7 +455,7 @@ void GUI_Modeler::modelerActionMove(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionRotate(const NaviData& naviData)
+void GUI_Modeler::modelerActionRotate(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if (!modeler->isSelectionEmpty())
@@ -481,7 +481,7 @@ void GUI_Modeler::modelerActionRotate(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionScale(const NaviData& naviData)
+void GUI_Modeler::modelerActionScale(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if (!modeler->isSelectionEmpty())
@@ -507,7 +507,7 @@ void GUI_Modeler::modelerActionScale(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionLink(const NaviData& naviData)
+void GUI_Modeler::modelerActionLink(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerActionLink()");
 
@@ -523,7 +523,7 @@ void GUI_Modeler::modelerActionLink(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Modeler::modelerActionProperties(const NaviData& naviData)
+void GUI_Modeler::modelerActionProperties(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerActionProperties()");
 
@@ -549,7 +549,7 @@ void GUI_Modeler::modelerActionProperties(const NaviData& naviData)
 
 //-------------------------------------------------------------------------------------
 
-void GUI_Modeler::modelerMainCreateSceneFromText(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateSceneFromText(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerMainCreateSceneFromText()");
     GUI_ModelerSceneFromText::showPanel();
@@ -559,7 +559,7 @@ void GUI_Modeler::modelerMainCreateSceneFromText(const NaviData& naviData)
 
 //-------------------------------------------------------------------------------------
 #ifdef TERRAIN_MODELER
-void GUI_Modeler::modelerMainCreateTerrain(const NaviData& naviData)
+void GUI_Modeler::modelerMainCreateTerrain(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::modelerMainCreateTerrain()");
     GUI_TerrainModeler::showPanel();

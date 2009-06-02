@@ -161,7 +161,7 @@ void GUI_Panel::createNavi(const std::string &homepage, int x, int y,
 
 
 //-------------------------------------------------------------------------------------
-void GUI_Panel::onPanelLoaded(const NaviData& naviData)
+void GUI_Panel::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     // Show Navi UI
     if (m_curState == NSCreated)

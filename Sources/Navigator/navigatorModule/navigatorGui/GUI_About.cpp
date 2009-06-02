@@ -78,7 +78,7 @@ bool GUI_About::show()
     return true;
 }
 
-void GUI_About::onClose(const NaviData& naviData)
+void GUI_About::onClose(Navi* caller, const Awesomium::JSArguments& args)
 {
     destroy();
 }

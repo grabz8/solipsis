@@ -234,7 +234,7 @@ void GUI_ModelerProperties::destroy()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerActionUndo(const NaviData& naviData)
+void GUI_ModelerProperties::modelerActionUndo(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Modeler::modelerActionUndo()");
 
@@ -247,7 +247,7 @@ void GUI_ModelerProperties::modelerActionUndo(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPageLoaded(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerProperties::modelerPropPageLoaded()");
 
@@ -260,7 +260,7 @@ void GUI_ModelerProperties::modelerPropPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPageClosed(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerProperties::modelerPropPageClosed()");
 
@@ -274,7 +274,7 @@ void GUI_ModelerProperties::modelerPropPageClosed(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropObjectName(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropObjectName(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('objectName').value");
 
@@ -284,7 +284,7 @@ void GUI_ModelerProperties::modelerPropObjectName(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropCreator(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropCreator(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('creator').value");
 
@@ -294,7 +294,7 @@ void GUI_ModelerProperties::modelerPropCreator(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropOwner(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropOwner(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('owner').value");
 
@@ -304,7 +304,7 @@ void GUI_ModelerProperties::modelerPropOwner(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropGroup(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropGroup(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('group').value");
 
@@ -314,7 +314,7 @@ void GUI_ModelerProperties::modelerPropGroup(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropDescription(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropDescription(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('description').value");
 
@@ -324,7 +324,7 @@ void GUI_ModelerProperties::modelerPropDescription(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTags(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTags(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('tags').value");
 
@@ -334,19 +334,19 @@ void GUI_ModelerProperties::modelerPropTags(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropModification(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropModification(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('modification').checked");
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropCopy(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropCopy(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("document.getElementById('copy').checked");
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTaperX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTaperX(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("taperX.getValue()");
 
@@ -359,7 +359,7 @@ void GUI_ModelerProperties::modelerPropTaperX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTaperY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTaperY(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("taperY.getValue()");
 
@@ -372,7 +372,7 @@ void GUI_ModelerProperties::modelerPropTaperY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTopShearX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTopShearX(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("topShearX.getValue()");
 
@@ -385,7 +385,7 @@ void GUI_ModelerProperties::modelerPropTopShearX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTopShearY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTopShearY(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value = mNavi->evaluateJS("topShearY.getValue()");
 
@@ -398,7 +398,7 @@ void GUI_ModelerProperties::modelerPropTopShearY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTwistBegin(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTwistBegin(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("twistBegin.getValue()");
@@ -412,7 +412,7 @@ void GUI_ModelerProperties::modelerPropTwistBegin(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTwistEnd(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTwistEnd(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("twistEnd.getValue()");
@@ -426,7 +426,7 @@ void GUI_ModelerProperties::modelerPropTwistEnd(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropDimpleBegin(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropDimpleBegin(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("dimpleBegin.getValue()");
@@ -440,7 +440,7 @@ void GUI_ModelerProperties::modelerPropDimpleBegin(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropDimpleEnd(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropDimpleEnd(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("dimpleEnd.getValue()");
@@ -454,7 +454,7 @@ void GUI_ModelerProperties::modelerPropDimpleEnd(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPathCutBegin(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPathCutBegin(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("pathCutBegin.getValue()");
@@ -468,7 +468,7 @@ void GUI_ModelerProperties::modelerPropPathCutBegin(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPathCutEnd(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPathCutEnd(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("pathCutEnd.getValue()");
@@ -482,7 +482,7 @@ void GUI_ModelerProperties::modelerPropPathCutEnd(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropHoleSizeX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropHoleSizeX(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("holeSizeX.getValue()");
@@ -496,7 +496,7 @@ void GUI_ModelerProperties::modelerPropHoleSizeX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropHoleSizeY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropHoleSizeY(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("holeSizeY.getValue()");
@@ -510,7 +510,7 @@ void GUI_ModelerProperties::modelerPropHoleSizeY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropHollowShape(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropHollowShape(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string value;
     value = naviData["shape"].str();
@@ -524,7 +524,7 @@ void GUI_ModelerProperties::modelerPropHollowShape(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropSkew(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropSkew(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("skew.getValue()");
@@ -538,7 +538,7 @@ void GUI_ModelerProperties::modelerPropSkew(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropRevolution(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropRevolution(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("revolution.getValue()");
@@ -552,7 +552,7 @@ void GUI_ModelerProperties::modelerPropRevolution(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropRadiusDelta(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropRadiusDelta(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("radiusDelta.getValue()");
@@ -566,7 +566,7 @@ void GUI_ModelerProperties::modelerPropRadiusDelta(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerColorAmbient(const NaviData& naviData)
+void GUI_ModelerProperties::modelerColorAmbient(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -595,7 +595,7 @@ void GUI_ModelerProperties::modelerColorAmbient(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerColorDiffuse(const NaviData& naviData)
+void GUI_ModelerProperties::modelerColorDiffuse(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -624,7 +624,7 @@ void GUI_ModelerProperties::modelerColorDiffuse(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerColorSpecular(const NaviData& naviData)
+void GUI_ModelerProperties::modelerColorSpecular(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned idRGB = 0;
     std::string str, color;
@@ -649,13 +649,13 @@ void GUI_ModelerProperties::modelerColorSpecular(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerColorLockAmbientDiffuse(const NaviData& naviData)
+void GUI_ModelerProperties::modelerColorLockAmbientDiffuse(Navi* caller, const Awesomium::JSArguments& args)
 { 
     std::string value = mNavi->evaluateJS("$('lockAmbientdiffuse').checked");
     mLockAmbientDiffuse = (value == "true")?true:false;
 }
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerDoubleSide(const NaviData& naviData)
+void GUI_ModelerProperties::modelerDoubleSide(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("$('doubleSide').checked");
@@ -668,7 +668,7 @@ void GUI_ModelerProperties::modelerDoubleSide(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropShininess(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropShininess(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("shininess.getValue()");
@@ -679,7 +679,7 @@ void GUI_ModelerProperties::modelerPropShininess(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTransparency(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTransparency(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("transparency.getValue()");
@@ -694,7 +694,7 @@ void GUI_ModelerProperties::modelerPropTransparency(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScrollU(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScrollU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scrollU.getValue()");
@@ -708,7 +708,7 @@ void GUI_ModelerProperties::modelerPropScrollU(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScrollV(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScrollV(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scrollV.getValue()");
@@ -722,7 +722,7 @@ void GUI_ModelerProperties::modelerPropScrollV(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScaleU(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScaleU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scaleU.getValue()");
@@ -736,7 +736,7 @@ void GUI_ModelerProperties::modelerPropScaleU(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScaleV(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScaleV(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("scaleV.getValue()");
@@ -750,7 +750,7 @@ void GUI_ModelerProperties::modelerPropScaleV(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropRotateU(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropRotateU(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("rotateU.getValue()");
@@ -761,7 +761,7 @@ void GUI_ModelerProperties::modelerPropRotateU(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTextureAdd(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTextureAdd(Navi* caller, const Awesomium::JSArguments& args)
 {
     char * PathTexture = FileBrowser::displayWindowForLoading( 
         "Image Files (*.png;*.bmp;*.jpg)\0*.png;*.bmp;*.jpg\0", string("") ); 
@@ -799,7 +799,7 @@ void GUI_ModelerProperties::modelerPropTextureAdd(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTextureRemove(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTextureRemove(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -818,7 +818,7 @@ void GUI_ModelerProperties::modelerPropTextureRemove(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTextureApply(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTextureApply(Navi* caller, const Awesomium::JSArguments& args)
 {
 
     Modeler *modeler = mNavigator->getModeler();
@@ -836,7 +836,7 @@ void GUI_ModelerProperties::modelerPropTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropWWWTextureApply(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropWWWTextureApply(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -901,7 +901,7 @@ void GUI_ModelerProperties::modelerPropWWWTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropSWFMrlBrowse(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropSWFMrlBrowse(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string mrl;
     if (System::showDlgOpenFilename(mrl, "Flash Media File,(*.swf)\0*.swf\0", ""))
@@ -914,7 +914,7 @@ void GUI_ModelerProperties::modelerPropSWFMrlBrowse(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropSWFTextureApply(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropSWFTextureApply(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -985,7 +985,7 @@ void GUI_ModelerProperties::modelerPropSWFTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropVLCTextureApply(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropVLCTextureApply(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -1072,7 +1072,7 @@ void GUI_ModelerProperties::modelerPropVLCTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropVLCMrlBrowse(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropVLCMrlBrowse(Navi* caller, const Awesomium::JSArguments& args)
 {
     std::string mrl;
     if (System::showDlgOpenFilename(mrl, "Media File,(*.*)\0*.*\0", ""))
@@ -1086,7 +1086,7 @@ void GUI_ModelerProperties::modelerPropVLCMrlBrowse(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropVNCTextureApply(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropVNCTextureApply(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -1143,7 +1143,7 @@ void GUI_ModelerProperties::modelerPropVNCTextureApply(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTexturePrev(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTexturePrev(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -1157,7 +1157,7 @@ void GUI_ModelerProperties::modelerPropTexturePrev(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropTextureNext(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropTextureNext(Navi* caller, const Awesomium::JSArguments& args)
 {
     Modeler *modeler = mNavigator->getModeler();
     if( modeler != 0 )
@@ -1171,7 +1171,7 @@ void GUI_ModelerProperties::modelerPropTextureNext(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPositionX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPositionX(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('positionX').value * 10000");
@@ -1182,7 +1182,7 @@ void GUI_ModelerProperties::modelerPropPositionX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPositionY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPositionY(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('positionY').value * 10000");
@@ -1193,7 +1193,7 @@ void GUI_ModelerProperties::modelerPropPositionY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropPositionZ(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropPositionZ(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('positionZ').value * 10000");
@@ -1204,7 +1204,7 @@ void GUI_ModelerProperties::modelerPropPositionZ(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropOrientationX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropOrientationX(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('orientationX').value * 10000");
@@ -1214,7 +1214,7 @@ void GUI_ModelerProperties::modelerPropOrientationX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropOrientationY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropOrientationY(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('orientationY').value * 10000");
@@ -1224,7 +1224,7 @@ void GUI_ModelerProperties::modelerPropOrientationY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropOrientationZ(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropOrientationZ(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('orientationZ').value * 10000");
@@ -1234,7 +1234,7 @@ void GUI_ModelerProperties::modelerPropOrientationZ(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScaleX(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScaleX(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     //std::string value = mNavi->evaluateJS("document.getElementById('scaleX').value * 10000");
@@ -1248,7 +1248,7 @@ void GUI_ModelerProperties::modelerPropScaleX(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScaleY(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScaleY(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     //std::string value = mNavi->evaluateJS("document.getElementById('scaleY').value * 10000");
@@ -1262,7 +1262,7 @@ void GUI_ModelerProperties::modelerPropScaleY(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropScaleZ(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropScaleZ(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     //std::string value = mNavi->evaluateJS("document.getElementById('scaleZ').value * 10000");
@@ -1276,14 +1276,14 @@ void GUI_ModelerProperties::modelerPropScaleZ(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropCollision(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropCollision(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('collision').checked");
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerPropGravity(const NaviData& naviData)
+void GUI_ModelerProperties::modelerPropGravity(Navi* caller, const Awesomium::JSArguments& args)
 {
     
     std::string value = mNavi->evaluateJS("document.getElementById('gravity').checked");
@@ -1291,7 +1291,7 @@ void GUI_ModelerProperties::modelerPropGravity(const NaviData& naviData)
 
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerProperties::modelerTabberChange(const NaviData& naviData)
+void GUI_ModelerProperties::modelerTabberChange(Navi* caller, const Awesomium::JSArguments& args)
 {
     unsigned tab;
     tab = atoi(naviData["tab"].str().c_str());
@@ -1836,7 +1836,7 @@ void GUI_ModelerProperties::modelerAddNewDeformation(Object3D::Command pCommand)
 }
 
 /*
-void GUI_ModelerProperties::modelerProperties(const NaviData& naviData)
+void GUI_ModelerProperties::modelerProperties(Navi* caller, const Awesomium::JSArguments& args)
 {
 std::string slider;
 slider = naviData["slider"].str();

@@ -130,7 +130,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             datas["itemWidth"] = itemW;
             datas["itemHeight"] = itemH;
 
-            mNavi->navigateTo("local://uictxtavatar.html", datas);
+            mNavi->loadURL("local://uictxtavatar.html", datas);
 
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onPanelLoaded));
             mNavi->bind("contextItemSelected", NaviDelegate(this, &GUI_ContextMenu::onAvatarSelect));
@@ -159,7 +159,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onWWWPanelLoaded));
             mNavi->bind("navCommand", NaviDelegate(this, &GUI_ContextMenu::onWWWCommand));
  
-            mNavi->navigateTo("local://uictxtwww.html", datas);
+            mNavi->loadURL("local://uictxtwww.html", datas);
        }
         break;
     case NAVI_CTXTVLC:
@@ -185,7 +185,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             datas["naviDataName"] = "uictxtvlcDatas";
             datas["ctxtVLCName"] = ctxtVLCName;
 
-            mNavi->navigateTo("local://uictxtvlc.html", datas);
+            mNavi->loadURL("local://uictxtvlc.html", datas);
         }
         break;
     case NAVI_CTXTSWF:
@@ -211,7 +211,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             datas["naviDataName"] = "uictxtvlcDatas";
             datas["ctxtSWFName"] = ctxtSWFName;
 
-            mNavi->navigateTo("local://uictxtswf.html", datas);
+            mNavi->loadURL("local://uictxtswf.html", datas);
        }
         break;
     }
@@ -249,14 +249,14 @@ void GUI_ContextMenu::destroy()
     mNavi = NULL; 
 }
 
-void GUI_ContextMenu::onAvatarSelect(const NaviData& naviData)
+void GUI_ContextMenu::onAvatarSelect(Navi* caller, const Awesomium::JSArguments& args)
 {
     Navigator::getSingletonPtr()->contextItemSelected(naviData["item"].str());
 }
 
 
 // usual function on page loaded
-void GUI_ContextMenu::onPanelLoaded(const NaviData& naviData)
+void GUI_ContextMenu::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
   mNavi->show();  
 
@@ -264,7 +264,7 @@ void GUI_ContextMenu::onPanelLoaded(const NaviData& naviData)
 
 
 // usual function on page loaded
-void GUI_ContextMenu::onWWWPanelLoaded(const NaviData& naviData)
+void GUI_ContextMenu::onWWWPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtNaviName = naviData["ctxtNaviName"].str();
 
@@ -290,7 +290,7 @@ void GUI_ContextMenu::onWWWPanelLoaded(const NaviData& naviData)
 
 
 // usual function on page loaded
-void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
+void GUI_ContextMenu::onWWWCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtNaviName = naviData["ctxtNaviName"].str();
     Navi * pNaviDest = NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName);
@@ -299,7 +299,7 @@ void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
     if (cmd == "go") 
     {
        String url = mNavi->evaluateJS( "$('inputUrl').value");
-       pNaviDest->navigateTo( url);
+       pNaviDest->loadURL( url);
     }
     else if (cmd == "back") 
     {
@@ -320,7 +320,7 @@ void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
     }
     else if (cmd == "home") 
     {
-        pNaviDest->navigateTo( "http://www.solipsis.org" );
+        pNaviDest->loadURL( "http://www.solipsis.org" );
     }
     else if (cmd == "maximize") 
     {
@@ -341,7 +341,7 @@ String extTextSrcExHandleEvt(const String & extTextSrcExPlugin, const String & m
 }
 
 // SWF callbacks 
-void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
+void GUI_ContextMenu::onSWFPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtSWFName = naviData["ctxtSWFName"].str(); 
 
@@ -358,7 +358,7 @@ void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
     mNavi->show(); 
 }
 
-void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
+void GUI_ContextMenu::onSWFCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtSWFName = naviData["ctxtSWFName"].str();
     String cmd = naviData["cmd"].str();
@@ -381,7 +381,7 @@ void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
 }
 
 // VLC callbacks 
-void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
+void GUI_ContextMenu::onVLCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtVLCName = naviData["ctxtVLCName"].str(); 
 
@@ -399,7 +399,7 @@ void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
 
 }
 
-void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
+void GUI_ContextMenu::onVLCCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     String ctxtVLCName = naviData["ctxtVLCName"].str();
     String cmd = naviData["cmd"].str();
@@ -422,12 +422,12 @@ void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
 }
 
 // VNC callbacks 
-void GUI_ContextMenu::onVNCPanelLoaded(const NaviData& naviData)
+void GUI_ContextMenu::onVNCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     
 }
 
-void GUI_ContextMenu::onVNCCommand(const NaviData& naviData)
+void GUI_ContextMenu::onVNCCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
 
 }

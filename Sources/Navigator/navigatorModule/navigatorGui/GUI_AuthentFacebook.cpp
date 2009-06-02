@@ -117,7 +117,7 @@ void GUI_AuthentFacebook::onError()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onLoaded(const Awesomium::JSArguments& args)
+void GUI_AuthentFacebook::onLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
 
@@ -131,7 +131,7 @@ void GUI_AuthentFacebook::onLoaded(const Awesomium::JSArguments& args)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onOk(const NaviData& naviData)
+void GUI_AuthentFacebook::onOk(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk()");
 
@@ -158,7 +158,7 @@ void GUI_AuthentFacebook::onOk(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onCancel(const NaviData& naviData)
+void GUI_AuthentFacebook::onCancel(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookCancel()");
 

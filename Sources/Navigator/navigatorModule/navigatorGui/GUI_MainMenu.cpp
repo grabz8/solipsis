@@ -107,7 +107,7 @@ bool GUI_MainMenu::show()
 
 #ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
-void GUI_MainMenu::debugCommand(const NaviData& naviData)
+void GUI_MainMenu::debugCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
 

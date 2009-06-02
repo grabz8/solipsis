@@ -61,41 +61,41 @@ namespace Solipsis
         Navigator * mNavigator;
 
         // Modeler fake right click callbacks
-        void onPageLoaded(const Awesomium::JSArguments& args);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
 
        // Modeler page callbacks
-        void modelerMainFileImport(const Awesomium::JSArguments& args);
-        void modelerMainFileSave(const Awesomium::JSArguments& args);
-        void modelerMainFileExit(const Awesomium::JSArguments& args);
-        void modelerMainFileSaveAs(const Awesomium::JSArguments& args);
+        void modelerMainFileImport(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainFileSave(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainFileExit(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainFileSaveAs(Navi* caller, const Awesomium::JSArguments& args);
 
         // Scene From Text Modeler Panel
-        void modelerMainCreateTerrain(const Awesomium::JSArguments& args);
+        void modelerMainCreateTerrain(Navi* caller, const Awesomium::JSArguments& args);
 
         // Modeler object creation callbacks
-        void modelerMainCreatePlane(const Awesomium::JSArguments& args);
-        void modelerMainCreateBox(const Awesomium::JSArguments& args);
-        void modelerMainCreateCorner(const Awesomium::JSArguments& args);
-        void modelerMainCreatePyramid(const Awesomium::JSArguments& args);
-        void modelerMainCreatePrism(const Awesomium::JSArguments& args);
-        void modelerMainCreateCylinder(const Awesomium::JSArguments& args);
-        void modelerMainCreateHalfCylinder(const Awesomium::JSArguments& args);
-        void modelerMainCreateCone(const Awesomium::JSArguments& args);
-        void modelerMainCreateHalfCone(const Awesomium::JSArguments& args);
-        void modelerMainCreateSphere(const Awesomium::JSArguments& args);
-        void modelerMainCreateHalfSphere(const Awesomium::JSArguments& args);
-        void modelerMainCreateTorus(const Awesomium::JSArguments& args);
-        void modelerMainCreateTube(const Awesomium::JSArguments& args);
-        void modelerMainCreateRing(const Awesomium::JSArguments& args);
-        void modelerMainCreateSceneFromText(const Awesomium::JSArguments& args);
-        void modelerActionDelete(const Awesomium::JSArguments& args);
-        void modelerActionMove(const Awesomium::JSArguments& args);
-        void modelerActionRotate(const Awesomium::JSArguments& args);
-        void modelerActionScale(const Awesomium::JSArguments& args);
-        void modelerActionLink(const Awesomium::JSArguments& args);
-        void modelerActionProperties(const Awesomium::JSArguments& args);
-        void modelerActionUndo(const Awesomium::JSArguments& args);
-        void modelerActionSave(const Awesomium::JSArguments& args);
+        void modelerMainCreatePlane(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateBox(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateCorner(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreatePyramid(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreatePrism(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateCylinder(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateHalfCylinder(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateCone(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateHalfCone(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateSphere(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateHalfSphere(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateTorus(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateTube(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateRing(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerMainCreateSceneFromText(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionDelete(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionMove(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionRotate(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionScale(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionLink(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionProperties(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionUndo(Navi* caller, const Awesomium::JSArguments& args);
+        void modelerActionSave(Navi* caller, const Awesomium::JSArguments& args);
 
     };
 } // namespace Solipsis

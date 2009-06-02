@@ -73,7 +73,7 @@ bool GUI_AuthentWorldServer::show(const std::string& pwd)
         mNavi->bind("ok", NaviDelegate(this, &GUI_AuthentWorldServer::onOk));
         // Add 1 event listener to detect network errors
         mNavi->addEventListener(this);
-        mNavi->navigateTo(uiauthentwsUrl);
+        mNavi->loadURL(uiauthentwsUrl);
         m_curState = NSCreated;
     }
 
@@ -99,7 +99,7 @@ bool GUI_AuthentWorldServer::show(const std::string& pwd)
 // }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentWorldServer::onOk(const NaviData& naviData)
+void GUI_AuthentWorldServer::onOk(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk()");
 

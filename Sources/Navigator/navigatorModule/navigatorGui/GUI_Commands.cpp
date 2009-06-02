@@ -75,12 +75,12 @@ bool GUI_Commands::show()
     return true;
 }
 
-void GUI_Commands::onPageLoaded(const NaviData& naviData)
+void GUI_Commands::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->show();
 }
 
-void GUI_Commands::onPageClosed(const NaviData& naviData)
+void GUI_Commands::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->hide();
 }

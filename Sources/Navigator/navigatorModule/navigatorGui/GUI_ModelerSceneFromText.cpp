@@ -97,7 +97,7 @@ bool GUI_ModelerSceneFromText::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onPageLoaded(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextPageLoaded()");
 
@@ -107,7 +107,7 @@ void GUI_ModelerSceneFromText::onPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onExec(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onExec(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextExec()");
 
@@ -140,7 +140,7 @@ void GUI_ModelerSceneFromText::onExec(const NaviData& naviData)
     }
 }
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onCancelled(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onCancelled(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextSetUpCancelled()");
     destroy();

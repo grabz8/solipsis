@@ -53,13 +53,13 @@ namespace Solipsis
 
         void applyLoginDatas(); 
 
-        void onPanelLoaded(const Awesomium::JSArguments& args);
+        void onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
 
 
-        void onChooseWorld(const Awesomium::JSArguments& args);
-        void onConnect(const Awesomium::JSArguments& args);
-        void onOptions(const Awesomium::JSArguments& args);
-        void onQuit(const Awesomium::JSArguments& args);
+        void onChooseWorld(Navi* caller, const Awesomium::JSArguments& args);
+        void onConnect(Navi* caller, const Awesomium::JSArguments& args);
+        void onOptions(Navi* caller, const Awesomium::JSArguments& args);
+        void onQuit(Navi* caller, const Awesomium::JSArguments& args);
 
         static GUI_Login * stGUI_Login;
         Navigator * mNavigator;

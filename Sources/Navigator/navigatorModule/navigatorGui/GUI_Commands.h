@@ -44,8 +44,8 @@ namespace Solipsis
 
     protected:
 
-        void onPageLoaded(const Awesomium::JSArguments& args);
-        void onPageClosed(const Awesomium::JSArguments& args);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onPageClosed(Navi* caller, const Awesomium::JSArguments& args);
 
         GUI_Commands();
         static GUI_Commands * stGUI_Commands;

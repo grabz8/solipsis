@@ -72,7 +72,7 @@ bool GUI_WorldsServerInfo::show()
         mNavi->bind("ok", NaviDelegate(this, &GUI_WorldsServerInfo::onOkPressed));
         // Add 1 event listener to detect network errors
         mNavi->addEventListener(this);
-        mNavi->navigateTo(uiinfowsUrl);
+        mNavi->loadURL(uiinfowsUrl);
         m_curState = NSCreated;
     }
 
@@ -84,7 +84,7 @@ bool GUI_WorldsServerInfo::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_WorldsServerInfo::onOkPressed(const NaviData& naviData)
+void GUI_WorldsServerInfo::onOkPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerInfoOk()");
 

@@ -87,17 +87,17 @@ void GUI_Chat::addText(const std::wstring& message)
     stGUI_Chat->mNavi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
 
-void GUI_Chat::onPageLoaded(const NaviData& naviData)
+void GUI_Chat::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->show();
 }
 
-void GUI_Chat::onPageClosed(const NaviData& naviData)
+void GUI_Chat::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->hide();
 }
 
-void GUI_Chat::onSendMessage(const NaviData& naviData)
+void GUI_Chat::onSendMessage(Navi* caller, const Awesomium::JSArguments& args)
 {
     // Reset input
     mNavi->evaluateJS("$('inputChat').value = ''");

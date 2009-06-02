@@ -97,7 +97,7 @@ bool GUI_TerrainModeler::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onPageLoaded(const NaviData& naviData)
+void GUI_TerrainModeler::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::modelerSceneFromTextPageLoaded()");
 
@@ -107,7 +107,7 @@ void GUI_TerrainModeler::onPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onExec(const NaviData& naviData)
+void GUI_TerrainModeler::onExec(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::onExec()");
 
@@ -126,7 +126,7 @@ void GUI_TerrainModeler::onExec(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onCancelled(const NaviData& naviData)
+void GUI_TerrainModeler::onCancelled(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::modelerSceneFromTextSetUpCancelled()");
     destroy();

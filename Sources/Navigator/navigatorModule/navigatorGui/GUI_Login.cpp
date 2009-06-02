@@ -115,7 +115,7 @@ void GUI_Login::applyLoginDatas()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Login::onPanelLoaded(const NaviData& naviData)
+void GUI_Login::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     char txt[256];
 
@@ -148,20 +148,20 @@ void GUI_Login::onPanelLoaded(const NaviData& naviData)
         mNavi->show(true);
 }
 
-void GUI_Login::onChooseWorld(const NaviData& naviData)
+void GUI_Login::onChooseWorld(Navi* caller, const Awesomium::JSArguments& args)
 {
     applyLoginDatas();
     GUI_ChooseWorld::createAndShowPanel();
 }
 
-void GUI_Login::onOptions(const NaviData& naviData)
+void GUI_Login::onOptions(Navi* caller, const Awesomium::JSArguments& args)
 {
     applyLoginDatas();
     GUI_Options::createAndShowPanel();
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Login::onConnect(const NaviData& naviData)
+void GUI_Login::onConnect(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Login::onConnect()");
 
@@ -213,7 +213,7 @@ void GUI_Login::onConnect(const NaviData& naviData)
 
 
 //-------------------------------------------------------------------------------------
-void GUI_Login::onQuit(const NaviData& naviData)
+void GUI_Login::onQuit(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavigator->quit();
 }

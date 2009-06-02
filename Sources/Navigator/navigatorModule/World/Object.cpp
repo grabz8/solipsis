@@ -126,7 +126,7 @@ bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
     if (navi->getCurrentLocation() != url)
     {
         Navigator::getSingletonPtr()->addNaviURLUpdatePending(naviName, url);
-        navi->navigateTo(url);
+        navi->loadURL(url);
     }
 
     return true;

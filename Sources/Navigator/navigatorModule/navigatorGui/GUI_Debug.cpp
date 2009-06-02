@@ -153,7 +153,7 @@ void GUI_Debug::refreshDemoVoiceTalkButtonName()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::onPageLoaded(const NaviData& naviData)
+void GUI_Debug::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
 
@@ -172,7 +172,7 @@ void GUI_Debug::onPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::onPageClosed(const NaviData& naviData)
+void GUI_Debug::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageClosed()");
 
@@ -180,7 +180,7 @@ void GUI_Debug::onPageClosed(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::refreshTree(const NaviData& naviData)
+void GUI_Debug::refreshTree(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshTree()");
 
@@ -204,7 +204,7 @@ void GUI_Debug::refreshTree(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::debugCommand(const NaviData& naviData)
+void GUI_Debug::debugCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
 
@@ -220,7 +220,7 @@ void GUI_Debug::debugCommand(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::navCommand(const NaviData& naviData)
+void GUI_Debug::navCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::navCommand()");
 
@@ -241,7 +241,7 @@ void GUI_Debug::navCommand(const NaviData& naviData)
     else if (cmd == "go")
     {
         std::string url = mNavi->evaluateJS("$('inputUrl').value");
-        naviDemoNavi2->navigateTo(url);
+        naviDemoNavi2->loadURL(url);
     }
 #endif
 }

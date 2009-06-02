@@ -58,7 +58,7 @@ namespace Solipsis
         void destroyPreviousNavi();
 
         // usual function on page loaded
-        void onPanelLoaded(const Awesomium::JSArguments&);
+        void onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
 
         void fitOnScreen(int & w, int & h);
 

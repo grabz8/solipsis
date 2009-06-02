@@ -47,7 +47,7 @@ namespace Solipsis
         virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
 
 #ifdef UIDEBUG       
-        void GUI_MainMenu::debugCommand(const Awesomium::JSArguments& args);
+        void GUI_MainMenu::debugCommand(Navi* caller, const Awesomium::JSArguments& args);
 #endif
 
     protected:

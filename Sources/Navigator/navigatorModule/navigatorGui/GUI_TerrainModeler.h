@@ -44,9 +44,9 @@ namespace Solipsis
         virtual bool show();
 
         // Modeler Scene From Text Setup properties page callbacks
-        void onPageLoaded(const Awesomium::JSArguments& args);
-        void onExec(const Awesomium::JSArguments& args);	
-        void onCancelled(const Awesomium::JSArguments& args);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onExec(Navi* caller, const Awesomium::JSArguments& args);	
+        void onCancelled(Navi* caller, const Awesomium::JSArguments& args);
 
     protected:
         GUI_TerrainModeler();
