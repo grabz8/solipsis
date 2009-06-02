@@ -276,7 +276,7 @@ mNavi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
 void GUI_Avatar::avatarMainSelected(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainSelected()");
-    std::string item( naviData["item"].str() );
+    std::string item( args.at(0).toString() );
 
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     if( avatar->getCharacter()->getName() != item )

@@ -345,3 +345,48 @@ std::wstring NaviUtilities::decodeURIComponent(std::string strToDecode)
 
     return result;
 }
+
+
+
+std::string NaviUtilities::encodeURIComponent(std::wstring strToEncode)
+{
+    std::string result;
+    std::vector<int> temp;
+    // BEGIN GREG updates for VC7
+    //	std::back_insert_iterator<std::vector<int>> bI(temp);
+    typedef std::vector<int> t_int_vector;
+    std::back_insert_iterator<t_int_vector> bI(temp);
+    // END GREG updates for VC7
+
+    for(std::wstring::iterator i = strToEncode.begin(); i != strToEncode.end(); ++i)
+    {
+        if(!(('a' <= *i && 'z' >= *i) || ('A' <= *i && 'Z' >= *i) ||
+            ('0' <= *i && '9' >= *i) || (*i == '-') || (*i == '_') ||
+            (*i == '.') || (*i == '!') || (*i == '~') || (*i == '*') ||
+            (*i == '\'') || (*i == '(') || (*i == ')') || (*i == '+') ||
+            (*i == ';') || (*i == '/') || (*i == '?') || (*i == ':') ||
+            (*i == '@') || (*i == '&') || (*i == '=') || (*i == '$') ||
+            (*i == ',') ))
+        {
+            try { utf8::append((int)*i, bI); } catch(...) {}
+
+            if(temp.size())
+            {
+                for(std::vector<int>::iterator iter = temp.begin(); iter != temp.end(); ++iter)
+                {
+                    char buffer[32];
+                    // BEGIN GREG updates for VC7
+                    //					sprintf_s(buffer, 32, "%%%02lX", *iter);
+                    _snprintf(buffer, 32, "%%%02lX", *iter);
+                    // END GREG updates for VC7
+                    result += buffer;
+                }
+                temp.clear();
+            }
+        }
+        else
+            result += (char)*i;
+    }
+
+    return result;
+}

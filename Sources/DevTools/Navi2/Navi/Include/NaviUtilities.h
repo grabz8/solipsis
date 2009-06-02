@@ -323,6 +323,8 @@ namespace NaviLibrary
         *			a standard string.
         */
         std::wstring _NaviExport decodeURIComponent(std::string strToDecode);
+        std::string _NaviExport encodeURIComponent(std::wstring strToEncode);
+
 	}
 }
 

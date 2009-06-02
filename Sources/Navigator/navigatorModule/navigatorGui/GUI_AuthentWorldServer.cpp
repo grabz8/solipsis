@@ -103,8 +103,8 @@ void GUI_AuthentWorldServer::onOk(Navi* caller, const Awesomium::JSArguments& ar
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk()");
 
-    std::string result = naviData["result"].str();
-    NodeId nodeId = naviData["nodeId"].str();
+    std::string result = args.at(0).toString();
+    NodeId nodeId = args.at(1).toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() result=%s, nodeId=%s", result.c_str(), nodeId.c_str());
     if (nodeId.empty())
     {

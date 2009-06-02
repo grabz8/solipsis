@@ -161,7 +161,7 @@ void GUI_Modeler::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::naviToShowPageLoaded()");
 
     std::string naviName;
-    naviName = naviData["naviName"].str();
+    naviName = args[0].toString();
 
     // Show Navi UI
     if (m_curState == NSCreated)

@@ -141,22 +141,25 @@ void GUI_Panel::destroy()
 }
 
 void GUI_Panel::createNavi(const std::string &homepage, const NaviPosition &naviPosition,
-                unsigned short width, unsigned short height, unsigned short zOrder)
+                unsigned short width, unsigned short height)
 {
     mCurrentNaviCreationDate = 0;
 
-    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, homepage, naviPosition,
-        width, height, zOrder);
+    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, width, height, naviPosition);
+
+    mNavi->loadURL(homepage);
 }
 
 
 void GUI_Panel::createNavi(const std::string &homepage, int x, int y,
-                           unsigned short width, unsigned short height, unsigned short zOrder)
+                           unsigned short width, unsigned short height)
 {
     mCurrentNaviCreationDate = 0;
 
-    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, homepage, NaviPosition(x, y),
-        width, height, zOrder);
+    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName,  width, height, NaviPosition(x, y));
+
+    mNavi->loadURL(homepage);
+
 }
 
 

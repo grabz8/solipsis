@@ -81,8 +81,10 @@ void GUI_Chat::addText(const std::wstring& message)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
+    Awesomium::JSArguments args;
+    args[0] = Awesomium::JSValue(StringHelpers::convertWStringToString(message) );
     // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
-    stGUI_Chat->mNavi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
+    stGUI_Chat->mNavi->evaluateJS("$('textChat').value += ?", args);
     stGUI_Chat->mNavi->evaluateJS("$('textChat').value += '\\n'");
     stGUI_Chat->mNavi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
 }
@@ -103,7 +105,7 @@ void GUI_Chat::onSendMessage(Navi* caller, const Awesomium::JSArguments& args)
     mNavi->evaluateJS("$('inputChat').value = ''");
     //           -- Send the message
     // navigator:sendMessage(param["msg"])
-    Navigator::getSingletonPtr()->sendMessage(naviData["msg"].str());
+    Navigator::getSingletonPtr()->sendMessage(args[0].toString());
 }
 
 

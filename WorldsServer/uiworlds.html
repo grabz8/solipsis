@@ -22,30 +22,17 @@
 				
 				Client.pageLoaded('uiworlds'); 
             }
-            function okPressed (buttonName)
+            function okPressed ()
             {
                 // Eg. <option value='127.0.0.1:8660?voipServer=127.0.0.1:30000'>Children Island</option>
-                var naviData = new NaviData(buttonName);
-                if (buttonName == 'ok')
-                {
-                    var worldURL = document.getElementById("selectWorlds").value;
-                    var addr;
-                    addr = getURLWoParams(worldURL);
-                    if (addr != "")
-                        naviData.add({world:addr});
-                    addr = getParamIntoURL(worldURL, "voipServer");
-                    if (addr != "")
-                        naviData.add({voipServer:addr});
-                    addr = getParamIntoURL(worldURL, "vncServer");
-                    if (addr != "")
-                        naviData.add({vncServer:addr});
-                    addr = getParamIntoURL(worldURL, "vlcServer");
-                    if (addr != "")
-                        naviData.add({vlcServer:addr});
-                }
-				
-				
-                Client.ok();
+
+                var worldURL = document.getElementById("selectWorlds").value;
+                var addr = getURLWoParams(worldURL);
+                var voipServer = getParamIntoURL(worldURL, "voipServer");
+                var vncServer = getParamIntoURL(worldURL, "vncServer"); 
+                var vlcServer = getParamIntoURL(worldURL, "vlcServer");
+    
+                Client.ok(addr, voipServer, vncServer, vlcServer);
             }
         </script>
         <style type="text/css">

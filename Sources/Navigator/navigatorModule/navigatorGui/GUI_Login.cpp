@@ -100,13 +100,13 @@ void GUI_Login::applyLoginDatas()
     if (mNavi == 0) 
         return;
 
-    std::string login = mNavi->evaluateJS("$('inputLogin').value");
-    std::string pwd = mNavi->evaluateJS("$('inputPwd').value");
+    std::string login = mNavi->evaluateJSWithResult("$('inputLogin').value").get().toString();
+    std::string pwd = mNavi->evaluateJSWithResult("$('inputPwd').value").get().toString();
     Navigator* pNavigator = Navigator::getSingletonPtr();
     if ((login != pNavigator->getLogin()) || (pwd != pNavigator->getPwd()))
         pNavigator->setNodeId("");
 
-    bool rememberPassword = mNavi->evaluateJS("$('savePassWordCB').checked") == "true";
+    bool rememberPassword = mNavi->evaluateJSWithResult("$('savePassWordCB').checked").get().toString() == "true";
 
     pNavigator->setLogin(login);
     pNavigator->setPwd(pwd, rememberPassword);

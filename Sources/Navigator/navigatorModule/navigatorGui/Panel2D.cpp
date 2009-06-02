@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Panel2D.h"
 #include "Panel2DMgr.h"
-#include <NaviMouse.h>
+//#include <NaviMouse.h>
 
 using namespace Ogre;
 
@@ -453,7 +453,7 @@ void Panel2D::updateButtons()
 //-------------------------------------------------------------------------------------
 void Panel2D::updateMouseCursor()
 {
-    NaviLibrary::NaviMouse *naviMouse = NaviLibrary::NaviMouse::GetPointer();
+/*    NaviLibrary::NaviMouse *naviMouse = NaviLibrary::NaviMouse::GetPointer();
     if (naviMouse == 0)
         return;
 
@@ -478,7 +478,7 @@ void Panel2D::updateMouseCursor()
     default:
         naviMouse->activateCursor("default");
         break;
-    }
+    }*/
 }
 
 //-------------------------------------------------------------------------------------

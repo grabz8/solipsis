@@ -111,7 +111,7 @@ void GUI_ModelerSceneFromText::onExec(Navi* caller, const Awesomium::JSArguments
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextExec()");
 
-    std::string value = mNavi->evaluateJS("document.getElementById('scenedescription').value");
+    std::string value = mNavi->evaluateJSWithResult("document.getElementById('scenedescription').value").get().toString();
 
     //modelerSceneSetUpUnload(); // no unloading of the window unless the user explicitely closes it.
     std::string errMsg( "" );

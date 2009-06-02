@@ -70,8 +70,8 @@
                 // Everything within this block will execute when the Document-Object-Model of the page is ready
                 window.addEvent('domready', function(){
                     // Initialize local variables from Page Navi Data
-                    var itemWidth = $PND.get('itemWidth').toInt(), itemHeight = $PND.get('itemHeight').toInt();
-                    var items = $PND.get('items').split('#');
+                    var itemWidth = Client.itemWidth.toInt(), itemHeight = Client.itemHeight.toInt();
+                    var items = Client.items.split('#');
 
                     // Build the menu
                     var pieMenu = new Element('ul');

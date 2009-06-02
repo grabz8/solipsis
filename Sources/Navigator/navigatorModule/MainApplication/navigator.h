@@ -385,9 +385,9 @@ protected:
     virtual void onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction);
 
     /** See NaviEventListener. */
-    virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args);
+    virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args) {}
     virtual void onLocationChange(Navi *caller, const std::string &url);
-    virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
+    virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
 
 };
 

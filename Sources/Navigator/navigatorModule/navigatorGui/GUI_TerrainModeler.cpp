@@ -113,11 +113,11 @@ void GUI_TerrainModeler::onExec(Navi* caller, const Awesomium::JSArguments& args
 
     int nbOctaves = 5;
 
-    std::string noiseScale = mNavi->evaluateJS("noiseScale.getValue()");	
+    std::string noiseScale = mNavi->evaluateJSWithResult("noiseScale.getValue()").get().toString();
     std::string msg = "noiseScale="+noiseScale;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
 
-    std::string granularity = mNavi->evaluateJS("granularity.getValue()");	
+    std::string granularity = mNavi->evaluateJSWithResult("granularity.getValue()").get().toString();
     msg = "granularity="+granularity;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
 

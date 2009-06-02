@@ -7365,7 +7365,7 @@ if(window.document.URL.test(/\?(.*)\?(.*)/g))
 	data.split('&').each(function(qs){ $PND.addQueryString(qs); });
 }
 	
-window.addEvent('domready', function(){	$ND('ready').send(); });
+window.addEvent('domready', function(){	Client.ready(); });
 
 /**
 * Native combo-boxes (<select>) refuse to work properly in our context. This NaviWidget class essentially emulates native combo-boxes using MooTools/CSS/HTML.

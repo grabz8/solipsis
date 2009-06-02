@@ -121,10 +121,10 @@ void GUI_Debug::refreshUrl()
     sprintf(txt, "$('inputUrl').value = '%s'", naviDemoNavi2->getCurrentLocation().c_str());
     stGUI_Debug->mNavi->evaluateJS(txt);
     // Activate/Deactivate Back/Forward buttons
-    sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
-    stGUI_Debug->mNavi->evaluateJS(txt);
-    sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
-    stGUI_Debug->mNavi->evaluateJS(txt);
+//    sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
+//    stGUI_Debug->mNavi->evaluateJS(txt);
+//    sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
+//    stGUI_Debug->mNavi->evaluateJS(txt);
 #endif
 }
 
@@ -161,7 +161,7 @@ void GUI_Debug::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
     refreshUrl();
 
     // Refresh tree datas
-    refreshTree(naviData);
+    refreshTree(caller, args);
 
     // Refresh voice engine state
     refreshDemoVoiceTalkButtonName();
@@ -211,8 +211,8 @@ void GUI_Debug::debugCommand(Navi* caller, const Awesomium::JSArguments& args)
     // Get message to send
     std::string cmd;
     std::string params;
-    cmd = naviData["cmd"].str();
-    params = naviData["params"].str();
+    cmd = args[0].toString();
+    params = args[1].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
 
     // Push debug command
@@ -226,21 +226,21 @@ void GUI_Debug::navCommand(Navi* caller, const Awesomium::JSArguments& args)
 
     // Get command
     std::string cmd;
-    cmd = naviData["cmd"].str();
+    cmd = args[0].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s", cmd.c_str());
 
 #ifdef DEMO_NAVI2
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
-    if (cmd == "back")
+/*    if (cmd == "back")
         naviDemoNavi2->navigateBack();
     else if (cmd == "forward")
         naviDemoNavi2->navigateForward();
     else if (cmd == "stop")
-        naviDemoNavi2->navigateStop();
+        naviDemoNavi2->navigateStop();*/
     else if (cmd == "go")
     {
-        std::string url = mNavi->evaluateJS("$('inputUrl').value");
+        std::string url = mNavi->evaluateJSWithResult("$('inputUrl').value").get().toString();
         naviDemoNavi2->loadURL(url);
     }
 #endif

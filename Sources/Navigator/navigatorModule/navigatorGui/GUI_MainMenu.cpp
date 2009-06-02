@@ -114,8 +114,8 @@ void GUI_MainMenu::debugCommand(Navi* caller, const Awesomium::JSArguments& args
     // Get message to send
     std::string cmd;
     std::string params;
-    cmd = naviData["cmd"].str();
-    params = naviData["params"].str();
+    cmd = args[0].toString();
+    params = args[1].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
 
     // Push debug command
@@ -123,14 +123,14 @@ void GUI_MainMenu::debugCommand(Navi* caller, const Awesomium::JSArguments& args
 }
 #endif
 
-virtual void GUI_MainMenu::onCallback(const std::string& name, const Awesomium::JSArguments& args)
+void GUI_MainMenu::onCallback(const std::string& name, const Awesomium::JSArguments& args)
 {
     m_curState = NSCreated;
     // OutputDebugTrace("GUI_MainMenu::onNaviDataEvent name %s\n" , naviData.getName().c_str());
     if (name == "menuClick" && args.size())
     {
         //   OutputDebugTrace("GUI_MainMenu::onNaviDataEvent data %s\n" , naviData["item"].str().c_str());
-        onClick(args[0].str());
+        onClick(args[0].toString());
     }
 }
 

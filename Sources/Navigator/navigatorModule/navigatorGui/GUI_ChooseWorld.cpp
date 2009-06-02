@@ -103,27 +103,27 @@ void GUI_ChooseWorld::onOkPressed(Navi* caller, const Awesomium::JSArguments& ar
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
 
-    std::string world = naviData["world"].str();
+    std::string world = args[0].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
     std::string worldHost, worldPort;
     CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
     mNavigator->setWorldAddress(world);
 
     // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
-    if (naviData.exists("voipServer"))
+    std::string voipServer = args[1].toString();
+    if (voipServer.size())
     {
-        std::string voipServer = naviData["voipServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
         mNavigator->setVoIPServerAddress(voipServer);
     }
-    if (naviData.exists("vncServer"))
+    std::string vncServer = args[2].toString();
+    if (vncServer.size())
     {
-        std::string vncServer = naviData["vncServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
     }
-    if (naviData.exists("vlcServer"))
+    std::string vlcServer = args[2].toString();
+    if (vlcServer.size())
     {
-        std::string vlcServer = naviData["vlcServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
     }
 

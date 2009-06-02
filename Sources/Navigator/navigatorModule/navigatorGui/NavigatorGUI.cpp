@@ -47,7 +47,7 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     m_pCurrentPanel(NULL)
 {
     // Initializing Navi
-    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
+    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr()->getViewport(0), "NaviLocal");
     mNaviMgr->setZOrderMinMax(200, 299);
 
     // Initializing 2D Panels manager
@@ -87,14 +87,14 @@ NavigatorGUI::~NavigatorGUI()
 bool NavigatorGUI::startup()
 {
     // Startup NaviMouse and create the cursors
-    NaviMouse* mouse = new NaviMouse();
-    NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 1, 0);
-	defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
-	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
-	defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");
-    mouse->setDefaultCursor("default_cursor");
-	NaviCursor* moveCursor = mouse->createCursor("move", 19, 19);
-	moveCursor->addFrame(0, "cursorMove.png");
+//    NaviMouse* mouse = new NaviMouse();
+//    NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 1, 0);
+// 	defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
+// 	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
+// 	defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");
+//     mouse->setDefaultCursor("default_cursor");
+// 	NaviCursor* moveCursor = mouse->createCursor("move", 19, 19);
+// 	moveCursor->addFrame(0, "cursorMove.png");
 
     mPanel2DMgr->initializeMouseCursors();
 
@@ -143,16 +143,17 @@ void NavigatorGUI::windowResized(RenderWindow* rw)
 //-------------------------------------------------------------------------------------
 void NavigatorGUI::SetMouseVisibility(bool visible)
 {
-    if (visible)
-        NaviLibrary::NaviMouse::Get().show();
-    else
-        NaviLibrary::NaviMouse::Get().hide();
+//     if (visible)
+//         NaviLibrary::NaviMouse::Get().show();
+//     else
+//         NaviLibrary::NaviMouse::Get().hide();
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isMouseVisible()
 {
-    return NaviLibrary::NaviMouse::Get().isVisible();
+//     return NaviLibrary::NaviMouse::Get().isVisible();
+    return true;
 }
 
 //-------------------------------------------------------------------------------------
