@@ -51,6 +51,8 @@ mMaterial(material), mUseAddedColour(false), mAddedColour(ColourValue(0.5,0.5,0.
 	}
 
 #if 1 // GILLES
+    //mPass->setAmbient( .5, .5, .5 );
+
     // mipmap level
     //mTextureUnitState->setTextureMipmapBias(0.);
     // set the filter anisotropic

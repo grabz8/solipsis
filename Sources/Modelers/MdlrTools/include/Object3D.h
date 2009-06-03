@@ -123,6 +123,9 @@ public:
     /// Save an object3D textures attributes 
 	/// \param pathToSave = The path to the save temporary files
     int		saveTextures(Ogre::String &pathToSave,MyZipArchive* zz);
+    /// Save an object3D mesh attribute
+	/// \param pathToSave = The path to the save temporary mesh file
+    int		saveMeshRef(Ogre::String &pathToSave,MyZipArchive* zz);
 
 	/// brief ...
 	void setEntityUID(const EntityUID& entityUID);

@@ -72,7 +72,7 @@ Object3D * Object3D::createObject3D(Type type, const EntityUID& entityUID, const
         return new Object3DRing(entityUID, name, node);
     default:
     case OTHER:
-        return NULL;
+        return new Object3DOther(entityUID, name, node);
     }
 }
 
@@ -2493,6 +2493,35 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
         }
     }
     */
+
+    return 0;
+}
+
+
+int		Object3D::saveMeshRef(Ogre::String &pathToSave,MyZipArchive* zz)
+{
+    if (getTypeAsInt() != Object3D::OTHER)
+        return 1;
+    
+    if (!mMeshImport.empty())
+    {
+        // go to the root directory
+        //_chdir(mExecPath.c_str());
+
+        Path source(mMeshImport);
+        std::string tmpDir( "solTmpTexture\\" + source.getLastFileName() );
+
+        // copy the source file to the temp directory
+        if (!zz->isFilePresent( source.getLastFileName() ))
+        {
+            //SOLcopyFile(source.getFormatedPath().c_str(), tmpDir.c_str());
+            zz->writeFile( source.getFormatedPath() );
+
+            // copy the skeleton if it exsists
+            std::string skeleton( source.getLastFileName(false) );
+            skeleton += ".skeleton";
+        }
+    }
 
     return 0;
 }

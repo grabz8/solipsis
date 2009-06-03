@@ -68,7 +68,7 @@ public:
 	static bool FolderExist(std::string strPath);
 	static bool convert3dsToMesh(const Ogre::String & sz3dsFileName,
 						const Ogre::String & szMeshPrefix,
-						bool bCreateSkeleton = true,
+						bool bCreateSkeleton = false,
 						bool bTextureVerticalFlip = false);
 	static Ogre::Entity* createEntityFrom3ds(const Ogre::String & entityName, 
 												const Ogre::String & sz3dsFileName,

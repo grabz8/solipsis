@@ -89,7 +89,8 @@ public:
         const EntityUID& entityUID, 
         const String& name, 
         Vector3 &player_pos, Quaternion &orientation, 
-        bool bSelectIt);
+        bool bSelectIt,
+        const String& meshName = "");
 
 // 	/ Create a plane 
 // 		bool createPlane(const EntityUID& entityUID, const String& name, Vector3 &player_pos, Quaternion &orientation);

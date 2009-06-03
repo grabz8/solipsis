@@ -1923,7 +1923,8 @@ bool Navigator::mdlrXMLImport()
         dep.x = x;
 
         EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
-        return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep );
+        //return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep );
+        return mModeler->XMLImport(entityUID, entityUID, "", mUserAvatar->getSceneNode()->getPosition() + dep, mUserAvatar->getSceneNode()->getOrientation() );
     }
 
     return false;
