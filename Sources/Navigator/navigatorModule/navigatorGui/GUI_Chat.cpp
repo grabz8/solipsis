@@ -58,7 +58,8 @@ bool GUI_Chat::show()
     // Lua
     if (m_curState == NSNotCreated)
     {
-        createNavi("local://uichat.html", BottomLeft, 512, 128);
+        createNavi( BottomLeft, 512, 128);
+        mNavi->loadFile("uichat.html");
 
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->hide();

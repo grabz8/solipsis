@@ -47,51 +47,9 @@ GUI_Panel::~GUI_Panel()
 
 bool GUI_Panel::show()
 {
-    if (!mNavi || m_curState  == GUI_Panel::NSNotCreated)
-        switchLuaNavi(true);
-    else
-        mNavi->show(true);
+    mNavi->show(true);
 
     return true;
-}
-
-//-------------------------------------------------------------------------------------
-void GUI_Panel::switchLuaNavi(bool createDestroy)
-{
-    if (m_curState == GUI_Panel::NSNotCreated)
-    {
-        // Create Navi panel
-        // Lua
-        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
-        {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mPanelName.c_str());
-            return;
-        }
-
-        m_curState = NSCreated;
-        // the navi panel
-        mNavi = NavigatorGUI::getNavi(mPanelName);
-    }
-    else
-    {
-        if (!mNavi->getVisibility())
-        {
-            mNavi->show(true);
-        }
-        else
-        {
-            if (!createDestroy)
-            {
-                // call virtual fct hide
-               this->hide();
-            }
-            else
-            {
-                // call virtual fct destroy
-                destroy();
-            }
-        }
-    }
 }
 
 
@@ -140,28 +98,13 @@ void GUI_Panel::destroy()
     }
 }
 
-void GUI_Panel::createNavi(const std::string &homepage, const NaviPosition &naviPosition,
+void GUI_Panel::createNavi(const NaviPosition &naviPosition,
                 unsigned short width, unsigned short height)
 {
     mCurrentNaviCreationDate = 0;
 
     mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, width, height, naviPosition);
-
-    mNavi->loadURL(homepage);
 }
-
-
-void GUI_Panel::createNavi(const std::string &homepage, int x, int y,
-                           unsigned short width, unsigned short height)
-{
-    mCurrentNaviCreationDate = 0;
-
-    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName,  width, height, NaviPosition(x, y));
-
-    mNavi->loadURL(homepage);
-
-}
-
 
 //-------------------------------------------------------------------------------------
 void GUI_Panel::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)

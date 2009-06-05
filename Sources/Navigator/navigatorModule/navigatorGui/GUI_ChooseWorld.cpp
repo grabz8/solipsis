@@ -75,11 +75,11 @@ bool GUI_ChooseWorld::show()
         // Add the local world ?
         if (!mNavigator->getLocalWorldAddress().empty())
             uiworldsUrl += "&localWorld=" + mNavigator->getLocalWorldAddress();
-        createNavi( "", NaviPosition(Center), 256, 256);
-        
+        createNavi( Center, 256, 256);
+
         mNavi->setMovable(false);
         mNavi->hide();
-        mNavi->setOpacity(0.75f);
+        mNavi->setOpacity(0.75f); 
 
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
         mNavi->bind("ok", NaviDelegate(this, &GUI_ChooseWorld::onOkPressed));

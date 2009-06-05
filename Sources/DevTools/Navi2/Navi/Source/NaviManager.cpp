@@ -387,7 +387,7 @@ bool NaviManager::injectMouseUp(int buttonID)
 
 // BEGIN GREG : adapted by TOF
     //	if(buttonID == LeftMouseButton && focusedNavi)
-    if(buttonID == LeftMouseButton && !focusedNavi->isMaterialOnly())
+    if(buttonID == LeftMouseButton && focusedNavi && !focusedNavi->isMaterialOnly())
 // END GREG
 	{
 		if(focusedNavi)

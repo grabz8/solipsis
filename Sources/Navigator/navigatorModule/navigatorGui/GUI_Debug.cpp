@@ -82,7 +82,8 @@ bool GUI_Debug::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI debug
-        createNavi("local://uidebug.html", NaviPosition(TopRight), 300, 256);
+        createNavi(TopRight, 300, 256);
+        mNavi->loadFile("uichat.html");
         mNavi->setMovable(true);
         mNavi->setAutoUpdateOnFocus(true);
         mNavi->setMaxUPS(24);

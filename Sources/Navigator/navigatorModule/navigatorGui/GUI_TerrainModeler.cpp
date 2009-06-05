@@ -71,8 +71,8 @@ bool GUI_TerrainModeler::show()
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::show()");
 
         // Create Navi UI modeler
-        createNavi( "local://uimdlrterrain.html" , NaviPosition(TopRight), 512, 512);
-
+        createNavi(  TopRight, 512, 512);
+        mNavi->loadFile("uimdlrterrain.html");
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uimdlrterrain.png");//Eliminate the black shadow at the margin of the menu

@@ -60,9 +60,9 @@ bool GUI_About::show()
     {
         int w = 1024, h = 1024;  
         fitOnScreen(w, h);
-        createNavi("local://uiabout.html", Center, w, h);
+        createNavi(Center, w, h);
 
-        mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->loadFile("uiabout.html");
         mNavi->show();
         mNavi->setMovable(true);
         mNavi->setIgnoreBounds(true);

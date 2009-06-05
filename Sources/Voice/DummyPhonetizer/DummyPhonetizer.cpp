@@ -11,7 +11,7 @@
 #endif
 
 namespace Solipsis
-{
+{ 
 	DummyPhonetizer::DummyPhonetizer( void )
 	{
 	}

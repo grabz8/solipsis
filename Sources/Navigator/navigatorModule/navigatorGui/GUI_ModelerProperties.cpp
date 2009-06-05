@@ -101,7 +101,8 @@ bool GUI_ModelerProperties::show()
         std::string firstLocalIP = myIPAddesses.front();
 
         // Create Navi UI modeler
-        createNavi("local://uimdlrprop.html?localIP=" + firstLocalIP, NaviPosition(TopRight), 512, 512);
+        createNavi(TopRight, 512, 512);
+        mNavi->loadFile("uimdlrprop.html?localIP=" + firstLocalIP);
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uimdlrprop.png");//Eliminate the black shadow at the margin of the menu

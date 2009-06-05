@@ -64,7 +64,7 @@ bool GUI_WorldsServerInfo::show()
         // Prepare the url to the world server uiinfows.html page
         std::string uiinfowsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiinfows.html";
         uiinfowsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
-        createNavi( "", NaviPosition(Center), 256, 256);
+        createNavi( Center, 256, 256);
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setOpacity(0.75f);

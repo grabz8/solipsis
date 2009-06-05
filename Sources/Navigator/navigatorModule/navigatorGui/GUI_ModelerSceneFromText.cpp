@@ -75,7 +75,8 @@ bool GUI_ModelerSceneFromText::show()
         std::string firstLocalIP = myIPAddresses.front();
 
         // Create Navi UI modeler
-        createNavi( "local://uimdlrscenefromtext.html" /*?localIP=" + firstLocalIP*/, NaviPosition(TopRight), 512, 512);
+        createNavi(NaviPosition(TopRight), 512, 512);
+        mNavi->loadFile("uimdlrscenefromtext.html" /*?localIP=" + firstLocalIP*/);
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uimdlrscenefromtext.png");//Eliminate the black shadow at the margin of the menu

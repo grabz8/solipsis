@@ -935,13 +935,13 @@ void Navi::onBeginLoading(const std::string& url, const std::wstring& frameName,
 {
 
     loadingUrl = url;
-    statusCode = statusCode;
+    m_statusCode = statusCode;
 }
 
 void Navi::onFinishLoading()
 {
     for(std::vector<NaviEventListener*>::const_iterator nel = eventListeners.begin(); nel != eventListeners.end(); ++nel)
-        (*nel)->onNavigateComplete(this, loadingUrl,statusCode);
+        (*nel)->onNavigateComplete(this, loadingUrl,m_statusCode);
 }
 
 void Navi::onCallback(const std::string& name, const Awesomium::JSArguments& args)

@@ -67,7 +67,9 @@ bool GUI_Login::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI login
-        createNavi("local://uilogin.html", NaviPosition(Center), 400, 300);
+        createNavi(NaviPosition(Center), 400, 300);
+
+        mNavi->loadFile("uilogin.html");
 
         if (!mNavi)
         {
@@ -78,8 +80,8 @@ bool GUI_Login::show()
         mNavi->setAutoUpdateOnFocus(true);
         mNavi->setMaxUPS(24);
         mNavi->hide();
-        mNavi->setMask("uilogin.png");
-        mNavi->setOpacity(0.75f);
+     //   mNavi->setMask("uilogin.png");
+        mNavi->setOpacity(1);
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Login::onPanelLoaded));
         mNavi->bind("world", NaviDelegate(this, &GUI_Login::onChooseWorld));
         mNavi->bind("connect", NaviDelegate(this, &GUI_Login::onConnect));

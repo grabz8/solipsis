@@ -80,6 +80,11 @@ xcopy "..\..\..\Dependencies\FaceController\lib\Debug\FaceController.dll" "%dst%
 xcopy "..\..\..\Dependencies\libiconv\lib\libiconv2.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\gecode-2.2.0\bin\*.dll" "%dst%" /s /y
 
+xcopy "..\..\..\Dependencies\navi\bin\Navi_d.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\navi\bin\Awesomium_d.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\navi\bin\icudt38.dll" "%dst%" /s /y
+
+
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Debug\Plugins.cfg" "%dst%" /s /y
  if exist "%OGRE_HOME%\bin\debug\Plugins.cfg" xcopy "%OGRE_HOME%\bin\debug\Plugins.cfg" "%dst%" /s /y

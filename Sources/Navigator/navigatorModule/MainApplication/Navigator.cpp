@@ -552,7 +552,7 @@ void Navigator::demoNavi1()
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
     NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*txtEnt),  512, 512);
-    txtNavi->loadURL("local://lgpl-3.0.txt");
+    txtNavi->loadURL("lgpl-3.0.txt");
 
     txtNavi->show(true);
     txtNavi->setMaxUPS(8);

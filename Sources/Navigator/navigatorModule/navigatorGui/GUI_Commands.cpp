@@ -58,7 +58,8 @@ bool GUI_Commands::show()
     // Lua
     if (m_curState == NSNotCreated)
     {  
-        createNavi("local://uicommands.html", Center, 512, 256);
+        createNavi( Center, 512, 256);
+        mNavi->loadFile("uicommands.html");
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->hide();
         mNavi->setMovable(true);

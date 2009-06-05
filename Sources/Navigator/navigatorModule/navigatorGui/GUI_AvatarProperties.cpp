@@ -96,7 +96,8 @@ bool GUI_AvatarProperties::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI modeler
-        createNavi( "local://uiavatarprop.html", NaviPosition(TopRight), 512, 512);
+        createNavi(TopRight, 512, 512);
+        mNavi->loadFile("uiavatarprop.html");
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uiavatarprop.png");//Eliminate the black shadow at the margin of the menu

@@ -118,7 +118,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
 
             clampNaviOnScreen(x, y, naviW, naviH);
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y) ,naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             // no more found in awesomium
@@ -131,11 +131,11 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->setProperty("itemWidth", itemW);
             mNavi->setProperty("itemHeight", itemH);
 
-            mNavi->loadURL("local://uictxtavatar.html");
-
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onPanelLoaded));
             mNavi->bind("contextItemSelected", NaviDelegate(this, &GUI_ContextMenu::onAvatarSelect));
-        }
+
+            mNavi->loadFile("uictxtavatar.html");
+       }
         break;
 
     case NAVI_CTXTWWW:
@@ -143,7 +143,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             naviW = 256; naviH = 48;  
             clampNaviOnScreen(x, y, naviW, naviH);
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y) ,naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
 
@@ -161,7 +161,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->setProperty("naviDataName","uictxtwwwDatas");
             mNavi->setProperty("ctxtNaviName", params);
  
-            mNavi->loadURL("local://uictxtwww.html");
+            mNavi->loadFile("uictxtwww.html");
        }
         break;
     case NAVI_CTXTVLC:
@@ -171,7 +171,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             clampNaviOnScreen(x, y, naviW, naviH);
             String ctxtVLCName = params;
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y) ,naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             mNavi->setOpacity(0.8);
@@ -185,7 +185,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->setProperty("naviDataName","uictxtvlcDatas");
             mNavi->setProperty("ctxtVLCName", ctxtVLCName);
 
-            mNavi->loadURL("local://uictxtvlc.html");
+            mNavi->loadFile("uictxtvlc.html");
         }
         break;
     case NAVI_CTXTSWF:
@@ -195,7 +195,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             clampNaviOnScreen(x, y, naviW, naviH);
             String ctxtSWFName = params;
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y) ,naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             mNavi->setOpacity(0.8);
@@ -209,7 +209,7 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->setProperty("naviDataName","uictxtswfDatas");
             mNavi->setProperty("ctxtSWFName", ctxtSWFName);
 
-            mNavi->loadURL("local://uictxtswf.html");
+            mNavi->loadFile("uictxtswf.html");
        }
         break;
     }

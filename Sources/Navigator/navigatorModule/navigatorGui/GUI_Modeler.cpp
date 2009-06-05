@@ -106,7 +106,8 @@ bool GUI_Modeler::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI modeler
-        createNavi("local://uimdlrmain.html", NaviPosition(TopRight), 256, 512);
+        createNavi(NaviPosition(TopRight), 256, 512);
+        mNavi->loadFile("uimdlrmain.html");
 
         mNavi->setMovable(true);
         mNavi->setMask("uimdlrmain.png");//Eliminate the black shadow at the margin of the menu

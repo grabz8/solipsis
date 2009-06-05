@@ -41,7 +41,6 @@ GUI_FromServer::GUI_FromServer(const std::string & panelName) : GUI_Panel(panelN
 {
     mNavigator = Navigator::getSingletonPtr();
     mCurrentNaviCreationDate = 0;
-    mCurrentNaviCreationDate = 0;
 }
 
 

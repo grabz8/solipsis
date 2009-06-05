@@ -83,7 +83,9 @@ bool GUI_MainMenu::show()
     if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
-        createNavi("local://uimainmenu.html", TopLeft, 512, 16);
+        createNavi(TopLeft, 512, 16);
+        mNavi->loadFile("uimainmenu.html");
+
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->setMask("alphafade512x16.png");
         mNavi->hide();

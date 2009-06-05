@@ -47,7 +47,7 @@ NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     m_pCurrentPanel(NULL)
 {
     // Initializing Navi
-    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr()->getViewport(0), "NaviLocal");
+    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr()->getViewport(0), "./NaviLocal");
     mNaviMgr->setZOrderMinMax(200, 299);
 
     // Initializing 2D Panels manager

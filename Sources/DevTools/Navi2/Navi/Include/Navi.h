@@ -506,7 +506,7 @@ namespace NaviLibrary
 		std::vector<NaviEventListener*> eventListeners;
 
         std::string loadingUrl;
-        int statusCode;
+        int m_statusCode;
 
 		friend class NaviManager;
 
