@@ -80,7 +80,6 @@ bool GUI_Login::show()
         mNavi->setAutoUpdateOnFocus(true);
         mNavi->setMaxUPS(24);
         mNavi->hide();
-     //   mNavi->setMask("uilogin.png");
         mNavi->setOpacity(1);
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Login::onPanelLoaded));
         mNavi->bind("world", NaviDelegate(this, &GUI_Login::onChooseWorld));

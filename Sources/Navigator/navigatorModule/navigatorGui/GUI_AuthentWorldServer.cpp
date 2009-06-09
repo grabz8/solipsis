@@ -68,12 +68,13 @@ bool GUI_AuthentWorldServer::show(const std::string& pwd)
         createNavi( NaviPosition(Center), 256, 128);
 
         mNavi->setMovable(false);
-        mNavi->hide();
+        mNavi->show();
         mNavi->setOpacity(0.75f);
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
-        mNavi->bind("ok", NaviDelegate(this, &GUI_AuthentWorldServer::onOk));
+
+ //       mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
+ //       mNavi->bind("ok", NaviDelegate(this, &GUI_AuthentWorldServer::onOk));
         // Add 1 event listener to detect network errors
-        mNavi->addEventListener(this);
+        //mNavi->addEventListener(this);
         mNavi->loadURL(uiauthentwsUrl);
         m_curState = NSCreated;
     }
