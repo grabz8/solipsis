@@ -251,6 +251,8 @@ void Entity::createPhysics(IPhysicsScene* physicsScene)
                     while (entity == 0)
                     {
                         node = node->NextSiblingElement("node");
+                        if (!node)
+                            break;
                         entity = node->FirstChildElement("entity");
                     }
                 }
@@ -348,6 +350,12 @@ bool Entity::update(Real timeSinceLastFrame)
 
         if ((newPosition - mXmlEntity->getPosition()).squaredLength() > 0.0001f)
             mDirty = true;
+#if 1 // GILLES FLY
+		bool collision = true;
+		mPhysicsCharacter->getCollision(collision);
+		if (collision)
+			setGravity(true);
+#endif
 
         mXmlEntity->setPosition(newPosition);
     }

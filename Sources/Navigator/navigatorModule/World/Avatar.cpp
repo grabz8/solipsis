@@ -244,7 +244,11 @@ void Avatar::onSceneNodeChanged()
 
     getSceneNode()->setPosition(mXmlEntity->getPosition());
     getSceneNode()->setOrientation(mXmlEntity->getOrientation());
+#if 1 // GILLES FLY
+    setState(ASAvatarFly);
+#else
     setState(ASAvatarIdle);
+#endif
 
     // Attach all camera supports to the new user avatar 
     if (isLocal())
@@ -538,6 +542,16 @@ void Avatar::animate(Real timeSinceLastFrame)
     Real animOffset = 0;
     Real animLength = 0;
 
+#if 1 // GILLES FLY
+	//Height between -4 and 100
+Real nodeHeight = (20+getSceneNode()->getPosition().y)/10.0;
+//Real factFly = std::max( (float)1.0 , std::min( (float)20.0 , (float)(nodeHeight*nodeHeight/2.0 ) ) ) ;
+
+//Real nodeHeight = (30+getSceneNode()->getPosition().y)/10.0;
+//Real factFly = std::max( (float)1.0 , std::min( (float)30.0 , (float)(nodeHeight*nodeHeight/2.0 ) ) ) ;
+    Real factFly = 2.0;
+#endif
+
     if (isLocal())
     {
         Vector3 vpn = getSceneNode()->getOrientation()*Vector3::UNIT_X;
@@ -553,7 +567,10 @@ void Avatar::animate(Real timeSinceLastFrame)
         mUpKeyMotion.update(timeSinceLastFrame);
         mDownKeyMotion.update(timeSinceLastFrame);
         frontBackMvt = mUpKeyMotion.getMotion() - mDownKeyMotion.getMotion();
+
+#if 0 // GILLES FLY
         mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+#endif
         if ((Math::Abs(frontBackMvt) > EPSILON_SPEED) && (Math::Abs(frontBackMvt) < MAX_SPEED*0.9) && (mState != ASAvatarWalk))
             nextState = ASAvatarWalk;
         if ((Math::Abs(frontBackMvt) > MAX_SPEED*0.9) && (mState != ASAvatarRun))
@@ -565,7 +582,10 @@ void Avatar::animate(Real timeSinceLastFrame)
         if (mMvtType == MT1stPerson)
         {
             // First person straff
+ 
+#if 0 // GILLES FLY
             mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+#endif
             if ((Math::Abs(leftRightMvt) > EPSILON_SPEED) && (mState == ASAvatarIdle))
                 nextState = ASAvatarWalk;
         }
@@ -590,6 +610,26 @@ void Avatar::animate(Real timeSinceLastFrame)
     //    if ((Math::Abs(upDownMvt) > MAX_SPEED*0.9) && (mState != ASAvatarFly))
     //        nextState = ASAvatarFly;
 
+#if 1 // GILLES FLY
+		//Translation speed variation in fly mode
+		if(!isGravityEnabled())
+		{
+            if (mMvtType == MT1stPerson)
+                mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*factFly;
+			mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*factFly;
+			mvt += vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*factFly/2.0;
+			if ( (Math::Abs(upDownMvt) > MAX_SPEED*0.25) && (mState != ASAvatarWalk))
+				nextState = ASAvatarFly;
+		}
+		else
+		{
+            if (mMvtType == MT1stPerson)
+                mvt += -vri*leftRightMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+            mvt += vpn*frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+            mvt += vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame;
+        }
+#endif
+
         animLength = mAnimationState->getLength();
         if ((mState == ASAvatarWalk) || (mState == ASAvatarRun))
             if (Math::Abs(frontBackMvt) > EPSILON_SPEED)    // Avatar is walking or running
@@ -598,6 +638,27 @@ void Avatar::animate(Real timeSinceLastFrame)
                 animOffset = leftRightMvt*ROTATION_SPEED_RPS.valueRadians()*timeSinceLastFrame*(animLength/ROTATION_ANIM_LOOP.valueRadians());
             else
                 nextState = ASAvatarIdle;
+#if 1 // GILLES FLY
+		//Animation speed  variation in fly mode
+		else if(mState == ASAvatarFly)
+		{
+			if(!isGravityEnabled()) 
+			{
+				nextState = ASAvatarFly;
+				//Min and Max animOffset
+                Real factWalk = std::min((float)1.0,std::max((float)1.0/factFly,(float)0.1));
+				if (Math::Abs(frontBackMvt) > EPSILON_SPEED)    // Avatar is walking or running
+					animOffset = frontBackMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame*(animLength/TRANSLATION_ANIM_LOOP)*factWalk;
+				else if (Math::Abs(leftRightMvt) > EPSILON_SPEED)   // Avatar is rotating : mState = ASAvatarWalk
+					animOffset = leftRightMvt*ROTATION_SPEED_RPS.valueRadians()*timeSinceLastFrame*(animLength/ROTATION_ANIM_LOOP.valueRadians())*factWalk;
+				else
+					animOffset = timeSinceLastFrame/2.0;	
+			}
+			//if gravity is enable, it's because Avatar touch terrain
+			else
+				nextState = ASAvatarIdle;
+		}
+#endif
         else // mState = ASAvatarIdle / ASAvatarFly / ASAvatarSwim
             animOffset = timeSinceLastFrame;
         if (mAnimationState != 0)
@@ -607,7 +668,12 @@ void Avatar::animate(Real timeSinceLastFrame)
             setState(nextState);
 
         // Move physics character
+#if 1 // GILLES FLY
+        Vector3 displacement = mvt;
+        //Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame * factFly);
+#else
         Vector3 displacement = mvt + (vup*upDownMvt*TRANSLATION_SPEED_MPS*timeSinceLastFrame);
+#endif
 
 		// update facial animation
 		IFaceController* pFaceController = getCharacterInstance()->getFaceController();

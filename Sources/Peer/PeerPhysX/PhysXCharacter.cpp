@@ -79,8 +79,12 @@ void PhysXCharacter::move(Vector3& displacement)
 /*    IPhysicsCharacterListener* listener = (IPhysicsCharacterListener*)mNxCapsuleController->getUserData();
     NxExtendedVec3 newPos = mNxCapsuleController->getFilteredPosition();
     listener->setPosition(newPos.x, newPos.y - (mDesc.height - mDesc.radius), newPos.z);*/
+#if 1 // GILLES FLY
+    mNxCapsuleController->move(PhysXHelpers::Vector32NxVec3(displacement), IPhysicsScene::CG_COLLIDABLE_MASK, 0.001f, mCollisionFlags, 1.0f);
+#else
     NxU32 collisionFlags;
     mNxCapsuleController->move(PhysXHelpers::Vector32NxVec3(displacement), IPhysicsScene::CG_COLLIDABLE_MASK, 0.001f, collisionFlags, 1.0f);
+#endif
 
 #ifdef VRD
     NxPhysicsSDK* sdk = PhysXHelpers::getNxPhysicsSDK();

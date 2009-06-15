@@ -456,7 +456,11 @@ OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
     peerAvatar->setStateAnimName(ASAvatarRun, "Run");
     peerAvatar->setStateAnimName(ASAvatarFly, "Fly");
     peerAvatar->setStateAnimName(ASAvatarSwim, "Swim");
+#if 1 // GILLES FLY
+    peerAvatar->setState(ASAvatarFly);
+#else
     peerAvatar->setState(ASAvatarIdle);
+#endif
 
     if (isLocal)
     {
@@ -468,6 +472,10 @@ OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
     if (mCallbacks != 0)
         mCallbacks->onAvatarNodeCreate(peerAvatar);
+
+#if 0 // GILLES FLY
+    peerAvatar->onSceneNodeChanged();
+#endif
 
     return peerAvatar;
 }
