@@ -1161,3 +1161,8 @@ RakNetServer is now quitting ASAP if some download/upload are in progress, Q to 
 No more SOL.log
 
 ---------------------------
+22/06/05
+
+RakNet Send() chunk size tuned to improve transfer rate
+
+---------------------------
