@@ -63,9 +63,13 @@ protected:
     /// Last deserialized defined attributes (updated attr sent to server)
     XmlEntity::DefinedAttributes mLastDeserializedDefinedAttributes;
 
+    /// Total number of files
+    int mTotalNbfiles;
+
     /// List of missing files
     XmlLodContent::LodContentFileList mMissingFiles;
-    int mTotalNbfiles;
+    /// List of uploading files
+    XmlLodContent::LodContentFileList mUploadingFiles;
 
 public:
     /** Constructor. */
@@ -91,6 +95,8 @@ public:
     static RakNetEntity* findByAddressAndType(SystemAddress& systemAddress, EntityType type);
 	/** Helper function to delete an entity by address and entity type (free on disconnections). */
 	static void deleteByAddressAndType(SystemAddress& systemAddress, EntityType type);
+	/** Helper function to delete all entities with content not fully downloaded. */
+    static void deleteEntitiesIfContentDownloadAborted();
 
     /** Method called when 1 entity is created. */
     virtual void onNewEntity() {}
@@ -137,13 +143,19 @@ public:
     @param sender The address of the system having the file to request to
     */
     void requestFilesFromCacheManager(const SystemAddress& sender);
+    /** Cancel files (if they are currently downloaded/uploaded) from the cache manager
+    @param removeFiles True if cancelled files must be removed from cache list and deleted
+    */
+    void cancelFilesFromCacheManager(bool removeFiles = false);
+    /** Get missing files list
+    @return List of missing files
+    */
+    const XmlLodContent::LodContentFileList& getMissingFiles() { return mMissingFiles; }
 
     /** See CacheManagerCallback. */
-    virtual void onTransferComplete(const std::string& filename);
-
+    virtual float onDownloadProgress(const std::string& filename, float progress);
     /** See CacheManagerCallback. */
-    virtual float onTransferProgress(const std::string& filename, float progress);
-
+    virtual float onUploadProgress(const std::string& filename, float progress);
 };
 
 } // namespace Solipsis

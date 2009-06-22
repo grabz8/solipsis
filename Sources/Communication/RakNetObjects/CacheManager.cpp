@@ -34,10 +34,12 @@ using namespace CommonTools;
 
 namespace Solipsis {
 
-const CacheManager::EntryState CacheManager::ESTransferToRequest = -1;
-const CacheManager::EntryState CacheManager::ESTransferComplete = 1;
+const CacheManager::EntryState CacheManager::ESTransferAborted = -2.0f;
+const CacheManager::EntryState CacheManager::ESTransferToRequest = -1.0f;
+const CacheManager::EntryState CacheManager::ESTransferComplete = 1.0f;
 
 const std::string CacheManager::ms_CacheFilename = "cache.xml";
+float CacheManager::ms_ProgressStepCallback = 0.1f;
 
 //-------------------------------------------------------------------------------------
 CacheManager::CacheManager(RakNetConnection* connection) :
@@ -58,10 +60,472 @@ void CacheManager::initialize(const std::string& cachePath)
 {
     mCachePath = cachePath;
 
+    // load the cache file
+    load();
+
+	// write the new cache file.
+	// if there where errors (file not found, they will be removed)
+	save();
+
+    // set FileListTransfer callback to be warn about pushed files
+    mConnection->getFileListTransfer()->SetCallback(this);
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::finalize()
+{
+    // unset FileListTransfer callback
+    mConnection->getFileListTransfer()->SetCallback(0);
+
+    // save the cache file
+    save();
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::OnFilePush(const char *fileName, unsigned int fileLengthBytes, unsigned int offset, unsigned int bytesBeingSent, bool done, SystemAddress targetSystem)
+{
+    CacheMap::iterator entryIt = mCache.find(fileName);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFilePush() File %s not found in cache table !", fileName);
+        return;
+    }
+    CacheManagerFileEntry &entry = entryIt->second;
+    PendingTransferList& pendingUploadList = entry.mPendingUploadList;
+    for (PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
+        if (pendingUploadIt->mSystem == targetSystem)
+        {
+            float progress = (float)(offset + bytesBeingSent)/(float)fileLengthBytes;
+            if (pendingUploadIt->mState >= 0.0f)
+            {
+                if ((pendingUploadIt->mState == 0.0f) || (progress >= std::min(1.0f, pendingUploadIt->mState + ms_ProgressStepCallback)))
+                {
+                    pendingUploadIt->mState = progress;
+                    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFilePush() File %s %.2f %% pushed to %s", fileName, pendingUploadIt->mState*100, targetSystem.ToString());
+                    // Callback ?
+                    if (entry.mCallback != 0)
+                        entry.mCallback->onUploadProgress(entryIt->first, pendingUploadIt->mState);
+                }
+            }
+            if (done)
+                pendingUploadIt->mState = ESTransferComplete;
+            break;
+        }
+}
+
+//-------------------------------------------------------------------------------------
+bool CacheManager::OnFile(OnFileStruct *onFileStruct)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() File %s", onFileStruct->fileName);
+
+    std::string filename = onFileStruct->fileName;
+    std::string pathname;
+    getCachePathname(filename, pathname);
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() Writing file content into pathname %s", pathname.c_str());
+    if (!IO::writeFileContent(pathname, (char*)onFileStruct->fileData, (unsigned int)onFileStruct->finalDataLength))
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() writeFileContent(%s) failed !", pathname.c_str());
+        return true;
+    }
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() Finished writing file content into pathname %s", pathname.c_str());
+
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() File %s not found in cache table !", filename.c_str());
+        return true;
+    }
+    CacheManagerFileEntry &entry = entryIt->second;
+
+    entry.mFileSize = IO::getFileSize(pathname);
+    entry.mDownload.mState = ESTransferComplete;
+
+    // Call callback
+    if (entry.mCallback != 0)
+        entry.mCallback->onDownloadProgress(entryIt->first, ESTransferComplete);
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength, char *firstDataChunk)
+{
+    std::string filename = onFileStruct->fileName;
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFileProgress() File %s not found in cache table !", filename.c_str());
+        return;
+    }
+
+    CacheManagerFileEntry &entry = entryIt->second;
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() File %s %d, %d, %d", onFileStruct->fileName, partCount, partTotal, partLength);
+    float progress = (float)partCount/(float)partTotal;
+    if (progress >= std::min(1.0f, entry.mDownload.mState + ms_ProgressStepCallback))
+    {
+        entry.mDownload.mState = progress;
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() File %s %.2f %% received from %s", onFileStruct->fileName, entry.mDownload.mState*100, entry.mDownload.mSystem.ToString());
+        // Callback ?
+        if ((entry.mCallback != 0) && (entry.mDownload.mState < ESTransferComplete))
+            entry.mCallback->onDownloadProgress(entryIt->first, entry.mDownload.mState);
+    }
+}
+ 
+//-------------------------------------------------------------------------------------
+unsigned int CacheManager::GetFilePart(char *filename, 
+                                       unsigned int startReadBytes, unsigned int numBytesToRead, 
+                                       void *preallocatedDestination, 
+                                       FileListNodeContext context)
+{
+/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() File %s (%d, %d, 0x%08x, (%d, %d))",
+        filename, startReadBytes, numBytesToRead, 
+        preallocatedDestination, context.op, context.fileId);*/
+
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+    // on RakNet 3.401
+    std::string baseFilename = filename;
+    std::string pathname;
+    getCachePathname(baseFilename, pathname);
+#else
+    // on RakNet 3.51
+    std::string pathname = filename;
+    std::string baseFilename = IO::getFileName(pathname);
+#endif
+
+    CacheMap::iterator entryIt = mCache.find(baseFilename);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::GetFilePart() File %s not found in cache table !", baseFilename);
+        return numBytesToRead;
+    }
+    long size = entryIt->second.mFileSize;
+
+/*    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() File %s %.2f %% (%d, %d, 0x%08x, (%d, %d))",
+        baseFilename.c_str(), (float)(std::min(size, long(startReadBytes + numBytesToRead)))*100/(float)size , startReadBytes, numBytesToRead, 
+        preallocatedDestination, context.op, context.fileId);*/
+//    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() File %s %.2f %%", baseFilename.c_str(), (float)(std::min(size, long(startReadBytes + numBytesToRead)))*100/(float)size);
+
+    return IncrementalReadInterface::GetFilePart((char *)pathname.c_str(), startReadBytes, numBytesToRead, preallocatedDestination, context);
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::addFile(const std::string& filename, const FileVersion& version, CacheManagerCallback* callback)
+{
+    std::string completeFileName;
+    getCachePathname(filename, completeFileName);
+	// check if the file is present
+	if (IO::isFileExists(completeFileName)) 
+	{
+		CacheMap::iterator entryIt = mCache.find(filename);
+		if (entryIt == mCache.end())
+		{
+			CacheManagerFileEntry entry;
+			mCache[filename] = entry;
+			entryIt = mCache.find(filename);
+		}
+        CacheManagerFileEntry &entry = entryIt->second;
+		entry.mVersion = version;
+        entry.mFileSize = IO::getFileSize(completeFileName);
+        entry.mCallback = callback;
+        entry.mDownload.mSystem = UNASSIGNED_SYSTEM_ADDRESS;
+        entry.mDownload.mFileListTransferSetID = 0;
+        entry.mDownload.mState = ESTransferComplete;
+	}
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::removeFile(const std::string& filename)
+{
+    cancelFile(filename, true);
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::requestFile(const SystemAddress& sender,
+                               const std::string& filename,
+                               const FileVersion& version,
+                               CacheManagerCallback* callback)
+{
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        CacheManagerFileEntry entry;
+        entry.mDownload.mState = ESTransferToRequest;
+        mCache[filename] = entry;
+        entryIt = mCache.find(filename);
+    }
+    else if (entryIt->second.mVersion != version)
+    {
+        entryIt->second.mDownload.mState = ESTransferToRequest;
+    }
+    else if (entryIt->second.mDownload.mState == ESTransferComplete)
+	{
+        CacheManagerFileEntry &entry = entryIt->second;
+        std::string completeFileName;
+        getCachePathname(filename, completeFileName);
+		// to prevent internal errors, check that the file is really here
+		if (IO::isFileExists(completeFileName))
+            callback->onDownloadProgress(entryIt->first, ESTransferComplete);
+		else
+			entry.mDownload.mState = ESTransferToRequest;
+	}
+    if (entryIt->second.mDownload.mState == ESTransferToRequest)
+    {
+        CacheManagerFileEntry &entry = entryIt->second;
+        entry.mVersion = version;
+        entry.mCallback = callback;
+        entry.mDownload.mState = 0.0f;
+        BitStream bitStream;
+        bitStream.Write((MessageID)RakNetConnection::ID_CM_REQUESTING_FILETRANSFER);
+        entry.mDownload.mSystem = sender;
+        entry.mDownload.mFileListTransferSetID = mConnection->getFileListTransfer()->SetupReceive(this, false, sender);
+        bitStream.Write(entry.mDownload.mFileListTransferSetID);
+        RakNetConnection::SerializeString(&bitStream, filename);
+        bitStream.Write(entry.mVersion);
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::requestFile() Requesting file %s, version %d, fileListTransferSetID %d", filename.c_str(), version, entry.mDownload.mFileListTransferSetID);
+        // Send the request to the server
+        mConnection->getRakPeer()->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, sender, false);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::cancelFile(const std::string& filename, bool removeFile)
+{
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::cancelFile() File %s not found in cache table !", filename.c_str());
+        return;
+    }
+    CacheManagerFileEntry &entry = entryIt->second;
+
+    // Download
+    if ((entry.mDownload.mState >= 0.0f) && (entry.mDownload.mState != ESTransferComplete))
+    {
+        removeFile = true;
+        if (mConnection->getFileListTransfer()->IsHandlerActive(entry.mDownload.mFileListTransferSetID))
+            mConnection->getFileListTransfer()->CancelReceive(entry.mDownload.mFileListTransferSetID);
+        if (entry.mCallback != 0)
+            entry.mCallback->onDownloadProgress(entryIt->first, ESTransferAborted);
+    }
+    // Uploads (notice that they cannot be really cancelled with RakNet 3.x)
+    PendingTransferList& pendingUploadList = entryIt->second.mPendingUploadList;
+    for (PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
+    {
+        if (entry.mCallback != 0)
+            entry.mCallback->onUploadProgress(entryIt->first, ESTransferAborted);
+    }
+
+    entry.mCallback = 0;
+    if (removeFile)
+    {
+        mCache.erase(entryIt);
+        std::string completeFileName;
+        getCachePathname(filename, completeFileName);
+        IO::deleteFile(completeFileName);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileListTransferSetID, std::string& filename, const FileVersion& version)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Sending file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
+
+    CacheMap::iterator entryIt = mCache.find(filename);
+    if (entryIt == mCache.end())
+    {
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::sendFile() File %s not found in cache table !", filename.c_str());
+        return;
+    }
+    CacheManagerFileEntry &entry = entryIt->second;
+
+    // Add it to the pending upload list, it will be sent now or as soon as it will be downloaded
+    TransferDesc pendingUpload;
+    pendingUpload.mSystem = recipient;
+    pendingUpload.mFileListTransferSetID = fileListTransferSetID;
+    if (entry.mDownload.mState == ESTransferComplete)
+        pendingUpload.mState = 0.0f;
+    else
+        pendingUpload.mState = ESTransferToRequest;
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Adding upload file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), entry.mVersion, recipient.ToString(), fileListTransferSetID);
+    entry.mPendingUploadList.push_back(pendingUpload);
+    if (entry.mDownload.mState == ESTransferComplete)
+    {
+        // Send it now !
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Sending now file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
+        FileList fileList;
+        std::string pathname;
+        getCachePathname(filename, pathname);
+        long filesize = IO::getFileSize(pathname);
+        if (filesize == -1)
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+        // on RakNet 3.401
+        fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#else
+        // on RakNet 3.51
+        fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#endif
+        mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUpload.mSystem, pendingUpload.mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
+    }
+    else
+    {
+        // It will be sent as soon as it will be downloaded
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Add in pendingUpload file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+bool CacheManager::havePendingDownload()
+{
+    unsigned int totalPendingDownloads = 0;
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
+    {
+        CacheManagerFileEntry &entry = entryIt->second;
+        if (entry.mDownload.mState != ESTransferComplete)
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::havePendingDownload() %d: %s version %d system %s state %.2f",
+                totalPendingDownloads,
+                entryIt->first.c_str(),
+                entry.mVersion,
+                entry.mDownload.mSystem.ToString(),
+                entry.mDownload.mState);
+            totalPendingDownloads++;
+        }
+    }
+
+    return (totalPendingDownloads != 0);
+}
+
+//-------------------------------------------------------------------------------------
+bool CacheManager::havePendingUpload()
+{
+    unsigned int totalPendingUploads = 0;
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
+    {
+        PendingTransferList& pendingUploadList = entryIt->second.mPendingUploadList;
+        for (PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
+        {
+            if (pendingUploadIt->mState == ESTransferComplete)
+                continue;
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::havePendingUpload() %d: %s version %d system %s state %.2f",
+                totalPendingUploads,
+                entryIt->first.c_str(),
+                entryIt->second.mVersion,
+                pendingUploadIt->mSystem.ToString(),
+                pendingUploadIt->mState);
+            totalPendingUploads++;
+        }
+    }
+    return (totalPendingUploads != 0);
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::removeConnection(const SystemAddress& system)
+{
+    // Cancel downloading files
+    std::list<std::string> filesToCancel;
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
+    {
+        CacheManagerFileEntry &entry = entryIt->second;
+        if ((entry.mDownload.mState != ESTransferComplete) && (entry.mDownload.mSystem == system))
+            filesToCancel.push_back(entryIt->first);
+    }
+    // Cancel downloading files
+    for (std::list<std::string>::const_iterator it = filesToCancel.begin(); it != filesToCancel.end(); ++it)
+        cancelFile(*it, true);
+
+    // Cancel uploading files
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
+    {
+        CacheManagerFileEntry &entry = entryIt->second;
+        PendingTransferList& pendingUploadList = entry.mPendingUploadList;
+        PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin();
+        while (pendingUploadIt != pendingUploadList.end())
+        {
+            if (pendingUploadIt->mSystem != system)
+            {
+                pendingUploadIt++;
+                continue;
+            }
+            // Uploads (notice that they cannot be really cancelled with RakNet 3.x)
+            if (entry.mCallback != 0)
+                entry.mCallback->onUploadProgress(entryIt->first, ESTransferAborted);
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::removeConnection() Removing upload file %s, version %d to recipient %s, fileListTransferSetID %d", entryIt->first.c_str(), entry.mVersion, pendingUploadIt->mSystem.ToString(), pendingUploadIt->mFileListTransferSetID);
+            pendingUploadIt = pendingUploadList.erase(pendingUploadIt);
+        }
+    }
+
+    // Plugin will remove receiver into OnClosedConnection
+    //mConnection->getFileListTransfer()->RemoveReceiver(system);
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::update()
+{
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
+    {
+        CacheManagerFileEntry &entry = entryIt->second;
+
+        std::string filename = entryIt->first;
+        std::string pathname;
+        getCachePathname(entryIt->first, pathname);
+
+        PendingTransferList& pendingUploadList = entry.mPendingUploadList;
+        PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin();
+        while (pendingUploadIt != pendingUploadList.end())
+        {
+            // Removing uploaded entry
+            if (pendingUploadIt->mState == ESTransferComplete)
+            {
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::update() Removing uploaded file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), entry.mVersion, pendingUploadIt->mSystem.ToString(), pendingUploadIt->mFileListTransferSetID);
+                pendingUploadIt = pendingUploadList.erase(pendingUploadIt);
+                continue;
+            }
+            // Send pending upload
+            if ((pendingUploadIt->mState == ESTransferToRequest) &&
+                (entry.mDownload.mState == ESTransferComplete))
+            {
+                long filesize = IO::getFileSize(pathname);
+                if (filesize == -1)
+                    LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::update() Unable to get size of file %s !", filename.c_str());
+                FileList fileList;
+#if ((RAKNET_VERSION_MAJOR < 3) || \
+ (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
+ (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
+                // on RakNet 3.401
+                fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#else
+                // on RakNet 3.51
+                fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
+#endif
+                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::update() Sending now file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), entry.mVersion, pendingUploadIt->mSystem.ToString(), pendingUploadIt->mFileListTransferSetID);
+                pendingUploadIt->mState = 0.0f;
+                mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mSystem, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
+            }
+            pendingUploadIt++;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
+{
+    if (!IO::isDirectoryExists(mCachePath))
+        IO::createDirectory(mCachePath);
+    pathname = mCachePath + IO::getPathSeparator() + filename;
+}
+
+//-------------------------------------------------------------------------------------
+void CacheManager::load()
+{
     std::string filename;
     getCachePathname(ms_CacheFilename, filename);
 
-    LOGHANDLER_LOGF(LogHandler::VL_INFO, "CacheManager::initialize() loading cache from %s", filename.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "CacheManager::load() Loading cache from %s", filename.c_str());
 
     try
     {
@@ -92,20 +556,15 @@ void CacheManager::initialize(const std::string& cachePath)
         LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::initialize() Unable to read/parse cache from %s, Resetting it.", filename);
         mCache.clear();
     }
-
-	// write the new cache file.
-	// if there where errors (file not found, they will be removed)
-	CacheManager::finalize();
 }
 
-
 //-------------------------------------------------------------------------------------
-void CacheManager::finalize()
+void CacheManager::save()
 {
     std::string pathname;
     getCachePathname(ms_CacheFilename, pathname);
 
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::finalize() saving cache into %s", pathname.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::save() Saving cache into %s", pathname.c_str());
 
     TiXmlDocument xmlFileDoc(pathname.c_str());
     // root node
@@ -115,7 +574,7 @@ void CacheManager::finalize()
     cacheElt->LinkEndChild(filesElt); 
     for (CacheMap::iterator it = mCache.begin(); it != mCache.end(); ++it)
     {
-        if (it->second.mState != ESTransferComplete) continue;
+        if (it->second.mDownload.mState != ESTransferComplete) continue;
         LodContentFileStruct lodContentFileStruct;
         lodContentFileStruct.mFilename = it->first;
         lodContentFileStruct.mVersion = it->second.mVersion;
@@ -127,266 +586,18 @@ void CacheManager::finalize()
 }
 
 //-------------------------------------------------------------------------------------
-unsigned int CacheManager::GetFilePart(char *filename, 
-                                       unsigned int startReadBytes, unsigned int numBytesToRead, 
-                                       void *preallocatedDestination, 
-                                       FileListNodeContext context)
+void CacheManager::logAll()
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s (%d, %d, 0x%08x, (%d, %d))",
-        filename, startReadBytes, numBytesToRead, 
-        preallocatedDestination, context.op, context.fileId);
-
-#if ((RAKNET_VERSION_MAJOR < 3) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
-    // on RakNet 3.401
-    std::string filenameStr = filename;
-    std::string pathname;
-    getCachePathname(filenameStr, pathname);
-#else
-    // on RakNet 3.51
-    std::string pathname = filename;
-    std::string filenameStr = IO::getFileName(pathname);
-#endif
-
-    long size = 0;
-    CacheMap::iterator entryIt = mCache.find(filenameStr);
-    if (entryIt != mCache.end())
-        size = entryIt->second.mFileSize;
-
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::GetFilePart() filename:%s %d %% (%d, %d, 0x%08x, (%d, %d))",
-        filenameStr.c_str(), (startReadBytes*100) /size , startReadBytes, numBytesToRead, 
-        preallocatedDestination, context.op, context.fileId);
-
-    return IncrementalReadInterface::GetFilePart((char *)pathname.c_str(), startReadBytes, numBytesToRead, preallocatedDestination, context);
-}
-
-//-------------------------------------------------------------------------------------
-bool CacheManager::OnFile(OnFileStruct *onFileStruct)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() filename:%s", onFileStruct->fileName);
-
-    std::string filename = onFileStruct->fileName;
-    std::string pathname;
-    getCachePathname(std::string(onFileStruct->fileName), pathname);
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() writing file content into pathname:%s", pathname.c_str());
-    if (!IO::writeFileContent(pathname, (char*)onFileStruct->fileData, (unsigned int)onFileStruct->finalDataLength))
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::logAll()");
+    for (CacheMap::iterator entryIt = mCache.begin(); entryIt != mCache.end(); ++entryIt)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() writeFileContent(%s) failed !", pathname.c_str());
-        return true;
+        CacheManagerFileEntry &entry = entryIt->second;
+        PendingTransferList& pendingUploadList = entry.mPendingUploadList;
+        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, " file %s, version %d, size %ld, download(%s, %d, %.2f)", entryIt->first.c_str(), entry.mVersion, entry.mFileSize, entry.mDownload.mSystem.ToString(), entry.mDownload.mFileListTransferSetID, entry.mDownload.mState);
+        std::string uploads;
+        for (PendingTransferList::const_iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "  upload(%s, %d, %.2f)", pendingUploadIt->mSystem.ToString(), pendingUploadIt->mFileListTransferSetID, pendingUploadIt->mState);
     }
-
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() filename:%s not found in requested files !", filename.c_str());
-    else
-    {
-        entryIt->second.mState = ESTransferComplete;
-
-        // Call callbacks
-        PendingDownloadList& pendingDownloadList = entryIt->second.mPendingDownloadList;
-        for (PendingDownloadList::iterator pendingDownloadIt = pendingDownloadList.begin(); pendingDownloadIt != pendingDownloadList.end(); ++pendingDownloadIt)
-            pendingDownloadIt->mCallback->onTransferComplete(filename);
-
-        pendingDownloadList.clear();
-
-        // Send pending uploads
-        FileList fileList;
-        std::string pathname;
-        getCachePathname(filename, pathname);
-        long filesize = IO::getFileSize(pathname);
-        if (filesize == -1)
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFile() Unable to get size of file %s !", filename.c_str());
-#if ((RAKNET_VERSION_MAJOR < 3) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
-        // on RakNet 3.401
-        fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#else
-        // on RakNet 3.51
-        fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#endif
-        PendingUploadList& pendingUploadList = entryIt->second.mPendingUploadList;
-        for (PendingUploadList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
-        {
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFile() Sending now file %s, version:%d to recipient:%s, fileListTransferSetID:%d", filename.c_str(), entryIt->second.mVersion, pendingUploadIt->mRecipient.ToString(), pendingUploadIt->mFileListTransferSetID);
-            mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mRecipient, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
-        }
-        pendingUploadList.clear();
-    }
-
-    return true;
-}
-
-//-------------------------------------------------------------------------------------
-void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength, char *firstDataChunk)
-{
-    std::string filename = onFileStruct->fileName;
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFileProgress() filename:%s not found in requested files !", filename.c_str());
-    else
-    {
-        float progress = (float)partCount/partTotal;
-        EntryState state = entryIt->second.mState;
-        if (state == 0 || progress > state +0.01)
-        {
-            state = std::min(0.99f, progress);
-            entryIt->second.mState = state;
-      //      LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() filename:%s %f %%", onFileStruct->fileName, entryIt->second.mState*100);
-            PendingDownloadList& pendingDownloadList = entryIt->second.mPendingDownloadList;
-
-            for (PendingDownloadList::iterator pendingDownloadIt = pendingDownloadList.begin(); pendingDownloadIt != pendingDownloadList.end(); ++pendingDownloadIt)
-                pendingDownloadIt->mCallback->onTransferProgress(filename, entryIt->second.mState);
-        }
-    }
-}
- 
-//-------------------------------------------------------------------------------------
-void CacheManager::addFile(const std::string& filename, const FileVersion& version)
-{
-    std::string completeFileName;
-    getCachePathname(filename, completeFileName);
-	// check if the file is present
-	if (IO::isFileExists(completeFileName)) 
-	{
-		CacheMap::iterator entryIt = mCache.find(filename);
-		if (entryIt == mCache.end())
-		{
-			CacheManagerFileEntry entry;
-            entry.mVersion = version;
-            entry.mFileSize = IO::getFileSize(completeFileName);
-			entry.mState = ESTransferComplete;
-			mCache[filename] = entry;
-			entryIt = mCache.find(filename);
-		}
-		entryIt->second.mVersion = version;
-	}
-}
-
-//-------------------------------------------------------------------------------------
-void CacheManager::requestFile(const SystemAddress& sender, 
-                               const std::string& filename, 
-                               const FileVersion& version, 
-                               CacheManagerCallback* callback)
-{
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-    {
-        CacheManagerFileEntry entry;
-        entry.mVersion = version;
-        entry.mState = ESTransferToRequest;
-        mCache[filename] = entry;
-        entryIt = mCache.find(filename);
-    }
-    else if (entryIt->second.mVersion != version)
-    {
-        entryIt->second.mState = ESTransferToRequest;
-    }
-    if (entryIt->second.mState == ESTransferToRequest)
-    {
-        entryIt->second.mVersion = version;
-        entryIt->second.mState = 0;
-        BitStream bitStream;
-        bitStream.Write((MessageID)RakNetConnection::ID_CM_REQUESTING_FILETRANSFER);
-        PendingDownload pendingDownload;
-        pendingDownload.mFileListTransferSetID = mConnection->getFileListTransfer()->SetupReceive(this, false, sender);
-        pendingDownload.mCallback = callback;
-        entryIt->second.mPendingDownloadList.push_back(pendingDownload);
-        bitStream.Write(pendingDownload.mFileListTransferSetID);
-        RakNetConnection::SerializeString(&bitStream, filename);
-        bitStream.Write(entryIt->second.mVersion);
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::requestFile() Requesting file %s, version:%d, fileListTransferSetID:%d", filename.c_str(), version, pendingDownload.mFileListTransferSetID);
-        // Send the request to the server
-        mConnection->getRakPeer()->Send(&bitStream, LOW_PRIORITY, RELIABLE_ORDERED, 0, sender, false);
-    }
-    else if (entryIt->second.mState == ESTransferComplete)
-	{
-        std::string completeFileName;
-        getCachePathname(filename, completeFileName);
-		// to prevent internal errors, check that the file is really here
-		if (IO::isFileExists(completeFileName))
-        {
-            entryIt->second.mFileSize = IO::getFileSize(completeFileName);
-            callback->onTransferComplete(filename);
-        }
-		else
-		{
-			// back to request
-			entryIt->second.mState = ESTransferToRequest;
-		}
-	}
-}
-
-//-------------------------------------------------------------------------------------
-void CacheManager::removeFile(const std::string& filename, CacheManagerCallback* callback)
-{
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-        // entry not found !
-        return;
-
-    for (PendingDownloadList::iterator pendingDownloadIt = entryIt->second.mPendingDownloadList.begin(); pendingDownloadIt != entryIt->second.mPendingDownloadList.end(); ++pendingDownloadIt)
-        if (pendingDownloadIt->mCallback == callback)
-        {
-            entryIt->second.mPendingDownloadList.erase(pendingDownloadIt);
-            if (entryIt->second.mPendingDownloadList.empty())
-            {
-                mCache.erase(entryIt);
-            }
-            return;
-        }
-    // callback not found !
-}
-
-//-------------------------------------------------------------------------------------
-void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileListTransferSetID, std::string& filename, const FileVersion& version)
-{
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Sending file %s, version:%d to recipient:%s, fileListTransferSetID:%d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
-
-    CacheMap::iterator entryIt = mCache.find(filename);
-    if (entryIt == mCache.end())
-        // entry not found !
-        return;
-
-    if (entryIt->second.mState == ESTransferComplete)
-    {
-        // Send it now !
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Sending now file %s, version:%d to recipient:%s, fileListTransferSetID:%d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
-        FileList fileList;
-        std::string pathname;
-        getCachePathname(filename, pathname);
-        long filesize = IO::getFileSize(pathname);
-        if (filesize == -1)
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::sendFile() Unable to get size of file %s !", filename.c_str());
-#if ((RAKNET_VERSION_MAJOR < 3) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR < 5) || \
-     (RAKNET_VERSION_MAJOR == 3 && RAKNET_VERSION_MINOR == 5 && RAKNET_VERSION_PATCH < 1))
-        // on RakNet 3.401
-        fileList.AddFile(filename.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#else
-        // on RakNet 3.51
-        fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
-#endif
-        mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), recipient, fileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
-    }
-    else
-    {
-        // Add it to the pending upload list, it will be sent as soon as it will be downloaded
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Add in pendingUpload file %s, version:%d to recipient:%s, fileListTransferSetID:%d", filename.c_str(), version, recipient.ToString(), fileListTransferSetID);
-        PendingUpload pendingUpload;
-        pendingUpload.mFileListTransferSetID = fileListTransferSetID;
-        pendingUpload.mRecipient = recipient;
-        entryIt->second.mPendingUploadList.push_back(pendingUpload);
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void CacheManager::getCachePathname(const std::string& filename, std::string& pathname)
-{
-    if (!IO::isDirectoryExists(mCachePath))
-        IO::createDirectory(mCachePath);
-    pathname = mCachePath + IO::getPathSeparator() + filename;
 }
 
 //-------------------------------------------------------------------------------------

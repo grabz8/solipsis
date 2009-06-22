@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "GUI_Panel.h"
+#include "MainApplication/Navigator.h"
 #include <CTLog.h>
 #include <CTStringHelpers.h>
 #include <Navi.h>

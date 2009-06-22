@@ -33,7 +33,10 @@ using namespace CommonTools;
 OgrePeer::OgrePeer(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
     mXmlEntity(xmlEntity),
     mIsLocal(isLocal),
-    mLod(0)
+    mLod(0),
+    mBBox(0),
+    mLocalNode(0),
+    mProgressBar(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "OgrePeer::OgrePeer() mIsLocal=%s", LOGHANDLER_LOGBOOL(isLocal));
 }
@@ -41,6 +44,23 @@ OgrePeer::OgrePeer(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
 //-------------------------------------------------------------------------------------
 OgrePeer::~OgrePeer()
 {
+    if (mProgressBar) 
+    {
+        mProgressBar->detach();
+        delete mProgressBar;
+        mProgressBar = 0;
+    }
+    if (mLocalNode)
+    {
+        mLocalNode->detachAllObjects();
+        mLocalNode->getCreator()->destroySceneNode(mLocalNode->getName());
+        mLocalNode = 0;
+    }
+    if (mBBox)
+    {
+        delete mBBox;
+        mBBox = 0;
+    }
 }
 
 //-------------------------------------------------------------------------------------

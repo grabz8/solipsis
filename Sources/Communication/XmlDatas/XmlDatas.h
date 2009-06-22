@@ -56,7 +56,6 @@ namespace Solipsis
     };
   
     RefCntPoolPtr<XmlData> RefCntPoolPtr<XmlData>::nullPtr((XmlData*)0);
-
 } // namespace Solipsis
 
 #endif // #ifndef __XmlDatas_h__

@@ -484,11 +484,19 @@ bool Avatar::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             throw Exception(Exception::ERR_INTERNAL_ERROR, "Unable to create character instance !", "Avatar::updateEntity");
         setCharacterInstance(characterInstance);
     }
-    if (definedAttributes & XmlEntity::DAProgress)
+    if (definedAttributes & XmlEntity::DADownloadProgress)
     {
-        OGRE_LOG("Progress for avatar " + 
-            xmlEntity->getUid() + " : " + 
-            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+        mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
+        OGRE_LOG("Download progress for avatar " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getDownloadProgress()));
+    }
+    if (definedAttributes & XmlEntity::DAUploadProgress)
+    {
+        mXmlEntity->setUploadProgress(xmlEntity->getUploadProgress());
+        OGRE_LOG("Upload progress for avatar " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getUploadProgress()));
     }
 
 #ifdef LOGSNDRCV

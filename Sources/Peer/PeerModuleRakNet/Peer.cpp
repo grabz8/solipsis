@@ -262,11 +262,12 @@ void Peer::run()
                     break;
                 case ID_DISCONNECTION_NOTIFICATION:
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Peer::run() RakNetConnection::ID_DISCONNECTION_NOTIFICATION from %s", packet->systemAddress.ToString());
-                    // Connection lost
+                    // Connection closed
                     if (mRakNetConnection.isClientConnected())
                     {
                         mAvatarNode->setConnectionLost(true);
                         time(&lastConnectionAttempt);
+                        mRakNetConnection.getCacheManager()->removeConnection(packet->systemAddress);
                     }
                     break;
                 case ID_CONNECTION_LOST:
@@ -276,6 +277,7 @@ void Peer::run()
                     {
                         mAvatarNode->setConnectionLost(true);
                         time(&lastConnectionAttempt);
+                        mRakNetConnection.getCacheManager()->removeConnection(packet->systemAddress);
                     }
                     break;
                 case RakNetConnection::ID_CM_REQUESTING_FILETRANSFER:
@@ -303,6 +305,9 @@ void Peer::run()
 
         // Update replication manager
         mRakNetConnection.getReplicationManager()->update();
+
+        // Update cache manager
+        mRakNetConnection.getCacheManager()->update();
 
         pthread_mutex_unlock(&mRakNetMutex);
 
@@ -434,6 +439,7 @@ IP2NClient::RetCode Peer::logout(NodeId& nodeId)
     pthread_mutex_lock(&mRakNetMutex);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Peer::logout() Disconnecting from %s ...", mRakNetConnection.getServerSystemAddress().ToString());
     mRakNetConnection.disconnectClient();
+    mRakNetConnection.getCacheManager()->removeConnection(mRakNetConnection.getServerSystemAddress());
     pthread_mutex_unlock(&mRakNetMutex);
 
     pthread_mutex_lock(&mPhysicsMutex);

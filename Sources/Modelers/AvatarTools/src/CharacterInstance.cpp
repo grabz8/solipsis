@@ -195,6 +195,8 @@ CharacterInstance::~CharacterInstance()
     // Destroy instance zip file as resource location
 	ResourceGroupManager::getSingleton().removeResourceLocation(mUidPath->getUniversalPath(), mResourceGroup);
 	ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+    // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+    ArchiveManager::getSingleton().unload(mUidPath->getUniversalPath());
 
     delete mUidZipArchive;
     delete mUidPath;

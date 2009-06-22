@@ -398,11 +398,10 @@ void ProgressBarWithText::setProgress(Real value)
             Real remaining = (1-value)*deltaTime/deltaValue;
             int min = Math::Floor(remaining/60);
             int sec = Math::Floor(remaining-min*60);
+            char elapsedText[16];
+            _snprintf(elapsedText, sizeof(elapsedText) - 1, "%d:%02d", std::min(999, min), sec);
 
-            m_Txt.setCaption(mCaption + 
-                StringConverter::toString((int)(value*100)) +" % (" + 
-                StringConverter::toString(min) + ":" + 
-                StringConverter::toString(sec) + ")");
+            m_Txt.setCaption(mCaption + StringConverter::toString((int)(value*100)) +" % (" + String(elapsedText) + ")");
         }
         else
         {
@@ -425,6 +424,8 @@ void ProgressBarWithText::detach()
 {
 	m_Bar.detatchFromParent();
 	m_Txt.detatchFromParent();
+    if (mpNodeAll)
+        mpNodeAll->getCreator()->destroySceneNode(mpNodeAll->getName());
 }
 
 #endif

@@ -147,7 +147,7 @@ void GUI_MainMenu::onClick(const String& item)
     // Perform action associated to item selected
     // Submenu File
     if (item == "Exit")
-        mNavigator->disconnect();
+        mNavigator->disconnect(false);
     // Submenu Action
     else if (item == "Talk")
         mNavigator->toggleVoIP();

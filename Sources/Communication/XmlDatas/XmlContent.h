@@ -37,39 +37,31 @@ namespace Solipsis
         typedef std::map<Lod, RefCntPoolPtr<XmlLodContent>> ContentLodMap;
 
     protected:
-
         RefCntPoolPtr<XmlData> mDatas;
 
         ContentLodMap mContentLodMap;
 
     public:
         XmlContent() :
+            mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+        {}
 
-          mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mDatas = RefCntPoolPtr<XmlData>::nullPtr;
+            mContentLodMap.clear();
+        }
 
-          {}
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
+        void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
+        RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mDatas = RefCntPoolPtr<XmlData>::nullPtr;
-              mContentLodMap.clear();
-          }
-
-
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
-
-
-          void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
-          RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
-
-
-          ContentLodMap& getContentLodMap() { return mContentLodMap; }
+        ContentLodMap& getContentLodMap() { return mContentLodMap; }
     };
-
  
     RefCntPoolPtr<XmlContent> RefCntPoolPtr<XmlContent>::nullPtr((XmlContent*)0);
 } // namespace Solipsis

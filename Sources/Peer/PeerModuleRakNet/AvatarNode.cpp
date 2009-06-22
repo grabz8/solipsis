@@ -32,15 +32,15 @@ using namespace CommonTools;
 
 namespace Solipsis {
 
-    //-------------------------------------------------------------------------------------
-    AvatarNode::AvatarNode() :
-mMutex(PTHREAD_MUTEX_INITIALIZER),
-mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
-mFrozen(true),
-mConnectionLost(false),
-Node("avatar"),
-mLastSiteUid(""),
-mEntity(0)
+//-------------------------------------------------------------------------------------
+AvatarNode::AvatarNode() :
+    mMutex(PTHREAD_MUTEX_INITIALIZER),
+    mEvtsMutex(PTHREAD_MUTEX_INITIALIZER),
+    mFrozen(true),
+    mConnectionLost(false),
+    Node("avatar"),
+    mLastSiteUid(""),
+    mEntity(0)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::AvatarNode()");
 }
@@ -440,7 +440,7 @@ bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespS
             if (entity == 0)
                 return true;
             entity->mDirty = false;
-            Entity::removeEntity(entity);
+            entity->cancelFilesFromCacheManager(true);
             pthread_mutex_lock(&mMutex);
             mOwnedEntities.erase(entity->getXmlEntity()->getUid());
             pthread_mutex_unlock(&mMutex);

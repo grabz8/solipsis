@@ -51,7 +51,12 @@ protected:
             // Keyboard
             char c[256];
             fscanf(stdin, "%s", c);
-            if ((*c == 'q') || (*c == 'Q'))
+            if (*c == 'q')
+            {
+                LOGHANDLER_LOGF(LogHandler::VL_INFO, "Quit as soon as possible ...");
+                mRakNetServer->quit(RakNetServer::QMQuitAsap);
+            }
+            else if (*c == 'Q')
             {
                 LOGHANDLER_LOGF(LogHandler::VL_INFO, "Quitting ...");
                 stop();
@@ -61,7 +66,7 @@ protected:
 
     virtual void end()
     {
-        mRakNetServer->quit();
+        mRakNetServer->quit(RakNetServer::QMQuitNow);
     }
 };
 
@@ -83,7 +88,7 @@ BOOL WINAPI ConsoleHandler(DWORD CEvent)
     case CTRL_LOGOFF_EVENT:
     case CTRL_SHUTDOWN_EVENT:
         if (rakNetServer != 0)
-            rakNetServer->quit();
+            rakNetServer->quit(RakNetServer::QMQuitNow);
         // Waiting server is shutting down
         System::sleep(1000);
         break;
@@ -108,6 +113,7 @@ int main(int argc, char *argv[])
     LogHandler::getLogHandler()->setLogFilename("RakNetServer_" + StringHelpers::toString(System::getPID()) + "_"  + System::getDateTimeYYYYMMDDHHMMSS() + ".log");
     LogHandler::getLogHandler()->setVerbosityLevel(LogHandler::VL_DEBUG);
     LOGHANDLER_LOGF(LogHandler::VL_INFO, "Starting RakNet server");
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "(Enter q to quit or Q to force quit)");
 
 #ifdef WIN32
     // Install the console handler

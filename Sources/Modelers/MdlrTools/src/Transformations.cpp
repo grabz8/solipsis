@@ -810,7 +810,7 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
                     if(mPlaneClicked == Transformations::X)
                     {
                         //We can calculate the new position :
-                        //Ogre::LogManager::getSingleton().logMessage("Dist X : " + Ogre::StringConverter::toString((*itrRSQR).distance));
+                        //LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Transformations::getMousePosOnDummyPlane() Dist X : %.2f", (*itrRSQR).distance);
                         Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
                         mRaySceneQuery->clearResults();
                         return pos ;
@@ -824,7 +824,7 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
                     if(mPlaneClicked == Transformations::Y)
                     {
                         //We can calculate the new position :
-                        //Ogre::LogManager::getSingleton().logMessage("Dist Y : " + Ogre::StringConverter::toString((*itrRSQR).distance));
+                        //LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Transformations::getMousePosOnDummyPlane() Dist Y : %.2f", (*itrRSQR).distance);
                         Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
                         mRaySceneQuery->clearResults();
                         return pos ;
@@ -838,7 +838,7 @@ Vector3 Transformations::getMousePosOnDummyPlane (Ray mouseRay)
                     if(mPlaneClicked == Transformations::Z)
                     {
                         //We can calculate the new position :
-                        //Ogre::LogManager::getSingleton().logMessage("Dist Z : " + Ogre::StringConverter::toString((*itrRSQR).distance));
+                        //LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "Transformations::getMousePosOnDummyPlane() Dist Z : %.2f", (*itrRSQR).distance);
                         Vector3 pos = mouseRay.getPoint((*itrRSQR).distance);
                         mRaySceneQuery->clearResults();
                         return pos ;

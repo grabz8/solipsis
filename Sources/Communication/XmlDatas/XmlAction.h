@@ -33,7 +33,6 @@ namespace Solipsis
     protected:
         static Pool mPool;
 
-
     protected:
         ActionType mType;
         EntityUID mSourceEntityUid;
@@ -43,44 +42,42 @@ namespace Solipsis
 
     public:
         XmlAction() :
-          mType(ATNone),
-              mSourceEntityUid(""),
-              mTargetEntityUid(""),
-              mBroadcast(false),
-              mDesc(L"")
-          {}
+            mType(ATNone),
+            mSourceEntityUid(""),
+            mTargetEntityUid(""),
+            mBroadcast(false),
+            mDesc(L"")
+        {}
 
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mType = ATNone;
+            mSourceEntityUid.clear();
+            mTargetEntityUid.clear();
+            mBroadcast = false;
+            mDesc.clear();
+        }
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mType = ATNone;
-              mSourceEntityUid.clear();
-              mTargetEntityUid.clear();
-              mBroadcast = false;
-              mDesc.clear();
-          }
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
+        void setType(const ActionType& type) { mType = type; }
+        ActionType getType() { return mType; }
+        const std::string& getTypeRepr() { return XmlHelpers::convertActionTypeToRepr(mType); }
 
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
+        void setSourceEntityUid(const EntityUID& sourceEntityUid) { mSourceEntityUid = sourceEntityUid; }
+        const EntityUID& getSourceEntityUid() { return mSourceEntityUid; }
 
-          void setType(const ActionType& type) { mType = type; }
-          ActionType getType() { return mType; }
-          const std::string& getTypeRepr() { return XmlHelpers::convertActionTypeToRepr(mType); }
+        void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
+        const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
 
-          void setSourceEntityUid(const EntityUID& sourceEntityUid) { mSourceEntityUid = sourceEntityUid; }
-          const EntityUID& getSourceEntityUid() { return mSourceEntityUid; }
+        void setBroadcast(bool broadcast) { mBroadcast = broadcast; }
+        bool getBroadcast() { return mBroadcast; }
 
-          void setTargetEntityUid(const EntityUID& targetEntityUid) { mTargetEntityUid = targetEntityUid; }
-          const EntityUID& getTargetEntityUid() { return mTargetEntityUid; }
-
-          void setBroadcast(bool broadcast) { mBroadcast = broadcast; }
-          bool getBroadcast() { return mBroadcast; }
-
-          void setDesc(const std::wstring& desc) { mDesc = desc; }
-          const std::wstring& getDesc() { return mDesc; }
+        void setDesc(const std::wstring& desc) { mDesc = desc; }
+        const std::wstring& getDesc() { return mDesc; }
     };
 
     RefCntPoolPtr<XmlAction> RefCntPoolPtr<XmlAction>::nullPtr((XmlAction*)0);

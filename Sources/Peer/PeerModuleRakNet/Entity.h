@@ -72,9 +72,9 @@ public:
 	virtual void deserialize(RakNet::BitStream* bitStream, SerializationType serializationType, SystemAddress sender);
 
     /** See CacheManagerCallback. */
-    virtual void onTransferComplete(const std::string& filename);
+    virtual float onDownloadProgress(const std::string& filename, float progress);
     /** See CacheManagerCallback. */
-    virtual float onTransferProgress(const std::string& filename, float fProgress);
+    virtual float onUploadProgress(const std::string& filename, float progress);
 
     /** Apply or not the gravity. */
     void applyGravity(bool enabled);

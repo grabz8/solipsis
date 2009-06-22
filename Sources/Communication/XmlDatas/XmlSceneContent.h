@@ -30,7 +30,6 @@ namespace Solipsis
 {
     class XMLDATAS_EXPORT XmlSceneContent : public XmlData
     {
-
     protected:
         static Pool mPool;
 
@@ -44,14 +43,12 @@ namespace Solipsis
             mEntryGate.mPosition = Ogre::Vector3::ZERO;
         }
 
-
         static Pool& getStaticPool();
         virtual Pool& getPool() const;
         virtual void clear() {
             mEntryGate.mGravity = false;
             mEntryGate.mPosition = Ogre::Vector3::ZERO;
         }
-
 
         virtual std::string toXmlString() const;
         virtual bool toXmlElt(TiXmlElement& xmlElt) const;
@@ -62,7 +59,6 @@ namespace Solipsis
     };
 
     RefCntPoolPtr<XmlSceneContent> RefCntPoolPtr<XmlSceneContent>::nullPtr((XmlSceneContent*)0);
-
 } // namespace Solipsis
 
 #endif // #ifndef __XmlSceneContent_h__

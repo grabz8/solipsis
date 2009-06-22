@@ -76,49 +76,61 @@ void Entity::deserialize(BitStream *bitStream, SerializationType serializationTy
     RakNetEntityMap& entities = getEntities();
     RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
     if (it == entities.end())
-    {
         addEntity(this);
+    else
+        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
+}
+
+//-------------------------------------------------------------------------------------
+float Entity::onDownloadProgress(const std::string& filename, float progress)
+{
+    float totalProgress = RakNetEntity::onDownloadProgress(filename, progress);
+
+    // Aborted ?
+    if (progress == -2.0f)
+        return totalProgress;
+
+    // Completed or in progress ?
+    if (totalProgress == 1.0f)
+    {
+        if (!mMissingFiles.empty())
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Entity::onDownloadProgress() totalProgress=%.2f but still missing files !", totalProgress);
+            return totalProgress;
+        }
+
+        mXmlEntity->setDownloadProgress(1.0f);
+        mLastDeserializedDefinedAttributes |= XmlEntity::DADownloadProgress;
+        mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
     }
     else
     {
-        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
+        mXmlEntity->setDownloadProgress(totalProgress);
+        mLastDeserializedDefinedAttributes |= XmlEntity::DADownloadProgress;
     }
-}
-
-//-------------------------------------------------------------------------------------
-float Entity::onTransferProgress(const std::string& filename, float fProgress)
-{
-    float fGlobalProgress = RakNetEntity::onTransferProgress(filename, fProgress);
-    mXmlEntity->setDownloadProgress(fGlobalProgress);
-    mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
-
-    RakNetEntityMap& entities = getEntities();
-    RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
-    if (it != entities.end())
-    {
-        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
-    }
-
-    return fGlobalProgress;
-}
-
-
-//-------------------------------------------------------------------------------------
-void Entity::onTransferComplete(const std::string& filename)
-{
-    RakNetEntity::onTransferComplete(filename);
-
-    if (!mMissingFiles.empty())
-        return;
-
-    mXmlEntity->setDownloadProgress(1.0f);
-    mLastDeserializedDefinedAttributes |= XmlEntity::DAProgress;
-    mLastDeserializedDefinedAttributes |= XmlEntity::DAContent;
 
     RakNetEntityMap& entities = getEntities();
     RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
     if (it != entities.end())
         Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
+
+    return totalProgress;
+}
+
+//-------------------------------------------------------------------------------------
+float Entity::onUploadProgress(const std::string& filename, float progress)
+{
+    float totalProgress = RakNetEntity::onUploadProgress(filename, progress);
+
+    mXmlEntity->setUploadProgress(totalProgress);
+    mLastDeserializedDefinedAttributes |= XmlEntity::DAUploadProgress;
+
+    RakNetEntityMap& entities = getEntities();
+    RakNetEntityMap::const_iterator it = entities.find(mXmlEntity->getUid());
+    if (it != entities.end())
+        Peer::getSingleton().getAvatarNode()->onUpdatedEntity(this);
+
+    return totalProgress;
 }
 
 //-------------------------------------------------------------------------------------

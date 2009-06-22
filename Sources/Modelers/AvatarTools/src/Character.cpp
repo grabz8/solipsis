@@ -639,6 +639,8 @@ Character::~Character()
     // Destroy zip file as resource location
 	ResourceGroupManager::getSingleton().removeResourceLocation(mPath->getUniversalPath(), mResourceGroup);
 	ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+    // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+    ArchiveManager::getSingleton().unload(mPath->getUniversalPath());
 
     delete mPath;
 }

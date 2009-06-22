@@ -310,22 +310,23 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     }
 
     // is editing the avatar ?
-    else if (mNavigator->getState() == Navigator::SAvatarEdit && avatarEditor != 0)
+    else if (avatarEditor != 0)
     {
         switch (evt.mKey)
         {
         case KC_F8:
-            if (/*modeler->isSelectionLocked() &&*/ !GUI_Avatar::isPanelVisible())
+            if ((mNavigator->getState() == Navigator::SInWorld))
             {
-                GUI_AvatarProperties::hidePanel();
+                mNavigator->setCameraMode(Navigator::CMAroundPerson);
                 GUI_Avatar::createAndShowPanel();
+                return OgreFrameListener::keyPressed(evt);
             }
-            else 
+            else if (mNavigator->getState() == Navigator::SAvatarEdit)
             {
                 GUI_Avatar::unload();
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
+                return OgreFrameListener::keyPressed(evt);
             }
-            return OgreFrameListener::keyPressed(evt);
         }
     }
 
@@ -401,7 +402,7 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
                 mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 			}
 			else
-				mNavigator->disconnect();
+				mNavigator->disconnect(false);
             return true;
         }
         break;

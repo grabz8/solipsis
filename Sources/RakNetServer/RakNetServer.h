@@ -40,6 +40,12 @@ class RakNetServer
 private:
     static RakNetServer* ms_Singleton;
 
+public:
+    typedef int QuitMode;
+    static const QuitMode QMQuitNo;
+    static const QuitMode QMQuitNow;
+    static const QuitMode QMQuitAsap;
+
 protected:
     /// Node identifier of the site node
     NodeId mSiteNodeId;
@@ -61,7 +67,7 @@ protected:
     /// Is running
     bool mRunning;
     /// Flag to quit
-    bool mQuit;
+    QuitMode mQuit;
 
     /// Statistics manager
     CommonTools::StatsManager mStatsManager;
@@ -81,7 +87,7 @@ public:
     /** Return true if running. */
     bool isRunning() { return mRunning; }
     /** Call this to quit the loop. */
-    void quit() { mQuit = true; }
+    void quit(QuitMode mode) { mQuit = mode; }
     /** Finalize the server. */
     void finalize();
 

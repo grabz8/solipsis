@@ -52,8 +52,7 @@ Scene::Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
     OgrePeer(xmlEntity, isLocal),
     mSceneNode(0),
     mStaticGeometry(0),
-    mOgreMaxScene(0),
-    mpBar(0)
+    mOgreMaxScene(0)
 {
 }
 
@@ -206,45 +205,50 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         // Optimize by converting it into static geometry
         convertToStaticGeometry(sceneNode);
     }
-    if (definedAttributes & XmlEntity::DAProgress)
+    if (definedAttributes & XmlEntity::DADownloadProgress)
     {
         if (xmlEntity->getDownloadProgress() < 1.0f)
         {
             Avatar* pUserAvatar = Navigator::getSingletonPtr()->getUserAvatar();
             if (pUserAvatar)
             {
-                if (!mpBar)
+                if (mProgressBar == 0)
                 {
-                    mpBar = new ProgressBarWithText("MainSceneBar", "Scene Loading : ", false);
-                    mpBar->setBarSize(2.5,0.3);
-                    mpBar->setTxtVerticalPos(0);
-                    mpBar->setTxtHozizontalPosition(false, -120);
-                    mpBar->setPosition(1.7); 
-                    mpBar->showRemainingTime(true);
-                     
-                    mpBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
-                    mpBar->setTxtScale(0.1f);
-                    mpBar->attach(pUserAvatar->getSceneNode());  
-                }    
-                else 
-                {
-                    mpBar->setProgress(xmlEntity->getDownloadProgress());
+                    mProgressBar = new ProgressBarWithText(mXmlEntity->getUid(), "Scene downloading : ", false);
+                    mProgressBar->setBarSize(2.5, 0.3);
+                    mProgressBar->setTxtVerticalPos(0);
+                    mProgressBar->setTxtHozizontalPosition(false, -120);
+                    mProgressBar->setPosition(1.7);
+                    mProgressBar->setPosition(pUserAvatar->getEntity()->getBoundingBox().getSize().y);
+                    mProgressBar->showRemainingTime(true);
+                    mProgressBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
+                    mProgressBar->setTxtScale(0.1f);
+                    mProgressBar->attach(pUserAvatar->getSceneNode());
                 }
+                mProgressBar->setProgress(xmlEntity->getDownloadProgress());
             } 
         }
         else
         {
-            if (mpBar) 
+            if (mProgressBar != 0)
             {
-                mpBar->detach();
-                delete mpBar;
-                mpBar = 0;
+                mProgressBar->detach();
+                delete mProgressBar;
+                mProgressBar = 0;
             }
         }
    
-        OGRE_LOG("Progress for Scene " + 
-            xmlEntity->getUid() + " : " + 
-            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+        mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
+        OGRE_LOG("Download progress for Scene " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getDownloadProgress()));
+    }
+    if (definedAttributes & XmlEntity::DAUploadProgress)
+    {
+        mXmlEntity->setUploadProgress(xmlEntity->getUploadProgress());
+        OGRE_LOG("Upload progress for Scene " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getUploadProgress()));
     }
 
     return true;
@@ -350,6 +354,8 @@ void Scene::destroy()
 
 	    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+        // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+        ArchiveManager::getSingleton().unload(mResourceLocation);
     } 
 
     else if (NO_OGREMAX_STATIC_GEOM && mOgreMaxScene != 0)
@@ -371,6 +377,8 @@ void Scene::destroy()
 
         ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
         ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+        // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+        ArchiveManager::getSingleton().unload(mResourceLocation);
     }
 
     if (mSceneNode != 0)

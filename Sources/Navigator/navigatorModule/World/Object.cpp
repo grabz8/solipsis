@@ -37,14 +37,10 @@ using namespace CommonTools;
 //-------------------------------------------------------------------------------------
 
 Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D) :
-    OgrePeer(xmlEntity, isLocal)
-,   mObject3D(object3D)
-,   mpBox(0)
-,   mLocalNode(NULL)
+    OgrePeer(xmlEntity, isLocal),
+    mObject3D(object3D)
 
 {
-    mResourceGroup = xmlEntity->getUid() + "Resources";
-    ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
 }
 
 //-------------------------------------------------------------------------------------
@@ -60,25 +56,28 @@ Object::~Object()
     }
 
     if (!mResourceLocation.empty())
+    {
         ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-    if (!mResourceGroup.empty())
-        ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
-
-    if (mLocalNode)
-    {
-        mLocalNode->detachAllObjects();
-        mLocalNode->getCreator()->destroySceneNode(mLocalNode->getName());
-        mLocalNode = NULL;
-    }
-    if (mpBox)
-    {
-        delete mpBox;
+        if (!mResourceGroup.empty())
+            ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+        // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+        ArchiveManager::getSingleton().unload(mResourceLocation);
+        mResourceLocation.clear();
+        mResourceGroup.clear();
     }
 }
 
 //-------------------------------------------------------------------------------------
 void Object::onObjectSave()
 {
+    // Update entity position
+    mXmlEntity->setPosition(mObject3D->getPosition());
+    AxisAlignedBox aabbox;
+    mObject3D->getAABoundingBox(aabbox);
+    mXmlEntity->setAABoundingBox(aabbox);
+    if (mLocalNode != 0)
+        mLocalNode->setPosition(mXmlEntity->getPosition());
+
     // Get the content for LOD 0
     XmlContent::ContentLodMap& contentLodMap = mXmlEntity->getContent()->getContentLodMap();
     XmlLodContent::LodContentFileList& lodContent0FileList = contentLodMap[0]->getLodContentFileList();
@@ -99,7 +98,6 @@ void Object::update(Real timeSinceLastFrame)
 }
 
 //-------------------------------------------------------------------------------------
-
 bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
 {
     // Action applied by our local avatar ?
@@ -133,14 +131,14 @@ bool Object::action(RefCntPoolPtr<XmlAction>& xmlAction)
 }
 
 //-------------------------------------------------------------------------------------
-
 bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
     XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
 
-    if (!mLocalNode)
+    if (mLocalNode == 0)
     {
-        mLocalNode = Modeler::getSceneManager()->getRootSceneNode()->createChildSceneNode( String(xmlEntity->getUid()) + "_tempObjects.node" );
+        mLocalNode = Modeler::getSceneManager()->getRootSceneNode()->createChildSceneNode(String(xmlEntity->getUid()) + "_localNode");
+        mLocalNode->setPosition(mXmlEntity->getPosition());
     }
 
     if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
@@ -153,9 +151,16 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
             Selection *selection = modeler->getSelection();
             selection->remove3DObject(mObject3D);
 
-            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
             if (!mResourceLocation.empty())
-	            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+            {
+                ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+                if (!mResourceGroup.empty())
+                    ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+                // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+                ArchiveManager::getSingleton().unload(mResourceLocation);
+                mResourceLocation.clear();
+                mResourceGroup.clear();
+            }
         }
 
         String pathname = "";
@@ -167,15 +172,24 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         mResourceLocation = pathname;
         try
         {
+            mResourceGroup = xmlEntity->getUid() + "Resources";
+            ResourceGroupManager::getSingleton().createResourceGroup(mResourceGroup);
             ResourceGroupManager::getSingleton().addResourceLocation(mResourceLocation, "Zip", mResourceGroup);
             ResourceGroupManager::getSingleton().initialiseResourceGroup(mResourceGroup);
         }
         catch (Ogre::Exception e)
         {
             OGRE_LOG("Object::updateEntity() caught Ogre exception : " + e.getFullDescription());
-            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
-            ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-            mResourceLocation.clear();
+            if (!mResourceLocation.empty())
+            {
+                ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+                if (!mResourceGroup.empty())
+                    ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+                // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+                ArchiveManager::getSingleton().unload(mResourceLocation);
+                mResourceLocation.clear();
+                mResourceGroup.clear();
+            }
             return false;
         }
 
@@ -184,18 +198,21 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         if (!modeler->XMLLoad(pathname, newObjects))
         {
             OGRE_LOG("Object::updateEntity() Unable to load .sof object file !");
-            ResourceGroupManager::getSingleton().clearResourceGroup(mResourceGroup);
             ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+            ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+            // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+            ArchiveManager::getSingleton().unload(mResourceLocation);
             mResourceLocation.clear();
+            mResourceGroup.clear();
             return false;
         }
         mObject3D = *(newObjects.begin());
     }
     if (definedAttributes & XmlEntity::DAAABoundingBox)
     {
-//         if (mpBox == NULL)
+//         if (mBBox == NULL)
 //         {
-//             const Ogre::AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
+//             const AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
 //             Vector3 size = bbBox.getSize();
 //             if (size.x == 0)    
 //                 size.x = 1;
@@ -206,22 +223,54 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 // 
 //             size.y = 800;
 // 
-//             mpBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", size, false);
-//             mLocalNode->attachObject(mpBox);
+//             mBBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", size, false);
+//             mLocalNode->attachObject(mBBox);
 //         }
     }
     if (definedAttributes & XmlEntity::DAPosition)
     {
         mLocalNode->setPosition(mXmlEntity->getPosition());
     }
-    if (definedAttributes & XmlEntity::DAProgress)
+    if (definedAttributes & XmlEntity::DADownloadProgress)
     {
-        OGRE_LOG("Progress for Object " + 
-            xmlEntity->getUid() + " : " + 
-            StringConverter::toString((Real) xmlEntity->getDownloadProgress()));
+        mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
+        OGRE_LOG("Download progress for Object " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getDownloadProgress()));
     }
-    
+    if (definedAttributes & XmlEntity::DAUploadProgress)
+    {
+        if (xmlEntity->getUploadProgress() < 1.0f)
+        {
+            if (mProgressBar == 0)
+            {
+                mProgressBar = new ProgressBarWithText(mXmlEntity->getUid(), "Object uploading : ", false);
+                mProgressBar->setBarSize(2.5,0.3);
+                mProgressBar->setTxtVerticalPos(0);
+                mProgressBar->setTxtHozizontalPosition(false, -120);
+                mProgressBar->setPosition(mXmlEntity->getAABoundingBox().getSize().y);
+                mProgressBar->showRemainingTime(true);
+                mProgressBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
+                mProgressBar->setTxtScale(0.1f);
+                mProgressBar->attach(mLocalNode);
+            }
+            mProgressBar->setProgress(xmlEntity->getUploadProgress());
+        }
+        else
+        {
+            if (mProgressBar != 0)
+            {
+                mProgressBar->detach();
+                delete mProgressBar;
+                mProgressBar = 0;
+            }
+        }
 
+        mXmlEntity->setUploadProgress(xmlEntity->getUploadProgress());
+        OGRE_LOG("Upload progress for Object " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getUploadProgress()));
+    }
 
     return true;
 }

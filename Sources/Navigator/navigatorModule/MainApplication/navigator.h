@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World/Object.h"
 #include "OgrePeerManager.h"
 #include "NavigatorGUI/NavigatorGUI.h"
+#include "NavigatorGUI/GUI_MessageBox.h"
 #include "Scripting/LuaBinding.h"
 #include "Scripting/NavigatorLua.h"
 #include "Selection.h"
@@ -285,7 +286,11 @@ public:
 
     bool quit();
     bool connect();
-    bool disconnect();
+    void disconnect(bool force);
+    class DisconnectMsgBoxResponse : public GUI_MessageBoxResponse {
+        virtual void onResponse(const std::string& response);
+    };
+    DisconnectMsgBoxResponse disconnectMsgBoxResponse;
     bool contextItemSelected(const String& item);
     bool sendMessage(const String& message);
     bool addNaviURLUpdatePending(const String& naviName, const String& url);

@@ -30,10 +30,8 @@ namespace Solipsis
 {
     class XMLDATAS_EXPORT XmlLodContent : public XmlData
     {
-
     protected:
         static Pool mPool;
-
 
     public:
         typedef std::list<LodContentFileStruct> LodContentFileList;
@@ -46,31 +44,28 @@ namespace Solipsis
 
     public:
         XmlLodContent() :
-          mDatas(RefCntPoolPtr<XmlData>::nullPtr)
-          {}
+            mDatas(RefCntPoolPtr<XmlData>::nullPtr)
+        {}
 
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mLevel = 0;
+            mDatas = RefCntPoolPtr<XmlData>::nullPtr;
+            mLodContentFileList.clear();
+        }
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mLevel = 0;
-              mDatas = RefCntPoolPtr<XmlData>::nullPtr;
-              mLodContentFileList.clear();
-          }
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
+        void setLevel(Lod level) { mLevel = level; }
+        Lod getLevel() { return mLevel; }
 
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
+        void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
+        RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
 
-          void setLevel(Lod level) { mLevel = level; }
-          Lod getLevel() { return mLevel; }
-
-
-          void setDatas(RefCntPoolPtr<XmlData>& datas) { mDatas = datas; }
-          RefCntPoolPtr<XmlData>& getDatas() { return mDatas; }
-
-          LodContentFileList& getLodContentFileList() { return mLodContentFileList; }
+        LodContentFileList& getLodContentFileList() { return mLodContentFileList; }
     };
 
     RefCntPoolPtr<XmlLodContent> RefCntPoolPtr<XmlLodContent>::nullPtr((XmlLodContent*)0);

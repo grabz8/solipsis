@@ -165,15 +165,16 @@ void NavigatorGUI::inWorld()
     GUI_StatusBar::createAndShowPanel();
 }
 
- void NavigatorGUI::connectionServerError()
+//-------------------------------------------------------------------------------------
+void NavigatorGUI::connectionServerError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionError()");
-    Navigator::getSingletonPtr()->disconnect();
+    Navigator::getSingletonPtr()->disconnect(true);
 
-    GUI_MessageBox::getMsgBox()->show("Network error", "Connection to server error...", 
+    GUI_MessageBox::getMsgBox()->show("Network error",
+        "Connection to server error...", 
         GUI_MessageBox::MBB_OK, 
         GUI_MessageBox::MBB_EXCLAMATION);
-
 }
 
 //-------------------------------------------------------------------------------------
@@ -181,12 +182,13 @@ void NavigatorGUI::connectionLostError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionLostError()");
 
-    GUI_MessageBox::getMsgBox()->show(
-        "Network error", "Peer lost its connection, re-connection in progress ...", 
+    GUI_MessageBox::getMsgBox()->show("Network error",
+        "Peer lost its connection, re-connection in progress ...", 
         GUI_MessageBox::MBB_OK, 
         GUI_MessageBox::MBB_EXCLAMATION);
 }
 
+//-------------------------------------------------------------------------------------
 
 
 //-------------------------------------------------------------------------------------
@@ -227,11 +229,13 @@ void NavigatorGUI::registerGuiPanel(GUI_Panel *pPanel)
     mNaviGui->m_panels[pPanel->getPanelName()] = pPanel;
 }
 
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::unregisterGuiPanel(GUI_Panel *pPanel)
 {
     mNaviGui->m_panels.erase(pPanel->getPanelName());//  .remove(pPanel->getPanelName());
 }
 
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::destroyAllRegisteredPanels()
 {
     for (std::map<std::string, GUI_Panel *>::iterator it = mNaviGui->m_panels.begin(); it != mNaviGui->m_panels.end(); it++)
@@ -240,6 +244,7 @@ void NavigatorGUI::destroyAllRegisteredPanels()
     }
 }
 
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::destroyCurrentPanel()
 {
     if (mNaviGui->m_pCurrentPanel)
@@ -247,3 +252,5 @@ void NavigatorGUI::destroyCurrentPanel()
         mNaviGui->m_pCurrentPanel->destroy();
     }
 }
+
+//-------------------------------------------------------------------------------------

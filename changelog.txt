@@ -1150,3 +1150,14 @@ NaviManager injectMouse on Navi materials improved
 Focus lost management improved by using legacy Ogre method setDeactivateOnFocusChange()
 
 ---------------------------
+26/05/09
+
+bug fix: sof archive is now cleaned when re-saved (old textures are removed)
+bug fix: deleting 1 obj during its upload resolved by adding cancelFilesFromCacheManager(), reception is cancelled but
+send cannot be cancelled until RakNet v4
+bug fix: only fully downloaded content entities are saved as present in 1 site node
+Upload progress added to prevent stopping peer/navigator before upload is over + upload bar displayed
+RakNetServer is now quitting ASAP if some download/upload are in progress, Q to force Quit
+No more SOL.log
+
+---------------------------

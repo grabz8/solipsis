@@ -127,6 +127,9 @@ public:
     OgrePeersMap::iterator getOgrePeersIteratorEnd() { return mOgrePeersMap.end(); }
     EvtsList& getEvtsToSendList() { return mEvtsList; }
 
+    /** Returns true there are pending upload of some entities' contents */
+    bool havePendingUpload();
+
 protected:
 
     virtual OgrePeer* createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity);

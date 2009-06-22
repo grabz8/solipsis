@@ -30,7 +30,6 @@ namespace Solipsis
 {
     class XMLDATAS_EXPORT XmlEvt : public XmlData
     {
-
     protected:
         static Pool mPool;
 
@@ -40,12 +39,13 @@ namespace Solipsis
         std::string mCommand;
 
     public:
-        XmlEvt() :  mType(ETNewEntity),
+        XmlEvt() :
+            mType(ETNewEntity),
             mDatas(RefCntPoolPtr<XmlData>::nullPtr)
         {}
 
         XmlEvt(const EventType& type) :
-        mType(type),
+            mType(type),
             mDatas(RefCntPoolPtr<XmlData>::nullPtr)
         {}
 
@@ -71,10 +71,7 @@ namespace Solipsis
         const std::string& getCommand() { return mCommand; }
     };
 
-
-
     RefCntPoolPtr<XmlEvt> RefCntPoolPtr<XmlEvt>::nullPtr((XmlEvt*)0);
-
 } // namespace Solipsis
 
 #endif // #ifndef __XmlEvt_h__

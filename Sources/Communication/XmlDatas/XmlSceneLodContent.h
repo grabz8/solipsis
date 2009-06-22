@@ -30,7 +30,6 @@ namespace Solipsis
 {
     class XMLDATAS_EXPORT XmlSceneLodContent : public XmlData
     {
-
     protected:
         static Pool mPool;
 
@@ -40,35 +39,33 @@ namespace Solipsis
 
     public:
         XmlSceneLodContent() :
-          mMainFilename(""),
-              mCollision("")
-          {}
-          XmlSceneLodContent(const std::string& mainFilename, const std::string& collision) :
-          mMainFilename(mainFilename),
-              mCollision(collision)
-          {}
+            mMainFilename(""),
+            mCollision("")
+        {}
+        XmlSceneLodContent(const std::string& mainFilename, const std::string& collision) :
+            mMainFilename(mainFilename),
+            mCollision(collision)
+        {}
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mMainFilename.clear();
-              mCollision.clear();
-          }
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mMainFilename.clear();
+            mCollision.clear();
+        }
 
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
+        void setMainFilename(const std::string& mainFilename) { mMainFilename = mainFilename; }
+        const std::string& getMainFilename() { return mMainFilename; }
 
-          void setMainFilename(const std::string& mainFilename) { mMainFilename = mainFilename; }
-          const std::string& getMainFilename() { return mMainFilename; }
-
-          void setCollision(const std::string& collision) { mCollision = collision; }
-          const std::string& getCollision() { return mCollision; }
+        void setCollision(const std::string& collision) { mCollision = collision; }
+        const std::string& getCollision() { return mCollision; }
     };
 
     RefCntPoolPtr<XmlSceneLodContent> RefCntPoolPtr<XmlSceneLodContent>::nullPtr((XmlSceneLodContent*)0);
-
 } // namespace Solipsis
 
 #endif // #ifndef __XmlSceneLodContent_h__

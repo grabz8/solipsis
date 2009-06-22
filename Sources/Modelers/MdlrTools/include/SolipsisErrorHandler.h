@@ -41,9 +41,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 #include <direct.h>
 
-namespace Solipsis {
+#include <Ogre.h>
 
 using namespace Ogre;
+
+namespace Solipsis {
 
 // Increment if there are major upgrades 
 #define SOLMODVERSION "1.0.1" 
@@ -57,48 +59,6 @@ using namespace Ogre;
 
 typedef std::vector<unsigned int> uintvector;
 typedef std::vector<Real> realvector;
-
-/**
- * Write a message in the SOLIPSIS log file
- *
- *	\brief
- *
- *		Decorates and add a message in the SOLIPSIS log file
- *			- A message is composed of 2 parts (ex for inserting fileNames...)	
- *			- Add date and time at the beginning of the message 
- *			- Add the type of the message 
- *
- *	\param type = The type of the message : 0 for info, 1 for warning, 2 for error 
- *	\param message  = The first part of the message to insert
- *	\param message2 = The sond part of the message to insert
- */
-void insertInLog(int type,const char *message,const char* message2);
-
-/**
- * Write an error message in the SOLIPSIS log file
- *
- *	\param message  = The first part of the message to insert
- *	\param message2 = The sond part of the message to insert
- */
-void SOLIPSISERROR(const char *message,const char* message2 = NULL);
-
-
-/**
- * Write an warning message in the SOLIPSIS log file
- *
- *	\param message  = The first part of the message to insert
- *	\param message2 = The sond part of the message to insert
- */
-void SOLIPSISWARNING(const char *message,const char* message2 = NULL);
-
-/**
- * Write an warning message in the SOLIPSIS log file
- *
- *	\param message  = The first part of the message to insert
- *	\param message2 = The sond part of the message to insert
- */
-void SOLIPSISINFO(const char *message,const char* message2 = NULL);
-
 
 /**
  * Substitute a substring in another one 

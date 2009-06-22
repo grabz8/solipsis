@@ -26,7 +26,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <XmlEntity.h>
 #include <XmlAction.h>
-#include "Ogre.h"
+#include <Ogre.h>
+#include "OgreGraphicObjects/ProgressBar.h"
+#include "OgreGraphicObjects/MovableBox.h"
 
 using namespace Ogre;
 
@@ -44,6 +46,14 @@ protected:
     bool mIsLocal;
     /// Level of detail
     int mLod;
+
+    // When loading this box replace the bounding box
+    MovableBox *mBBox;
+    // Used only for bounding box
+    SceneNode *mLocalNode;
+
+    // progress Bar for downloading/uploading
+    ProgressBarWithText *mProgressBar;
 
 public:
     /** Constructor.

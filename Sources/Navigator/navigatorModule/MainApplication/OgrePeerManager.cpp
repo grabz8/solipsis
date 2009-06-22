@@ -314,6 +314,7 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
 
         // Create the object
         Object* peerObject = new Object(xmlEntity, true, object3D);
+        peerObject->onObjectSave();
 
         // Store it
         mOgrePeersMap[xmlEntity->getUid()] = peerObject;
@@ -341,6 +342,7 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         xmlEntity->setUid(object->getXmlEntity()->getUid());
         xmlEntity->setType(object->getXmlEntity()->getType());
         xmlEntity->setVersion(object->getXmlEntity()->getVersion());
+        xmlEntity->setPosition(object->getXmlEntity()->getPosition());
         xmlEntity->setContent(object->getXmlEntity()->getContent());
 
         // Send updated entity event
@@ -428,7 +430,16 @@ bool OgrePeerManager::onUserAvatarSave()
 }
 
 //-------------------------------------------------------------------------------------
+bool OgrePeerManager::havePendingUpload()
+{
+    for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
+        if (ogrePeer->second->getXmlEntity()->getUploadProgress() < 1.0f)
+            return true;
 
+    return false;
+}
+
+//-------------------------------------------------------------------------------------
 OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
     if (mSceneMgr == 0)
@@ -481,7 +492,6 @@ OgrePeer* OgrePeerManager::createAvatarNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-
 OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
     bool isLocal = (xmlEntity->getOwner() == mNodeId);
@@ -494,7 +504,6 @@ OgrePeer* OgrePeerManager::createSceneNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 }
 
 //-------------------------------------------------------------------------------------
-
 OgrePeer* OgrePeerManager::createObjectNode(RefCntPoolPtr<XmlEntity>& xmlEntity)
 {
     bool isLocal = (xmlEntity->getOwner() == mNodeId);

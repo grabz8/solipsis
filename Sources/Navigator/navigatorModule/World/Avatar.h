@@ -125,8 +125,7 @@ public:
     /** Destructor. */
     virtual ~Avatar();
 
-    /** Gets the updated entity. */
-
+    /** Get the updated entity. */
     virtual RefCntPoolPtr<XmlEntity>& getUpdatedXmlEntity()
     {
         if (isLocal() && mUpdatedXmlEntity->getDefinedAttributes() & (

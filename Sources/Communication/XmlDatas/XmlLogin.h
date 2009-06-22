@@ -43,7 +43,7 @@ namespace Solipsis
         XmlLogin()
         {}
         XmlLogin(const std::string& username, const std::string& worldHost, unsigned short worldPort, const NodeId& nodeId) :
-        mUsername(username),
+            mUsername(username),
             mWorldHost(worldHost),
             mWorldPort(worldPort),
             mNodeId(nodeId)
@@ -74,7 +74,6 @@ namespace Solipsis
         void setNodeId(const NodeId& nodeId) { mNodeId = nodeId; }
         const NodeId& getNodeId() { return mNodeId; }
     };
-
  
     RefCntPoolPtr<XmlLogin> RefCntPoolPtr<XmlLogin>::nullPtr((XmlLogin*)0);
 } // namespace Solipsis

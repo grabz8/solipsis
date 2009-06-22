@@ -38,6 +38,10 @@ namespace Solipsis {
 
 RakNetServer* RakNetServer::ms_Singleton = 0;
 
+const RakNetServer::QuitMode RakNetServer::QMQuitNo = 0;
+const RakNetServer::QuitMode RakNetServer::QMQuitNow = 1;
+const RakNetServer::QuitMode RakNetServer::QMQuitAsap = 2;
+
 //-------------------------------------------------------------------------------------
 RakNetServer::RakNetServer(int argc, char** argv) :
     mMediaCachePath(""),
@@ -47,7 +51,7 @@ RakNetServer::RakNetServer(int argc, char** argv) :
     mSiteNodeId("11112222"),
     mSiteNode(0),
     mRunning(false),
-    mQuit(false)
+    mQuit(QMQuitNo)
 {
     for (int iarg=1; iarg < argc; iarg++)
     {
@@ -138,11 +142,12 @@ void RakNetServer::run()
 {
     RakPeerInterface *RakPeer = mRakNetConnection.getRakPeer();
     Packet *packet;
+    bool stillPendingDownloads = false, stillPendingUploads = false;
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run()");
 
     mRunning = true;
-    while (!mQuit)
+    while (mQuit != QMQuitNow)
     {
         // process packets
         for (packet = RakPeer->Receive(); packet; RakPeer->DeallocatePacket(packet), packet = RakPeer->Receive())
@@ -155,11 +160,11 @@ void RakNetServer::run()
             {
             case ID_CONNECTION_ATTEMPT_FAILED:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_ATTEMPT_FAILED from %s", packet->systemAddress.ToString());
-                mQuit = true;
+                mQuit = QMQuitNow;
                 break;
             case ID_NO_FREE_INCOMING_CONNECTIONS:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_NO_FREE_INCOMING_CONNECTIONS from %s", packet->systemAddress.ToString());
-                mQuit = true;
+                mQuit = QMQuitNow;
                 break;
             case ID_CONNECTION_REQUEST_ACCEPTED:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_REQUEST_ACCEPTED from %s", packet->systemAddress.ToString());
@@ -175,12 +180,16 @@ void RakNetServer::run()
                 mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_DISCONNECTION, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetEntity::deleteByAddressAndType(packet->systemAddress, ETAvatar);
+                mRakNetConnection.getCacheManager()->removeConnection(packet->systemAddress);
+                RakNetEntity::deleteEntitiesIfContentDownloadAborted();
                 break;
             case ID_CONNECTION_LOST:
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetServer::run() ID_CONNECTION_LOST from %s", packet->systemAddress.ToString());
                 mStatsManager.addEvent(StatsManager::SET_RELATIVE, StatsManager::SEI_SERVER_CLIENT_LOST, std::string(packet->systemAddress.ToString()));
                 // Destruction broadcast done automatically in the destructor, from Replica2
                 RakNetEntity::deleteByAddressAndType(packet->systemAddress, ETAvatar);
+                mRakNetConnection.getCacheManager()->removeConnection(packet->systemAddress);
+                RakNetEntity::deleteEntitiesIfContentDownloadAborted();
                 break;
             case RakNetConnection::ID_CM_REQUESTING_FILETRANSFER:
                 {
@@ -234,6 +243,29 @@ void RakNetServer::run()
         // Update replication manager
         mRakNetConnection.getReplicationManager()->update();
 
+        // Update cache manager
+        mRakNetConnection.getCacheManager()->update();
+
+        // Is it possible to quit now if expected ?
+        if (mQuit == QMQuitAsap)
+        {
+            if (mRakNetConnection.getCacheManager()->havePendingDownload())
+            {
+                if (!stillPendingDownloads)
+                    LOGHANDLER_LOGF(LogHandler::VL_INFO, "RakNetServer::run() Waiting to quit ... still pending downloads");
+                stillPendingDownloads = true;
+                stillPendingUploads = false;
+            }
+            else if (mRakNetConnection.getCacheManager()->havePendingUpload())
+            {
+                if (!stillPendingUploads)
+                    LOGHANDLER_LOGF(LogHandler::VL_INFO, "RakNetServer::run() Waiting to quit ... still pending uploads");
+                stillPendingUploads = true;
+                stillPendingDownloads = false;
+            }
+            else mQuit = QMQuitNow;
+        }
+
         System::sleep(100);
     }
 
@@ -248,7 +280,7 @@ void RakNetServer::finalize()
     // Quit the loop
     if (mRunning)
     {
-        quit();
+        quit(QMQuitNow);
         while (mQuit)
             System::sleep(100);
     }

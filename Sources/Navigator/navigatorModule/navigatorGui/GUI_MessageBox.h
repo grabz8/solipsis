@@ -24,13 +24,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __GUI_MessageBox_h__
 #define __GUI_MessageBox_h__
 
-#include "NavigatorGui.h"
 #include "GUI_Panel.h"
-#include "MainApplication/Navigator.h"
 
 using namespace NaviLibrary;
 
 namespace Solipsis {
+    /** This class handles user response on message box
+    */
+    class GUI_MessageBoxResponse
+    {
+    public:
+        /// Called on message box user response
+        virtual void onResponse(const std::string& response) = 0;
+    };
+
     /** This class manages all Graphical User Interfaces of the Navigator.
     */
     class GUI_MessageBox : public GUI_Panel
@@ -38,8 +45,8 @@ namespace Solipsis {
     public:
         enum MsgBoxButtons {
             MBB_OK = 1,
-            MBB_CANCEL = MBB_OK >> 1,
-            MBB_YESNO = MBB_CANCEL >> 1
+            MBB_CANCEL = MBB_OK<<1,
+            MBB_YESNO = MBB_CANCEL<<1
         };
 
         enum MsgBoxIcon {
@@ -54,7 +61,8 @@ namespace Solipsis {
         static bool show(const std::string& titleText, 
             const std::string& msgText, 
             MsgBoxButtons buttons, 
-            MsgBoxIcon icon);
+            MsgBoxIcon icon,
+            GUI_MessageBoxResponse *msgBoxResponse = 0);
 
         static GUI_MessageBox * getMsgBox()
         {
@@ -67,7 +75,8 @@ namespace Solipsis {
         bool protectedShow(const std::string& titleText, 
             const std::string& msgText, 
             MsgBoxButtons buttons, 
-            MsgBoxIcon icon);
+            MsgBoxIcon icon,
+            GUI_MessageBoxResponse *msgBoxResponse);
         
         
         GUI_MessageBox() : GUI_Panel("uimsgbox")
@@ -85,6 +94,7 @@ namespace Solipsis {
         std::string mMsgBoxMsgText;
         MsgBoxButtons mMsgBoxButtons;
         MsgBoxIcon mMsgBoxIcon;
+        GUI_MessageBoxResponse *mMsgBoxResponse;
 
         void onPageLoaded(const NaviData& naviData);
         void onResponse(const NaviData& naviData);

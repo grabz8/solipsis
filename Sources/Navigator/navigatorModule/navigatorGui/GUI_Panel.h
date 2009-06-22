@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __GUI_LOGIN_h__
 
 #include "NavigatorGui.h"
-#include "MainApplication/Navigator.h"
 
 using namespace NaviLibrary;
 

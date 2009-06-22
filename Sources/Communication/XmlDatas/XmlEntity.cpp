@@ -57,12 +57,14 @@ std::string XmlEntity::toXmlString() const
         XmlHelpers::ostreamVector3(s << "<max ", mAABoundingBox.getMaximum()) << " />";
         s << "</aabb>";
     }
-    if (mDefinedAttributes & DAProgress) 
+    if (mDefinedAttributes & DADownloadProgress)
         s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
+    if (mDefinedAttributes & DAUploadProgress)
+        s << "<UploadProgress value=\"" << mUploadProgress<< "\" />";
      
-    if (!mShape.isNull()) 
+    if (!mShape.isNull())
         s << mShape->toXmlString();
-    if (!mContent.isNull()) 
+    if (!mContent.isNull())
         s << mContent->toXmlString();
 
     s << "</entity>";
@@ -104,13 +106,18 @@ bool XmlEntity::toXmlElt(TiXmlElement& xmlElt) const
         aabbElt->LinkEndChild(XmlHelpers::toXmlEltVector3("max", mAABoundingBox.getMaximum()));
         entityElt->LinkEndChild(aabbElt);
     }
-    if (mDefinedAttributes & DAProgress)
+    if (mDefinedAttributes & DADownloadProgress)
     {
         TiXmlElement* elt = new TiXmlElement("DownloadProgress");
         elt->SetAttribute("value", mDownloadProgress);
         entityElt->LinkEndChild(elt);
     } 
-
+    if (mDefinedAttributes & DAUploadProgress)
+    {
+        TiXmlElement* elt = new TiXmlElement("UploadProgress");
+        elt->SetAttribute("value", mUploadProgress);
+        entityElt->LinkEndChild(elt);
+    } 
 
     if (!mShape.isNull()) 
         mShape->toXmlElt(*entityElt);
@@ -205,7 +212,12 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
     if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
     {
         mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
-        mDefinedAttributes |= DAProgress;
+        mDefinedAttributes |= DADownloadProgress;
+    }
+    if ((elt = xmlElt->FirstChildElement("UploadProgress")) != 0)
+    {
+        mUploadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
+        mDefinedAttributes |= DAUploadProgress;
     }
 
     return true;
@@ -227,8 +239,10 @@ void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEnti
         dstXmlEntity->setAnimation(srcXmlEntity->getAnimation());
     if (definedAttributes & XmlEntity::DAContent)
         dstXmlEntity->setContent(srcXmlEntity->getContent());
-    if (definedAttributes & XmlEntity::DAProgress)
+    if (definedAttributes & XmlEntity::DADownloadProgress)
         dstXmlEntity->setDownloadProgress(srcXmlEntity->getDownloadProgress());
+    if (definedAttributes & XmlEntity::DAUploadProgress)
+        dstXmlEntity->setUploadProgress(srcXmlEntity->getUploadProgress());
 }
 
 } // namespace Solipsis

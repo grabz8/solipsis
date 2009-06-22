@@ -68,7 +68,7 @@ Modeler::Modeler(SceneManager* pSceneMgr, Camera* pCamera, IModelerCallbacks* mo
 #endif
 
 	mExecPath = _getcwd(NULL, 0);
-	SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
+    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Modeler::Modeler() Current working directory is %s", mExecPath.c_str());
 
     // remove directory for temp files
     std::string workDir = _getcwd(NULL, 0);
@@ -197,7 +197,7 @@ bool Modeler::init(const String& pPath)
 	//mPrecedentVerticalScrollPosition = 0;
 
 	//mExecPath = _getcwd(NULL, 0);
-	//SOLIPSISINFO("Current working directory is : ",mExecPath.c_str());
+    //LOGHANDLER_LOGF(LogHandler::VL_INFO, "Modeler::init() Current working directory is %s", mExecPath.c_str());
 	//mModeLink = false ;
 
 	//mTransfoButton.clear();
@@ -286,7 +286,8 @@ bool Modeler::createPrimitive(Object3D::Type type, const EntityUID& entityUID,
     // quick save the created object
     XMLSave(false);
     // add it again into list of object to save
-    mSelection->add3DObjectToListSinceLastSave(obj);
+    if (bSelectIt)
+        mSelection->add3DObjectToListSinceLastSave(obj);
 
     return true;
 }
@@ -744,8 +745,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				doc.Parse(buff.getBufferFormatedToText().c_str());
 				if (doc.Error())
 				{
-					SOLIPSISWARNING("Unable to read the sof file",filename.c_str());
-					SOLIPSISWARNING("Error returned bu TinyXML",doc.ErrorDesc());
+                    LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::XMLLoad() Unable to read the sof file %s, Error returned by TinyXML:%s", filename.c_str(), doc.ErrorDesc());
 				}
 				else
                 {
@@ -772,8 +772,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				
 				if (doc.Error())
 				{
-					SOLIPSISWARNING("Unable to read the sof file",filename.c_str());
-					SOLIPSISWARNING("Error returned bu TinyXML",doc.ErrorDesc());
+                    LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::XMLLoad() Unable to read the sof file %s, Error returned by TinyXML:%s", filename.c_str(), doc.ErrorDesc());
 				}
 				else	//we test if this object has got parent
 				{
@@ -906,7 +905,7 @@ ResourceGroupManager::getSingleton().addResourceLocation(loadDir, "FileSystem");
 						doc.Parse(buff.getBufferFormatedToText().c_str());
 						if (doc.Error())
 						{
-							SOLIPSISWARNING("SOF file import error", sofFileName.c_str());
+                            LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::XMLImport() SOF file import error %s", sofFileName.c_str());
 							return false;
 						}
 						else
@@ -935,7 +934,7 @@ ResourceGroupManager::getSingleton().addResourceLocation(loadDir, "FileSystem");
 			}
 			else
 			{
-				SOLIPSISWARNING("SOF file import error", sofFileName.c_str());
+                LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::XMLImport() SOF file import error %s", sofFileName.c_str());
 				return false;
 			}
 
@@ -1416,7 +1415,7 @@ void Modeler::releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, c
         NaviManager &naviMgr = NaviLibrary::NaviManager::Get();
         Navi *navi = naviMgr.getNaviFromMtlName(mtlName);
         if (navi == 0)
-    		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
+            LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::releaseTexture() ERROR when releasing navi texture. The navi cannot be retrieved from the material name");
         else
         {
             // Destroy 2D panel if exist
@@ -1457,7 +1456,7 @@ void Modeler::pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         NaviManager &naviMgr = NaviLibrary::NaviManager::Get();
         Navi *navi = naviMgr.getNaviFromMtlName(mtlName);
         if (navi == 0)
-    		SOLIPSISWARNING("ERROR when releasing navi texture. The navi cannot be retrieved from the material name.", "");
+            LOGHANDLER_LOGF(LogHandler::VL_WARNING, "Modeler::pauseEffect() ERROR when releasing navi texture. The navi cannot be retrieved from the material name");
         else
         {
             navi->hide();
@@ -1476,7 +1475,7 @@ void Modeler::pauseEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
         ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
         extTextSrc->handleEvt(mtlName, "stop");
-        SOLIPSISINFO("Modeler ==> STOP envoyé à la texture : ", name.c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Modeler::pauseEffect() Stop event sent to texture %s", name.c_str());
         if (plugin == "vlc")
         {
             TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
@@ -1546,7 +1545,7 @@ void Modeler::startEffect(ModifiedMaterialManager* modifiedMaterialManager, cons
         ExternalTextureSourceManager::getSingleton().setCurrentPlugIn(plugin);
         ExternalTextureSourceEx* extTextSrc = dynamic_cast<ExternalTextureSourceEx*>(ExternalTextureSourceManager::getSingleton().getExternalTextureSource(plugin));
         extTextSrc->handleEvt(mtlName, "play");
-        SOLIPSISINFO("Modeler ==> PLAY envoyé à la texture : ", name.c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Modeler::startEffect() Play event sent to texture %s", name.c_str());
         TextureExtParamsMap::const_iterator it = textureExtParamsMap.find("sound_params");
         if ((it != textureExtParamsMap.end()) && (it->second.find("3d") == 0))
             // Bind the scene node to the material name / sound buffer

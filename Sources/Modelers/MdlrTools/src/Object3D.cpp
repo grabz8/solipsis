@@ -29,11 +29,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "FileBrowser.h"
 #include "SolidBoolOp.h"
 
-#include "SolipsisErrorHandler.h"
+#include <CTLog.h>
 
 #include "tinyxml.h"
 #include "MyZipArchive.h"
 #include "Path.h"
+
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -315,7 +317,7 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
 		mCommandLast = toAdd.first;
 
 		sDebug << "Applying tranformation : " << toAdd.first << " with value : " << toAdd.second << " to " << mName << endl; 
-		SOLIPSISINFO( sDebug.str().c_str() );
+        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::loadFromFile() %s", sDebug.str().c_str());
 		trans = trans->NextSiblingElement( "transfo" );
 	}
 
@@ -437,12 +439,12 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
                 {
                     if (mModifiedMaterialManager->getMMMTextureManager() != 0)
                     {
-                        LogManager::getSingleton().logMessage("Object3D::loadFromFile() : Plugin" + it->second + " detecté sur la texture (" + trans->Attribute("Name") + ") ==> Texture non courante ==> On arrête le son" );
+                        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::loadFromFile() Plugin %s detected on texture %s ==> Not current texture ==> Stop the effect", it->second.c_str(), trans->Attribute("Name"));
                         mModifiedMaterialManager->getMMMTextureManager()->pauseEffect(mModifiedMaterialManager, trans->Attribute("Name"),textureExtParamsMap);
                     }
                     else
                     {
-                        LogManager::getSingleton().logMessage("Object3D::loadFromFile() : Plugin" + it->second + "detecté sur la texture et pas de MMMTextureManager" );
+                        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::loadFromFile() Plugin %s detected on texture %s and no MMMTextureManager", it->second.c_str(), trans->Attribute("Name"));
                     }
                 }
             }
@@ -523,7 +525,7 @@ int		Object3D::saveToFile(const char* fileName)
 	toSave.open(fileName, ios_base::out | ios_base::trunc);
 	if (!toSave.is_open())
 	{
-		SOLIPSISERROR("Unable to open dest file",fileName);
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Object3D::saveToFile() Unable to open dest file %s", fileName);
 		return SOL_ERROR_CANNOTOPENFILE; 
 	}
 	// <?xml version="1.0" encoding="ISO-8859-1" ?>
@@ -1808,7 +1810,7 @@ void Object3D::setCurrentTexture(const TexturePtr texture)
 {
     if (texture.isNull())
     {
-        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Pointeur de texture NULL " );
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "Object3D::setCurrentTexture() Null texture pointer !");
         return;
     }
 
@@ -1836,12 +1838,12 @@ void Object3D::setCurrentTexture(const TexturePtr texture)
                 {
                     if (mModifiedMaterialManager->getMMMTextureManager() != 0)
                     {
-                        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> Old Texture ==> Stop the effect" );
+                        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::setCurrentTexture() Plugin %s detected ==> Old Texture ==> Stop the effect", plugin.c_str());
                         mModifiedMaterialManager->getMMMTextureManager()->pauseEffect(mModifiedMaterialManager, currentTexture->getName(),*textureExtParamsMap);
                     }
                     else
                     {
-                        LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> getMMMTextureManager() returns NULL ==> TODO" );
+                        LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::setCurrentTexture() Plugin %s detected ==> getMMMTextureManager() returns NULL ==> TODO", plugin.c_str());
                     }
                 }
             }
@@ -1871,12 +1873,12 @@ void Object3D::setCurrentTexture(const TexturePtr texture)
             {
                 if (mModifiedMaterialManager->getMMMTextureManager() != 0)
                 {
-                    LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> Current Texture ==> Start the effect" );
+                    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::setCurrentTexture() Plugin %s detected ==> Current Texture ==> Start the effect", plugin.c_str());
                     mModifiedMaterialManager->getMMMTextureManager()->startEffect(mModifiedMaterialManager, texture->getName(),*textureExtParamsMap );
                 }
                 else
                 {
-                    LogManager::getSingleton().logMessage("Object3D::setCurrentTexture() : Plugin " + plugin + " detected ==> getMMMTextureManager() returns NULL ==> TODO" );
+                    LOGHANDLER_LOGF(LogHandler::VL_INFO, "Object3D::setCurrentTexture() Plugin %s detected ==> getMMMTextureManager() returns NULL ==> TODO", plugin.c_str());
                 }
             }
         }
@@ -2384,6 +2386,19 @@ bool Object3D::undo()
 int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
 {
     Ogre::String texturePath;
+
+    // Build list of current textures files in archive to delete no more used files
+    std::set<Ogre::String> texturesFilesToRemove;
+    for (int f = zz->getNbFile(); f > 0; f--)
+    {
+        Path filename(zz->getName(f - 1));
+        if ((filename.getExtension() != "xml") &&
+            (filename.getExtension() != "mesh") &&
+            (filename.getExtension() != "skeleton") &&
+            (filename.getExtension() != "material"))
+            texturesFilesToRemove.insert(zz->getName(f - 1));
+    }
+
     for (int i=1; i< mModifiedMaterialManager->getNbTexture(); i++)	//begin to 1 to do not save the default texture !
     {
         texturePath = mModifiedMaterialManager->getTexture(i)->getName();
@@ -2417,6 +2432,7 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
                 zz->writeFile( newFile );
             SOLdeleteFile( newFile.c_str() );
 #endif
+            texturesFilesToRemove.erase(fileName);
         }
 
         // SWF / MOVIES (mpg, mpeg, avi, mp4, flv ...)
@@ -2443,6 +2459,7 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
                             // GILLES end
                         }
                         (*param).second = url.getLastFileName();
+                        texturesFilesToRemove.erase(url.getLastFileName());
                     }
                 }
                 // VLC
@@ -2471,6 +2488,7 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
                                 //(*param).second = newFile;
                             }
                             //(*param).second = mrlPath.getLastFileName();
+                            texturesFilesToRemove.erase(mrlPath.getLastFileName());
                         }
                     }
                 }
@@ -2493,6 +2511,10 @@ int		Object3D::saveTextures(Ogre::String &pathToSave,MyZipArchive* zz)
         }
     }
     */
+
+    // Delete no more used textures files
+    for (std::set<Ogre::String>::const_iterator itf = texturesFilesToRemove.begin(); itf != texturesFilesToRemove.end(); ++itf)
+        zz->removeFile(*itf);
 
     return 0;
 }

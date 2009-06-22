@@ -31,16 +31,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
-
 
 GUI_AuthentWorldServer * GUI_AuthentWorldServer::stGUI_AuthentWorldServer = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_AuthentWorldServer::GUI_AuthentWorldServer() : GUI_FromServer("uiauthentws")
 {
     stGUI_AuthentWorldServer = this;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_AuthentWorldServer::createAndShowPanel(const std::string& pwd)
 {
     if (!stGUI_AuthentWorldServer)
@@ -51,6 +51,7 @@ bool GUI_AuthentWorldServer::createAndShowPanel(const std::string& pwd)
     return stGUI_AuthentWorldServer->show(pwd);
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_AuthentWorldServer::show(const std::string& pwd)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServer()");
@@ -84,20 +85,6 @@ bool GUI_AuthentWorldServer::show(const std::string& pwd)
     return true;
 }
 
-// jamais appelé
-// //-------------------------------------------------------------------------------------
-// void NavigatorGUI::authentWorldsServerError()
-// {
-//     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerError()");
-// 
-//     std::string wsHost, wsPort;
-//     CommonTools::StringHelpers::getURLHostPort(mNavigator->getWorldsServerAddress(), wsHost, wsPort);
-//     GUI_MessageBox::getMsgBox()->show("Authentication error", "Authentication failed !", 
-//         GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_ERROR);
-// 
-//     login();
-// }
-
 //-------------------------------------------------------------------------------------
 void GUI_AuthentWorldServer::onOk(const NaviData& naviData)
 {
@@ -108,7 +95,7 @@ void GUI_AuthentWorldServer::onOk(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentWorldsServerOk() result=%s, nodeId=%s", result.c_str(), nodeId.c_str());
     if (nodeId.empty())
     {
-        GUI_Login::createAndShowPanel();;
+        GUI_Login::createAndShowPanel();
         return;
     }
 
@@ -116,3 +103,5 @@ void GUI_AuthentWorldServer::onOk(const NaviData& naviData)
     // Call connect
     bool connected = mNavigator->connect();
 }
+
+//-------------------------------------------------------------------------------------

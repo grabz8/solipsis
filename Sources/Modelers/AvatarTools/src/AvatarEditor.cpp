@@ -26,8 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Character.h"
 #include "CharacterInstance.h"
 #include <SolipsisErrorHandler.h>
+#include <CTLog.h>
 #include <FileBrowser.h>
 
+using namespace CommonTools;
 using namespace Solipsis;
 
 AvatarEditor* AvatarEditor::ms_singletonPtr = 0;
@@ -78,7 +80,7 @@ void AvatarEditor::buildListSAF(const String& pPathDirectory)
 			if (characterPath.getExtension() == "saf")
 			{
 				mCharacters->addCharacter(characterPath.getLastFileName(false));
-				SOLIPSISINFO("Adding character from file :",characterPath.getUniversalPath().c_str());
+                LOGHANDLER_LOGF(LogHandler::VL_INFO, "AvatarEditor::buildListSAF() Adding character from file %s", characterPath.getUniversalPath().c_str());
 			}
 			itFiles++;
 		}

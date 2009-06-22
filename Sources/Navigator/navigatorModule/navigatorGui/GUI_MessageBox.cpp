@@ -41,21 +41,23 @@ GUI_MessageBox * GUI_MessageBox::st_GUI_MessageBox = NULL;
 bool GUI_MessageBox::show(const std::string& titleText, 
                             const std::string& msgText, 
                             MsgBoxButtons buttons, 
-                            MsgBoxIcon icon)
+                            MsgBoxIcon icon,
+                            GUI_MessageBoxResponse *msgBoxResponse)
 {
     if (!st_GUI_MessageBox)
     {
         st_GUI_MessageBox = new GUI_MessageBox();
     }
 
-    return st_GUI_MessageBox->protectedShow(titleText, msgText, buttons, icon);
+    return st_GUI_MessageBox->protectedShow(titleText, msgText, buttons, icon, msgBoxResponse);
 }
 
-
-bool GUI_MessageBox::protectedShow(const std::string& titleText, 
-    const std::string& msgText, 
-    MsgBoxButtons buttons, 
-    MsgBoxIcon icon)
+//-------------------------------------------------------------------------------------
+bool GUI_MessageBox::protectedShow(const std::string& titleText,
+                                   const std::string& msgText,
+                                   MsgBoxButtons buttons,
+                                   MsgBoxIcon icon,
+                                   GUI_MessageBoxResponse *msgBoxResponse)
 {
     if (m_curState == GUI_Panel::NSNotCreated)
     {
@@ -74,13 +76,13 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
     mMsgBoxMsgText = msgText;
     mMsgBoxButtons = buttons;
     mMsgBoxIcon = icon;
+    mMsgBoxResponse = msgBoxResponse;
 
     mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_MessageBox::onPageLoaded));
     mNavi->bind("response", NaviDelegate(this, &GUI_MessageBox::onResponse));
 
     return true;
 }
-
 
 //-------------------------------------------------------------------------------------
 void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
@@ -101,5 +103,10 @@ void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
 void GUI_MessageBox::onResponse(const NaviData& naviData)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
+
+    if (mMsgBoxResponse != 0)
+        mMsgBoxResponse->onResponse(naviData["response"].str());
     destroy();
 }
+
+//-------------------------------------------------------------------------------------

@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "navigatorGui/GUI_StatusBar.h"
 #include "navigatorGui/GUI_Modeler.h"
 #include "navigatorGui/GUI_Avatar.h"
+#include "navigatorGui/GUI_AvatarProperties.h"
 #include "navigatorGui/GUI_Chat.h"
 #include "navigatorGui/GUI_Debug.h"
 #include "navigatorGui/GUI_About.h"
@@ -122,7 +123,7 @@ isOnGizmo(false)
 Navigator::~Navigator()
 {
     if (mState != SLogin)
-        disconnect();
+        disconnect(true);
 
     // Stop the node events listener thread
     NodeEventListener::stop();
@@ -1360,10 +1361,31 @@ bool Navigator::connect()
 }
 
 //-------------------------------------------------------------------------------------
-bool Navigator::disconnect()
+void Navigator::DisconnectMsgBoxResponse::onResponse(const std::string& response)
 {
+    if (response == "yes")
+        Navigator::getSingletonPtr()->disconnect(true);
+}
+
+//-------------------------------------------------------------------------------------
+void Navigator::disconnect(bool force)
+{
+    if (!force)
+    {
+        // check if there are pending upload
+        if (mOgrePeerManager->havePendingUpload())
+        {
+            GUI_MessageBox::getMsgBox()->show("Pending upload",
+                "Still pending upload, are you sure you want to disconnect ?<br/>Uploading entities will be lost !",
+                GUI_MessageBox::MBB_YESNO,
+                GUI_MessageBox::MBB_QUESTION,
+                &disconnectMsgBoxResponse);
+            return;
+        }
+    }
+
     if (mXmlRpcClient == 0)
-        return false;
+        return;
 
     // voice engine : stop speaking
     IVoiceEngine* voiceEngine = VoiceEngineManager::getSingleton().getSelectedEngine();
@@ -1418,8 +1440,6 @@ bool Navigator::disconnect()
 
     mState = SLogin;
     GUI_Login::createAndShowPanel();
-
-    return true;
 }
 
 //-------------------------------------------------------------------------------------
@@ -1646,7 +1666,6 @@ void Navigator::processEvents()
                 mUserAvatar->setGhost(false);
             break;
         case ETConnectionFailed:
-      //      disconnect();
             mNavigatorGUI->connectionServerError();
         default: // Caller already check type consistency
             break;
@@ -1733,6 +1752,7 @@ bool Navigator::endModeling()
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 bool Navigator::createPrimitive(Object3D::Type type)
 {
     Vector3 plpos = mUserAvatar->getSceneNode()->getPosition();
@@ -1751,7 +1771,6 @@ bool Navigator::createPrimitive(Object3D::Type type)
     EntityUID entityUID = mOgrePeerManager->getNewEntityUID();
     return mModeler->createPrimitive(type, entityUID, entityUID, plpos + dep, pldir, true);
 }
-
 
 //-------------------------------------------------------------------------------------
 #ifdef DECLARATIVE_MODELER
@@ -1778,7 +1797,6 @@ bool Navigator::createSceneFromText( const std::string& s, std::string& errMsg, 
 
 #endif
 
-
 //-------------------------------------------------------------------------------------
 #ifdef TERRAIN_MODELER
 bool Navigator::createTerrain(double steepness,double noiseScale,double granularity)
@@ -1801,7 +1819,6 @@ bool Navigator::createTerrain(double steepness,double noiseScale,double granular
 	return mModeler->createTerrain(entityUID, entityUID, plpos + dep,steepness,noiseScale,granularity);
 }
 #endif
-
 
 //-------------------------------------------------------------------------------------
 bool Navigator::createMesh()
@@ -1937,8 +1954,10 @@ bool Navigator::mdlrXMLSave(bool all)
         if (all || !mModeler->isSelectionEmpty())
             return mModeler->XMLSave(all);
         else
-            GUI_MessageBox::getMsgBox()->show("Modeler information", 
-            GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED], GUI_MessageBox::MBB_OK, GUI_MessageBox::MBB_INFO);
+            GUI_MessageBox::getMsgBox()->show("Modeler information",
+                GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED],
+                GUI_MessageBox::MBB_OK,
+                GUI_MessageBox::MBB_INFO);
     return false;
 }
 
@@ -1950,7 +1969,7 @@ bool Navigator::mdlrXMLSaveAs(const String& pDestination)
             return mModeler->XMLSaveAs( pDestination );
         else
             //mNavigatorGUI->showMessageBox("Modeler information", NavigatorGUI::ms_ModelerErrors[NavigatorGUI::ME_NOOBJECTSELECTED], NavigatorGUI::MBB_OK, NavigatorGUI::MBB_INFO);
-            GUI_MessageBox::getMsgBox()->show("Modeler information", 
+            GUI_MessageBox::getMsgBox()->show("Modeler information",
                 GUI_Modeler::ms_ModelerErrors[GUI_Modeler::ME_NOOBJECTSELECTED],
                 GUI_MessageBox::MBB_OK, 
                 GUI_MessageBox::MBB_INFO);
@@ -2184,7 +2203,7 @@ void Navigator::toggleVoIP()
         }
         else
         {
-            GUI_MessageBox::getMsgBox()->show("Voice engine", 
+            GUI_MessageBox::getMsgBox()->show("Voice engine",
                 "Unable to connect to the Voice Server !<br/>Check your Internet connection and configure your firewall<br/>(UDP port " + StringHelpers::toString(voipSrvPort) + ").", 
                 GUI_MessageBox::MBB_OK, 
                 GUI_MessageBox::MBB_ERROR);

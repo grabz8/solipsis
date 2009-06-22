@@ -25,6 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "ModifiedMaterial.h"
 
+#include <CTLog.h>
+
+using namespace CommonTools;
+
 namespace Solipsis {
 
 ModifiedMaterialManager::MMMTextureManager* ModifiedMaterialManager::ms_MMMTextureManager = 0;
@@ -142,7 +146,7 @@ TexturePtr ModifiedMaterialManager::getTexture(const String& name)
             return (*textureIterator);
         textureIterator++;
     }
-    LogManager::getSingleton().logMessage("ModifiedMaterialManager::getTexture(String): Texture not found in the list => " + name); 
+//    LOGHANDLER_LOGF(LogHandler::VL_INFO, "ModifiedMaterialManager::getTexture(String): Texture %s not found in the list", name.c_str());
     return TexturePtr();
 }
 
@@ -235,7 +239,7 @@ void ModifiedMaterialManager::setCurrentTexture(TexturePtr texture)
         }
         textureIterator ++; 
     }
-    LogManager::getSingleton().logMessage("ModifiedMaterialManager::setCurrentTexture(TexturePtr): Texture not found in the list => " + texture->getName()); 
+    LOGHANDLER_LOGF(LogHandler::VL_WARNING, "ModifiedMaterialManager::setCurrentTexture(TexturePtr): Texture %s not found in the list", texture->getName().c_str());
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -278,7 +282,7 @@ void ModifiedMaterialManager::clearTextures()
 {
     if (!ms_MMMTextureManager)
     {
-        LogManager::getSingleton().logMessage("ModifiedMaterialManager::clearTextures: No MMMTextureManager ==> Cannot delete textures" );
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "ModifiedMaterialManager::clearTextures() No MMMTextureManager ==> Cannot delete textures");
     }
     else
     {
@@ -320,7 +324,7 @@ void ModifiedMaterialManager::deleteTexture(TexturePtr pTexture)
 {
     if (pTexture.isNull())
     {
-        LogManager::getSingleton().logMessage("ModifiedMaterialManager::deleteTexture() : NULL Texture pointer" );
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "ModifiedMaterialManager::deleteTexture() NULL Texture pointer");
         return;
     }
 	if( pTexture->getName() != "default_texture.jpg" )	//if it is not the default texture ...

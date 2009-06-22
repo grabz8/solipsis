@@ -28,8 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // from ogre max
 #include "OgreMaxScene.hpp"
 
-#include "OgreGraphicObjects/ProgressBar.h"
-
 #define NO_OGREMAX_STATIC_GEOM          1
 #define USE_OGREMAX_SHADOWPARAM         0
 
@@ -52,8 +50,6 @@ protected:
     StaticGeometry* mStaticGeometry;
     /// OgreMax scene
     OgreMax::OgreMaxScene* mOgreMaxScene;
-    // progress Bar for loading
-    ProgressBarWithText * mpBar;
 
 public:
     Scene(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal);

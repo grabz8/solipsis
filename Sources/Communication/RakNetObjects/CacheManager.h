@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <list>
 #include <RakPeerInterface.h>
+#include <FileList.h>
 #include <FileListTransferCBInterface.h>
 #include <IncrementalReadInterface.h>
 
@@ -42,54 +43,48 @@ class RakNetConnection;
 class CacheManagerCallback
 {
 public:
-    /** Called when transfer of 1 file is completed
+    /** Called when a download is in progress
     @param filename The filename of the received file
-    */
-    virtual void onTransferComplete(const std::string& filename) = 0;
-
-    /** Called when a transfer is in progress
-    @param filename The filename of the received file
-    @param fProgress The download progress of this file
+    @param progress The download progress of this file (0..1 download ratio, -1.0 if transfer aborted)
     @return should return the global progress of the entity.
     **/
-    virtual float onTransferProgress(const std::string& filename, float fProgress) = 0;
- 
+    virtual float onDownloadProgress(const std::string& filename, float progress) = 0;
+    /** Called when an upload is in progress
+    @param filename The filename of the received file
+    @param progress The upload progress of this file (0..1 upload ratio, -1.0 if transfer aborted)
+    @return should return the global progress of the entity.
+    **/
+    virtual float onUploadProgress(const std::string& filename, float progress) = 0;
 };
 
 /** This class manages 1 files cache.
 */
-class CacheManager : public FileListTransferCBInterface, public IncrementalReadInterface
+class CacheManager : public FileListProgress, public FileListTransferCBInterface, public IncrementalReadInterface
 {
 public:
     /// CacheManager File Entry state
     typedef float EntryState;
-    static const EntryState ESTransferToRequest; //(-1)
-    static const EntryState ESTransferComplete; //(1)
+    static const EntryState ESTransferAborted; //(-2.0f)
+    static const EntryState ESTransferToRequest; //(-1.0f)
+    static const EntryState ESTransferComplete; //(1.0f)
 
-    /// Pending download
+    /// Transfer description
     typedef struct {
+        SystemAddress mSystem;
         unsigned short mFileListTransferSetID;
-        CacheManagerCallback* mCallback;
-    } PendingDownload;
-    /// Pending downloads list
-    typedef std::list<PendingDownload> PendingDownloadList;
-
-    /// Pending upload
-    typedef struct {
-        unsigned short mFileListTransferSetID;
-        SystemAddress mRecipient;
-    } PendingUpload;
-    /// Pending uploads list
-    typedef std::list<PendingUpload> PendingUploadList;
+        EntryState mState;
+    } TransferDesc;
+    /// Pending transfer list
+    typedef std::list<TransferDesc> PendingTransferList;
 
     /// Cache entry
     typedef struct
     {
         FileVersion mVersion;
-        EntryState mState;
         long mFileSize;
-        PendingDownloadList mPendingDownloadList;
-        PendingUploadList mPendingUploadList;
+        CacheManagerCallback* mCallback;
+        TransferDesc mDownload;
+        PendingTransferList mPendingUploadList;
     } CacheManagerFileEntry;
 
     /// Cache map of <filename, CacheManagerFileEntry>
@@ -105,6 +100,8 @@ protected:
 
     /// Cache filename
     static const std::string ms_CacheFilename;
+    /// Download/Upload progress step between each callback
+    static float ms_ProgressStepCallback;
 
 public:
     /** Constructor.
@@ -114,6 +111,11 @@ public:
     /** Destructor. */
     virtual ~CacheManager();
 
+    /** Get Download/Upload progress step between each callback */
+    static float getProgressStepCallback() { return ms_ProgressStepCallback; }
+    /** Set Download/Upload progress step between each callback */
+    static void setProgressStepCallback(float progressStepCallback) { ms_ProgressStepCallback = progressStepCallback; }
+
     /** Initialize cache by loading last saved state
     @param cachePath The cache path
     */
@@ -121,32 +123,40 @@ public:
     /** Finalize cache management by saving current state. */
     void finalize();
 
-    /** See IncrementalReadInterface. */
-	virtual unsigned int GetFilePart( char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context);
+    /** See FileListProgress. */
+	virtual void OnFilePush(const char *fileName, unsigned int fileLengthBytes, unsigned int offset, unsigned int bytesBeingSent, bool done, SystemAddress targetSystem);
 
     /** See FileListTransferCBInterface. */
     virtual bool OnFile(OnFileStruct *onFileStruct);
     /** See FileListTransferCBInterface. */
     virtual void OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCount,unsigned int partTotal,unsigned int partLength, char *firstDataChunk);
 
+    /** See IncrementalReadInterface. */
+	virtual unsigned int GetFilePart(char *filename, unsigned int startReadBytes, unsigned int numBytesToRead, void *preallocatedDestination, FileListNodeContext context);
+
     /** Add 1 file in cache.
     @param filename The filename of the cached file
     @param version The version of the cached file
+    @param callback The callback instance (download/upload transfer progress)
     */
-    void addFile(const std::string& filename, const FileVersion& version);
+    void addFile(const std::string& filename, const FileVersion& version, CacheManagerCallback* callback = 0);
+    /** Remove 1 file to manage
+    @param filename The filename of the removed file
+    */
+    void removeFile(const std::string& filename);
+
     /** Request 1 file in cache (already in cache or send 1 request to sender if not).
     @param sender The address of the system having the file to request to
     @param filename The filename of the requested file
     @param version The version of the requested file
-    @param callback The callback instance (when transfer is complete, ...)
+    @param callback The callback instance (download/upload transfer progress)
     */
-    void requestFile(const SystemAddress& sender, const std::string& filename, const FileVersion& version, CacheManagerCallback* callback);
-    /** Remove 1 file to manage
-    @param filename The filename of the requested file
-    @param callback The callback instance to remove from the pending download list
+    void requestFile(const SystemAddress& sender, const std::string& filename, const FileVersion& version, CacheManagerCallback* callback = 0);
+    /** Cancel reception of 1 file.
+    @param filename The filename of the sent file
+    @param removeFile True if file must be removed from cache and deleted
     */
-    void removeFile(const std::string& filename, CacheManagerCallback* callback);
-
+    void cancelFile(const std::string& filename, bool removeFile = false);
     /** Send 1 file to a recipient system which has requested it.
     @param recipient The address of the recipient system
     @param fileListTransferSetID The transfer identifier
@@ -155,12 +165,39 @@ public:
     */
     void sendFile(const SystemAddress& recipient, unsigned short fileListTransferSetID, std::string& filename, const FileVersion& version);
 
+    /** Whether manager have still files to send
+    @returns True if there is pending upload
+    */
+    bool havePendingDownload();
+    /** Whether manager have still files to send
+    @returns True if there is pending upload
+    */
+    bool havePendingUpload();
+
+    /** Remove 1 connection from cache management.
+    @param system The address of the system to remove
+    */
+    void removeConnection(const SystemAddress& system);
+
+    /** Update the cache manager.
+    */
+    void update();
+
 protected:
     /** Retrieve the pathname of 1 file into the cache directory.
     @param filename The file name
     @param pathname The pathname of the file into the cache directory
     */
     void getCachePathname(const std::string& filename, std::string& pathname);
+
+    /** Load the cache XML file */
+    void load();
+    /** Save the cache XML file */
+    void save();
+
+private:
+    /** Log all cache entries */
+    void logAll();
 };
 
 } // namespace Solipsis

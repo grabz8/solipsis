@@ -92,7 +92,14 @@ TiXmlElement* SiteNode::getSavedElt()
     TiXmlElement* presentEntitiesElt = new TiXmlElement("presentEntities");
     nodeElt->LinkEndChild(presentEntitiesElt); 
     for (RakNetEntity::RakNetEntityMap::iterator it = mPresentEntities.begin(); it != mPresentEntities.end(); ++it)
+    {
+        if (!it->second->getMissingFiles().empty())
+        {
+            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SiteNode::getSavedElt() Entity %s not saved due to lack of content files !", it->second->getXmlEntity()->getUid().c_str());
+            continue;
+        }
         it->second->getXmlEntity()->toXmlElt(*presentEntitiesElt);
+    }
 
     return nodeElt;
 }

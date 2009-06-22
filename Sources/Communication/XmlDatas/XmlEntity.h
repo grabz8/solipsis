@@ -51,7 +51,8 @@ namespace Solipsis
         static const DefinedAttributes DAAnimation = (DefinedAttributes)(DAOrientation << 1);
         static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAAnimation << 1);
         static const DefinedAttributes DAContent = (DefinedAttributes)(DAAABoundingBox << 1);
-        static const DefinedAttributes DAProgress = (DefinedAttributes)(DAContent << 1);
+        static const DefinedAttributes DADownloadProgress = (DefinedAttributes)(DAContent << 1);
+        static const DefinedAttributes DAUploadProgress = (DefinedAttributes)(DADownloadProgress << 1);
 
     protected:
         DefinedAttributes mDefinedAttributes;
@@ -67,118 +68,118 @@ namespace Solipsis
         AnimationState mAnimationState;
         Ogre::AxisAlignedBox mAABoundingBox;
         float mDownloadProgress;
-
+        float mUploadProgress;
 
         RefCntPoolPtr<XmlData> mShape;
         RefCntPoolPtr<XmlContent> mContent;
 
-
     public:
         XmlEntity() :
-          mDefinedAttributes(DANone),
-              mUid(""),
-              mOwner(""),
-              mType(ETAvatar),
-              mName(""),
-              mVersion(0),
-              mFlags(EFNone),
-              mDisplacement(Ogre::Vector3::ZERO),
-              mPosition(Ogre::Vector3::ZERO),
-              mOrientation(Ogre::Quaternion::IDENTITY),
-              mAnimationState(ASNone),
-              mDownloadProgress(0),
-              mShape(RefCntPoolPtr<XmlData>::nullPtr),
-              mContent(RefCntPoolPtr<XmlContent>::nullPtr)
-          {
-          }
+            mDefinedAttributes(DANone),
+            mUid(""),
+            mOwner(""),
+            mType(ETAvatar),
+            mName(""),
+            mVersion(0),
+            mFlags(EFNone),
+            mDisplacement(Ogre::Vector3::ZERO),
+            mPosition(Ogre::Vector3::ZERO),
+            mOrientation(Ogre::Quaternion::IDENTITY),
+            mAnimationState(ASNone),
+            mDownloadProgress(1.0f),
+            mUploadProgress(1.0f),
+            mShape(RefCntPoolPtr<XmlData>::nullPtr),
+            mContent(RefCntPoolPtr<XmlContent>::nullPtr)
+        {}
 
+        XmlEntity(const EntityUID& uid) :
+            mDefinedAttributes(DAUid),
+            mUid(uid),
+            mOwner(""),
+            mType(ETAvatar),
+            mName(""),
+            mVersion(0),
+            mFlags(EFNone),
+            mDisplacement(Ogre::Vector3::ZERO),
+            mPosition(Ogre::Vector3::ZERO),
+            mOrientation(Ogre::Quaternion::IDENTITY),
+            mAnimationState(ASNone),
+            mShape(RefCntPoolPtr<XmlData>::nullPtr),
+            mContent(RefCntPoolPtr<XmlContent>::nullPtr)
+        {}
 
-          XmlEntity(const EntityUID& uid) :
-          mDefinedAttributes(DAUid),
-              mUid(uid),
-              mOwner(""),
-              mType(ETAvatar),
-              mName(""),
-              mVersion(0),
-              mFlags(EFNone),
-              mDisplacement(Ogre::Vector3::ZERO),
-              mPosition(Ogre::Vector3::ZERO),
-              mOrientation(Ogre::Quaternion::IDENTITY),
-              mAnimationState(ASNone),
-              mShape(RefCntPoolPtr<XmlData>::nullPtr),
-              mContent(RefCntPoolPtr<XmlContent>::nullPtr)
-          {}
+        static Pool& getStaticPool();
+        virtual Pool& getPool() const;
+        virtual void clear() {
+            mDefinedAttributes = DANone;
+            mUid.clear();
+            mOwner.clear();
+            mType = ETAvatar;
+            mName.clear();
+            mVersion = 0;
+            mFlags = EFNone;
+            mDisplacement = Ogre::Vector3::ZERO;
+            mPosition = Ogre::Vector3::ZERO;
+            mOrientation = Ogre::Quaternion::IDENTITY;
+            mAnimationState = ASNone;
+            mShape = RefCntPoolPtr<XmlData>::nullPtr;
+            mContent = RefCntPoolPtr<XmlContent>::nullPtr;
+        }
 
+        virtual std::string toXmlString() const;
+        virtual bool toXmlElt(TiXmlElement& xmlElt) const;
+        virtual bool fromXmlElt(TiXmlElement* xmlElt);
 
-          static Pool& getStaticPool();
-          virtual Pool& getPool() const;
-          virtual void clear() {
-              mDefinedAttributes = DANone;
-              mUid.clear();
-              mOwner.clear();
-              mType = ETAvatar;
-              mName.clear();
-              mVersion = 0;
-              mFlags = EFNone;
-              mDisplacement = Ogre::Vector3::ZERO;
-              mPosition = Ogre::Vector3::ZERO;
-              mOrientation = Ogre::Quaternion::IDENTITY;
-              mAnimationState = ASNone;
-              mShape = RefCntPoolPtr<XmlData>::nullPtr;
-              mContent = RefCntPoolPtr<XmlContent>::nullPtr;
-          }
+        static void copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEntity, RefCntPoolPtr<XmlEntity>& dstXmlEntity);
 
-          virtual std::string toXmlString() const;
-          virtual bool toXmlElt(TiXmlElement& xmlElt) const;
-          virtual bool fromXmlElt(TiXmlElement* xmlElt);
+        void setDefinedAttributes(const DefinedAttributes& definedAttributes) { mDefinedAttributes = definedAttributes; }
+        DefinedAttributes getDefinedAttributes() { return mDefinedAttributes; }
 
-          static void copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEntity, RefCntPoolPtr<XmlEntity>& dstXmlEntity);
+        void setUid(const EntityUID& uid) { mUid = uid; mDefinedAttributes |= DAUid; }
+        const EntityUID& getUid() { return mUid; }
 
-          void setDefinedAttributes(const DefinedAttributes& definedAttributes) { mDefinedAttributes = definedAttributes; }
-          DefinedAttributes getDefinedAttributes() { return mDefinedAttributes; }
+        void setOwner(const NodeId& owner) { mOwner = owner; mDefinedAttributes |= DAOwner; }
+        const NodeId& getOwner() { return mOwner; }
 
-          void setUid(const EntityUID& uid) { mUid = uid; mDefinedAttributes |= DAUid; }
-          const EntityUID& getUid() { return mUid; }
+        void setType(const EntityType& type) { mType = type; mDefinedAttributes |= DAType; }
+        EntityType getType() { return mType; }
+        const std::string& getTypeRepr() { return XmlHelpers::convertEntityTypeToRepr(mType); }
 
-          void setOwner(const NodeId& owner) { mOwner = owner; mDefinedAttributes |= DAOwner; }
-          const NodeId& getOwner() { return mOwner; }
+        void setName(const std::string& name) { mName = name; mDefinedAttributes |= DAName; }
+        const std::string& getName() { return mName; }
 
-          void setType(const EntityType& type) { mType = type; mDefinedAttributes |= DAType; }
-          EntityType getType() { return mType; }
-          const std::string& getTypeRepr() { return XmlHelpers::convertEntityTypeToRepr(mType); }
+        void setVersion(const EntityVersion& version) { mVersion = version; mDefinedAttributes |= DAVersion; }
+        const EntityVersion& getVersion() { return mVersion; }
+        std::string getVersionString() { return XmlHelpers::convertEntityVersionToHexString(mVersion); }
 
-          void setName(const std::string& name) { mName = name; mDefinedAttributes |= DAName; }
-          const std::string& getName() { return mName; }
+        void setFlags(const EntityFlags& flags) { mFlags = flags; mDefinedAttributes |= DAFlags; }
+        EntityFlags getFlags() { return mFlags; }
+        std::string getFlagsString() { return XmlHelpers::convertEntityFlagsToHexString(mFlags); }
+        std::string getFlagsRepr() { return XmlHelpers::convertEntityFlagsToRepr(mFlags); }
 
-          void setVersion(const EntityVersion& version) { mVersion = version; mDefinedAttributes |= DAVersion; }
-          const EntityVersion& getVersion() { return mVersion; }
-          std::string getVersionString() { return XmlHelpers::convertEntityVersionToHexString(mVersion); }
+        void setDisplacement(const Ogre::Vector3& displacement) { mDisplacement = displacement; mDefinedAttributes |= DADisplacement; }
+        const Ogre::Vector3& getDisplacement() { return mDisplacement; }
 
-          void setFlags(const EntityFlags& flags) { mFlags = flags; mDefinedAttributes |= DAFlags; }
-          EntityFlags getFlags() { return mFlags; }
-          std::string getFlagsString() { return XmlHelpers::convertEntityFlagsToHexString(mFlags); }
-          std::string getFlagsRepr() { return XmlHelpers::convertEntityFlagsToRepr(mFlags); }
+        void setPosition(const Ogre::Vector3& position) { mPosition = position; mDefinedAttributes |= DAPosition; }
+        const Ogre::Vector3& getPosition() { return mPosition; }
 
-          void setDisplacement(const Ogre::Vector3& displacement) { mDisplacement = displacement; mDefinedAttributes |= DADisplacement; }
-          const Ogre::Vector3& getDisplacement() { return mDisplacement; }
+        void setOrientation(const Ogre::Quaternion& orientation) { mOrientation = orientation; mDefinedAttributes |= DAOrientation; }
+        const Ogre::Quaternion& getOrientation() { return mOrientation; }
 
-          void setPosition(const Ogre::Vector3& position) { mPosition = position; mDefinedAttributes |= DAPosition; }
-          const Ogre::Vector3& getPosition() { return mPosition; }
+        void setAnimation(AnimationState animationState) { mAnimationState = animationState; mDefinedAttributes |= DAAnimation; }
+        AnimationState getAnimation() { return mAnimationState; }
 
-          void setOrientation(const Ogre::Quaternion& orientation) { mOrientation = orientation; mDefinedAttributes |= DAOrientation; }
-          const Ogre::Quaternion& getOrientation() { return mOrientation; }
+        void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
+        const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
 
-          void setAnimation(AnimationState animationState) { mAnimationState = animationState; mDefinedAttributes |= DAAnimation; }
-          AnimationState getAnimation() { return mAnimationState; }
+        void setDownloadProgress(const float progress) { mDownloadProgress = progress; mDefinedAttributes |= DADownloadProgress; }
+        const float getDownloadProgress() { return mDownloadProgress; }
 
-          void setAABoundingBox(const Ogre::AxisAlignedBox& AABoundingBox) { mAABoundingBox = AABoundingBox; mDefinedAttributes |= DAAABoundingBox; }
-          const Ogre::AxisAlignedBox& getAABoundingBox() { return mAABoundingBox; }
+        void setUploadProgress(const float progress) { mUploadProgress = progress; mDefinedAttributes |= DAUploadProgress; }
+        const float getUploadProgress() { return mUploadProgress; }
 
-          void setDownloadProgress(const float progress) { mDownloadProgress = progress; mDefinedAttributes |= DAProgress; }
-          const float getDownloadProgress() { return mDownloadProgress; }
-
-          void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }
-          RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
+        void setContent(RefCntPoolPtr<XmlContent>& content) { mContent = content; mDefinedAttributes |= DAContent; }
+        RefCntPoolPtr<XmlContent>& getContent() { return mContent; }
     };
 
     RefCntPoolPtr<XmlEntity> RefCntPoolPtr<XmlEntity>::nullPtr((XmlEntity*)0);

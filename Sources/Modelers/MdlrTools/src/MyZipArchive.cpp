@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <stdio.h>
 #include "SolipsisErrorHandler.h"
+#include <CTLog.h>
 
 #include "minizip/zip.h"
 #include "minizip/unzip.h"
@@ -32,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <fstream>
 #include <iostream>
+
+using namespace CommonTools;
 
 namespace Solipsis {
 
@@ -148,7 +151,7 @@ void MyZipArchive::writeFile(const String& filePath)
     if (!inputFile.is_open())
     {
         inputFile.close();
-        SOLIPSISWARNING("MyZipArchive::writeFile(String) : Unable to open file ",filePath.c_str());
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "MyZipArchive::writeFile() Unable to open file %s", filePath.c_str());
         return;
     }
     int toAddFileSize = inputFile.tellg();

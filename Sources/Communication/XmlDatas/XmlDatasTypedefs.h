@@ -80,14 +80,15 @@ typedef unsigned int FileVersion;
 class LodContentFileStruct
 {
 public:
-    LodContentFileStruct()
-    {
-        progress = 0;
-    }
+    LodContentFileStruct() :
+        mFilename(""),
+        mVersion(0),
+        mProgress(0.0f)
+    {}
 
     std::string mFilename;
     FileVersion mVersion;
-    float progress;
+    float mProgress;
 } ;
 
 typedef unsigned char AnimationState;
