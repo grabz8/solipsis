@@ -1638,10 +1638,6 @@ void Navigator::processEvents()
     NodeEventListener::EvtsList* nodeEvents = beginProcessEvents();
     for (NodeEventListener::EvtsList::iterator xmlEvt = nodeEvents->begin();xmlEvt != nodeEvents->end();++xmlEvt)
     {
-        // GILLES begin
-        if (nodeEvents->empty()) 
-            break;
-        // GILLES end
         switch ((*xmlEvt)->getType())
         {
         case ETNewEntity:
