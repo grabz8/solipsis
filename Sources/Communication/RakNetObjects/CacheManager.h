@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <string>
 #include <list>
 #include <RakPeerInterface.h>
+#include <FileListTransfer.h>
 #include <FileList.h>
 #include <FileListTransferCBInterface.h>
 #include <IncrementalReadInterface.h>
@@ -93,6 +94,8 @@ public:
 protected:
     /// Connection
     RakNetConnection *mConnection;
+    /// FileListTransfer plugin
+    FileListTransfer mFileListTransfer;
     /// Cache path
     std::string mCachePath;
     /// Map of files in cache
@@ -100,6 +103,8 @@ protected:
 
     /// Cache filename
     static const std::string ms_CacheFilename;
+    /// Upload transfer chunk size (default value to 64Kb, RakNet use 256Kb)
+    static unsigned int CacheManager::ms_SendChunkSize;
     /// Download/Upload progress step between each callback
     static float ms_ProgressStepCallback;
 

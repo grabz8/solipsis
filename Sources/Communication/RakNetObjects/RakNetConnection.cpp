@@ -92,9 +92,6 @@ void RakNetConnection::initialize(const std::string& cachePath)
         // server system address must be set by client when connection request is accepted
     }
 
-    // Attach the FileListTransfer plugin
-    mRakPeer->AttachPlugin(&mFileListTransfer);
-
 	// Here I use the string table class to efficiently send strings I know in advance.
 	// The encoding is used in in Replica2::SerializeConstruct
 	// The decoding is used in in Connection_RM2::Construct

@@ -152,8 +152,8 @@ void AvatarNode::onNewEntity(Entity* entity)
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() sending ETNewEntity for entity uid:%s", entity->getXmlEntity()->getUid().c_str());
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);
-        if (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAFlags)
-            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() ETNewEntity evt sent uid=%s flags=%08x", entity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getFlags());
+//        if (entity->getXmlEntity()->getDefinedAttributes() & XmlEntity::DAFlags)
+//            LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onNewEntity() ETNewEntity evt sent uid=%s flags=%08x", entity->getXmlEntity()->getUid().c_str(), entity->getXmlEntity()->getFlags());
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(entity->getXmlEntity()));
 
         pthread_mutex_lock(&mEvtsMutex);
@@ -213,8 +213,8 @@ void AvatarNode::onUpdatedEntity(Entity* entity)
     RefCntPoolPtr<XmlEntity> xmlEntity;
     xmlEntity->setDefinedAttributes(entity->getLastDeserializedDefinedAttributes());
     XmlEntity::copyEntityDefinedAttributes(entity->getXmlEntity(), xmlEntity);
-    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
-        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() ETUpdatedEntity evt sent uid=%s flags=%08x", xmlEntity->getUid().c_str(), xmlEntity->getFlags());
+//    if (xmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
+//        LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::onUpdatedEntity() ETUpdatedEntity evt sent uid=%s flags=%08x", xmlEntity->getUid().c_str(), xmlEntity->getFlags());
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
 
     // Create physics of scene (if content is available)
@@ -586,8 +586,8 @@ bool AvatarNode::tick(Real timeSinceLastTick)
 			else
 				entity->mUpdatedXmlEntity->setFlags(EFNone);
 #endif
-            if (entity->mUpdatedXmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
-                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::tick() ETUpdatedEntity evt sent uid=%s flags=%08x", entity->mUpdatedXmlEntity->getUid().c_str(), entity->mUpdatedXmlEntity->getFlags());
+//            if (entity->mUpdatedXmlEntity->getDefinedAttributes() & XmlEntity::DAFlags)
+//                LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "AvatarNode::tick() ETUpdatedEntity evt sent uid=%s flags=%08x", entity->mUpdatedXmlEntity->getUid().c_str(), entity->mUpdatedXmlEntity->getFlags());
 #ifdef LOGSNDRCV
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "SND uid:%s p:%s", entity->getXmlEntity()->getUid().c_str(), StringConverter::toString(entity->getXmlEntity()->getPosition()).c_str());
 #endif

@@ -39,6 +39,7 @@ const CacheManager::EntryState CacheManager::ESTransferToRequest = -1.0f;
 const CacheManager::EntryState CacheManager::ESTransferComplete = 1.0f;
 
 const std::string CacheManager::ms_CacheFilename = "cache.xml";
+unsigned int CacheManager::ms_SendChunkSize = 65536;
 float CacheManager::ms_ProgressStepCallback = 0.1f;
 
 //-------------------------------------------------------------------------------------
@@ -67,15 +68,18 @@ void CacheManager::initialize(const std::string& cachePath)
 	// if there where errors (file not found, they will be removed)
 	save();
 
+    // Attach the FileListTransfer plugin
+    mConnection->getRakPeer()->AttachPlugin(&mFileListTransfer);
+
     // set FileListTransfer callback to be warn about pushed files
-    mConnection->getFileListTransfer()->SetCallback(this);
+    mFileListTransfer.SetCallback(this);
 }
 
 //-------------------------------------------------------------------------------------
 void CacheManager::finalize()
 {
     // unset FileListTransfer callback
-    mConnection->getFileListTransfer()->SetCallback(0);
+    mFileListTransfer.SetCallback(0);
 
     // save the cache file
     save();
@@ -279,7 +283,7 @@ void CacheManager::requestFile(const SystemAddress& sender,
         BitStream bitStream;
         bitStream.Write((MessageID)RakNetConnection::ID_CM_REQUESTING_FILETRANSFER);
         entry.mDownload.mSystem = sender;
-        entry.mDownload.mFileListTransferSetID = mConnection->getFileListTransfer()->SetupReceive(this, false, sender);
+        entry.mDownload.mFileListTransferSetID = mFileListTransfer.SetupReceive(this, false, sender);
         bitStream.Write(entry.mDownload.mFileListTransferSetID);
         RakNetConnection::SerializeString(&bitStream, filename);
         bitStream.Write(entry.mVersion);
@@ -304,8 +308,8 @@ void CacheManager::cancelFile(const std::string& filename, bool removeFile)
     if ((entry.mDownload.mState >= 0.0f) && (entry.mDownload.mState != ESTransferComplete))
     {
         removeFile = true;
-        if (mConnection->getFileListTransfer()->IsHandlerActive(entry.mDownload.mFileListTransferSetID))
-            mConnection->getFileListTransfer()->CancelReceive(entry.mDownload.mFileListTransferSetID);
+        if (mFileListTransfer.IsHandlerActive(entry.mDownload.mFileListTransferSetID))
+            mFileListTransfer.CancelReceive(entry.mDownload.mFileListTransferSetID);
         if (entry.mCallback != 0)
             entry.mCallback->onDownloadProgress(entryIt->first, ESTransferAborted);
     }
@@ -369,7 +373,7 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
         // on RakNet 3.51
         fileList.AddFile(filename.c_str(), pathname.c_str(), 0, (unsigned int)filesize, (unsigned int)filesize, FileListNodeContext(0, 0), true);
 #endif
-        mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUpload.mSystem, pendingUpload.mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
+        mFileListTransfer.Send(&fileList, mConnection->getRakPeer(), pendingUpload.mSystem, pendingUpload.mFileListTransferSetID, LOW_PRIORITY, 0, false, this, ms_SendChunkSize);
     }
     else
     {
@@ -460,7 +464,7 @@ void CacheManager::removeConnection(const SystemAddress& system)
     }
 
     // Plugin will remove receiver into OnClosedConnection
-    //mConnection->getFileListTransfer()->RemoveReceiver(system);
+    //mFileListTransfer.RemoveReceiver(system);
 }
 
 //-------------------------------------------------------------------------------------
@@ -504,7 +508,7 @@ void CacheManager::update()
 #endif
                 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::update() Sending now file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), entry.mVersion, pendingUploadIt->mSystem.ToString(), pendingUploadIt->mFileListTransferSetID);
                 pendingUploadIt->mState = 0.0f;
-                mConnection->getFileListTransfer()->Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mSystem, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false, this, 4096);
+                mFileListTransfer.Send(&fileList, mConnection->getRakPeer(), pendingUploadIt->mSystem, pendingUploadIt->mFileListTransferSetID, LOW_PRIORITY, 0, false, this, ms_SendChunkSize);
             }
             pendingUploadIt++;
         }
