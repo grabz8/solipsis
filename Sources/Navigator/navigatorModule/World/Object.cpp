@@ -195,7 +195,7 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
 
         Object3DPtrList newObjects;
 
-        if (!modeler->XMLLoad(pathname, newObjects))
+        if (!modeler->XMLLoad(pathname, mResourceGroup, newObjects))
         {
             OGRE_LOG("Object::updateEntity() Unable to load .sof object file !");
             ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);

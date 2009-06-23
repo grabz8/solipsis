@@ -776,7 +776,7 @@ void GUI_ModelerProperties::modelerPropTextureAdd(const NaviData& naviData)
         Path filePath(TextureFilePath);
         ResourceGroupManager::getSingleton().addResourceLocation(filePath.getFormatedRootPath(), "FileSystem");
         TextureExtParamsMap textureExtParamsMap;
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), TextureFilePath, textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), TextureFilePath, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, textureExtParamsMap);
 
         //Test if this texture is already in the list :
         if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -881,7 +881,7 @@ void GUI_ModelerProperties::modelerPropWWWTextureApply(const NaviData& naviData)
         textureExtParamsMap["height"] = StringConverter::toString(height);
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
         textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, textureExtParamsMap);
 
         //Test if this texture is already in the list :
         if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -965,7 +965,7 @@ void GUI_ModelerProperties::modelerPropSWFTextureApply(const NaviData& naviData)
         textureExtParamsMap["frames_per_second"] = StringConverter::toString(fps);
         textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
 
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, textureExtParamsMap);
 
         //Test if this texture is already in the list :
         if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -1053,7 +1053,7 @@ void GUI_ModelerProperties::modelerPropVLCTextureApply(const NaviData& naviData)
         textureExtParamsMap["vlc_params"] = paramsStr;
         textureExtParamsMap["remote_mrl"] = remoteMrlStr;
         textureExtParamsMap["sound_params"] = (sound3d ? "3d " + StringConverter::toString(sound3dMin) + " " + StringConverter::toString(sound3dMax) : "");
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, textureExtParamsMap);
 
         //Test if this texture is already in the list :
         if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )
@@ -1124,7 +1124,7 @@ void GUI_ModelerProperties::modelerPropVNCTextureApply(const NaviData& naviData)
         textureExtParamsMap["query_flags"] = StringConverter::toString(Navigator::QFVNCPanel);
         textureExtParamsMap["address"] = address;
         textureExtParamsMap["password"] = password;
-        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", textureExtParamsMap);
+        TexturePtr PtrTexture = modeler->loadTexture(obj->getMaterialManager(), "", ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, textureExtParamsMap);
 
         //Test if this texture is already in the list :
         if( obj->getMaterialManager()->isPresentInList( PtrTexture ) )

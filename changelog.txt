@@ -1161,8 +1161,13 @@ RakNetServer is now quitting ASAP if some download/upload are in progress, Q to 
 No more SOL.log
 
 ---------------------------
-22/06/05
+22/06/09
 
 RakNet Send() chunk size tuned to improve transfer rate
+
+---------------------------
+23/06/09
+
+Object dedicated resource group is now used to load sof embedded textures
 
 ---------------------------

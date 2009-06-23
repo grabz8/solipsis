@@ -116,7 +116,7 @@ public:
 
 	/// \brief Load a object3D from a file 
 	/// \param fileName = The path to the file to load
-	int		loadFromFile(TiXmlDocument &doc, string texturepath);
+	int		loadFromFile(TiXmlDocument &doc, String group);
 	/// Save a object3D to a file 
 	/// \param fileName = The path to the file to save
 	int		saveToFile(const char* fileName);

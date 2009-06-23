@@ -664,7 +664,7 @@ void Modeler::extractFromArchive(std::string pArchive)
 #endif
 
 /// Load from a XML SOLIPSIS file (.sof)
-bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos, Quaternion orientation)
+bool Modeler::XMLLoad(const String& filename, const String& group, Object3DPtrList& loadedObjects, Vector3 pos, Quaternion orientation)
 {
     if (filename.empty())
         return false;
@@ -749,7 +749,7 @@ bool Modeler::XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Ve
 				}
 				else
                 {
-                    Object3D *newObject3D = createObjectWithXML(doc, texturepath, pos, orientation) ;
+                    Object3D *newObject3D = createObjectWithXML(doc, group, pos, orientation) ;
                     if (!newObject3D)
                         return false;
                     loadedObjects.push_back(newObject3D);
@@ -939,7 +939,7 @@ ResourceGroupManager::getSingleton().addResourceLocation(loadDir, "FileSystem");
 			}
 
 			Object3DPtrList loadedObjects;
-			XMLLoad(sofFileName, loadedObjects, pos, orientation);
+			XMLLoad(sofFileName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, loadedObjects, pos, orientation);
 
 			return true; // we stop here
 		}
@@ -1214,7 +1214,7 @@ bool Modeler::XMLSaveAs(const String& pDestination)
 #endif
 
 /// Create a new Object3D with a file XML
-Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos, Quaternion orientation)
+Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, String group, Vector3 pos, Quaternion orientation)
 {
 	Ogre::String primType = doc.RootElement()->FirstChildElement("model")->FirstChildElement("primitive")->Attribute("Name");
 	Object3D::Type type = objectStringToType(primType);
@@ -1243,7 +1243,7 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
     Object3D * newObject = mSelection->geLastAddedObject();
     if (!newObject)
         return NULL;
-    newObject->loadFromFile(doc, path.c_str());
+    newObject->loadFromFile(doc, group);
 
 	// Go back to the main directory
 	_chdir(mExecPath.c_str());
@@ -1252,13 +1252,13 @@ Object3D * Modeler::createObjectWithXML(TiXmlDocument doc, string path, Vector3 
 }
 
 /// Dedicated callback texture loader
-TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap)
+TexturePtr Modeler::loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const String& group, const TextureExtParamsMap& textureExtParamsMap)
 {
     Object3D* object = modifiedMaterialManager->getObject3D();
     TexturePtr texture;
     if (textureExtParamsMap.empty())
     {
-        texture = TextureManager::getSingleton().load(name, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        texture = TextureManager::getSingleton().load(name, group);
     }
     else
     {

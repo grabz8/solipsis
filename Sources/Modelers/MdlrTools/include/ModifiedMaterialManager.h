@@ -62,9 +62,10 @@ public:
 	    /// brief callback to load a texture
 	    /// param modifiedMaterialManager The material manager
 	    /// param name The name of the texture
+	    /// param group The resource group containing the texture
 	    /// param textureExtParamsMap The extended parameters of the texture
 	    /// return the texture
-        virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap) = 0;
+        virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const String& group, const TextureExtParamsMap& textureExtParamsMap) = 0;
 	    /// brief callback to release a texture
 	    /// param modifiedMaterialManager The material manager
 	    /// param name The name of the texture

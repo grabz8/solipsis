@@ -202,7 +202,7 @@ void    Object3D::setupCreationDate()
 }
 #endif
 //-------------------------------------------------------------------------------------
-int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
+int		Object3D::loadFromFile(TiXmlDocument &doc, String group)
 {
 	Ogre::String extractedAttribute;
 
@@ -410,12 +410,11 @@ int		Object3D::loadFromFile(TiXmlDocument &doc, string texturepath)
         }
         if (mModifiedMaterialManager->getMMMTextureManager() != 0)
         {
-            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(mModifiedMaterialManager, trans->Attribute("Name"), textureExtParamsMap);
+            texture = mModifiedMaterialManager->getMMMTextureManager()->loadTexture(mModifiedMaterialManager, trans->Attribute("Name"), group, textureExtParamsMap);
         }
         else
         {
-            //texture = TextureManager::getSingleton().load( (texturepath + trans->Attribute("Name")) , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-		    texture = TextureManager::getSingleton().load( trans->Attribute("Name") , ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+		    texture = TextureManager::getSingleton().load( trans->Attribute("Name") , group);
         }
 
 		addTexture (texture, textureExtParamsMap);

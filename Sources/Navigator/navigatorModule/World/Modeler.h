@@ -175,7 +175,7 @@ public:
 #endif
 
 	/// Load from / Save to a XML SOLIPSIS file
-	bool XMLLoad(const String& filename, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
+	bool XMLLoad(const String& filename, const String& group, Object3DPtrList& loadedObjects, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLImport(const EntityUID& entityUID, const String& name, const String& filename, Vector3 pos = Vector3::ZERO, Quaternion orientation = Quaternion::IDENTITY);
 	bool XMLSave(bool all = false);
 #if 1 // GILLES
@@ -193,12 +193,12 @@ public:
 	Ogre::String		mExecPath;
 
 private:
-	Object3D * createObjectWithXML(TiXmlDocument doc, string path, Vector3 pos, Quaternion orientation);
+	Object3D * createObjectWithXML(TiXmlDocument doc, String group, Vector3 pos, Quaternion orientation);
     MeshPtr cloneGenericPrimitiveMesh(Object3D::Type type, const EntityUID& entityUID);
 
 public:
     /// See TextureManager::loadTexture
-    virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
+    virtual TexturePtr loadTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const String& group, const TextureExtParamsMap& textureExtParamsMap);
     /// See TextureManager::releaseTexture
     virtual void releaseTexture(ModifiedMaterialManager* modifiedMaterialManager, const String& name, const TextureExtParamsMap& textureExtParamsMap);
     /// See TextureManager::loadTexture
