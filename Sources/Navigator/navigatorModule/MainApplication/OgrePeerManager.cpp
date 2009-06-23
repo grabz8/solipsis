@@ -433,7 +433,8 @@ bool OgrePeerManager::onUserAvatarSave()
 bool OgrePeerManager::havePendingUpload()
 {
     for (OgrePeersMap::iterator ogrePeer = mOgrePeersMap.begin(); ogrePeer != mOgrePeersMap.end(); ++ogrePeer)
-        if (ogrePeer->second->getXmlEntity()->getUploadProgress() < 1.0f)
+        if ((ogrePeer->second->getXmlEntity()->getOwner() == mNodeId) &&
+            (ogrePeer->second->getXmlEntity()->getUploadProgress() < 1.0f))
             return true;
 
     return false;
