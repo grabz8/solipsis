@@ -1169,5 +1169,6 @@ RakNet Send() chunk size tuned to improve transfer rate
 23/06/09
 
 Object dedicated resource group is now used to load sof embedded textures
+Pending upload test on owned entity added
 
 ---------------------------
