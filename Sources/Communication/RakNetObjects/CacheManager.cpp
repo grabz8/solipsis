@@ -148,6 +148,9 @@ bool CacheManager::OnFile(OnFileStruct *onFileStruct)
     if (entry.mCallback != 0)
         entry.mCallback->onDownloadProgress(entryIt->first, ESTransferComplete);
 
+    // flush/update the cache file
+    save();
+
     return true;
 }
 

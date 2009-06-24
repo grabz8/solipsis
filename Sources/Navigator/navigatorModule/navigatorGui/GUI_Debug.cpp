@@ -135,6 +135,7 @@ void GUI_Debug::refreshDemoVoiceTalkButtonName()
 
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshDemoVoiceTalkButtonName()");
 
+    if (!stGUI_Debug) return;
     if (stGUI_Debug->m_curState != NSCreated) return;
 
     stGUI_Debug->mNavi->evaluateJS("$('inputVoice').value = '" + stGUI_Debug->mNavigator->getVoIPServerAddress() + "'");
