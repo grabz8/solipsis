@@ -1172,3 +1172,8 @@ Object dedicated resource group is now used to load sof embedded textures
 Pending upload test on owned entity added
 
 ---------------------------
+24/06/09
+
+release 1.1.1
+
+---------------------------
