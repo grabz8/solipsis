@@ -1165,6 +1165,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\navigatorGui\GUI_MessageBoxResponse.h"
+				>
+			</File>
+			<File
 				RelativePath=".\navigatorGui\gui_modeler.cpp"
 				>
 			</File>

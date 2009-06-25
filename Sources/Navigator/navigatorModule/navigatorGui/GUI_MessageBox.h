@@ -29,15 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace NaviLibrary;
 
 namespace Solipsis {
-    /** This class handles user response on message box
-    */
-    class GUI_MessageBoxResponse
-    {
-    public:
-        /// Called on message box user response
-        virtual void onResponse(const std::string& response) = 0;
-    };
-
     /** This class manages all Graphical User Interfaces of the Navigator.
     */
     class GUI_MessageBox : public GUI_Panel

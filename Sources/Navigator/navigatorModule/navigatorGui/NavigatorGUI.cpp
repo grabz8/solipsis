@@ -166,15 +166,21 @@ void NavigatorGUI::inWorld()
 }
 
 //-------------------------------------------------------------------------------------
+void NavigatorGUI::ConnectionServerErrorMsgBoxResponse::onResponse(const std::string& response)
+{
+    Navigator::getSingletonPtr()->disconnect(true);
+}
+
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::connectionServerError()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::connectionError()");
-    Navigator::getSingletonPtr()->disconnect(true);
 
     GUI_MessageBox::getMsgBox()->show("Network error",
         "Connection to server error...", 
         GUI_MessageBox::MBB_OK, 
-        GUI_MessageBox::MBB_EXCLAMATION);
+        GUI_MessageBox::MBB_EXCLAMATION,
+        &connectionServerErrorMsgBoxResponse);
 }
 
 //-------------------------------------------------------------------------------------

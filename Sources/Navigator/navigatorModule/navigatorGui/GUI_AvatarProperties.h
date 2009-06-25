@@ -111,4 +111,4 @@ namespace Solipsis
 
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_Avatar_h__
+#endif // #ifndef __GUI_AvatarProperties_h__

@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "World/Object.h"
 #include "OgrePeerManager.h"
 #include "NavigatorGUI/NavigatorGUI.h"
-#include "NavigatorGUI/GUI_MessageBox.h"
+#include "NavigatorGUI/GUI_MessageBoxResponse.h"
 #include "Scripting/LuaBinding.h"
 #include "Scripting/NavigatorLua.h"
 #include "Selection.h"

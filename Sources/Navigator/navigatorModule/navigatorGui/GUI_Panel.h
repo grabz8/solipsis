@@ -21,8 +21,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef __GUI_LOGIN_h__
-#define __GUI_LOGIN_h__
+#ifndef __GUI_Panel_h__
+#define __GUI_Panel_h__
 
 #include "NavigatorGui.h"
 
@@ -81,4 +81,4 @@ namespace Solipsis
 
 } // namespace Solipsis
 
-#endif // #ifndef __GUI_LOGIN_h__
+#endif // #ifndef __GUI_Panel_h__

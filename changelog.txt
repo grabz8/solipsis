@@ -1177,6 +1177,7 @@ Pending upload test on owned entity added
 uilogin world button placement fixed
 avatar ctxt talk bug fix, guiDebug ptr test added
 cache file flushed after each file downloaded
+connection error crash fix
 release 1.1.1
 
 ---------------------------

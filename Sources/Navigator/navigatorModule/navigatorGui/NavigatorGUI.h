@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NaviManager.h"
 #include "World/Modeler.h"
 #include "ModifiableMaterialObject.h"
+#include "NavigatorGUI/GUI_MessageBoxResponse.h"
 #include "Panel2DMgr.h"
 
 using namespace NaviLibrary;
@@ -71,6 +72,10 @@ public:
     void inWorld();
 
     void connectionLostError();
+    class ConnectionServerErrorMsgBoxResponse : public GUI_MessageBoxResponse {
+        virtual void onResponse(const std::string& response);
+    };
+    ConnectionServerErrorMsgBoxResponse connectionServerErrorMsgBoxResponse;
     void connectionServerError();
 
 public:
