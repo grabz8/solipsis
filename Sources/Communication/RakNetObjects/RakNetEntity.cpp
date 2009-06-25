@@ -486,7 +486,7 @@ void RakNetEntity::addFilesInCacheManager()
         for(XmlLodContent::LodContentFileList::const_iterator itf = lodContentFileList.begin(); itf != lodContentFileList.end(); ++itf)
         {
             LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "RakNetEntity::addFilesInCacheManager() adding file %s", itf->mFilename.c_str());
-            RakNetConnection::getSingletonPtr()->getCacheManager()->addFile(itf->mFilename, itf->mVersion, this);
+            RakNetConnection::getSingletonPtr()->getCacheManager()->addFile(itf->mFilename, itf->mVersion, true, this);
         }
     }
 }

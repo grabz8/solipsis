@@ -142,9 +142,10 @@ public:
     /** Add 1 file in cache.
     @param filename The filename of the cached file
     @param version The version of the cached file
+    @param saveCacheFile If the cache file must be saved
     @param callback The callback instance (download/upload transfer progress)
     */
-    void addFile(const std::string& filename, const FileVersion& version, CacheManagerCallback* callback = 0);
+    void addFile(const std::string& filename, const FileVersion& version, bool saveCacheFile = false, CacheManagerCallback* callback = 0);
     /** Remove 1 file to manage
     @param filename The filename of the removed file
     */

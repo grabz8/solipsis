@@ -218,7 +218,7 @@ unsigned int CacheManager::GetFilePart(char *filename,
 }
 
 //-------------------------------------------------------------------------------------
-void CacheManager::addFile(const std::string& filename, const FileVersion& version, CacheManagerCallback* callback)
+void CacheManager::addFile(const std::string& filename, const FileVersion& version, bool saveCacheFile, CacheManagerCallback* callback)
 {
     std::string completeFileName;
     getCachePathname(filename, completeFileName);
@@ -241,7 +241,8 @@ void CacheManager::addFile(const std::string& filename, const FileVersion& versi
         entry.mDownload.mState = ESTransferComplete;
 
         // flush/update the cache file
-        save();
+        if (saveCacheFile)
+            save();
 	}
 }
 
@@ -557,7 +558,7 @@ void CacheManager::load()
                 if (!XmlHelpers::fromXmlEltLodContentFileStruct(fileElt, lodContentFileStruct))
                     throw std::string("Parsing error");
 
-                addFile(lodContentFileStruct.mFilename, lodContentFileStruct.mVersion);
+                addFile(lodContentFileStruct.mFilename, lodContentFileStruct.mVersion, false);
             }
         }
     }
