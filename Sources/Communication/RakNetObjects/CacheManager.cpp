@@ -239,6 +239,9 @@ void CacheManager::addFile(const std::string& filename, const FileVersion& versi
         entry.mDownload.mSystem = UNASSIGNED_SYSTEM_ADDRESS;
         entry.mDownload.mFileListTransferSetID = 0;
         entry.mDownload.mState = ESTransferComplete;
+
+        // flush/update the cache file
+        save();
 	}
 }
 
