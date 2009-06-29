@@ -50,9 +50,9 @@ namespace Solipsis
         static const DefinedAttributes DAOrientation = (DefinedAttributes)(DAPosition << 1);
         static const DefinedAttributes DAAnimation = (DefinedAttributes)(DAOrientation << 1);
         static const DefinedAttributes DAAABoundingBox = (DefinedAttributes)(DAAnimation << 1);
-        static const DefinedAttributes DAContent = (DefinedAttributes)(DAAABoundingBox << 1);
-        static const DefinedAttributes DADownloadProgress = (DefinedAttributes)(DAContent << 1);
+        static const DefinedAttributes DADownloadProgress = (DefinedAttributes)(DAAABoundingBox << 1);
         static const DefinedAttributes DAUploadProgress = (DefinedAttributes)(DADownloadProgress << 1);
+        static const DefinedAttributes DAContent = (DefinedAttributes)(DAUploadProgress << 1);
 
     protected:
         DefinedAttributes mDefinedAttributes;

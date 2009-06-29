@@ -190,6 +190,8 @@ public:
 
 	void setProgress(Real value);
 
+    void showOnTop(bool show);
+
 	void attach(SceneNode *pNode);
 	void detach();
     void resetTime()

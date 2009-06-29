@@ -1181,3 +1181,8 @@ connection error crash fix
 release 1.1.1
 
 ---------------------------
+29/06/09
+
+Obect download progress bar added
+
+---------------------------

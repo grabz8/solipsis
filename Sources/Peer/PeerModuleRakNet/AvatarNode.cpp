@@ -386,6 +386,21 @@ bool AvatarNode::processEvt(RefCntPoolPtr<XmlEvt>& xmlEvt, std::string& xmlRespS
             if (entity == 0)
                 return true;
             XmlEntity::DefinedAttributes definedAttributes = xmlEntity->getDefinedAttributes();
+            if (definedAttributes & XmlEntity::DAVersion)
+            {
+                entity->getXmlEntity()->setVersion(xmlEntity->getVersion());
+                entity->addLastDeserializedDefinedAttributes(XmlEntity::DAVersion);
+            }
+            if (definedAttributes & XmlEntity::DAPosition)
+            {
+                entity->getXmlEntity()->setPosition(xmlEntity->getPosition());
+                entity->addLastDeserializedDefinedAttributes(XmlEntity::DAPosition);
+            }
+            if (definedAttributes & XmlEntity::DAAABoundingBox)
+            {
+                entity->getXmlEntity()->setAABoundingBox(xmlEntity->getAABoundingBox());
+                entity->addLastDeserializedDefinedAttributes(XmlEntity::DAAABoundingBox);
+            }
             if (definedAttributes & XmlEntity::DAContent)
             {
                 entity->getXmlEntity()->setContent(xmlEntity->getContent());

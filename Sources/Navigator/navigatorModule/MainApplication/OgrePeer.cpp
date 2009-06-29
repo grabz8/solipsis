@@ -34,7 +34,7 @@ OgrePeer::OgrePeer(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal) :
     mXmlEntity(xmlEntity),
     mIsLocal(isLocal),
     mLod(0),
-    mBBox(0),
+    mAABBox(0),
     mLocalNode(0),
     mProgressBar(0)
 {
@@ -50,16 +50,17 @@ OgrePeer::~OgrePeer()
         delete mProgressBar;
         mProgressBar = 0;
     }
+    if (mAABBox)
+    {
+        mAABBox->detatchFromParent();
+        delete mAABBox;
+        mAABBox = 0;
+    }
     if (mLocalNode)
     {
         mLocalNode->detachAllObjects();
         mLocalNode->getCreator()->destroySceneNode(mLocalNode->getName());
         mLocalNode = 0;
-    }
-    if (mBBox)
-    {
-        delete mBBox;
-        mBBox = 0;
     }
 }
 

@@ -86,6 +86,8 @@ float Entity::onDownloadProgress(const std::string& filename, float progress)
 {
     float totalProgress = RakNetEntity::onDownloadProgress(filename, progress);
 
+    mLastDeserializedDefinedAttributes &= ~XmlEntity::DAUploadProgress;
+
     // Aborted ?
     if (progress == -2.0f)
         return totalProgress;
@@ -121,6 +123,8 @@ float Entity::onDownloadProgress(const std::string& filename, float progress)
 float Entity::onUploadProgress(const std::string& filename, float progress)
 {
     float totalProgress = RakNetEntity::onUploadProgress(filename, progress);
+
+    mLastDeserializedDefinedAttributes &= ~XmlEntity::DADownloadProgress;
 
     mXmlEntity->setUploadProgress(totalProgress);
     mLastDeserializedDefinedAttributes |= XmlEntity::DAUploadProgress;

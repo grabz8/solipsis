@@ -39,7 +39,6 @@ using namespace CommonTools;
 Object::Object(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, Object3D* object3D) :
     OgrePeer(xmlEntity, isLocal),
     mObject3D(object3D)
-
 {
 }
 
@@ -53,6 +52,7 @@ Object::~Object()
     {
         Selection *selection = modeler->getSelection();
         selection->remove3DObject(mObject3D);
+        mObject3D = 0;
     }
 
     if (!mResourceLocation.empty())
@@ -141,27 +141,112 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         mLocalNode->setPosition(mXmlEntity->getPosition());
     }
 
-    if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
+    if (definedAttributes & XmlEntity::DAPosition)
     {
-        OGRE_LOG("Object::updateEntity() Destroy/Load new object uid:" + mXmlEntity->getUid());
-
-        Modeler* modeler = Modeler::getSingletonPtr();
-        if (mObject3D != 0)
+        mLocalNode->setPosition(xmlEntity->getPosition());
+        mXmlEntity->setPosition(xmlEntity->getPosition());
+    }
+    if (definedAttributes & XmlEntity::DAAABoundingBox)
+    {
+        showAABBox();
+        const AxisAlignedBox & aabbox = mXmlEntity->getAABoundingBox();
+        mAABBox->setSize(aabbox.getSize());
+        mAABBox->setPosition(aabbox.getCenter().y);
+        mXmlEntity->setAABoundingBox(xmlEntity->getAABoundingBox());
+    }
+    if (definedAttributes & XmlEntity::DADownloadProgress)
+    {
+        if (xmlEntity->getDownloadProgress() < 1.0f)
         {
-            Selection *selection = modeler->getSelection();
-            selection->remove3DObject(mObject3D);
-
-            if (!mResourceLocation.empty())
+            if (mObject3D != 0)
             {
-                ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
-                if (!mResourceGroup.empty())
-                    ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
-                // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
-                ArchiveManager::getSingleton().unload(mResourceLocation);
-                mResourceLocation.clear();
-                mResourceGroup.clear();
+                OGRE_LOG("Object::updateEntity() Destroy old object uid:" + mXmlEntity->getUid());
+
+                Modeler* modeler = Modeler::getSingletonPtr();
+                Selection *selection = modeler->getSelection();
+                selection->remove3DObject(mObject3D);
+                mObject3D = 0;
+
+                if (!mResourceLocation.empty())
+                {
+                    ResourceGroupManager::getSingleton().removeResourceLocation(mResourceLocation, mResourceGroup);
+                    if (!mResourceGroup.empty())
+                        ResourceGroupManager::getSingleton().destroyResourceGroup(mResourceGroup);
+                    // Here we unload the archive manually because removeResourceLocation() missed it (see Ogre forums)
+                    ArchiveManager::getSingleton().unload(mResourceLocation);
+                    mResourceLocation.clear();
+                    mResourceGroup.clear();
+                }
+            }
+            showAABBox();
+            if (mProgressBar == 0)
+            {
+                mProgressBar = new ProgressBarWithText(mXmlEntity->getUid(), "Object downloading : ", false);
+                mProgressBar->setBarSize(2.5,0.3);
+                mProgressBar->setTxtVerticalPos(0);
+                mProgressBar->setTxtHozizontalPosition(false, -120);
+                mProgressBar->setPosition(mXmlEntity->getAABoundingBox().getMaximum().y + 0.5);
+                mProgressBar->showRemainingTime(true);
+                mProgressBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
+                mProgressBar->setTxtScale(0.1f);
+                mProgressBar->showOnTop(false);
+                mProgressBar->attach(mLocalNode);
+            }
+            mProgressBar->setProgress(xmlEntity->getDownloadProgress());
+        }
+        else
+        {
+            if (mProgressBar != 0)
+            {
+                mProgressBar->detach();
+                delete mProgressBar;
+                mProgressBar = 0;
+            }
+            hideAABBox();
+        }
+
+        mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
+        OGRE_LOG("Download progress for Object " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getDownloadProgress()));
+    }
+    if (definedAttributes & XmlEntity::DAUploadProgress)
+    {
+        if (xmlEntity->getUploadProgress() < 1.0f)
+        {
+            if (mProgressBar == 0)
+            {
+                mProgressBar = new ProgressBarWithText(mXmlEntity->getUid(), "Object uploading : ", false);
+                mProgressBar->setBarSize(2.5,0.3);
+                mProgressBar->setTxtVerticalPos(0);
+                mProgressBar->setTxtHozizontalPosition(false, -120);
+                mProgressBar->setPosition(mXmlEntity->getAABoundingBox().getMaximum().y + 0.5);
+                mProgressBar->showRemainingTime(true);
+                mProgressBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
+                mProgressBar->setTxtScale(0.1f);
+                mProgressBar->showOnTop(false);
+                mProgressBar->attach(mLocalNode);
+            }
+            mProgressBar->setProgress(xmlEntity->getUploadProgress());
+        }
+        else
+        {
+            if (mProgressBar != 0)
+            {
+                mProgressBar->detach();
+                delete mProgressBar;
+                mProgressBar = 0;
             }
         }
+
+        mXmlEntity->setUploadProgress(xmlEntity->getUploadProgress());
+        OGRE_LOG("Upload progress for Object " +
+            xmlEntity->getUid() + " : " +
+            StringConverter::toString((Real)mXmlEntity->getUploadProgress()));
+    }
+    if ((definedAttributes & XmlEntity::DAContent) && (xmlEntity->getDownloadProgress() >= 1.0f))
+    {
+        OGRE_LOG("Object::updateEntity() Load new object uid:" + mXmlEntity->getUid());
 
         String pathname = "";
         XmlLodContent::LodContentFileList& lodContentFileList = xmlEntity->getContent()->getContentLodMap()[0]->getLodContentFileList();
@@ -194,7 +279,7 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         }
 
         Object3DPtrList newObjects;
-
+        Modeler* modeler = Modeler::getSingletonPtr();
         if (!modeler->XMLLoad(pathname, mResourceGroup, newObjects))
         {
             OGRE_LOG("Object::updateEntity() Unable to load .sof object file !");
@@ -208,71 +293,29 @@ bool Object::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
         }
         mObject3D = *(newObjects.begin());
     }
-    if (definedAttributes & XmlEntity::DAAABoundingBox)
-    {
-//         if (mBBox == NULL)
-//         {
-//             const AxisAlignedBox & bbBox = mXmlEntity->getAABoundingBox();
-//             Vector3 size = bbBox.getSize();
-//             if (size.x == 0)    
-//                 size.x = 1;
-//             if (size.y == 0)    
-//                 size.y = 1;
-//             if (size.z == 0)    
-//                 size.z = 1;
-// 
-//             size.y = 800;
-// 
-//             mBBox = new MovableBox(mXmlEntity->getUid()+"_BBOX", size, false);
-//             mLocalNode->attachObject(mBBox);
-//         }
-    }
-    if (definedAttributes & XmlEntity::DAPosition)
-    {
-        mLocalNode->setPosition(mXmlEntity->getPosition());
-    }
-    if (definedAttributes & XmlEntity::DADownloadProgress)
-    {
-        mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
-        OGRE_LOG("Download progress for Object " +
-            xmlEntity->getUid() + " : " +
-            StringConverter::toString((Real)mXmlEntity->getDownloadProgress()));
-    }
-    if (definedAttributes & XmlEntity::DAUploadProgress)
-    {
-        if (xmlEntity->getUploadProgress() < 1.0f)
-        {
-            if (mProgressBar == 0)
-            {
-                mProgressBar = new ProgressBarWithText(mXmlEntity->getUid(), "Object uploading : ", false);
-                mProgressBar->setBarSize(2.5,0.3);
-                mProgressBar->setTxtVerticalPos(0);
-                mProgressBar->setTxtHozizontalPosition(false, -120);
-                mProgressBar->setPosition(mXmlEntity->getAABoundingBox().getSize().y);
-                mProgressBar->showRemainingTime(true);
-                mProgressBar->setFont("BerlinSans32", 1, ColourValue::White, 1);
-                mProgressBar->setTxtScale(0.1f);
-                mProgressBar->attach(mLocalNode);
-            }
-            mProgressBar->setProgress(xmlEntity->getUploadProgress());
-        }
-        else
-        {
-            if (mProgressBar != 0)
-            {
-                mProgressBar->detach();
-                delete mProgressBar;
-                mProgressBar = 0;
-            }
-        }
-
-        mXmlEntity->setUploadProgress(xmlEntity->getUploadProgress());
-        OGRE_LOG("Upload progress for Object " +
-            xmlEntity->getUid() + " : " +
-            StringConverter::toString((Real)mXmlEntity->getUploadProgress()));
-    }
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------
+void Object::showAABBox()
+{
+    if (mAABBox != 0)
+        return;
+
+    mAABBox = new MovableBox(mXmlEntity->getUid() + "_aabbox", Vector3::ZERO, false);
+    mLocalNode->attachObject(mAABBox);
+}
+
+//-------------------------------------------------------------------------------------
+void Object::hideAABBox()
+{
+    if (mAABBox == 0)
+        return;
+
+    mAABBox->detatchFromParent();
+    delete mAABBox;
+    mAABBox = 0;
 }
 
 //-------------------------------------------------------------------------------------

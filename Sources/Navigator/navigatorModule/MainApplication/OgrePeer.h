@@ -48,7 +48,7 @@ protected:
     int mLod;
 
     // When loading this box replace the bounding box
-    MovableBox *mBBox;
+    MovableBox *mAABBox;
     // Used only for bounding box
     SceneNode *mLocalNode;
 

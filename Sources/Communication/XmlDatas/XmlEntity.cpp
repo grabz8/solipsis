@@ -24,10 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Solipsis {
 
-
-
 Pool XmlEntity::mPool;
-
 
 Pool& XmlEntity::getStaticPool() { return mPool; }
 Pool& XmlEntity::getPool() const { return mPool; }
@@ -61,7 +58,7 @@ std::string XmlEntity::toXmlString() const
         s << "<DownloadProgress value=\"" << mDownloadProgress<< "\" />";
     if (mDefinedAttributes & DAUploadProgress)
         s << "<UploadProgress value=\"" << mUploadProgress<< "\" />";
-     
+
     if (!mShape.isNull())
         s << mShape->toXmlString();
     if (!mContent.isNull())
@@ -198,6 +195,16 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         mAABoundingBox.setExtents(min, max);
         mDefinedAttributes |= DAAABoundingBox;
     }
+    if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
+    {
+        mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
+        mDefinedAttributes |= DADownloadProgress;
+    }
+    if ((elt = xmlElt->FirstChildElement("UploadProgress")) != 0)
+    {
+        mUploadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
+        mDefinedAttributes |= DAUploadProgress;
+    }
     if ((elt = xmlElt->FirstChildElement("shape")) != 0)
     {
         //
@@ -208,16 +215,6 @@ bool XmlEntity::fromXmlElt(TiXmlElement* xmlElt)
         xmlContent->fromXmlElt(elt);
         mContent = RefCntPoolPtr<XmlContent>(xmlContent);
         mDefinedAttributes |= DAContent;
-    }
-    if ((elt = xmlElt->FirstChildElement("DownloadProgress")) != 0)
-    {
-        mDownloadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
-        mDefinedAttributes |= DADownloadProgress;
-    }
-    if ((elt = xmlElt->FirstChildElement("UploadProgress")) != 0)
-    {
-        mUploadProgress = XmlHelpers::convertStringToFloat(elt->Attribute("value"));
-        mDefinedAttributes |= DAUploadProgress;
     }
 
     return true;
@@ -237,12 +234,16 @@ void XmlEntity::copyEntityDefinedAttributes(RefCntPoolPtr<XmlEntity>& srcXmlEnti
         dstXmlEntity->setOrientation(srcXmlEntity->getOrientation());
     if (definedAttributes & XmlEntity::DAAnimation)
         dstXmlEntity->setAnimation(srcXmlEntity->getAnimation());
-    if (definedAttributes & XmlEntity::DAContent)
-        dstXmlEntity->setContent(srcXmlEntity->getContent());
+    if (definedAttributes & XmlEntity::DAAABoundingBox)
+        dstXmlEntity->setAABoundingBox(srcXmlEntity->getAABoundingBox());
     if (definedAttributes & XmlEntity::DADownloadProgress)
         dstXmlEntity->setDownloadProgress(srcXmlEntity->getDownloadProgress());
     if (definedAttributes & XmlEntity::DAUploadProgress)
         dstXmlEntity->setUploadProgress(srcXmlEntity->getUploadProgress());
+    if (definedAttributes & XmlEntity::DAContent)
+        dstXmlEntity->setContent(srcXmlEntity->getContent());
 }
+
+//-------------------------------------------------------------------------------------
 
 } // namespace Solipsis

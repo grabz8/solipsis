@@ -210,8 +210,6 @@ bool OgrePeerManager::frameStarted(const FrameEvent& evt)
         it->second->update(evt.timeSinceLastFrame);
 
     // Send updated entities events to node
-
-
     for (OgrePeersMap::iterator it = mOgrePeersMap.begin();it != mOgrePeersMap.end();++it)
     {
 
@@ -320,7 +318,6 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         mOgrePeersMap[xmlEntity->getUid()] = peerObject;
 
         // Send new entity event
-
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETNewEntity);
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
@@ -330,12 +327,10 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
     else
     {
         // Updated object
-
         Object *object = (Object*)ogrePeer->second;
         object->onObjectSave();
 
         // Create the Xml entity
-
         RefCntPoolPtr<XmlEntity> xmlEntity;
 
         xmlEntity->setDefinedAttributes(XmlEntity::DANone);
@@ -343,10 +338,10 @@ bool OgrePeerManager::onObject3DSave(const String& sofFilename, Object3D* object
         xmlEntity->setType(object->getXmlEntity()->getType());
         xmlEntity->setVersion(object->getXmlEntity()->getVersion());
         xmlEntity->setPosition(object->getXmlEntity()->getPosition());
+        xmlEntity->setAABoundingBox(object->getXmlEntity()->getAABoundingBox());
         xmlEntity->setContent(object->getXmlEntity()->getContent());
 
         // Send updated entity event
-
         RefCntPoolPtr<XmlEvt> xmlEvt;
         xmlEvt->setType(ETUpdatedEntity);
         xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));

@@ -410,6 +410,12 @@ void ProgressBarWithText::setProgress(Real value)
     }
 }
 
+void ProgressBarWithText::showOnTop(bool show)
+{
+    m_Bar.showOnTop(show);
+    m_Txt.showOnTop(show);
+}
+
 void ProgressBarWithText::attach(SceneNode *pNode)
 {
     if (!mpNodeAll)

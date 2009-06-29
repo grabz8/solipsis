@@ -237,7 +237,7 @@ bool Scene::updateEntity(RefCntPoolPtr<XmlEntity>& xmlEntity)
                 mProgressBar = 0;
             }
         }
-   
+
         mXmlEntity->setDownloadProgress(xmlEntity->getDownloadProgress());
         OGRE_LOG("Download progress for Scene " +
             xmlEntity->getUid() + " : " +

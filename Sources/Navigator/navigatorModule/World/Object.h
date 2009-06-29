@@ -60,6 +60,12 @@ public:
 
     /** See OgrePeer. */
     virtual bool action(RefCntPoolPtr<XmlAction>& xmlAction);
+
+private:
+    /** Show the axis-aligned bounding box. */
+    void showAABBox();
+    /** Hide the axis-aligned bounding box. */
+    void hideAABBox();
 };
 
 } // namespace Solipsis
