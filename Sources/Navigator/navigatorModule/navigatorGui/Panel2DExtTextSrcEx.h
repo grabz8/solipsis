@@ -37,6 +37,7 @@ class Panel2DExtTextSrcEx : public Panel2D
 protected:
     ExternalTextureSourceEx *mExtTextSrcEx;
     bool mMouseCaptured;
+    bool mGotFocus;
 
 public:
     /// Constructor
@@ -58,6 +59,9 @@ protected:
     virtual bool mousePressed(const MouseEvt& evt);
     /** See MouseEventListener. */
     virtual bool mouseReleased(const MouseEvt& evt);
+
+protected:
+    virtual void onFocus(bool isFocused);
 };
 
 /** This factory class to create 2D panel for VLC ExternalTextureSourceEx material.

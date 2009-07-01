@@ -1186,3 +1186,10 @@ release 1.1.1
 Obect download progress bar added
 
 ---------------------------
+30/06/09
+
+VNC ctxt + NavigatorFrameListener improvements were fully SVN overwritten without taking care about any merge !!! :-(
+Web 2D panel mouse click bug fix
+GUI contexts added into 2D panels WWW/VNC/SWF
+
+---------------------------

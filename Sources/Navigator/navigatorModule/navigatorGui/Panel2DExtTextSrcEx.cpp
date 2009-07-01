@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "Panel2DExtTextSrcEx.h"
+#include "navigatorGui/GUI_ContextMenu.h"
 #include <CTLog.h>
 
 using namespace Ogre;
@@ -39,7 +40,8 @@ const String Panel2DSWFFactory::ms_Type = "swf";
 Panel2DExtTextSrcEx::Panel2DExtTextSrcEx(const Ogre::String& type, const String& name) :
     Panel2D(type, name),
     mExtTextSrcEx(0),
-    mMouseCaptured(false)
+    mMouseCaptured(false),
+    mGotFocus(false)
 {
 }
 
@@ -123,11 +125,24 @@ bool Panel2DExtTextSrcEx::mousePressed(const MouseEvt& evt)
         return eventHandled;
     eventHandled = true;
     mMouseCaptured = true;
-    Evt mouseEvt;
-    mouseEvt.mType = evt.mType;
-    mouseEvt.mMouse.mState = evt.mState;
-    getTextureUVRelativePoint(evt.mState.mX, evt.mState.mY, mouseEvt.mMouse.mState.mXreal, mouseEvt.mMouse.mState.mYreal);
-    mExtTextSrcEx->handleEvt(mMatName, Event(0, &mouseEvt));
+    String plugin = mType;
+    if ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible() && mGotFocus &&
+        ((plugin == "vnc") || (plugin == "swf")))
+    {
+        if (plugin == "vnc")
+            GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTVNC, mName);
+        else if (plugin == "swf")
+            GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTSWF, mName);
+        Panel2DMgr::getSingleton().defocus();
+    }
+    else
+    {
+        Evt mouseEvt;
+        mouseEvt.mType = evt.mType;
+        mouseEvt.mMouse.mState = evt.mState;
+        getTextureUVRelativePoint(evt.mState.mX, evt.mState.mY, mouseEvt.mMouse.mState.mXreal, mouseEvt.mMouse.mState.mYreal);
+        mExtTextSrcEx->handleEvt(mMatName, Event(0, &mouseEvt));
+    }
     return eventHandled;
 }
 
@@ -138,12 +153,19 @@ bool Panel2DExtTextSrcEx::mouseReleased(const MouseEvt& evt)
 
     eventHandled = true;
     mMouseCaptured = false;
+    mGotFocus = false;
     Evt mouseEvt;
     mouseEvt.mType = evt.mType;
     mouseEvt.mMouse.mState = evt.mState;
     getTextureUVRelativePoint(evt.mState.mX, evt.mState.mY, mouseEvt.mMouse.mState.mXreal, mouseEvt.mMouse.mState.mYreal);
     mExtTextSrcEx->handleEvt(mMatName, Event(0, &mouseEvt));
     return eventHandled;
+}
+
+//-------------------------------------------------------------------------------------
+void Panel2DExtTextSrcEx::onFocus(bool isFocused)
+{
+    mGotFocus = true;
 }
 
 //-------------------------------------------------------------------------------------

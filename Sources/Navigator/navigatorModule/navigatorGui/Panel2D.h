@@ -129,6 +129,8 @@ public:
     void moveRelative(int deltaX, int deltaY);
     virtual void resize(int width, int height);
     virtual void resize(State state);
+    virtual void saveFocus() {}
+    virtual void restoreFocus() {}
 
     bool operator>(const Panel2D& panel)  const { return mOverlay->getZOrder() > panel.mOverlay->getZOrder(); };
 

@@ -43,9 +43,9 @@ namespace Solipsis
         {
             NAVI_CTXTAVATAR,
             NAVI_CTXTWWW,
-            NAVI_CTXTSWF,
             NAVI_CTXTVLC,
             NAVI_CTXTVNC,
+            NAVI_CTXTSWF,
 
             NAVI_CTXTCOUNT
         };

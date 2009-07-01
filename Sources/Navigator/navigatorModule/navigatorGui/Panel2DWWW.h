@@ -46,6 +46,8 @@ public:
 
     virtual bool create(Ogre::ushort zOrder);
 
+    virtual void restoreFocus();
+
 protected:
     /** See KeyboardEventListener. */
     virtual bool keyPressed(const KeyboardEvt& evt);

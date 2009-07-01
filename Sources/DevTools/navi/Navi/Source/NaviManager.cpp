@@ -399,9 +399,15 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
     if (focusedNavi && focusedNavi->isModal)
         return true;
 // END GREG
-	deFocusAllNavis();
+// BEGIN GREG
+//	deFocusAllNavis();
+// END GREG
 	Navi* naviToFocus = selection? selection : getTopNavi(x, y);
 
+// BEGIN GREG
+	if (naviToFocus != focusedNavi)
+        deFocusAllNavis();
+// END GREG
 	if(!naviToFocus)
 		return false;
 
@@ -440,11 +446,18 @@ bool NaviManager::focusNavi(int x, int y, Navi* selection)
 	}
 // END GREG
 
+// BEGIN GREG
+	if (naviToFocus != focusedNavi)
+    {
+// END GREG
 	focusedNavi = naviToFocus;
 // BEGIN GREG
 	focusedNavi->setFocus(true);
 // END GREG
 	LLMozLib::getInstance()->focusBrowser(naviToFocus->windowID, true);
+// BEGIN GREG
+    }
+// END GREG
 
 	return true;
 }

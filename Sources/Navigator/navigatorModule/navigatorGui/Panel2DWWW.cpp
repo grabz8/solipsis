@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Prerequisites.h"
 
 #include "Panel2DWWW.h"
+#include "navigatorGui/GUI_ContextMenu.h"
 #include <CTLog.h>
 
 using namespace Ogre;
@@ -69,6 +70,12 @@ bool Panel2DWWW::create(ushort zOrder)
 }
 
 //-------------------------------------------------------------------------------------
+void Panel2DWWW::restoreFocus()
+{
+    NaviManager::Get().focusNavi(mNavi);
+}
+
+//-------------------------------------------------------------------------------------
 bool Panel2DWWW::keyPressed(const KeyboardEvt& evt)
 {
     return (NaviManager::Get().getFocusedNavi() == mNavi);
@@ -107,9 +114,17 @@ bool Panel2DWWW::mousePressed(const MouseEvt& evt)
         return eventHandled;
     eventHandled = true;
     mMouseCaptured = true;
-    int textureX, textureY;
-    getTextureRelativePoint(evt.mState.mX, evt.mState.mY, textureX, textureY);
-    mNavi->injectMouseDown(textureX, textureY);
+    if (evt.mState.mButtons & MBLeft)
+    {
+        int textureX, textureY;
+        getTextureRelativePoint(evt.mState.mX, evt.mState.mY, textureX, textureY);
+        mNavi->injectMouseDown(textureX, textureY);
+    }
+    else if ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible())
+    {
+        GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTWWW, mName);
+        Panel2DMgr::getSingleton().defocus();
+    }
     return eventHandled;
 }
 
@@ -140,7 +155,10 @@ void Panel2DWWW::getTextureSize(int& textureWidth, int& textureHeight)
 //-------------------------------------------------------------------------------------
 void Panel2DWWW::onFocus(bool isFocused)
 {
-    NaviManager::Get().focusNavi(mNavi);
+    if (!isFocused)
+        NaviManager::Get().deFocusAllNavis();
+    else
+        NaviManager::Get().focusNavi(mNavi);
 }
 
 //-------------------------------------------------------------------------------------

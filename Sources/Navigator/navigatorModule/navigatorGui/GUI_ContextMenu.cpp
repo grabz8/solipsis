@@ -188,6 +188,32 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->navigateTo("local://uictxtvlc.html", datas);
         }
         break;
+    case NAVI_CTXTVNC:
+        {
+            naviW = 256;
+            naviH = 64;
+            clampNaviOnScreen(x, y, naviW, naviH);
+            String ctxtVNCName = params;
+
+            createNavi("", x, y,naviW, naviH);
+            mNavi->setMovable(false);
+            mNavi->hide();
+            mNavi->setOpacity(0.8);
+
+            mNavi->setMaxUPS(8);
+            mNavi->setForceMaxUpdate(false);
+            mNavi->setAutoUpdateOnFocus(true);
+
+            mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onVNCPanelLoaded));
+            mNavi->bind("vncCommand", NaviDelegate(this, &GUI_ContextMenu::onVNCCommand));
+
+            NaviData datas( "uictxtvncDatas");
+            datas["naviDataName"] = "uictxtvncDatas";
+            datas["ctxtVNCName"] = ctxtVNCName;
+
+            mNavi->navigateTo("local://uictxtvnc.html", datas);
+        }
+        break;
     case NAVI_CTXTSWF:
         {
             naviW = 286;
@@ -286,9 +312,6 @@ void GUI_ContextMenu::onWWWPanelLoaded(const NaviData& naviData)
     mNavi->show(); 
 }
 
-
-
-
 // usual function on page loaded
 void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
 {
@@ -340,53 +363,13 @@ String extTextSrcExHandleEvt(const String & extTextSrcExPlugin, const String & m
     return extTextSrcEx->handleEvt(mtlName, extTextSrcExEvt);
 }
 
-// SWF callbacks 
-void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
-{
-    String ctxtSWFName = naviData["ctxtSWFName"].str(); 
-
-    String url = extTextSrcExHandleEvt("swf", ctxtSWFName, "geturl");
-    StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
-
-    mNavi->evaluateJS("$('inputUrl').value = '" + url + "'");
-    String mute = extTextSrcExHandleEvt("swf", ctxtSWFName, "getmute");
-    if (mute == "true")
-        mNavi->evaluateJS("$('mTbIconVolume').addClass('swfToolbarVolumeOff')");
-    else
-        mNavi->evaluateJS("$('mTbIconVolume').removeClass('swfToolbarVolumeOff')");
-
-    mNavi->show(); 
-}
-
-void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
-{
-    String ctxtSWFName = naviData["ctxtSWFName"].str();
-    String cmd = naviData["cmd"].str();
-
-    if (cmd == "seturl")  
-    {
-        String url = mNavi->evaluateJS( "$('inputUrl').value");
-        extTextSrcExHandleEvt("swf", ctxtSWFName, "seturl?" + url);
-    }
-    else if (cmd == "maximize") 
-    {
-        Navigator::getSingletonPtr()->getNavigatorGUI()->createPanel2D("swf", ctxtSWFName);   
-    }
-    else 
-    {
-        extTextSrcExHandleEvt("swf", ctxtSWFName, cmd);
-    }
-
-    destroy();
-}
-
 // VLC callbacks 
 void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
 {
     String ctxtVLCName = naviData["ctxtVLCName"].str(); 
 
     String url = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmrl");
-   StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
+    StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
 
     mNavi->evaluateJS("$('inputMrl').value = '" + url + "'");
     String mute = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmute");
@@ -395,8 +378,7 @@ void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
     else
         mNavi->evaluateJS("$('mTbIconVolume').removeClass('vlcToolbarVolumeOff')");
 
-    mNavi->show(); 
-
+    mNavi->show();
 }
 
 void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
@@ -424,10 +406,67 @@ void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
 // VNC callbacks 
 void GUI_ContextMenu::onVNCPanelLoaded(const NaviData& naviData)
 {
-    
+    String ctxtVNCName = naviData["ctxtVNCName"].str(); 
+
+    String address = extTextSrcExHandleEvt("vnc", ctxtVNCName, "getaddress");
+    mNavi->evaluateJS("$('inputAddress').value = '" + address + "'");
+
+    mNavi->show(); 
 }
 
 void GUI_ContextMenu::onVNCCommand(const NaviData& naviData)
 {
+    String ctxtVNCName = naviData["ctxtVNCName"].str();
+    String cmd = naviData["cmd"].str();
 
+    if (cmd == "maximize") 
+    {
+        Navigator::getSingletonPtr()->getNavigatorGUI()->createPanel2D("vnc", ctxtVNCName);   
+    }
+    else 
+    {
+        extTextSrcExHandleEvt("vnc", ctxtVNCName, cmd);
+    }
+
+    destroy();
+}
+
+// SWF callbacks 
+void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
+{
+    String ctxtSWFName = naviData["ctxtSWFName"].str(); 
+
+    String url = extTextSrcExHandleEvt("swf", ctxtSWFName, "geturl");
+    StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
+
+    mNavi->evaluateJS("$('inputUrl').value = '" + url + "'");
+    String mute = extTextSrcExHandleEvt("swf", ctxtSWFName, "getmute");
+    if (mute == "true")
+        mNavi->evaluateJS("$('mTbIconVolume').addClass('swfToolbarVolumeOff')");
+    else
+        mNavi->evaluateJS("$('mTbIconVolume').removeClass('swfToolbarVolumeOff')");
+
+    mNavi->show();
+}
+
+void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
+{
+    String ctxtSWFName = naviData["ctxtSWFName"].str();
+    String cmd = naviData["cmd"].str();
+
+    if (cmd == "seturl")  
+    {
+        String url = mNavi->evaluateJS( "$('inputUrl').value");
+        extTextSrcExHandleEvt("swf", ctxtSWFName, "seturl?" + url);
+    }
+    else if (cmd == "maximize") 
+    {
+        Navigator::getSingletonPtr()->getNavigatorGUI()->createPanel2D("swf", ctxtSWFName);   
+    }
+    else 
+    {
+        extTextSrcExHandleEvt("swf", ctxtSWFName, cmd);
+    }
+
+    destroy();
 }

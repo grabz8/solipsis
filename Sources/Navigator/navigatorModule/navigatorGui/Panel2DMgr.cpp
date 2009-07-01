@@ -207,9 +207,10 @@ Panel2D* Panel2DMgr::getPanel(const String& name)
 //-------------------------------------------------------------------------------------
 Panel2D* Panel2DMgr::focusPanel(int x, int y, Panel2D* focusedPanel)
 {
-    defocus();
-
     Panel2D *panelToFocus = focusedPanel ? focusedPanel : getPanelOverMouse(x, y);
+
+    if (panelToFocus != mFocusedPanel)
+        defocus();
 
     if (panelToFocus == 0)
         return 0;
@@ -233,8 +234,11 @@ Panel2D* Panel2DMgr::focusPanel(int x, int y, Panel2D* focusedPanel)
         sortedPanels.at(popIdx)->mOverlay->setZOrder(highestZ);
     }
 
-    mFocusedPanel = panelToFocus;
-    mFocusedPanel->onFocus(true);
+    if (panelToFocus != mFocusedPanel)
+    {
+        mFocusedPanel = panelToFocus;
+        mFocusedPanel->onFocus(true);
+    }
 
     return mFocusedPanel;
 }
