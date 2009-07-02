@@ -1193,3 +1193,9 @@ Web 2D panel mouse click bug fix
 GUI contexts added into 2D panels WWW/VNC/SWF
 
 ---------------------------
+02/07/09
+
+context guis clamping fixed
+SWF maximize cmd fixed
+
+---------------------------
