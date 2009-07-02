@@ -367,10 +367,10 @@ void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
 {
     String ctxtVLCName = naviData["ctxtVLCName"].str(); 
 
-    String url = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmrl");
-    StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
+    String mrl = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmrl");
+    StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
 
-    mNavi->evaluateJS("$('inputMrl').value = '" + url + "'");
+    mNavi->evaluateJS("$('inputMrl').value = '" + mrl + "'");
     String mute = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmute");
     if (mute == "true") 
         mNavi->evaluateJS("$('mTbIconVolume').addClass('vlcToolbarVolumeOff')");
@@ -436,7 +436,7 @@ void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
     String ctxtSWFName = naviData["ctxtSWFName"].str(); 
 
     String url = extTextSrcExHandleEvt("swf", ctxtSWFName, "geturl");
-    StringHelpers::replaceSubStr(url, "[\\]", "\\\\");
+    StringHelpers::replaceSubStr(url, "\\", "\\\\");
 
     mNavi->evaluateJS("$('inputUrl').value = '" + url + "'");
     String mute = extTextSrcExHandleEvt("swf", ctxtSWFName, "getmute");

@@ -204,7 +204,7 @@ unsigned int CacheManager::GetFilePart(char *filename,
     CacheMap::iterator entryIt = mCache.find(baseFilename);
     if (entryIt == mCache.end())
     {
-        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::GetFilePart() File %s not found in cache table !", baseFilename);
+        LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::GetFilePart() File %s not found in cache table !", baseFilename.c_str());
         return numBytesToRead;
     }
     long size = entryIt->second.mFileSize;
@@ -564,7 +564,7 @@ void CacheManager::load()
     }
     catch (std::string exceptionStr)
     {
-        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::initialize() Unable to read/parse cache from %s, Resetting it.", filename);
+        LOGHANDLER_LOGF(LogHandler::VL_WARNING, "CacheManager::initialize() Unable to read/parse cache from %s, Resetting it.", filename.c_str());
         mCache.clear();
     }
 }

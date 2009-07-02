@@ -213,7 +213,10 @@ Panel2D* Panel2DMgr::focusPanel(int x, int y, Panel2D* focusedPanel)
         defocus();
 
     if (panelToFocus == 0)
+    {
+        mFocusedPanel = 0;
         return 0;
+    }
 
     std::vector<Panel2D*> sortedPanels;
     for (PanelMap::iterator panelIt = mPanelMap.begin(); panelIt != mPanelMap.end(); ++panelIt)

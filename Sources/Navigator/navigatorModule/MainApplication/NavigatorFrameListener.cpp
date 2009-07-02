@@ -334,6 +334,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
     if (mNavigator->isNaviSupported() && NaviManager::Get().isAnyNaviFocused())
         return true;
 
+    GUI_ContextMenu::destroyMenu();
+
     // 2D Panels
     if ((Panel2DMgr::getSingleton().getFocusedPanel() != 0) && (mEscapeHitsB4CancellingFocus >= ESCAPE_HITS_CANCEL_FOCUS))
     {
@@ -341,9 +343,8 @@ bool NavigatorFrameListener::keyPressed(const KeyboardEvt& evt)
         Panel2DMgr::getSingleton().defocus();
         return true;
     }
-    Panel2DMgr::getSingleton().keyPressed(evt);
-
-    GUI_ContextMenu::destroyMenu();
+    if (Panel2DMgr::getSingleton().keyPressed(evt))
+        return true;
 
     // VNC panel ?
     if (mNavigator->getPickedMovable() && (mNavigator->getPickedMovable()->getQueryFlags() & Navigator::QFVNCPanel))
