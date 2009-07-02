@@ -1197,5 +1197,8 @@ GUI contexts added into 2D panels WWW/VNC/SWF
 
 context guis clamping fixed
 SWF maximize cmd fixed
+vlc/swf url/mrl slash bug fixed
+2D panels keypressed/focus bug fixed
+cacheManager log bug fix
 
 ---------------------------
