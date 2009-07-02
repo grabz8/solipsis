@@ -126,10 +126,14 @@ bool Panel2DExtTextSrcEx::mousePressed(const MouseEvt& evt)
     eventHandled = true;
     mMouseCaptured = true;
     String plugin = mType;
-    if ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible() && mGotFocus &&
-        ((plugin == "vnc") || (plugin == "swf")))
+    bool showContextMenu = ((evt.mState.mButtons & MBRight) && !GUI_ContextMenu::isContextVisible());
+    if (showContextMenu && ((plugin == "vnc") || (plugin == "swf")) && !mGotFocus)
+        showContextMenu = false;
+    if (showContextMenu)
     {
-        if (plugin == "vnc")
+        if (plugin == "vlc")
+            GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTVLC, mName);
+        else if (plugin == "vnc")
             GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTVNC, mName);
         else if (plugin == "swf")
             GUI_ContextMenu::createAndShowPanel(evt.mState.mX, evt.mState.mY, GUI_ContextMenu::NAVI_CTXTSWF, mName);

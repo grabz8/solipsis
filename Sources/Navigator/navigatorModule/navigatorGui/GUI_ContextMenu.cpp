@@ -72,10 +72,13 @@ void GUI_ContextMenu::destroyMenu()
 }
 
 
-void clampNaviOnScreen(int &x, int & y, int w, int h )
+void GUI_ContextMenu::clampNaviOnScreen(int& x, int& y, int w, int h)
 {
     int cx = x - w/2;
     int cy = y - h/2;
+
+    if (cx < 0) cx = 0;
+    if (cy < 0) cy = 0;
 
     unsigned int scrWidth, scrHeight, colourDepth;
     int left, top;
@@ -83,13 +86,9 @@ void clampNaviOnScreen(int &x, int & y, int w, int h )
 
     if (cx > ((int) scrWidth - w)) 
         cx = ((int) scrWidth - w);
-    else if (cx < w)
-        cx = w;
 
     if (cy > ((int) scrHeight - h)) 
         cy = ((int) scrHeight - h);
-    else if (cy < h)
-        cy = h;
 
     x = cx;
     y = cy;

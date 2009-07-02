@@ -61,25 +61,28 @@ namespace Solipsis
         //virtual void hide();
         virtual void destroy();
 
+        // clamp navi extents into screen
+        void clampNaviOnScreen(int& x, int& y, int w, int h);
+
         // avatar callbacks
-       void onAvatarSelect(const NaviData& naviData);
+        void onAvatarSelect(const NaviData& naviData);
         void onPanelLoaded(const NaviData& naviData);
 
         // WWW callbacks 
-       void onWWWPanelLoaded(const NaviData& naviData);
-       void onWWWCommand(const NaviData& naviData);
+        void onWWWPanelLoaded(const NaviData& naviData);
+        void onWWWCommand(const NaviData& naviData);
 
-       // SWF callbacks 
-       void onSWFPanelLoaded(const NaviData& naviData);
-       void onSWFCommand(const NaviData& naviData);
+        // SWF callbacks 
+        void onSWFPanelLoaded(const NaviData& naviData);
+        void onSWFCommand(const NaviData& naviData);
 
-       // VLC callbacks 
-       void onVLCPanelLoaded(const NaviData& naviData);
-       void onVLCCommand(const NaviData& naviData);
+        // VLC callbacks 
+        void onVLCPanelLoaded(const NaviData& naviData);
+        void onVLCCommand(const NaviData& naviData);
 
-       // VNC callbacks 
-       void onVNCPanelLoaded(const NaviData& naviData);
-       void onVNCCommand(const NaviData& naviData);
+        // VNC callbacks 
+        void onVNCPanelLoaded(const NaviData& naviData);
+        void onVNCCommand(const NaviData& naviData);
 
         static GUI_ContextMenu * stGUI_ContextMenu;
         static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];
