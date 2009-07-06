@@ -268,6 +268,24 @@ void Avatar::detachFromSceneNode()
 }
 
 //-------------------------------------------------------------------------------------
+void Avatar::enableDisableSelection(bool enabled)
+{
+    if (mSelectionObject == 0)
+        return;
+
+    if (enabled)
+    {
+        if (!mSelectionObject->isAttached())
+            getSceneNode()->attachObject(mSelectionObject);
+    }
+    else
+    {
+        if (mSelectionObject->isAttached())
+            getSceneNode()->detachObject(mSelectionObject);
+    }
+}
+
+//-------------------------------------------------------------------------------------
 void Avatar::onAvatarSave()
 {
     assert(isLocal());

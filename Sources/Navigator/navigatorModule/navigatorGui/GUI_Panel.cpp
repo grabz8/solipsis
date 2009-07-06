@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 using namespace CommonTools;
 
+//-------------------------------------------------------------------------------------
 GUI_Panel::GUI_Panel(const std::string & panelName)
 {
     mPanelName = panelName;
@@ -41,60 +42,26 @@ GUI_Panel::GUI_Panel(const std::string & panelName)
     mNavi = NULL;
 }
 
+//-------------------------------------------------------------------------------------
 GUI_Panel::~GUI_Panel()
 {
     NavigatorGUI::unregisterGuiPanel(this);
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_Panel::show()
 {
-    if (!mNavi || m_curState  == GUI_Panel::NSNotCreated)
-        switchLuaNavi(true);
-    else
+    if ((m_curState != GUI_Panel::NSCreated) || (mNavi == 0))
+        return false;
+
+    if (!mNavi->getVisibility())
+    {
         mNavi->show(true);
+        mNavi->focus();
+    }
 
     return true;
 }
-
-//-------------------------------------------------------------------------------------
-void GUI_Panel::switchLuaNavi(bool createDestroy)
-{
-    if (m_curState == GUI_Panel::NSNotCreated)
-    {
-        // Create Navi panel
-        // Lua
-        if (!Navigator::getSingletonPtr()->getNavigatorLua()->call("createGUI", "%s", mPanelName.c_str()))
-        {
-            LOGHANDLER_LOGF(LogHandler::VL_ERROR, "NavigatorGUI::switchLuaNavi() Unable to create GUI called %s", mPanelName.c_str());
-            return;
-        }
-
-        m_curState = NSCreated;
-        // the navi panel
-        mNavi = NavigatorGUI::getNavi(mPanelName);
-    }
-    else
-    {
-        if (!mNavi->getVisibility())
-        {
-            mNavi->show(true);
-        }
-        else
-        {
-            if (!createDestroy)
-            {
-                // call virtual fct hide
-               this->hide();
-            }
-            else
-            {
-                // call virtual fct destroy
-                destroy();
-            }
-        }
-    }
-}
-
 
 //-------------------------------------------------------------------------------------
 bool GUI_Panel::isVisible()

@@ -185,7 +185,7 @@ bool GUI_ModelerProperties::show()
     }
     else //if(!isModelerMainVisible())
     {
-        mNavi->show(true);
+        GUI_Panel::show();
 
         // Update the properties panel from the selected object datas
         modelerTabberLoad(1);

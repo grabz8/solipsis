@@ -48,8 +48,8 @@ void GUI_Chat::showHide()
 
     if (stGUI_Chat->isVisible())
         stGUI_Chat->hide();
-   else
-       stGUI_Chat->show();
+    else
+        stGUI_Chat->show();
 }
 
 bool GUI_Chat::show()
@@ -72,6 +72,8 @@ bool GUI_Chat::show()
  
         m_curState = NSCreated;
     }
+    else
+        GUI_Panel::show();
 
     return true;
 }
@@ -92,7 +94,7 @@ void GUI_Chat::addText(const std::wstring& message)
 
 void GUI_Chat::onPageLoaded(const NaviData& naviData)
 {
-    mNavi->show();
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 void GUI_Chat::onPageClosed(const NaviData& naviData)

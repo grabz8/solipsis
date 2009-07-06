@@ -73,7 +73,7 @@ bool GUI_About::show()
         m_curState = NSCreated;
     }
     else
-         mNavi->show();
+        GUI_Panel::show();
 
     return true;
 }

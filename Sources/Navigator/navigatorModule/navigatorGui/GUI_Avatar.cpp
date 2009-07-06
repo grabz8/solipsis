@@ -110,7 +110,7 @@ bool GUI_Avatar::show()
         m_curState = NSCreated;
     }
     else
-        mNavi->show(true);
+        GUI_Panel::show();
 
     mNavigator->startAvatarEdit();
     return true;

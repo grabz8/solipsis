@@ -87,11 +87,9 @@ bool GUI_ModelerSceneFromText::show()
         mNavi->bind("MdlrSFTCancel", NaviDelegate(this, &GUI_ModelerSceneFromText::onCancelled));
 
         m_curState = NSCreated;
-
     }
-    else {
-        mNavi->show(true);
-    }
+    else
+        GUI_Panel::show();
 
     return true;
 }
@@ -102,8 +100,7 @@ void GUI_ModelerSceneFromText::onPageLoaded(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextPageLoaded()");
 
     // Show Navi UI
-    if (m_curState == NSCreated)
-        mNavi->show(true);
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 //-------------------------------------------------------------------------------------

@@ -87,11 +87,8 @@ bool GUI_TerrainModeler::show()
         m_curState = NSCreated;
 
     }
-    else 
-    {
-        mNavi->show(true);
-    }
-
+    else
+        GUI_Panel::show();
 
     return true;
 }
@@ -102,8 +99,7 @@ void GUI_TerrainModeler::onPageLoaded(const NaviData& naviData)
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::modelerSceneFromTextPageLoaded()");
 
     // Show Navi UI
-    if (m_curState == NSCreated)
-        mNavi->show(true);
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 //-------------------------------------------------------------------------------------

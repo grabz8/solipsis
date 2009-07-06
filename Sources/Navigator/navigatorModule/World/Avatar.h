@@ -155,6 +155,9 @@ public:
     /** Detach extra nodes and movables from the character instance scene node. */
     void detachFromSceneNode();
 
+    /** Enable or Disable the selection box around avatar. (eg. disabled on 1st person camera) */
+    void enableDisableSelection(bool enabled);
+
 	/** Called when the avatar was saved. */
 	void onAvatarSave();
 

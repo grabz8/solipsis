@@ -144,7 +144,7 @@ bool GUI_Modeler::show()
         m_curState = NSCreated;
     }
     else
-        mNavi->show(true);
+        GUI_Panel::show();
 
     mNavigator->startModeling();
 
@@ -164,13 +164,7 @@ void GUI_Modeler::onPageLoaded(const NaviData& naviData)
     naviName = naviData["naviName"].str();
 
     // Show Navi UI
-    if (m_curState == NSCreated)
-    {
-        mNavi->show(true);
-        mNavi->focus();
-    }
-
-    mCurrentNaviCreationDate = 0;
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 //-------------------------------------------------------------------------------------

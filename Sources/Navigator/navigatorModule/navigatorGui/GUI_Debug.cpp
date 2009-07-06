@@ -168,8 +168,7 @@ void GUI_Debug::onPageLoaded(const NaviData& naviData)
     refreshDemoVoiceTalkButtonName();
 
     // Show Navi UI debug
-    if (m_curState == NSCreated)
-        mNavi->show(true);
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 //-------------------------------------------------------------------------------------

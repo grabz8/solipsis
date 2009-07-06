@@ -1202,3 +1202,10 @@ vlc/swf url/mrl slash bug fixed
 cacheManager log bug fix
 
 ---------------------------
+06/07/09
+
+switchLuaNavi removed, panels visibility bugs fixed
+picking in 1st person camera bug fixed
+gui fading restored
+
+---------------------------

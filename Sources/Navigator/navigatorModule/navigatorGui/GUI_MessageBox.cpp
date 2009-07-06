@@ -65,6 +65,7 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
         // Lua
         createNavi("local://uimsgbox.html", Center, 512, 128);
         mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->hide();
         mNavi->setMask("uimsgbox.png");
 
         m_curState = NSCreated;
@@ -95,8 +96,7 @@ void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
     mNavi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
 
     // Show Navi UI message box
-    if (m_curState == GUI_Panel::NSCreated)
-        mNavi->show(true);
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 //-------------------------------------------------------------------------------------

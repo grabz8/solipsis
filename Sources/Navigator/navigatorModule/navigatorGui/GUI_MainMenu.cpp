@@ -77,9 +77,6 @@ void GUI_MainMenu::showHide(bool bShow)
 
 bool GUI_MainMenu::show()
 {
-    if (m_curState == NSCreated)
-        return true;
-
     if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
@@ -92,15 +89,14 @@ bool GUI_MainMenu::show()
 
         mNavi->addEventListener(this);
 
-        m_curState = NSCreated;
-    }
-
-    if (!GUI_Panel::show())
-        return false;
-
 #ifdef UIDEBUG
     mNavi->bind("debugCommand", NaviDelegate(this, &GUI_MainMenu::debugCommand));
 #endif
+
+        m_curState = NSCreated;
+    }
+    else
+        GUI_Panel::show();
 
     return true;
 }
@@ -123,6 +119,7 @@ void GUI_MainMenu::debugCommand(const NaviData& naviData)
 }
 #endif
 
+//-------------------------------------------------------------------------------------
 void GUI_MainMenu::onNaviDataEvent(Navi *caller, const NaviData &naviData)
 {
     m_curState = NSCreated;
@@ -131,14 +128,7 @@ void GUI_MainMenu::onNaviDataEvent(Navi *caller, const NaviData &naviData)
     {
      //   OutputDebugTrace("GUI_MainMenu::onNaviDataEvent data %s\n" , naviData["item"].str().c_str());
         onClick(naviData["item"].str());
-
     }
-    //  
-}
-
-void GUI_MainMenu::onLinkClicked(Navi *caller, const std::string &linkHref)
-{
-    m_curState = NSCreated;
 }
 
 //-------------------------------------------------------------------------------------

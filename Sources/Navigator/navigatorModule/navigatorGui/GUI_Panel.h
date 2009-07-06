@@ -62,7 +62,6 @@ namespace Solipsis
         void fitOnScreen(int & w, int & h);
 
     protected:
-        void switchLuaNavi(bool createDestroy);
         void createNavi(const std::string &homepage, const NaviPosition &naviPosition,
             unsigned short width, unsigned short height, unsigned short zOrder = 0);
         void createNavi(const std::string &homepage,  int x, int y,

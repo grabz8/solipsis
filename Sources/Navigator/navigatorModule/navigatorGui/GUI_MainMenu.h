@@ -43,7 +43,7 @@ namespace Solipsis
 
         ////// NaviEventListener Interface /////////////
         virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData);
-        virtual void onLinkClicked(Navi *caller, const std::string &linkHref);
+        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
         virtual void onLocationChange(Navi *caller, const std::string &url) {}
         virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode) {}
 

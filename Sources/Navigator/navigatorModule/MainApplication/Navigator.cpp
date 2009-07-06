@@ -2151,7 +2151,9 @@ void Navigator::setCameraMode(int mode)
             break;
         }
     }
-    mUserAvatar->getEntity()->setVisible(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
+    bool userAvatarVisible = ((mode == CM3rdPerson) || (mode == CMAroundPerson) || (mode == CMModeling));
+    mUserAvatar->getEntity()->setVisible(userAvatarVisible);
+    mUserAvatar->enableDisableSelection(userAvatarVisible);
     //mUserAvatar->setNameVisibility(mode == CM3rdPerson || mode == CMAroundPerson || mode == CMModeling);
     if (mNavigatorGUI != 0)
     {

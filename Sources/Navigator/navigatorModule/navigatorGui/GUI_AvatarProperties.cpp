@@ -159,7 +159,7 @@ bool GUI_AvatarProperties::show()
         // Update the properties panel from the selected object datas
         avatarTabberLoad(1);
         mNavi->evaluateJS("$('avatarTabbers').tabber.tabShow(1)");
-        mNavi->show(true);
+        GUI_Panel::show();
     }
 
     return true;

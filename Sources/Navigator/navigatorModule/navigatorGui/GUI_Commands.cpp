@@ -70,14 +70,14 @@ bool GUI_Commands::show()
         mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Commands::onPageClosed));
     }
     else
-        mNavi->show();
+        GUI_Panel::show();
 
     return true;
 }
 
 void GUI_Commands::onPageLoaded(const NaviData& naviData)
 {
-    mNavi->show();
+    GUI_Panel::onPanelLoaded(naviData);
 }
 
 void GUI_Commands::onPageClosed(const NaviData& naviData)
