@@ -122,6 +122,9 @@ bool OgrePeerManager::remove(const EntityUID& entity)
             break;
         }
 
+        // reset mouse picking
+        Navigator::getSingletonPtr()->resetMousePicking();
+
         delete ogrePeer->second;
         mOgrePeersMap.erase(ogrePeer);
         return true;
@@ -379,6 +382,9 @@ bool OgrePeerManager::onObject3DDelete(Object3D* object3D)
     xmlEvt->setDatas(RefCntPoolPtr<XmlData>(xmlEntity));
 
     mEvtsList.push_back(xmlEvt);
+
+    // reset mouse picking
+    Navigator::getSingletonPtr()->resetMousePicking();
 
     mOgrePeersMap.erase(ogrePeer);
     delete object;
