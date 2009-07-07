@@ -59,35 +59,37 @@ class SoundIcon
 {
 public:
     /** Enumeration denoting the status of the icon **/
-    enum SoundIcon_Status {
-        Invisible,
-        Showed,
-		Animated
+    enum Status {
+        SNone = 0x00,
+        SVisible = 0x01,
+		SAnimated = SVisible << 1
     };
 
-	SoundIcon(SceneManager* pMgr, SceneNode* pNode, const String& name, Real yPos = 0, Real xSize = 0.5, Real ySize = 0.3);
+	SoundIcon(SceneManager* pMgr, const String& name, Real yPos = 0, Real xSize = 0.5, Real ySize = 0.3);
 	~SoundIcon();
 
-	void setStatus(SoundIcon_Status status);
-	SoundIcon_Status getStatus()
-	{
-		return m_status;
-	}
+    void attach(SceneNode* pNode);
+    void detach();
+
+	void setStatus(Status status);
+	Status getStatus() { return mStatus; }
+	void addStatus(Status status) { setStatus((Status)(mStatus | status)); }
+	void delStatus(Status status) { setStatus((Status)(mStatus & (~status))); }
 
 	void animate(Real timeSinceLastFrame);
 
 protected:
 	// the billboard set
-	BillboardSet* m_SoundIcon; 
-	Billboard *m_pBoard;
+	BillboardSet* mSoundIcon; 
+	Billboard *mBillboard;
 
-	SceneNode* m_pParentNode;
-	SceneManager* m_pMgr;
+	SceneManager* mMgr;
+    SceneNode* mParentNode;
 
-	SoundIcon_Status m_status;
+	Status mStatus;
 
 	ColorInterpolator mCInterpolator;
-	Real m_animationTime;
+	Real mAnimationTime;
 };
 
 } // namespace Solipsis

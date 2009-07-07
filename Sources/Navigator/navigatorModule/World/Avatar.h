@@ -78,12 +78,10 @@ protected:
     MovableText* mNameLabel;
 	/// Chat label
     MovableText* mChatLabel;
-
-    // soundIcon if needed
-    SoundIcon * m_pSoundIcon; 
-
 	/// Chat label alpha timer
     Real mChatLabelAlphaTimer;
+    // soundIcon if needed
+    SoundIcon* mSoundIcon; 
     /// Selection object
     ManualObject* mSelectionObject;
     /// Whether to apply the gravity
@@ -220,7 +218,7 @@ public:
     */
     virtual void onVoiceCreation()
     {
-      m_pSoundIcon->setStatus(SoundIcon::Showed);
+        mSoundIcon->addStatus(SoundIcon::SVisible);
     }
 
     /** Called when avatar voice is destroyed.
@@ -228,7 +226,7 @@ public:
     */
     virtual void onVoiceDestruction()
     {
-          m_pSoundIcon->setStatus(SoundIcon::Invisible);
+          mSoundIcon->delStatus(SoundIcon::SVisible);
     };
 
     /** Called when avatar is talking or not.
@@ -238,9 +236,9 @@ public:
     virtual void onTalking(bool talking)
     {
         if (talking)
-            m_pSoundIcon->setStatus(SoundIcon::Animated);
+            mSoundIcon->addStatus(SoundIcon::SAnimated);
         else
-            m_pSoundIcon->setStatus(SoundIcon::Showed);
+            mSoundIcon->delStatus(SoundIcon::SAnimated);
     }
 
 protected:

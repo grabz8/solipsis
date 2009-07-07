@@ -68,7 +68,7 @@ Avatar::Avatar(RefCntPoolPtr<XmlEntity>& xmlEntity, bool isLocal, CharacterInsta
 ,   mAnimationState(0)
 ,   mNameLabel(0)
 ,   mChatLabel(0)
-, 	m_pSoundIcon(0)
+, 	mSoundIcon(0)
 ,   mSelectionObject(0)
 ,   mUpKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
 ,   mDownKeyMotion(MAX_SPEED/100, MAX_SPEED, 1.5, 0.5)
@@ -149,9 +149,10 @@ Avatar::~Avatar()
         getSceneNode()->detachObject(mChatLabel);
         delete mChatLabel;
     }
-    if (m_pSoundIcon != 0)
+    if (mSoundIcon != 0)
     {
-        delete m_pSoundIcon;
+        mSoundIcon->detach();
+        delete mSoundIcon;
     }
     CharacterManager::getSingletonPtr()->destroyCharacterInstance(mCharacterInstance);
 }
@@ -214,14 +215,11 @@ void Avatar::onSceneNodeChanged()
 	}
 
     // Sound Icon
-    if (m_pSoundIcon == 0) 
+    if (mSoundIcon == 0) 
     {
-        m_pSoundIcon = new SoundIcon(getSceneMgr(), getSceneNode(), mXmlEntity->getUid() + "Billboard_Sound", avatarSize.y+0.5);
+        mSoundIcon = new SoundIcon(getSceneMgr(), mXmlEntity->getUid() + "Billboard_Sound", avatarSize.y + 0.5f);
     }
-
-    //m_pSoundIcon->setStatus(SoundIcon::Showed);
-
-    //setNameVisibility(!isLocal());
+    mSoundIcon->attach(getSceneNode());
 
     // Picking
 /* simple test about color picking, bind 1 unique color to each pickable entity, set 1 flag when
@@ -262,6 +260,12 @@ void Avatar::detachFromSceneNode()
 
     // Name Label
     getSceneNode()->detachObject(mNameLabel);
+
+    // Chat Label
+	getSceneNode()->detachObject(mChatLabel);
+
+    // Sound icon
+    mSoundIcon->detach();
 
     // Picking
     getSceneNode()->detachObject(mSelectionObject);
@@ -430,9 +434,9 @@ void Avatar::update(Real timeSinceLastFrame)
             mChatLabel->setColor(ColourValue::ColourValue(1.0f, 1.0f, 0.0f, Math::Cos(smoothAngle)));
     }
 
-    if (m_pSoundIcon)
+    if (mSoundIcon)
     {	
-        m_pSoundIcon->animate(timeSinceLastFrame);
+        mSoundIcon->animate(timeSinceLastFrame);
     }
 }
 
