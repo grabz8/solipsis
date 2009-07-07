@@ -1209,3 +1209,8 @@ picking in 1st person camera bug fixed
 gui fading restored
 
 ---------------------------
+07/07/09
+
+soundIcon some bugs fixed
+
+---------------------------
