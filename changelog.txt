@@ -1215,3 +1215,8 @@ soundIcon some bugs fixed
 resetMousePicking when objects are deleted
 
 ---------------------------
+09/07/09
+
+fixed download/upload progress step replaced by 1 duration step
+
+---------------------------
