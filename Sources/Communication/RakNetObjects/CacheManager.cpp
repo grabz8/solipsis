@@ -40,7 +40,7 @@ const CacheManager::EntryState CacheManager::ESTransferComplete = 1.0f;
 
 const std::string CacheManager::ms_CacheFilename = "cache.xml";
 unsigned int CacheManager::ms_SendChunkSize = 65536;
-float CacheManager::ms_ProgressStepCallback = 0.1f;
+Timer::Time CacheManager::ms_ProgressStepCallbackMs = 1000;
 
 //-------------------------------------------------------------------------------------
 CacheManager::CacheManager(RakNetConnection* connection) :
@@ -48,6 +48,7 @@ CacheManager::CacheManager(RakNetConnection* connection) :
     mCachePath("") 
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::CacheManager()");
+    mTimer.reset();
 }
 
 //-------------------------------------------------------------------------------------
@@ -94,6 +95,7 @@ void CacheManager::OnFilePush(const char *fileName, unsigned int fileLengthBytes
         LOGHANDLER_LOGF(LogHandler::VL_ERROR, "CacheManager::OnFilePush() File %s not found in cache table !", fileName);
         return;
     }
+    Timer::Time now = mTimer.getMilliseconds();
     CacheManagerFileEntry &entry = entryIt->second;
     PendingTransferList& pendingUploadList = entry.mPendingUploadList;
     for (PendingTransferList::iterator pendingUploadIt = pendingUploadList.begin(); pendingUploadIt != pendingUploadList.end(); ++pendingUploadIt)
@@ -102,9 +104,10 @@ void CacheManager::OnFilePush(const char *fileName, unsigned int fileLengthBytes
             float progress = (float)(offset + bytesBeingSent)/(float)fileLengthBytes;
             if (pendingUploadIt->mState >= 0.0f)
             {
-                if ((pendingUploadIt->mState == 0.0f) || (progress >= std::min(1.0f, pendingUploadIt->mState + ms_ProgressStepCallback)))
+                if ((pendingUploadIt->mState == 0.0f) || (progress == 1.0f) || (now >= pendingUploadIt->mLastProgressStepCallbackMs + ms_ProgressStepCallbackMs))
                 {
                     pendingUploadIt->mState = progress;
+                    pendingUploadIt->mLastProgressStepCallbackMs = now;
                     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFilePush() File %s %.2f %% pushed to %s", fileName, pendingUploadIt->mState*100, targetSystem.ToString());
                     // Callback ?
                     if (entry.mCallback != 0)
@@ -165,12 +168,14 @@ void CacheManager::OnFileProgress(OnFileStruct *onFileStruct,unsigned int partCo
         return;
     }
 
+    Timer::Time now = mTimer.getMilliseconds();
     CacheManagerFileEntry &entry = entryIt->second;
 //    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() File %s %d, %d, %d", onFileStruct->fileName, partCount, partTotal, partLength);
     float progress = (float)partCount/(float)partTotal;
-    if (progress >= std::min(1.0f, entry.mDownload.mState + ms_ProgressStepCallback))
+    if ((progress == 1.0f) || (now >= entry.mDownload.mLastProgressStepCallbackMs + ms_ProgressStepCallbackMs))
     {
         entry.mDownload.mState = progress;
+        entry.mDownload.mLastProgressStepCallbackMs = now;
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::OnFileProgress() File %s %.2f %% received from %s", onFileStruct->fileName, entry.mDownload.mState*100, entry.mDownload.mSystem.ToString());
         // Callback ?
         if ((entry.mCallback != 0) && (entry.mDownload.mState < ESTransferComplete))
@@ -287,6 +292,7 @@ void CacheManager::requestFile(const SystemAddress& sender,
         entry.mVersion = version;
         entry.mCallback = callback;
         entry.mDownload.mState = 0.0f;
+        entry.mDownload.mLastProgressStepCallbackMs = mTimer.getMilliseconds();
         BitStream bitStream;
         bitStream.Write((MessageID)RakNetConnection::ID_CM_REQUESTING_FILETRANSFER);
         entry.mDownload.mSystem = sender;
@@ -356,7 +362,10 @@ void CacheManager::sendFile(const SystemAddress& recipient, unsigned short fileL
     pendingUpload.mSystem = recipient;
     pendingUpload.mFileListTransferSetID = fileListTransferSetID;
     if (entry.mDownload.mState == ESTransferComplete)
+    {
         pendingUpload.mState = 0.0f;
+        pendingUpload.mLastProgressStepCallbackMs = mTimer.getMilliseconds();
+    }
     else
         pendingUpload.mState = ESTransferToRequest;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "CacheManager::sendFile() Adding upload file %s, version %d to recipient %s, fileListTransferSetID %d", filename.c_str(), entry.mVersion, recipient.ToString(), fileListTransferSetID);

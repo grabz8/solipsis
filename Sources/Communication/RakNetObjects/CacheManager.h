@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <XmlSceneLodContent.h>
 #include <XmlSceneContent.h>
+#include <CTTimer.h>
 
 namespace Solipsis {
 
@@ -74,6 +75,7 @@ public:
         SystemAddress mSystem;
         unsigned short mFileListTransferSetID;
         EntryState mState;
+        CommonTools::Timer::Time mLastProgressStepCallbackMs;
     } TransferDesc;
     /// Pending transfer list
     typedef std::list<TransferDesc> PendingTransferList;
@@ -100,13 +102,15 @@ protected:
     std::string mCachePath;
     /// Map of files in cache
     CacheMap mCache;
+    /// Timer
+    CommonTools::Timer mTimer;
 
     /// Cache filename
     static const std::string ms_CacheFilename;
     /// Upload transfer chunk size (default value to 64Kb, RakNet use 256Kb)
     static unsigned int CacheManager::ms_SendChunkSize;
-    /// Download/Upload progress step between each callback
-    static float ms_ProgressStepCallback;
+    /// Download/Upload progress step between each callback (in milliseconds)
+    static CommonTools::Timer::Time ms_ProgressStepCallbackMs;
 
 public:
     /** Constructor.
@@ -116,10 +120,10 @@ public:
     /** Destructor. */
     virtual ~CacheManager();
 
-    /** Get Download/Upload progress step between each callback */
-    static float getProgressStepCallback() { return ms_ProgressStepCallback; }
-    /** Set Download/Upload progress step between each callback */
-    static void setProgressStepCallback(float progressStepCallback) { ms_ProgressStepCallback = progressStepCallback; }
+    /** Get Download/Upload progress step between each callback (in milliseconds) */
+    static CommonTools::Timer::Time getProgressStepCallbackMs() { return ms_ProgressStepCallbackMs; }
+    /** Set Download/Upload progress step between each callback (in milliseconds) */
+    static void setProgressStepCallbackMs(CommonTools::Timer::Time progressStepCallbackMs) { ms_ProgressStepCallbackMs = progressStepCallbackMs; }
 
     /** Initialize cache by loading last saved state
     @param cachePath The cache path
