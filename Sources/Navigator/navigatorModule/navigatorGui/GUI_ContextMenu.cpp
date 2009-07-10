@@ -232,8 +232,8 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onSWFPanelLoaded));
             mNavi->bind("swfCommand", NaviDelegate(this, &GUI_ContextMenu::onSWFCommand));
 
-            NaviData datas( "uictxtvlcDatas");
-            datas["naviDataName"] = "uictxtvlcDatas";
+            NaviData datas( "uictxtswfDatas");
+            datas["naviDataName"] = "uictxtswfDatas";
             datas["ctxtSWFName"] = ctxtSWFName;
 
             mNavi->navigateTo("local://uictxtswf.html", datas);
