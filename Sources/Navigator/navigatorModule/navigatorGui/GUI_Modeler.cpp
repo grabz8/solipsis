@@ -406,12 +406,6 @@ void GUI_Modeler::modelerActionDelete(const NaviData& naviData)
             modeler->removeSelection();
             // reset mouse picking
             mNavigator->resetMousePicking();
-
-            // hide the gizmos axes
-            modeler->getSelection()->mTransformation->showGizmosMove(false);
-            modeler->getSelection()->mTransformation->showGizmosRotate(false);
-            modeler->getSelection()->mTransformation->showGizmosScale(false);
-            modeler->lockGizmo(0);
         }
         else
         {
@@ -438,6 +432,7 @@ void GUI_Modeler::modelerActionMove(const NaviData& naviData)
         {
             modeler->lockGizmo( 1 );
             modeler->eventMove();
+            mNavigator->computeGizmo();
         }
     }
     else
@@ -463,6 +458,7 @@ void GUI_Modeler::modelerActionRotate(const NaviData& naviData)
         {
             modeler->lockGizmo( 2 );
             modeler->eventRotate();
+            mNavigator->computeGizmo();
         }
     }
     else
@@ -489,6 +485,7 @@ void GUI_Modeler::modelerActionScale(const NaviData& naviData)
         {
             modeler->lockGizmo( 3 );
             modeler->eventScale();
+            mNavigator->computeGizmo();
         }
     }
     else

@@ -511,9 +511,14 @@ void Modeler::removeSelection()
 	}
 	while ( obj != 0 );
 
-//	mSelection->mTransformation->showGizmosMove( false );
-//	mSelection->mTransformation->showGizmosRotate( false );
-//	mSelection->mTransformation->showGizmosScale( false );
+    // hide the gizmos axes
+    if(mSelection != NULL)
+    {
+        mSelection->mTransformation->showGizmosMove(false);
+        mSelection->mTransformation->showGizmosRotate(false);
+        mSelection->mTransformation->showGizmosScale(false);
+    }
+    lockGizmo(0);
 }
 
 /// Return the lock state of the selection
@@ -559,14 +564,6 @@ void Modeler::eventMove()
 	{
 		//put the gizmos in the centre of selection
 		mSceneManager->getSceneNode("NodeSelection")->setPosition( mSelection->getCenterPosition() );
-
-		/*
-		if(mSelection->getNumSelectedObjects() != 0)
-			mSelection->mTransformation->firstClickForTransformation(e) ;
-		else
-			mSelection->mTransformation->eventSelection();
-		*/
-
 		mSelection->mTransformation->eventMove();
 	}
 }

@@ -943,6 +943,61 @@ bool Navigator::computeMousePicking(Ray& mouseRay)
     return false;
 }
 
+#if 1 // GILLES MDLR
+//-------------------------------------------------------------------------------------
+bool Navigator::computeGizmo()
+{
+    // increase Object Picking Distance
+    if(!mModeler->isSelectionEmpty() && mModeler->isOnGizmo())
+        mMaxObjectPickingDistance = 100.0;
+    else
+        mMaxObjectPickingDistance = 20.0;
+
+    // scale and rotate Gizmo 
+    if(!mModeler->isSelectionEmpty())
+    {
+        //Calculate scale
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+        Vector3 camWorldPos = getCameraPtr()->getWorldPosition();
+#else
+        Vector3 camWorldPos = getCameraPtr()->getDerivedPosition();
+#endif
+        //Ogre::LogManager::getSingleton().logMessage("Cam World Pos : " + Ogre::StringConverter::toString(camWorldPos));
+        Vector3 objSelWorldPos = mModeler->getSelected()->getPosition(true);
+        Real distObjToCam = (camWorldPos - objSelWorldPos).length();
+        Real gizmoScale = std::min((float)10.0, std::max((float)1.0, distObjToCam/(float)5.0));
+        Vector3 currentScale = getSceneMgrPtr()->getSceneNode("NodeSelection")->getScale(); 
+
+        //Calculate rotation
+#if (OGRE_VERSION_MAJOR <= 1 && OGRE_VERSION_MINOR < 6)
+        Radian yawGizmo = getSceneMgrPtr()->getSceneNode("NodeSelection")->getWorldOrientation().getYaw();
+        Radian yawCam = getCameraPtr()->getWorldOrientation().getYaw();
+#else
+        Radian yawGizmo = getSceneMgrPtr()->getSceneNode("NodeSelection")->_getDerivedOrientation().getYaw();
+        Radian yawCam = getCameraPtr()->getDerivedOrientation().getYaw();
+#endif
+        // if gizmo is MOVE, then lock it on the camera's orientation
+        if(mModeler->isOnGizmo() == 1)
+        {
+            Radian halfPi(Math::HALF_PI);
+            Radian quaterPi(Math::HALF_PI/2.0);
+            Quaternion newYawGizmo = Quaternion(yawCam,Vector3::UNIT_Y)*Quaternion(-quaterPi,Vector3::UNIT_Y);
+            getSceneMgrPtr()->getSceneNode("NodeSelection")->setOrientation(newYawGizmo);
+        } 
+        else // else lock it on the selection orientation
+        {
+            Radian Pi(Math::PI);
+            Quaternion orientation = mModeler->getSelected()->getSceneNode()->getOrientation();
+            getSceneMgrPtr()->getSceneNode("NodeSelection")->setOrientation(orientation);
+            getSceneMgrPtr()->getSceneNode("NodeSelection")->yaw(Pi);
+        }
+        getSceneMgrPtr()->getSceneNode("NodeSelection")->scale(gizmoScale/currentScale.x,gizmoScale/currentScale.y,gizmoScale/currentScale.z);
+       
+        return true;
+    }
+    return false;
+}
+#endif
 //-------------------------------------------------------------------------------------
 bool Navigator::is1NaviHitByMouse(String& naviName, int& naviX, int& naviY)
 {
@@ -1887,6 +1942,11 @@ void Navigator::MdlrModifGizmo(Vector3 dep)
 {
     SceneNode* node = mSceneMgr->getSceneNode("NodeSelection");
     Vector3 vec;
+
+#if 1 // GILLES MDLR
+    if(mModeler->getSelected() == NULL)
+        return;
+#endif
 
     switch (mModeler->getSelection()->mTransformation->getMode())
     {

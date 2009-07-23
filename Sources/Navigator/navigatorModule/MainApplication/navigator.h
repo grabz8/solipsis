@@ -266,6 +266,9 @@ public:
     // Mouse ray picking
     void resetMousePicking();
     bool computeMousePicking(Ray& mouseRay);
+#if 1 // GILLES MDLR
+    bool computeGizmo();
+#endif
     MovableObject* getPickedMovable() { return mPickedMovable; }
     bool is1NaviHitByMouse(String& naviName, int& naviX, int& naviY);
     void computeNaviHit(const String& naviName,

@@ -172,6 +172,15 @@ private :
 	///brief Node for attach Z Gizmos (its name is move_Widget_Z)
 	SceneNode * mNode_Z;
 
+#if 1 // GILLES MDLR
+	///brief Node for attach X Gizmos Plane (its name is move_Plane_X)
+	SceneNode * mPlane_Node_X;
+	///brief Node for attach Y Gizmos Plane (its name is move_Plane_Y)
+	SceneNode * mPlane_Node_Y;
+	///brief Node for attach Z Gizmos Plane (its name is move_Plane_Z)
+	SceneNode * mPlane_Node_Z;
+#endif
+
 	///brief Object for gizmos :
 		//Gizmos move :
 	Entity* m_moveX; 

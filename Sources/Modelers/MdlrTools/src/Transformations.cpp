@@ -84,6 +84,11 @@ void Transformations::firstClickForTransformation( RaySceneQueryResult &result )
 //-------------------------------------------------------------------------------------
 void Transformations::releasedClickForTransformation ()
 {
+#if 1 // GILLES MDLR
+    mNode_X->removeAllChildren();
+    mNode_Y->removeAllChildren();
+    mNode_Z->removeAllChildren();
+#else
 	SceneNode* node;
 	switch( mMode )
 	{
@@ -149,7 +154,7 @@ void Transformations::releasedClickForTransformation ()
 			break;
 		}
 	}
-
+#endif
 	mAxeClicked = Transformations::NONE;
 	mPlaneClicked = Transformations::NONE;
 	mOldpos = Vector3::ZERO;	
@@ -434,6 +439,11 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	mPlaneX = pSceneMgr->createEntity( "dummy_plane_x", "dummy_plane_x" );
 	mPlaneX->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
 	mPlaneX->setVisible(false);
+#if 1 // GILLES MDLR
+    mPlane_Node_X = pSceneMgr->createSceneNode("move_Plane_X");
+    mPlane_Node_X->attachObject(mPlaneX);
+    mPlane_Node_X->setInheritOrientation(false);
+#endif
 
 	movPlane = new MovablePlane("dummy_plane_y");
 	movPlane->normal = Vector3::UNIT_Z;
@@ -441,6 +451,11 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	mPlaneY = pSceneMgr->createEntity( "dummy_plane_y", "dummy_plane_y" );
 	mPlaneY->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
     mPlaneY->setVisible(false);
+#if 1 // GILLES MDLR
+    mPlane_Node_Y = pSceneMgr->createSceneNode("move_Plane_Y");
+    mPlane_Node_Y->attachObject(mPlaneY);
+    mPlane_Node_Y->setInheritOrientation(false);
+#endif
 
 	movPlane = new MovablePlane("dummy_plane_z");
 	movPlane->normal = Vector3::UNIT_X;
@@ -448,6 +463,11 @@ void Transformations::createGizmos(SceneNode* pGizmosParentNode, SceneManager * 
 	mPlaneZ = pSceneMgr->createEntity( "dummy_plane_z", "dummy_plane_z" );
 	mPlaneZ->setQueryFlags(SceneManager::ENTITY_TYPE_MASK);
 	mPlaneZ->setVisible(false);
+#if 1 // GILLES MDLR
+    mPlane_Node_Z = pSceneMgr->createSceneNode("move_Plane_Z");
+    mPlane_Node_Z->attachObject(mPlaneZ);
+    mPlane_Node_Z->setInheritOrientation(false);
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -705,20 +725,34 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 				{
 					if (name == pNameAxeX)
 					{
-						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
-						nodeM->getParentSceneNode()->attachObject(mPlaneY);
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+#else
+                        nodeM->getParentSceneNode()->attachObject(mPlaneY);
+                        nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
 						mAxeClicked = Transformations::X ;
 					}
 					else if (name == pNameAxeY)
 					{
-						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Y);
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Z);
+#else
+                        nodeM->getParentSceneNode()->attachObject(mPlaneY);
+                        nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
 						mAxeClicked = Transformations::Y ;
 					}
 					else if( name == pNameAxeZ)
 					{
-						nodeM->getParentSceneNode()->attachObject(mPlaneY);
-						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+#else
+                        nodeM->getParentSceneNode()->attachObject(mPlaneY);
+                        nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
 						mAxeClicked = Transformations::Z ;
 					}
                     break;
@@ -727,43 +761,74 @@ void Transformations::onClickToTransformObject(RaySceneQueryResult &result, cons
 				{
 					if (name == pNameAxeX)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->removeAllChildren();
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Y);
+                        mAxeClicked = Transformations::Y ;
+#else
                         nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						mAxeClicked = Transformations::Y ;
+#endif
 					}
 					else if (name == pNameAxeY)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->removeAllChildren();
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Z);
+                        mAxeClicked = Transformations::Z ;
+#else
                         nodeM->getParentSceneNode()->detachObject(mPlaneZ);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
 						mAxeClicked = Transformations::Z ;
+#endif
 					}
 					else if( name == pNameAxeZ)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->removeChild(mPlane_Node_Y);
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Y);
+                        mAxeClicked = Transformations::X ;
+#else
                         nodeM->getParentSceneNode()->detachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneX);
 						mAxeClicked = Transformations::X ;
+#endif        
 					}		
-					//nodeM->getParentSceneNode()->attachObject(mSceneMgr->getEntity("dummy_plane_y"));				
 					break;
 				}
 				case Transformations::SCALE :
 				{
 					if (name == pNameAxeX)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+#else
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
                         mAxeClicked = Solipsis::Transformations::X ;
 					}
 					else if (name == pNameAxeY)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Y);
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_Z);
+#else
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
 						mAxeClicked = Solipsis::Transformations::Y ;
 					}
 					else if( name == pNameAxeZ)
 					{
+#if 1 // GILLES MDLR
+                        nodeM->getParentSceneNode()->addChild(mPlane_Node_X);
+#else
 						nodeM->getParentSceneNode()->attachObject(mPlaneY);
 						nodeM->getParentSceneNode()->attachObject(mPlaneZ);
+#endif
 						mAxeClicked = Solipsis::Transformations::Z ;
 					}
 					break;
