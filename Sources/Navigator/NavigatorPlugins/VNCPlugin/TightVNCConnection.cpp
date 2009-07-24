@@ -358,6 +358,8 @@ Ogre::String TightVNCConnection::handleEvt(const Ogre::String& evt)
     if (tokens.size() < 1) return result;
     if (tokens[0].compare("getaddress") == 0)
         return mHost + ":" + Ogre::StringConverter::toString(mPort);
+    else if (tokens[0].compare("ctrlAltDel") == 0)
+        mConn->CtrlAltDelEvt();
 
     return result;
 }

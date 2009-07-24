@@ -95,6 +95,9 @@ public:
     void mouseEvt(int x, int y, UINT iMsg, WPARAM wParam) { ProcessPointerEvent(x, y, (DWORD)wParam, iMsg); }
     void kbdEvt(int virtkey, DWORD keyData) { ProcessKeyEvent(virtkey, keyData); }
 // GREG END
+// JEROME BEGIN
+    void CtrlAltDelEvt() {SendCtrlAltDelEvent();}
+// JEROME END
 
 private:
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -152,6 +155,7 @@ private:
  	void SubProcessPointerEvent(int x, int y, DWORD keyflags);
 	void SendPointerEvent(int x, int y, int buttonMask);
     void ProcessKeyEvent(int virtkey, DWORD keyData);
+    void SendCtrlAltDelEvent();
 	void SendKeyEvent(CARD32 key, bool down);
 	void SwitchOffKey();
 

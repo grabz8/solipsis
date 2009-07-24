@@ -2543,6 +2543,18 @@ ClientConnection::SendPointerEvent(int x, int y, int buttonMask)
 //      Alt-Up, Ctrl-Up
 //                 (when the AltGr is released)
 
+// BEGIN Jerome
+void ClientConnection::SendCtrlAltDelEvent()
+{
+    SendKeyEvent(XK_Control_L, true);
+	SendKeyEvent(XK_Alt_L,     true);
+	SendKeyEvent(XK_Delete,    true);
+	SendKeyEvent(XK_Delete,    false);
+	SendKeyEvent(XK_Alt_L,     false);
+	SendKeyEvent(XK_Control_L, false);
+}
+// END Jerome
+
 inline void ClientConnection::ProcessKeyEvent(int virtkey, DWORD keyData)
 {
     bool down = ((keyData & 0x80000000l) == 0);
