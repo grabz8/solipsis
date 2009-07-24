@@ -31,15 +31,19 @@
 	            height: 64px;
                 background-color: #D8DBE0;
             }
-            .vncIcon
+            .vncToolBarIcons
             {
-                position: absolute;
-	            left: 4px;
-	            top: 25px;
+				display: block;
                 width: 30px;
                 height: 34px;
                 background-image: url(vncicon.png);
+                background-repeat: no-repeat;
+                position: relative;
+	            top: 23px;
+                float: left;
             }
+			.vncIcon { background-position : 0px 0px; }
+			.vncCtrlAltDel { background-position: -30px 0px; }
             .solipsisIcons
             {
                 display: block;
@@ -73,7 +77,8 @@
             <div id="addressInput">
                 <input id="inputAddress" class="inputText" name="inputAddress" value="" type="text" size="38"/>
             </div>
-            <span id="mVNCIcon" class="vncIcon"></span>
+            <span id="mVNCIcon" class="vncToolBarIcons vncIcon"></span>
+			<span id="mVNCCtrlAltDel" class="vncToolBarIcons vncCtrlAltDel" style="left:10px;" onclick="vncCommand('ctrlAltDel')"></span>
             <span id="mTbIconMaximize" class="solipsisIcons solipsisMaximizeActive" onclick="vncCommand('maximize')"></span>
         </div>
     </body>
