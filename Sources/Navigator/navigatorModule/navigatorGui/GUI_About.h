@@ -43,7 +43,8 @@ namespace Solipsis
         virtual bool show();
 
     protected:
-        void onClose(const NaviData& naviData);
+        void onClose(Navi* caller, const Awesomium::JSArguments& args);
+
         GUI_About();
         static GUI_About * stGUI_About;
     };

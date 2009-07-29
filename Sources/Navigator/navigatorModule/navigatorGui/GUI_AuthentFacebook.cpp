@@ -34,19 +34,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <Facebook.h>
 
-
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_AuthentFacebook * GUI_AuthentFacebook::stGUI_AuthentFacebook = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_AuthentFacebook::GUI_AuthentFacebook() : GUI_FromServer("uiauthentfb")
 {
     stGUI_AuthentFacebook = this;
     mFacebook = 0;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_AuthentFacebook::createAndShowPanel()
 {
     if (!stGUI_AuthentFacebook)
@@ -87,11 +87,12 @@ bool GUI_AuthentFacebook::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI authentication on Facebook
-        createNavi( "local://uiauthentfb.html", NaviPosition(Center), 256, 128);
+        createNavi(NaviPosition(Center), 256, 128);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_AuthentFacebook::onLoaded));
+        mNavi->loadFile("uiauthentfb.html");
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setOpacity(0.75f);
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_AuthentFacebook::onLoaded));
         mNavi->bind("ok", NaviDelegate(this, &GUI_AuthentFacebook::onOk));
         mNavi->bind("cancel", NaviDelegate(this, &GUI_AuthentFacebook::onCancel));
         m_curState = NSCreated;
@@ -117,7 +118,7 @@ void GUI_AuthentFacebook::onError()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onLoaded(const NaviData& naviData)
+void GUI_AuthentFacebook::onLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookPageLoaded()");
 
@@ -131,7 +132,7 @@ void GUI_AuthentFacebook::onLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onOk(const NaviData& naviData)
+void GUI_AuthentFacebook::onOk(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookOk()");
 
@@ -158,7 +159,7 @@ void GUI_AuthentFacebook::onOk(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_AuthentFacebook::onCancel(const NaviData& naviData)
+void GUI_AuthentFacebook::onCancel(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::authentFacebookCancel()");
 
@@ -172,3 +173,5 @@ void GUI_AuthentFacebook::onCancel(const NaviData& naviData)
     // Return to Navi UI login
     GUI_Login::createAndShowPanel();
 }
+
+//-------------------------------------------------------------------------------------

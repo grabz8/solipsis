@@ -7,12 +7,12 @@
             var ctxtSWFNameParam;
             function pageLoaded()
             {
-                ctxtSWFNameParam = $PND.get('ctxtSWFName');
-                $ND('pageLoaded').add({naviName:'uictxtswf'}).add({ctxtSWFName:ctxtSWFNameParam}).send();
+                ctxtSWFNameParam = Client.ctxtSWFName; 
+				Client.pageLoaded('uictxtswf'); 
             }
             function swfCommand(command)
             {
-                $ND('swfCommand').add({ctxtSWFName:ctxtSWFNameParam}).add({cmd:command}).send();
+				Client.swfCommand(ctxtSWFNameParam, command); 
             }
         </script>
         <style type="text/css">

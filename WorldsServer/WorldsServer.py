@@ -247,6 +247,9 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                     loginHtmlFileContent = loginHtmlFileContent.replace('resultDynamicContent', 'Failed')
                     loginHtmlFileContent = loginHtmlFileContent.replace('nodeIdDynamicContent', '')
                     statsManager.addEvent(StatEvent(statId=StatEvent.StatEventId['SEI_WSERVER_AUTH_FAILURE'], statDesc='%s/%s' % (login, pwd)))
+                self.send_response(200, 'OK')
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
                 self.wfile.write(loginHtmlFileContent)
                 usersManager.save()
             elif o.path == '/uiworlds.html':
@@ -267,6 +270,9 @@ class WSRequestHandler(TimeoutHTTPRequestHandler):
                 if not self.isNavigatorVersionCompatible(navVersion):
                     infos = infos + '=> Upgrade your Navigator !'
                 infoHtmlFileContent = infoHtmlFileContent.replace('infosDynamicContent', infos)
+                self.send_response(200, 'OK')
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
                 self.wfile.write(infoHtmlFileContent)
             else:
                 # serve simply the html file

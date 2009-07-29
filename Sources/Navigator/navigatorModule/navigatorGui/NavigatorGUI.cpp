@@ -43,11 +43,12 @@ NavigatorGUI * NavigatorGUI::mNaviGui = NULL;
 //-------------------------------------------------------------------------------------
 NavigatorGUI::NavigatorGUI(Navigator* navigator) :
     mNavigator(navigator),
+    mMouse(0),
     mLoginInfosText(""),
     m_pCurrentPanel(NULL)
 {
     // Initializing Navi
-    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr(), "NaviLocal", ".");
+    mNaviMgr = new NaviLibrary::NaviManager(mNavigator->getRenderWindowPtr()->getViewport(0), "./NaviLocal");
     mNaviMgr->setZOrderMinMax(200, 299);
 
     // Initializing 2D Panels manager
@@ -81,22 +82,29 @@ NavigatorGUI::~NavigatorGUI()
 
     // Finalizing Navi
     delete mNaviMgr;
+
+    // Destroy mouse
+    if (mMouse != 0)
+		delete mMouse;
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::startup()
 {
-    // Startup NaviMouse and create the cursors
-    NaviMouse* mouse = new NaviMouse();
-    NaviCursor* defaultCursor = mouse->createCursor("default_cursor", 1, 0);
-	defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
-	defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
-	defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");
-    mouse->setDefaultCursor("default_cursor");
-	NaviCursor* moveCursor = mouse->createCursor("move", 19, 19);
-	moveCursor->addFrame(0, "cursorMove.png");
+    // Startup Mouse and create the cursors
+    if (mMouse == 0)
+    {
+        mMouse = new Mouse();
+        Cursor* defaultCursor = mMouse->createCursor("default_cursor", 1, 0);
+	    defaultCursor->addFrame(1200, "cursor1.png")->addFrame(100, "cursor2.png")->addFrame(100, "cursor3.png")->addFrame(100, "cursor4.png");
+	    defaultCursor->addFrame(100, "cursor5.png")->addFrame(100, "cursor6.png")->addFrame(100, "cursor5.png")->addFrame(100, "cursor4.png");
+	    defaultCursor->addFrame(100, "cursor3.png")->addFrame(100, "cursor2.png");
+        mMouse->setDefaultCursor("default_cursor");
+	    Cursor* moveCursor = mMouse->createCursor("move", 19, 19);
+	    moveCursor->addFrame(0, "cursorMove.png");
 
-    mPanel2DMgr->initializeMouseCursors();
+        mPanel2DMgr->initializeMouseCursors();
+    }
 
     // Load Lua default GUI
     lua_State* luaState = mNavigator->getLuaState();
@@ -119,6 +127,9 @@ bool NavigatorGUI::startup()
 void NavigatorGUI::update()
 {
     unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
+
+    if (Mouse::getSingletonPtr() != 0)
+        Mouse::getSingletonPtr()->update();
 
     if (m_pCurrentPanel)
     {
@@ -144,15 +155,15 @@ void NavigatorGUI::windowResized(RenderWindow* rw)
 void NavigatorGUI::SetMouseVisibility(bool visible)
 {
     if (visible)
-        NaviLibrary::NaviMouse::Get().show();
+        Mouse::getSingleton().show();
     else
-        NaviLibrary::NaviMouse::Get().hide();
+        Mouse::getSingleton().hide();
 }
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::isMouseVisible()
 {
-    return NaviLibrary::NaviMouse::Get().isVisible();
+    return ((mMouse != 0) && mMouse->isVisible());
 }
 
 //-------------------------------------------------------------------------------------
@@ -166,7 +177,7 @@ void NavigatorGUI::inWorld()
 }
 
 //-------------------------------------------------------------------------------------
-void NavigatorGUI::ConnectionServerErrorMsgBoxResponse::onResponse(const std::string& response)
+void NavigatorGUI::ConnectionServerErrorMsgBoxResponse::onResponse(Navi* caller, const Awesomium::JSArguments& args)
 {
     Navigator::getSingletonPtr()->disconnect(true);
 }
@@ -193,9 +204,6 @@ void NavigatorGUI::connectionLostError()
         GUI_MessageBox::MBB_OK, 
         GUI_MessageBox::MBB_EXCLAMATION);
 }
-
-//-------------------------------------------------------------------------------------
-
 
 //-------------------------------------------------------------------------------------
 bool NavigatorGUI::setNaviVisibility(const String& naviName, bool show)
@@ -230,6 +238,7 @@ bool NavigatorGUI::createPanel2D(const String& type, const String& name)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 void NavigatorGUI::registerGuiPanel(GUI_Panel *pPanel)
 {
     mNaviGui->m_panels[pPanel->getPanelName()] = pPanel;

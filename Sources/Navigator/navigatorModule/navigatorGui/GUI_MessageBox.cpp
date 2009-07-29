@@ -63,15 +63,18 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
     {
         // Create Navi panel
         // Lua
-        createNavi("local://uimsgbox.html", Center, 512, 128);
+        createNavi(NaviPosition(Center), 512, 128);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_MessageBox::onPageLoaded));
+        mNavi->loadFile("uimsgbox.html");
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->hide();
         mNavi->setMask("uimsgbox.png");
+        mNavi->setModal(true);
+
+        mNavi->bind("response", NaviDelegate(this, &GUI_MessageBox::onResponse));
 
         m_curState = NSCreated;
     }
-
-    mNavi->setModal(true);
 
     mMsgBoxTitleText = titleText;
     mMsgBoxMsgText = msgText;
@@ -79,14 +82,11 @@ bool GUI_MessageBox::protectedShow(const std::string& titleText,
     mMsgBoxIcon = icon;
     mMsgBoxResponse = msgBoxResponse;
 
-    mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_MessageBox::onPageLoaded));
-    mNavi->bind("response", NaviDelegate(this, &GUI_MessageBox::onResponse));
-
     return true;
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
+void GUI_MessageBox::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxPageLoaded()");
 
@@ -96,16 +96,16 @@ void GUI_MessageBox::onPageLoaded(const NaviData& naviData)
     mNavi->evaluateJS("setIcon(" + StringHelpers::toString(mMsgBoxIcon) + ")");
 
     // Show Navi UI message box
-    GUI_Panel::onPanelLoaded(naviData);
+    GUI_Panel::onPanelLoaded(caller, args);
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_MessageBox::onResponse(const NaviData& naviData)
+void GUI_MessageBox::onResponse(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::messageBoxResponse()");
 
     if (mMsgBoxResponse != 0)
-        mMsgBoxResponse->onResponse(naviData["response"].str());
+        mMsgBoxResponse->onResponse(caller, args);
     destroy();
 }
 

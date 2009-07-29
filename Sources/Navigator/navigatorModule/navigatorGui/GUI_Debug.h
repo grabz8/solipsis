@@ -54,11 +54,11 @@ namespace Solipsis
         GUI_Debug();
 
         // Debug callbacks
-        void debugCommand(const NaviData& naviData);
-        void navCommand(const NaviData& naviData);
-        void onPageLoaded(const NaviData& naviData);
-        void onPageClosed(const NaviData& naviData);
-        void refreshTree(const NaviData& naviData);
+        void debugCommand(Navi* caller, const Awesomium::JSArguments& args);
+        void navCommand(Navi* caller, const Awesomium::JSArguments& args);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onPageClosed(Navi* caller, const Awesomium::JSArguments& args);
+        void refreshTree(Navi* caller, const Awesomium::JSArguments& args);
 
 
         static GUI_Debug * stGUI_Debug;

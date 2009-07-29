@@ -35,15 +35,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 using namespace CommonTools;
 
-/////////////////
-
+//-------------------------------------------------------------------------------------
 GUI_FromServer::GUI_FromServer(const std::string & panelName) : GUI_Panel(panelName)
 {
     mNavigator = Navigator::getSingletonPtr();
     mCurrentNaviCreationDate = 0;
     mCurrentNaviCreationDate = 0;
 }
-
 
 //-------------------------------------------------------------------------------------
 void GUI_FromServer::onNavigateComplete(Navi *caller, const std::string &url, int responseCode)
@@ -56,7 +54,6 @@ void GUI_FromServer::onNavigateComplete(Navi *caller, const std::string &url, in
             serverError();
     }
 }
-
 
 //-------------------------------------------------------------------------------------
 void GUI_FromServer::serverError()
@@ -91,8 +88,7 @@ void GUI_FromServer::serverCompatibilityError()
     mCurrentNaviCreationDate = 0; 
 }
 
-//-------------------------------------------------
-
+//-------------------------------------------------------------------------------------
 void GUI_FromServer::update()
 {    
     unsigned long now = Ogre::Root::getSingleton().getTimer()->getMilliseconds();
@@ -104,3 +100,5 @@ void GUI_FromServer::update()
         serverError();
     }
 }
+
+//-------------------------------------------------------------------------------------

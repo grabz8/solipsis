@@ -536,10 +536,12 @@ void Navigator::demoNavi1()
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi1Video", "demoNavi1Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), "http://www.youtube.com/watch?v=066_q4DIeqk", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), 512, 512);
+    vidNavi->loadURL( "http://www.youtube.com/watch?v=066_q4DIeqk");
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
-    vidNavi->setForceMaxUpdate(true);
+    // Awesomium ?
+    //vidNavi->setForceMaxUpdate(true);
     vidNavi->setOpacity(0.75f);
     vidEnt->setMaterialName(vidNavi->getMaterialName());
     //http://www.youtube.com/watch?v=ZQcUS4chhc4
@@ -551,7 +553,8 @@ void Navigator::demoNavi1()
     // Creates the Text Plane and subsequent NaviMaterial
     Entity* txtEnt = mSceneMgr->createEntity("demoNavi1Text", "demoNavi1Plane");
     txtEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*txtEnt), "local://lgpl-3.0.txt", 512, 512);
+    NaviLibrary::Navi* txtNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*txtEnt),  512, 512);
+    txtNavi->loadURL("lgpl-3.0.txt");
     txtNavi->show(true);
     txtNavi->setMaxUPS(8);
     txtEnt->setMaterialName(txtNavi->getMaterialName());
@@ -562,7 +565,8 @@ void Navigator::demoNavi1()
     // web knot
     Entity* knotEnt = mSceneMgr->createEntity("demoNavi1WebKnot", "knot.mesh");
     knotEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*knotEnt), "http://www.google.com", 512, 512);
+    NaviLibrary::Navi* knotNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*knotEnt),  512, 512);
+    knotNavi->loadURL("http://www.google.com");
     knotNavi->show(true);
     knotNavi->setMaxUPS(8);
     std::string googleMtlName = knotNavi->getMaterialName();
@@ -598,7 +602,7 @@ void Navigator::demoNavi2(const String params)
         url2go = "http://fr.youtube.com/watch?v=u5WIEep8DJg";
     if (active)
     {
-        NaviLibrary::NaviManager::Get().getNavi("demoNavi2Video")->navigateTo(url2go);
+        NaviLibrary::NaviManager::Get().getNavi("demoNavi2Video")->loadURL(url2go);
         return;
     }
     active = true;
@@ -610,10 +614,11 @@ void Navigator::demoNavi2(const String params)
     // Creates the Video Plane and subsequent NaviMaterial
     Entity* vidEnt = mSceneMgr->createEntity("demoNavi2Video", "demoNavi2Plane");
     vidEnt->setQueryFlags(QFNaviPanel);
-    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), "", 512, 512);
+    NaviLibrary::Navi* vidNavi = NaviLibrary::NaviManager::Get().createNaviMaterial(getEntityNaviName(*vidEnt), 512, 512);
     vidNavi->show(true);
     vidNavi->setMaxUPS(15);
-    vidNavi->setForceMaxUpdate(true);
+    // Awesomium ?
+    //vidNavi->setForceMaxUpdate(true);
     vidNavi->setOpacity(0.75f);
     vidEnt->setMaterialName(vidNavi->getMaterialName());
     SceneNode* videoNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("demo2VideoNode");
@@ -622,7 +627,7 @@ void Navigator::demoNavi2(const String params)
     videoNode->yaw(Degree(180), Node::TS_WORLD);
     // Add 1 listener to follow URL changes
     vidNavi->addEventListener(this);
-    vidNavi->navigateTo(url2go);
+    vidNavi->loadURL(url2go);
 }
 #endif
 #ifdef DEMO_VNC
@@ -1416,9 +1421,9 @@ bool Navigator::connect()
 }
 
 //-------------------------------------------------------------------------------------
-void Navigator::DisconnectMsgBoxResponse::onResponse(const std::string& response)
+void Navigator::DisconnectMsgBoxResponse::onResponse(Navi* caller, const Awesomium::JSArguments& args)
 {
-    if (response == "yes")
+    if ((args.size() > 0) && (args[0].toString() == "yes"))
         Navigator::getSingletonPtr()->disconnect(true);
 }
 

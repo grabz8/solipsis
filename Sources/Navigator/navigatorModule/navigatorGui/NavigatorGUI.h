@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "NaviManager.h"
 #include "World/Modeler.h"
 #include "ModifiableMaterialObject.h"
+#include "Mouse.h"
 #include "NavigatorGUI/GUI_MessageBoxResponse.h"
 #include "Panel2DMgr.h"
 
@@ -47,6 +48,7 @@ class NavigatorGUI : public WindowEventListener
 protected:
     Navigator* mNavigator;
     NaviManager* mNaviMgr;
+    Mouse* mMouse;
     Panel2DMgr* mPanel2DMgr;
 
     std::string mLoginInfosText;
@@ -73,7 +75,7 @@ public:
 
     void connectionLostError();
     class ConnectionServerErrorMsgBoxResponse : public GUI_MessageBoxResponse {
-        virtual void onResponse(const std::string& response);
+        virtual void onResponse(Navi* caller, const Awesomium::JSArguments& args);
     };
     ConnectionServerErrorMsgBoxResponse connectionServerErrorMsgBoxResponse;
     void connectionServerError();

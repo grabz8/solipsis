@@ -45,9 +45,9 @@ namespace Solipsis
 
 
         // Modeler Scene From Text Setup properties page callbacks
-        void onPageLoaded(const NaviData& naviData);
-        void onExec(const NaviData& naviData);	
-        void onCancelled(const NaviData& naviData);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onExec(Navi* caller, const Awesomium::JSArguments& args);	
+        void onCancelled(Navi* caller, const Awesomium::JSArguments& args);
 
     protected:
         GUI_ModelerSceneFromText();

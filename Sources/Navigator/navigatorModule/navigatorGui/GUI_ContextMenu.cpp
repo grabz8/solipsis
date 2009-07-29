@@ -32,10 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <OgreExternalTextureSourceManager.h>
 #include "OgreTools/ExternalTextureSourceEx.h"
 
-
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 const std::string GUI_ContextMenu::ms_NavisContexts[] = 
 {
@@ -48,12 +46,14 @@ const std::string GUI_ContextMenu::ms_NavisContexts[] =
 
 GUI_ContextMenu * GUI_ContextMenu::stGUI_ContextMenu = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_ContextMenu::GUI_ContextMenu() : GUI_Panel("contextMenu")
 {
     m_curContext = NAVI_CTXTCOUNT;
     stGUI_ContextMenu = this;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_ContextMenu::createAndShowPanel(int x, int y, NaviContext ctxtPanel, const String& params)
 {
     if (!stGUI_ContextMenu)
@@ -64,6 +64,7 @@ bool GUI_ContextMenu::createAndShowPanel(int x, int y, NaviContext ctxtPanel, co
     return stGUI_ContextMenu->show(x, y, ctxtPanel, params);
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_ContextMenu::destroyMenu()
 {
     if (!stGUI_ContextMenu) return;
@@ -71,7 +72,7 @@ void GUI_ContextMenu::destroyMenu()
     stGUI_ContextMenu->destroy();
 }
 
-
+//-------------------------------------------------------------------------------------
 void GUI_ContextMenu::clampNaviOnScreen(int& x, int& y, int w, int h)
 {
     int cx = x - w/2;
@@ -94,10 +95,7 @@ void GUI_ContextMenu::clampNaviOnScreen(int& x, int& y, int w, int h)
     y = cy;
 }
 
-
-
-
-
+//-------------------------------------------------------------------------------------
 bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& params)
 {
     if (m_curState != NSNotCreated)
@@ -117,49 +115,49 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
 
             clampNaviOnScreen(x, y, naviW, naviH);
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y), naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
-            mNavi->setColorKey("#010203", 0, "#000000");
+            // Awesomium ?
+            //mNavi->setColorKey("#010203", 0, "#000000");
+            mNavi->setTransparent(true);
             mNavi->setOpacity(0.75);
 
-            NaviData datas( "uictxtavatarDatas");
-            datas["naviDataName"] = "uictxtavatarDatas";
-            datas["items"] = params;
-            datas["itemWidth"] = itemW;
-            datas["itemHeight"] = itemH;
-
-            mNavi->navigateTo("local://uictxtavatar.html", datas);
+            mNavi->setProperty("items", params);
+            mNavi->setProperty("itemWidth", itemW);
+            mNavi->setProperty("itemHeight", itemH);
 
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onPanelLoaded));
             mNavi->bind("contextItemSelected", NaviDelegate(this, &GUI_ContextMenu::onAvatarSelect));
+
+            mNavi->loadFile("uictxtavatar.html");
         }
         break;
-
     case NAVI_CTXTWWW:
         {
             naviW = 256; naviH = 48;  
             clampNaviOnScreen(x, y, naviW, naviH);
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y), naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
 
-            mNavi->setColorKey("#010203", 0, "#000000");
+            // Awesomium ?
+            //mNavi->setColorKey("#010203", 0, "#000000");
+            mNavi->setTransparent(true);
             mNavi->setOpacity(0.8);
             mNavi->setMaxUPS(8);
-            mNavi->setForceMaxUpdate(false);
+            // Awesomium ?
+            //mNavi->setForceMaxUpdate(false);
             mNavi->setAutoUpdateOnFocus(true);
 
-            NaviData datas( "uictxtwwwDatas");
-            datas["naviDataName"] = "uictxtwwwDatas";
-            datas["ctxtNaviName"] = params;
-   
+            mNavi->setProperty("ctxtNaviName", params);
+
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onWWWPanelLoaded));
             mNavi->bind("navCommand", NaviDelegate(this, &GUI_ContextMenu::onWWWCommand));
  
-            mNavi->navigateTo("local://uictxtwww.html", datas);
-       }
+            mNavi->loadFile("uictxtwww.html");
+        }
         break;
     case NAVI_CTXTVLC:
         {
@@ -168,23 +166,22 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             clampNaviOnScreen(x, y, naviW, naviH);
             String ctxtVLCName = params;
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y), naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             mNavi->setOpacity(0.8);
 
             mNavi->setMaxUPS(8);
-            mNavi->setForceMaxUpdate(false);
+            // Awesomium ?
+            //mNavi->setForceMaxUpdate(false);
             mNavi->setAutoUpdateOnFocus(true);
 
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onVLCPanelLoaded));
             mNavi->bind("vlcCommand", NaviDelegate(this, &GUI_ContextMenu::onVLCCommand));
 
-            NaviData datas( "uictxtvlcDatas");
-            datas["naviDataName"] = "uictxtvlcDatas";
-            datas["ctxtVLCName"] = ctxtVLCName;
+            mNavi->setProperty("ctxtVLCName", ctxtVLCName);
 
-            mNavi->navigateTo("local://uictxtvlc.html", datas);
+            mNavi->loadFile("uictxtvlc.html");
         }
         break;
     case NAVI_CTXTVNC:
@@ -194,23 +191,22 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             clampNaviOnScreen(x, y, naviW, naviH);
             String ctxtVNCName = params;
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y), naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             mNavi->setOpacity(0.8);
 
             mNavi->setMaxUPS(8);
-            mNavi->setForceMaxUpdate(false);
+            // Awesomium ?
+            //mNavi->setForceMaxUpdate(false);
             mNavi->setAutoUpdateOnFocus(true);
 
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onVNCPanelLoaded));
             mNavi->bind("vncCommand", NaviDelegate(this, &GUI_ContextMenu::onVNCCommand));
 
-            NaviData datas( "uictxtvncDatas");
-            datas["naviDataName"] = "uictxtvncDatas";
-            datas["ctxtVNCName"] = ctxtVNCName;
+            mNavi->setProperty("ctxtVNCName", ctxtVNCName);
 
-            mNavi->navigateTo("local://uictxtvnc.html", datas);
+            mNavi->loadFile("uictxtvnc.html");
         }
         break;
     case NAVI_CTXTSWF:
@@ -220,23 +216,22 @@ bool GUI_ContextMenu::show(int x, int y, NaviContext ctxtPanel, const String& pa
             clampNaviOnScreen(x, y, naviW, naviH);
             String ctxtSWFName = params;
 
-            createNavi("", x, y,naviW, naviH);
+            createNavi(NaviPosition(x, y), naviW, naviH);
             mNavi->setMovable(false);
             mNavi->hide();
             mNavi->setOpacity(0.8);
 
             mNavi->setMaxUPS(8);
-            mNavi->setForceMaxUpdate(false);
+            // Awesomium ?
+            //mNavi->setForceMaxUpdate(false);
             mNavi->setAutoUpdateOnFocus(true);
 
             mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ContextMenu::onSWFPanelLoaded));
             mNavi->bind("swfCommand", NaviDelegate(this, &GUI_ContextMenu::onSWFCommand));
 
-            NaviData datas( "uictxtswfDatas");
-            datas["naviDataName"] = "uictxtswfDatas";
-            datas["ctxtSWFName"] = ctxtSWFName;
+            mNavi->setProperty("ctxtSWFName", ctxtSWFName);
 
-            mNavi->navigateTo("local://uictxtswf.html", datas);
+            mNavi->loadFile("uictxtswf.html");
        }
         break;
     }
@@ -274,35 +269,33 @@ void GUI_ContextMenu::destroy()
     mNavi = NULL; 
 }
 
-void GUI_ContextMenu::onAvatarSelect(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onAvatarSelect(Navi* caller, const Awesomium::JSArguments& args)
 {
-    Navigator::getSingletonPtr()->contextItemSelected(naviData["item"].str());
+    Navigator::getSingletonPtr()->contextItemSelected(args[0].toString());
 }
 
-
-// usual function on page loaded
-void GUI_ContextMenu::onPanelLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-  mNavi->show();  
-
+    mNavi->show();  
 }
 
-
-// usual function on page loaded
-void GUI_ContextMenu::onWWWPanelLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onWWWPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtNaviName = naviData["ctxtNaviName"].str();
+    String ctxtNaviName = args[1].toString();
 
-    if (NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName)->canNavigateBack())
-    {
-        mNavi->evaluateJS("$('mTbIconBack').addClass('mozToolbarBackActive')");
-        
-    }
-    
-    if (NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName)->canNavigateForward())
-    {
-        mNavi->evaluateJS("$('mTbIconFwd').addClass('mozToolbarFwdActive')");
-    }    
+    // Awesomium ?
+    //if (NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName)->canNavigateBack())
+    //{
+    //    mNavi->evaluateJS("$('mTbIconBack').addClass('mozToolbarBackActive')");
+    //    
+    //}
+    //if (NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName)->canNavigateForward())
+    //{
+    //    mNavi->evaluateJS("$('mTbIconFwd').addClass('mozToolbarFwdActive')");
+    //}    
     
     String location =  NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName)->getCurrentLocation();
     String JSCommand = "$('inputUrl').value = '" + location + "'";
@@ -311,38 +304,40 @@ void GUI_ContextMenu::onWWWPanelLoaded(const NaviData& naviData)
     mNavi->show(); 
 }
 
-// usual function on page loaded
-void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onWWWCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtNaviName = naviData["ctxtNaviName"].str();
+    String ctxtNaviName = args[0].toString();
     Navi * pNaviDest = NaviLibrary::NaviManager::Get().getNavi(ctxtNaviName);
-    String cmd = naviData["cmd"].str();
+    String cmd = args[1].toString();
 
     if (cmd == "go") 
     {
-       String url = mNavi->evaluateJS( "$('inputUrl').value");
-       pNaviDest->navigateTo( url);
+       String url = mNavi->evaluateJSWithResult("$('inputUrl').value").get().toString();
+       pNaviDest->loadURL(url);
     }
-    else if (cmd == "back") 
-    {
-        pNaviDest->navigateBack();
-    }
-    else if (cmd == "fwd") 
-    {
-        pNaviDest->navigateForward();
+    // Awesomium ?
+    //else if (cmd == "back") 
+    //{
+    //    pNaviDest->navigateBack();
+    //}
+    //else if (cmd == "fwd") 
+    //{
+    //    pNaviDest->navigateForward();
 
-    }
+    //}
     else if (cmd == "refresh") 
     {
-        pNaviDest->evaluateJS( "window.location.reload(false)");
+        pNaviDest->evaluateJS("window.location.reload(false)");
     }
-    else if (cmd == "stop") 
-    {
-        pNaviDest->navigateStop();
-    }
+    // Awesomium ?
+    //else if (cmd == "stop") 
+    //{
+    //    pNaviDest->navigateStop();
+    //}
     else if (cmd == "home") 
     {
-        pNaviDest->navigateTo( "http://www.solipsis.org" );
+        pNaviDest->loadURL( "http://www.solipsis.org" );
     }
     else if (cmd == "maximize") 
     {
@@ -351,7 +346,6 @@ void GUI_ContextMenu::onWWWCommand(const NaviData& naviData)
 
     destroy();
 }
-
 
 //-------------------------------------------------------------------------------------
 String extTextSrcExHandleEvt(const String & extTextSrcExPlugin, const String & mtlName, const String & extTextSrcExEvt)
@@ -362,10 +356,10 @@ String extTextSrcExHandleEvt(const String & extTextSrcExPlugin, const String & m
     return extTextSrcEx->handleEvt(mtlName, extTextSrcExEvt);
 }
 
-// VLC callbacks 
-void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onVLCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtVLCName = naviData["ctxtVLCName"].str(); 
+    String ctxtVLCName = args[0].toString(); 
 
     String mrl = extTextSrcExHandleEvt("vlc", ctxtVLCName, "getmrl");
     StringHelpers::replaceSubStr(mrl, "\\", "\\\\");
@@ -380,14 +374,15 @@ void GUI_ContextMenu::onVLCPanelLoaded(const NaviData& naviData)
     mNavi->show();
 }
 
-void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onVLCCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtVLCName = naviData["ctxtVLCName"].str();
-    String cmd = naviData["cmd"].str();
+    String ctxtVLCName = args[0].toString();
+    String cmd = args[1].toString();
 
     if (cmd == "setmrl") 
     {
-        String mrl = mNavi->evaluateJS( "$('inputMrl').value");
+        String mrl = mNavi->evaluateJSWithResult( "$('inputMrl').value").get().toString();
         extTextSrcExHandleEvt("vlc", ctxtVLCName, "setmrl?" + mrl);
     }
     else if (cmd == "maximize") 
@@ -402,10 +397,10 @@ void GUI_ContextMenu::onVLCCommand(const NaviData& naviData)
     destroy();
 }
 
-// VNC callbacks 
-void GUI_ContextMenu::onVNCPanelLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onVNCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtVNCName = naviData["ctxtVNCName"].str(); 
+    String ctxtVNCName = args[0].toString();
 
     String address = extTextSrcExHandleEvt("vnc", ctxtVNCName, "getaddress");
     mNavi->evaluateJS("$('inputAddress').value = '" + address + "'");
@@ -413,10 +408,11 @@ void GUI_ContextMenu::onVNCPanelLoaded(const NaviData& naviData)
     mNavi->show(); 
 }
 
-void GUI_ContextMenu::onVNCCommand(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onVNCCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtVNCName = naviData["ctxtVNCName"].str();
-    String cmd = naviData["cmd"].str();
+    String ctxtVNCName = args[0].toString();
+    String cmd = args[1].toString();
 
     if (cmd == "maximize") 
     {
@@ -430,10 +426,10 @@ void GUI_ContextMenu::onVNCCommand(const NaviData& naviData)
     destroy();
 }
 
-// SWF callbacks 
-void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onSWFPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtSWFName = naviData["ctxtSWFName"].str(); 
+    String ctxtSWFName = args[0].toString();
 
     String url = extTextSrcExHandleEvt("swf", ctxtSWFName, "geturl");
     StringHelpers::replaceSubStr(url, "\\", "\\\\");
@@ -448,14 +444,15 @@ void GUI_ContextMenu::onSWFPanelLoaded(const NaviData& naviData)
     mNavi->show();
 }
 
-void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_ContextMenu::onSWFCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
-    String ctxtSWFName = naviData["ctxtSWFName"].str();
-    String cmd = naviData["cmd"].str();
+    String ctxtSWFName = args[0].toString();
+    String cmd = args[1].toString();
 
     if (cmd == "seturl")  
     {
-        String url = mNavi->evaluateJS( "$('inputUrl').value");
+        String url = mNavi->evaluateJSWithResult( "$('inputUrl').value").get().toString();
         extTextSrcExHandleEvt("swf", ctxtSWFName, "seturl?" + url);
     }
     else if (cmd == "maximize") 
@@ -469,3 +466,5 @@ void GUI_ContextMenu::onSWFCommand(const NaviData& naviData)
 
     destroy();
 }
+
+//-------------------------------------------------------------------------------------

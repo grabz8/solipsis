@@ -40,63 +40,56 @@
 			loadSV();
 			$S('plugin').display='none';
 			$S('SVslide').top=(80/100*170-7)+'px';
-
-			new NaviData('pageLoaded').add({naviName:'uiavatarprop'}).send();
+			
+			Client.pageLoaded('uiavatarprop');
 		}
-        
-        function elementClicked(elementName)
-        {
-            new NaviData(elementName).send();
-        }
         
         function sendMessage(message)
         {
-			//alert(message);
-			new NaviData('sendMessage').add({msg:message}).send();
+			Client.sendMessage(message);
         }  
-        function sendMessageParam(message, sub, param)
-        {
-			new NaviData(message).add({sub:param}).send();
-        }
-        
+  
         // selector menus
         function selectAnimation(value)
         {
             $('animationSelectItem').style.display='none';
             $('animationSelectTitre').className = "titreMenu itemOut";
             $('animationSelectTitre').innerHTML = ""+value;
-            new NaviData('AnimationSelected').add({item:value}).send();
+			
+			Client.AnimationSelected(value);
         }
         function selectBone(value)
         {
             $('boneSelectItem').style.display='none';
             $('boneSelectTitre').innerHTML = ""+value;
-            new NaviData('BoneSelected').add({item:value}).send();
+			
+			Client.BoneSelected(value);
         }
         function selectBodyPart(value)
         {
             $('bodyPartSelectItem').style.display='none';
             $('bodyPartSelectTitre').innerHTML = ""+value;
-            new NaviData('BodyPartSelected').add({item:value}).send();
+			Client.BodyPartSelected(value);
         }
         function selectBodyPartModel(value)
         {
             $('bodyPartModelSelectItem').style.display='none';
             $('bodyPartModelSelectTitre').innerHTML = ""+value;
-            new NaviData('BodyPartModelSelected').add({item:value}).send();
+			Client.BodyPartModelSelected(value);
+
         }
         function selectGoody(value)
         {
             $('goodySelectItem').style.display='none';
             $('goodySelectTitre').innerHTML = ""+value;
-            new NaviData('GoodySelected').add({item:value}).send();
-        }
+  			Client.GoodySelected(value);
+         }
         function selectGoodyModel(value)
         {
             $('goodyModelSelectItem').style.display='none';
             $('goodyModelSelectTitre').innerHTML = ""+value;
-            new NaviData('GoodyModelSelected').add({item:value}).send();
-        }
+  			Client.GoodyModelSelected(value);
+         }
         
         function decToHex(dec) 
         {
@@ -235,7 +228,7 @@
                         <table align="center" width="260">
 						    <tr>
 						        <td align="center">
-						            <input type="button" value=" < " style="width: 30px" onclick="elementClicked('AnimPrev')">
+						            <input type="button" value=" < " style="width: 30px" onclick="Client.AnimPrev()">
 						        </td>
 						        <td width="200">
 <div class="menu" id="animationSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:180px">
@@ -250,15 +243,15 @@
 </div>						        
 						        </td>
 								<td align="center">
-								    <input type="button" value=" > " style="width: 30px" onclick="elementClicked('AnimNext')">
+								    <input type="button" value=" > " style="width: 30px" onclick="Client.AnimNext()">
 								</td>
 							</tr>
 							
 				            <tr>
 				                <td align="center" colspan="3">
 				                    <br />
-						            <input type="button" value="Pause"  style="width: 125px" onclick="elementClicked('AnimPlayPause')" id="AnimPlayPause">
-						            <input type="button" value="Stop"  style="width: 125px" onclick="elementClicked('AnimStop')"><br>
+						            <input type="button" value="Pause"  style="width: 125px" onclick="Client.AnimPlayPause();" id="AnimPlayPause">
+						            <input type="button" value="Stop"  style="width: 125px" onclick="Client.AnimStop();"><br>
 						            <br>
 						            <div class="slider" id="animTime" style="display: block; width: 260px">
 										<input class="slider-input" id="animeTimeInput" />
@@ -301,7 +294,7 @@
                             <tr>
                                 <td colspan="2"><b>Bones</b></td>
                                 <td>
-                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BonePrev','','bone1')" />
+                                    <input type="button" value=" < " style="width: 30px" onclick="Client.BonePrev('bone1');" />
                                 </td>
                                 <td align="center" id="BoneName">BoneName
 <div class="menu" id="boneSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
@@ -316,7 +309,7 @@
 </div>
                                 </td>
                                 <td>
-                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BoneNext','','bone1')" />
+                                    <input type="button" value=" > " style="width: 30px" onclick="Client.BoneNext('bone1')" />
                                 </td>
                                 <td colspan="2"></td>
                             </tr>
@@ -326,7 +319,7 @@
                             <tr>
                                 <td colspan="2"><b>Body Parts</b></td>
                                 <td>
-                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartPrev','','body1')" />
+                                    <input type="button" value=" < " style="width: 30px" onclick="Client.BodyPartPrev('body1')" />
                                 </td>
                                 <td align="center" id="BodyPartName">BodyPartName
 <div class="menu" id="bodyPartSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
@@ -341,17 +334,17 @@
 </div>
                                 </td>
                                 <td>
-                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartNext','','body1')" />
+                                    <input type="button" value=" > " style="width: 30px" onclick="Client.BodyPartNext('body1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input id="BodyPartAdd" type="button" value="Add new" onclick="elementClicked('PartAdd')" id="PartAdd" disabled />
+                                    <input id="BodyPartAdd" type="button" value="Add new" onclick="Client.PartAdd();" id="PartAdd" disabled />
                                 </td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td>Model</td>
                                 <td>
-                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('BodyPartModelPrev','','body1')" />
+                                    <input type="button" value=" < " style="width: 30px" onclick="Client.BodyPartModelPrev('body1')" />
                                 </td>
                                 <td align="center" id="BodyPartModelName">BodyPartModelName
 <div class="menu" id="bodyPartModelSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
@@ -366,11 +359,11 @@
 </div>
                                 </td>
                                 <td>
-                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('BodyPartModelNext','','body1')" />
+                                    <input type="button" value=" > " style="width: 30px" onclick="Client.BodyPartModelNext('body1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input id="BodyPartEdit" type="button" value="Edit" onclick="sendMessageParam('BodyPartModelEdit','','body1'); updateTexture()" />
-                                    <input id="BodyPartRemove" type="button" value="Remove" onclick="sendMessageParam('BodyPartModelRemove','','body1')" disabled />
+                                    <input id="BodyPartEdit" type="button" value="Edit" onclick="Client.BodyPartModelEdit('body1'); updateTexture()" />
+                                    <input id="BodyPartRemove" type="button" value="Remove" onclick="Client.BodyPartModelRemove('body1')" disabled />
                                 </td>
                             </tr>
                         
@@ -380,7 +373,7 @@
                             <tr>
                                 <td colspan="2"><b>Attachements</b></td>
                                 <td>
-                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachPrev','','attach1')" />
+                                    <input type="button" value=" < " style="width: 30px" onclick="Client.AttachPrev('attach1')" />
                                 </td>
                                 <td align="center" id="AttachName">AttachName
 <div class="menu" id="attachSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
@@ -395,17 +388,17 @@
 </div>
                                 </td>
                                 <td>
-                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachNext','','attach1')" />
+                                    <input type="button" value=" > " style="width: 30px" onclick="Client.AttachNext('attach1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input id="AttachAdd" type="button" value="Add new" onclick="elementClicked('AttachAdd')" disabled />
+                                    <input id="AttachAdd" type="button" value="Add new" onclick="Client.AttachAdd();" disabled />
                                 </td>
                             </tr>
                             <tr>
                                 <td></td>
                                 <td>Model</td>
                                 <td>
-                                    <input type="button" value=" < " style="width: 30px" onclick="sendMessageParam('AttachModelPrev','','attach1')" />
+                                    <input type="button" value=" < " style="width: 30px" onclick="Client.AttachModelPrev('attach1')" />
                                 </td>
                                 <td align="center" id="AttachModelName">AttachModelName
 <div class="menu" id="attachModelSelect" onmouseout="fout(this)" onmouseover="fover(this)" style="width:140px; display:none">
@@ -420,11 +413,11 @@
 </div>
                                 </td>
                                 <td>
-                                    <input type="button" value=" > " style="width: 30px" onclick="sendMessageParam('AttachModelNext','','attach1')" />
+                                    <input type="button" value=" > " style="width: 30px" onclick="Client.AttachModelNext('attach1')" />
                                 </td>
                                 <td colspan="2">
-                                    <input id="AttachEdit" type="button" value="Edit" onclick="sendMessageParam('AttachModelEdit','','attach1'); updateTexture()" />
-                                    <input id="AttachRemove" type="button" value="Remove" onclick="sendMessageParam('AttachModelRemove','','attach1')" disabled />
+                                    <input id="AttachEdit" type="button" value="Edit" onclick="Client.AttachModelEdit('attach1'); updateTexture()" />
+                                    <input id="AttachRemove" type="button" value="Remove" onclick="Client.AttachModelRemove('attach1')" disabled />
                                 </td>
                             </tr>
                             <tr><td colspan="7"><hr width="75%"/></td></tr>
@@ -497,7 +490,7 @@
                             <tr align="center">
                                 <td></td>
                                 <td colspan="3">
-                                    <input id="selectionReset" type="button" value="Reset" onclick="sendMessageParam('SelectionReset','','attach1')" style="width:160px" disabled />
+                                    <input id="selectionReset" type="button" value="Reset" onclick="Client.SelectionReset('attach1')" style="width:160px" disabled />
                                 </td>
                             </tr>
                         </table>
@@ -565,7 +558,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('AvatarLockAmbientDiffuse')">
+                                    <input type="checkbox" id="lockAmbientdiffuse" onclick="Client.AvatarLockAmbientDiffuse();">
                                     Lock Ambient-Diffuse
                                 </td>
                                 <td>
@@ -579,7 +572,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <input type="checkbox" id="doubleSide" onclick="elementClicked('AvatarDoubleSide')">
+                                    <input type="checkbox" id="doubleSide" onclick="Client.AvatarDoubleSide();">
                                     Double Side
                                 </td>
                                 <td>
@@ -623,13 +616,13 @@
                                 <td colspan="3">
                                     <br>
                                     <br>
-                                    <input type="button" value="Add texture" onclick="elementClicked('AvatarAddTexture');updTexture()">
-                                    <input type="button" value="Remove texture" onclick="elementClicked('AvatarRemoveTexture');updTexture()">
+                                    <input type="button" value="Add texture" onclick="Client.AvatarAddTexture();updTexture()">
+                                    <input type="button" value="Remove texture" onclick="Client.AvatarRemoveTexture();updTexture()">
                                 </td>
                                 <td>
                                     <br />
                                     <br />
-                                    <input type="button" value="Reset colour" onclick="elementClicked('AvatarResetColour')">
+                                    <input type="button" value="Reset colour" onclick="Client.AvatarResetColour()">
                                 </td>
                             </tr>
                             <tr valign="middle">
@@ -638,8 +631,8 @@
                                     <table>
                                         <tr>
                                             <td>
-                                                <input type="button" value=" < " onclick="elementClicked('AvatarPrevTexture')"><br>
-                                                <input type="button" value=" > " onclick="elementClicked('AvatarNextTexture')">
+                                                <input type="button" value=" < " onclick="Client.AvatarPrevTexture()"><br>
+                                                <input type="button" value=" > " onclick="Client.AvatarNextTexture()">
                                             </td>
                                             <td>
                                                 <div style='height: 132px; overflow: auto' id="divTexture">
@@ -732,25 +725,24 @@
                     sound3DMaxDist.setMinimum(1.0); sound3DMaxDist.setMaximum(100.0);
 					
 					// onchange / deformations
-					//taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
-					height.onchange = function() {elementClicked('AvatarHeight')};
-                    posX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posX'}).send()};
-                    posY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posY'}).send()};
-                    posZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'posZ'}).send()};
-                    oriX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriX'}).send()};
-                    oriY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriY'}).send()};
-                    oriZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'oriZ'}).send()};
-                    scaleX.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleX'}).send()};
-                    scaleY.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleY'}).send()};
-                    scaleZ.onchange = function() {new NaviData('AvatarPropSliders').add({slider:'scaleZ'}).send()};
+					height.onchange = function() {Client.AvatarHeight();};
+                    posX.onchange = function() {Client.AvatarPropSliders('posX');};
+                    posY.onchange = function() {Client.AvatarPropSliders('posY');};
+                    posZ.onchange = function() {Client.AvatarPropSliders('posZ');};
+                    oriX.onchange = function() {Client.AvatarPropSliders('oriX');};
+                    oriY.onchange = function() {Client.AvatarPropSliders('oriY');};
+                    oriZ.onchange = function() {Client.AvatarPropSliders('oriZ');};
+                    scaleX.onchange = function() {Client.AvatarPropSliders('scaleX');};
+                    scaleY.onchange = function() {Client.AvatarPropSliders('scaleY');};
+                    scaleZ.onchange = function() {Client.AvatarPropSliders('scaleZ');};
 					// onchange / material
-					shininess.onchange = function() {elementClicked('AvatarShininess')};
-					transparency.onchange = function() {elementClicked('AvatarTransparency')};
-					scrollU.onchange = function() {elementClicked('AvatarScrollU')};
-					scrollV.onchange = function() {elementClicked('AvatarScrollV')};
-					scaleU.onchange = function() {elementClicked('AvatarScaleU')};
-					scaleV.onchange = function() {elementClicked('AvatarScaleV')};
-					rotateU.onchange = function() {elementClicked('AvatarRotateU')};
+					shininess.onchange = function() {Client.AvatarShininess()};
+					transparency.onchange = function() {Client.AvatarTransparency()};
+					scrollU.onchange = function() {Client.AvatarScrollU()};
+					scrollV.onchange = function() {Client.AvatarScrollV()};
+					scaleU.onchange = function() {Client.AvatarScaleU()};
+					scaleV.onchange = function() {Client.AvatarScaleV()};
+					rotateU.onchange = function() {Client.AvatarRotateU()};
 
 					sound3DMinDist.onchange = function() {soundDistances()};
 					sound3DMaxDist.onchange = function() {soundDistances()};
@@ -761,7 +753,8 @@ function soundDistances()
     {
         sound3DMinDist.setValue(sound3DMaxDist.getValue())
     }
-    new NaviData('AvatarPropSound').add({minDist:sound3DMinDist.getValue()}).add({maxDist:sound3DMaxDist.getValue()}).send();
+	
+	Client.AvatarPropSound(sound3DMinDist.getValue(), sound3DMaxDist.getValue());
 }
 
 function updTexture()
@@ -800,7 +793,7 @@ function updateTexture()
                 </form>
             </div>
         </fieldset>
-        <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="elementClicked('pageClosed')"></span>
+        <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="Client.pageClosed()"></span>
     </div>
 </body>
 </html>

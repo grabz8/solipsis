@@ -6,11 +6,12 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uimsgbox'}).send();
+				Client.pageLoaded('uimsgbox');
+ 
             }
             function buttonPressed(buttonName)
             {
-                new NaviData('response').add({response:buttonName}).send();
+                Client.response(buttonName);
             }
             function setButtons(buttonsMask)
             {

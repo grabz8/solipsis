@@ -34,13 +34,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Cameras/OrbitalCameraSupport.h"
 #include "Cameras/FirstPersonCameraSupport.h"
 
+#include "navigatorGui/Mouse.h"
 #include "navigatorGui/GUI_ContextMenu.h"
 #include "navigatorGui/GUI_Modeler.h"
 #include "navigatorGui/GUI_ModelerProperties.h"
 #include "navigatorGui/GUI_Avatar.h"
 #include "navigatorGui/GUI_AvatarProperties.h"
 #include "navigatorGui/GUI_Chat.h"
-
 #include "navigatorGui/GUI_Debug.h"
 
 using namespace NaviLibrary;
@@ -693,6 +693,9 @@ bool NavigatorFrameListener::keyReleased(const KeyboardEvt& evt)
 //-------------------------------------------------------------------------------------
 bool NavigatorFrameListener::mouseMoved(const MouseEvt& evt)
 {
+	if (Mouse::getSingletonPtr() != 0)
+        Mouse::getSingletonPtr()->move(evt.mState.mX, evt.mState.mY);
+
     // Updating Navi with the mouse motion
     // 3D picking of Navi panels if any NaviMaterial focused
     if (mNavigator->isNaviSupported())
@@ -1049,7 +1052,7 @@ bool NavigatorFrameListener::mousePressed(const MouseEvt& evt)
         mMouseLeftPressed = true;
 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    if ((navigatorGUI != 0) && mNavigator->getNavigatorGUI()->isMouseVisible())
     {
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 
@@ -1213,7 +1216,7 @@ bool NavigatorFrameListener::mouseReleased(const MouseEvt& evt)
         mMouseLeftPressed = false;
 
     NavigatorGUI* navigatorGUI = mNavigator->getNavigatorGUI();
-    if ((navigatorGUI != 0) && NaviLibrary::NaviMouse::Get().isVisible())
+    if ((navigatorGUI != 0) && mNavigator->getNavigatorGUI()->isMouseVisible())
     {
         int buttonsId = (evt.mState.mButtons & MBLeft) ? LeftMouseButton : ((evt.mState.mButtons & MBRight) ? RightMouseButton : MiddleMouseButton);
 

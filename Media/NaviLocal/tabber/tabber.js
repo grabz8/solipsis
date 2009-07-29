@@ -349,7 +349,7 @@ tabberObj.prototype.navClick = function(event)
   self.tabShow(tabberIndex);
   
   //alert('tabber : '+tabberIndex);
-  new NaviData('ClickOnTabber').add({tab:tabberIndex}).send(); 
+  Client.ClickOnTabber(tabberIndex);
   if( tabberIndex == 2 || tabberIndex == 0 ) updTexture();
 
   return false;

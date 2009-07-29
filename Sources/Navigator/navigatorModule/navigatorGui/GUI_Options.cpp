@@ -35,8 +35,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
+
 GUI_Options * GUI_Options::stGUI_Options = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Options::GUI_Options() : GUI_Panel("uioptions")
 {
     stGUI_Options = this;
@@ -44,8 +46,8 @@ GUI_Options::GUI_Options() : GUI_Panel("uioptions")
     mNaviMgr = NavigatorGUI::getNaviMgr();
 }
 
-//static 
-bool GUI_Options::createAndShowPanel()
+//-------------------------------------------------------------------------------------
+/*static*/ bool GUI_Options::createAndShowPanel()
 {
     if (!stGUI_Options)
     {
@@ -54,7 +56,6 @@ bool GUI_Options::createAndShowPanel()
 
     return stGUI_Options->show();
 }
-
 
 //-------------------------------------------------------------------------------------
 bool GUI_Options::show()
@@ -67,12 +68,13 @@ bool GUI_Options::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI options
-        createNavi("local://uioptions.html", NaviPosition(Center), 400, 400);
+        createNavi(NaviPosition(Center), 400, 400);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Options::onLoaded));
+        mNavi->loadFile("uioptions.html");
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setMask("uioptions.png");
         mNavi->setOpacity(0.75f);
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Options::onLoaded));
         mNavi->bind("ok", NaviDelegate(this, &GUI_Options::onOk));
         mNavi->bind("back", NaviDelegate(this, &GUI_Options::onBack));
         m_curState = NSCreated;
@@ -84,7 +86,7 @@ bool GUI_Options::show()
     return true;
 }
 //-------------------------------------------------------------------------------------
-void GUI_Options::onLoaded(const NaviData& naviData)
+void GUI_Options::onLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     char txt[256];
 
@@ -135,27 +137,28 @@ void GUI_Options::onLoaded(const NaviData& naviData)
     mNavi->evaluateJS(txt);
     mNavi->evaluateJS("$('infosText').innerHTML = ''");
 
-    std::string proxyAutoconfUrl;
-    std::string proxyHttpHost;
-    int proxyHttpPort;
-    int proxyType;
-    if (mNaviMgr->getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
-    {
-        sprintf(txt, "setInputState('radioProxyTypeDirect', null, %s)", (proxyType == 0) ? "'checked'" : "null");
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "setInputState('radioProxyTypeAutodetect', null, %s)", (proxyType == 4) ? "'checked'" : "null");
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "setInputState('radioProxyTypeManual', null, %s)", (proxyType == 1) ? "'checked'" : "null");
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "setInputState('radioProxyTypeAutoconf', null, %s)", (proxyType == 2) ? "'checked'" : "null");
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "$('inputProxyHttpPort').value = '%d'", proxyHttpPort);
-        mNavi->evaluateJS(txt);
-        sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
-        mNavi->evaluateJS(txt);
-    }
+    // Awesomium ?
+    //std::string proxyAutoconfUrl;
+    //std::string proxyHttpHost;
+    //int proxyHttpPort;
+    //int proxyType;
+    //if (mNaviMgr->getProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl))
+    //{
+    //    sprintf(txt, "setInputState('radioProxyTypeDirect', null, %s)", (proxyType == 0) ? "'checked'" : "null");
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "setInputState('radioProxyTypeAutodetect', null, %s)", (proxyType == 4) ? "'checked'" : "null");
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "setInputState('radioProxyTypeManual', null, %s)", (proxyType == 1) ? "'checked'" : "null");
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "setInputState('radioProxyTypeAutoconf', null, %s)", (proxyType == 2) ? "'checked'" : "null");
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "$('inputProxyHttpHost').value = '%s'", proxyHttpHost.c_str());
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "$('inputProxyHttpPort').value = '%d'", proxyHttpPort);
+    //    mNavi->evaluateJS(txt);
+    //    sprintf(txt, "$('inputProxyAutoconfUrl').value = '%s'", proxyAutoconfUrl.c_str());
+    //    mNavi->evaluateJS(txt);
+    //}
 
     Navigator::NavigationInterface ni=mNavigator->getNavigationInterface();
     sprintf(txt, "setInputState('radioControlKeyboardAndMouse', null, %s)", (ni==Navigator::NIMouseKeyboard) ? "'checked'" : "null");
@@ -173,35 +176,35 @@ void GUI_Options::onLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Options::onOk(const NaviData& naviData)
+void GUI_Options::onOk(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsOk()");
 
     // Get options
-    bool generalResetDisplayConfig = naviData["generalResetDisplayConfig"].toBool();
-    mNavigator->setCastShadows(naviData["castShadow"].toBool());
+    bool generalResetDisplayConfig = args.at(0).toBoolean();
+    mNavigator->setCastShadows(args.at(1).toBoolean());
 
     std::string radioIdAuthentType;
-    radioIdAuthentType = naviData["radioIdAuthentType"].str();
+    radioIdAuthentType = args.at(2).toString();
     std::string wsHost;
     unsigned short wsPort;
-    wsHost = naviData["wsHost"].str();
-    wsPort = naviData["wsPort"].toInt();
+    wsHost = args.at(3).toString();
+    wsPort = args.at(4).toInteger();
     std::string peerHost;
     unsigned short peerPort;
-    peerHost = naviData["peerHost"].str();
-    peerPort = naviData["peerPort"].toInt();
+    peerHost = args.at(5).toString();
+    peerPort = args.at(6).toInteger();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "peerHost=%s, peerPort=%d", peerHost.c_str(), peerPort);
     std::string radioProxyType;
     std::string proxyHttpHost;
     std::string radioControlType;
     int proxyHttpPort;
     std::string proxyAutoconfUrl;
-    radioProxyType = naviData["radioProxyType"].str();
-    proxyHttpHost = naviData["proxyHttpHost"].str();
-    proxyHttpPort = naviData["proxyHttpPort"].toInt();
-    proxyAutoconfUrl = naviData["proxyAutoconfUrl"].str();
-    radioControlType = naviData["radioControlType"].str();
+    radioProxyType = args.at(7).toString();
+    proxyHttpHost = args.at(8).toString();
+    proxyHttpPort = args.at(9).toInteger();
+    proxyAutoconfUrl = args.at(10).toString();
+    radioControlType =  args.at(11).toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "radioProxyType=%s, proxyHttpHost=%s, proxyHttpPort=%d, proxyAutoconfUrl=%s, controlType=%s", radioProxyType.c_str(), proxyHttpHost.c_str(), proxyHttpPort, proxyAutoconfUrl.c_str(), radioControlType.c_str());
 
     // Check
@@ -307,7 +310,8 @@ void GUI_Options::onOk(const NaviData& naviData)
         mNavigator->setPeerAddress(CommonTools::StringHelpers::getURL(peerHost, peerPort));
 
         // saved in Navi manager
-        mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
+        // Awesomium ?
+        //mNaviMgr->setProxyConfig(proxyType, proxyHttpHost, proxyHttpPort, proxyAutoconfUrl);
 
         mNavigator->setNavigationInterface(controlType);
 
@@ -322,7 +326,7 @@ void GUI_Options::onOk(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Options::onBack(const NaviData& naviData)
+void GUI_Options::onBack(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::optionsBack()");
 
@@ -330,4 +334,4 @@ void GUI_Options::onBack(const NaviData& naviData)
     GUI_Login::createAndShowPanel();
 }
 
-
+//-------------------------------------------------------------------------------------

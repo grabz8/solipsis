@@ -40,14 +40,15 @@ using namespace CommonTools;
 
 GUI_Login * GUI_Login::stGUI_Login = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Login::GUI_Login() : GUI_Panel("uilogin")
 {
     stGUI_Login = this;
     mNavigator = Navigator::getSingletonPtr();
 }
 
-//static 
-bool GUI_Login::createAndShowPanel()
+//-------------------------------------------------------------------------------------
+/*static*/ bool GUI_Login::createAndShowPanel()
 {
     if (!stGUI_Login)
     {
@@ -67,7 +68,9 @@ bool GUI_Login::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI login
-        createNavi("local://uilogin.html", NaviPosition(Center), 400, 300);
+        createNavi(NaviPosition(Center), 400, 300);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Login::onPanelLoaded));
+        mNavi->loadFile("uilogin.html");
 
         if (!mNavi)
         {
@@ -79,8 +82,7 @@ bool GUI_Login::show()
         mNavi->setMaxUPS(24);
         mNavi->hide();
         mNavi->setMask("uilogin.png");
-        mNavi->setOpacity(0.75f);
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Login::onPanelLoaded));
+        mNavi->setOpacity(1);
         mNavi->bind("world", NaviDelegate(this, &GUI_Login::onChooseWorld));
         mNavi->bind("connect", NaviDelegate(this, &GUI_Login::onConnect));
         mNavi->bind("options", NaviDelegate(this, &GUI_Login::onOptions));
@@ -100,13 +102,13 @@ void GUI_Login::applyLoginDatas()
     if (mNavi == 0) 
         return;
 
-    std::string login = mNavi->evaluateJS("$('inputLogin').value");
-    std::string pwd = mNavi->evaluateJS("$('inputPwd').value");
+    std::string login = mNavi->evaluateJSWithResult("$('inputLogin').value").get().toString();
+    std::string pwd = mNavi->evaluateJSWithResult("$('inputPwd').value").get().toString();
     Navigator* pNavigator = Navigator::getSingletonPtr();
     if ((login != pNavigator->getLogin()) || (pwd != pNavigator->getPwd()))
         pNavigator->setNodeId("");
 
-    bool rememberPassword = mNavi->evaluateJS("$('savePassWordCB').checked") == "true";
+    bool rememberPassword = mNavi->evaluateJSWithResult("$('savePassWordCB').checked").get().toBoolean();
 
     pNavigator->setLogin(login);
     pNavigator->setPwd(pwd, rememberPassword);
@@ -115,7 +117,7 @@ void GUI_Login::applyLoginDatas()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Login::onPanelLoaded(const NaviData& naviData)
+void GUI_Login::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     char txt[256];
 
@@ -148,20 +150,22 @@ void GUI_Login::onPanelLoaded(const NaviData& naviData)
         mNavi->show(true);
 }
 
-void GUI_Login::onChooseWorld(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Login::onChooseWorld(Navi* caller, const Awesomium::JSArguments& args)
 {
     applyLoginDatas();
     GUI_ChooseWorld::createAndShowPanel();
 }
 
-void GUI_Login::onOptions(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Login::onOptions(Navi* caller, const Awesomium::JSArguments& args)
 {
     applyLoginDatas();
     GUI_Options::createAndShowPanel();
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Login::onConnect(const NaviData& naviData)
+void GUI_Login::onConnect(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Login::onConnect()");
 
@@ -211,9 +215,10 @@ void GUI_Login::onConnect(const NaviData& naviData)
     }
 }
 
-
 //-------------------------------------------------------------------------------------
-void GUI_Login::onQuit(const NaviData& naviData)
+void GUI_Login::onQuit(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavigator->quit();
 }
+
+//-------------------------------------------------------------------------------------

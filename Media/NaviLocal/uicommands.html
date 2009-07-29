@@ -6,11 +6,11 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uicommands'}).send();
+				Client.pageLoaded('uicommands');
             }
             function pageClosed()
             {
-                new NaviData('pageClosed').send();
+				Client.pageClosed();
             }
         </script>
         <style type="text/css">

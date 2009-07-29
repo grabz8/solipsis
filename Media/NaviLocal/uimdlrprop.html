@@ -59,21 +59,18 @@
                 
                 //document.getElementById('myTabber').tabber.tabShow(3);
 				
-                new NaviData('pageLoaded').add({naviName:'uimdlrprop'}).send();
+				Client.pageLoaded('uimdlrprop');
             }
             
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
-            }
-
             function mrlHelperSelected(helper)
             {
                 if (helper == "Browse")
                 {
                     document.getElementById('MaterialVLCMrlHelpers').options[0].selected = 'true';
                     document.getElementById('MaterialVLCMrl').value='';
-                    new NaviData('MdlrVLCMrlBrowse').send();
+					
+					Client.MdlrVLCMrlBrowse();
+                 
                 }
                 else
                 {
@@ -211,43 +208,43 @@
 						<p><table>
 								<tr>
 									<td width="80">UID</td>
-									<td><input type="text" value="?" id="objectUid" size="50" disabled="disabled" onchange="elementClicked('MdlrObjectUid')"/></td>
+									<td><input type="text" value="?" id="objectUid" size="50" disabled="disabled" onchange="Client.MdlrObjectUid();"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Name</td>
-									<td><input type="text" value="?" id="objectName" size="50" onchange="elementClicked('MdlrObjectName')"/></td>
+									<td><input type="text" value="?" id="objectName" size="50" onchange="Client.MdlrObjectName();"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Creator</td>
-									<td><input type="text" value="?" id="creator" size="50" onchange="elementClicked('MdlrCreator')"/></td>
+									<td><input type="text" value="?" id="creator" size="50" onchange="Client.MdlrCreator();"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Owner</td>
-									<td><input type="text" value="?" id="owner" size="50" onchange="elementClicked('MdlrOwner')"/></td>
+									<td><input type="text" value="?" id="owner" size="50" onchange="Client.MdlrOwner();"/></td>
 									<td></td>
 								</tr>
 								<tr>
 									<td>Group</td>
-									<td><input type="text" value="?" id="group" size="50" onchange="elementClicked('MdlrGroup')"/></td>
+									<td><input type="text" value="?" id="group" size="50" onchange="Client.MdlrGroup();"/></td>
 									<td></td>
 								</tr>
 								<tr valign="top">
 									<td>Description</td>
-									<td colspan="2"><textarea id="description" rows="6" cols="40" onblur="elementClicked('MdlrDescription')">...</textarea></td>
+									<td colspan="2"><textarea id="description" rows="6" cols="40" onblur="Client.MdlrDescription();">...</textarea></td>
 								</tr>
 								<tr valign="top">
 									<td>Tags</td>
-									<td colspan="2"><textarea id="tags" rows="6" cols="40" onblur="elementClicked('MdlrTags')">...</textarea></td>
+									<td colspan="2"><textarea id="tags" rows="6" cols="40" onblur="Client.MdlrTags();">...</textarea></td>
 								</tr>
 							</table>
                             <table>
 								<tr>
 									<td width="80">Rights</td>
-									<td><input type="checkbox" id="modification" onclick="elementClicked('MdlrModification')">Modification</td>
-									<td><input type="checkbox" id="copy" onclick="elementClicked('MdlrCopy')">Copy</td>
+									<td><input type="checkbox" id="modification" onclick="Client.MdlrModification();">Modification</td>
+									<td><input type="checkbox" id="copy" onclick="Client.MdlrCopy();">Copy</td>
 								</tr>
 							</table>
 						</p>
@@ -316,10 +313,10 @@
 												<td>Shape :
 												</td>
 												<td>
-													<input type="radio" name="hollowShape" id="shapeSquare" onclick="new NaviData('MdlrHollowShape').add({shape:1}).send()"
+													<input type="radio" name="hollowShape" id="shapeSquare" onclick="Client.MdlrHollowShape(1);"
 														checked="true">square<br>
-													<input type="radio" name="hollowShape" id="shapeTriangle" onclick="new NaviData('MdlrHollowShape').add({shape:2}).send()">triangle<br>
-													<input type="radio" name="hollowShape" id="shapeCircle" onclick="new NaviData('MdlrHollowShape').add({shape:0}).send()">circle
+													<input type="radio" name="hollowShape" id="shapeTriangle" onclick="Client.MdlrHollowShape(2);">triangle<br>
+													<input type="radio" name="hollowShape" id="shapeCircle" onclick="Client.MdlrHollowShape(0);">circle
 												</td>
 											</tr>
 										</table>
@@ -336,7 +333,7 @@
 										</div>
 										<br>
 										<!--
-								<input type="button" value="undo" onclick="elementClicked('ActionUndo')"><br>
+								<input type="button" value="undo" onclick="Client.ActionUndo();"><br>
 								stack : <div id="stack">0</div>
 								-->
 									</td>
@@ -388,7 +385,7 @@
 									</td>
 								</tr>
 								<tr>
-									<td colspan="2"><input type="checkbox" id="lockAmbientdiffuse" onclick="elementClicked('MdlrLockAmbientDiffuse')">
+									<td colspan="2"><input type="checkbox" id="lockAmbientdiffuse" onclick="Client.MdlrLockAmbientDiffuse();">
 										Lock Ambient-Diffuse</td>
 									<td>Scroll V</td>
 									<td>
@@ -399,7 +396,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-                                        <input type="checkbox" id="doubleSide" onclick="elementClicked('MdlrDoubleSide')">
+                                        <input type="checkbox" id="doubleSide" onclick="Client.MdlrDoubleSide();">
                                         Double Side
                                     </td>
 									<td>Scale U</td>
@@ -438,9 +435,9 @@
 						        <table>
 								        <tr>
 									        <td colspan="4">
-										        <input type="button" value="Add texture" onclick="elementClicked('MdlrAddTexture');updTexture()"/>
-										        <input type="button" value="Remove texture" onclick="elementClicked('MdlrRemoveTexture');updTexture()"/>
-										        <!--<input type="button" value="Apply" onclick="elementClicked('MdlrApplyTexture')"/>-->
+										        <input type="button" value="Add texture" onclick="Client.MdlrAddTexture();;updTexture()"/>
+										        <input type="button" value="Remove texture" onclick="Client.MdlrRemoveTexture();;updTexture()"/>
+										        <!--<input type="button" value="Apply" onclick="Client.MdlrApplyTexture();"/>-->
 									        <td>
 								        </tr>
 								        <tr valign="middle">
@@ -449,8 +446,8 @@
 										        <table>
 											        <tr>
 												        <td>
-													        <input type="button" value=" < " onclick="elementClicked('MdlrPrevTexture')"/><br>
-													        <input type="button" value=" > " onclick="elementClicked('MdlrNextTexture')"/>
+													        <input type="button" value=" < " onclick="Client.MdlrPrevTexture();"/><br>
+													        <input type="button" value=" > " onclick="Client.MdlrNextTexture();"/>
 												        </td>
 												        <td>
 													        <div style='height: 103px; width: 434px; overflow: auto' id="divTexture"></div>
@@ -475,7 +472,7 @@
                                     </tr>
 						        </table>
 						        <table>
-                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyWWWTexture')"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="Client.MdlrApplyWWWTexture();"/></td></tr>
 						        </table>
  	                        </div>
 							<div class="tabbertab">
@@ -500,7 +497,7 @@
                                     </tr>
                                 </table>
 						        <table>
-                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplySWFTexture')"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="Client.MdlrApplySWFTexture();"/></td></tr>
 						        </table>
  	                        </div>
 	                        <div class="tabbertab">
@@ -582,7 +579,7 @@
                                     </tr>
                                 </table>
 						        <table>
-                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVLCTexture')"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="Client.MdlrApplyVLCTexture();"/></td></tr>
 						        </table>
  	                        </div>
 	                        <div class="tabbertab">
@@ -596,7 +593,7 @@
 						        </table>
 						        <table>
                                     <tr><td>Password</td><td><input type="text" size="20" id="MaterialVNCPwd" value=""/></td></tr>
-                                    <tr><td><input type="button" value="Apply" onclick="elementClicked('MdlrApplyVNCTexture')"/></td></tr>
+                                    <tr><td><input type="button" value="Apply" onclick="Client.MdlrApplyVNCTexture();"/></td></tr>
 						        </table>
  	                        </div>
                        </div>
@@ -613,26 +610,26 @@
 								</tr>
 								<tr>
 									<td>Position</td>
-									<td><input type="text" size="10" id="positionX" value="0.0" onchange="elementClicked('MdlrPositionX')"/></td>
-									<td><input type="text" size="10" id="positionY" value="0.0" onchange="elementClicked('MdlrPositionY')"/></td>
-									<td><input type="text" size="10" id="positionZ" value="0.0" onchange="elementClicked('MdlrPositionZ')"/></td>
+									<td><input type="text" size="10" id="positionX" value="0.0" onchange="Client.MdlrPositionX();"/></td>
+									<td><input type="text" size="10" id="positionY" value="0.0" onchange="Client.MdlrPositionY();"/></td>
+									<td><input type="text" size="10" id="positionZ" value="0.0" onchange="Client.MdlrPositionZ();"/></td>
 								</tr>
 								<tr>
 									<td>Orientation</td>
-									<td><input type="text" size="10" id="orientationX" value="0.0" onchange="elementClicked('MdlrOrientationX')"/></td>
-									<td><input type="text" size="10" id="orientationY" value="0.0" onchange="elementClicked('MdlrOrientationY')"/></td>
-									<td><input type="text" size="10" id="orientationZ" value="0.0" onchange="elementClicked('MdlrOrientationZ')"/></td>
+									<td><input type="text" size="10" id="orientationX" value="0.0" onchange="Client.MdlrOrientationX();"/></td>
+									<td><input type="text" size="10" id="orientationY" value="0.0" onchange="Client.MdlrOrientationY();"/></td>
+									<td><input type="text" size="10" id="orientationZ" value="0.0" onchange="Client.MdlrOrientationZ();"/></td>
 								</tr>
 								<tr>
 									<td>Scale</td>
-									<td><input type="text" size="10" id="scaleX" value="0.0" onchange="elementClicked('MdlrScaleX')"/></td>
-									<td><input type="text" size="10" id="scaleY" value="0.0" onchange="elementClicked('MdlrScaleY')"/></td>
-									<td><input type="text" size="10" id="scaleZ" value="0.0" onchange="elementClicked('MdlrScaleZ')"/></td>
+									<td><input type="text" size="10" id="scaleX" value="0.0" onchange="Client.MdlrScaleX();"/></td>
+									<td><input type="text" size="10" id="scaleY" value="0.0" onchange="Client.MdlrScaleY();"/></td>
+									<td><input type="text" size="10" id="scaleZ" value="0.0" onchange="Client.MdlrScaleZ();"/></td>
 								</tr>
 								<tr>
 									<td>Physics</td>
-									<td colspan="3"><input type="checkbox" id="collision" onclick="elementclicked('MdlrCollision')"/>Enable 
-										collision &nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" id="gravity" onclick="elementClicked('MdlrGravity')"/>Enable 
+									<td colspan="3"><input type="checkbox" id="collision" onclick="Client.MdlrCollision();"/>Enable 
+										collision &nbsp;&nbsp;&nbsp;&nbsp; <input type="checkbox" id="gravity" onclick="Client.MdlrGravity();"/>Enable 
 										gravity</td>
 								</tr>
 								<tr>
@@ -713,50 +710,33 @@
 					
 					// onchange / deformations
 					/*	1.	taperX.onchange = function() {alert('taperX : '+taperX.getValue())};							*/
-					/*	2.	taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};	*/
-					/*	3.	taperX.onchange = function() {elementClicked('MdlrTaperX')};									*/
+					/*	2.	taperX.onchange = function() {Client.MdlrProperties('taperX');  };	*/
+					/*	3.	taperX.onchange = function() {Client.MdlrTaperX();};									*/
 					
-					taperX.onchange = function() {elementClicked('MdlrTaperX')};
-					taperY.onchange = function() {elementClicked('MdlrTaperY')};
-					topShearX.onchange = function() {elementClicked('MdlrTopShearX')};
-					topShearY.onchange = function() {elementClicked('MdlrTopShearY')};
-					twistBegin.onchange = function() {elementClicked('MdlrTwistBegin')};
-					twistEnd.onchange = function() {elementClicked('MdlrTwistEnd')};
-					dimpleBegin.onchange = function() {elementClicked('MdlrDimpleBegin')};
-					dimpleEnd.onchange = function() {elementClicked('MdlrDimpleEnd')};
-					pathCutBegin.onchange = function() {elementClicked('MdlrPathBegin')};
-					pathCutEnd.onchange = function() {elementClicked('MdlrPathEnd')};
-					holeSizeX.onchange = function() {elementClicked('MdlrHoleX')};
-					holeSizeY.onchange = function() {elementClicked('MdlrHoleY')};
-					skew.onchange = function() {elementClicked('MdlrSkew')};
-					revolution.onchange = function() {elementClicked('MdlrRevolution')};
-					radiusDelta.onchange = function() {elementClicked('MdlrRadiusDelta')};
-					/*
-					taperX.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperX'}).send()};
-					taperY.onchange = function() {new NaviData('MdlrProperties').add({slider:'taperY'}).send()};
-					topShearX.onchange = function() {new NaviData('MdlrProperties').add({slider:'topShearX'}).send()};
-					topShearY.onchange = function() {new NaviData('MdlrProperties').add({slider:'topShearY'}).send()};
-					twistBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'twistBegin'}).send()};
-					twistEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'twistEnd'}).send()};
-					dimpleBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'dimpleBegin'}).send()};
-					dimpleEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'dimpleEnd'}).send()};
-					pathCutBegin.onchange = function() {new NaviData('MdlrProperties').add({slider:'pathCutBegin'}).send()};
-					pathCutEnd.onchange = function() {new NaviData('MdlrProperties').add({slider:'pathCutEnd'}).send()};
-					holeSizeX.onchange = function() {new NaviData('MdlrProperties').add({slider:'holeSizeX'}).send()};
-					holeSizeY.onchange = function() {new NaviData('MdlrProperties').add({slider:'holeSizeY'}).send()};
-					skew.onchange = function() {new NaviData('MdlrProperties').add({slider:'skew'}).send()};
-					revolution.onchange = function() {new NaviData('MdlrProperties').add({slider:'revolution'}).send()};
-					radiusDelta.onchange = function() {new NaviData('MdlrProperties').add({slider:'radiusDelta'}).send()};
-					*/
-					
+					taperX.onchange = function() {Client.MdlrTaperX();};
+					taperY.onchange = function() {Client.MdlrTaperY();};
+					topShearX.onchange = function() {Client.MdlrTopShearX();};
+					topShearY.onchange = function() {Client.MdlrTopShearY();};
+					twistBegin.onchange = function() {Client.MdlrTwistBegin();};
+					twistEnd.onchange = function() {Client.MdlrTwistEnd();};
+					dimpleBegin.onchange = function() {Client.MdlrDimpleBegin();};
+					dimpleEnd.onchange = function() {Client.MdlrDimpleEnd();};
+					pathCutBegin.onchange = function() {Client.MdlrPathBegin();};
+					pathCutEnd.onchange = function() {Client.MdlrPathEnd();};
+					holeSizeX.onchange = function() {Client.MdlrHoleX();};
+					holeSizeY.onchange = function() {Client.MdlrHoleY();};
+					skew.onchange = function() {Client.MdlrSkew();};
+					revolution.onchange = function() {Client.MdlrRevolution();};
+					radiusDelta.onchange = function() {Client.MdlrRadiusDelta();};
+			
 					// onchange / material
-					shininess.onchange = function() {elementClicked('MdlrShininess')};
-					transparency.onchange = function() {elementClicked('MdlrTransparency')};
-					scrollU.onchange = function() {elementClicked('MdlrScrollU')};
-					scrollV.onchange = function() {elementClicked('MdlrScrollV')};
-					scaleU.onchange = function() {elementClicked('MdlrScaleU')};
-					scaleV.onchange = function() {elementClicked('MdlrScaleV')};
-					rotateU.onchange = function() {elementClicked('MdlrRotateU')};
+					shininess.onchange = function() {Client.MdlrShininess();};
+					transparency.onchange = function() {Client.MdlrTransparency();};
+					scrollU.onchange = function() {Client.MdlrScrollU();};
+					scrollV.onchange = function() {Client.MdlrScrollV();};
+					scaleU.onchange = function() {Client.MdlrScaleU();};
+					scaleV.onchange = function() {Client.MdlrScaleV();};
+					rotateU.onchange = function() {Client.MdlrRotateU();};
 					
 					/* onresize
 					window.onresize = function () {
@@ -798,7 +778,7 @@ function updateTexture()
 					</form>
 				</div>
 			</fieldset>
-            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="elementClicked('pageClosed')"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="Client.pageClosed();"></span>
 		</div>
 	</body>
 </html>

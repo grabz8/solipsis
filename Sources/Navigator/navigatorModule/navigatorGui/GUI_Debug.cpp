@@ -32,11 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Navi.h>
 #include "Tools/DebugHelpers.h"
 
-
 using namespace Solipsis;
 using namespace CommonTools;
 GUI_Debug * GUI_Debug::stGUI_Debug = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Debug::GUI_Debug() : GUI_Panel("uidebug")
 {
     stGUI_Debug = this;
@@ -45,8 +45,8 @@ GUI_Debug::GUI_Debug() : GUI_Panel("uidebug")
     mNaviMgr = NavigatorGUI::getNaviMgr();
 }
 
-//static 
-void GUI_Debug::switchPanel()
+//-------------------------------------------------------------------------------------
+/*static*/ void GUI_Debug::switchPanel()
 {
     if (!stGUI_Debug)
     {
@@ -66,6 +66,7 @@ void GUI_Debug::switchPanel()
     }
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ void GUI_Debug::setTreeDirty(bool dirty)
 {
     if (!stGUI_Debug) return;
@@ -82,14 +83,15 @@ bool GUI_Debug::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI debug
-        createNavi("local://uidebug.html", NaviPosition(TopRight), 300, 256);
+        createNavi(NaviPosition(TopRight), 300, 256);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Debug::onPageLoaded));
+        mNavi->loadFile("uidebug.html");
         mNavi->setMovable(true);
         mNavi->setAutoUpdateOnFocus(true);
         mNavi->setMaxUPS(24);
         mNavi->hide();
         mNavi->setMask("uidebug.png");
         mNavi->setOpacity(0.50f);
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Debug::onPageLoaded));
         mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Debug::onPageClosed));
         mNavi->bind("debugRefreshTree", NaviDelegate(this, &GUI_Debug::refreshTree));
         mNavi->bind("debugCommand", NaviDelegate(this, &GUI_Debug::debugCommand));
@@ -121,10 +123,11 @@ void GUI_Debug::refreshUrl()
     sprintf(txt, "$('inputUrl').value = '%s'", naviDemoNavi2->getCurrentLocation().c_str());
     stGUI_Debug->mNavi->evaluateJS(txt);
     // Activate/Deactivate Back/Forward buttons
-    sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
-    stGUI_Debug->mNavi->evaluateJS(txt);
-    sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
-    stGUI_Debug->mNavi->evaluateJS(txt);
+    // Awesomium ?
+    //sprintf(txt, "$('navBackButton').disabled = %s", naviDemoNavi2->canNavigateBack() ? "false" : "true");
+    //stGUI_Debug->mNavi->evaluateJS(txt);
+    //sprintf(txt, "$('navForwardButton').disabled = %s", naviDemoNavi2->canNavigateForward() ? "false" : "true");
+    //stGUI_Debug->mNavi->evaluateJS(txt);
 #endif
 }
 
@@ -154,7 +157,7 @@ void GUI_Debug::refreshDemoVoiceTalkButtonName()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::onPageLoaded(const NaviData& naviData)
+void GUI_Debug::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageLoaded()");
 
@@ -162,17 +165,17 @@ void GUI_Debug::onPageLoaded(const NaviData& naviData)
     refreshUrl();
 
     // Refresh tree datas
-    refreshTree(naviData);
+    refreshTree(caller, args);
 
     // Refresh voice engine state
     refreshDemoVoiceTalkButtonName();
 
     // Show Navi UI debug
-    GUI_Panel::onPanelLoaded(naviData);
+    GUI_Panel::onPanelLoaded(caller, args);
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::onPageClosed(const NaviData& naviData)
+void GUI_Debug::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugPageClosed()");
 
@@ -180,7 +183,7 @@ void GUI_Debug::onPageClosed(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::refreshTree(const NaviData& naviData)
+void GUI_Debug::refreshTree(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugRefreshTree()");
 
@@ -204,15 +207,13 @@ void GUI_Debug::refreshTree(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::debugCommand(const NaviData& naviData)
+void GUI_Debug::debugCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
 
     // Get message to send
-    std::string cmd;
-    std::string params;
-    cmd = naviData["cmd"].str();
-    params = naviData["params"].str();
+    std::string cmd = args[0].toString();
+    std::string params = args[1].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
 
     // Push debug command
@@ -220,32 +221,34 @@ void GUI_Debug::debugCommand(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Debug::navCommand(const NaviData& naviData)
+void GUI_Debug::navCommand(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::navCommand()");
 
     // Get command
-    std::string cmd;
-    cmd = naviData["cmd"].str();
+    std::string cmd = args[0].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s", cmd.c_str());
 
 #ifdef DEMO_NAVI2
     NaviLibrary::Navi* naviDemoNavi2 = mNaviMgr->getNavi("WWW_demoNavi2Video");
     if (naviDemoNavi2 == 0) return;
-    if (cmd == "back")
-        naviDemoNavi2->navigateBack();
-    else if (cmd == "forward")
-        naviDemoNavi2->navigateForward();
-    else if (cmd == "stop")
-        naviDemoNavi2->navigateStop();
-    else if (cmd == "go")
+    // Awesomium ?
+    //if (cmd == "back")
+    //    naviDemoNavi2->navigateBack();
+    //else if (cmd == "forward")
+    //    naviDemoNavi2->navigateForward();
+    //else if (cmd == "stop")
+    //    naviDemoNavi2->navigateStop();
+    //else if (cmd == "go")
+    if (cmd == "go")
     {
-        std::string url = mNavi->evaluateJS("$('inputUrl').value");
-        naviDemoNavi2->navigateTo(url);
+        std::string url = mNavi->evaluateJSWithResult("$('inputUrl').value").get().toString();
+        naviDemoNavi2->loadURL(url);
     }
 #endif
 }
 
+//-------------------------------------------------------------------------------------
 
 #endif
 

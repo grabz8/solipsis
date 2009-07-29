@@ -30,15 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_Commands * GUI_Commands::stGUI_Commands = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Commands::GUI_Commands() : GUI_Panel("uicommands")
 {
     stGUI_Commands = this;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_Commands::showHide()
 {
     if (!stGUI_Commands)
@@ -52,13 +53,16 @@ void GUI_Commands::showHide()
        stGUI_Commands->show();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_Commands::show()
 {
     // Create Navi UI Chat panel bar
     // Lua
     if (m_curState == NSNotCreated)
     {  
-        createNavi("local://uicommands.html", Center, 512, 256);
+        createNavi(NaviPosition(Center), 512, 256);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
+        mNavi->loadFile("uicommands.html");
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->hide();
         mNavi->setMovable(true);
@@ -66,7 +70,6 @@ bool GUI_Commands::show()
 
         m_curState = NSCreated;
 
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Commands::onPageLoaded));
         mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Commands::onPageClosed));
     }
     else
@@ -75,12 +78,10 @@ bool GUI_Commands::show()
     return true;
 }
 
-void GUI_Commands::onPageLoaded(const NaviData& naviData)
-{
-    GUI_Panel::onPanelLoaded(naviData);
-}
-
-void GUI_Commands::onPageClosed(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Commands::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->hide();
 }
+
+//-------------------------------------------------------------------------------------

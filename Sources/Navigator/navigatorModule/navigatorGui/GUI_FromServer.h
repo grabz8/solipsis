@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __GUI_FromServer_h__
 
 #include "GUI_Panel.h"
+#include "NaviEventListener.h"
 
 using namespace NaviLibrary;
 
@@ -39,8 +40,7 @@ namespace Solipsis
         GUI_FromServer(const std::string & panelName);
 
         ////// NaviEventListener Interface /////////////
-        virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-        virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+        virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args){}
         virtual void onLocationChange(Navi *caller, const std::string &url) {}
         virtual void onNavigateComplete(Navi *caller, const std::string &url, int responseCode);
 

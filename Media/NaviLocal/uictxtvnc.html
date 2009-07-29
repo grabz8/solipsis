@@ -7,12 +7,12 @@
             var ctxtVNCNameParam;
             function pageLoaded()
             {
-                ctxtVNCNameParam = $PND.get('ctxtVNCName');
-                $ND('pageLoaded').add({naviName:'uictxtvnc'}).add({ctxtVNCName:ctxtVNCNameParam}).send();
+                ctxtVNCNameParam = Client.ctxtVNCName;
+				Client.pageLoaded('uictxtvnc', ctxtVNCNameParam);  
             }
             function vncCommand(command)
             {
-                $ND('vncCommand').add({ctxtVNCName:ctxtVNCNameParam}).add({cmd:command}).send();
+				Client.vncCommand(ctxtVNCNameParam, command);  
             }
         </script>
         <style type="text/css">

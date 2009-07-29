@@ -28,19 +28,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <Navi.h>
 #include "GUI_Login.h"
 
-
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
-
 
 GUI_WorldsServerInfo * GUI_WorldsServerInfo::stGUI_WorldsServerInfo = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_WorldsServerInfo::GUI_WorldsServerInfo() : GUI_FromServer("uiinfows")
 {
     stGUI_WorldsServerInfo = this;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_WorldsServerInfo::createAndShowPanel()
 {
     if (!stGUI_WorldsServerInfo)
@@ -51,6 +50,7 @@ bool GUI_WorldsServerInfo::createAndShowPanel()
     return stGUI_WorldsServerInfo->show();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_WorldsServerInfo::show()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerInfo()");
@@ -64,7 +64,7 @@ bool GUI_WorldsServerInfo::show()
         // Prepare the url to the world server uiinfows.html page
         std::string uiinfowsUrl = "http://" + mNavigator->getWorldsServerAddress() + "/uiinfows.html";
         uiinfowsUrl += "?navVersion=" + StringHelpers::toHexString(mNavigator->getVersion());
-        createNavi( "", NaviPosition(Center), 256, 256);
+        createNavi(NaviPosition(Center), 256, 256);
         mNavi->setMovable(false);
         mNavi->hide();
         mNavi->setOpacity(0.75f);
@@ -72,7 +72,7 @@ bool GUI_WorldsServerInfo::show()
         mNavi->bind("ok", NaviDelegate(this, &GUI_WorldsServerInfo::onOkPressed));
         // Add 1 event listener to detect network errors
         mNavi->addEventListener(this);
-        mNavi->navigateTo(uiinfowsUrl);
+        mNavi->loadURL(uiinfowsUrl);
         m_curState = NSCreated;
     }
 
@@ -84,10 +84,12 @@ bool GUI_WorldsServerInfo::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_WorldsServerInfo::onOkPressed(const NaviData& naviData)
+void GUI_WorldsServerInfo::onOkPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldsServerInfoOk()");
 
     // Return to Navi UI login
     GUI_Login::createAndShowPanel();
 }
+
+//-------------------------------------------------------------------------------------

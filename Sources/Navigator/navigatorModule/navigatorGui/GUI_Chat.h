@@ -44,9 +44,9 @@ namespace Solipsis
         virtual bool show();
 
     protected:
-        void onPageLoaded(const NaviData& naviData);
-        void onPageClosed(const NaviData& naviData);
-        void onSendMessage(const NaviData& naviData);
+        void onPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onPageClosed(Navi* caller, const Awesomium::JSArguments& args);
+        void onSendMessage(Navi* caller, const Awesomium::JSArguments& args);
 
        GUI_Chat();
         static GUI_Chat * stGUI_Chat;

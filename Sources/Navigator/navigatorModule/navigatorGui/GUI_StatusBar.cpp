@@ -30,15 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_StatusBar * GUI_StatusBar::stGUI_StatusBar = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_StatusBar::GUI_StatusBar() : GUI_Panel("uistatusbar")
 {
     stGUI_StatusBar = this;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_StatusBar::createAndShowPanel()
 {
     if (!stGUI_StatusBar)
@@ -49,14 +50,15 @@ bool GUI_StatusBar::createAndShowPanel()
     return stGUI_StatusBar->show();
 }
 
-
+//-------------------------------------------------------------------------------------
 bool GUI_StatusBar::show()
 {
     // Create Navi UI status bar
     // Lua
     if (m_curState == NSNotCreated)
     {
-           createNavi("local://uistatusbar.html", BottomLeft, 512, 16);
+        createNavi(NaviPosition(BottomLeft), 512, 16);
+        mNavi->loadFile("uistatusbar.html");
 
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->setMask("alphafade512x16.png");
@@ -70,6 +72,7 @@ bool GUI_StatusBar::show()
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_StatusBar::updateBar()
 {
     if (!stGUI_StatusBar)
@@ -79,6 +82,7 @@ void GUI_StatusBar::updateBar()
 
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_StatusBar::update()
 {
     if (!stGUI_StatusBar)
@@ -109,7 +113,7 @@ void GUI_StatusBar::setStatusBarText(const std::string& statusText)
         stGUI_StatusBar->mNavi->show(true);
 }
 
-
+//-------------------------------------------------------------------------------------
 void GUI_StatusBar::windowResized(RenderWindow* rw)
 {
     if (mNavi)
@@ -119,8 +123,7 @@ void GUI_StatusBar::windowResized(RenderWindow* rw)
         int left, top;
         rw->getMetrics(width, height, depth, left, top);
         mNavi->setPosition(NaviPosition(0,height-16));
-
     }
-
 }
 
+//-------------------------------------------------------------------------------------

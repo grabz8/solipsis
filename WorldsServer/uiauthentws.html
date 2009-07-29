@@ -9,16 +9,13 @@
             img.src = "uiauthentws.png";
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uiauthentws'}).send();	
-				// autoclose in 3 seconds				
-				setTimeout("buttonPressed('ok')", 3000); 
+                Client.pageLoaded('uiauthentws');
+                // autoclose in 3 seconds				
+                setTimeout("okPressed()", 3000); 
             }
-            function buttonPressed(buttonName)
+            function okPressed()
             {
-                var naviData = new NaviData(buttonName);
-                naviData.add({result:'resultDynamicContent'});
-                naviData.add({nodeId:'nodeIdDynamicContent'});
-                naviData.send();
+                Client.ok('resultDynamicContent', 'nodeIdDynamicContent');
             }
         </script>
         <style type="text/css">
@@ -68,7 +65,7 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="msgText">resultDynamicContent</div>
-            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
+            <div id="okButton" class="button" onclick="okPressed()"></div>
         </div>
     </body>
 </html>

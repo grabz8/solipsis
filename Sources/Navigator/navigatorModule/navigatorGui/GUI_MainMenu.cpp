@@ -40,16 +40,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_MainMenu * GUI_MainMenu::stGUI_MainMenu = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_MainMenu::GUI_MainMenu() : GUI_Panel("uimainmenu")
 {
     stGUI_MainMenu = this;
     mNavigator = Navigator::getSingletonPtr();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_MainMenu::createAndShowPanel()
 {
     if (!stGUI_MainMenu)
@@ -60,6 +61,7 @@ bool GUI_MainMenu::createAndShowPanel()
     return stGUI_MainMenu->show();
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_MainMenu::showHide(bool bShow)
 {
     if (!stGUI_MainMenu)
@@ -73,24 +75,24 @@ void GUI_MainMenu::showHide(bool bShow)
         stGUI_MainMenu->hide();
 }
 
-
-
+//-------------------------------------------------------------------------------------
 bool GUI_MainMenu::show()
 {
     if (m_curState == GUI_Panel::NSNotCreated)
     {
         // Create Navi panel
-        createNavi("local://uimainmenu.html", TopLeft, 512, 16);
+        createNavi(NaviPosition(TopLeft), 512, 16);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
+        mNavi->loadFile("uimainmenu.html");
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->setMask("alphafade512x16.png");
         mNavi->hide();
         mNavi->setMovable(false);
         mNavi->setIgnoreBounds(true);
 
-        mNavi->addEventListener(this);
-
+        mNavi->bind("menuClick", NaviDelegate(this, &GUI_MainMenu::menuClick));
 #ifdef UIDEBUG
-    mNavi->bind("debugCommand", NaviDelegate(this, &GUI_MainMenu::debugCommand));
+        mNavi->bind("debugCommand", NaviDelegate(this, &GUI_MainMenu::debugCommand));
 #endif
 
         m_curState = NSCreated;
@@ -101,39 +103,15 @@ bool GUI_MainMenu::show()
     return true;
 }
 
-#ifdef UIDEBUG
 //-------------------------------------------------------------------------------------
-void GUI_MainMenu::debugCommand(const NaviData& naviData)
+void GUI_MainMenu::menuClick(Navi* caller, const Awesomium::JSArguments& args)
 {
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::menuClick()");
 
-    // Get message to send
-    std::string cmd;
-    std::string params;
-    cmd = naviData["cmd"].str();
-    params = naviData["params"].str();
-    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
+    // Get menu item
+    std::string item = args[0].toString();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "item=%s", item.c_str());
 
-    // Push debug command
-    DebugHelpers::debugCommands[String(cmd)] = String(params);
-}
-#endif
-
-//-------------------------------------------------------------------------------------
-void GUI_MainMenu::onNaviDataEvent(Navi *caller, const NaviData &naviData)
-{
-    m_curState = NSCreated;
-   // OutputDebugTrace("GUI_MainMenu::onNaviDataEvent name %s\n" , naviData.getName().c_str());
-    if (naviData.getName() == "menuClick" && naviData.size())
-    {
-     //   OutputDebugTrace("GUI_MainMenu::onNaviDataEvent data %s\n" , naviData["item"].str().c_str());
-        onClick(naviData["item"].str());
-    }
-}
-
-//-------------------------------------------------------------------------------------
-void GUI_MainMenu::onClick(const String& item)
-{
     // Perform action associated to item selected
     // Submenu File
     if (item == "Exit")
@@ -186,3 +164,21 @@ void GUI_MainMenu::onClick(const String& item)
     else if (item == "Commands")
         GUI_Commands::showHide();
 }
+
+#ifdef UIDEBUG
+//-------------------------------------------------------------------------------------
+void GUI_MainMenu::debugCommand(Navi* caller, const Awesomium::JSArguments& args)
+{
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::debugCommand()");
+
+    // Get message to send
+    std::string cmd = args[0].toString();
+    std::string params = args[1].toString();
+    LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "cmd=%s, params=%s", cmd.c_str(), params.c_str());
+
+    // Push debug command
+    DebugHelpers::debugCommands[String(cmd)] = String(params);
+}
+#endif
+
+//-------------------------------------------------------------------------------------

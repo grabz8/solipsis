@@ -6,14 +6,14 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                $ND('pageLoaded').add({naviName:'uimainmenu'}).send();
+                Client.pageLoaded('uimainmenu');
                 menuClick('Main');
                 // AUTOMATIC TEST TO SPEED UP UNITARY TESTS
-                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg'}).send();
-                // new NaviData('debugCommand').add({cmd:'demoNavi2'}).add({params:'http://fr.youtube.com/watch?v=u5WIEep8DJg;(17, -108, 96.5)'}).send();
+                // Client.debugCommand('demoNavi2', 'http://fr.youtube.com/watch?v=u5WIEep8DJg');
+                // Client.debugCommand('demoNavi2', 'http://fr.youtube.com/watch?v=u5WIEep8DJg;(17, -108, 96.5)');
                 // USE (17, -108, 96.5) in the scene Deltastation1
                 // USE (17, -118, 96.5) in the scene Ile
-                // new NaviData('debugCommand').add({cmd:'demoVNC'}).add({params:'localhost:5900'}).send();
+                // Client.debugCommand('demoVNC', 'localhost:5900');
             }
             function menuClick(menu)
             {
@@ -64,7 +64,7 @@
                     mainmenuText.innerHTML += '<div id="commandsMenu" class="menuText" onclick="menuClick(\'Commands\')">Commands</div>';
                 }
                 else
-                    $ND('menuClick').add({item:menu}).send();
+                    Client.menuClick(menu);
             }
         </script>
         <style type="text/css">

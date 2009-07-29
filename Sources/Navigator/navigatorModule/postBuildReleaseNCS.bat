@@ -61,7 +61,6 @@ if exist "%dst%\OIS.dll" goto OIS_exist
  if exist "%OGRE_HOME%\bin\release\OIS.dll" xcopy "%OGRE_HOME%\bin\release\OIS.dll" "%dst%" /s /y
 :OIS_exist
 if not exist "%dst%\pthreadVC.dll" xcopy "..\..\..\Dependencies\pthreads\lib\pthreadVC.dll" "%dst%" /s /y
-if not exist "%dst%\xul.dll" xcopy "..\..\..\Dependencies\llmozlib\win32_%vc%\runtime\Release\*.*" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\protocols\XmlDatas\lib\ReleaseDLL\XmlDatas.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\protocols\P2NNullClientServer\ReleaseDLL\P2NNullClientServer.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\peerModule\lib\Release\Peer.dll" "%dst%" /s /y
@@ -79,6 +78,9 @@ xcopy "..\..\..\Dependencies\Phonetizer\lib\Release\Phonetizer.dll" "%dst%" /s /
 xcopy "..\..\..\Dependencies\FaceController\lib\Release\FaceController.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\libiconv\lib\libiconv2.dll" "%dst%" /s /y
 xcopy "..\..\..\Dependencies\gecode-2.2.0\bin\*.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\naviAwesomium\bin\Navi.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\naviAwesomium\bin\Awesomium.dll" "%dst%" /s /y
+xcopy "..\..\..\Dependencies\naviAwesomium\bin\icudt38.dll" "%dst%" /s /y
 
 if exist "%dst%\Plugins.cfg" goto Plugins_exist
  if exist "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" xcopy "%OGRE_HOME%\Samples\Common\bin\Release\Plugins.cfg" "%dst%" /s /y

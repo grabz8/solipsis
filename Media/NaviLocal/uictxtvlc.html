@@ -7,12 +7,12 @@
             var ctxtVLCNameParam;
             function pageLoaded()
             {
-                ctxtVLCNameParam = $PND.get('ctxtVLCName');
-                $ND('pageLoaded').add({naviName:'uictxtvlc'}).add({ctxtVLCName:ctxtVLCNameParam}).send();
+                ctxtVLCNameParam = Client.ctxtVLCName;
+				Client.pageLoaded('uictxtvlc', ctxtVLCNameParam);  
             }
             function vlcCommand(command)
             {
-                $ND('vlcCommand').add({ctxtVLCName:ctxtVLCNameParam}).add({cmd:command}).send();
+				Client.vlcCommand(ctxtVLCNameParam, command);  
             }
         </script>
         <style type="text/css">

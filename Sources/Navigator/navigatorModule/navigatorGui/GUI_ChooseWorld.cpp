@@ -36,19 +36,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "GUI_login.h"
 #include "GUI_MessageBox.h"
 
-
 using namespace Solipsis;
 using namespace CommonTools;
 
-////////////////////////////////////////////////////////////////////////
-
 GUI_ChooseWorld * GUI_ChooseWorld::stGUI_ChooseWorld = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_ChooseWorld::GUI_ChooseWorld() : GUI_FromServer("uiworlds")
 {
     stGUI_ChooseWorld = this;
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_ChooseWorld::createAndShowPanel()
 {
     if (!stGUI_ChooseWorld)
@@ -63,6 +62,8 @@ bool GUI_ChooseWorld::createAndShowPanel()
 bool GUI_ChooseWorld::show()
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::world()");
+
+    // Hide previous Navi UI
     NavigatorGUI::destroyCurrentPanel();
 
     if (m_curState == NSNotCreated)
@@ -75,11 +76,11 @@ bool GUI_ChooseWorld::show()
         // Add the local world ?
         if (!mNavigator->getLocalWorldAddress().empty())
             uiworldsUrl += "&localWorld=" + mNavigator->getLocalWorldAddress();
-        createNavi( "", NaviPosition(Center), 256, 256);
-        
+        createNavi(NaviPosition(Center), 256, 256);
+
         mNavi->setMovable(false);
         mNavi->hide();
-        mNavi->setOpacity(0.75f);
+        mNavi->setOpacity(0.75f); 
 
         mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Panel::onPanelLoaded));
         mNavi->bind("ok", NaviDelegate(this, &GUI_ChooseWorld::onOkPressed));
@@ -87,7 +88,7 @@ bool GUI_ChooseWorld::show()
 
         // Add 1 event listener to detect network errors
         mNavi->addEventListener(this);
-        mNavi->navigateTo(uiworldsUrl);
+        mNavi->loadURL(uiworldsUrl);
         m_curState = NSCreated;
     }
 
@@ -99,31 +100,31 @@ bool GUI_ChooseWorld::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::onOkPressed(const NaviData& naviData)
+void GUI_ChooseWorld::onOkPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk()");
 
-    std::string world = naviData["world"].str();
+    std::string world = args[0].toString();
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() world=%s", world.c_str());
     std::string worldHost, worldPort;
     CommonTools::StringHelpers::getURLHostPort(world, worldHost, worldPort);
     mNavigator->setWorldAddress(world);
 
     // extended datas associated to the world server : voice IP server, VNC server, VLC server, ...
-    if (naviData.exists("voipServer"))
+    std::string voipServer = args[1].toString();
+    if (voipServer.size())
     {
-        std::string voipServer = naviData["voipServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() voipServer=%s", voipServer.c_str());
         mNavigator->setVoIPServerAddress(voipServer);
     }
-    if (naviData.exists("vncServer"))
+    std::string vncServer = args[2].toString();
+    if (vncServer.size())
     {
-        std::string vncServer = naviData["vncServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vncServer=%s", vncServer.c_str());
     }
-    if (naviData.exists("vlcServer"))
+    std::string vlcServer = args[2].toString();
+    if (vlcServer.size())
     {
-        std::string vlcServer = naviData["vlcServer"].str();
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldOk() vlcServer=%s", vlcServer.c_str());
     }
 
@@ -132,7 +133,7 @@ void GUI_ChooseWorld::onOkPressed(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ChooseWorld::onCancelPressed(const NaviData& naviData)
+void GUI_ChooseWorld::onCancelPressed(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::worldCancel()");
 
@@ -140,3 +141,4 @@ void GUI_ChooseWorld::onCancelPressed(const NaviData& naviData)
     GUI_Login::createAndShowPanel();
 }
 
+//-------------------------------------------------------------------------------------

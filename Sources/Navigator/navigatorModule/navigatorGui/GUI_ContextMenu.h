@@ -65,24 +65,24 @@ namespace Solipsis
         void clampNaviOnScreen(int& x, int& y, int w, int h);
 
         // avatar callbacks
-        void onAvatarSelect(const NaviData& naviData);
-        void onPanelLoaded(const NaviData& naviData);
+        void onAvatarSelect(Navi* caller, const Awesomium::JSArguments& args);
+        void onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
 
         // WWW callbacks 
-        void onWWWPanelLoaded(const NaviData& naviData);
-        void onWWWCommand(const NaviData& naviData);
+        void onWWWPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onWWWCommand(Navi* caller, const Awesomium::JSArguments& args);
 
         // SWF callbacks 
-        void onSWFPanelLoaded(const NaviData& naviData);
-        void onSWFCommand(const NaviData& naviData);
+        void onSWFPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onSWFCommand(Navi* caller, const Awesomium::JSArguments& args);
 
         // VLC callbacks 
-        void onVLCPanelLoaded(const NaviData& naviData);
-        void onVLCCommand(const NaviData& naviData);
+        void onVLCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onVLCCommand(Navi* caller, const Awesomium::JSArguments& args);
 
         // VNC callbacks 
-        void onVNCPanelLoaded(const NaviData& naviData);
-        void onVNCCommand(const NaviData& naviData);
+        void onVNCPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onVNCCommand(Navi* caller, const Awesomium::JSArguments& args);
 
         static GUI_ContextMenu * stGUI_ContextMenu;
         static const std::string ms_NavisContexts[NAVI_CTXTCOUNT];

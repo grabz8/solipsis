@@ -34,14 +34,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
+
 GUI_ModelerSceneFromText * GUI_ModelerSceneFromText::stGUI_ModelerSceneFromText = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_ModelerSceneFromText::GUI_ModelerSceneFromText() : GUI_Panel("uimdlrscenefromtext")
 {
     stGUI_ModelerSceneFromText = this;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_ModelerSceneFromText::showPanel()
 {
     if (!stGUI_ModelerSceneFromText)
@@ -52,6 +54,7 @@ void GUI_ModelerSceneFromText::showPanel()
     stGUI_ModelerSceneFromText->show();
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ void GUI_ModelerSceneFromText::unloadPanel()
 {
     if (!stGUI_ModelerSceneFromText)
@@ -62,6 +65,7 @@ void GUI_ModelerSceneFromText::showPanel()
     stGUI_ModelerSceneFromText->destroy();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_ModelerSceneFromText::show()
 {
     if (m_curState == NSNotCreated)
@@ -75,14 +79,15 @@ bool GUI_ModelerSceneFromText::show()
         std::string firstLocalIP = myIPAddresses.front();
 
         // Create Navi UI modeler
-        createNavi( "local://uimdlrscenefromtext.html" /*?localIP=" + firstLocalIP*/, NaviPosition(TopRight), 512, 512);
+        createNavi(NaviPosition(TopRight), 512, 512);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ModelerSceneFromText::onPageLoaded));
+        mNavi->loadFile("uimdlrscenefromtext.html" /*?localIP=" + firstLocalIP*/);
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uimdlrscenefromtext.png");//Eliminate the black shadow at the margin of the menu
         //mNavi->setOpacity(0.75f);
 
         // page loaded
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_ModelerSceneFromText::onPageLoaded));
         mNavi->bind("MdlrSFTCreate", NaviDelegate(this, &GUI_ModelerSceneFromText::onExec));
         mNavi->bind("MdlrSFTCancel", NaviDelegate(this, &GUI_ModelerSceneFromText::onCancelled));
 
@@ -95,20 +100,20 @@ bool GUI_ModelerSceneFromText::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onPageLoaded(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextPageLoaded()");
 
     // Show Navi UI
-    GUI_Panel::onPanelLoaded(naviData);
+    GUI_Panel::onPanelLoaded(caller, args);
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onExec(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onExec(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextExec()");
 
-    std::string value = mNavi->evaluateJS("document.getElementById('scenedescription').value");
+    std::string value = mNavi->evaluateJSWithResult("document.getElementById('scenedescription').value").get().toString();
 
     //modelerSceneSetUpUnload(); // no unloading of the window unless the user explicitely closes it.
     std::string errMsg( "" );
@@ -136,10 +141,12 @@ void GUI_ModelerSceneFromText::onExec(const NaviData& naviData)
             GUI_MessageBox::MBB_ERROR);
     }
 }
+
 //-------------------------------------------------------------------------------------
-void GUI_ModelerSceneFromText::onCancelled(const NaviData& naviData)
+void GUI_ModelerSceneFromText::onCancelled(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_ModelerSceneFromText::modelerSceneFromTextSetUpCancelled()");
     destroy();
 }
 
+//-------------------------------------------------------------------------------------

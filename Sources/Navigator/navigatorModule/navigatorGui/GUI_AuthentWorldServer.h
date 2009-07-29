@@ -43,7 +43,7 @@ namespace Solipsis
         virtual bool show(const std::string& pwd);
 
         // ok is pressed
-        void onOk(const NaviData& naviData);
+        void onOkPressed(Navi* caller, const Awesomium::JSArguments& args);
 
     protected:
         GUI_AuthentWorldServer();

@@ -6,15 +6,15 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').send();
+				Client.pageLoaded();
             }
             function pageClosed()
             {
-                new NaviData('pageClosed').send();
+				Client.pageClosed();
             }
             function sendMessage(message)
             {
-                new NaviData('sendMessage').add({msg:message}).send();
+				Client.sendMessage(message);
             }
         </script>
         <style type="text/css">
@@ -50,7 +50,7 @@
             {
 	            position: absolute;
 	            left: 0px;
-	            top: 20px;
+	            top: 24px;
             }
             .solipsisIcons
             {
@@ -76,11 +76,11 @@
             by returning false the page won t be reloaded
              -->
             <div id="chatTextArea">
-                <textarea disabled="disabled" id="textChat" rows="5"  cols="61"></textarea>
+                <textarea disabled="disabled" id="textChat" rows="6"  cols="61"></textarea>
             </div>
             <form id="chatForm" action="" visible="false" onsubmit="sendMessage(document.getElementById('inputChat').value);return false;">
                 <div id="chatInput">
-                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="78" />
+                    <input id="inputChat" class="inputText" name="inputChat" value="" type="text" size="77" />
                 </div>
             </form>
             <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="pageClosed()"></span>

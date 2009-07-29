@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgrePeerManager.h"
 #include "NavigatorGUI/NavigatorGUI.h"
 #include "NavigatorGUI/GUI_MessageBoxResponse.h"
+#include "NaviEventListener.h"
 #include "Scripting/LuaBinding.h"
 #include "Scripting/NavigatorLua.h"
 #include "Selection.h"
@@ -291,7 +292,7 @@ public:
     bool connect();
     void disconnect(bool force);
     class DisconnectMsgBoxResponse : public GUI_MessageBoxResponse {
-        virtual void onResponse(const std::string& response);
+        virtual void onResponse(Navi* caller, const Awesomium::JSArguments& args);
     };
     DisconnectMsgBoxResponse disconnectMsgBoxResponse;
     bool contextItemSelected(const String& item);
@@ -392,9 +393,7 @@ protected:
     virtual void onPeerAction(RefCntPoolPtr<XmlAction>& xmlAction);
 
     /** See NaviEventListener. */
-    virtual void onNaviDataEvent(Navi *caller, const NaviData &naviData) {}
-    /** See NaviEventListener. */
-    virtual void onLinkClicked(Navi *caller, const std::string &linkHref) {}
+    virtual void onCallback(const std::string& name, const Awesomium::JSArguments& args) {}
     /** See NaviEventListener. */
     virtual void onLocationChange(Navi *caller, const std::string &url);
     /** See NaviEventListener. */

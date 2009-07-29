@@ -82,6 +82,7 @@ void GUI_Panel::hide()
     NaviManager::Get().deFocusAllNavis();
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_Panel::destroyPreviousNavi()
 {
     GUI_Panel * pCurrentPanel = NavigatorGUI::getCurrentPanel();
@@ -92,6 +93,7 @@ void GUI_Panel::destroyPreviousNavi()
     }
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_Panel::destroy()
 {
     if (m_curState != GUI_Panel::NSCreated) 
@@ -108,28 +110,17 @@ void GUI_Panel::destroy()
     }
 }
 
-void GUI_Panel::createNavi(const std::string &homepage, const NaviPosition &naviPosition,
-                unsigned short width, unsigned short height, unsigned short zOrder)
+//-------------------------------------------------------------------------------------
+void GUI_Panel::createNavi(const NaviPosition &naviPosition,
+                unsigned short width, unsigned short height)
 {
     mCurrentNaviCreationDate = 0;
 
-    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, homepage, naviPosition,
-        width, height, zOrder);
+    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, width, height, naviPosition);
 }
-
-
-void GUI_Panel::createNavi(const std::string &homepage, int x, int y,
-                           unsigned short width, unsigned short height, unsigned short zOrder)
-{
-    mCurrentNaviCreationDate = 0;
-
-    mNavi = NaviLibrary::NaviManager::Get().createNavi(mPanelName, homepage, NaviPosition(x, y),
-        width, height, zOrder);
-}
-
 
 //-------------------------------------------------------------------------------------
-void GUI_Panel::onPanelLoaded(const NaviData& naviData)
+void GUI_Panel::onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     // Show Navi UI
     if (m_curState == NSCreated)
@@ -142,6 +133,7 @@ void GUI_Panel::onPanelLoaded(const NaviData& naviData)
     mCurrentNaviCreationDate = 0;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_Panel::fitOnScreen(int & w, int & h)
 {
     unsigned int width, height, colourDepth;
@@ -158,5 +150,4 @@ void GUI_Panel::fitOnScreen(int & w, int & h)
     h = height - 32;
 }
 
-
-
+//-------------------------------------------------------------------------------------

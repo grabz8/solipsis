@@ -70,14 +70,14 @@
                 // Everything within this block will execute when the Document-Object-Model of the page is ready
                 window.addEvent('domready', function(){
                     // Initialize local variables from Page Navi Data
-                    var itemWidth = $PND.get('itemWidth').toInt(), itemHeight = $PND.get('itemHeight').toInt();
-                    var items = $PND.get('items').split('#');
+                    var itemWidth = Client.itemWidth.toInt(), itemHeight = Client.itemHeight.toInt();
+                    var items = Client.items.split('#');
 
                     // Build the menu
                     var pieMenu = new Element('ul');
                     items.each(function(image, i){
                     pieMenu.adopt(new Element('li', {
-                        events: { click: function(){ $ND('contextItemSelected', {item: image}).send(); } },
+                        events: { click: function(){ Client.contextItemSelected(image); } },
                         styles: { 'background-image': "url('uictxbtn" + image + ".png')" }
                     }));
                 });
@@ -107,7 +107,7 @@
         <script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uictxtavatar'}).send();
+				Client.pageLoaded('uictxtavatar'); 
             }
         </script>
         <style type="text/css">

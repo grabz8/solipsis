@@ -1220,3 +1220,15 @@ resetMousePicking when objects are deleted
 fixed download/upload progress step replaced by 1 duration step
 
 ---------------------------
+28/07/09
+
+Navi1.6 replaced by NaviAwesomium based on google Chrome browser engine (TOF reports) + some fixes
+Mouse is now managed by solipsis NavigatorGui
+WorldsServer.py now respond HTML code + headers + content_type to be fully compliant
+todo :
+ color tabs/tuning sliders are not displayed into modeler/avatar properties ui
+ textures thumbnails not displayed,
+ color keying to add into NaviAwesomium for uictxtavatar
+ Panel2DWWW ratio1/1 resize to re-implement (see Navi::resizeNavi)
+
+---------------------------

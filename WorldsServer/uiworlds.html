@@ -19,30 +19,17 @@
                 selectWorlds.innerHTML += "<option value='127.0.0.1:8559?voipServer=127.0.0.1:30002'>Delta Station</option>";
                 selectWorlds.innerHTML += "<option value='127.0.0.1:8558?voipServer=127.0.0.1:30001'>Rennes</option>";
                 selectWorlds.innerHTML += "<option value='127.0.0.1:8556'>Blank Scene by mtyas</option>";
-                new NaviData('pageLoaded').add({naviName:'uiworlds'}).send();
+                Client.pageLoaded('uiworlds');
             }
-            function buttonPressed(buttonName)
+            function okPressed()
             {
                 // Eg. <option value='127.0.0.1:8660?voipServer=127.0.0.1:30000'>Children Island</option>
-                var naviData = new NaviData(buttonName);
-                if (buttonName == 'ok')
-                {
-                    var worldURL = document.getElementById("selectWorlds").value;
-                    var addr;
-                    addr = getURLWoParams(worldURL);
-                    if (addr != "")
-                        naviData.add({world:addr});
-                    addr = getParamIntoURL(worldURL, "voipServer");
-                    if (addr != "")
-                        naviData.add({voipServer:addr});
-                    addr = getParamIntoURL(worldURL, "vncServer");
-                    if (addr != "")
-                        naviData.add({vncServer:addr});
-                    addr = getParamIntoURL(worldURL, "vlcServer");
-                    if (addr != "")
-                        naviData.add({vlcServer:addr});
-                }
-                naviData.send();
+                var worldURL = document.getElementById("selectWorlds").value;
+                var addrWorld = getURLWoParams(worldURL);
+                var addrVoipServer = getParamIntoURL(worldURL, "voipServer");
+                var addrVncServer = getParamIntoURL(worldURL, "vncServer");
+                var addrVlcServer = getParamIntoURL(worldURL, "vlcServer");
+                Client.ok(addrWorld, addrVoipServer, addrVncServer, addrVlcServer);
             }
         </script>
         <style type="text/css">
@@ -86,11 +73,11 @@
     <body onload="pageLoaded()">
         <div id="container">
             <div id="worldsSelect">
-                <select id="selectWorlds" name="selectWorlds" size="5" style="width:200px" ondblclick="buttonPressed('ok')">
+                <select id="selectWorlds" name="selectWorlds" size="5" style="width:200px" ondblclick="okPressed()">
                 </select>
             </div>
-            <div id="okButton" class="button" onclick="buttonPressed('ok')"></div>
-            <div id="cancelButton" class="button" onclick="buttonPressed('cancel')"></div>
+            <div id="okButton" class="button" onclick="okPressed()"></div>
+            <div id="cancelButton" class="button" onclick="Client.cancel()"></div>
         </div>
     </body>
 </html>

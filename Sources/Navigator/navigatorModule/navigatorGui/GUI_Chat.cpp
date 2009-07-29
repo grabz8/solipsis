@@ -30,15 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_Chat * GUI_Chat::stGUI_Chat = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Chat::GUI_Chat() : GUI_Panel("uichat")
 {
     stGUI_Chat = this;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_Chat::showHide()
 {
     if (!stGUI_Chat)
@@ -48,17 +49,20 @@ void GUI_Chat::showHide()
 
     if (stGUI_Chat->isVisible())
         stGUI_Chat->hide();
-    else
-        stGUI_Chat->show();
+   else
+       stGUI_Chat->show();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_Chat::show()
 {
     // Create Navi UI Chat panel bar
     // Lua
     if (m_curState == NSNotCreated)
     {
-        createNavi("local://uichat.html", BottomLeft, 512, 128);
+        createNavi(NaviPosition(BottomLeft), 512, 128);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Chat::onPageLoaded));
+        mNavi->loadFile("uichat.html");
 
         mNavi = NavigatorGUI::getNavi(mPanelName);
         mNavi->hide();
@@ -66,7 +70,6 @@ bool GUI_Chat::show()
         mNavi->setIgnoreBounds(true);
         mNavi->setOpacity(0.75);
 
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Chat::onPageLoaded));
         mNavi->bind("pageClosed", NaviDelegate(this, &GUI_Chat::onPageClosed));
         mNavi->bind("sendMessage", NaviDelegate(this, &GUI_Chat::onSendMessage));
  
@@ -83,34 +86,37 @@ void GUI_Chat::addText(const std::wstring& message)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "NavigatorGUI::addChatText()");
 
+    Awesomium::JSArguments args;
+    args.push_back(Awesomium::JSValue(StringHelpers::convertWStringToString(message)));
     // Navi MultiValue will encode the wstring in URI encoded string and add 1 call to decodeURIComponent on it
     if (stGUI_Chat != 0)
     {
-        stGUI_Chat->mNavi->evaluateJS("$('textChat').value += ?", NaviLibrary::NaviUtilities::Args(message));
+        stGUI_Chat->mNavi->evaluateJS("$('textChat').value += ?", args);
         stGUI_Chat->mNavi->evaluateJS("$('textChat').value += '\\n'");
         stGUI_Chat->mNavi->evaluateJS("$('textChat').scrollTop = $('textChat').scrollHeight;");
     }
 }
 
-void GUI_Chat::onPageLoaded(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Chat::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
-    GUI_Panel::onPanelLoaded(naviData);
+    GUI_Panel::onPanelLoaded(caller, args);
 }
 
-void GUI_Chat::onPageClosed(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Chat::onPageClosed(Navi* caller, const Awesomium::JSArguments& args)
 {
     mNavi->hide();
 }
 
-void GUI_Chat::onSendMessage(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_Chat::onSendMessage(Navi* caller, const Awesomium::JSArguments& args)
 {
     // Reset input
     mNavi->evaluateJS("$('inputChat').value = ''");
     //           -- Send the message
     // navigator:sendMessage(param["msg"])
-    Navigator::getSingletonPtr()->sendMessage(naviData["msg"].str());
+    Navigator::getSingletonPtr()->sendMessage(args[0].toString());
 }
 
-
-
-
+//-------------------------------------------------------------------------------------

@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __GUI_MessageBoxResponse_h__
 #define __GUI_MessageBoxResponse_h__
 
+#include "NaviManager.h"
+
+using namespace NaviLibrary;
+
 namespace Solipsis {
     /** This class handles user response on message box
     */
@@ -31,7 +35,7 @@ namespace Solipsis {
     {
     public:
         /// Called on message box user response
-        virtual void onResponse(const std::string& response) = 0;
+        virtual void onResponse(Navi* caller, const Awesomium::JSArguments& args) = 0;
     };
 
 } // namespace Solipsis

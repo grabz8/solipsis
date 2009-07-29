@@ -41,6 +41,7 @@ using namespace CommonTools;
 
 GUI_Avatar * GUI_Avatar::stGUI_Avatar = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_Avatar::GUI_Avatar() : GUI_Panel("uiavatarmain")
 {
     stGUI_Avatar = this;
@@ -48,6 +49,7 @@ GUI_Avatar::GUI_Avatar() : GUI_Panel("uiavatarmain")
 
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ bool GUI_Avatar::createAndShowPanel()
 {
     if (!stGUI_Avatar)
@@ -58,6 +60,7 @@ GUI_Avatar::GUI_Avatar() : GUI_Panel("uiavatarmain")
     return stGUI_Avatar->show();
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ void GUI_Avatar::unload()
 {
     if (!stGUI_Avatar)
@@ -69,7 +72,7 @@ GUI_Avatar::GUI_Avatar() : GUI_Panel("uiavatarmain")
     return;
 }  
 
-
+//-------------------------------------------------------------------------------------
 /*static*/ bool GUI_Avatar::isPanelVisible()
 {
     if (!stGUI_Avatar)
@@ -80,7 +83,6 @@ GUI_Avatar::GUI_Avatar() : GUI_Panel("uiavatarmain")
     return stGUI_Avatar->isVisible();
 }  
 
-
 //-------------------------------------------------------------------------------------
 bool GUI_Avatar::show()
 {
@@ -90,14 +92,14 @@ bool GUI_Avatar::show()
     if (m_curState == NSNotCreated)
     {
         // Create Navi UI modeler
-        createNavi( "local://uiavatarmain.html", NaviPosition(TopRight), 256, 512);
-
+        createNavi(NaviPosition(TopRight), 256, 512);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Avatar::avatarMainPageLoaded));
+        mNavi->loadFile("uiavatarmain.html");
         mNavi->setMovable(true);
         mNavi->hide();
         mNavi->setMask("uiavatarmain.png");//Eliminate the black shadow at the margin of the menu
         mNavi->setOpacity(0.75f);
 
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_Avatar::avatarMainPageLoaded));
         //		mNavi->bind("AvatarPrev", NaviDelegate(this, &GUI_Avatar::avatarMainSelectPrev));
         //		mNavi->bind("AvatarNext", NaviDelegate(this, &GUI_Avatar::avatarMainSelectNext));
         mNavi->bind("AvatarSelected", NaviDelegate(this, &GUI_Avatar::avatarMainSelected));
@@ -158,7 +160,7 @@ void GUI_Avatar::destroy()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainPageLoaded(const NaviData& naviData)
+void GUI_Avatar::avatarMainPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainPageLoaded()");
 
@@ -208,13 +210,13 @@ void GUI_Avatar::avatarMainPageLoaded(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainFileOpen(const NaviData& naviData)
+void GUI_Avatar::avatarMainFileOpen(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainFileOpen()");
     mNavigator->avatarXMLLoad();
 }
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainFileEdit(const NaviData& naviData)
+void GUI_Avatar::avatarMainFileEdit(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainFileEdit()");
 
@@ -225,19 +227,19 @@ void GUI_Avatar::avatarMainFileEdit(const NaviData& naviData)
     GUI_AvatarProperties::createAndShowPanel();
 }
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainFileSave(const NaviData& naviData)
+void GUI_Avatar::avatarMainFileSave(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainFileSave()");
     mNavigator->avatarXMLSave();
 }
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainFileSaveAs(const NaviData& naviData)
+void GUI_Avatar::avatarMainFileSaveAs(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainFileSaveAs()");
     mNavigator->avatarXMLSaveAs();
 }
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainFileExit(const NaviData& naviData)
+void GUI_Avatar::avatarMainFileExit(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainFileExit()");
 
@@ -245,7 +247,7 @@ void GUI_Avatar::avatarMainFileExit(const NaviData& naviData)
     mNavigator->setCameraMode(mNavigator->getLastCameraMode());
 }
 //-------------------------------------------------------------------------------------
-/*void GUI_Avatar::avatarMainSelectPrev(const NaviData& naviData)
+/*void GUI_Avatar::avatarMainSelectPrev(Navi* caller, const Awesomium::JSArguments& args)
 {
 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainSelectPrev()");
 Avatar* userAvatar = mNavigator->getUserAvatar();
@@ -259,7 +261,7 @@ mNavi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p
 mNavi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
 }*/
 //-------------------------------------------------------------------------------------
-/*void GUI_Avatar::avatarMainSelectNext(const NaviData& naviData)
+/*void GUI_Avatar::avatarMainSelectNext(Navi* caller, const Awesomium::JSArguments& args)
 {
 LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainSelectNext()");
 Avatar* userAvatar = mNavigator->getUserAvatar();
@@ -273,10 +275,10 @@ mNavi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p
 mNavi->evaluateJS("$('avatarSelectTitre').innerHTML = '" + text + "'");
 }*/
 //-------------------------------------------------------------------------------------
-void GUI_Avatar::avatarMainSelected(const NaviData& naviData)
+void GUI_Avatar::avatarMainSelected(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_Avatar::avatarMainSelected()");
-    std::string item( naviData["item"].str() );
+    std::string item( args.at(0).toString() );
 
     CharacterInstance* avatar = AvatarEditor::getSingletonPtr()->getManager()->getCurrentInstance();
     if( avatar->getCharacter()->getName() != item )
@@ -290,3 +292,5 @@ void GUI_Avatar::avatarMainSelected(const NaviData& naviData)
         mNavi->evaluateJS("$('AvatarName').innerHTML = '<p>Name : <b>" + text + "</b></p>'");
     }
 }
+
+//-------------------------------------------------------------------------------------

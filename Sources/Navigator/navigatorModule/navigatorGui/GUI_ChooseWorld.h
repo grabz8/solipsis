@@ -49,8 +49,8 @@ namespace Solipsis
         virtual bool show();
 
         // ok is pressed
-        void onOkPressed(const NaviData& naviData);
-        void onCancelPressed(const NaviData& naviData);
+        void onOkPressed(Navi* caller, const Awesomium::JSArguments& args);
+        void onCancelPressed(Navi* caller, const Awesomium::JSArguments& args);
 
      
     protected:

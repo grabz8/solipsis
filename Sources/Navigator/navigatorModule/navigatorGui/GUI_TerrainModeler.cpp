@@ -34,15 +34,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace Solipsis;
 using namespace CommonTools;
 
-//-------------------------------------------------------------------------------------
-
 GUI_TerrainModeler * GUI_TerrainModeler::stGUI_TerrainModeler = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_TerrainModeler::GUI_TerrainModeler() : GUI_Panel("uimdlrTerrain")
 {
     stGUI_TerrainModeler = this;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_TerrainModeler::showPanel()
 {
     if (!stGUI_TerrainModeler)
@@ -53,6 +53,7 @@ void GUI_TerrainModeler::showPanel()
     stGUI_TerrainModeler->show();
 }
 
+//-------------------------------------------------------------------------------------
 /*static*/ void GUI_TerrainModeler::unloadPanel()
 {
     if (!stGUI_TerrainModeler)
@@ -63,15 +64,17 @@ void GUI_TerrainModeler::showPanel()
     stGUI_TerrainModeler->destroy();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_TerrainModeler::show()
 {
-
     if (m_curState == NSNotCreated)
     {
         LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::show()");
 
         // Create Navi UI modeler
-        createNavi( "local://uimdlrterrain.html" , NaviPosition(TopRight), 512, 512);
+        createNavi(NaviPosition(TopRight), 512, 512);
+        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_TerrainModeler::onPageLoaded));
+        mNavi->loadFile("uimdlrterrain.html");
 
         mNavi->setMovable(true);
         mNavi->hide();
@@ -79,7 +82,6 @@ bool GUI_TerrainModeler::show()
         //navi->setOpacity(0.75f);
 
         // page loaded
-        mNavi->bind("pageLoaded", NaviDelegate(this, &GUI_TerrainModeler::onPageLoaded));
 
         mNavi->bind("MdlrTCreate", NaviDelegate(this, &GUI_TerrainModeler::onExec));
         mNavi->bind("MdlrTCancel", NaviDelegate(this, &GUI_TerrainModeler::onCancelled));
@@ -94,26 +96,26 @@ bool GUI_TerrainModeler::show()
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onPageLoaded(const NaviData& naviData)
+void GUI_TerrainModeler::onPageLoaded(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::modelerSceneFromTextPageLoaded()");
 
     // Show Navi UI
-    GUI_Panel::onPanelLoaded(naviData);
+    GUI_Panel::onPanelLoaded(caller, args);
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onExec(const NaviData& naviData)
+void GUI_TerrainModeler::onExec(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::onExec()");
 
     int nbOctaves = 5;
 
-    std::string noiseScale = mNavi->evaluateJS("noiseScale.getValue()");	
+    std::string noiseScale = mNavi->evaluateJSWithResult("noiseScale.getValue()").get().toString();
     std::string msg = "noiseScale="+noiseScale;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
 
-    std::string granularity = mNavi->evaluateJS("granularity.getValue()");	
+    std::string granularity = mNavi->evaluateJSWithResult("granularity.getValue()").get().toString();
     msg = "granularity="+granularity;
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, msg.data());
 
@@ -122,9 +124,10 @@ void GUI_TerrainModeler::onExec(const NaviData& naviData)
 }
 
 //-------------------------------------------------------------------------------------
-void GUI_TerrainModeler::onCancelled(const NaviData& naviData)
+void GUI_TerrainModeler::onCancelled(Navi* caller, const Awesomium::JSArguments& args)
 {
     LOGHANDLER_LOGF(LogHandler::VL_DEBUG, "GUI_TerrainModeler::modelerSceneFromTextSetUpCancelled()");
     destroy();
 }
 
+//-------------------------------------------------------------------------------------

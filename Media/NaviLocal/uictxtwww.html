@@ -7,12 +7,12 @@
             var ctxtNaviNameParam;
             function pageLoaded()
             {
-                ctxtNaviNameParam = $PND.get('ctxtNaviName');
-                $ND('pageLoaded').add({naviName:'uictxtwww'}).add({ctxtNaviName:ctxtNaviNameParam}).send();
+                ctxtNaviNameParam = Client.ctxtNaviName;
+                Client.pageLoaded('uictxtwww', ctxtNaviNameParam);  
             }
             function navCommand(command)
             {
-                $ND('navCommand').add({ctxtNaviName:ctxtNaviNameParam}).add({cmd:command}).send();
+                Client.navCommand(ctxtNaviNameParam, command);  
             }
         </script>
         <style type="text/css">

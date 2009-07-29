@@ -44,9 +44,9 @@ namespace Solipsis
 
         void onError();
 
-        void onLoaded(const NaviData& naviData);
-        void onOk(const NaviData& naviData);
-        void onCancel(const NaviData& naviData);
+        void onLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void onOk(Navi* caller, const Awesomium::JSArguments& args);
+        void onCancel(Navi* caller, const Awesomium::JSArguments& args);
 
     protected:
         GUI_AuthentFacebook();

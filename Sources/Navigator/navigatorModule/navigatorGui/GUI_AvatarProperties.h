@@ -50,55 +50,55 @@ namespace Solipsis
 
 
         // Avatar properties page callbacks
-        void avatarPropPageLoaded(const NaviData& naviData);
-        void avatarPropPageClosed(const NaviData& naviData);
+        void avatarPropPageLoaded(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropPageClosed(Navi* caller, const Awesomium::JSArguments& args);
         // Avatar animation page callbaks
-        void avatarPropAnimPlayPause(const NaviData& naviData);
-        void avatarPropAnimStop(const NaviData& naviData);
-        void avatarPropAnimNext(const NaviData& naviData);
-        void avatarPropAnimPrev(const NaviData& naviData);
+        void avatarPropAnimPlayPause(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAnimStop(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAnimNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAnimPrev(Navi* caller, const Awesomium::JSArguments& args);
         // Avatar bodyParts page callbacks
-        void avatarPropHeight(const NaviData& naviData);
-        void avatarPropBonePrev(const NaviData& naviData);
-        void avatarPropBoneNext(const NaviData& naviData);
-        void avatarPropBPPrev(const NaviData& naviData);
-        void avatarPropBPNext(const NaviData& naviData);
-        void avatarPropBPMPrev(const NaviData& naviData);
-        void avatarPropBPMNext(const NaviData& naviData);
-        void avatarPropBPMEdit(const NaviData& naviData);
-        void avatarPropBPMRemove(const NaviData& naviData);
-        void avatarPropAttPrev(const NaviData& naviData);
-        void avatarPropAttNext(const NaviData& naviData);
-        void avatarPropAttMPrev(const NaviData& naviData);
-        void avatarPropAttMNext(const NaviData& naviData);
-        void avatarPropAttMEdit(const NaviData& naviData);
-        void avatarPropAttMRemove(const NaviData& naviData);
-        void avatarPropSliders(const NaviData& naviData);		// multi callback !
-        void avatarPropReset(const NaviData& naviData);
+        void avatarPropHeight(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBonePrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBoneNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPPrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPMPrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPMNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPMEdit(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropBPMRemove(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttPrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttMPrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttMNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttMEdit(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropAttMRemove(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropSliders(Navi* caller, const Awesomium::JSArguments& args);		// multi callback !
+        void avatarPropReset(Navi* caller, const Awesomium::JSArguments& args);
         // Avatar material page callbacks
-        void avatarColorAmbient(const NaviData& naviData);
-        void avatarColorDiffuse(const NaviData& naviData);
-        void avatarColorSpecular(const NaviData& naviData);
-        void avatarColorLockAmbientDiffuse(const NaviData& naviData);
-        void avatarDoubleSide(const NaviData& naviData);
-        void avatarPropShininess(const NaviData& naviData);
-        void avatarPropTransparency(const NaviData& naviData);
-        void avatarPropScrollU(const NaviData& naviData);
-        void avatarPropScrollV(const NaviData& naviData);
-        void avatarPropScaleU(const NaviData& naviData);
-        void avatarPropScaleV(const NaviData& naviData);
-        void avatarPropRotateU(const NaviData& naviData);
-        void avatarPropTextureAdd(const NaviData& naviData);
-        void avatarPropTextureRemove(const NaviData& naviData);
-        void avatarPropTexturePrev(const NaviData& naviData);
-        void avatarPropTextureNext(const NaviData& naviData);
-        void avatarPropResetColour(const NaviData& naviData);
-        void avatarPropSound(const NaviData& naviData);
+        void avatarColorAmbient(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarColorDiffuse(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarColorSpecular(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarColorLockAmbientDiffuse(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarDoubleSide(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropShininess(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropTransparency(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropScrollU(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropScrollV(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropScaleU(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropScaleV(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropRotateU(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropTextureAdd(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropTextureRemove(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropTexturePrev(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropTextureNext(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropResetColour(Navi* caller, const Awesomium::JSArguments& args);
+        void avatarPropSound(Navi* caller, const Awesomium::JSArguments& args);
 
         void avatarTabberLoad(unsigned pTab);
         // Avatar properties updates
         void avatarTabberSave();
-        void avatarTabberChange(const NaviData& naviData);
+        void avatarTabberChange(Navi* caller, const Awesomium::JSArguments& args);
 
         // Update the list of loaded textures
         void avatarUpdateTextures(ModifiableMaterialObject* pObject);

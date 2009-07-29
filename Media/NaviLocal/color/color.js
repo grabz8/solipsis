@@ -1,148 +1,3 @@
-/**
-* The NaviData class is essentially a flexible key/value container that is used to pass data between the page and the application.
-*
-* @param dataName	The name of the NaviData object to create.
-*
-* @param dataObj	An optional shortcut to calling 'new NaviData(dataName).add(dataObj)'. See NaviData::add below.
-*/
-var NaviData = new Class({
-
-	initialize: function(dataName, dataObj)
-	{
-		this.data = [];
-		this.dataName = dataName;
-		
-		if($defined(dataObj))
-			this.add.bind(this)(dataObj);
-			
-		return this;
-	},
-	
-	/**
-	* Adds data to the NaviData container.
-	*
-	* @param dataObj	Can be either:
-	*					An object containing key/value pairs, such as: myData.add( { message: 'hello', seconds: 37, minutes: 5 } )
-	*					An input element. The key/value of the data added will be the same as the current 'name' and 'value' properties of the element.
-	*					A DOM element that has been instantiated as a NaviWidget (such as a <span> element turned into a ComboBox).
-	*					A form element that may contain multiple input elements/NaviWidget containers.
-	*/
-	add: function(dataObj)
-	{
-		var pushData = (function(n,v) { this.data.push(n + '=' + encodeURIComponent(v)); }).bind(this);
-		
-		var pushInputEle = function(ele)
-		{
-			var n = ele.name;
-			var v = ele.getValue();
-			
-			if(v === false || !n || ele.disabled)
-				return;
-			else
-				pushData(n,v);
-		};
-			
-		switch($type(dataObj))
-		{
-		case "object":
-			this.data.push(Object.toQueryString(dataObj));
-			break;
-		case "element": 
-			dataObj = $(dataObj);
-			
-			switch(dataObj.getTag())
-			{
-			case "input": case "select": case "textarea":
-				pushInputEle(dataObj);
-				break;
-			case "form":
-				dataObj.getFormElements().each(function(el){ pushInputEle(el); });
-				$ES('*[alt=NaviWidget]', dataObj).each(function(el){ this.data.push(el.toQueryString()); }, this);
-				break;
-			default:
-				if(dataObj.getProperty('alt') == 'NaviWidget')
-					this.data.push(dataObj.toQueryString());
-				break;
-			}
-			break;
-		}
-		
-		return this;
-	},
-	
-	/**
-	* Adds a Query String to the NaviData container.
-	*
-	* @param	queryString	A standard query string with each value of every pair encoded using 'encodeURIComponent'.
-	*/
-	addQueryString: function(queryString){ this.data.push(queryString); return this; },
-	
-	/**
-	* Retrieves the value of a certain key.
-	*
-	* @param key	The name of the value to retrieve.
-	*
-	* @return	If the key is found, this returns a string containing the value of the pair, otherwise 'null'.
-	*/
-	get: function(key)
-	{
-		var result = null;
-		
-		this.data.join('&').split('&').each( function(pair)
-		{
-			if(pair.split('=')[0] == key && !result)
-				result = decodeURIComponent(pair.split('=')[1]);
-		});
-		
-		return result;
-	},
-	
-	/**
-	* Retrieves the value of a certain key as a Number.
-	*
-	* @param key	The name of the value to retrieve.
-	*
-	* @return	If the key is found and it is a Number, this returns the value of the pair as a Number, otherwise 'null'.
-	*/
-	getNumber: function(key)
-	{
-		var result = this.get.bind(this)(key);
-		
-		if($defined(result) && !isNaN(result))
-			return Number(result);
-
-		return null;	
-	},
-	
-	/**
-	* Returns the name of this NaviData
-	*/
-	getName: function(){ return this.dataName; },
-	
-	/**
-	* Sends this NaviData to the application.
-	*/
-	send: function()
-	{
-		window.statusbar = false;
-		window.status = "NAVI_DATA:?" + this.dataName + "?" + this.data.join('&');	
-		window.status = "";
-		
-		if(window.console)
-		{
-			console.group("NaviData sent!");
-			console.log("Name: " + this.dataName);
-			console.log("Data: " + this.data.join('&').split('&'));
-			console.groupEnd();
-		}
-		
-		return this;
-	}
-});
-
-
-
-
 /* DHTML Color Picker v1.0.3, Programming by Ulyses, ColorJack.com */
 /* Updated August 24th, 2007 */
 
@@ -179,22 +34,16 @@ function HSVslide(d,o,e) {
 				slideHSV[2]=100-mkHSV(100,wSV,ds.top); 
 				HSVupdate();
 				
-				//alert(panel);
-				//new NaviData(panel).send();
-				//if(panel == 'pAmbient') new NaviData('MdlrAmbient').add({rgb:$S(panel).background}).send();
 				if(panel == 'pAmbient') {
-				    new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarAmbient').add({rgb:hsv2rgb(HSV)}).send();
+					Client.Ambient(hsv2rgb(HSV));
 				}
 				else if(panel == 'pDiffuse') 
 				{   
-				    new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarDiffuse').add({rgb:hsv2rgb(HSV)}).send();
+					Client.Diffuse(hsv2rgb(HSV));
 				}
 				else if(panel == 'pSpecular') 
 				{
-				    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
-				    new NaviData('AvatarSpecular').add({rgb:hsv2rgb(HSV)}).send();
+					Client.Specular(hsv2rgb(HSV));
 				}
 			}
 			else if(d=='Hslide') { 
@@ -211,34 +60,17 @@ function HSVslide(d,o,e) {
 				HSVupdate(z); 
 				$S('SV').backgroundColor='#'+hsv2hex([HSV[0],100,100]);
 
-				if(panel == 'pAmbient') {
-					new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-					/*
-                    if($('lockAmbientdiffuse').checked == true)
-						new NaviData('MdlrAmbient').add({rgb:hsv2rgb(HSV)}).send();
-                    */
+				if(panel == 'pAmbient') 
+				{
+					Client.Ambient(hsv2rgb(HSV));
 				}
 				else if(panel == 'pDiffuse') {
-					new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-					/*
-                    if($('lockAmbientdiffuse').checked == true)
-						new NaviData('MdlrDiffuse').add({rgb:hsv2rgb(HSV)}).send();
-                      */
+					Client.Diffuse(hsv2rgb(HSV));
 				}
-				else if(panel == 'pSpecular') 
-                {
-                    new NaviData('MdlrSpecular').add({rgb:hsv2rgb(HSV)}).send();
-                }
+				else if(panel == 'pSpecular') {
+					Client.Specular(hsv2rgb(HSV));
+				}
 			}
-/*			else if(d=='drag') {
-				//var ds=$S(d!='drag'?d:o);
-				//var oX=parseInt(ds.left), oY=parseInt(ds.top), eX=XY(e), eY=XY(e,1);
-					 
-				//ds.left=XY(e)+oX-eX+'px'; 
-				//ds.top=XY(e,1)+oY-eY+'px';		
-				ds.left=XY(e)+'px'; 
-				ds.top=XY(e,1)+'px';		
-			}*/
 		}
 	}
 

@@ -10,17 +10,11 @@
 		<script type="text/javascript">
             function pageLoaded()
             {
-                new NaviData('pageLoaded').add({naviName:'uiavatarmain'}).send();
-            }
-            function elementClicked(elementName)
-            {
-                new NaviData(elementName).send();
+                Client.pageLoaded('uiavatarmain');
             }
             function select(value)
             {
-//                $('avatarSelectItem').style.display='none';
-//                $('avatarSelectTitre').innerHTML = ""+value;
-                new NaviData('AvatarSelected').add({item:value}).send();
+                Client.AvatarSelected(value);
             }
 		</script>
 		<style type="text/css"> 
@@ -108,12 +102,7 @@
 				    </td>
 				</tr>
 				<tr><td><br /><br /></td></tr>
-<!--				<tr>
-					<td align="center">
-						<input type="button" value=" < " style='width: 60px' onclick="elementClicked('AvatarPrev')">
-						<input type="button" value=" > " style='width: 60px' onclick="elementClicked('AvatarNext')">
-					</td>		    
-				</tr>-->
+				
 				<tr>
 				    <td align="center">
 				        <br><br>
@@ -126,17 +115,17 @@
 				<tr>
 				    <td align="center">
 				        <br><br>
-						<input type="button" value="Open" size="10" onclick="elementClicked('FileOpen')"><br>
-						<input type="button" value="Edit" size="10" onclick="elementClicked('AvatarEdit')"><br>
-						<input type="button" value="Save" size="10" onclick="elementClicked('FileSave')"><br>
-						<input type="button" value="Save as" size="10" onclick="elementClicked('FileSaveAs')"><br>
-						<input type="button" value="Exit" size="10" onclick="elementClicked('FileExit')"><br>
+						<input type="button" value="Open" size="10" onclick="Client.FileOpen()"><br>
+						<input type="button" value="Edit" size="10" onclick="Client.AvatarEdit()"><br>
+						<input type="button" value="Save" size="10" onclick="Client.FileSave()"><br>
+						<input type="button" value="Save as" size="10" onclick="Client.FileSaveAs()"><br>
+						<input type="button" value="Exit" size="10" onclick="Client.FileExit()"><br>
 					</td>
 				</tr>
 				
 			</table>
             </div>
-            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="elementClicked('FileExit')"></span>
+            <span id="mTbIconClose" class="solipsisIcons solipsisCloseActive" onclick="Client.FileExit()"></span>
         </div>
 	</body>
 </html>

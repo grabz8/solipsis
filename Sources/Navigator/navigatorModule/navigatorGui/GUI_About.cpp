@@ -30,15 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 using namespace Solipsis;
 using namespace CommonTools;
-//-------------------------------------------------------------------------------------
 
 GUI_About * GUI_About::stGUI_About = NULL;
 
+//-------------------------------------------------------------------------------------
 GUI_About::GUI_About() : GUI_Panel("uiabout")
 {
     stGUI_About = this;
 }
 
+//-------------------------------------------------------------------------------------
 void GUI_About::showHide()
 {
     if (!stGUI_About)
@@ -52,6 +53,7 @@ void GUI_About::showHide()
        stGUI_About->show();
 }
 
+//-------------------------------------------------------------------------------------
 bool GUI_About::show()
 {
     // Create Navi UI Chat panel bar
@@ -60,9 +62,9 @@ bool GUI_About::show()
     {
         int w = 1024, h = 1024;  
         fitOnScreen(w, h);
-        createNavi("local://uiabout.html", Center, w, h);
+        createNavi(NaviPosition(Center), w, h);
 
-        mNavi = NavigatorGUI::getNavi(mPanelName);
+        mNavi->loadFile("uiabout.html");
         mNavi->show();
         mNavi->setMovable(true);
         mNavi->setIgnoreBounds(true);
@@ -78,7 +80,10 @@ bool GUI_About::show()
     return true;
 }
 
-void GUI_About::onClose(const NaviData& naviData)
+//-------------------------------------------------------------------------------------
+void GUI_About::onClose(Navi* caller, const Awesomium::JSArguments& args)
 {
     destroy();
 }
+
+//-------------------------------------------------------------------------------------

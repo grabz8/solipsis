@@ -57,16 +57,13 @@ namespace Solipsis
         void destroyPreviousNavi();
 
         // usual function on page loaded
-        void onPanelLoaded(const NaviData& naviData);
+        void onPanelLoaded(Navi* caller, const Awesomium::JSArguments& args);
 
         void fitOnScreen(int & w, int & h);
 
     protected:
-        void createNavi(const std::string &homepage, const NaviPosition &naviPosition,
-            unsigned short width, unsigned short height, unsigned short zOrder = 0);
-        void createNavi(const std::string &homepage,  int x, int y,
-            unsigned short width, unsigned short height, unsigned short zOrder = 0);
-
+        void createNavi(const NaviPosition &naviPosition,
+            unsigned short width, unsigned short height);
 
         NaviState m_curState;
         std::string mPanelName;
